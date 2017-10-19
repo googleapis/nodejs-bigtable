@@ -309,6 +309,8 @@ function Bigtable(options) {
     return new Bigtable(options);
   }
 
+  options = options || {};
+
   var baseUrl = 'bigtable.googleapis.com';
   var adminBaseUrl = 'bigtableadmin.googleapis.com';
 

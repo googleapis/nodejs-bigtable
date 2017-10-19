@@ -27,15 +27,24 @@ const bigtable = new Bigtable({
   projectId: projectId,
 });
 
-const instance = bigtable.instance('my-instance');
-const table = instance.table('prezzy');
+// The name for the new instance
+const instanceName = 'my-new-instance';
 
-// Get the rows from your table.
-table.getRows(function(err, rows) {
-  if (err) {
-    // Error handling omitted.
-  }
-
-  console.log(rows);
-});
+// Creates the new instance
+bigtable
+  .createInstance(instanceName, {
+    clusters: [
+      {
+        name: 'my-cluster',
+        location: 'us-central1-c',
+        nodes: 3,
+      },
+    ],
+  })
+  .then(() => {
+    console.log(`Instance ${instanceName} created.`);
+  })
+  .catch(err => {
+    console.log('ERROR:', err);
+  });
 // [END bigtable_quickstart]
