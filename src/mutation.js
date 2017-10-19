@@ -21,6 +21,7 @@
 'use strict';
 
 var arrify = require('arrify');
+var Buffer = require('safe-buffer').Buffer;
 var Int64 = require('node-int64');
 var is = require('is');
 
@@ -63,7 +64,7 @@ var methods = (Mutation.methods = {
  * @return {string|number|buffer}
  */
 Mutation.convertFromBytes = function(bytes, options) {
-  var buf = new Buffer(bytes, 'base64');
+  var buf = Buffer.from(bytes, 'base64');
   var num = new Int64(buf).toNumber();
 
   if (!isNaN(num) && isFinite(num)) {
@@ -93,7 +94,7 @@ Mutation.convertToBytes = function(data) {
   }
 
   try {
-    return new Buffer(data);
+    return Buffer.from(data);
   } catch (e) {
     return data;
   }

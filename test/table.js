@@ -365,14 +365,6 @@ describe('Bigtable/Table', function() {
 
   describe('createReadStream', function() {
     describe('options', function() {
-      var pumpSpy;
-
-      beforeEach(function() {
-        pumpSpy = sinon.stub(pumpify, 'obj', function() {
-          return through.obj();
-        });
-      });
-
       it('should provide the proper request options', function(done) {
         table.requestStream = function(grpcOpts, reqOpts) {
           assert.deepEqual(grpcOpts, {

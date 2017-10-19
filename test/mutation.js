@@ -17,6 +17,7 @@
 'use strict';
 
 var assert = require('assert');
+var Buffer = require('safe-buffer').Buffer;
 var Int64 = require('node-int64');
 var Mutation = require('../src/mutation.js');
 var sinon = require('sinon').sandbox.create();
@@ -53,7 +54,7 @@ describe('Bigtable/Mutation', function() {
 
     it('should convert a base64 encoded string', function() {
       var message = 'Hello!';
-      var encoded = new Buffer(message).toString('base64');
+      var encoded = Buffer.from(message).toString('base64');
       var decoded = Mutation.convertFromBytes(encoded);
 
       assert.strictEqual(message, decoded);
@@ -61,7 +62,7 @@ describe('Bigtable/Mutation', function() {
 
     it('should return a buffer if decode is set to false', function() {
       var message = 'Hello!';
-      var encoded = new Buffer(message).toString('base64');
+      var encoded = Buffer.from(message).toString('base64');
       var decoded = Mutation.convertFromBytes(encoded, {
         decode: false,
       });
@@ -73,7 +74,7 @@ describe('Bigtable/Mutation', function() {
 
   describe('convertToBytes', function() {
     it('should not re-wrap buffers', function() {
-      var buf = new Buffer('hello');
+      var buf = Buffer.from('hello');
       var encoded = Mutation.convertToBytes(buf);
 
       assert.strictEqual(buf, encoded);
@@ -199,7 +200,7 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should accept buffers', function() {
-      var val = new Buffer('hello');
+      var val = Buffer.from('hello');
       var fakeMutation = {
         follows: {
           gwashington: val,

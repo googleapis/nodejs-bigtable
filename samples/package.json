@@ -1,0 +1,17 @@
+{
+  "name": "@google-cloud/bigtable-samples",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache-2.0",
+  "author": "Google Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/googleapis/nodejs-bigtable.git"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "dependencies": {
+    "@google-cloud/bigtable": "^0.10.2"
+  }
+}

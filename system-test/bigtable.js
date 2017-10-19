@@ -20,7 +20,6 @@ var assert = require('assert');
 var async = require('async');
 var uuid = require('uuid');
 
-var env = require('../../../system-test/env.js');
 var Bigtable = require('../');
 var Instance = require('../src/instance.js');
 var Cluster = require('../src/cluster.js');
@@ -31,7 +30,7 @@ var Row = require('../src/row.js');
 var PREFIX = 'gcloud-tests-';
 
 describe('Bigtable', function() {
-  var bigtable = new Bigtable(env);
+  var bigtable = new Bigtable();
 
   var INSTANCE = bigtable.instance(generateName('instance'));
   var TABLE = INSTANCE.table(generateName('table'));
