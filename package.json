@@ -47,7 +47,7 @@
     "lint": "repo-tools lint --cmd eslint -- src/ samples/ system-test/ test/",
     "prettier": "prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
     "publish-module": "node ../../scripts/publish.js bigtable",
-    "system-test": "mocha system-test/*.js --no-timeouts --bail"
+    "system-test": "repo-tools test run --cmd mocha -- system-test/*.js --no-timeouts"
   },
   "dependencies": {
     "@google-cloud/common": "^0.13.0",
