@@ -1,0 +1,8 @@
+{
+  "requiresKeyFile": true,
+  "requiresProjectId": true,
+  "product": "bigtable",
+  "client_reference_url":
+    "https://cloud.google.com/nodejs/docs/reference/bigtable/latest/",
+  "release_quality": "alpha"
+}
