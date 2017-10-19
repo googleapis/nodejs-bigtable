@@ -312,8 +312,8 @@ function Bigtable(options) {
   var baseUrl = 'bigtable.googleapis.com';
   var adminBaseUrl = 'bigtableadmin.googleapis.com';
 
-  var customEndpoint = options.apiEndpoint ||
-    process.env.BIGTABLE_EMULATOR_HOST;
+  var customEndpoint =
+    options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
 
   if (customEndpoint) {
     baseUrl = customEndpoint;
@@ -328,30 +328,30 @@ function Bigtable(options) {
       Bigtable: {
         baseUrl: baseUrl,
         path: 'google/bigtable/v2/bigtable.proto',
-        service: 'bigtable.v2'
+        service: 'bigtable.v2',
       },
       BigtableTableAdmin: {
         baseUrl: adminBaseUrl,
         path: 'google/bigtable/admin/v2/bigtable_table_admin.proto',
-        service: 'bigtable.admin.v2'
+        service: 'bigtable.admin.v2',
       },
       BigtableInstanceAdmin: {
         baseUrl: adminBaseUrl,
         path: 'google/bigtable/admin/v2/bigtable_instance_admin.proto',
-        service: 'bigtable.admin.v2'
+        service: 'bigtable.admin.v2',
       },
       Operations: {
         baseUrl: adminBaseUrl,
         path: 'google/longrunning/operations.proto',
-        service: 'longrunning'
-      }
+        service: 'longrunning',
+      },
     },
     scopes: [
       'https://www.googleapis.com/auth/bigtable.admin',
       'https://www.googleapis.com/auth/bigtable.data',
-      'https://www.googleapis.com/auth/cloud-platform'
+      'https://www.googleapis.com/auth/cloud-platform',
     ],
-    packageJson: require('../package.json')
+    packageJson: require('../package.json'),
   };
 
   commonGrpc.Service.call(this, config, options);
@@ -426,27 +426,30 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
 
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'createInstance'
+    method: 'createInstance',
   };
 
   var reqOpts = {
     parent: this.projectName,
     instanceId: name,
     instance: {
-      displayName: options.displayName || name
-    }
+      displayName: options.displayName || name,
+    },
   };
 
-  reqOpts.clusters = arrify(options.clusters)
-    .reduce(function(clusters, cluster) {
-      clusters[cluster.name] = {
-        location: Cluster.getLocation_(self.projectId, cluster.location),
-        serveNodes: cluster.nodes,
-        defaultStorageType: Cluster.getStorageType_(cluster.storage)
-      };
+  reqOpts.clusters = arrify(options.clusters).reduce(function(
+    clusters,
+    cluster
+  ) {
+    clusters[cluster.name] = {
+      location: Cluster.getLocation_(self.projectId, cluster.location),
+      serveNodes: cluster.nodes,
+      defaultStorageType: Cluster.getStorageType_(cluster.storage),
+    };
 
-      return clusters;
-    }, {});
+    return clusters;
+  },
+  {});
 
   this.request(protoOpts, reqOpts, function(err, resp) {
     if (err) {
@@ -517,11 +520,11 @@ Bigtable.prototype.getInstances = function(query, callback) {
 
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'listInstances'
+    method: 'listInstances',
   };
 
   var reqOpts = extend({}, query, {
-    parent: this.projectName
+    parent: this.projectName,
   });
 
   this.request(protoOpts, reqOpts, function(err, resp) {
@@ -538,7 +541,7 @@ Bigtable.prototype.getInstances = function(query, callback) {
 
     var nextQuery = null;
     if (resp.nextPageToken) {
-      nextQuery = extend({}, query, { pageToken: resp.nextPageToken });
+      nextQuery = extend({}, query, {pageToken: resp.nextPageToken});
     }
 
     callback(null, instances, nextQuery, resp);
@@ -572,8 +575,9 @@ Bigtable.prototype.getInstances = function(query, callback) {
  *     this.end();
  *   });
  */
-Bigtable.prototype.getInstancesStream =
-  common.paginator.streamify('getInstances');
+Bigtable.prototype.getInstancesStream = common.paginator.streamify(
+  'getInstances'
+);
 
 /**
  * Get a reference to a Compute instance.
@@ -607,7 +611,7 @@ common.paginator.extend(Bigtable, ['getInstances']);
  * that a callback is omitted.
  */
 common.util.promisifyAll(Bigtable, {
-  exclude: ['instance', 'operation']
+  exclude: ['instance', 'operation'],
 });
 
 module.exports = Bigtable;

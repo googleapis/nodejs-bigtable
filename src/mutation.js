@@ -51,10 +51,10 @@ function Mutation(mutation) {
  * INSERT => setCell
  * DELETE => deleteFrom*
  */
-var methods = Mutation.methods = {
+var methods = (Mutation.methods = {
   INSERT: 'insert',
-  DELETE: 'delete'
-};
+  DELETE: 'delete',
+});
 
 /**
  * Parses "bytes" returned from proto service.
@@ -162,7 +162,7 @@ Mutation.encodeSetCell = function(data) {
 
       if (!is.object(cell) || cell instanceof Buffer) {
         cell = {
-          value: cell
+          value: cell,
         };
       }
 
@@ -176,10 +176,10 @@ Mutation.encodeSetCell = function(data) {
         familyName: familyName,
         columnQualifier: Mutation.convertToBytes(cellName),
         timestampMicros: timestamp || -1,
-        value: Mutation.convertToBytes(cell.value)
+        value: Mutation.convertToBytes(cell.value),
       };
 
-      mutations.push({ setCell: setCell });
+      mutations.push({setCell: setCell});
     });
   });
 
@@ -239,15 +239,17 @@ Mutation.encodeSetCell = function(data) {
  */
 Mutation.encodeDelete = function(data) {
   if (!data) {
-    return [{
-      deleteFromRow: {}
-    }];
+    return [
+      {
+        deleteFromRow: {},
+      },
+    ];
   }
 
   return arrify(data).map(function(mutation) {
     if (is.string(mutation)) {
       mutation = {
-        column: mutation
+        column: mutation,
       };
     }
 
@@ -256,8 +258,8 @@ Mutation.encodeDelete = function(data) {
     if (!column.qualifier) {
       return {
         deleteFromFamily: {
-          familyName: column.family
-        }
+          familyName: column.family,
+        },
       };
     }
 
@@ -274,8 +276,8 @@ Mutation.encodeDelete = function(data) {
       deleteFromColumn: {
         familyName: column.family,
         columnQualifier: Mutation.convertToBytes(column.qualifier),
-        timeRange: timeRange
-      }
+        timeRange: timeRange,
+      },
     };
   });
 };
@@ -312,7 +314,7 @@ Mutation.parseColumnName = function(column) {
 
   return {
     family: parts[0],
-    qualifier: parts[1]
+    qualifier: parts[1],
   };
 };
 

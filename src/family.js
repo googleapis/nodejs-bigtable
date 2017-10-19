@@ -49,7 +49,6 @@ function Family(table, name) {
   this.familyName = name.split('/').pop();
 
   var methods = {
-
     /**
      * Create a column family.
      *
@@ -91,15 +90,17 @@ function Family(table, name) {
     delete: {
       protoOpts: {
         service: 'BigtableTableAdmin',
-        method: 'modifyColumnFamilies'
+        method: 'modifyColumnFamilies',
       },
       reqOpts: {
         name: table.id,
-        modifications: [{
-          id: this.familyName,
-          drop: true
-        }]
-      }
+        modifications: [
+          {
+            id: this.familyName,
+            drop: true,
+          },
+        ],
+      },
     },
 
     /**
@@ -147,7 +148,7 @@ function Family(table, name) {
      *   var apiResponse = data[1];
      * });
      */
-    get: true
+    get: true,
   };
 
   var config = {
@@ -156,7 +157,7 @@ function Family(table, name) {
     methods: methods,
     createMethod: function(_, options, callback) {
       table.createFamily(name, options, callback);
-    }
+    },
   };
 
   commonGrpc.ServiceObject.call(this, config);
@@ -225,13 +226,13 @@ Family.formatRule_ = function(ruleObj) {
 
   if (ruleObj.age) {
     rules.push({
-      maxAge: ruleObj.age
+      maxAge: ruleObj.age,
     });
   }
 
   if (ruleObj.versions) {
     rules.push({
-      maxNumVersions: ruleObj.versions
+      maxNumVersions: ruleObj.versions,
     });
   }
 
@@ -243,7 +244,7 @@ Family.formatRule_ = function(ruleObj) {
   var ruleType = ruleObj.union ? 'union' : 'intersection';
 
   rule[ruleType] = {
-    rules: rules
+    rules: rules,
   };
 
   return rule;
@@ -328,12 +329,12 @@ Family.prototype.setMetadata = function(metadata, callback) {
 
   var grpcOpts = {
     service: 'BigtableTableAdmin',
-    method: 'modifyColumnFamilies'
+    method: 'modifyColumnFamilies',
   };
 
   var mod = {
     id: this.familyName,
-    update: {}
+    update: {},
   };
 
   if (metadata.rule) {
@@ -342,7 +343,7 @@ Family.prototype.setMetadata = function(metadata, callback) {
 
   var reqOpts = {
     name: this.parent.id,
-    modifications: [mod]
+    modifications: [mod],
   };
 
   this.request(grpcOpts, reqOpts, function(err, resp) {

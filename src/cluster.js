@@ -46,7 +46,6 @@ function Cluster(instance, name) {
   }
 
   var methods = {
-
     /**
      * Create a cluster.
      *
@@ -97,11 +96,11 @@ function Cluster(instance, name) {
     delete: {
       protoOpts: {
         service: 'BigtableInstanceAdmin',
-        method: 'deleteCluster'
+        method: 'deleteCluster',
       },
       reqOpts: {
-        name: id
-      }
+        name: id,
+      },
     },
 
     /**
@@ -165,12 +164,12 @@ function Cluster(instance, name) {
     getMetadata: {
       protoOpts: {
         service: 'BigtableInstanceAdmin',
-        method: 'getCluster'
+        method: 'getCluster',
       },
       reqOpts: {
-        name: id
-      }
-    }
+        name: id,
+      },
+    },
   };
 
   var config = {
@@ -179,7 +178,7 @@ function Cluster(instance, name) {
     methods: methods,
     createMethod: function(_, options, callback) {
       instance.createCluster(name, options, callback);
-    }
+    },
   };
 
   commonGrpc.ServiceObject.call(this, config);
@@ -207,7 +206,7 @@ Cluster.getLocation_ = function(project, location) {
 
   return format('projects/{project}/locations/{location}', {
     project: project,
-    location: location
+    location: location,
   });
 };
 
@@ -227,7 +226,7 @@ Cluster.getStorageType_ = function(type) {
   var storageTypes = {
     unspecified: 0,
     ssd: 1,
-    hdd: 2
+    hdd: 2,
   };
 
   if (is.string(type)) {
@@ -285,11 +284,11 @@ Cluster.getStorageType_ = function(type) {
 Cluster.prototype.setMetadata = function(options, callback) {
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'updateCluster'
+    method: 'updateCluster',
   };
 
   var reqOpts = {
-    name: this.id
+    name: this.id,
   };
 
   var bigtable = this.parent.parent;

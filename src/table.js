@@ -71,7 +71,6 @@ function Table(instance, name) {
   var id = Table.formatName_(instance.id, name);
 
   var methods = {
-
     /**
      * Create a table.
      *
@@ -115,11 +114,11 @@ function Table(instance, name) {
     delete: {
       protoOpts: {
         service: 'BigtableTableAdmin',
-        method: 'deleteTable'
+        method: 'deleteTable',
       },
       reqOpts: {
-        name: id
-      }
+        name: id,
+      },
     },
 
     /**
@@ -169,7 +168,7 @@ function Table(instance, name) {
      *   var apiResponse = data[0];
      * });
      */
-    get: true
+    get: true,
   };
 
   var config = {
@@ -178,7 +177,7 @@ function Table(instance, name) {
     methods: methods,
     createMethod: function(_, options, callback) {
       instance.createTable(name, options, callback);
-    }
+    },
   };
 
   commonGrpc.ServiceObject.call(this, config);
@@ -196,7 +195,7 @@ Table.VIEWS = {
   unspecified: 0,
   name: 1,
   schema: 2,
-  full: 4
+  full: 4,
 };
 
 /**
@@ -256,8 +255,8 @@ Table.createPrefixRange_ = function(start) {
     start: start,
     end: {
       value: endKey,
-      inclusive: !endKey
-    }
+      inclusive: !endKey,
+    },
   };
 };
 
@@ -324,12 +323,12 @@ Table.prototype.createFamily = function(name, rule, callback) {
 
   var grpcOpts = {
     service: 'BigtableTableAdmin',
-    method: 'modifyColumnFamilies'
+    method: 'modifyColumnFamilies',
   };
 
   var mod = {
     id: name,
-    create: {}
+    create: {},
   };
 
   if (rule) {
@@ -338,7 +337,7 @@ Table.prototype.createFamily = function(name, rule, callback) {
 
   var reqOpts = {
     name: this.id,
-    modifications: [mod]
+    modifications: [mod],
   };
 
   this.request(grpcOpts, reqOpts, function(err, resp) {
@@ -453,18 +452,18 @@ Table.prototype.createReadStream = function(options) {
 
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'readRows'
+    method: 'readRows',
   };
 
   var reqOpts = {
     tableName: this.id,
-    objectMode: true
+    objectMode: true,
   };
 
   if (options.start || options.end) {
     options.ranges.push({
       start: options.start,
-      end: options.end
+      end: options.end,
     });
   }
 
@@ -499,7 +498,7 @@ Table.prototype.createReadStream = function(options) {
     through.obj(function(data, enc, next) {
       var throughStream = this;
       var rows = Row.formatChunks_(data.chunks, {
-        decode: options.decode
+        decode: options.decode,
       });
 
       rows.forEach(function(rowData) {
@@ -510,7 +509,7 @@ Table.prototype.createReadStream = function(options) {
       });
 
       next();
-    })
+    }),
   ]);
 };
 
@@ -559,11 +558,11 @@ Table.prototype.deleteRows = function(options, callback) {
 
   var grpcOpts = {
     service: 'BigtableTableAdmin',
-    method: 'dropRowRange'
+    method: 'dropRowRange',
   };
 
   var reqOpts = {
-    name: this.id
+    name: this.id,
   };
 
   if (options.prefix) {
@@ -666,12 +665,12 @@ Table.prototype.getMetadata = function(options, callback) {
 
   var protoOpts = {
     service: 'BigtableTableAdmin',
-    method: 'getTable'
+    method: 'getTable',
   };
 
   var reqOpts = {
     name: this.id,
-    view: Table.VIEWS[options.view || 'unspecified']
+    view: Table.VIEWS[options.view || 'unspecified'],
   };
 
   this.request(protoOpts, reqOpts, function(err, resp) {
@@ -720,9 +719,11 @@ Table.prototype.getRows = function(options, callback) {
 
   this.createReadStream(options)
     .on('error', callback)
-    .pipe(concat(function(rows) {
-      callback(null, rows);
-    }));
+    .pipe(
+      concat(function(rows) {
+        callback(null, rows);
+      })
+    );
 };
 
 /**
@@ -906,13 +907,13 @@ Table.prototype.mutate = function(entries, callback) {
 
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'mutateRows'
+    method: 'mutateRows',
   };
 
   var reqOpts = {
     objectMode: true,
     tableName: this.id,
-    entries: entries.map(Mutation.parse)
+    entries: entries.map(Mutation.parse),
   };
 
   var mutationErrors = [];
@@ -937,7 +938,7 @@ Table.prototype.mutate = function(entries, callback) {
 
       if (mutationErrors.length > 0) {
         err = new common.util.PartialFailureError({
-          errors: mutationErrors
+          errors: mutationErrors,
         });
       }
 
@@ -994,9 +995,11 @@ Table.prototype.row = function(key) {
 Table.prototype.sampleRowKeys = function(callback) {
   this.sampleRowKeysStream()
     .on('error', callback)
-    .pipe(concat(function(keys) {
-      callback(null, keys);
-    }));
+    .pipe(
+      concat(function(keys) {
+        callback(null, keys);
+      })
+    );
 };
 
 /**
@@ -1025,12 +1028,12 @@ Table.prototype.sampleRowKeys = function(callback) {
 Table.prototype.sampleRowKeysStream = function() {
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'sampleRowKeys'
+    method: 'sampleRowKeys',
   };
 
   var reqOpts = {
     tableName: this.id,
-    objectMode: true
+    objectMode: true,
   };
 
   return pumpify.obj([
@@ -1038,9 +1041,9 @@ Table.prototype.sampleRowKeysStream = function() {
     through.obj(function(key, enc, next) {
       next(null, {
         key: key.rowKey,
-        offset: key.offsetBytes
+        offset: key.offsetBytes,
       });
-    })
+    }),
   ]);
 };
 
@@ -1050,7 +1053,7 @@ Table.prototype.sampleRowKeysStream = function() {
  * that a callback is omitted.
  */
 common.util.promisifyAll(Table, {
-  exclude: ['family', 'row']
+  exclude: ['family', 'row'],
 });
 
 module.exports = Table;

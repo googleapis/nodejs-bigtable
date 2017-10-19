@@ -22,7 +22,6 @@ var Mutation = require('../src/mutation.js');
 var sinon = require('sinon').sandbox.create();
 
 describe('Bigtable/Mutation', function() {
-
   afterEach(function() {
     sinon.restore();
   });
@@ -31,7 +30,7 @@ describe('Bigtable/Mutation', function() {
     var fakeData = {
       key: 'a',
       method: 'b',
-      data: 'c'
+      data: 'c',
     };
 
     it('should localize all the mutation properties', function() {
@@ -64,7 +63,7 @@ describe('Bigtable/Mutation', function() {
       var message = 'Hello!';
       var encoded = new Buffer(message).toString('base64');
       var decoded = Mutation.convertFromBytes(encoded, {
-        decode: false
+        decode: false,
       });
 
       assert(decoded instanceof Buffer);
@@ -140,29 +139,32 @@ describe('Bigtable/Mutation', function() {
       var fakeMutation = {
         follows: {
           gwashington: 1,
-          alincoln: 1
-        }
+          alincoln: 1,
+        },
       };
 
       var cells = Mutation.encodeSetCell(fakeMutation);
 
       assert.strictEqual(cells.length, 2);
 
-      assert.deepEqual(cells, [{
-        setCell: {
-          familyName: 'follows',
-          columnQualifier: 'gwashington',
-          timestampMicros: -1,
-          value: 1
-        }
-      }, {
-        setCell: {
-          familyName: 'follows',
-          columnQualifier: 'alincoln',
-          timestampMicros: -1,
-          value: 1
-        }
-      }]);
+      assert.deepEqual(cells, [
+        {
+          setCell: {
+            familyName: 'follows',
+            columnQualifier: 'gwashington',
+            timestampMicros: -1,
+            value: 1,
+          },
+        },
+        {
+          setCell: {
+            familyName: 'follows',
+            columnQualifier: 'alincoln',
+            timestampMicros: -1,
+            value: 1,
+          },
+        },
+      ]);
 
       assert.strictEqual(convertCalls.length, 4);
       assert.deepEqual(convertCalls, ['gwashington', 1, 'alincoln', 1]);
@@ -174,21 +176,23 @@ describe('Bigtable/Mutation', function() {
         follows: {
           gwashington: {
             value: 1,
-            timestamp: new Date(timestamp)
-          }
-        }
+            timestamp: new Date(timestamp),
+          },
+        },
       };
 
       var cells = Mutation.encodeSetCell(fakeMutation);
 
-      assert.deepEqual(cells, [{
-        setCell: {
-          familyName: 'follows',
-          columnQualifier: 'gwashington',
-          timestampMicros: timestamp * 1000, // Convert ms to ms
-          value: 1
-        }
-      }]);
+      assert.deepEqual(cells, [
+        {
+          setCell: {
+            familyName: 'follows',
+            columnQualifier: 'gwashington',
+            timestampMicros: timestamp * 1000, // Convert ms to ms
+            value: 1,
+          },
+        },
+      ]);
 
       assert.strictEqual(convertCalls.length, 2);
       assert.deepEqual(convertCalls, ['gwashington', 1]);
@@ -198,20 +202,22 @@ describe('Bigtable/Mutation', function() {
       var val = new Buffer('hello');
       var fakeMutation = {
         follows: {
-          gwashington: val
-        }
+          gwashington: val,
+        },
       };
 
       var cells = Mutation.encodeSetCell(fakeMutation);
 
-      assert.deepEqual(cells, [{
-        setCell: {
-          familyName: 'follows',
-          columnQualifier: 'gwashington',
-          timestampMicros: -1,
-          value: val
-        }
-      }]);
+      assert.deepEqual(cells, [
+        {
+          setCell: {
+            familyName: 'follows',
+            columnQualifier: 'gwashington',
+            timestampMicros: -1,
+            value: val,
+          },
+        },
+      ]);
 
       assert.strictEqual(convertCalls.length, 2);
       assert.deepEqual(convertCalls, ['gwashington', val]);
@@ -241,26 +247,30 @@ describe('Bigtable/Mutation', function() {
     it('should create a delete row mutation', function() {
       var mutation = Mutation.encodeDelete();
 
-      assert.deepEqual(mutation, [{
-        deleteFromRow: {}
-      }]);
+      assert.deepEqual(mutation, [
+        {
+          deleteFromRow: {},
+        },
+      ]);
     });
 
     it('should array-ify the input', function() {
       var fakeKey = 'follows';
       var mutation = Mutation.encodeDelete(fakeKey);
 
-      assert.deepEqual(mutation, [{
-        deleteFromFamily: {
-          familyName: fakeKey
-        }
-      }]);
+      assert.deepEqual(mutation, [
+        {
+          deleteFromFamily: {
+            familyName: fakeKey,
+          },
+        },
+      ]);
     });
 
     it('should create a delete family mutation', function() {
       var fakeColumnName = {
         family: 'followed',
-        qualifier: null
+        qualifier: null,
       };
 
       sinon.stub(Mutation, 'parseColumnName', function() {
@@ -269,23 +279,27 @@ describe('Bigtable/Mutation', function() {
 
       var mutation = Mutation.encodeDelete(['follows']);
 
-      assert.deepEqual(mutation, [{
-        deleteFromFamily: {
-          familyName: fakeColumnName.family
-        }
-      }]);
+      assert.deepEqual(mutation, [
+        {
+          deleteFromFamily: {
+            familyName: fakeColumnName.family,
+          },
+        },
+      ]);
     });
 
     it('should create a delete column mutation', function() {
       var mutation = Mutation.encodeDelete(['follows:gwashington']);
 
-      assert.deepEqual(mutation, [{
-        deleteFromColumn: {
-          familyName: 'follows',
-          columnQualifier: 'gwashington',
-          timeRange: undefined
-        }
-      }]);
+      assert.deepEqual(mutation, [
+        {
+          deleteFromColumn: {
+            familyName: 'follows',
+            columnQualifier: 'gwashington',
+            timeRange: undefined,
+          },
+        },
+      ]);
 
       assert.strictEqual(convertCalls.length, 1);
       assert.strictEqual(convertCalls[0], 'gwashington');
@@ -294,33 +308,35 @@ describe('Bigtable/Mutation', function() {
     it('should optionally accept a timerange for column requests', function() {
       var createTimeRange = Mutation.createTimeRange;
       var timeCalls = [];
-      var fakeTimeRange = { a: 'a' };
+      var fakeTimeRange = {a: 'a'};
 
       var fakeMutationData = {
         column: 'follows:gwashington',
         time: {
           start: 1,
-          end: 2
-        }
+          end: 2,
+        },
       };
 
       Mutation.createTimeRange = function(start, end) {
         timeCalls.push({
           start: start,
-          end: end
+          end: end,
         });
         return fakeTimeRange;
       };
 
       var mutation = Mutation.encodeDelete(fakeMutationData);
 
-      assert.deepEqual(mutation, [{
-        deleteFromColumn: {
-          familyName: 'follows',
-          columnQualifier: 'gwashington',
-          timeRange: fakeTimeRange
-        }
-      }]);
+      assert.deepEqual(mutation, [
+        {
+          deleteFromColumn: {
+            familyName: 'follows',
+            columnQualifier: 'gwashington',
+            timeRange: fakeTimeRange,
+          },
+        },
+      ]);
 
       assert.strictEqual(timeCalls.length, 1);
       assert.deepEqual(timeCalls[0], fakeMutationData.time);
@@ -332,7 +348,7 @@ describe('Bigtable/Mutation', function() {
   describe('parse', function() {
     var toProto;
     var toProtoCalled = false;
-    var fakeData = { a: 'a' };
+    var fakeData = {a: 'a'};
 
     before(function() {
       toProto = Mutation.prototype.toProto;
@@ -350,7 +366,7 @@ describe('Bigtable/Mutation', function() {
       var fakeMutationData = {
         key: 'a',
         method: 'b',
-        data: 'c'
+        data: 'c',
       };
 
       var mutation = Mutation.parse(fakeMutationData);
@@ -363,7 +379,7 @@ describe('Bigtable/Mutation', function() {
       var data = new Mutation({
         key: 'a',
         method: 'b',
-        data: []
+        data: [],
       });
 
       var mutation = Mutation.parse(data);
@@ -410,11 +426,11 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should encode set cell mutations when method is insert', function() {
-      var fakeEncoded = [{ a: 'a' }];
+      var fakeEncoded = [{a: 'a'}];
       var data = {
         key: 'a',
         method: 'insert',
-        data: []
+        data: [],
       };
 
       var mutation = new Mutation(data);
@@ -432,11 +448,11 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should encode delete mutations when method is delete', function() {
-      var fakeEncoded = [{ b: 'b' }];
+      var fakeEncoded = [{b: 'b'}];
       var data = {
         key: 'b',
         method: 'delete',
-        data: []
+        data: [],
       };
 
       Mutation.encodeDelete = function(_data) {
@@ -451,5 +467,4 @@ describe('Bigtable/Mutation', function() {
       assert.strictEqual(convertCalls[0], data.key);
     });
   });
-
 });

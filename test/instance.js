@@ -39,7 +39,7 @@ var fakeUtil = extend({}, common.util, {
 
     promisified = true;
     assert.deepEqual(options.exclude, ['cluster', 'table']);
-  }
+  },
 });
 
 var fakePaginator = {
@@ -48,7 +48,7 @@ var fakePaginator = {
   },
   streamify: function(methodName) {
     return methodName;
-  }
+  },
 };
 
 function createFake(Class) {
@@ -68,11 +68,11 @@ var FakeTable = createFake(Table);
 
 describe('Bigtable/Instance', function() {
   var INSTANCE_NAME = 'my-instance';
-  var BIGTABLE = { projectName: 'projects/my-project' };
+  var BIGTABLE = {projectName: 'projects/my-project'};
 
   var INSTANCE_ID = format('{project}/instances/{instance}', {
     project: BIGTABLE.projectName,
-    instance: INSTANCE_NAME
+    instance: INSTANCE_NAME,
   });
 
   var CLUSTER_NAME = 'my-cluster';
@@ -84,14 +84,14 @@ describe('Bigtable/Instance', function() {
     Instance = proxyquire('../src/instance.js', {
       '@google-cloud/common': {
         paginator: fakePaginator,
-        util: fakeUtil
+        util: fakeUtil,
       },
       '@google-cloud/common-grpc': {
-        ServiceObject: FakeGrpcServiceObject
+        ServiceObject: FakeGrpcServiceObject,
       },
       './cluster.js': FakeCluster,
       './family.js': FakeFamily,
-      './table.js': FakeTable
+      './table.js': FakeTable,
     });
   });
 
@@ -128,32 +128,32 @@ describe('Bigtable/Instance', function() {
         delete: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'deleteInstance'
+            method: 'deleteInstance',
           },
           reqOpts: {
-            name: INSTANCE_ID
-          }
+            name: INSTANCE_ID,
+          },
         },
         exists: true,
         get: true,
         getMetadata: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'getInstance'
+            method: 'getInstance',
           },
           reqOpts: {
-            name: INSTANCE_ID
-          }
+            name: INSTANCE_ID,
+          },
         },
         setMetadata: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'updateInstance'
+            method: 'updateInstance',
           },
           reqOpts: {
-            name: INSTANCE_ID
-          }
-        }
+            name: INSTANCE_ID,
+          },
+        },
       });
     });
 
@@ -182,32 +182,32 @@ describe('Bigtable/Instance', function() {
         delete: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'deleteInstance'
+            method: 'deleteInstance',
           },
           reqOpts: {
-            name: fakeId
-          }
+            name: fakeId,
+          },
         },
         exists: true,
         get: true,
         getMetadata: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'getInstance'
+            method: 'getInstance',
           },
           reqOpts: {
-            name: fakeId
-          }
+            name: fakeId,
+          },
         },
         setMetadata: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'updateInstance'
+            method: 'updateInstance',
           },
           reqOpts: {
-            name: fakeId
-          }
-        }
+            name: fakeId,
+          },
+        },
       });
     });
   });
@@ -217,7 +217,7 @@ describe('Bigtable/Instance', function() {
       instance.request = function(grpcOpts, reqOpts) {
         assert.deepEqual(grpcOpts, {
           service: 'BigtableInstanceAdmin',
-          method: 'createCluster'
+          method: 'createCluster',
         });
 
         assert.strictEqual(reqOpts.parent, INSTANCE_ID);
@@ -230,7 +230,7 @@ describe('Bigtable/Instance', function() {
 
     it('should respect the location option', function(done) {
       var options = {
-        location: 'us-central1-b'
+        location: 'us-central1-b',
       };
 
       var fakeLocation = 'a/b/c/d';
@@ -251,7 +251,7 @@ describe('Bigtable/Instance', function() {
 
     it('should respect the nodes option', function(done) {
       var options = {
-        nodes: 3
+        nodes: 3,
       };
 
       instance.request = function(grpcOpts, reqOpts) {
@@ -264,7 +264,7 @@ describe('Bigtable/Instance', function() {
 
     it('should respect the storage option', function(done) {
       var options = {
-        storage: 'ssd'
+        storage: 'ssd',
       };
 
       var fakeStorageType = 2;
@@ -306,7 +306,7 @@ describe('Bigtable/Instance', function() {
       var fakeOperation = {};
 
       var response = {
-        name: 'my-operation'
+        name: 'my-operation',
       };
 
       instance.request = function(grpcOpts, reqOpts, callback) {
@@ -349,13 +349,13 @@ describe('Bigtable/Instance', function() {
       instance.request = function(protoOpts, reqOpts) {
         assert.deepEqual(protoOpts, {
           service: 'BigtableTableAdmin',
-          method: 'createTable'
+          method: 'createTable',
         });
 
         assert.strictEqual(reqOpts.parent, INSTANCE_ID);
         assert.strictEqual(reqOpts.tableId, TABLE_ID);
         assert.deepEqual(reqOpts.table, {
-          granularity: 0
+          granularity: 0,
         });
         done();
       };
@@ -365,13 +365,10 @@ describe('Bigtable/Instance', function() {
 
     it('should set the initial split keys', function(done) {
       var options = {
-        splits: ['a', 'b']
+        splits: ['a', 'b'],
       };
 
-      var expectedSplits = [
-        { key: 'a' },
-        { key: 'b' }
-      ];
+      var expectedSplits = [{key: 'a'}, {key: 'b'}];
 
       instance.request = function(protoOpts, reqOpts) {
         assert.deepEqual(reqOpts.initialSplits, expectedSplits);
@@ -384,13 +381,13 @@ describe('Bigtable/Instance', function() {
     describe('creating column families', function() {
       it('should accept a family name', function(done) {
         var options = {
-          families: ['a', 'b']
+          families: ['a', 'b'],
         };
 
         instance.request = function(protoOpts, reqOpts) {
           assert.deepEqual(reqOpts.table.columnFamilies, {
             a: {},
-            b: {}
+            b: {},
           });
 
           done();
@@ -404,12 +401,12 @@ describe('Bigtable/Instance', function() {
           families: [
             {
               name: 'e',
-              rule: {}
-            }
-          ]
+              rule: {},
+            },
+          ],
         };
 
-        var fakeRule = { a: 'b' };
+        var fakeRule = {a: 'b'};
 
         FakeFamily.formatRule_ = function(rule) {
           assert.strictEqual(rule, options.families[0].rule);
@@ -419,8 +416,8 @@ describe('Bigtable/Instance', function() {
         instance.request = function(protoOpts, reqOpts) {
           assert.deepEqual(reqOpts.table.columnFamilies, {
             e: {
-              gcRule: fakeRule
-            }
+              gcRule: fakeRule,
+            },
           });
           done();
         };
@@ -447,7 +444,7 @@ describe('Bigtable/Instance', function() {
 
     it('should return a Table object', function(done) {
       var response = {
-        name: TABLE_ID
+        name: TABLE_ID,
       };
 
       var fakeTable = {};
@@ -489,7 +486,7 @@ describe('Bigtable/Instance', function() {
       instance.request = function(grpcOpts, reqOpts) {
         assert.deepEqual(grpcOpts, {
           service: 'BigtableInstanceAdmin',
-          method: 'listClusters'
+          method: 'listClusters',
         });
 
         assert.strictEqual(reqOpts.parent, INSTANCE_ID);
@@ -502,7 +499,7 @@ describe('Bigtable/Instance', function() {
     it('should copy all query options', function(done) {
       var fakeOptions = {
         a: 'a',
-        b: 'b'
+        b: 'b',
       };
 
       instance.request = function(grpcOpts, reqOpts) {
@@ -536,17 +533,17 @@ describe('Bigtable/Instance', function() {
 
     it('should return an array of cluster objects', function(done) {
       var response = {
-        clusters: [{
-          name: 'a'
-        }, {
-          name: 'b'
-        }]
+        clusters: [
+          {
+            name: 'a',
+          },
+          {
+            name: 'b',
+          },
+        ],
       };
 
-      var fakeClusters = [
-        {},
-        {}
-      ];
+      var fakeClusters = [{}, {}];
 
       instance.request = function(grpcOpts, reqOpts, callback) {
         callback(null, response);
@@ -574,11 +571,11 @@ describe('Bigtable/Instance', function() {
     it('should provide a nextQuery object', function(done) {
       var response = {
         clusters: [],
-        nextPageToken: 'a'
+        nextPageToken: 'a',
       };
 
       var options = {
-        a: 'b'
+        a: 'b',
       };
 
       instance.request = function(grpcOpts, reqOpts, callback) {
@@ -587,7 +584,7 @@ describe('Bigtable/Instance', function() {
 
       instance.getClusters(options, function(err, clusters, nextQuery) {
         var expectedQuery = extend({}, options, {
-          pageToken: response.nextPageToken
+          pageToken: response.nextPageToken,
         });
 
         assert.ifError(err);
@@ -598,18 +595,18 @@ describe('Bigtable/Instance', function() {
   });
 
   describe('getTables', function() {
-    var views = FakeTable.VIEWS = {
+    var views = (FakeTable.VIEWS = {
       unspecified: 0,
       name: 1,
       schema: 2,
-      full: 4
-    };
+      full: 4,
+    });
 
     it('should provide the proper request options', function(done) {
       instance.request = function(protoOpts, reqOpts) {
         assert.deepEqual(protoOpts, {
           service: 'BigtableTableAdmin',
-          method: 'listTables'
+          method: 'listTables',
         });
         assert.strictEqual(reqOpts.parent, INSTANCE_ID);
         assert.strictEqual(reqOpts.view, views.unspecified);
@@ -622,7 +619,7 @@ describe('Bigtable/Instance', function() {
     Object.keys(views).forEach(function(view) {
       it('should set the "' + view + '" view', function(done) {
         var options = {
-          view: view
+          view: view,
         };
 
         instance.request = function(protoOpts, reqOpts) {
@@ -656,9 +653,11 @@ describe('Bigtable/Instance', function() {
       var fakeTable = {};
 
       var response = {
-        tables: [{
-          name: tableName
-        }]
+        tables: [
+          {
+            name: tableName,
+          },
+        ],
       };
 
       instance.request = function(p, r, callback) {
@@ -686,11 +685,11 @@ describe('Bigtable/Instance', function() {
     it('should create a nextQuery object', function(done) {
       var response = {
         tables: [],
-        nextPageToken: 'a'
+        nextPageToken: 'a',
       };
 
       var options = {
-        a: 'b'
+        a: 'b',
       };
 
       instance.request = function(protoOpts, reqOpts, callback) {
@@ -701,7 +700,7 @@ describe('Bigtable/Instance', function() {
         assert.ifError(err);
 
         var expectedQuery = extend({}, options, {
-          pageToken: response.nextPageToken
+          pageToken: response.nextPageToken,
         });
 
         assert.deepEqual(nextQuery, expectedQuery);
@@ -722,5 +721,4 @@ describe('Bigtable/Instance', function() {
       assert.strictEqual(args[1], TABLE_ID);
     });
   });
-
 });

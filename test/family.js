@@ -32,7 +32,7 @@ var fakeUtil = extend({}, common.util, {
     if (Class.name === 'Family') {
       promisified = true;
     }
-  }
+  },
 });
 
 var GrpcServiceObject = commonGrpc.ServiceObject;
@@ -49,12 +49,12 @@ describe('Bigtable/Family', function() {
   var TABLE = {
     id: 'my-table',
     getFamilies: util.noop,
-    createFamily: util.noop
+    createFamily: util.noop,
   };
 
   var FAMILY_ID = format('{t}/columnFamilies/{f}', {
     t: TABLE.id,
-    f: FAMILY_NAME
+    f: FAMILY_NAME,
   });
 
   var Family;
@@ -64,11 +64,11 @@ describe('Bigtable/Family', function() {
   before(function() {
     Family = proxyquire('../src/family.js', {
       '@google-cloud/common': {
-        util: fakeUtil
+        util: fakeUtil,
       },
       '@google-cloud/common-grpc': {
-        ServiceObject: FakeGrpcServiceObject
-      }
+        ServiceObject: FakeGrpcServiceObject,
+      },
     });
     FamilyError = Family.FamilyError;
   });
@@ -91,16 +91,18 @@ describe('Bigtable/Family', function() {
         delete: {
           protoOpts: {
             service: 'BigtableTableAdmin',
-            method: 'modifyColumnFamilies'
+            method: 'modifyColumnFamilies',
           },
           reqOpts: {
             name: TABLE.id,
-            modifications: [{
-              drop: true,
-              id: FAMILY_NAME
-            }]
-          }
-        }
+            modifications: [
+              {
+                drop: true,
+                id: FAMILY_NAME,
+              },
+            ],
+          },
+        },
       });
       assert.strictEqual(typeof config.createMethod, 'function');
       assert.strictEqual(family.familyName, FAMILY_NAME);
@@ -145,59 +147,63 @@ describe('Bigtable/Family', function() {
   describe('formatRule_', function() {
     it('should capture the max age option', function() {
       var originalRule = {
-        age: 10
+        age: 10,
       };
 
       var rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
-        maxAge: originalRule.age
+        maxAge: originalRule.age,
       });
     });
 
     it('should capture the max number of versions option', function() {
       var originalRule = {
-        versions: 10
+        versions: 10,
       };
 
       var rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
-        maxNumVersions: originalRule.versions
+        maxNumVersions: originalRule.versions,
       });
     });
 
     it('should create a union rule', function() {
       var originalRule = {
         age: 10,
-        union: true
+        union: true,
       };
 
       var rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
         union: {
-          rules: [{
-            maxAge: originalRule.age
-          }]
-        }
+          rules: [
+            {
+              maxAge: originalRule.age,
+            },
+          ],
+        },
       });
     });
 
     it('should create an intersecting rule', function() {
       var originalRule = {
         versions: 2,
-        intersection: true
+        intersection: true,
       };
 
       var rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
         intersection: {
-          rules: [{
-            maxNumVersions: originalRule.versions
-          }]
-        }
+          rules: [
+            {
+              maxNumVersions: originalRule.versions,
+            },
+          ],
+        },
       });
     });
   });
@@ -221,12 +227,12 @@ describe('Bigtable/Family', function() {
     it('should update the metadata', function(done) {
       var FAMILY = new Family(TABLE, FAMILY_NAME);
       var response = {
-        families: {}
+        families: {},
       };
 
       FAMILY.metadata = {
         a: 'a',
-        b: 'b'
+        b: 'b',
       };
 
       family.parent.getFamilies = function(callback) {
@@ -262,14 +268,16 @@ describe('Bigtable/Family', function() {
       family.request = function(protoOpts, reqOpts) {
         assert.deepEqual(protoOpts, {
           service: 'BigtableTableAdmin',
-          method: 'modifyColumnFamilies'
+          method: 'modifyColumnFamilies',
         });
 
         assert.strictEqual(reqOpts.name, TABLE.id);
-        assert.deepEqual(reqOpts.modifications, [{
-          id: FAMILY_NAME,
-          update: {}
-        }]);
+        assert.deepEqual(reqOpts.modifications, [
+          {
+            id: FAMILY_NAME,
+            update: {},
+          },
+        ]);
         done();
       };
 
@@ -281,14 +289,14 @@ describe('Bigtable/Family', function() {
 
       var formattedRule = {
         a: 'a',
-        b: 'b'
+        b: 'b',
       };
 
       var metadata = {
         rule: {
           c: 'c',
-          d: 'd'
-        }
+          d: 'd',
+        },
       };
 
       Family.formatRule_ = function(rule) {
@@ -299,12 +307,14 @@ describe('Bigtable/Family', function() {
       family.request = function(p, reqOpts) {
         assert.deepEqual(reqOpts, {
           name: TABLE.id,
-          modifications: [{
-            id: family.familyName,
-            update: {
-              gcRule: formattedRule
-            }
-          }]
+          modifications: [
+            {
+              id: family.familyName,
+              update: {
+                gcRule: formattedRule,
+              },
+            },
+          ],
         });
         Family.formatRule_ = formatRule;
         done();
@@ -333,8 +343,8 @@ describe('Bigtable/Family', function() {
       var fakeMetadata = {};
       var response = {
         columnFamilies: {
-          'family-test': fakeMetadata
-        }
+          'family-test': fakeMetadata,
+        },
       };
 
       family.request = function(protoOpts, reqOpts, callback) {
@@ -356,8 +366,10 @@ describe('Bigtable/Family', function() {
       var err = new FamilyError(FAMILY_NAME);
 
       assert.strictEqual(err.code, 404);
-      assert.strictEqual(err.message,
-        'Column family not found: ' + FAMILY_NAME + '.');
+      assert.strictEqual(
+        err.message,
+        'Column family not found: ' + FAMILY_NAME + '.'
+      );
     });
   });
 });

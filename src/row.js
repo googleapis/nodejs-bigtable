@@ -67,7 +67,6 @@ var RowError = createErrorClass('RowError', function(row) {
  */
 function Row(table, key) {
   var methods = {
-
     /**
      * Check if the table row exists.
      *
@@ -86,13 +85,13 @@ function Row(table, key) {
      *   var exists = data[0];
      * });
      */
-    exists: true
+    exists: true,
   };
 
   var config = {
     parent: table,
     methods: methods,
-    id: key
+    id: key,
   };
 
   commonGrpc.ServiceObject.call(this, config);
@@ -169,7 +168,7 @@ Row.formatChunks_ = function(chunks, options) {
         value: Mutation.convertFromBytes(chunk.value, options),
         labels: chunk.labels,
         timestamp: chunk.timestampMicros,
-        size: chunk.valueSize
+        size: chunk.valueSize,
       });
     }
 
@@ -230,7 +229,7 @@ Row.formatFamilies_ = function(families, options) {
   options = options || {};
 
   families.forEach(function(family) {
-    var familyData = data[family.name] = {};
+    var familyData = (data[family.name] = {});
 
     family.columns.forEach(function(column) {
       var qualifier = Mutation.convertFromBytes(column.qualifier);
@@ -245,7 +244,7 @@ Row.formatFamilies_ = function(families, options) {
         return {
           value: value,
           timestamp: cell.timestampMicros,
-          labels: cell.labels
+          labels: cell.labels,
         };
       });
     });
@@ -300,7 +299,7 @@ Row.prototype.create = function(entry, callback) {
   entry = {
     key: this.id,
     data: entry,
-    method: Mutation.methods.INSERT
+    method: Mutation.methods.INSERT,
   };
 
   this.parent.mutate(entry, function(err, apiResponse) {
@@ -376,7 +375,7 @@ Row.prototype.createRules = function(rules, callback) {
     var column = Mutation.parseColumnName(rule.column);
     var ruleData = {
       familyName: column.family,
-      columnQualifier: Mutation.convertToBytes(column.qualifier)
+      columnQualifier: Mutation.convertToBytes(column.qualifier),
     };
 
     if (rule.append) {
@@ -392,13 +391,13 @@ Row.prototype.createRules = function(rules, callback) {
 
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'readModifyWriteRow'
+    method: 'readModifyWriteRow',
   };
 
   var reqOpts = {
     tableName: this.parent.id,
     rowKey: Mutation.convertToBytes(this.id),
-    rules: rules
+    rules: rules,
   };
 
   this.request(grpcOpts, reqOpts, callback);
@@ -465,7 +464,7 @@ Row.prototype.createRules = function(rules, callback) {
 Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'checkAndMutateRow'
+    method: 'checkAndMutateRow',
   };
 
   if (is.function(onNoMatch)) {
@@ -478,7 +477,7 @@ Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
     rowKey: Mutation.convertToBytes(this.id),
     predicateFilter: Filter.parse(filter),
     trueMutations: createFlatMutationsList(onMatch),
-    falseMutations: createFlatMutationsList(onNoMatch)
+    falseMutations: createFlatMutationsList(onNoMatch),
   };
 
   this.request(grpcOpts, reqOpts, function(err, apiResponse) {
@@ -520,7 +519,7 @@ Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
 Row.prototype.delete = function(callback) {
   var mutation = {
     key: this.id,
-    method: Mutation.methods.DELETE
+    method: Mutation.methods.DELETE,
   };
 
   this.parent.mutate(mutation, callback);
@@ -571,7 +570,7 @@ Row.prototype.deleteCells = function(columns, callback) {
   var mutation = {
     key: this.id,
     data: arrify(columns),
-    method: Mutation.methods.DELETE
+    method: Mutation.methods.DELETE,
   };
 
   this.parent.mutate(mutation, callback);
@@ -638,22 +637,22 @@ Row.prototype.get = function(columns, options, callback) {
   columns = arrify(columns);
 
   if (columns.length) {
-    var filters = columns
-      .map(Mutation.parseColumnName)
-      .map(function(column) {
-        var filters = [{ family: column.family }];
+    var filters = columns.map(Mutation.parseColumnName).map(function(column) {
+      var filters = [{family: column.family}];
 
-        if (column.qualifier) {
-          filters.push({ column: column.qualifier });
-        }
+      if (column.qualifier) {
+        filters.push({column: column.qualifier});
+      }
 
-        return filters;
-      });
+      return filters;
+    });
 
     if (filters.length > 1) {
-      filter = [{
-        interleave: filters
-      }];
+      filter = [
+        {
+          interleave: filters,
+        },
+      ];
     } else {
       filter = filters[0];
     }
@@ -661,7 +660,7 @@ Row.prototype.get = function(columns, options, callback) {
 
   var reqOpts = extend({}, options, {
     keys: [this.id],
-    filter: filter
+    filter: filter,
   });
 
   this.parent.getRows(reqOpts, function(err, rows, apiResponse) {
@@ -773,7 +772,7 @@ Row.prototype.increment = function(column, value, callback) {
 
   var reqOpts = {
     column: column,
-    increment: value
+    increment: value,
   };
 
   this.createRules(reqOpts, function(err, resp) {
@@ -848,7 +847,7 @@ Row.prototype.save = function(key, value, callback) {
   var mutation = {
     key: this.id,
     data: rowData,
-    method: Mutation.methods.INSERT
+    method: Mutation.methods.INSERT,
   };
 
   this.parent.mutate(mutation, callback);

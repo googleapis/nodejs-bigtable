@@ -120,7 +120,7 @@ Filter.convertToRegExpString = function(regex) {
     return regex.toString();
   }
 
-  throw new TypeError('Can\'t convert to RegExp String from unknown type.');
+  throw new TypeError("Can't convert to RegExp String from unknown type.");
 };
 
 /**
@@ -369,7 +369,7 @@ Filter.prototype.all = function(pass) {
 Filter.prototype.column = function(column) {
   if (!is.object(column)) {
     column = {
-      name: column
+      name: column,
     };
   }
 
@@ -446,7 +446,7 @@ Filter.prototype.condition = function(condition) {
   this.set('condition', {
     predicateFilter: Filter.parse(condition.test),
     trueFilter: Filter.parse(condition.pass),
-    falseFilter: Filter.parse(condition.fail)
+    falseFilter: Filter.parse(condition.fail),
   });
 };
 
@@ -510,7 +510,7 @@ Filter.prototype.family = function(family) {
  */
 Filter.prototype.interleave = function(filters) {
   this.set('interleave', {
-    filters: filters.map(Filter.parse)
+    filters: filters.map(Filter.parse),
   });
 };
 
@@ -644,7 +644,7 @@ Filter.prototype.label = function(label) {
 Filter.prototype.row = function(row) {
   if (!is.object(row)) {
     row = {
-      key: row
+      key: row,
     };
   }
 
@@ -775,8 +775,8 @@ Filter.prototype.toProto = function() {
 
   return {
     chain: {
-      filters: this.filters_
-    }
+      filters: this.filters_,
+    },
   };
 };
 
@@ -867,7 +867,7 @@ Filter.prototype.toProto = function() {
 Filter.prototype.value = function(value) {
   if (!is.object(value)) {
     value = {
-      value: value
+      value: value,
     };
   }
 

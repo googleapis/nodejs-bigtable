@@ -63,7 +63,6 @@ function Instance(bigtable, name) {
   }
 
   var methods = {
-
     /**
      * Create an instance.
      *
@@ -114,11 +113,11 @@ function Instance(bigtable, name) {
     delete: {
       protoOpts: {
         service: 'BigtableInstanceAdmin',
-        method: 'deleteInstance'
+        method: 'deleteInstance',
       },
       reqOpts: {
-        name: id
-      }
+        name: id,
+      },
     },
 
     /**
@@ -182,11 +181,11 @@ function Instance(bigtable, name) {
     getMetadata: {
       protoOpts: {
         service: 'BigtableInstanceAdmin',
-        method: 'getInstance'
+        method: 'getInstance',
       },
       reqOpts: {
-        name: id
-      }
+        name: id,
+      },
     },
 
     /**
@@ -218,12 +217,12 @@ function Instance(bigtable, name) {
     setMetadata: {
       protoOpts: {
         service: 'BigtableInstanceAdmin',
-        method: 'updateInstance'
+        method: 'updateInstance',
       },
       reqOpts: {
-        name: id
-      }
-    }
+        name: id,
+      },
+    },
   };
 
   var config = {
@@ -232,7 +231,7 @@ function Instance(bigtable, name) {
     methods: methods,
     createMethod: function(_, options, callback) {
       bigtable.createInstance(name, options, callback);
-    }
+    },
   };
 
   commonGrpc.ServiceObject.call(this, config);
@@ -303,12 +302,12 @@ Instance.prototype.createCluster = function(name, options, callback) {
 
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'createCluster'
+    method: 'createCluster',
   };
 
   var reqOpts = {
     parent: this.id,
-    clusterId: name
+    clusterId: name,
   };
 
   if (!is.empty(options)) {
@@ -439,7 +438,7 @@ Instance.prototype.createTable = function(name, options, callback) {
 
   var protoOpts = {
     service: 'BigtableTableAdmin',
-    method: 'createTable'
+    method: 'createTable',
   };
 
   var reqOpts = {
@@ -448,14 +447,14 @@ Instance.prototype.createTable = function(name, options, callback) {
     table: {
       // The granularity at which timestamps are stored in the table.
       // Currently only milliseconds is supported, so it's not configurable.
-      granularity: 0
-    }
+      granularity: 0,
+    },
   };
 
   if (options.splits) {
     reqOpts.initialSplits = options.splits.map(function(key) {
       return {
-        key: key
+        key: key,
       };
     });
   }
@@ -464,11 +463,11 @@ Instance.prototype.createTable = function(name, options, callback) {
     var columnFamilies = options.families.reduce(function(families, family) {
       if (is.string(family)) {
         family = {
-          name: family
+          name: family,
         };
       }
 
-      var columnFamily = families[family.name] = {};
+      var columnFamily = (families[family.name] = {});
 
       if (family.rule) {
         columnFamily.gcRule = Family.formatRule_(family.rule);
@@ -558,11 +557,11 @@ Instance.prototype.getClusters = function(query, callback) {
 
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'listClusters'
+    method: 'listClusters',
   };
 
   var reqOpts = extend({}, query, {
-    parent: this.id
+    parent: this.id,
   });
 
   this.request(protoOpts, reqOpts, function(err, resp) {
@@ -581,7 +580,7 @@ Instance.prototype.getClusters = function(query, callback) {
 
     if (resp.nextPageToken) {
       nextQuery = extend({}, query, {
-        pageToken: resp.nextPageToken
+        pageToken: resp.nextPageToken,
       });
     }
 
@@ -616,8 +615,9 @@ Instance.prototype.getClusters = function(query, callback) {
  *     this.end();
  *   });
  */
-Instance.prototype.getClustersStream =
-  common.paginator.streamify('getClusters');
+Instance.prototype.getClustersStream = common.paginator.streamify(
+  'getClusters'
+);
 
 /**
  * Get Table objects for all the tables in your Compute instance.
@@ -675,12 +675,12 @@ Instance.prototype.getTables = function(query, callback) {
 
   var protoOpts = {
     service: 'BigtableTableAdmin',
-    method: 'listTables'
+    method: 'listTables',
   };
 
   var reqOpts = extend({}, query, {
     parent: this.id,
-    view: Table.VIEWS[query.view || 'unspecified']
+    view: Table.VIEWS[query.view || 'unspecified'],
   });
 
   this.request(protoOpts, reqOpts, function(err, resp) {
@@ -700,7 +700,7 @@ Instance.prototype.getTables = function(query, callback) {
     var nextQuery = null;
     if (resp.nextPageToken) {
       nextQuery = extend({}, query, {
-        pageToken: resp.nextPageToken
+        pageToken: resp.nextPageToken,
       });
     }
 
@@ -762,7 +762,7 @@ common.paginator.extend(Instance, ['getClusters', 'getTables']);
  * that a callback is omitted.
  */
 common.util.promisifyAll(Instance, {
-  exclude: ['cluster', 'table']
+  exclude: ['cluster', 'table'],
 });
 
 module.exports = Instance;
