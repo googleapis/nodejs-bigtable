@@ -39,11 +39,14 @@
     "Tim Swast <swast@google.com>"
   ],
   "scripts": {
+    "cover": "nyc --reporter=lcov mocha --require intelli-espower-loader test/*.js && nyc report",
+    "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
+    "test-no-cover": "repo-tools test run --cmd mocha -- test/*.js --no-timeouts",
+    "test": "repo-tools test run --cmd npm -- run cover",
     "generate-scaffolding": "repo-tools generate all",
     "lint": "repo-tools lint --cmd eslint -- src/ samples/ system-test/ test/",
     "prettier": "prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
     "publish-module": "node ../../scripts/publish.js bigtable",
-    "test": "mocha test/*.js",
     "system-test": "mocha system-test/*.js --no-timeouts --bail"
   },
   "dependencies": {
@@ -65,12 +68,16 @@
   },
   "devDependencies": {
     "@google-cloud/nodejs-repo-tools": "^2.0.10",
-    "async": "^2.1.4",
+    "async": "^2.5.0",
+    "codecov": "^2.3.1",
     "eslint": "^4.9.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-node": "^5.2.0",
     "eslint-plugin-prettier": "^2.3.1",
-    "mocha": "^3.0.1",
+    "intelli-espower-loader": "^1.0.1",
+    "mocha": "^3.5.3",
+    "nyc": "^11.2.1",
+    "power-assert": "^1.4.4",
     "prettier": "^1.7.4",
     "proxyquire": "^1.7.10",
     "sinon": "^1.17.4",
