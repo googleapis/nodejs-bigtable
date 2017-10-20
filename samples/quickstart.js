@@ -19,13 +19,8 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-// Your Google Cloud Platform project ID
-const projectId = 'YOUR_PROJECT_ID';
-
 // Instantiates a client
-const bigtable = new Bigtable({
-  projectId: projectId,
-});
+const bigtable = new Bigtable();
 
 // The name for the new instance
 const instanceName = 'my-new-instance';
