@@ -1,6 +1,6 @@
 <img src="https://avatars2.githubusercontent.com/u/2810941?v=3&s=96" alt="Google Cloud Platform logo" title="Google Cloud Platform" align="right" height="96" width="96"/>
 
-# Cloud Bigtable: Node.js Client
+# [Cloud Bigtable: Node.js Client](https://github.com/googleapis/nodejs-bigtable)
 
 [![release level](https://img.shields.io/badge/release%20level-alpha-orange.svg?style&#x3D;flat)](https://cloud.google.com/terms/launch-stages)
 [![CircleCI](https://img.shields.io/circleci/project/github/googleapis/nodejs-bigtable.svg?style=flat)](https://circleci.com/gh/googleapis/nodejs-bigtable)
@@ -11,7 +11,9 @@
 
 [Cloud Bigtable](https://cloud.google.com/bigtable/docs/) is Google&#x27;s NoSQL Big Data database service. It&#x27;s the same database that powers many core Google services, including Search, Analytics, Maps, and Gmail.
 
+
 * [Cloud Bigtable Node.js Client API Reference][client-docs]
+* [github.com/googleapis/nodejs-bigtable](https://github.com/googleapis/nodejs-bigtable)
 * [Cloud Bigtable Documentation][product-docs]
 
 Read more about the client libraries for Cloud APIs, including the older
@@ -25,6 +27,7 @@ Google APIs Client Libraries, in [Client Libraries Explained][explained].
   * [Before you begin](#before-you-begin)
   * [Installing the client library](#installing-the-client-library)
   * [Using the client library](#using-the-client-library)
+* [Samples](#samples)
 * [Versioning](#versioning)
 * [Contributing](#contributing)
 * [License](#license)
@@ -63,27 +66,39 @@ Google APIs Client Libraries, in [Client Libraries Explained][explained].
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-// Your Google Cloud Platform project ID
-const projectId = 'YOUR_PROJECT_ID';
+// Creates a client
+const bigtable = new Bigtable();
 
-// Instantiates a client
-const bigtable = new Bigtable({
-  projectId: projectId,
-});
+// The name for the new instance
+const instanceName = 'my-new-instance';
 
-const instance = bigtable.instance('my-instance');
-const table = instance.table('prezzy');
-
-// Get the rows from your table.
-table.getRows(function(err, rows) {
-  if (err) {
-    // Error handling omitted.
-  }
-
-  console.log(rows);
-});
+// Creates the new instance
+bigtable
+  .createInstance(instanceName, {
+    clusters: [
+      {
+        name: 'my-cluster',
+        location: 'us-central1-c',
+        nodes: 3,
+      },
+    ],
+  })
+  .then(() => {
+    console.log(`Instance ${instanceName} created.`);
+  })
+  .catch(err => {
+    console.log('ERROR:', err);
+  });
 ```
 
+## Samples
+
+Samples are in the [`samples/`](https://github.com/googleapis/nodejs-bigtable/tree/master/samples) directory. The samples' `README.md`
+has instructions for running the samples.
+
+| Sample                      | Source Code                       | Try it |
+| --------------------------- | --------------------------------- | ------ |
+| Instances | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/instances.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md) |
 
 The [Cloud Bigtable Node.js Client API Reference][client-docs] documentation
 also contains samples.
@@ -102,13 +117,14 @@ More Information: [Google Cloud Platform Launch Stages][launch_stages]
 
 ## Contributing
 
-Contributions welcome! See the [Contributing Guide](.github/CONTRIBUTING.md).
+Contributions welcome! See the [Contributing Guide](https://github.com/googleapis/nodejs-bigtable/blob/master/.github/CONTRIBUTING.md).
 
 ## License
 
 Apache Version 2.0
 
-See [LICENSE](LICENSE)
+See [LICENSE](https://github.com/googleapis/nodejs-bigtable/blob/master/LICENSE)
 
 [client-docs]: https://cloud.google.com/nodejs/docs/reference/bigtable/latest/
 [product-docs]: https://cloud.google.com/bigtable/docs/
+[shell_img]: http://gstatic.com/cloudssh/images/open-btn.png

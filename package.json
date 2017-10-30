@@ -33,6 +33,7 @@
     "Eric Uldall <ericuldall@gmail.com>",
     "Jason Dobry <jdobry@google.com>",
     "Jun Mukai <jun.mukai@gmail.com>",
+    "Luke Sneeringer <lukesneeringer@google.com>",
     "Misha Brukman <mbrukman@users.noreply.github.com>",
     "Simon Corsin <simoncorsin@gmail.com>",
     "Stephen Sawchuk <sawchuk@gmail.com>",
@@ -44,9 +45,9 @@
     "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
     "test-no-cover": "repo-tools test run --cmd mocha -- test/*.js --no-timeouts",
     "test": "repo-tools test run --cmd npm -- run cover",
-    "generate-scaffolding": "repo-tools generate all",
+    "generate-scaffolding": "repo-tools generate all && repo-tools generate lib_samples_readme -l samples/ --config ../.cloud-repo-tools.json",
     "lint": "repo-tools lint --cmd eslint -- src/ samples/ system-test/ test/",
-    "prettier": "prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
+    "prettier": "repo-tools exec -- prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
     "publish-module": "node ../../scripts/publish.js bigtable",
     "system-test": "repo-tools test run --cmd mocha -- system-test/*.js --no-timeouts"
   },
@@ -68,7 +69,7 @@
     "through2": "^2.0.0"
   },
   "devDependencies": {
-    "@google-cloud/nodejs-repo-tools": "^2.0.10",
+    "@google-cloud/nodejs-repo-tools": "^2.1.0",
     "async": "^2.5.0",
     "codecov": "^2.3.1",
     "eslint": "^4.9.0",

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*!
- * @module bigtable/mutation
- */
-
 'use strict';
 
 var arrify = require('arrify');
@@ -28,8 +24,10 @@ var is = require('is');
 /**
  * Formats table mutations to be in the expected proto format.
  *
- * @constructor
- * @alias module:bigtable/mutation
+ * @private
+ *
+ * @class
+ * @param {object} mutation
  *
  * @example
  * var mutation = new Mutation({
@@ -61,7 +59,7 @@ var methods = (Mutation.methods = {
  * Parses "bytes" returned from proto service.
  *
  * @param {string} bytes - Base64 encoded string.
- * @return {string|number|buffer}
+ * @returns {string|number|buffer}
  */
 Mutation.convertFromBytes = function(bytes, options) {
   var buf = Buffer.from(bytes, 'base64');
@@ -82,7 +80,7 @@ Mutation.convertFromBytes = function(bytes, options) {
  * Converts data into a buffer for proto service.
  *
  * @param {string} data - The data to be sent.
- * @return {buffer}
+ * @returns {buffer}
  */
 Mutation.convertToBytes = function(data) {
   if (data instanceof Buffer) {
@@ -105,7 +103,7 @@ Mutation.convertToBytes = function(data) {
  *
  * @param {date} start - The start date.
  * @param {date} end - The end date.
- * @return {object}
+ * @returns {object}
  */
 Mutation.createTimeRange = function(start, end) {
   var range = {};
@@ -125,7 +123,7 @@ Mutation.createTimeRange = function(start, end) {
  * Formats an `insert` mutation to what the proto service expects.
  *
  * @param {object} data - The entity data.
- * @return {object[]}
+ * @returns {object[]}
  *
  * @example
  * Mutation.encodeSetCell({
@@ -197,7 +195,7 @@ Mutation.encodeSetCell = function(data) {
  * * Delete all cells from an entire rows.
  *
  * @param {object} data - The entry data.
- * @return {object}
+ * @returns {object}
  *
  * @example
  * Mutation.encodeDelete([
@@ -287,7 +285,7 @@ Mutation.encodeDelete = function(data) {
  * Creates a new Mutation object and returns the proto JSON form.
  *
  * @param {object} entry - The entity data.
- * @return {object}
+ * @returns {object}
  */
 Mutation.parse = function(mutation) {
   if (!(mutation instanceof Mutation)) {
@@ -301,7 +299,7 @@ Mutation.parse = function(mutation) {
  * Parses a column name into an object.
  *
  * @param {string} column - The column name.
- * @return {object}
+ * @returns {object}
  *
  * @example
  * Mutation.parseColumnName('follows:gwashington');
@@ -322,7 +320,7 @@ Mutation.parseColumnName = function(column) {
 /**
  * Converts the mutation object into proto friendly JSON.
  *
- * return {object}
+ * @returns {object}
  */
 Mutation.prototype.toProto = function() {
   var mutation = {};
