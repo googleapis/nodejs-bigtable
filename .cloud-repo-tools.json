@@ -1,0 +1,17 @@
+{
+  "requiresKeyFile": true,
+  "requiresProjectId": true,
+  "product": "bigtable",
+  "client_reference_url":
+    "https://cloud.google.com/nodejs/docs/reference/bigtable/latest/",
+  "release_quality": "alpha",
+  "samples": [
+    {
+      "id": "instances",
+      "name": "Instances",
+      "file": "instances.js",
+      "docs_link": "https://cloud.google.com/bigtable/docs/",
+      "usage": "node instances.js --help"
+    }
+  ]
+}

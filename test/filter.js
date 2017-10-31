@@ -24,7 +24,7 @@ var FakeMutation = {
   convertToBytes: sinon.spy(function(value) {
     return value;
   }),
-  createTimeRange: sinon.stub()
+  createTimeRange: sinon.stub(),
 };
 
 describe('Bigtable/Filter', function() {
@@ -33,7 +33,7 @@ describe('Bigtable/Filter', function() {
 
   before(function() {
     Filter = proxyquire('../src/filter', {
-      './mutation.js': FakeMutation
+      './mutation.js': FakeMutation,
     });
   });
 
@@ -80,7 +80,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should throw an error for unknown types', function() {
-      var errorReg = /Can\'t convert to RegExp String from unknown type\./;
+      var errorReg = /Can't convert to RegExp String from unknown type\./;
 
       assert.throws(function() {
         Filter.convertToRegExpString(true);
@@ -98,7 +98,7 @@ describe('Bigtable/Filter', function() {
 
       assert.deepEqual(range, {
         startKeyClosed: start,
-        endKeyClosed: end
+        endKeyClosed: end,
       });
     });
 
@@ -110,7 +110,7 @@ describe('Bigtable/Filter', function() {
 
       assert(FakeMutation.convertToBytes.calledWithExactly(start));
       assert.deepEqual(range, {
-        startKeyClosed: start
+        startKeyClosed: start,
       });
     });
 
@@ -122,19 +122,19 @@ describe('Bigtable/Filter', function() {
 
       assert(FakeMutation.convertToBytes.calledWithExactly(end));
       assert.deepEqual(range, {
-        endKeyClosed: end
+        endKeyClosed: end,
       });
     });
 
     it('should optionally accept inclusive flags', function() {
       var start = {
         value: 'a',
-        inclusive: false
+        inclusive: false,
       };
 
       var end = {
         value: 'b',
-        inclusive: false
+        inclusive: false,
       };
 
       var key = 'Key';
@@ -143,7 +143,7 @@ describe('Bigtable/Filter', function() {
 
       assert.deepEqual(range, {
         startKeyOpen: start.value,
-        endKeyOpen: end.value
+        endKeyOpen: end.value,
       });
     });
   });
@@ -153,11 +153,14 @@ describe('Bigtable/Filter', function() {
       sinon.spy(Filter.prototype, 'row');
       sinon.spy(Filter.prototype, 'value');
 
-      var fakeFilter = [{
-        row: 'a'
-      }, {
-        value: 'b'
-      }];
+      var fakeFilter = [
+        {
+          row: 'a',
+        },
+        {
+          value: 'b',
+        },
+      ];
 
       Filter.parse(fakeFilter);
 
@@ -169,21 +172,22 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should throw an error for unknown filters', function() {
-      var fakeFilter = [{
-        wat: 'a'
-      }];
+      var fakeFilter = [
+        {
+          wat: 'a',
+        },
+      ];
 
-      assert.throws(
-        Filter.parse.bind(null, fakeFilter),
-        Filter.FilterError
-      );
+      assert.throws(Filter.parse.bind(null, fakeFilter), Filter.FilterError);
     });
 
     it('should return the filter in JSON form', function() {
-      var fakeProto = { a: 'a' };
-      var fakeFilter = [{
-        column: 'a'
-      }];
+      var fakeProto = {a: 'a'};
+      var fakeFilter = [
+        {
+          column: 'a',
+        },
+      ];
 
       sinon.stub(Filter.prototype, 'toProto').returns(fakeProto);
 
@@ -219,7 +223,7 @@ describe('Bigtable/Filter', function() {
   describe('column', function() {
     it('should set the column qualifier regex filter', function(done) {
       var column = {
-        name: 'fake-column'
+        name: 'fake-column',
       };
 
       var spy = sinon.stub(Filter, 'convertToRegExpString', function(value) {
@@ -251,7 +255,7 @@ describe('Bigtable/Filter', function() {
 
     it('should accept the cells per column limit filter', function(done) {
       var column = {
-        cellLimit: 10
+        cellLimit: 10,
       };
 
       filter.set = function(filterName, value) {
@@ -266,11 +270,11 @@ describe('Bigtable/Filter', function() {
     it('should accept the column range filter', function(done) {
       var fakeRange = {
         a: 'a',
-        b: 'b'
+        b: 'b',
       };
       var column = {
         start: 'a',
-        end: 'b'
+        end: 'b',
       };
 
       var spy = sinon.stub(Filter, 'createRange').returns(fakeRange);
@@ -289,9 +293,9 @@ describe('Bigtable/Filter', function() {
   describe('condition', function() {
     it('should create a condition filter', function(done) {
       var condition = {
-        test: { a: 'a' },
-        pass: { b: 'b' },
-        fail: { c: 'c' }
+        test: {a: 'a'},
+        pass: {b: 'b'},
+        fail: {c: 'c'},
       };
 
       var spy = sinon.stub(Filter, 'parse', function(value) {
@@ -303,7 +307,7 @@ describe('Bigtable/Filter', function() {
         assert.deepEqual(value, {
           predicateFilter: condition.test,
           trueFilter: condition.pass,
-          falseFilter: condition.fail
+          falseFilter: condition.fail,
         });
 
         assert.strictEqual(spy.getCall(0).args[0], condition.test);
@@ -375,7 +379,7 @@ describe('Bigtable/Filter', function() {
   describe('row', function() {
     it('should apply the row key regex filter', function(done) {
       var row = {
-        key: 'gwashinton'
+        key: 'gwashinton',
       };
       var convertedKey = 'abcd';
 
@@ -408,7 +412,7 @@ describe('Bigtable/Filter', function() {
 
     it('should set the row sample filter', function(done) {
       var row = {
-        sample: 10
+        sample: 10,
       };
 
       filter.set = function(filterName, value) {
@@ -422,7 +426,7 @@ describe('Bigtable/Filter', function() {
 
     it('should set the cells per row offset filter', function(done) {
       var row = {
-        cellOffset: 10
+        cellOffset: 10,
       };
 
       filter.set = function(filterName, value) {
@@ -436,7 +440,7 @@ describe('Bigtable/Filter', function() {
 
     it('should set the cells per row limit filter', function(done) {
       var row = {
-        cellLimit: 10
+        cellLimit: 10,
       };
 
       filter.set = function(filterName, value) {
@@ -452,7 +456,7 @@ describe('Bigtable/Filter', function() {
   describe('set', function() {
     it('should create a filter object', function() {
       var key = 'notARealFilter';
-      var value = { a: 'b' };
+      var value = {a: 'b'};
 
       filter.set(key, value);
 
@@ -478,7 +482,7 @@ describe('Bigtable/Filter', function() {
     it('should set the timestamp range filter', function(done) {
       var fakeTimeRange = {
         start: 10,
-        end: 10
+        end: 10,
       };
 
       var spy = FakeMutation.createTimeRange.returns(fakeTimeRange);
@@ -522,7 +526,7 @@ describe('Bigtable/Filter', function() {
   describe('value', function() {
     it('should set the value regex filter', function(done) {
       var value = {
-        value: 'fake-value'
+        value: 'fake-value',
       };
       var fakeRegExValue = 'abcd';
       var fakeConvertedValue = 'dcba';
@@ -531,9 +535,9 @@ describe('Bigtable/Filter', function() {
         return fakeRegExValue;
       });
 
-      var bytesSpy = FakeMutation.convertToBytes = sinon.spy(function() {
+      var bytesSpy = (FakeMutation.convertToBytes = sinon.spy(function() {
         return fakeConvertedValue;
-      });
+      }));
 
       filter.set = function(filterName, val) {
         assert.strictEqual(filterName, 'valueRegexFilter');
@@ -556,9 +560,9 @@ describe('Bigtable/Filter', function() {
         return fakeRegExValue;
       });
 
-      var bytesSpy = FakeMutation.convertToBytes = sinon.spy(function() {
+      var bytesSpy = (FakeMutation.convertToBytes = sinon.spy(function() {
         return fakeConvertedValue;
-      });
+      }));
 
       filter.set = function(filterName, val) {
         assert.strictEqual(filterName, 'valueRegexFilter');
@@ -574,11 +578,11 @@ describe('Bigtable/Filter', function() {
     it('should accept the value range filter', function(done) {
       var fakeRange = {
         a: 'a',
-        b: 'b'
+        b: 'b',
       };
       var value = {
         start: 'a',
-        end: 'b'
+        end: 'b',
       };
 
       var spy = sinon.stub(Filter, 'createRange', function() {
@@ -597,7 +601,7 @@ describe('Bigtable/Filter', function() {
 
     it('should apply the strip label transformer', function(done) {
       var value = {
-        strip: true
+        strip: true,
       };
 
       filter.set = function(filterName, val) {
@@ -617,5 +621,4 @@ describe('Bigtable/Filter', function() {
       assert.strictEqual(err.message, 'Unknown filter: test.');
     });
   });
-
 });

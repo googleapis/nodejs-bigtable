@@ -1,113 +1,130 @@
-# @google-cloud/bigtable ([Alpha][versioning])
-> Cloud Bigtable Client Library for Node.js
+<img src="https://avatars2.githubusercontent.com/u/2810941?v=3&s=96" alt="Google Cloud Platform logo" title="Google Cloud Platform" align="right" height="96" width="96"/>
 
-*Looking for more Google APIs than just Bigtable? You might want to check out [`google-cloud`][google-cloud].*
+# [Cloud Bigtable: Node.js Client](https://github.com/googleapis/nodejs-bigtable)
 
-- [API Documentation][gcloud-bigtable-docs]
-- [Official Documentation][cloud-bigtable-docs]
+[![release level](https://img.shields.io/badge/release%20level-alpha-orange.svg?style&#x3D;flat)](https://cloud.google.com/terms/launch-stages)
+[![CircleCI](https://img.shields.io/circleci/project/github/googleapis/nodejs-bigtable.svg?style=flat)](https://circleci.com/gh/googleapis/nodejs-bigtable)
+[![AppVeyor](https://ci.appveyor.com/api/projects/status/github/googleapis/nodejs-bigtable?branch=master&svg=true)](https://ci.appveyor.com/project/googleapis/nodejs-bigtable)
+[![codecov](https://img.shields.io/codecov/c/github/googleapis/nodejs-bigtable/master.svg?style=flat)](https://codecov.io/gh/googleapis/nodejs-bigtable)
 
-*You may need to [create a cluster][cloud-bigtable-cluster] to use the Cloud Bigtable API with your project.*
+> Node.js idiomatic client for [Cloud Bigtable][product-docs].
+
+[Cloud Bigtable](https://cloud.google.com/bigtable/docs/) is Google&#x27;s NoSQL Big Data database service. It&#x27;s the same database that powers many core Google services, including Search, Analytics, Maps, and Gmail.
 
 
-```sh
-$ npm install --save @google-cloud/bigtable
-```
-```js
-var bigtable = require('@google-cloud/bigtable')({
-  projectId: 'grape-spaceship-123',
-  keyFilename: '/path/to/keyfile.json'
-});
+* [Cloud Bigtable Node.js Client API Reference][client-docs]
+* [github.com/googleapis/nodejs-bigtable](https://github.com/googleapis/nodejs-bigtable)
+* [Cloud Bigtable Documentation][product-docs]
 
-var instance = bigtable.instance('my-instance');
-var table = instance.table('prezzy');
+Read more about the client libraries for Cloud APIs, including the older
+Google APIs Client Libraries, in [Client Libraries Explained][explained].
 
-table.getRows(function(err, rows) {});
+[explained]: https://cloud.google.com/apis/docs/client-libraries-explained
 
-// Update a row in your table.
-var row = table.row('alincoln');
+**Table of contents:**
 
-row.save('follows:gwashington', 1, function(err) {
-  if (err) {
-    // Error handling omitted.
-  }
+* [Quickstart](#quickstart)
+  * [Before you begin](#before-you-begin)
+  * [Installing the client library](#installing-the-client-library)
+  * [Using the client library](#using-the-client-library)
+* [Samples](#samples)
+* [Versioning](#versioning)
+* [Contributing](#contributing)
+* [License](#license)
 
-  row.get('follows:gwashington', function(err, data) {
-    if (err) {
-      // Error handling omitted.
-    }
+## Quickstart
 
-    // data = {
-    //   follows: {
-    //     gwashington: [
-    //       {
-    //         value: 1
-    //       }
-    //     ]
-    //   }
-    // }
+### Before you begin
+
+1.  Select or create a Cloud Platform project.
+
+    [Go to the projects page][projects]
+
+1.  Enable billing for your project.
+
+    [Enable billing][billing]
+
+1.  Enable the Cloud Bigtable API.
+
+    [Enable the API][enable_api]
+
+1.  [Set up authentication with a service account][auth] so you can access the
+    API from your local workstation.
+
+[projects]: https://console.cloud.google.com/project
+[billing]: https://support.google.com/cloud/answer/6293499#enable-billing
+[enable_api]: https://console.cloud.google.com/flows/enableapi?apiid=bigtable.googleapis.com,bigtableadmin.googleapis.com
+[auth]: https://cloud.google.com/docs/authentication/getting-started
+
+### Installing the client library
+
+    npm install --save @google-cloud/bigtable
+
+### Using the client library
+
+```javascript
+// Imports the Google Cloud client library
+const Bigtable = require('@google-cloud/bigtable');
+
+// Creates a client
+const bigtable = new Bigtable();
+
+// The name for the new instance
+const instanceName = 'my-new-instance';
+
+// Creates the new instance
+bigtable
+  .createInstance(instanceName, {
+    clusters: [
+      {
+        name: 'my-cluster',
+        location: 'us-central1-c',
+        nodes: 3,
+      },
+    ],
+  })
+  .then(() => {
+    console.log(`Instance ${instanceName} created.`);
+  })
+  .catch(err => {
+    console.log('ERROR:', err);
   });
-});
-
-// Promises are also supported by omitting callbacks.
-table.getRows().then(function(data) {
-  var rows = data[0];
-});
-
-// It's also possible to integrate with third-party Promise libraries.
-var bigtable = require('@google-cloud/bigtable')({
-  promise: require('bluebird')
-});
 ```
 
+## Samples
 
-## Authentication
+Samples are in the [`samples/`](https://github.com/googleapis/nodejs-bigtable/tree/master/samples) directory. The samples' `README.md`
+has instructions for running the samples.
 
-It's incredibly easy to get authenticated and start using Google's APIs. You can set your credentials on a global basis as well as on a per-API basis. See each individual API section below to see how you can auth on a per-API-basis. This is useful if you want to use different accounts for different Cloud services.
+| Sample                      | Source Code                       | Try it |
+| --------------------------- | --------------------------------- | ------ |
+| Instances | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/instances.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md) |
 
-### On Google Cloud Platform
+The [Cloud Bigtable Node.js Client API Reference][client-docs] documentation
+also contains samples.
 
-If you are running this client on Google Cloud Platform, we handle authentication for you with no configuration. You just need to make sure that when you [set up the GCE instance][gce-how-to], you add the correct scopes for the APIs you want to access.
+## Versioning
 
-``` js
-var bigtable = require('@google-cloud/bigtable')();
-// ...you're good to go!
-```
+This library follows [Semantic Versioning](http://semver.org/).
 
-### Elsewhere
+This library is considered to be in **alpha**. This means it is still a
+work-in-progress and under active development. Any release is subject to
+backwards-incompatible changes at any time.
 
-If you are not running this client on Google Cloud Platform, you need a Google Developers service account. To create a service account:
+More Information: [Google Cloud Platform Launch Stages][launch_stages]
 
-1. Visit the [Google Developers Console][dev-console].
-2. Create a new project or click on an existing project.
-3. Navigate to  **APIs & auth** > **APIs section** and turn on the following APIs (you may need to enable billing in order to use these services):
-  * Cloud Bigtable API
-  * Cloud Bigtable Admin API
-  * Cloud Bigtable Table Admin API
-4. Navigate to **APIs & auth** >  **Credentials** and then:
-  * If you want to use a new service account key, click on **Create credentials** and select **Service account key**. After the account key is created, you will be prompted to download the JSON key file that the library uses to authenticate your requests.
-  * If you want to generate a new service account key for an existing service account, click on **Generate new JSON key** and download the JSON key file.
+[launch_stages]: https://cloud.google.com/terms/launch-stages
 
-``` js
-var projectId = process.env.GCLOUD_PROJECT; // E.g. 'grape-spaceship-123'
+## Contributing
 
-var bigtable = require('@google-cloud/bigtable')({
-  projectId: projectId,
+Contributions welcome! See the [Contributing Guide](https://github.com/googleapis/nodejs-bigtable/blob/master/.github/CONTRIBUTING.md).
 
-  // The path to your key file:
-  keyFilename: '/path/to/keyfile.json'
+## License
 
-  // Or the contents of the key file:
-  credentials: require('./path/to/keyfile.json')
-});
+Apache Version 2.0
 
-// ...you're good to go!
-```
+See [LICENSE](https://github.com/googleapis/nodejs-bigtable/blob/master/LICENSE)
 
-
-[versioning]: https://github.com/GoogleCloudPlatform/google-cloud-node#versioning
-[google-cloud]: https://github.com/GoogleCloudPlatform/google-cloud-node
-[gce-how-to]: https://cloud.google.com/compute/docs/authentication#using
-[dev-console]: https://console.developers.google.com/project
-[gcloud-bigtable-docs]: https://googlecloudplatform.github.io/google-cloud-node/#/docs/bigtable
-[cloud-bigtable-docs]: https://cloud.google.com/bigtable/docs
-[cloud-bigtable-cluster]: https://cloud.google.com/bigtable/docs/creating-compute-instance
+[client-docs]: https://cloud.google.com/nodejs/docs/reference/bigtable/latest/
+[product-docs]: https://cloud.google.com/bigtable/docs/
+[shell_img]: http://gstatic.com/cloudssh/images/open-btn.png

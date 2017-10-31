@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*!
- * @module bigtable/table
- */
-
 'use strict';
 
 var arrify = require('arrify');
@@ -31,51 +27,33 @@ var pumpify = require('pumpify');
 var through = require('through2');
 var util = require('util');
 
-/**
- * @type {module:bigtable/family}
- * @private
- */
 var Family = require('./family.js');
-
-/**
- * @type {module:bigtable/filter}
- * @private
- */
 var Filter = require('./filter.js');
-
-/**
- * @type {module:bigtable/mutation}
- * @private
- */
 var Mutation = require('./mutation.js');
-
-/**
- * @type {module:bigtable/row}
- * @private
- */
 var Row = require('./row.js');
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
  *
- * @constructor
- * @alias module:bigtable/table
- *
- * @param {string} name - Name of the table.
+ * @class
+ * @param {Instance} instance Name of the table.
+ * @param {string} name Name of the table.
  *
  * @example
- * var instance = bigtable.instance('my-instance');
- * var table = instance.table('prezzy');
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
  */
 function Table(instance, name) {
   var id = Table.formatName_(instance.id, name);
 
   var methods = {
-
     /**
      * Create a table.
      *
-     * @param {object=} options - See {module:bigtable/instance#createTable}.
+     * @method Table#create
+     * @param {object} [options] See {@link Instance#createTable}.
      *
      * @example
      * table.create(function(err, table, apiResponse) {
@@ -97,10 +75,11 @@ function Table(instance, name) {
     /**
      * Delete the table.
      *
-     * @param {function=} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Table#delete
+     * @param {function} [callback] The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {object} callback.apiResponse - The full API response.
+     * @param {object} callback.apiResponse The full API response.
      *
      * @example
      * table.delete(function(err, apiResponse) {});
@@ -115,20 +94,21 @@ function Table(instance, name) {
     delete: {
       protoOpts: {
         service: 'BigtableTableAdmin',
-        method: 'deleteTable'
+        method: 'deleteTable',
       },
       reqOpts: {
-        name: id
-      }
+        name: id,
+      },
     },
 
     /**
      * Check if a table exists.
      *
-     * @param {function} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Table#exists
+     * @param {function} callback The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {boolean} callback.exists - Whether the table exists or not.
+     * @param {boolean} callback.exists Whether the table exists or not.
      *
      * @example
      * table.exists(function(err, exists) {});
@@ -150,11 +130,12 @@ function Table(instance, name) {
      * normally required for the `create` method must be contained within this
      * object as well.
      *
-     * @param {options=} options - Configuration object.
-     * @param {boolean} options.autoCreate - Automatically create the object if
-     *     it does not exist. Default: `false`
-     * @param {string} options.view - The view to be applied to the table
-     *   fields. See {module:bigtable/table#getMetadata}.
+     * @method Table#get
+     * @param {object} [options] Configuration object.
+     * @param {boolean} [options.autoCreate=false] Automatically create the
+     *     object if it does not exist.
+     * @param {string} [options.view] The view to be applied to the table
+     *   fields. See {@link Table#getMetadata}.
      *
      * @example
      * table.get(function(err, table, apiResponse) {
@@ -169,7 +150,7 @@ function Table(instance, name) {
      *   var apiResponse = data[0];
      * });
      */
-    get: true
+    get: true,
   };
 
   var config = {
@@ -178,7 +159,7 @@ function Table(instance, name) {
     methods: methods,
     createMethod: function(_, options, callback) {
       instance.createTable(name, options, callback);
-    }
+    },
   };
 
   commonGrpc.ServiceObject.call(this, config);
@@ -196,7 +177,7 @@ Table.VIEWS = {
   unspecified: 0,
   name: 1,
   schema: 2,
-  full: 4
+  full: 4,
 };
 
 /**
@@ -204,8 +185,8 @@ Table.VIEWS = {
  *
  * @private
  *
- * @param {string} instanceName - The formatted instance name.
- * @param {string} name - The table name.
+ * @param {string} instanceName The formatted instance name.
+ * @param {string} name The table name.
  *
  * @example
  * Table.formatName_(
@@ -227,8 +208,8 @@ Table.formatName_ = function(instanceName, name) {
  *
  * @private
  *
- * @param {string} start - The key prefix/starting bound.
- * @return {object} range
+ * @param {string} start The key prefix/starting bound.
+ * @returns {object} range
  *
  * @example
  * Table.createPrefixRange_('start');
@@ -256,8 +237,8 @@ Table.createPrefixRange_ = function(start) {
     start: start,
     end: {
       value: endKey,
-      inclusive: !endKey
-    }
+      inclusive: !endKey,
+    },
   };
 };
 
@@ -269,29 +250,34 @@ Table.createPrefixRange_ = function(start) {
  * possible for reads to return a cell even if it matches the active expression
  * for its family.
  *
- * @resource [Garbage Collection Proto Docs]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/table/v1/bigtable_table_data.proto#L59}
+ * @see [Garbage Collection Proto Docs]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/table/v1/bigtable_table_data.proto#L59}
  *
  * @throws {error} If a name is not provided.
  *
- * @param {string} name - The name of column family.
- * @param {object=} rule - Garbage collection rule.
- * @param {object} rule.age - Delete cells in a column older than the given
+ * @param {string} name The name of column family.
+ * @param {object} [rule] Garbage collection rule.
+ * @param {object} [rule.age] Delete cells in a column older than the given
  *     age. Values must be at least 1 millisecond.
- * @param {number} rule.versions - Maximum number of versions to delete cells
+ * @param {number} [rule.versions] Maximum number of versions to delete cells
  *     in a column, except for the most recent.
- * @param {boolean} rule.intersect - Cells to delete should match all rules.
- * @param {boolean} rule.union - Cells to delete should match any of the rules.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {module:bigtable/family} callback.family - The newly created Family.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {boolean} [rule.intersect] Cells to delete should match all rules.
+ * @param {boolean} [rule.union] Cells to delete should match any of the rules.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Family} callback.family The newly created Family.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
- * var callback = function(err, family, apiResponse) {
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
+ * const callback = function(err, family, apiResponse) {
  *   // `family` is a Family object
  * };
  *
- * var rule = {
+ * const rule = {
  *   age: {
  *     seconds: 0,
  *     nanos: 5000
@@ -306,8 +292,8 @@ Table.createPrefixRange_ = function(start) {
  * // If the callback is omitted, we'll return a Promise.
  * //-
  * table.createFamily('follows').then(function(data) {
- *   var family = data[0];
- *   var apiResponse = data[1];
+ *   const family = data[0];
+ *   const apiResponse = data[1];
  * });
  */
 Table.prototype.createFamily = function(name, rule, callback) {
@@ -324,12 +310,12 @@ Table.prototype.createFamily = function(name, rule, callback) {
 
   var grpcOpts = {
     service: 'BigtableTableAdmin',
-    method: 'modifyColumnFamilies'
+    method: 'modifyColumnFamilies',
   };
 
   var mod = {
     id: name,
-    create: {}
+    create: {},
   };
 
   if (rule) {
@@ -338,7 +324,7 @@ Table.prototype.createFamily = function(name, rule, callback) {
 
   var reqOpts = {
     name: this.id,
-    modifications: [mod]
+    modifications: [mod],
   };
 
   this.request(grpcOpts, reqOpts, function(err, resp) {
@@ -354,23 +340,28 @@ Table.prototype.createFamily = function(name, rule, callback) {
 };
 
 /**
- * Get {module:bigtable/row} objects for the rows currently in your table as a
+ * Get {@link Row} objects for the rows currently in your table as a
  * readable object stream.
  *
- * @param {options=} options - Configuration object.
- * @param {boolean} options.decode - If set to `false` it will not decode Buffer
- *     values returned from Bigtable. Default: true.
- * @param {string} options.end - End value for key range.
-* @param {module:bigtable/filter} options.filter - Row filters allow you to
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.decode=true] If set to `false` it will not decode
+ *     Buffer values returned from Bigtable.
+ * @param {string} [options.end] End value for key range.
+* @param {Filter} [options.filter] Row filters allow you to
  *     both make advanced queries and format how the data is returned.
- * @param {string[]} options.keys - A list of row keys.
- * @param {number} options.limit - Maximum number of rows to be returned.
- * @param {string} options.prefix - Prefix that the row key must match.
- * @param {object[]} options.ranges - A list of key ranges.
- * @param {string} options.start - Start value for key range.
- * @return {stream}
+ * @param {string[]} [options.keys] A list of row keys.
+ * @param {number} [options.limit] Maximum number of rows to be returned.
+ * @param {string} [options.prefix] Prefix that the row key must match.
+ * @param {object[]} [options.ranges] A list of key ranges.
+ * @param {string} [options.start] Start value for key range.
+ * @returns {stream}
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
  * table.createReadStream()
  *   .on('error', console.error)
  *   .on('data', function(row) {
@@ -433,7 +424,7 @@ Table.prototype.createFamily = function(name, rule, callback) {
  * });
  *
  * //-
- * // Apply a {module:bigtable/filter} to the contents of the specified rows.
+ * // Apply a {@link Filter} to the contents of the specified rows.
  * //-
  * table.createReadStream({
  *   filter: [
@@ -453,18 +444,18 @@ Table.prototype.createReadStream = function(options) {
 
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'readRows'
+    method: 'readRows',
   };
 
   var reqOpts = {
     tableName: this.id,
-    objectMode: true
+    objectMode: true,
   };
 
   if (options.start || options.end) {
     options.ranges.push({
       start: options.start,
-      end: options.end
+      end: options.end,
     });
   }
 
@@ -499,7 +490,7 @@ Table.prototype.createReadStream = function(options) {
     through.obj(function(data, enc, next) {
       var throughStream = this;
       var rows = Row.formatChunks_(data.chunks, {
-        decode: options.decode
+        decode: options.decode,
       });
 
       rows.forEach(function(rowData) {
@@ -510,7 +501,7 @@ Table.prototype.createReadStream = function(options) {
       });
 
       next();
-    })
+    }),
   ]);
 };
 
@@ -518,18 +509,23 @@ Table.prototype.createReadStream = function(options) {
  * Delete all rows in the table, optionally corresponding to a particular
  * prefix.
  *
- * @param {options=} options - Configuration object.
- * @param {string} options.prefix - Row key prefix, when omitted all rows
+ * @param {object} [options] Configuration object.
+ * @param {string} [options.prefix] Row key prefix, when omitted all rows
  *     will be deleted.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
  * //-
  * // You can supply a prefix to delete all corresponding rows.
  * //-
- * var callback = function(err, apiResponse) {
+ * const callback = function(err, apiResponse) {
  *   if (!err) {
  *     // Rows successfully deleted.
  *   }
@@ -548,7 +544,7 @@ Table.prototype.createReadStream = function(options) {
  * // If the callback is omitted, we'll return a Promise.
  * //-
  * table.deleteRows().then(function(data) {
- *   var apiResponse = data[0];
+ *   const apiResponse = data[0];
  * });
  */
 Table.prototype.deleteRows = function(options, callback) {
@@ -559,11 +555,11 @@ Table.prototype.deleteRows = function(options, callback) {
 
   var grpcOpts = {
     service: 'BigtableTableAdmin',
-    method: 'dropRowRange'
+    method: 'dropRowRange',
   };
 
   var reqOpts = {
-    name: this.id
+    name: this.id,
   };
 
   if (options.prefix) {
@@ -580,11 +576,11 @@ Table.prototype.deleteRows = function(options, callback) {
  *
  * @throws {error} If a name is not provided.
  *
- * @param {string} name - The family name.
- * @return {module:bigtable/family}
+ * @param {string} name The family name.
+ * @returns {Family}
  *
  * @example
- * var family = table.family('my-family');
+ * const family = table.family('my-family');
  */
 Table.prototype.family = function(name) {
   if (!name) {
@@ -597,12 +593,17 @@ Table.prototype.family = function(name) {
 /**
  * Get Family objects for all the column familes in your table.
  *
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {module:bigtable/family[]} callback.families - The list of families.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Family[]} callback.families The list of families.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
  * table.getFamilies(function(err, families, apiResponse) {
  *   // `families` is an array of Family objects.
  * });
@@ -637,15 +638,20 @@ Table.prototype.getFamilies = function(callback) {
 /**
  * Get the table's metadata.
  *
- * @param {object=} options - Table request options.
- * @param {string} options.view - The view to be applied to the table fields.
- * @param {function=} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {object} [options] Table request options.
+ * @param {string} [options.view] The view to be applied to the table fields.
+ * @param {function} [callback] The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.metadata - The table's metadata.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.metadata The table's metadata.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
  * table.getMetadata(function(err, metadata, apiResponse) {});
  *
  * //-
@@ -666,12 +672,12 @@ Table.prototype.getMetadata = function(options, callback) {
 
   var protoOpts = {
     service: 'BigtableTableAdmin',
-    method: 'getTable'
+    method: 'getTable',
   };
 
   var reqOpts = {
     name: this.id,
-    view: Table.VIEWS[options.view || 'unspecified']
+    view: Table.VIEWS[options.view || 'unspecified'],
   };
 
   this.request(protoOpts, reqOpts, function(err, resp) {
@@ -686,19 +692,24 @@ Table.prototype.getMetadata = function(options, callback) {
 };
 
 /**
- * Get {module:bigtable/row} objects for the rows currently in your table.
+ * Get {@link Row} objects for the rows currently in your table.
  *
  * This method is not recommended for large datasets as it will buffer all rows
  * before returning the results. Instead we recommend using the streaming API
- * via {module:bigtable/table#createReadStream}.
+ * via {@link Table#createReadStream}.
  *
- * @param {object=} options - Configuration object. See
- *     {module:bigtable/table#createReadStream} for a complete list of options.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {module:bigtable/row[]} callback.rows - List of Row objects.
+ * @param {object} [options] Configuration object. See
+ *     {@link Table#createReadStream} for a complete list of options.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Row[]} callback.rows List of Row objects.
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
  * table.getRows(function(err, rows) {
  *   if (!err) {
  *     // `rows` is an array of Row objects.
@@ -720,9 +731,11 @@ Table.prototype.getRows = function(options, callback) {
 
   this.createReadStream(options)
     .on('error', callback)
-    .pipe(concat(function(rows) {
-      callback(null, rows);
-    }));
+    .pipe(
+      concat(function(rows) {
+        callback(null, rows);
+      })
+    );
 };
 
 /**
@@ -730,16 +743,21 @@ Table.prototype.getRows = function(options, callback) {
  * you to send payloads that are less than or equal to 4MB. If you're inserting
  * more than that you may need to send smaller individual requests.
  *
- * @param {object|object[]} entries - List of entries to be inserted.
- *     See {module:bigtable/table#mutate}.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {object[]} callback.err.errors - If present, these represent partial
+ * @param {object|object[]} entries List of entries to be inserted.
+ *     See {@link Table#mutate}.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {object[]} callback.err.errors If present, these represent partial
  *     failures. It's possible for part of your request to be completed
  *     successfully, while the other part was not.
  *
  * @example
- * var callback = function(err) {
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
+ * const callback = function(err) {
  *   if (err) {
  *     // An API error or partial failure occurred.
  *
@@ -751,7 +769,7 @@ Table.prototype.getRows = function(options, callback) {
  *   }
  * };
  *
- * var entries = [
+ * const entries = [
  *  {
  *     key: 'alincoln',
  *     data: {
@@ -769,7 +787,7 @@ Table.prototype.getRows = function(options, callback) {
  * // timestamp of when your data was inserted. It's possible to provide a
  * // date object to be used instead.
  * //-
- * var entries = [
+ * const entries = [
  *   {
  *     key: 'gwashington',
  *     data: {
@@ -805,19 +823,24 @@ Table.prototype.insert = function(entries, callback) {
  * Mutations are applied in order, meaning that earlier mutations can be masked
  * by later ones.
  *
- * @param {object|object[]} entries - List of entities to be inserted or
+ * @param {object|object[]} entries List of entities to be inserted or
  *     deleted.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {object[]} callback.err.errors - If present, these represent partial
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {object[]} callback.err.errors If present, these represent partial
  *     failures. It's possible for part of your request to be completed
  *     successfully, while the other part was not.
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ *
  * //-
- * // Insert entities. See {module:bigtable/table#insert}.
+ * // Insert entities. See {@link Table#insert}.
  * //-
- * var callback = function(err) {
+ * const callback = function(err) {
  *   if (err) {
  *     // An API error or partial failure occurred.
  *
@@ -829,7 +852,7 @@ Table.prototype.insert = function(entries, callback) {
  *   }
  * };
  *
- * var entries = [
+ * const entries = [
  *   {
  *     method: 'insert',
  *     key: 'gwashington',
@@ -844,9 +867,9 @@ Table.prototype.insert = function(entries, callback) {
  * table.mutate(entries, callback);
  *
  * //-
- * // Delete entities. See {module:bigtable/row#deleteCells}.
+ * // Delete entities. See {@link Row#deleteCells}.
  * //-
- * var entries = [
+ * const entries = [
  *   {
  *     method: 'delete',
  *     key: 'gwashington'
@@ -858,7 +881,7 @@ Table.prototype.insert = function(entries, callback) {
  * //-
  * // Delete specific columns within a row.
  * //-
- * var entries = [
+ * const entries = [
  *   {
  *     method: 'delete',
  *     key: 'gwashington',
@@ -874,7 +897,7 @@ Table.prototype.insert = function(entries, callback) {
  * // Mix and match mutations. This must contain at least one entry and at
  * // most 100,000.
  * //-
- * var entries = [
+ * const entries = [
  *   {
  *     method: 'insert',
  *     key: 'alincoln',
@@ -906,13 +929,13 @@ Table.prototype.mutate = function(entries, callback) {
 
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'mutateRows'
+    method: 'mutateRows',
   };
 
   var reqOpts = {
     objectMode: true,
     tableName: this.id,
-    entries: entries.map(Mutation.parse)
+    entries: entries.map(Mutation.parse),
   };
 
   var mutationErrors = [];
@@ -937,7 +960,7 @@ Table.prototype.mutate = function(entries, callback) {
 
       if (mutationErrors.length > 0) {
         err = new common.util.PartialFailureError({
-          errors: mutationErrors
+          errors: mutationErrors,
         });
       }
 
@@ -950,8 +973,8 @@ Table.prototype.mutate = function(entries, callback) {
  *
  * @throws {error} If a key is not provided.
  *
- * @param {string} key - The row key.
- * @return {module:bigtable/row}
+ * @param {string} key The row key.
+ * @returns {Row}
  *
  * @example
  * var row = table.row('lincoln');
@@ -969,9 +992,9 @@ Table.prototype.row = function(key) {
  * contigous sections of the table of approximately equal size, which can be
  * used to break up the data for distributed tasks like mapreduces.
  *
- * @param {function=} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {object[]} callback.keys - The list of keys.
+ * @param {function} [callback] The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {object[]} callback.keys The list of keys.
  *
  * @example
  * table.sampleRowKeys(function(err, keys) {
@@ -994,17 +1017,19 @@ Table.prototype.row = function(key) {
 Table.prototype.sampleRowKeys = function(callback) {
   this.sampleRowKeysStream()
     .on('error', callback)
-    .pipe(concat(function(keys) {
-      callback(null, keys);
-    }));
+    .pipe(
+      concat(function(keys) {
+        callback(null, keys);
+      })
+    );
 };
 
 /**
  * Returns a sample of row keys in the table as a readable object stream.
  *
- * See {module:bigtable/table#sampleRowKeys} for more details.
+ * See {@link Table#sampleRowKeys} for more details.
  *
- * @return {stream}
+ * @returns {stream}
  *
  * @example
  * table.sampleRowKeysStream()
@@ -1025,12 +1050,12 @@ Table.prototype.sampleRowKeys = function(callback) {
 Table.prototype.sampleRowKeysStream = function() {
   var grpcOpts = {
     service: 'Bigtable',
-    method: 'sampleRowKeys'
+    method: 'sampleRowKeys',
   };
 
   var reqOpts = {
     tableName: this.id,
-    objectMode: true
+    objectMode: true,
   };
 
   return pumpify.obj([
@@ -1038,9 +1063,9 @@ Table.prototype.sampleRowKeysStream = function() {
     through.obj(function(key, enc, next) {
       next(null, {
         key: key.rowKey,
-        offset: key.offsetBytes
+        offset: key.offsetBytes,
       });
-    })
+    }),
   ]);
 };
 
@@ -1050,7 +1075,7 @@ Table.prototype.sampleRowKeysStream = function() {
  * that a callback is omitted.
  */
 common.util.promisifyAll(Table, {
-  exclude: ['family', 'row']
+  exclude: ['family', 'row'],
 });
 
 module.exports = Table;

@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*!
- * @module bigtable/filter
- */
-
 'use strict';
 
 var arrify = require('arrify');
@@ -25,10 +21,6 @@ var createErrorClass = require('create-error-class');
 var extend = require('extend');
 var is = require('is');
 
-/**
- * @private
- * @type {module:bigtable/mutation}
- */
 var Mutation = require('./mutation.js');
 
 /**
@@ -49,11 +41,11 @@ var FilterError = createErrorClass('FilterError', function(filter) {
  *
  * There are two broad categories of filters (true filters and transformers),
  * as well as two ways to compose simple filters into more complex ones
- * ({module:bigtable/filter#interleave}). They work as follows:
+ * ({@link Filter#interleave}). They work as follows:
  *
  * True filters alter the input row by excluding some of its cells wholesale
  * from the output row. An example of a true filter is the
- * {module:bigtable/filter#value} filter, which excludes cells whose values
+ * {@link Filter#value} filter, which excludes cells whose values
  * don't match the specified pattern. All regex true filters use RE2 syntax
  * (https://github.com/google/re2/wiki/Syntax) and are evaluated as full
  * matches. An important point to keep in mind is that RE2(.) is equivalent by
@@ -64,7 +56,7 @@ var FilterError = createErrorClass('FilterError', function(filter) {
  *
  * Transformers alter the input row by changing the values of some of its
  * cells in the output, without excluding them completely. Currently, the only
- * supported transformer is the {module:bigtable/filter#value} `strip` filter,
+ * supported transformer is the {@link Filter#value} `strip` filter,
  * which replaces every cell's value with the empty string.
  *
  * The total serialized size of a filter message must not
@@ -80,8 +72,8 @@ var FilterError = createErrorClass('FilterError', function(filter) {
  * | tjefferson  | 1                   | 1              |                    |
  * | jadams      | 1                   |                | 1                  |
  *
- * @constructor
- * @alias module:bigtable/filter
+ * @private
+ * @class
  */
 function Filter() {
   this.filters_ = [];
@@ -97,7 +89,7 @@ function Filter() {
  * @param {regex|string|string[]} regex - Either a plain regex, a regex in
  *     string form or an array of strings.
  *
- * @return {string}
+ * @returns {string}
  *
  * @example
  * var regexString = Filter.convertToRegExpString(['a', 'b', 'c']);
@@ -120,21 +112,23 @@ Filter.convertToRegExpString = function(regex) {
     return regex.toString();
   }
 
-  throw new TypeError('Can\'t convert to RegExp String from unknown type.');
+  throw new TypeError("Can't convert to RegExp String from unknown type.");
 };
 
 /**
- * @private
- *
  * Creates a range object. All bounds default to inclusive.
  *
+ * @private
  * @param {?object|string} start - Lower bound value.
  * @param {?object|string} end - Upper bound value.
  * @param {string} key - Key used to create range value keys.
  *
- * @return {object}
+ * @returns {object}
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const Filter = Bigtable.Filter;
+ *
  * var range = Filter.createRange('value1', 'value2', 'Test');
  * // {
  * //   startTestInclusive: new Buffer('value1'),
@@ -186,7 +180,7 @@ Filter.createRange = function(start, end, key) {
  *
  * @param {object[]} filters - The list of filters to be parsed.
  *
- * @return {object}
+ * @returns {object}
  *
  * @example
  * var filter = Filter.parse([
@@ -313,7 +307,7 @@ Filter.prototype.all = function(pass) {
  * // columns updated at the two most recent timestamps.
  * //
  * // If duplicate cells are present, as is possible when using an
- * // {module:bigtable/filter#interleave} filter, each copy of the cell is
+ * // {@link Filter#interleave} filter, each copy of the cell is
  * // counted separately.
  * //-
  * var filter = [
@@ -369,7 +363,7 @@ Filter.prototype.all = function(pass) {
 Filter.prototype.column = function(column) {
   if (!is.object(column)) {
     column = {
-      name: column
+      name: column,
     };
   }
 
@@ -446,7 +440,7 @@ Filter.prototype.condition = function(condition) {
   this.set('condition', {
     predicateFilter: Filter.parse(condition.test),
     trueFilter: Filter.parse(condition.pass),
-    falseFilter: Filter.parse(condition.fail)
+    falseFilter: Filter.parse(condition.fail),
   });
 };
 
@@ -510,7 +504,7 @@ Filter.prototype.family = function(family) {
  */
 Filter.prototype.interleave = function(filters) {
   this.set('interleave', {
-    filters: filters.map(Filter.parse)
+    filters: filters.map(Filter.parse),
   });
 };
 
@@ -525,7 +519,7 @@ Filter.prototype.interleave = function(filters) {
  * Due to a technical limitation, it is not currently possible to apply
  * multiple labels to a cell. As a result, a chain filter may have no more than
  * one sub-filter which contains a apply label transformer. It is okay for
- * an {module:bigtable/filter#interleave} to contain multiple apply label
+ * an {@link Filter#interleave} to contain multiple apply label
  * transformers, as they will be applied to separate copies of the input. This
  * may be relaxed in the future.
  *
@@ -614,7 +608,7 @@ Filter.prototype.label = function(label) {
  * //
  * // Skips the first N cells of each row, matching all subsequent cells.
  * // If duplicate cells are present, as is possible when using an
- * // {module:bigtable/filter#interleave}, each copy of the cell is counted
+ * // {@link Filter#interleave}, each copy of the cell is counted
  * // separately.
  * //-
  * var filter = [
@@ -630,7 +624,7 @@ Filter.prototype.label = function(label) {
  * //
  * // Matches only the first N cells of each row.
  * // If duplicate cells are present, as is possible when using an
- * // {module:bigtable/filter#interleave}, each copy of the cell is counted
+ * // {@link Filter#interleave}, each copy of the cell is counted
  * // separately.
  * //-
  * var filter = [
@@ -644,7 +638,7 @@ Filter.prototype.label = function(label) {
 Filter.prototype.row = function(row) {
   if (!is.object(row)) {
     row = {
-      key: row
+      key: row,
     };
   }
 
@@ -691,10 +685,10 @@ Filter.prototype.set = function(key, value) {
  * Despite being excluded by the qualifier filter, a copy of every cell that
  * reaches the sink is present in the final result.
  *
- * As with an {module:bigtable/filter#interleave} filter, duplicate cells are
+ * As with an {@link Filter#interleave} filter, duplicate cells are
  * possible, and appear in an unspecified mutual order.
  *
- * Cannot be used within {module:bigtable/filter#condition} filter.
+ * Cannot be used within {@link Filter#condition} filter.
  *
  * @example
  * //-
@@ -729,11 +723,11 @@ Filter.prototype.set = function(key, value) {
  * ];
  *
  * //-
- * // As with an {module:bigtable/filter#interleave} filter, duplicate cells
+ * // As with an {@link Filter#interleave} filter, duplicate cells
  * // are possible, and appear in an unspecified mutual order. In this case we
  * // have a duplicates with multiple `gwashington` columns because one copy
- * // passed through the {module:bigtable/filter#all} filter while the other was
- * // passed through the {module:bigtable/filter#label} and sink. Note that one
+ * // passed through the {@link Filter#all} filter while the other was
+ * // passed through the {@link Filter#label} and sink. Note that one
  * // copy has label "prezzy" while the other does not.
  * //-
  */
@@ -760,9 +754,9 @@ Filter.prototype.time = function(time) {
 };
 
 /**
- * @private
  * If we detect multiple filters, we'll assume it's a chain filter and the
  * execution of the filters will be the order in which they were specified.
+ * @private
  */
 Filter.prototype.toProto = function() {
   if (!this.filters_.length) {
@@ -775,8 +769,8 @@ Filter.prototype.toProto = function() {
 
   return {
     chain: {
-      filters: this.filters_
-    }
+      filters: this.filters_,
+    },
   };
 };
 
@@ -867,7 +861,7 @@ Filter.prototype.toProto = function() {
 Filter.prototype.value = function(value) {
   if (!is.object(value)) {
     value = {
-      value: value
+      value: value,
     };
   }
 

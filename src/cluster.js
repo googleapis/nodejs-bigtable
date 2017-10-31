@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*!
- * @module bigtable/instance
- */
-
 'use strict';
 
 var common = require('@google-cloud/common');
@@ -29,14 +25,15 @@ var util = require('util');
 /**
  * Create a cluster object to interact with your cluster.
  *
- * @constructor
- * @alias module:bigtable/cluster
- *
- * @param {string} name - Name of the cluster.
+ * @class
+ * @param {Instance} instance The parent instance of this cluster.
+ * @param {string} name Name of the cluster.
  *
  * @example
- * var instance = bigtable.instance('my-instance');
- * var cluster = instance.cluster('my-cluster');
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const cluster = instance.cluster('my-cluster');
  */
 function Cluster(instance, name) {
   var id = name;
@@ -46,13 +43,18 @@ function Cluster(instance, name) {
   }
 
   var methods = {
-
     /**
      * Create a cluster.
      *
-     * @param {object} options - See {module:bigtable/instance#createCluster}
+     * @method Cluster#create
+     * @param {object} options See {@link Instance#createCluster}
      *
      * @example
+     * const Bigtable = require('@google-cloud/bigtable');
+     * const bigtable = new Bigtable();
+     * const instance = bigtable.instance('my-instance');
+     * const cluster = instance.cluster('my-cluster');
+     *
      * cluster.create(function(err, cluster, operation, apiResponse) {
      *   if (err) {
      *     // Error handling omitted.
@@ -69,9 +71,9 @@ function Cluster(instance, name) {
      * // If the callback is omitted, we'll return a Promise.
      * //-
      * cluster.create().then(function(data) {
-     *   var cluster = data[0];
-     *   var operation = data[1];
-     *   var apiResponse = data[2];
+     *   const cluster = data[0];
+     *   const operation = data[1];
+     *   const apiResponse = data[2];
      * });
      */
     create: true,
@@ -79,10 +81,11 @@ function Cluster(instance, name) {
     /**
      * Delete the cluster.
      *
-     * @param {function=} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Cluster#delete
+     * @param {function} [callback] The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {object} callback.apiResponse - The full API response.
+     * @param {object} callback.apiResponse The full API response.
      *
      * @example
      * cluster.delete(function(err, apiResponse) {});
@@ -97,20 +100,21 @@ function Cluster(instance, name) {
     delete: {
       protoOpts: {
         service: 'BigtableInstanceAdmin',
-        method: 'deleteCluster'
+        method: 'deleteCluster',
       },
       reqOpts: {
-        name: id
-      }
+        name: id,
+      },
     },
 
     /**
      * Check if a cluster exists.
      *
-     * @param {function} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Cluster#exists
+     * @param {function} callback The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {boolean} callback.exists - Whether the cluster exists or not.
+     * @param {boolean} callback.exists Whether the cluster exists or not.
      *
      * @example
      * cluster.exists(function(err, exists) {});
@@ -126,6 +130,8 @@ function Cluster(instance, name) {
 
     /**
      * Get a cluster if it exists.
+     *
+     * @method Cluster#get
      *
      * @example
      * cluster.get(function(err, cluster, apiResponse) {
@@ -145,11 +151,12 @@ function Cluster(instance, name) {
     /**
      * Get the cluster metadata.
      *
-     * @param {function} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Cluster#getMetadata
+     * @param {function} callback The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {object} callback.metadata - The metadata.
-     * @param {object} callback.apiResponse - The full API response.
+     * @param {object} callback.metadata The metadata.
+     * @param {object} callback.apiResponse The full API response.
      *
      * @example
      * cluster.getMetadata(function(err, metadata, apiResponse) {});
@@ -165,21 +172,25 @@ function Cluster(instance, name) {
     getMetadata: {
       protoOpts: {
         service: 'BigtableInstanceAdmin',
-        method: 'getCluster'
+        method: 'getCluster',
       },
       reqOpts: {
-        name: id
-      }
-    }
+        name: id,
+      },
+    },
   };
 
   var config = {
     parent: instance,
+    /**
+     * @name Cluster#id
+     * @type {string}
+     */
     id: id,
     methods: methods,
     createMethod: function(_, options, callback) {
       instance.createCluster(name, options, callback);
-    }
+    },
   };
 
   commonGrpc.ServiceObject.call(this, config);
@@ -192,9 +203,9 @@ util.inherits(Cluster, commonGrpc.ServiceObject);
  *
  * @private
  *
- * @param {string} project - The project.
- * @param {string} location - The zone location.
- * @return {string}
+ * @param {string} project The project.
+ * @param {string} location The zone location.
+ * @returns {string}
  *
  * @example
  * Cluster.getLocation_('my-project', 'us-central1-b');
@@ -207,7 +218,7 @@ Cluster.getLocation_ = function(project, location) {
 
   return format('projects/{project}/locations/{location}', {
     project: project,
-    location: location
+    location: location,
   });
 };
 
@@ -216,8 +227,8 @@ Cluster.getLocation_ = function(project, location) {
  *
  * @private
  *
- * @param {string} type - The storage type (hdd, ssd).
- * @return {number}
+ * @param {string} type The storage type (hdd, ssd).
+ * @returns {number}
  *
  * @example
  * Cluster.getStorageType_('ssd');
@@ -227,7 +238,7 @@ Cluster.getStorageType_ = function(type) {
   var storageTypes = {
     unspecified: 0,
     ssd: 1,
-    hdd: 2
+    hdd: 2,
   };
 
   if (is.string(type)) {
@@ -240,21 +251,26 @@ Cluster.getStorageType_ = function(type) {
 /**
  * Set the cluster metadata.
  *
- * See {module:bigtable/instance#createCluster} for a detailed explanation of
+ * See {@link Instance#createCluster} for a detailed explanation of
  * the arguments.
  *
- * @param {object} metadata - Metadata object.
- * @param {string} metadata.location - The cluster location.
- * @param {number} metadata.nodes - Number of nodes allocated to the cluster.
- * @param {string} metadata.storage - The cluster storage type.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {Operation} callback.operation - An operation object that can be used
+ * @param {object} metadata Metadata object.
+ * @param {string} metadata.location The cluster location.
+ * @param {number} metadata.nodes Number of nodes allocated to the cluster.
+ * @param {string} metadata.storage The cluster storage type.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Operation} callback.operation An operation object that can be used
  *     to check the status of the request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
- * var callback = function(err, operation, apiResponse) {
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const cluster = instance.cluster('my-cluster');
+ *
+ * const callback = function(err, operation, apiResponse) {
  *   if (err) {
  *     // Error handling omitted.
  *   }
@@ -266,7 +282,7 @@ Cluster.getStorageType_ = function(type) {
  *     });
  * };
  *
- * var metadata = {
+ * const metadata = {
  *   location: 'us-central1-b',
  *   nodes: 3,
  *   storage: 'ssd'
@@ -278,18 +294,18 @@ Cluster.getStorageType_ = function(type) {
  * // If the callback is omitted, we'll return a Promise.
  * //-
  * cluster.setMetadata(metadata).then(function(data) {
- *   var operation = data[0];
- *   var apiResponse = data[1];
+ *   const operation = data[0];
+ *   const apiResponse = data[1];
  * });
  */
 Cluster.prototype.setMetadata = function(options, callback) {
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'updateCluster'
+    method: 'updateCluster',
   };
 
   var reqOpts = {
-    name: this.id
+    name: this.id,
   };
 
   var bigtable = this.parent.parent;
@@ -329,4 +345,9 @@ Cluster.prototype.setMetadata = function(options, callback) {
  */
 common.util.promisifyAll(Cluster);
 
+/**
+ * Reference to the {@link Cluster} class.
+ * @name module:@google-cloud/bigtable.Cluster
+ * @see Cluster
+ */
 module.exports = Cluster;

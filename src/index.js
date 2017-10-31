@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*!
- * @module bigtable
- */
-
 'use strict';
 
 var arrify = require('arrify');
@@ -28,33 +24,57 @@ var path = require('path');
 var is = require('is');
 var util = require('util');
 
-/**
- * @private
- * @type {module:bigtable/cluster}
- */
 var Cluster = require('./cluster.js');
-
-/**
- * @private
- * @type {module:bigtable/instance}
- */
 var Instance = require('./instance.js');
 
 /**
- * @alias module:bigtable
- * @constructor
- *
- * @resource [Creating a Cloud Bigtable Cluster]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
- * @resource [Cloud Bigtable Concepts Overview]{@link https://cloud.google.com/bigtable/docs/concepts}
- *
- * @param {object=} options - [Configuration object](#/docs).
- * @param {string=} options.apiEndpoint - Override the default API endpoint used
+ * @typedef {object} ClientConfig
+ * @property {string} [apiEndpoint] Override the default API endpoint used
  *     to reach Bigtable. This is useful for connecting to your local Bigtable
  *     emulator.
+ * @property {string} [projectId] The project ID from the Google Developer's
+ *     Console, e.g. 'grape-spaceship-123'. We will also check the environment
+ *     variable `GCLOUD_PROJECT` for your project ID. If your app is running in
+ *     an environment which supports {@link https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application Application Default Credentials},
+ *     your project ID will be detected automatically.
+ * @property {string} [keyFilename] Full path to the a .json, .pem, or .p12 key
+ *     downloaded from the Google Developers Console. If you provide a path to a
+ *     JSON file, the `projectId` option above is not necessary. NOTE: .pem and
+ *     .p12 require you to specify the `email` option as well.
+ * @property {string} [email] Account email address. Required when using a .pem
+ *     or .p12 keyFilename.
+ * @property {object} [credentials] Credentials object.
+ * @property {string} [credentials.client_email]
+ * @property {string} [credentials.private_key]
+ * @property {boolean} [autoRetry=true] Automatically retry requests if the
+ *     response is related to rate limits or certain intermittent server errors.
+ *     We will exponentially backoff subsequent requests by default.
+ * @property {number} [maxRetries=3] Maximum number of automatic retries
+ *     attempted before returning the error.
+ * @property {Constructor} [promise] Custom promise module to use instead of
+ *     native Promises.
+ */
+
+/**
+ * @see [Creating a Cloud Bigtable Cluster]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
+ * @see [Cloud Bigtable Concepts Overview]{@link https://cloud.google.com/bigtable/docs/concepts}
+ *
+ * @class
+ * @param {ClientConfig} [options] Configuration options.
+ *
+ * @example <caption>Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:</caption>
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ *
+ * @example <caption>Create a client with <a href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit credentials</a>:</caption>
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable({
+ *   projectId: 'your-project-id',
+ *   keyFilename: '/path/to/keyfile.json'
+ * });
  *
  * @example
- * //-
- * // <h3>The Bigtable Emulator</h3>
+ * //<h4> The Bigtable Emulator</h4>
  * //
  * // Make sure you have the <a href="https://cloud.google.com/sdk/downloads">
  * // gcloud SDK installed</a>, then run:
@@ -72,12 +92,15 @@ var Instance = require('./instance.js');
  * //-
  *
  * //-
- * // <h3>Creating a Bigtable Instance and Cluster</h3>
+ * // <h4>Creating a Bigtable Instance and Cluster</h4>
  * //
  * // Before you create your table, you first need to create a Bigtable Instance
  * // and cluster for the table to be served from.
  * //-
- * var callback = function(err, instance, operation) {
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ *
+ * const callback = function(err, instance, operation) {
  *   operation
  *     .on('error', console.log)
  *     .on('complete', function() {
@@ -85,7 +108,7 @@ var Instance = require('./instance.js');
  *     });
  * };
  *
- * var instance = bigtable.instance('my-instance');
+ * const instance = bigtable.instance('my-instance');
  *
  * instance.create({
  *   clusters: [
@@ -105,25 +128,25 @@ var Instance = require('./instance.js');
  * //-
  *
  * //-
- * // <h3>Creating Tables</h3>
+ * // <h4>Creating Tables</h4>
  * //
  * // After creating your instance and enabling the Bigtable APIs, you are now
- * // ready to create your table with {module:bigtable/instance#createTable}.
+ * // ready to create your table with {@link Instance#createTable}.
  * //-
  * instance.createTable('prezzy', function(err, table) {
  *   // `table` is your newly created Table object.
  * });
  *
  * //-
- * // <h3>Creating Column Families</h3>
+ * // <h4>Creating Column Families</h4>
  * //
  * // Column families are used to group together various pieces of data within
  * // your table. You can think of column families as a mechanism to categorize
  * // all of your data.
  * //
- * // We can create a column family with {module:bigtable/table#createFamily}.
+ * // We can create a column family with {@link Table#createFamily}.
  * //-
- * var table = instance.table('prezzy');
+ * const table = instance.table('prezzy');
  *
  * table.createFamily('follows', function(err, family) {
  *   // `family` is your newly created Family object.
@@ -133,17 +156,17 @@ var Instance = require('./instance.js');
  * // It is also possible to create your column families when creating a new
  * // table.
  * //-
- * var options = {
+ * const options = {
  *   families: ['follows']
  * };
  *
  * instance.createTable('prezzy', options, function(err, table) {});
  *
  * //-
- * // <h3>Creating Rows</h3>
+ * // <h4>Creating Rows</h4>
  * //
  * // New rows can be created within your table using
- * // {module:bigtable/table#insert}. You must provide a unique key for each row
+ * // {@link Table#insert}. You must provide a unique key for each row
  * // to be inserted, this key can then be used to retrieve your row at a later
  * // time.
  * //
@@ -152,7 +175,7 @@ var Instance = require('./instance.js');
  * // family and `tjefferson` is the column qualifier. Together they could be
  * // referred to as `follows:tjefferson`.
  * //-
- * var rows = [
+ * const rows = [
  *   {
  *     key: 'wmckinley',
  *     data: {
@@ -170,10 +193,10 @@ var Instance = require('./instance.js');
  * });
  *
  * //-
- * // <h3>Retrieving Rows</h3>
+ * // <h4>Retrieving Rows</h4>
  * //
  * // If you're anticipating a large number of rows to be returned, we suggest
- * // using the {module:bigtable/table#getRows} streaming API.
+ * // using the {@link Table#getRows} streaming API.
  * //-
  * table.createReadStream()
  *   .on('error', console.error)
@@ -185,7 +208,7 @@ var Instance = require('./instance.js');
  * // If you're not anticpating a large number of results, a callback mode
  * // is also available.
  * //-
- * var callback = function(err, rows) {
+ * const callback = function(err, rows) {
  *   // `rows` is an array of Row objects.
  * };
  *
@@ -194,7 +217,7 @@ var Instance = require('./instance.js');
  * //-
  * // A range of rows can be retrieved by providing `start` and `end` row keys.
  * //-
- * var options = {
+ * const options = {
  *   start: 'gwashington',
  *   end: 'wmckinley'
  * };
@@ -202,16 +225,16 @@ var Instance = require('./instance.js');
  * table.getRows(options, callback);
  *
  * //-
- * // Retrieve an individual row with {module:bigtable/row#get}.
+ * // Retrieve an individual row with {@link Row#get}.
  * //-
- * var row = table.row('alincoln');
+ * const row = table.row('alincoln');
  *
  * row.get(function(err) {
  *   // `row.data` is now populated.
  * });
  *
  * //-
- * // <h3>Accessing Row Data</h3>
+ * // <h4>Accessing Row Data</h4>
  * //
  * // When retrieving rows, upon success the `row.data` property will be
  * // populated by an object. That object will contain additional objects
@@ -238,9 +261,9 @@ var Instance = require('./instance.js');
  * //-
  * // The `timestamp` field can be used to order cells from newest to oldest.
  * // If you only wish to retrieve the most recent version of the data, you
- * // can specify the number of cells with a {module:bigtable/filter} object.
+ * // can specify the number of cells with a {@link Filter} object.
  * //-
- * var filter = [
+ * const filter = [
  *   {
  *     column: {
  *       cellLimit: 1
@@ -253,12 +276,12 @@ var Instance = require('./instance.js');
  * }, callback);
  *
  * //-
- * // <h3>Deleting Row Data</h3>
+ * // <h4>Deleting Row Data</h4>
  * //
  * // We can delete all of an individual row's cells using
- * // {module:bigtable/row#delete}.
+ * // {@link Row#delete}.
  * //-
- * var callback = function(err) {
+ * const callback = function(err) {
  *   if (!err) {
  *     // All cells for this row were deleted successfully.
  *   }
@@ -270,7 +293,7 @@ var Instance = require('./instance.js');
  * // To delete a specific set of cells, we can provide an array of
  * // column families and qualifiers.
  * //-
- * var cells = [
+ * const cells = [
  *   'follows:gwashington',
  *   'traits'
  * ];
@@ -278,13 +301,13 @@ var Instance = require('./instance.js');
  * row.delete(cells, callback);
  *
  * //-
- * // <h3>Deleting Rows</h3>
+ * // <h4>Deleting Rows</h4>
  * //
  * // If you wish to delete multiple rows entirely, we can do so with
- * // {module:bigtable/table#deleteRows}. You can provide this method with a
+ * // {@link Table#deleteRows}. You can provide this method with a
  * // row key prefix.
  * //-
- * var options = {
+ * const options = {
  *   prefix: 'gwash'
  * };
  *
@@ -309,11 +332,13 @@ function Bigtable(options) {
     return new Bigtable(options);
   }
 
+  options = options || {};
+
   var baseUrl = 'bigtable.googleapis.com';
   var adminBaseUrl = 'bigtableadmin.googleapis.com';
 
-  var customEndpoint = options.apiEndpoint ||
-    process.env.BIGTABLE_EMULATOR_HOST;
+  var customEndpoint =
+    options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
 
   if (customEndpoint) {
     baseUrl = customEndpoint;
@@ -328,30 +353,30 @@ function Bigtable(options) {
       Bigtable: {
         baseUrl: baseUrl,
         path: 'google/bigtable/v2/bigtable.proto',
-        service: 'bigtable.v2'
+        service: 'bigtable.v2',
       },
       BigtableTableAdmin: {
         baseUrl: adminBaseUrl,
         path: 'google/bigtable/admin/v2/bigtable_table_admin.proto',
-        service: 'bigtable.admin.v2'
+        service: 'bigtable.admin.v2',
       },
       BigtableInstanceAdmin: {
         baseUrl: adminBaseUrl,
         path: 'google/bigtable/admin/v2/bigtable_instance_admin.proto',
-        service: 'bigtable.admin.v2'
+        service: 'bigtable.admin.v2',
       },
       Operations: {
         baseUrl: adminBaseUrl,
         path: 'google/longrunning/operations.proto',
-        service: 'longrunning'
-      }
+        service: 'longrunning',
+      },
     },
     scopes: [
       'https://www.googleapis.com/auth/bigtable.admin',
       'https://www.googleapis.com/auth/bigtable.data',
-      'https://www.googleapis.com/auth/cloud-platform'
+      'https://www.googleapis.com/auth/cloud-platform',
     ],
-    packageJson: require('../package.json')
+    packageJson: require('../package.json'),
   };
 
   commonGrpc.Service.call(this, config, options);
@@ -364,24 +389,27 @@ util.inherits(Bigtable, commonGrpc.Service);
 /**
  * Create a Compute instance.
  *
- * @resource [Creating a Compute Instance]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
+ * @see [Creating a Compute Instance]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
  *
- * @param {string} name - The unique name of the instance.
- * @param {object=} options - Instance creation options.
- * @param {object[]} options.clusters - The clusters to be created within the
+ * @param {string} name The unique name of the instance.
+ * @param {object} [options] Instance creation options.
+ * @param {object[]} [options.clusters] The clusters to be created within the
  *     instance.
- * @param {string} options.displayName - The descriptive name for this instance
+ * @param {string} [options.displayName] The descriptive name for this instance
  *     as it appears in UIs.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this request.
- * @param {module:bigtable/instance} callback.instance - The newly created
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Instance} callback.instance The newly created
  *     instance.
- * @param {Operation} callback.operation - An operation object that can be used
+ * @param {Operation} callback.operation An operation object that can be used
  *     to check the status of the request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
- * var callback = function(err, instance, operation, apiResponse) {
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ *
+ * const callback = function(err, instance, operation, apiResponse) {
  *   if (err) {
  *     // Error handling omitted.
  *   }
@@ -393,7 +421,7 @@ util.inherits(Bigtable, commonGrpc.Service);
  *     });
  * };
  *
- * var options = {
+ * const options = {
  *   displayName: 'my-sweet-instance',
  *   clusters: [
  *     {
@@ -411,9 +439,9 @@ util.inherits(Bigtable, commonGrpc.Service);
  * // If the callback is omitted, we'll return a Promise.
  * //-
  * bigtable.createInstance('my-instance', options).then(function(data) {
- *   var instance = data[0];
- *   var operation = data[1];
- *   var apiResponse = data[2];
+ *   const instance = data[0];
+ *   const operation = data[1];
+ *   const apiResponse = data[2];
  * });
  */
 Bigtable.prototype.createInstance = function(name, options, callback) {
@@ -426,27 +454,30 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
 
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'createInstance'
+    method: 'createInstance',
   };
 
   var reqOpts = {
     parent: this.projectName,
     instanceId: name,
     instance: {
-      displayName: options.displayName || name
-    }
+      displayName: options.displayName || name,
+    },
   };
 
-  reqOpts.clusters = arrify(options.clusters)
-    .reduce(function(clusters, cluster) {
-      clusters[cluster.name] = {
-        location: Cluster.getLocation_(self.projectId, cluster.location),
-        serveNodes: cluster.nodes,
-        defaultStorageType: Cluster.getStorageType_(cluster.storage)
-      };
+  reqOpts.clusters = arrify(options.clusters).reduce(function(
+    clusters,
+    cluster
+  ) {
+    clusters[cluster.name] = {
+      location: Cluster.getLocation_(self.projectId, cluster.location),
+      serveNodes: cluster.nodes,
+      defaultStorageType: Cluster.getStorageType_(cluster.storage),
+    };
 
-      return clusters;
-    }, {});
+    return clusters;
+  },
+  {});
 
   this.request(protoOpts, reqOpts, function(err, resp) {
     if (err) {
@@ -465,20 +496,23 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
 /**
  * Get Instance objects for all of your Compute instances.
  *
- * @param {object} query - Query object.
- * @param {boolean} query.autoPaginate - Have pagination handled
+ * @param {object} query Query object.
+ * @param {boolean} query.autoPaginate Have pagination handled
  *     automatically. Default: true.
- * @param {number} query.maxApiCalls - Maximum number of API calls to make.
- * @param {number} query.maxResults - Maximum number of results to return.
- * @param {string} query.pageToken - Token returned from a previous call, to
+ * @param {number} query.maxApiCalls Maximum number of API calls to make.
+ * @param {number} query.maxResults Maximum number of results to return.
+ * @param {string} query.pageToken Token returned from a previous call, to
  *     request the next page of results.
- * @param {function} callback - The callback function.
- * @param {?error} callback.error - An error returned while making this request.
- * @param {module:bigtable/instance[]} callback.instances - List of all
+ * @param {function} callback The callback function.
+ * @param {?error} callback.error An error returned while making this request.
+ * @param {Instance[]} callback.instances List of all
  *     instances.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ *
  * bigtable.getInstances(function(err, instances) {
  *   if (!err) {
  *     // `instances` is an array of Instance objects.
@@ -489,7 +523,7 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
  * // To control how many API requests are made and page through the results
  * // manually, set `autoPaginate` to false.
  * //-
- * var callback = function(err, instances, nextQuery, apiResponse) {
+ * const callback = function(err, instances, nextQuery, apiResponse) {
  *   if (nextQuery) {
  *     // More results exist.
  *     bigtable.getInstances(nextQuery, calback);
@@ -504,7 +538,7 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
  * // If the callback is omitted, we'll return a Promise.
  * //-
  * bigtable.getInstances().then(function(data) {
- *   var instances = data[0];
+ *   const instances = data[0];
  * });
  */
 Bigtable.prototype.getInstances = function(query, callback) {
@@ -517,11 +551,11 @@ Bigtable.prototype.getInstances = function(query, callback) {
 
   var protoOpts = {
     service: 'BigtableInstanceAdmin',
-    method: 'listInstances'
+    method: 'listInstances',
   };
 
   var reqOpts = extend({}, query, {
-    parent: this.projectName
+    parent: this.projectName,
   });
 
   this.request(protoOpts, reqOpts, function(err, resp) {
@@ -538,7 +572,7 @@ Bigtable.prototype.getInstances = function(query, callback) {
 
     var nextQuery = null;
     if (resp.nextPageToken) {
-      nextQuery = extend({}, query, { pageToken: resp.nextPageToken });
+      nextQuery = extend({}, query, {pageToken: resp.nextPageToken});
     }
 
     callback(null, instances, nextQuery, resp);
@@ -546,14 +580,17 @@ Bigtable.prototype.getInstances = function(query, callback) {
 };
 
 /**
- * Get {module:bigtable/instance} objects for all of your Compute instances as a
+ * Get {@link Iinstance} objects for all of your Compute instances as a
  * readable object stream.
  *
- * @param {object=} query - Configuration object. See
- *     {module:bigtable#getInstances} for a complete list of options.
- * @return {stream}
+ * @param {object} [query] Configuration object. See
+ *     {@link Bigtable#getInstances} for a complete list of options.
+ * @returns {stream}
  *
  * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ *
  * bigtable.getInstancesStream()
  *   .on('error', console.error)
  *   .on('data', function(instance) {
@@ -572,14 +609,15 @@ Bigtable.prototype.getInstances = function(query, callback) {
  *     this.end();
  *   });
  */
-Bigtable.prototype.getInstancesStream =
-  common.paginator.streamify('getInstances');
+Bigtable.prototype.getInstancesStream = common.paginator.streamify(
+  'getInstances'
+);
 
 /**
  * Get a reference to a Compute instance.
  *
- * @param {string} name - The name of the instance.
- * @return {module:bigtable/instance}
+ * @param {string} name The name of the instance.
+ * @returns {Instance}
  */
 Bigtable.prototype.instance = function(name) {
   return new Instance(this, name);
@@ -588,8 +626,8 @@ Bigtable.prototype.instance = function(name) {
 /**
  * Get a reference to an Operation.
  *
- * @param {string} name - The name of the instance.
- * @return {Operation}
+ * @param {string} name The name of the instance.
+ * @returns {Operation}
  */
 Bigtable.prototype.operation = function(name) {
   return new commonGrpc.Operation(this, name);
@@ -607,7 +645,54 @@ common.paginator.extend(Bigtable, ['getInstances']);
  * that a callback is omitted.
  */
 common.util.promisifyAll(Bigtable, {
-  exclude: ['instance', 'operation']
+  exclude: ['instance', 'operation'],
 });
 
+/**
+ * {@link Cluster} class.
+ *
+ * @name Bigtable.Cluster
+ * @see Cluster
+ * @type {Constructor}
+ */
+Bigtable.Cluster = Cluster;
+
+/**
+ * {@link Instance} class.
+ *
+ * @name Bigtable.Instance
+ * @see Instance
+ * @type {Constructor}
+ */
+Bigtable.Instance = Instance;
+
+/**
+ * The default export of the `@google-cloud/bigtable` package is the
+ * {@link Bigtable} class.
+ *
+ * See {@link Bigtable} and {@link ClientConfig} for client methods and
+ * configuration options.
+ *
+ * @module {constructor} @google-cloud/bigtable
+ * @alias nodejs-bigtable
+ *
+ * @example <caption>Install the client library with <a href="https://www.npmjs.com/">npm</a>:</caption>
+ * npm install --save @google-cloud/bigtable
+ *
+ * @example <caption>Import the client library</caption>
+ * const Bigtable = require('@google-cloud/bigtable');
+ *
+ * @example <caption>Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:</caption>
+ * const bigtable = new Bigtable();
+ *
+ * @example <caption>Create a client with <a href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit credentials</a>:</caption>
+ * const bigtable = new Bigtable({
+ *   projectId: 'your-project-id',
+ *   keyFilename: '/path/to/keyfile.json'
+ * });
+ *
+ * @example <caption>include:samples/quickstart.js</caption>
+ * region_tag:bigtable_quickstart
+ * Full quickstart example:
+ */
 module.exports = Bigtable;

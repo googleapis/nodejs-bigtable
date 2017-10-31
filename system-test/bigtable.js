@@ -20,7 +20,6 @@ var assert = require('assert');
 var async = require('async');
 var uuid = require('uuid');
 
-var env = require('../../../system-test/env.js');
 var Bigtable = require('../');
 var Instance = require('../src/instance.js');
 var Cluster = require('../src/cluster.js');
@@ -31,35 +30,39 @@ var Row = require('../src/row.js');
 var PREFIX = 'gcloud-tests-';
 
 describe('Bigtable', function() {
-  var bigtable = new Bigtable(env);
+  var bigtable = new Bigtable();
 
   var INSTANCE = bigtable.instance(generateName('instance'));
   var TABLE = INSTANCE.table(generateName('table'));
   var CLUSTER_NAME = generateName('cluster');
 
   before(function(done) {
-    INSTANCE.create({
-      clusters: [
-        {
-          name: CLUSTER_NAME,
-          location: 'us-central1-c',
-          nodes: 3
+    INSTANCE.create(
+      {
+        clusters: [
+          {
+            name: CLUSTER_NAME,
+            location: 'us-central1-c',
+            nodes: 3,
+          },
+        ],
+      },
+      function(err, instance, operation) {
+        if (err) {
+          done(err);
+          return;
         }
-      ]
-    }, function(err, instance, operation) {
-      if (err) {
-        done(err);
-        return;
-      }
 
-      operation
-        .on('error', done)
-        .on('complete', function() {
-          TABLE.create({
-            families: ['follows', 'traits']
-          }, done);
+        operation.on('error', done).on('complete', function() {
+          TABLE.create(
+            {
+              families: ['follows', 'traits'],
+            },
+            done
+          );
         });
-    });
+      }
+    );
   });
 
   after(function(done) {
@@ -73,9 +76,14 @@ describe('Bigtable', function() {
         return instance.id.match(PREFIX);
       });
 
-      async.eachLimit(testInstances, 5, function(instance, next) {
-        instance.delete(next);
-      }, done);
+      async.eachLimit(
+        testInstances,
+        5,
+        function(instance, next) {
+          instance.delete(next);
+        },
+        done
+      );
     });
   });
 
@@ -91,7 +99,8 @@ describe('Bigtable', function() {
     it('should get a list of instances in stream mode', function(done) {
       var instances = [];
 
-      bigtable.getInstancesStream()
+      bigtable
+        .getInstancesStream()
         .on('error', done)
         .on('data', function(instance) {
           assert(instance instanceof Instance);
@@ -127,7 +136,7 @@ describe('Bigtable', function() {
 
     it('should update an instance', function(done) {
       var metadata = {
-        displayName: 'metadata-test'
+        displayName: 'metadata-test',
       };
 
       INSTANCE.setMetadata(metadata, function(err) {
@@ -196,28 +205,24 @@ describe('Bigtable', function() {
 
     it('should update a cluster', function(done) {
       var metadata = {
-        nodes: 4
+        nodes: 4,
       };
 
       CLUSTER.setMetadata(metadata, function(err, operation) {
         assert.ifError(err);
 
-        operation
-          .on('error', done)
-          .on('complete', function() {
-            CLUSTER.getMetadata(function(err, _metadata) {
-              assert.ifError(err);
-              assert.strictEqual(metadata.nodes, _metadata.serveNodes);
-              done();
-            });
+        operation.on('error', done).on('complete', function() {
+          CLUSTER.getMetadata(function(err, _metadata) {
+            assert.ifError(err);
+            assert.strictEqual(metadata.nodes, _metadata.serveNodes);
+            done();
           });
+        });
       });
     });
-
   });
 
   describe('tables', function() {
-
     it('should retrieve a list of tables', function(done) {
       INSTANCE.getTables(function(err, tables) {
         assert.ifError(err);
@@ -266,10 +271,7 @@ describe('Bigtable', function() {
     it('should delete a table', function(done) {
       var table = INSTANCE.table(generateName('table'));
 
-      async.series([
-        table.create.bind(table),
-        table.delete.bind(table)
-      ], done);
+      async.series([table.create.bind(table), table.delete.bind(table)], done);
     });
 
     it('should get the tables metadata', function(done) {
@@ -285,7 +287,7 @@ describe('Bigtable', function() {
     it('should create a table with column family data', function(done) {
       var name = generateName('table');
       var options = {
-        families: ['test']
+        families: ['test'],
       };
 
       INSTANCE.createTable(name, options, function(err, table) {
@@ -294,7 +296,6 @@ describe('Bigtable', function() {
         done();
       });
     });
-
   });
 
   describe('column families', function() {
@@ -357,12 +358,12 @@ describe('Bigtable', function() {
       var rule = {
         age: {
           seconds: 10000,
-          nanos: 10000
+          nanos: 10000,
         },
-        union: true
+        union: true,
       };
 
-      FAMILY.setMetadata({ rule: rule }, function(err, metadata) {
+      FAMILY.setMetadata({rule: rule}, function(err, metadata) {
         assert.ifError(err);
         var maxAge = metadata.gcRule.maxAge;
 
@@ -375,38 +376,39 @@ describe('Bigtable', function() {
     it('should delete a column family', function(done) {
       FAMILY.delete(done);
     });
-
   });
 
   describe('rows', function() {
-
     describe('inserting data', function() {
-
       it('should insert rows', function(done) {
-        var rows = [{
-          key: 'gwashington',
-          data: {
-            follows: {
-              jadams: 1
-            }
-          }
-        }, {
-          key: 'tjefferson',
-          data: {
-            follows: {
-              gwashington: 1,
-              jadams: 1
-            }
-          }
-        }, {
-          key: 'jadams',
-          data: {
-            follows: {
-              gwashington: 1,
-              tjefferson: 1
-            }
-          }
-        }];
+        var rows = [
+          {
+            key: 'gwashington',
+            data: {
+              follows: {
+                jadams: 1,
+              },
+            },
+          },
+          {
+            key: 'tjefferson',
+            data: {
+              follows: {
+                gwashington: 1,
+                jadams: 1,
+              },
+            },
+          },
+          {
+            key: 'jadams',
+            data: {
+              follows: {
+                gwashington: 1,
+                tjefferson: 1,
+              },
+            },
+          },
+        ];
 
         TABLE.insert(rows, done);
       });
@@ -417,8 +419,8 @@ describe('Bigtable', function() {
           follows: {
             gwashington: 1,
             jadams: 1,
-            tjefferson: 1
-          }
+            tjefferson: 1,
+          },
         };
 
         row.create(rowData, done);
@@ -429,8 +431,8 @@ describe('Bigtable', function() {
 
         var rowData = {
           follows: {
-            jadams: 1
-          }
+            jadams: 1,
+          },
         };
 
         row.save(rowData, done);
@@ -443,9 +445,9 @@ describe('Bigtable', function() {
           follows: {
             jadams: {
               value: 1,
-              timestamp: new Date('March 22, 1986')
-            }
-          }
+              timestamp: new Date('March 22, 1986'),
+            },
+          },
         };
 
         row.save(rowData, done);
@@ -466,7 +468,7 @@ describe('Bigtable', function() {
         var row = TABLE.row('gwashington');
         var rule = {
           column: 'traits:teeth',
-          append: '-wood'
+          append: '-wood',
         };
 
         row.save('traits:teeth', 'shiny', function(err) {
@@ -488,13 +490,15 @@ describe('Bigtable', function() {
         var row = TABLE.row('gwashington');
         var filter = {
           family: 'follows',
-          value: 'alincoln'
+          value: 'alincoln',
         };
 
-        var mutations = [{
-          method: 'delete',
-          data: ['follows:alincoln']
-        }];
+        var mutations = [
+          {
+            method: 'delete',
+            data: ['follows:alincoln'],
+          },
+        ];
 
         row.filter(filter, mutations, function(err, matched) {
           assert.ifError(err);
@@ -502,11 +506,9 @@ describe('Bigtable', function() {
           done();
         });
       });
-
     });
 
     describe('fetching data', function() {
-
       it('should get rows', function(done) {
         TABLE.getRows(function(err, rows) {
           assert.ifError(err);
@@ -543,7 +545,7 @@ describe('Bigtable', function() {
 
       it('should limit the number of rows', function(done) {
         var options = {
-          limit: 1
+          limit: 1,
         };
 
         TABLE.getRows(options, function(err, rows) {
@@ -556,7 +558,7 @@ describe('Bigtable', function() {
       it('should fetch a range of rows', function(done) {
         var options = {
           start: 'alincoln',
-          end: 'jadams'
+          end: 'jadams',
         };
 
         TABLE.getRows(options, function(err, rows) {
@@ -568,7 +570,7 @@ describe('Bigtable', function() {
 
       it('should fetch a range of rows via prefix', function(done) {
         var options = {
-          prefix: 'g'
+          prefix: 'g',
         };
 
         TABLE.getRows(options, function(err, rows) {
@@ -592,7 +594,7 @@ describe('Bigtable', function() {
       it('should not decode the values', function(done) {
         var row = TABLE.row('gwashington');
         var options = {
-          decode: false
+          decode: false,
         };
 
         row.get(options, function(err) {
@@ -631,25 +633,22 @@ describe('Bigtable', function() {
       });
 
       describe('filters', function() {
-
         it('should get rows via column data', function(done) {
           var filter = {
-            column: 'gwashington'
+            column: 'gwashington',
           };
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
             assert.strictEqual(rows.length, 3);
 
-            var keys = rows.map(function(row) {
-              return row.id;
-            }).sort();
+            var keys = rows
+              .map(function(row) {
+                return row.id;
+              })
+              .sort();
 
-            assert.deepEqual(keys, [
-              'alincoln',
-              'jadams',
-              'tjefferson'
-            ]);
+            assert.deepEqual(keys, ['alincoln', 'jadams', 'tjefferson']);
 
             done();
           });
@@ -660,24 +659,27 @@ describe('Bigtable', function() {
             key: 'alincoln',
             data: {
               follows: {
-                tjefferson: 1
-              }
-            }
+                tjefferson: 1,
+              },
+            },
           };
 
-          var filter = [{
-            row: 'alincoln'
-          }, {
-            column: {
-              name: 'tjefferson',
-              cellLimit: 1
-            }
-          }];
+          var filter = [
+            {
+              row: 'alincoln',
+            },
+            {
+              column: {
+                name: 'tjefferson',
+                cellLimit: 1,
+              },
+            },
+          ];
 
           TABLE.insert(entry, function(err) {
             assert.ifError(err);
 
-            TABLE.getRows({ filter: filter }, function(err, rows) {
+            TABLE.getRows({filter: filter}, function(err, rows) {
               assert.ifError(err);
               var rowData = rows[0].data;
               assert(rowData.follows.tjefferson.length, 1);
@@ -687,26 +689,26 @@ describe('Bigtable', function() {
         });
 
         it('should get a range of columns', function(done) {
-          var filter = [{
-            row: 'tjefferson'
-          }, {
-            column: {
-              family: 'follows',
-              start: 'gwashington',
-              end: 'jadams'
-            }
-          }];
+          var filter = [
+            {
+              row: 'tjefferson',
+            },
+            {
+              column: {
+                family: 'follows',
+                start: 'gwashington',
+                end: 'jadams',
+              },
+            },
+          ];
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
 
             rows.forEach(function(row) {
               var keys = Object.keys(row.data.follows).sort();
 
-              assert.deepEqual(keys, [
-                'gwashington',
-                'jadams'
-              ]);
+              assert.deepEqual(keys, ['gwashington', 'jadams']);
             });
 
             done();
@@ -716,23 +718,27 @@ describe('Bigtable', function() {
         it('should run a conditional filter', function(done) {
           var filter = {
             condition: {
-              test: [{
-                row: 'gwashington'
-              }, {
-                family: 'follows'
-              }, {
-                column: 'tjefferson'
-              }],
+              test: [
+                {
+                  row: 'gwashington',
+                },
+                {
+                  family: 'follows',
+                },
+                {
+                  column: 'tjefferson',
+                },
+              ],
               pass: {
-                row: 'gwashington'
+                row: 'gwashington',
               },
               fail: {
-                row: 'tjefferson'
-              }
-            }
+                row: 'tjefferson',
+              },
+            },
           };
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
             assert.strictEqual(rows.length, 1);
             assert.strictEqual(rows[0].id, 'tjefferson');
@@ -743,16 +749,20 @@ describe('Bigtable', function() {
         it('should run a conditional filter with pass only', function(done) {
           var filter = {
             condition: {
-              test: [{
-                row: 'gwashington'
-              }],
-              pass: [{
-                all: true
-              }]
-            }
+              test: [
+                {
+                  row: 'gwashington',
+                },
+              ],
+              pass: [
+                {
+                  all: true,
+                },
+              ],
+            },
           };
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
             assert(rows.length > 0);
             done();
@@ -760,23 +770,25 @@ describe('Bigtable', function() {
         });
 
         it('should only get cells for a specific family', function(done) {
-          var entries = [{
-            key: 'gwashington',
-            data: {
-              traits: {
-                teeth: 'wood'
-              }
-            }
-          }];
+          var entries = [
+            {
+              key: 'gwashington',
+              data: {
+                traits: {
+                  teeth: 'wood',
+                },
+              },
+            },
+          ];
 
           var filter = {
-            family: 'traits'
+            family: 'traits',
           };
 
           TABLE.insert(entries, function(err) {
             assert.ifError(err);
 
-            TABLE.getRows({ filter: filter }, function(err, rows) {
+            TABLE.getRows({filter: filter}, function(err, rows) {
               assert.ifError(err);
               assert(rows.length > 0);
 
@@ -788,28 +800,34 @@ describe('Bigtable', function() {
         });
 
         it('should interleave filters', function(done) {
-          var filter = [{
-            interleave: [
-              [{
-                row: 'gwashington'
-              }], [{
-                row: 'tjefferson'
-              }]
-            ]
-          }];
+          var filter = [
+            {
+              interleave: [
+                [
+                  {
+                    row: 'gwashington',
+                  },
+                ],
+                [
+                  {
+                    row: 'tjefferson',
+                  },
+                ],
+              ],
+            },
+          ];
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
             assert.strictEqual(rows.length, 2);
 
-            var ids = rows.map(function(row) {
-              return row.id;
-            }).sort();
+            var ids = rows
+              .map(function(row) {
+                return row.id;
+              })
+              .sort();
 
-            assert.deepEqual(ids, [
-              'gwashington',
-              'tjefferson'
-            ]);
+            assert.deepEqual(ids, ['gwashington', 'tjefferson']);
 
             done();
           });
@@ -817,10 +835,10 @@ describe('Bigtable', function() {
 
         it('should apply labels to the results', function(done) {
           var filter = {
-            label: 'test-label'
+            label: 'test-label',
           };
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
 
             rows.forEach(function(row) {
@@ -839,54 +857,60 @@ describe('Bigtable', function() {
 
         it('should run a regex against the row id', function(done) {
           var filter = {
-            row: /[a-z]+on$/
+            row: /[a-z]+on$/,
           };
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
 
-            var keys = rows.map(function(row) {
-              return row.id;
-            }).sort();
+            var keys = rows
+              .map(function(row) {
+                return row.id;
+              })
+              .sort();
 
-            assert.deepEqual(keys, [
-              'gwashington',
-              'tjefferson'
-            ]);
+            assert.deepEqual(keys, ['gwashington', 'tjefferson']);
 
             done();
           });
         });
 
         it('should run a sink filter', function(done) {
-          var filter = [{
-            row: 'alincoln'
-          }, {
-            family: 'follows'
-          }, {
-            interleave: [
-              [{
-                all: true
-              }], [{
-                label: 'prezzy'
-              }, {
-                sink: true
-              }]
-            ]
-          }, {
-            column: 'gwashington'
-          }];
+          var filter = [
+            {
+              row: 'alincoln',
+            },
+            {
+              family: 'follows',
+            },
+            {
+              interleave: [
+                [
+                  {
+                    all: true,
+                  },
+                ],
+                [
+                  {
+                    label: 'prezzy',
+                  },
+                  {
+                    sink: true,
+                  },
+                ],
+              ],
+            },
+            {
+              column: 'gwashington',
+            },
+          ];
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
 
             var columns = Object.keys(rows[0].data.follows).sort();
 
-            assert.deepEqual(columns, [
-              'gwashington',
-              'jadams',
-              'tjefferson'
-            ]);
+            assert.deepEqual(columns, ['gwashington', 'jadams', 'tjefferson']);
 
             done();
           });
@@ -896,23 +920,20 @@ describe('Bigtable', function() {
           var filter = {
             time: {
               start: new Date('March 21, 1986'),
-              end: new Date('March 23, 1986')
-            }
+              end: new Date('March 23, 1986'),
+            },
           };
 
-          TABLE.getRows({ filter: filter }, function(err, rows) {
+          TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
             assert(rows.length > 0);
             done();
           });
         });
-
       });
-
     });
 
     describe('deleting rows', function() {
-
       it('should delete specific cells', function(done) {
         var row = TABLE.row('alincoln');
 
@@ -942,11 +963,8 @@ describe('Bigtable', function() {
           });
         });
       });
-
     });
-
   });
-
 });
 
 function generateName(resourceType) {

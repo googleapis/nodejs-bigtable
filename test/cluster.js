@@ -31,7 +31,7 @@ var fakeUtil = extend({}, common.util, {
     if (Class.name === 'Cluster') {
       promisified = true;
     }
-  }
+  },
 });
 
 var GrpcServiceObject = commonGrpc.ServiceObject;
@@ -49,12 +49,12 @@ describe('Bigtable/Cluster', function() {
 
   var INSTANCE = {
     id: 'projects/p/instances/i',
-    parent: { projectId: PROJECT_ID }
+    parent: {projectId: PROJECT_ID},
   };
 
   var CLUSTER_ID = format('{instance}/clusters/{cluster}', {
     instance: INSTANCE.id,
-    cluster: CLUSTER_NAME
+    cluster: CLUSTER_NAME,
   });
 
   var Cluster;
@@ -63,11 +63,11 @@ describe('Bigtable/Cluster', function() {
   before(function() {
     Cluster = proxyquire('../src/cluster.js', {
       '@google-cloud/common': {
-        util: fakeUtil
+        util: fakeUtil,
       },
       '@google-cloud/common-grpc': {
-        ServiceObject: FakeGrpcServiceObject
-      }
+        ServiceObject: FakeGrpcServiceObject,
+      },
     });
   });
 
@@ -89,23 +89,23 @@ describe('Bigtable/Cluster', function() {
         delete: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'deleteCluster'
+            method: 'deleteCluster',
           },
           reqOpts: {
-            name: CLUSTER_ID
-          }
+            name: CLUSTER_ID,
+          },
         },
         exists: true,
         get: true,
         getMetadata: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'getCluster'
+            method: 'getCluster',
           },
           reqOpts: {
-            name: CLUSTER_ID
-          }
-        }
+            name: CLUSTER_ID,
+          },
+        },
       });
     });
 
@@ -138,23 +138,23 @@ describe('Bigtable/Cluster', function() {
         delete: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'deleteCluster'
+            method: 'deleteCluster',
           },
           reqOpts: {
-            name: fakeName
-          }
+            name: fakeName,
+          },
         },
         exists: true,
         get: true,
         getMetadata: {
           protoOpts: {
             service: 'BigtableInstanceAdmin',
-            method: 'getCluster'
+            method: 'getCluster',
           },
           reqOpts: {
-            name: fakeName
-          }
-        }
+            name: fakeName,
+          },
+        },
       });
     });
   });
@@ -165,7 +165,7 @@ describe('Bigtable/Cluster', function() {
     it('should format the location name', function() {
       var expected = format('projects/{project}/locations/{location}', {
         project: PROJECT_ID,
-        location: LOCATION
+        location: LOCATION,
       });
 
       var formatted = Cluster.getLocation_(PROJECT_ID, LOCATION);
@@ -174,7 +174,7 @@ describe('Bigtable/Cluster', function() {
 
     it('should not re-format a complete location', function() {
       var complete = format('projects/p/locations/{location}', {
-        location: LOCATION
+        location: LOCATION,
       });
 
       var formatted = Cluster.getLocation_(PROJECT_ID, complete);
@@ -186,7 +186,7 @@ describe('Bigtable/Cluster', function() {
     var types = {
       unspecified: 0,
       ssd: 1,
-      hdd: 2
+      hdd: 2,
     };
 
     it('should default to unspecified', function() {
@@ -209,7 +209,7 @@ describe('Bigtable/Cluster', function() {
       cluster.request = function(grpcOpts, reqOpts) {
         assert.deepEqual(grpcOpts, {
           service: 'BigtableInstanceAdmin',
-          method: 'updateCluster'
+          method: 'updateCluster',
         });
 
         assert.strictEqual(reqOpts.name, CLUSTER_ID);
@@ -221,7 +221,7 @@ describe('Bigtable/Cluster', function() {
 
     it('should respect the location option', function(done) {
       var options = {
-        location: 'us-centralb-1'
+        location: 'us-centralb-1',
       };
 
       var getLocation = Cluster.getLocation_;
@@ -244,7 +244,7 @@ describe('Bigtable/Cluster', function() {
 
     it('should respect the nodes option', function(done) {
       var options = {
-        nodes: 3
+        nodes: 3,
       };
 
       cluster.request = function(grpcOpts, reqOpts) {
@@ -257,7 +257,7 @@ describe('Bigtable/Cluster', function() {
 
     it('should respect the storage option', function(done) {
       var options = {
-        storage: 'ssd'
+        storage: 'ssd',
       };
 
       var getStorageType = Cluster.getStorageType_;
@@ -295,7 +295,7 @@ describe('Bigtable/Cluster', function() {
 
     it('should return an operation to the callback', function(done) {
       var response = {
-        name: 'my-operation'
+        name: 'my-operation',
       };
       var fakeOperation = {};
 
