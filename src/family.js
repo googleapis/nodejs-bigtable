@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*!
- * @module bigtable/family
- */
-
 'use strict';
 
 var common = require('@google-cloud/common');
@@ -36,23 +32,31 @@ var FamilyError = createErrorClass('FamilyError', function(name) {
 /**
  * Create a Family object to interact with your table column families.
  *
- * @constructor
- * @alias module:bigtable/family
+ * @class
+ * @param {Table} table
+ * @param {string} name
  *
  * @example
- * var instance = bigtable.instance('my-instance');
- * var table = instance.table('prezzy');
- * var family = table.family('follows');
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ * const family = table.family('follows');
  */
 function Family(table, name) {
   var id = Family.formatName_(table.id, name);
+  /**
+   * @name Family#familyName
+   * @type {string}
+   */
   this.familyName = name.split('/').pop();
 
   var methods = {
     /**
      * Create a column family.
      *
-     * @param {object=} options - See {module:bigtable/table#createFamily}.
+     * @method Family#create
+     * @param {object} [options] See {@link Table#createFamily}.
      *
      * @example
      * family.create(function(err, family, apiResponse) {
@@ -63,8 +67,8 @@ function Family(table, name) {
      * // If the callback is omitted, we'll return a Promise.
      * //-
      * family.create().then(function(data) {
-     *   var family = data[0];
-     *   var apiResponse = data[1];
+     *   const family = data[0];
+     *   const apiResponse = data[1];
      * });
      */
     create: true,
@@ -72,10 +76,11 @@ function Family(table, name) {
     /**
      * Delete the column family.
      *
-     * @param {function=} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Family#delete
+     * @param {function} [callback] The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {object} callback.apiResponse - The full API response.
+     * @param {object} callback.apiResponse The full API response.
      *
      * @example
      * family.delete(function(err, apiResponse) {});
@@ -84,7 +89,7 @@ function Family(table, name) {
      * // If the callback is omitted, we'll return a Promise.
      * //-
      * family.delete().then(function(data) {
-     *   var apiResponse = data[0];
+     *   const apiResponse = data[0];
      * });
      */
     delete: {
@@ -106,10 +111,11 @@ function Family(table, name) {
     /**
      * Check if the column family exists.
      *
-     * @param {function} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Family#exists
+     * @param {function} callback The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {boolean} callback.exists - Whether the family exists or not.
+     * @param {boolean} callback.exists Whether the family exists or not.
      *
      * @example
      * family.exists(function(err, exists) {});
@@ -118,7 +124,7 @@ function Family(table, name) {
      * // If the callback is omitted, we'll return a Promise.
      * //-
      * family.exists().then(function(data) {
-     *   var exists = data[0];
+     *   const exists = data[0];
      * });
      */
     exists: true,
@@ -131,9 +137,10 @@ function Family(table, name) {
      * normally required for the `create` method must be contained within this
      * object as well.
      *
-     * @param {options=} options - Configuration object.
-     * @param {boolean} options.autoCreate - Automatically create the object if
-     *     it does not exist. Default: `false`
+     * @method Family#get
+     * @param {object} [options] Configuration object.
+     * @param {boolean} [options.autoCreate=false] Automatically create the
+     *     object if it does not exist.
      *
      * @example
      * family.get(function(err, family, apiResponse) {
@@ -144,8 +151,8 @@ function Family(table, name) {
      * // If the callback is omitted, we'll return a Promise.
      * //-
      * family.get().then(function(data) {
-     *   var family = data[0];
-     *   var apiResponse = data[1];
+     *   const family = data[0];
+     *   const apiResponse = data[1];
      * });
      */
     get: true,
@@ -170,9 +177,9 @@ util.inherits(Family, commonGrpc.ServiceObject);
  *
  * @private
  *
- * @param {string} tableName - The full formatted table name.
- * @param {string} name - The column family name.
- * @return {string}
+ * @param {string} tableName The full formatted table name.
+ * @param {string} name The column family name.
+ * @returns {string}
  *
  * @example
  * Family.formatName_(
@@ -194,8 +201,8 @@ Family.formatName_ = function(tableName, name) {
  *
  * @private
  *
- * @param {object} ruleObj - The rule object.
- * @return {object}
+ * @param {object} ruleObj The rule object.
+ * @returns {object}
  *
  * @example
  * Family.formatRule({
@@ -253,11 +260,11 @@ Family.formatRule_ = function(ruleObj) {
 /**
  * Get the column family's metadata.
  *
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.metadata - The metadata.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.metadata The metadata.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * family.getMetadata(function(err, metadata, apiResponse) {});
@@ -295,17 +302,17 @@ Family.prototype.getMetadata = function(callback) {
 /**
  * Set the column family's metadata.
  *
- * See {module:bigtable/table#createFamily} for a detailed explanation of the
+ * See {@link Table#createFamily} for a detailed explanation of the
  * arguments.
  *
- * @resource [Garbage Collection Proto Docs]{@link https://github.com/googleapis/googleapis/blob/3592a7339da5a31a3565870989beb86e9235476e/google/bigtable/admin/table/v1/bigtable_table_data.proto#L59}
+ * @see [Garbage Collection Proto Docs]{@link https://github.com/googleapis/googleapis/blob/3592a7339da5a31a3565870989beb86e9235476e/google/bigtable/admin/table/v1/bigtable_table_data.proto#L59}
  *
- * @param {object} metadata - Metadata object.
- * @param {object=} metadata.rule - Garbage collection rule.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {object} metadata Metadata object.
+ * @param {object} [metadata.rule] Garbage collection rule.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * var metadata = {

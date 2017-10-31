@@ -37,7 +37,7 @@ function listInstances() {
   // [END bigtable_list_instances]
 }
 
-require(`yargs`) // eslint-disable-line
+require(`yargs`)
   .demand(1)
   .command(
     `list`,

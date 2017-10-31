@@ -21,7 +21,8 @@ const test = require(`ava`);
 const tools = require(`@google-cloud/nodejs-repo-tools`);
 const uuid = require(`uuid`);
 
-const bigtable = proxyquire(`@google-cloud/bigtable`, {})();
+const Bigtable = proxyquire(`@google-cloud/bigtable`, {});
+const bigtable = new Bigtable();
 const clusterName = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instanceName = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instance = bigtable.instance(instanceName);

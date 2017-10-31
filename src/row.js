@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-/*!
- * @module bigtable/row
- */
-
 'use strict';
 
 var arrify = require('arrify');
@@ -30,16 +26,7 @@ var flatten = require('lodash.flatten');
 var is = require('is');
 var util = require('util');
 
-/**
- * @type {module:bigtable/filter}
- * @private
- */
 var Filter = require('./filter.js');
-
-/**
- * @type {module:bigtable/mutation}
- * @private
- */
 var Mutation = require('./mutation.js');
 
 /**
@@ -49,31 +36,30 @@ var RowError = createErrorClass('RowError', function(row) {
   this.message = 'Unknown row: ' + row + '.';
 });
 
-/*! Developer Documentation
- *
- * @param {module:bigtable/table} table - The row's parent Table instance.
- * @param {string} key - The key for this row.
- */
 /**
  * Create a Row object to interact with your table rows.
  *
- * @constructor
- * @alias module:bigtable/row
+ * @class
+ * @param {Table} table The row's parent Table instance.
+ * @param {string} key The key for this row.
  *
  * @example
- * var instance = bigtable.instance('my-instance');
- * var table = instance.table('prezzy');
- * var row = table.row('gwashington');
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const table = instance.table('prezzy');
+ * const row = table.row('gwashington');
  */
 function Row(table, key) {
   var methods = {
     /**
      * Check if the table row exists.
      *
-     * @param {function} callback - The callback function.
-     * @param {?error} callback.err - An error returned while making this
+     * @method Row#exists
+     * @param {function} callback The callback function.
+     * @param {?error} callback.err An error returned while making this
      *     request.
-     * @param {boolean} callback.exists - Whether the row exists or not.
+     * @param {boolean} callback.exists Whether the row exists or not.
      *
      * @example
      * row.exists(function(err, exists) {});
@@ -104,19 +90,19 @@ util.inherits(Row, commonGrpc.ServiceObject);
 /**
  * Formats the row chunks into friendly format. Chunks contain 3 properties:
  *
- * `rowContents` - The row contents, this essentially is all data pertaining
+ * `rowContents` The row contents, this essentially is all data pertaining
  *     to a single family.
  *
- * `commitRow` - This is a boolean telling us the all previous chunks for this
+ * `commitRow` This is a boolean telling us the all previous chunks for this
  *     row are ok to consume.
  *
- * `resetRow` - This is a boolean telling us that all the previous chunks are to
+ * `resetRow` This is a boolean telling us that all the previous chunks are to
  *     be discarded.
  *
  * @private
  *
- * @param {chunk[]} chunks - The list of chunks.
- * @param {object=} options - Formatting options.
+ * @param {chunk[]} chunks The list of chunks.
+ * @param {object} [options] Formatting options.
  *
  * @example
  * Row.formatChunks_(chunks);
@@ -192,8 +178,8 @@ Row.formatChunks_ = function(chunks, options) {
  *
  * @private
  *
- * @param {object[]} families - The row families.
- * @param {object=} options - Formatting options.
+ * @param {object[]} families The row families.
+ * @param {object} [options] Formatting options.
  *
  * @example
  * var families = [
@@ -256,12 +242,12 @@ Row.formatFamilies_ = function(families, options) {
 /**
  * Create a new row in your table.
  *
- * @param {object=} entry - An entry. See {module:bigtable/table#insert}.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {object} [entry] An entry. See {@link Table#insert}.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {module:bigtable/row} callback.row - The newly created row object.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {Row} callback.row The newly created row object.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * var callback = function(err, apiResponse) {
@@ -319,11 +305,11 @@ Row.prototype.create = function(entry, callback) {
  *
  * @throws {error} If no rules are provided.
  *
- * @param {object|object[]} rules - The rules to apply to this row.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {object|object[]} rules The rules to apply to this row.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * //-
@@ -408,15 +394,15 @@ Row.prototype.createRules = function(rules, callback) {
  * whether or not any results are yielded, either the `onMatch` or `onNoMatch`
  * callback will be executed.
  *
- * @param {module:bigtable/filter} filter - Filter ot be applied to the contents
+ * @param {Filter} filter Filter ot be applied to the contents
  *     of the row.
- * @param {?object[]} onMatch - A list of entries to be ran if a match is found.
- * @param {object[]=} onNoMatch - A list of entries to be ran if no matches are
+ * @param {?object[]} onMatch A list of entries to be ran if a match is found.
+ * @param {object[]} [onNoMatch] A list of entries to be ran if no matches are
  *     found.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {boolean} callback.matched - Whether a match was found or not.
+ * @param {boolean} callback.matched Whether a match was found or not.
  *
  * @example
  * var callback = function(err, matched) {
@@ -501,10 +487,10 @@ Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
 /**
  * Deletes all cells in the row.
  *
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * row.delete(function(err, apiResponse) {});
@@ -526,13 +512,13 @@ Row.prototype.delete = function(callback) {
 };
 
 /**
- * Delete specified cells from the row. See {module:bigtable/table#mutate}.
+ * Delete specified cells from the row. See {@link Table#mutate}.
  *
- * @param {string[]} columns - Column names for the cells to be deleted.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {string[]} columns Column names for the cells to be deleted.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * //-
@@ -577,17 +563,17 @@ Row.prototype.deleteCells = function(columns, callback) {
 };
 
 /**
- * Get the row data. See {module:bigtable/table#getRows}.
+ * Get the row data. See {@link Table#getRows}.
  *
- * @param {string[]=} columns - List of specific columns to retrieve.
- * @param {object} options - Configuration object.
- * @param {boolean} options.decode - If set to `false` it will not decode Buffer
- *     values returned from Bigtable. Default: true.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {string[]} [columns] List of specific columns to retrieve.
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.decode=true] If set to `false` it will not decode Buffer
+ *     values returned from Bigtable.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {module:bigtable/row} callback.row - The updated Row object.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {Row} callback.row The updated Row object.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * //-
@@ -689,14 +675,14 @@ Row.prototype.get = function(columns, options, callback) {
 /**
  * Get the row's metadata.
  *
- * @param {object=} options - Configuration object.
- * @param {boolean} options.decode - If set to `false` it will not decode Buffer
- *     values returned from Bigtable. Default: true.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.decode=true] If set to `false` it will not decode Buffer
+ *     values returned from Bigtable.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.metadata - The row's metadata.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.metadata The row's metadata.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * row.getMetadata(function(err, metadata, apiResponse) {});
@@ -729,13 +715,13 @@ Row.prototype.getMetadata = function(options, callback) {
  * Increment a specific column within the row. If the column does not
  * exist, it is automatically initialized to 0 before being incremented.
  *
- * @param {string} column - The column we are incrementing a value in.
- * @param {number=} value - The amount to increment by, defaults to 1.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {string} column The column we are incrementing a value in.
+ * @param {number} [value] The amount to increment by, defaults to 1.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {number} callback.value - The updated value of the column.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {number} callback.value The updated value of the column.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * var callback = function(err, value, apiResponse) {
@@ -791,15 +777,15 @@ Row.prototype.increment = function(column, value, callback) {
 /**
  * Update the row cells.
  *
- * @param {string|object} key - Either a column name or an entry
- *     object to be inserted into the row. See {module:bigtable/table#insert}.
- * @param {*=} value - This can be omitted if using entry object.
- * @param {object=} options - Configuration options. See
- *     {module:bigtable/table#mutate}.
- * @param {function} callback - The callback function.
- * @param {?error} callback.err - An error returned while making this
+ * @param {string|object} key Either a column name or an entry
+ *     object to be inserted into the row. See {@link Table#insert}.
+ * @param {*} [value] This can be omitted if using entry object.
+ * @param {object} [options] Configuration options. See
+ *     {@link Table#mutate}.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.apiResponse - The full API response.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * //-
