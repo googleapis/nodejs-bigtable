@@ -34,6 +34,7 @@ var Mutation = require('./mutation.js');
  */
 var RowError = createErrorClass('RowError', function(row) {
   this.message = 'Unknown row: ' + row + '.';
+  this.code = 404;
 });
 
 /**

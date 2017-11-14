@@ -347,7 +347,7 @@ Table.prototype.createFamily = function(name, rule, callback) {
  * @param {boolean} [options.decode=true] If set to `false` it will not decode
  *     Buffer values returned from Bigtable.
  * @param {string} [options.end] End value for key range.
-* @param {Filter} [options.filter] Row filters allow you to
+ * @param {Filter} [options.filter] Row filters allow you to
  *     both make advanced queries and format how the data is returned.
  * @param {string[]} [options.keys] A list of row keys.
  * @param {number} [options.limit] Maximum number of rows to be returned.

@@ -379,6 +379,42 @@ describe('Bigtable', function() {
   });
 
   describe('rows', function() {
+    describe('.exists()', function() {
+      var row = TABLE.row('alincoln');
+
+      beforeEach(function(done) {
+        var rowData = {
+          follows: {
+            gwashington: 1,
+            jadams: 1,
+            tjefferson: 1,
+          },
+        };
+
+        row.create(rowData, done);
+      });
+
+      afterEach(row.delete.bind(row));
+
+      it('should check if a row exists', function(done) {
+        row.exists(function(err, exists) {
+          assert.ifError(err);
+          assert.strictEqual(exists, true);
+          done();
+        });
+      });
+
+      it('should check if a row does not exist', function(done) {
+        var row = TABLE.row('gwashington');
+
+        row.exists(function(err, exists) {
+          assert.ifError(err);
+          assert.strictEqual(exists, false);
+          done();
+        });
+      });
+    });
+
     describe('inserting data', function() {
       it('should insert rows', function(done) {
         var rows = [
