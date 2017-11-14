@@ -379,7 +379,6 @@ describe('Bigtable', function() {
   });
 
   describe('rows', function() {
-
     describe('.exists()', function() {
       var row = TABLE.row('alincoln');
 
@@ -414,7 +413,6 @@ describe('Bigtable', function() {
           done();
         });
       });
-
     });
 
     describe('inserting data', function() {
