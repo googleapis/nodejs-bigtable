@@ -941,6 +941,7 @@ describe('Bigtable/Row', function() {
       row.get(function(err, row_, apiResponse) {
         assert(err instanceof Row.RowError);
         assert.strictEqual(err.message, 'Unknown row: ' + row.id + '.');
+        assert.strictEqual(err.code, 404);
         assert.deepEqual(row_, null);
         assert.strictEqual(response, apiResponse);
         done();
@@ -1208,6 +1209,11 @@ describe('Bigtable/Row', function() {
     it('should supply the correct message', function() {
       var error = new Row.RowError('test');
       assert.strictEqual(error.message, 'Unknown row: test.');
+    });
+
+    it('should supply a 404 error code', function() {
+      var error = new Row.RowError('test');
+      assert.strictEqual(error.code, 404);
     });
   });
 });
