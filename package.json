@@ -61,6 +61,7 @@
     "extend": "^3.0.0",
     "is": "^3.0.1",
     "lodash.flatten": "^4.2.0",
+    "lodash": "^4.2.0",
     "node-int64": "^0.4.0",
     "prop-assign": "^1.0.0",
     "pumpify": "^1.3.3",
@@ -71,6 +72,7 @@
   "devDependencies": {
     "@google-cloud/nodejs-repo-tools": "^2.1.0",
     "async": "^2.5.0",
+    "change-case": "^3.0.1",
     "codecov": "^2.3.1",
     "eslint": "^4.9.0",
     "eslint-config-prettier": "^2.6.0",
@@ -79,11 +81,14 @@
     "ink-docstrap": "^1.3.0",
     "intelli-espower-loader": "^1.0.1",
     "jsdoc": "^3.5.5",
+    "lodash": "^4.2.0",
     "mocha": "^3.5.3",
     "nyc": "^11.2.1",
     "power-assert": "^1.4.4",
     "prettier": "^1.7.4",
+    "protobufjs": "^6.8.0",
     "proxyquire": "^1.7.10",
+    "readable-stream": "^2.3.3",
     "sinon": "^1.17.4",
     "uuid": "^3.0.1"
   }
