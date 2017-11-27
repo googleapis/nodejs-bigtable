@@ -4,6 +4,8 @@
 .nyc_output
 docs/
 out/
+.idea/
+*.iml
 system-test/secrets.js
 system-test/*key.json
 *.lock
