@@ -274,9 +274,7 @@ describe('Bigtable/Mutation', function() {
         qualifier: null,
       };
 
-      sinon.stub(Mutation, 'parseColumnName', function() {
-        return fakeColumnName;
-      });
+      sinon.stub(Mutation, 'parseColumnName').returns(fakeColumnName);
 
       var mutation = Mutation.encodeDelete(['follows']);
 
