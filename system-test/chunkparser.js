@@ -39,7 +39,7 @@ function ChunkParser() {
 }
 
 ChunkParser.prototype.toValue = function(field, value) {
-  switch(field.substring('_root_.'.length)){
+  switch (field.substring('_root_.'.length)) {
     case 'rowKey':
     case 'row_key':
     case 'qualifier.value':
@@ -56,7 +56,7 @@ ChunkParser.prototype.toValue = function(field, value) {
     default:
       return idF(value);
   }
-}
+};
 
 ChunkParser.prototype.toChunks = function(chunkStrArray) {
   return chunkStrArray.map(chunkStr => this.toChunk(chunkStr));
