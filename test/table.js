@@ -133,9 +133,7 @@ describe('Bigtable/Table', function() {
     it('should inherit from GrpcServiceObject', function() {
       var FAKE_TABLE_NAME = 'fake-table-name';
 
-      sinon.stub(Table, 'formatName_', function() {
-        return FAKE_TABLE_NAME;
-      });
+      sinon.stub(Table, 'formatName_').returns(FAKE_TABLE_NAME);
 
       var table = new Table(INSTANCE, TABLE_ID);
       var config = table.calledWith_[0];
@@ -570,7 +568,7 @@ describe('Bigtable/Table', function() {
       var formattedRows = [{key: 'c', data: {}}, {key: 'd', data: {}}];
 
       beforeEach(function() {
-        sinon.stub(table, 'row', function() {
+        sinon.stub(table, 'row').callsFake(function() {
           return {};
         });
 
