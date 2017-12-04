@@ -84,7 +84,6 @@
     "nyc": "^11.2.1",
     "power-assert": "^1.4.4",
     "prettier": "^1.7.4",
-    "protobufjs": "^6.8.0",
     "proxyquire": "^1.7.10",
     "readable-stream": "^2.3.3",
     "sinon": "^1.17.4",
