@@ -71,6 +71,7 @@
   "devDependencies": {
     "@google-cloud/nodejs-repo-tools": "^2.1.0",
     "async": "^2.5.0",
+    "change-case": "^3.0.1",
     "codecov": "^3.0.0",
     "eslint": "^4.9.0",
     "eslint-config-prettier": "^2.6.0",
