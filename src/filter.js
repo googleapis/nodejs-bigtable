@@ -72,7 +72,6 @@ var FilterError = createErrorClass('FilterError', function(filter) {
  * | tjefferson  | 1                   | 1              |                    |
  * | jadams      | 1                   |                | 1                  |
  *
- * @private
  * @class
  */
 function Filter() {
@@ -80,13 +79,12 @@ function Filter() {
 }
 
 /**
- * @private
  * @throws TypeError
  *
  * Transforms Arrays into a simple regular expression for matching multiple
  * values.
  *
- * @param {regex|string|string[]} regex - Either a plain regex, a regex in
+ * @param {regex|string|string[]} regex Either a plain regex, a regex in
  *     string form or an array of strings.
  *
  * @returns {string}
@@ -118,10 +116,9 @@ Filter.convertToRegExpString = function(regex) {
 /**
  * Creates a range object. All bounds default to inclusive.
  *
- * @private
- * @param {?object|string} start - Lower bound value.
- * @param {?object|string} end - Upper bound value.
- * @param {string} key - Key used to create range value keys.
+ * @param {?object|string} start Lower bound value.
+ * @param {?object|string} end Upper bound value.
+ * @param {string} key Key used to create range value keys.
  *
  * @returns {object}
  *
@@ -173,12 +170,11 @@ Filter.createRange = function(start, end, key) {
 };
 
 /**
- * @private
  * @throws FilterError
  *
  * Turns filters into proto friendly format.
  *
- * @param {object[]} filters - The list of filters to be parsed.
+ * @param {object[]} filters The list of filters to be parsed.
  *
  * @returns {object}
  *
@@ -665,10 +661,8 @@ Filter.prototype.row = function(row) {
 /**
  * Stores a filter object.
  *
- * @private
- *
- * @param {string} key - Filter name.
- * @param {*} value - Filter value.
+ * @param {string} key Filter name.
+ * @param {*} value Filter value.
  */
 Filter.prototype.set = function(key, value) {
   var filter = {};
@@ -756,7 +750,6 @@ Filter.prototype.time = function(time) {
 /**
  * If we detect multiple filters, we'll assume it's a chain filter and the
  * execution of the filters will be the order in which they were specified.
- * @private
  */
 Filter.prototype.toProto = function() {
   if (!this.filters_.length) {
