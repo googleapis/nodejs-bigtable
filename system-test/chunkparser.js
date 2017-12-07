@@ -74,11 +74,21 @@ ChunkParser.prototype.toChunks = function(chunkStrArray) {
     'chunks',
     chunkStrArray.map(chunkStr => this.toChunk(chunkStr)).map(chunk => {
       let cellChunk = new CellChunk();
-      cellChunk.set('rowKey', chunk.rowKey);
-      cellChunk.set('familyName', chunk.familyName);
-      cellChunk.set('qualifier', chunk.qualifier);
-      cellChunk.set('timestampMicros', chunk.timestampMicros);
-      cellChunk.set('value', chunk.value);
+      if (typeof chunk.rowKey !== 'undefined') {
+        cellChunk.set('rowKey', chunk.rowKey);
+      }
+      if (typeof chunk.familyName !== 'undefined') {
+        cellChunk.set('familyName', chunk.familyName);
+      }
+      if (typeof chunk.qualifier !== 'undefined') {
+        cellChunk.set('qualifier', chunk.qualifier);
+      }
+      if (typeof chunk.timestampMicros !== 'undefined') {
+        cellChunk.set('timestampMicros', chunk.timestampMicros);
+      }
+      if (typeof chunk.value !== 'undefined') {
+        cellChunk.set('value', chunk.value);
+      }
       if (typeof chunk.valueSize !== 'undefined') {
         cellChunk.set('valueSize', chunk.valueSize);
       }
@@ -94,7 +104,10 @@ ChunkParser.prototype.toChunks = function(chunkStrArray) {
       return cellChunk;
     })
   );
-  return readRowsResponse;
+  return ReadRowsResponse.decode(readRowsResponse.encode().toBuffer()).toRaw(
+    true,
+    true
+  );
 };
 ChunkParser.prototype.toChunk = function(chunkStr) {
   let value = {};
