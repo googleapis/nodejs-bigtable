@@ -976,6 +976,9 @@ describe('Bigtable/Table', function() {
         assert.deepEqual(grpcOpts, {
           service: 'Bigtable',
           method: 'mutateRows',
+          retryOpts: {
+            currentRetryAttempt: 0,
+          },
         });
 
         assert.strictEqual(reqOpts.tableName, TABLE_NAME);
@@ -1004,6 +1007,7 @@ describe('Bigtable/Table', function() {
             });
 
             setImmediate(function() {
+              stream.emit('request');
               stream.emit('error', error);
             });
 
@@ -1012,6 +1016,7 @@ describe('Bigtable/Table', function() {
         });
 
         it('should return the error to the callback', function(done) {
+          table.maxRetries = 0;
           table.mutate(entries, function(err) {
             assert.strictEqual(err, error);
             done();
@@ -1104,6 +1109,7 @@ describe('Bigtable/Table', function() {
           });
 
           setImmediate(function() {
+            stream.emit('request');
             stream.end({entries: fakeStatuses});
           });
 
@@ -1112,6 +1118,7 @@ describe('Bigtable/Table', function() {
       });
 
       it('should execute callback', function(done) {
+        table.maxRetries = 0;
         table.mutate(entries, done);
       });
     });
