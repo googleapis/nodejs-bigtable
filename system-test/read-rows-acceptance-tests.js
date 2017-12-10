@@ -50,20 +50,19 @@ describe('Read Row Acceptance tests', function() {
         family[result.qual] = qualifier;
         qualifier.push({value: result.value, timestamp: result.ts});
       });
-      let readRowsResponse = new ReadRowsResponse();
-      readRowsResponse.set(
-        'chunks',
-        test.chunks_base64.map(chunk => {
-          const cellChunk = CellChunk.decode64(chunk);
-          return cellChunk;
-        })
-      );
-
-      readRowsResponse = ReadRowsResponse.decode(
-        readRowsResponse.encode().toBuffer()
-      ).toRaw(true, false);
       const rs = new Stream.Readable({objectMode: true});
-      rs.push(readRowsResponse);
+      test.chunks_base64
+        .map(chunk => {
+          let readRowsResponse = new ReadRowsResponse();
+          const cellChunk = CellChunk.decode64(chunk);
+          readRowsResponse.set('chunks', [cellChunk]);
+          readRowsResponse = ReadRowsResponse.decode(
+            readRowsResponse.encode().toBuffer()
+          ).toRaw(true, false);
+          return readRowsResponse;
+        })
+        .forEach(readRowsResponse => rs.push(readRowsResponse));
+      // rs.push(readRowsResponse);
       rs.push(null);
       const table = new Table({id: 'xyz'}, 'my-table');
       sinon.stub(table, 'requestStream').returns(rs);
