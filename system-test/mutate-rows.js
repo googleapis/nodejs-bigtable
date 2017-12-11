@@ -2,10 +2,10 @@
 
 const Bigtable = require('../');
 
-const tests = require('./mutate-rows-acceptance-test.json').tests;
+const tests = require('./mutate-rows-retry-test.json').tests;
 
 const assert = require('assert');
-const grpc = require('grpc');
+const grpc = require('@google-cloud/common-grpc').grpc;
 const sinon = require('sinon');
 const through = require('through2');
 

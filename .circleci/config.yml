@@ -10,9 +10,6 @@ unit_tests: &unit_tests
         name: Run unit tests.
         command: npm test
     - run:
-        name: Run integration tests.
-        command: npm run integration-test
-    - run:
         name: Submit coverage data to codecov.
         command: node_modules/.bin/codecov
         when: always
@@ -102,9 +99,6 @@ jobs:
       - run:
           name: Run unit tests.
           command: npm test
-      - run:
-          name: Run integration tests.
-          command: npm run integration-test
       - run:
           name: Submit coverage data to codecov.
           command: node_modules/.bin/codecov
