@@ -668,6 +668,21 @@ describe('Bigtable', function() {
           });
       });
 
+      it('should end stream early', function(done) {
+        var rows = [];
+
+        TABLE.createReadStream()
+          .on('error', done)
+          .on('data', function(row) {
+            rows.push(row);
+            this.end();
+          })
+          .on('end', function() {
+            assert.strictEqual(rows.length, 1);
+            done();
+          });
+      });
+
       describe('filters', function() {
         it('should get rows via column data', function(done) {
           var filter = {
