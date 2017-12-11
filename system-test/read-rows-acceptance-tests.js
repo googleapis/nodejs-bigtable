@@ -37,6 +37,7 @@ describe('Read Row Acceptance tests', function() {
     it(test.name, done => {
       const results = [];
       const rawResults = test.results || [];
+      const errorCount = rawResults.filter(result => result.error).length;
       rawResults.filter(result => !result.error).forEach(result => {
         const existingRow = results.find(filter => filter.key === result.rk);
         const row = existingRow || {key: result.rk, data: {}};
@@ -66,12 +67,26 @@ describe('Read Row Acceptance tests', function() {
       rs.push(null);
       const table = new Table({id: 'xyz'}, 'my-table');
       sinon.stub(table, 'requestStream').returns(rs);
-      table.getRows({}, function(err, rows) {
-        assert.equal(
-          rows.length,
-          results.length,
-          'Expected & Actual Row count mismatch'
-        );
+
+      const errors = [];
+      const rows = [];
+      table
+        .createReadStream({})
+        .on('error', err => {
+          errors.push(err);
+          verify(errors, rows, results, errorCount, done);
+        })
+        .on('data', row => {
+          rows.push(row);
+        })
+        .on('end', () => {
+          if (errors.length === 0) {
+            verify(errors, rows, results, errorCount, done);
+          }
+        });
+      function verify(errors, rows, results, errorCount, done) {
+        assert.equal(errors.length, errorCount, ' error count mismatch');
+        assert.equal(rows.length, results.length, 'row count mismatch');
         results.forEach(result => {
           const row = rows.find(row => row.id === result.key);
           assert.notEqual(row, 'undefined', 'can not find row');
@@ -117,7 +132,7 @@ describe('Read Row Acceptance tests', function() {
           });
         });
         done();
-      });
+      }
     });
   });
 });

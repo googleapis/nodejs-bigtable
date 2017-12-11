@@ -488,23 +488,36 @@ Table.prototype.createReadStream = function(options) {
   const chunkFormatter = new ChunkFormatter();
   return pumpify.obj([
     this.requestStream(grpcOpts, reqOpts),
-    through.obj(function(data, enc, next) {
-      var throughStream = this;
-      // try{
-      var rows = chunkFormatter.formatChunks(data.chunks, {
-        decode: options.decode,
-      });
-      rows.forEach(function(rowData) {
-        var row = self.row(rowData.key);
-        row.data = rowData.data;
-        throughStream.push(row);
-      });
-    // }catch(err){
-    //   console.log(err);
-    //   throughStream.emit('error',err);
-    // }
-      next();
-    }),
+    through.obj(
+      function(data, enc, next) {
+        var throughStream = this;
+        chunkFormatter.formatChunks(
+          data.chunks,
+          {
+            decode: options.decode,
+          },
+          (err, rowData) => {
+            if (err) {
+              throughStream.emit('error', err);
+            } else {
+              var row = self.row(rowData.key);
+              row.data = rowData.data;
+              throughStream.push(row);
+            }
+          }
+        );
+        next();
+      },
+      function(callback) {
+        var throughStream = this;
+        chunkFormatter.onStreamEnd(err => {
+          if (err) {
+            throughStream.emit('error', err);
+          }
+        });
+        callback();
+      }
+    ),
   ]);
 };
 

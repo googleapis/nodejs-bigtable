@@ -24,7 +24,7 @@ function ChunkFormatter() {
   this.family = {};
   this.qualifiers = [];
   this.qualifier = {};
-  this.newRow = (chunk, options, rows) => {
+  this.newRow = (chunk, options, callback) => {
     const row = (this.row = this.row || {});
     const prevRowKey = this.prevRowKey;
     if (typeof row.key !== 'undefined') {
@@ -65,7 +65,7 @@ function ChunkFormatter() {
     this.qualifiers.push(this.qualifier);
     if (chunk.commitRow) {
       this.prevRowKey = row.key;
-      rows.push(row);
+      callback(null, row);
       return true;
     } else {
       if (chunk.valueSize > 0) {
@@ -76,7 +76,7 @@ function ChunkFormatter() {
       return false;
     }
   };
-  this.rowInProgress = (chunk, options, rows) => {
+  this.rowInProgress = (chunk, options, callback) => {
     const row = this.row;
     if (chunk.resetRow) {
       if (
@@ -120,7 +120,7 @@ function ChunkFormatter() {
     this.qualifiers.push(this.qualifier);
     if (chunk.commitRow) {
       this.prevRowKey = row.key;
-      rows.push(row);
+      callback(null, row);
       return true;
     } else {
       if (chunk.valueSize > 0) {
@@ -129,7 +129,7 @@ function ChunkFormatter() {
       return false;
     }
   };
-  this.cellInProgress = (chunk, options, rows) => {
+  this.cellInProgress = (chunk, options, callback) => {
     const row = this.row;
     if (chunk.resetRow) {
       if (
@@ -152,7 +152,7 @@ function ChunkFormatter() {
       this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
     if (chunk.commitRow) {
       this.prevRowKey = row.key;
-      rows.push(row);
+      callback(null, row);
       return true;
     } else {
       if (chunk.valueSize === 0) {
@@ -192,23 +192,34 @@ function ChunkFormatter() {
  * //   }
  * // }
  */
-ChunkFormatter.prototype.formatChunks = function(chunks, options) {
-  var rows = [];
+ChunkFormatter.prototype.formatChunks = function(chunks, options, callback) {
   options = options || {};
   try {
     chunks.forEach(chunk => {
-      if (this.state(chunk, options, rows)) {
+      if (this.state(chunk, options, callback)) {
         this.state = this.newRow;
         this.family = {};
         this.qualifier = {};
-        this.qualifiers=[];
+        this.qualifiers = [];
         this.row = {};
       }
     }, this);
   } catch (err) {
-    // throw err;
-    return rows;
+    this.state = this.newRow;
+    this.family = {};
+    this.qualifier = {};
+    this.qualifiers = [];
+    this.row = {};
+    callback(err, null);
   }
-  return rows;
 };
+
+ChunkFormatter.prototype.onStreamEnd = function(callback) {
+  if (typeof this.row.key !== 'undefined') {
+    callback(new Error('Response ended with pending row without commit'));
+  } else {
+    callback(null);
+  }
+};
+
 module.exports = ChunkFormatter;
