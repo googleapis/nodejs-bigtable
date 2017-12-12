@@ -20,6 +20,7 @@ const testcases = require('./read-rows-acceptance-test.json').tests;
 const sinon = require('sinon');
 const Stream = require('stream');
 const Table = require('../src/table.js');
+const Row = require('../src/row.js');
 const ProtoBuf = require('protobufjs');
 ProtoBuf.convertFieldsToCamelCase = true;
 const path = require('path');
@@ -35,6 +36,7 @@ const CellChunk = builder.build(
 describe('Read Row Acceptance tests', function() {
   testcases.forEach(function(test) {
     it(test.name, done => {
+      const table = new Table({id: 'xyz'}, 'my-table');
       const results = [];
       const rawResults = test.results || [];
       const errorCount = rawResults.filter(result => result.error).length;
@@ -49,7 +51,21 @@ describe('Read Row Acceptance tests', function() {
         data[result.fm] = family;
         const qualifier = family[result.qual] || [];
         family[result.qual] = qualifier;
-        qualifier.push({value: result.value, timestamp: result.ts});
+        const resultLabels = [];
+        if (result.label !== '') {
+          resultLabels.push(result.label);
+        }
+        qualifier.push({
+          value: result.value,
+          timestamp: '' + result.ts,
+          labels: resultLabels,
+          size: 0,
+        });
+      });
+      const tableRows = results.map(rawRow => {
+        const row = new Row(table, rawRow.key);
+        row.data = rawRow.data;
+        return row;
       });
       const rs = new Stream.Readable({objectMode: true});
       test.chunks_base64
@@ -59,13 +75,11 @@ describe('Read Row Acceptance tests', function() {
           readRowsResponse.set('chunks', [cellChunk]);
           readRowsResponse = ReadRowsResponse.decode(
             readRowsResponse.encode().toBuffer()
-          ).toRaw(true, false);
+          ).toRaw(true, true);
           return readRowsResponse;
         })
         .forEach(readRowsResponse => rs.push(readRowsResponse));
-      // rs.push(readRowsResponse);
       rs.push(null);
-      const table = new Table({id: 'xyz'}, 'my-table');
       sinon.stub(table, 'requestStream').returns(rs);
 
       const errors = [];
@@ -74,63 +88,20 @@ describe('Read Row Acceptance tests', function() {
         .createReadStream({})
         .on('error', err => {
           errors.push(err);
-          verify(errors, rows, results, errorCount, done);
+          verify();
         })
         .on('data', row => {
           rows.push(row);
         })
         .on('end', () => {
           if (errors.length === 0) {
-            verify(errors, rows, results, errorCount, done);
+            verify();
           }
         });
-      function verify(errors, rows, results, errorCount, done) {
+      function verify() {
         assert.equal(errors.length, errorCount, ' error count mismatch');
         assert.equal(rows.length, results.length, 'row count mismatch');
-        results.forEach(result => {
-          const row = rows.find(row => row.id === result.key);
-          assert.notEqual(row, 'undefined', 'can not find row');
-          const familiesName = Object.keys(result.data);
-          familiesName.forEach(familyName => {
-            const resultFamily = result.data[familyName];
-            const rowFamily = row.data[familyName];
-            assert.notEqual(rowFamily, 'undefined', 'row family mismatch');
-            const qualifiersName = Object.keys(resultFamily);
-            qualifiersName.forEach(qualifierName => {
-              const resultQualifier = resultFamily[qualifierName];
-              const rowQualifier = rowFamily[qualifierName];
-              assert.notEqual(
-                rowQualifier,
-                'undefined',
-                'row qualifier mismatch'
-              );
-              assert.equal(
-                rowQualifier.length,
-                resultQualifier.length,
-                'qualifier length mistmatch'
-              );
-              for (let qe of resultQualifier.entries()) {
-                const resultQualifierValue = qe[1];
-                const rowQualifierValue = rowQualifier[qe[0]];
-                assert.notEqual(
-                  rowQualifierValue,
-                  'undefined',
-                  'qualifier  mismatch'
-                );
-                assert.equal(
-                  rowQualifierValue.value,
-                  resultQualifierValue.value,
-                  'qualifier value mismatch'
-                );
-                assert.equal(
-                  rowQualifierValue.timestamp,
-                  resultQualifierValue.timestamp,
-                  'qualifier value timestamp mismatch'
-                );
-              }
-            });
-          });
-        });
+        assert.deepEqual(rows, tableRows, 'row mismatch');
         done();
       }
     });

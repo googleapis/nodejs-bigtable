@@ -150,6 +150,7 @@ function ChunkFormatter() {
     }
     this.qualifier.value =
       this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
+    this.qualifier.size = 0;
     if (chunk.commitRow) {
       this.prevRowKey = row.key;
       callback(null, row);
