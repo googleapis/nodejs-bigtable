@@ -24,7 +24,6 @@ var flatten = require('lodash.flatten');
 var is = require('is');
 var propAssign = require('prop-assign');
 var pumpify = require('pumpify');
-var retryRequest = require('retry-request');
 var through = require('through2');
 var util = require('util');
 
@@ -941,10 +940,7 @@ Table.prototype.mutate = function(entries, callback) {
 
   var onBatchResponse = error => {
     if (pendingEntryIndices.size !== 0 && requestsMade <= maxRetries) {
-      setTimeout(
-        makeNextRequestBatch,
-        retryRequest.getNextRetryDelay(requestsMade)
-      );
+      makeNextRequestBatch();
       return;
     }
     var err = error;
