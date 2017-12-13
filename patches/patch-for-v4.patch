@@ -1,0 +1,13 @@
+--- a/node_modules/through2/node_modules/readable-stream/node_modules/process-nextick-args/index.js
++++ b/node_modules/through2/node_modules/readable-stream/node_modules/process-nextick-args/index.js
+@@ -5,7 +5,9 @@ if (!process.version ||
+     process.version.indexOf('v1.') === 0 && process.version.indexOf('v1.8.') !== 0) {
+   module.exports = nextTick;
+ } else {
+-  module.exports = process.nextTick;
++  module.exports = function() {
++    return process.nextTick.apply(this, arguments);
++  };
+ }
+ 
+ function nextTick(fn, arg1, arg2, arg3) {

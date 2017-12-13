@@ -992,6 +992,9 @@ describe('Bigtable/Table', function() {
         assert.deepEqual(grpcOpts, {
           service: 'Bigtable',
           method: 'mutateRows',
+          retryOpts: {
+            currentRetryAttempt: 0,
+          },
         });
 
         assert.strictEqual(reqOpts.tableName, TABLE_NAME);
@@ -1020,6 +1023,7 @@ describe('Bigtable/Table', function() {
             });
 
             setImmediate(function() {
+              stream.emit('request');
               stream.emit('error', error);
             });
 
@@ -1028,6 +1032,7 @@ describe('Bigtable/Table', function() {
         });
 
         it('should return the error to the callback', function(done) {
+          table.maxRetries = 0;
           table.mutate(entries, function(err) {
             assert.strictEqual(err, error);
             done();
@@ -1120,6 +1125,7 @@ describe('Bigtable/Table', function() {
           });
 
           setImmediate(function() {
+            stream.emit('request');
             stream.end({entries: fakeStatuses});
           });
 
@@ -1128,7 +1134,72 @@ describe('Bigtable/Table', function() {
       });
 
       it('should execute callback', function(done) {
+        table.maxRetries = 0;
         table.mutate(entries, done);
+      });
+    });
+
+    describe('retries', function() {
+      var fakeStatuses;
+      var entryRequests;
+
+      beforeEach(function() {
+        entryRequests = [];
+        fakeStatuses = [
+          [
+            {
+              index: 0,
+              status: {
+                code: 0,
+              },
+            },
+            {
+              index: 1,
+              status: {
+                code: 4,
+              },
+            },
+          ],
+          [
+            {
+              index: 0,
+              status: {
+                code: 0,
+              },
+            },
+          ],
+        ];
+        FakeGrpcService.decorateStatus_ = function() {
+          return {};
+        };
+        table.requestStream = function(_, reqOpts) {
+          entryRequests.push(reqOpts.entries);
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            stream.emit('request');
+            stream.end({entries: fakeStatuses.shift()});
+          });
+
+          return stream;
+        };
+      });
+
+      it('should succeed after a retry', function(done) {
+        table.maxRetries = 1;
+        table.mutate(entries, done);
+      });
+
+      it('should retry the same failed entry', function(done) {
+        table.maxRetries = 1;
+        table.mutate(entries, function() {
+          assert.strictEqual(entryRequests[0].length, 2);
+          assert.strictEqual(entryRequests[1].length, 1);
+          assert.strictEqual(entryRequests[0][1], entryRequests[1][0]);
+          done();
+        });
       });
     });
   });
