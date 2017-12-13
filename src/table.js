@@ -489,7 +489,7 @@ Table.prototype.createReadStream = function(options) {
     reqOpts.rowsLimit = options.limit;
   }
 
-  return pumpify.obj([
+  var stream = pumpify.obj([
     this.requestStream(grpcOpts, reqOpts),
     through.obj(function(data, enc, next) {
       var throughStream = this;
@@ -498,6 +498,10 @@ Table.prototype.createReadStream = function(options) {
       });
 
       rows.forEach(function(rowData) {
+        if (stream._ended) {
+          return;
+        }
+
         var row = self.row(rowData.key);
 
         row.data = rowData.data;
@@ -507,6 +511,8 @@ Table.prototype.createReadStream = function(options) {
       next();
     }),
   ]);
+
+  return stream;
 };
 
 /**
