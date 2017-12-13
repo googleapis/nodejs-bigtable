@@ -656,8 +656,38 @@ describe('Bigtable/Table', function() {
 
     describe('error', function() {
       var error = new Error('err');
+      var fakeChunks = {
+        chunks: [
+          {
+            rowKey: 'a',
+          },
+          {
+            commitRow: true,
+          },
+          {
+            rowKey: 'b',
+          },
+          {
+            commitRow: true,
+          },
+        ],
+      };
 
-      beforeEach(function() {
+      // beforeEach(function() {
+      //   table.requestStream = function() {
+      //     var stream = new Stream({
+      //       objectMode: true,
+      //     });
+
+      //     setImmediate(function() {
+      //       stream.emit('error', error);
+      //     });
+
+      //     return stream;
+      //   };
+      // });
+
+      it('should emit an error event', function(done) {
         table.requestStream = function() {
           var stream = new Stream({
             objectMode: true,
@@ -669,9 +699,59 @@ describe('Bigtable/Table', function() {
 
           return stream;
         };
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
       });
+      it('should emit an error event when chunk format returns error', function(done) {
+        table.requestStream = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
 
-      it('should emit an error event', function(done) {
+          setImmediate(function() {
+            stream.push(fakeChunks);
+            stream.push(null);
+          });
+
+          return stream;
+        };
+        FakeChunkFormatter.prototype.formatChunks = sinon.spy(function(
+          chunks,
+          options,
+          callback
+        ) {
+          callback(error, null);
+        });
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
+      });
+      it('should emit an error event when chunkformatter returns error onstream end', function(done) {
+        table.requestStream = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            stream.push(null);
+          });
+
+          return stream;
+        };
+        FakeChunkFormatter.prototype.onStreamEnd = sinon.spy(function(
+          callback
+        ) {
+          callback(error);
+        });
         table
           .createReadStream()
           .on('error', function(err) {

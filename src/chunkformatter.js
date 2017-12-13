@@ -24,144 +24,7 @@ function ChunkFormatter() {
   this.family = {};
   this.qualifiers = [];
   this.qualifier = {};
-  this.newRow = (chunk, options, callback) => {
-    const row = (this.row = this.row || {});
-    const prevRowKey = this.prevRowKey;
-    if (typeof row.key !== 'undefined') {
-      throw new Error('A new row cannot have existing state: ' + chunk);
-    }
-    if (typeof chunk.rowKey === 'undefined') {
-      throw new Error('A row key must be set' + chunk);
-    }
-    if (chunk.resetRow) {
-      throw new Error('A new row cannot be reset: ' + chunk);
-    }
-    const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-    if (prevRowKey === newRowKey) {
-      throw new Error('A commit happened but the same key followed: ' + chunk);
-    }
-    if (!chunk.familyName) {
-      throw new Error('A family must be set: ' + chunk);
-    }
-    if (!chunk.qualifier) {
-      throw new Error('A column qualifier must be set: ' + chunk);
-    }
-    if (chunk.valueSize > 0 && chunk.commitRow) {
-      throw new Error(
-        'A row cannot be have a value size and be a commit row: ' + chunk
-      );
-    }
-    row.key = newRowKey;
-    row.data = {};
-    this.family = row.data[chunk.familyName.value] = {};
-    const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
-    this.qualifiers = this.family[qualifierName] = [];
-    this.qualifier = {
-      value: Mutation.convertFromBytes(chunk.value, options),
-      labels: chunk.labels,
-      timestamp: chunk.timestampMicros,
-      size: chunk.valueSize,
-    };
-    this.qualifiers.push(this.qualifier);
-    if (chunk.commitRow) {
-      this.prevRowKey = row.key;
-      callback(null, row);
-      return true;
-    } else {
-      if (chunk.valueSize > 0) {
-        this.state = this.cellInProgress;
-      } else {
-        this.state = this.rowInProgress;
-      }
-      return false;
-    }
-  };
-  this.rowInProgress = (chunk, options, callback) => {
-    const row = this.row;
-    if (chunk.resetRow) {
-      if (
-        chunk.rowKey ||
-        chunk.familyName ||
-        chunk.qualifier ||
-        chunk.value ||
-        !chunk.timestampMicros > 0
-      ) {
-        throw new Error('A reset should have no data' + chunk);
-      }
-      return true;
-    }
-    const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-    if (chunk.rowKey && newRowKey !== row.key) {
-      throw new Error('A commit is required between row keys: ' + chunk);
-    }
-    if (chunk.valueSize > 0 && chunk.commitRow) {
-      throw new Error(
-        'A row cannot be have a value size and be a commit row: ' + chunk
-      );
-    }
-    if (chunk.familyName) {
-      if (!chunk.qualifier) {
-        throw new Error('A qualifier must be specified: ' + chunk);
-      }
-      this.family = row.data[chunk.familyName.value] =
-        row.data[chunk.familyName.value] || {};
-    }
-    if (chunk.qualifier) {
-      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
-      this.qualifiers = this.family[qualifierName] =
-        this.family[qualifierName] || [];
-    }
-    this.qualifier = {
-      value: Mutation.convertFromBytes(chunk.value, options),
-      labels: chunk.labels,
-      timestamp: chunk.timestampMicros,
-      size: chunk.valueSize,
-    };
-    this.qualifiers.push(this.qualifier);
-    if (chunk.commitRow) {
-      this.prevRowKey = row.key;
-      callback(null, row);
-      return true;
-    } else {
-      if (chunk.valueSize > 0) {
-        this.state = this.cellInProgress;
-      }
-      return false;
-    }
-  };
-  this.cellInProgress = (chunk, options, callback) => {
-    const row = this.row;
-    if (chunk.resetRow) {
-      if (
-        chunk.rowKey ||
-        chunk.familyName ||
-        chunk.qualifier ||
-        chunk.value ||
-        !chunk.timestampMicros > 0
-      ) {
-        throw new Error('A reset should have no data' + chunk);
-      }
-      return true;
-    }
-    if (chunk.valueSize > 0 && chunk.commitRow) {
-      throw new Error(
-        'A row cannot be have a value size and be a commit row: ' + chunk
-      );
-    }
-    this.qualifier.value =
-      this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
-    this.qualifier.size = 0;
-    if (chunk.commitRow) {
-      this.prevRowKey = row.key;
-      callback(null, row);
-      return true;
-    } else {
-      if (chunk.valueSize === 0) {
-        this.state = this.rowInProgress;
-      }
-      return false;
-    }
-  };
+  this.row = {};
   this.state = this.newRow;
 }
 /**
@@ -220,6 +83,145 @@ ChunkFormatter.prototype.onStreamEnd = function(callback) {
     callback(new Error('Response ended with pending row without commit'));
   } else {
     callback(null);
+  }
+};
+
+ChunkFormatter.prototype.newRow = function(chunk, options, callback) {
+  const row = (this.row = this.row || {});
+  const prevRowKey = this.prevRowKey;
+  if (typeof row.key !== 'undefined') {
+    throw new Error('A new row cannot have existing state: ' + chunk);
+  }
+  if (typeof chunk.rowKey === 'undefined') {
+    throw new Error('A row key must be set' + chunk);
+  }
+  if (chunk.resetRow) {
+    throw new Error('A new row cannot be reset: ' + chunk);
+  }
+  const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+  if (prevRowKey === newRowKey) {
+    throw new Error('A commit happened but the same key followed: ' + chunk);
+  }
+  if (!chunk.familyName) {
+    throw new Error('A family must be set: ' + chunk);
+  }
+  if (!chunk.qualifier) {
+    throw new Error('A column qualifier must be set: ' + chunk);
+  }
+  if (chunk.valueSize > 0 && chunk.commitRow) {
+    throw new Error(
+      'A row cannot be have a value size and be a commit row: ' + chunk
+    );
+  }
+  row.key = newRowKey;
+  row.data = {};
+  this.family = row.data[chunk.familyName.value] = {};
+  const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+  this.qualifiers = this.family[qualifierName] = [];
+  this.qualifier = {
+    value: Mutation.convertFromBytes(chunk.value, options),
+    labels: chunk.labels,
+    timestamp: chunk.timestampMicros,
+    size: chunk.valueSize,
+  };
+  this.qualifiers.push(this.qualifier);
+  if (chunk.commitRow) {
+    this.prevRowKey = row.key;
+    callback(null, row);
+    return true;
+  } else {
+    if (chunk.valueSize > 0) {
+      this.state = this.cellInProgress;
+    } else {
+      this.state = this.rowInProgress;
+    }
+    return false;
+  }
+};
+ChunkFormatter.prototype.rowInProgress = function(chunk, options, callback) {
+  const row = this.row;
+  if (chunk.resetRow) {
+    if (
+      chunk.rowKey ||
+      chunk.familyName ||
+      chunk.qualifier ||
+      chunk.value ||
+      !chunk.timestampMicros > 0
+    ) {
+      throw new Error('A reset should have no data' + chunk);
+    }
+    return true;
+  }
+  const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+  if (chunk.rowKey && newRowKey !== row.key) {
+    throw new Error('A commit is required between row keys: ' + chunk);
+  }
+  if (chunk.valueSize > 0 && chunk.commitRow) {
+    throw new Error(
+      'A row cannot be have a value size and be a commit row: ' + chunk
+    );
+  }
+  if (chunk.familyName) {
+    if (!chunk.qualifier) {
+      throw new Error('A qualifier must be specified: ' + chunk);
+    }
+    this.family = row.data[chunk.familyName.value] =
+      row.data[chunk.familyName.value] || {};
+  }
+  if (chunk.qualifier) {
+    const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+    this.qualifiers = this.family[qualifierName] =
+      this.family[qualifierName] || [];
+  }
+  this.qualifier = {
+    value: Mutation.convertFromBytes(chunk.value, options),
+    labels: chunk.labels,
+    timestamp: chunk.timestampMicros,
+    size: chunk.valueSize,
+  };
+  this.qualifiers.push(this.qualifier);
+  if (chunk.commitRow) {
+    this.prevRowKey = row.key;
+    callback(null, row);
+    return true;
+  } else {
+    if (chunk.valueSize > 0) {
+      this.state = this.cellInProgress;
+    }
+    return false;
+  }
+};
+ChunkFormatter.prototype.cellInProgress = function(chunk, options, callback) {
+  const row = this.row;
+  if (chunk.resetRow) {
+    if (
+      chunk.rowKey ||
+      chunk.familyName ||
+      chunk.qualifier ||
+      chunk.value ||
+      !chunk.timestampMicros > 0
+    ) {
+      throw new Error('A reset should have no data' + chunk);
+    }
+    return true;
+  }
+  if (chunk.valueSize > 0 && chunk.commitRow) {
+    throw new Error(
+      'A row cannot be have a value size and be a commit row: ' + chunk
+    );
+  }
+  this.qualifier.value =
+    this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
+  this.qualifier.size = 0;
+  if (chunk.commitRow) {
+    this.prevRowKey = row.key;
+    callback(null, row);
+    return true;
+  } else {
+    if (chunk.valueSize === 0) {
+      this.state = this.rowInProgress;
+    }
+    return false;
   }
 };
 
