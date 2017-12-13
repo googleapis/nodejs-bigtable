@@ -2,7 +2,7 @@
 
 const Bigtable = require('../');
 
-const tests = require('./mutate-rows-retry-test.json').tests;
+const tests = require('./data/mutate-rows-retry-test.json').tests;
 
 const assert = require('assert');
 const grpc = require('@google-cloud/common-grpc').grpc;
