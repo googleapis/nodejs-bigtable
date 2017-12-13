@@ -669,18 +669,51 @@ describe('Bigtable', function() {
       });
 
       it('should end stream early', function(done) {
-        var rows = [];
+        var entries = [
+          {
+            key: 'gwashington',
+            data: {
+              follows: {
+                jadams: 1,
+              },
+            },
+          },
+          {
+            key: 'tjefferson',
+            data: {
+              follows: {
+                gwashington: 1,
+                jadams: 1,
+              },
+            },
+          },
+          {
+            key: 'jadams',
+            data: {
+              follows: {
+                gwashington: 1,
+                tjefferson: 1,
+              },
+            },
+          },
+        ];
 
-        TABLE.createReadStream()
-          .on('error', done)
-          .on('data', function(row) {
-            rows.push(row);
-            this.end();
-          })
-          .on('end', function() {
-            assert.strictEqual(rows.length, 1);
-            done();
-          });
+        TABLE.insert(entries, function(err) {
+          assert.ifError(err);
+
+          var rows = [];
+
+          TABLE.createReadStream()
+            .on('error', done)
+            .on('data', function(row) {
+              rows.push(row);
+              this.end();
+            })
+            .on('end', function() {
+              assert.strictEqual(rows.length, 1);
+              done();
+            });
+        });
       });
 
       describe('filters', function() {
