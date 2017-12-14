@@ -87,7 +87,7 @@ ChunkFormatter.prototype.onStreamEnd = function(callback) {
 };
 
 ChunkFormatter.prototype.newRow = function(chunk, options, callback) {
-  const row = (this.row = this.row || {});
+  const row = this.row;
   const prevRowKey = this.prevRowKey;
   if (typeof row.key !== 'undefined') {
     throw new Error('A new row cannot have existing state: ' + chunk);
@@ -146,7 +146,7 @@ ChunkFormatter.prototype.rowInProgress = function(chunk, options, callback) {
       chunk.familyName ||
       chunk.qualifier ||
       chunk.value ||
-      !chunk.timestampMicros > 0
+      chunk.timestampMicros > 0
     ) {
       throw new Error('A reset should have no data' + chunk);
     }
@@ -199,7 +199,7 @@ ChunkFormatter.prototype.cellInProgress = function(chunk, options, callback) {
       chunk.familyName ||
       chunk.qualifier ||
       chunk.value ||
-      !chunk.timestampMicros > 0
+      chunk.timestampMicros > 0
     ) {
       throw new Error('A reset should have no data' + chunk);
     }

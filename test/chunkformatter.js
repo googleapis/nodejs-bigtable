@@ -71,18 +71,22 @@ describe('Bigtable/ChunkFormatter', function() {
         'invalid initial state'
       );
     });
+    it('calling as function should return chunkformatter instance', function() {
+      const instance = ChunkFormatter();
+      assert(instance instanceof ChunkFormatter);
+    });
   });
   describe('newRow', function() {
     var newRowSpy;
     var callback;
     beforeEach(function() {
-      newRowSpy = sinon.spy(chunkFormatter.newRow);
+      newRowSpy = sinon.spy(chunkFormatter, 'newRow');
       callback = sinon.spy();
     });
     it('should throw exception when row key is undefined ', function() {
       try {
         chunkFormatter.row = {key: 'abc'};
-        newRowSpy({}, {}, callback);
+        newRowSpy.call(chunkFormatter, {}, {}, callback);
       } catch (err) {
         //pass
       }
@@ -90,7 +94,7 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when chunk key is undefined ', function() {
       try {
-        newRowSpy({}, {}, callback);
+        newRowSpy.call(chunkFormatter, {}, {}, callback);
       } catch (err) {
         //pass
       }
@@ -98,7 +102,20 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow is true ', function() {
       try {
-        newRowSpy({resetRow: true}, {}, callback);
+        newRowSpy.call(
+          chunkFormatter,
+          {rowKey: 'key', resetRow: true},
+          {},
+          callback
+        );
+      } catch (err) {
+        //pass
+      }
+      assert(newRowSpy.threw());
+    });
+    it('should throw exception when resetRow ', function() {
+      try {
+        newRowSpy.call(chunkFormatter, {resetRow: true}, {}, callback);
       } catch (err) {
         //pass
       }
@@ -107,7 +124,12 @@ describe('Bigtable/ChunkFormatter', function() {
     it('should throw exception when row key is equal to previous row key ', function() {
       chunkFormatter.prevRowKey = 'key';
       try {
-        newRowSpy({rowKey: 'key', resetRow: false}, {}, callback);
+        newRowSpy.call(
+          chunkFormatter,
+          {rowKey: 'key', resetRow: false},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -115,7 +137,7 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when family name is undefined ', function() {
       try {
-        newRowSpy({rowKey: 'key'}, {}, callback);
+        newRowSpy.call(chunkFormatter, {rowKey: 'key'}, {}, callback);
       } catch (err) {
         //pass
       }
@@ -123,7 +145,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when qualifier is undefined ', function() {
       try {
-        newRowSpy({rowKey: 'key', familyName: 'family'}, {}, callback);
+        newRowSpy.call(
+          chunkFormatter,
+          {rowKey: 'key', familyName: 'family'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -131,7 +158,8 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when valueSize>0 and commitRow=true ', function() {
       try {
-        newRowSpy(
+        newRowSpy.call(
+          chunkFormatter,
           {
             rowKey: 'key',
             familyName: 'family',
@@ -261,12 +289,17 @@ describe('Bigtable/ChunkFormatter', function() {
     var rowInProgressSpy;
     var callback;
     beforeEach(function() {
-      rowInProgressSpy = sinon.spy(chunkFormatter.rowInProgress);
+      rowInProgressSpy = sinon.spy(chunkFormatter, 'rowInProgress');
       callback = sinon.spy();
     });
     it('should throw exception when resetRow and rowkey', function() {
       try {
-        rowInProgressSpy({resetRow: true, rowKey: 'key'}, {}, callback);
+        rowInProgressSpy.call(
+          chunkFormatter,
+          {resetRow: true, rowKey: 'key'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -274,7 +307,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and familyName', function() {
       try {
-        rowInProgressSpy({resetRow: true, familyName: 'family'}, {}, callback);
+        rowInProgressSpy.call(
+          chunkFormatter,
+          {resetRow: true, familyName: 'family'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -282,7 +320,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and qualifier', function() {
       try {
-        rowInProgressSpy({resetRow: true, qualifer: 'qualifier'}, {}, callback);
+        rowInProgressSpy.call(
+          chunkFormatter,
+          {resetRow: true, qualifier: 'qualifier'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -290,7 +333,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and value', function() {
       try {
-        rowInProgressSpy({resetRow: true, value: 'value'}, {}, callback);
+        rowInProgressSpy.call(
+          chunkFormatter,
+          {resetRow: true, value: 'value'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -298,7 +346,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and timestampMicros', function() {
       try {
-        rowInProgressSpy({resetRow: true, timestampMicros: 10}, {}, callback);
+        rowInProgressSpy.call(
+          chunkFormatter,
+          {resetRow: true, timestampMicros: 10},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -306,8 +359,8 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when rowKey not equal to prevRowKey', function() {
       try {
-        chunkFormatter.row = {key: 'key'};
-        rowInProgressSpy({rowKey: 'key'}, {}, callback);
+        chunkFormatter.row = {key: 'key1'};
+        rowInProgressSpy.call(chunkFormatter, {rowKey: 'key'}, {}, callback);
       } catch (err) {
         //pass
       }
@@ -315,7 +368,8 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when valueSize>0 and commitRow=true ', function() {
       try {
-        rowInProgressSpy(
+        rowInProgressSpy.call(
+          chunkFormatter,
           {
             valueSize: 10,
             commitRow: true,
@@ -330,11 +384,10 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when familyName without qualifier ', function() {
       try {
-        rowInProgressSpy(
+        rowInProgressSpy.call(
+          chunkFormatter,
           {
             familyName: 'family',
-            valueSize: 10,
-            commitRow: true,
           },
           {},
           callback
@@ -343,6 +396,12 @@ describe('Bigtable/ChunkFormatter', function() {
         //pass
       }
       assert(rowInProgressSpy.threw());
+    });
+    it('should return true on resetRow ', function() {
+      const chunk = {resetRow: true};
+      const returnValue = chunkFormatter.rowInProgress(chunk, {}, callback);
+      assert(returnValue);
+      assert(!callback.called);
     });
     it('bare commitRow should produce qualifer ', function() {
       chunkFormatter.qualifiers = [];
@@ -523,12 +582,17 @@ describe('Bigtable/ChunkFormatter', function() {
     var cellInProgressSpy;
     var callback;
     beforeEach(function() {
-      cellInProgressSpy = sinon.spy(chunkFormatter.cellInProgress);
+      cellInProgressSpy = sinon.spy(chunkFormatter, 'cellInProgress');
       callback = sinon.spy();
     });
     it('should throw exception when resetRow and rowkey', function() {
       try {
-        cellInProgressSpy({resetRow: true, rowKey: 'key'}, {}, callback);
+        cellInProgressSpy.call(
+          this,
+          {resetRow: true, rowKey: 'key'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -536,7 +600,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and familyName', function() {
       try {
-        cellInProgressSpy({resetRow: true, familyName: 'family'}, {}, callback);
+        cellInProgressSpy.call(
+          this,
+          {resetRow: true, familyName: 'family'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -544,8 +613,9 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and qualifier', function() {
       try {
-        cellInProgressSpy(
-          {resetRow: true, qualifer: 'qualifier'},
+        cellInProgressSpy.call(
+          this,
+          {resetRow: true, qualifier: 'qualifier'},
           {},
           callback
         );
@@ -556,7 +626,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and value', function() {
       try {
-        cellInProgressSpy({resetRow: true, value: 'value'}, {}, callback);
+        cellInProgressSpy.call(
+          this,
+          {resetRow: true, value: 'value'},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -564,7 +639,12 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when resetRow and timestampMicros', function() {
       try {
-        cellInProgressSpy({resetRow: true, timestampMicros: 10}, {}, callback);
+        cellInProgressSpy.call(
+          this,
+          {resetRow: true, timestampMicros: 10},
+          {},
+          callback
+        );
       } catch (err) {
         //pass
       }
@@ -573,7 +653,7 @@ describe('Bigtable/ChunkFormatter', function() {
     it('should throw exception when rowKey not equal to prevRowKey', function() {
       try {
         chunkFormatter.row = {key: 'key'};
-        cellInProgressSpy({rowKey: 'key'}, {}, callback);
+        cellInProgressSpy.call(this, {rowKey: 'key'}, {}, callback);
       } catch (err) {
         //pass
       }
@@ -581,7 +661,8 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should throw exception when valueSize>0 and commitRow=true ', function() {
       try {
-        cellInProgressSpy(
+        cellInProgressSpy.call(
+          this,
           {
             valueSize: 10,
             commitRow: true,
@@ -593,6 +674,12 @@ describe('Bigtable/ChunkFormatter', function() {
         //pass
       }
       assert(cellInProgressSpy.threw());
+    });
+    it('should return true on resetRow ', function() {
+      const chunk = {resetRow: true};
+      const returnValue = chunkFormatter.cellInProgress(chunk, {}, callback);
+      assert(returnValue);
+      assert(!callback.called);
     });
     it('should produce row on commitRow', function() {
       chunkFormatter.qualifier = {
