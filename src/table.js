@@ -31,6 +31,7 @@ var Family = require('./family.js');
 var Filter = require('./filter.js');
 var Mutation = require('./mutation.js');
 var Row = require('./row.js');
+const ChunkFormatter = require('./chunkformatter.js');
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
@@ -484,24 +485,39 @@ Table.prototype.createReadStream = function(options) {
   if (options.limit) {
     reqOpts.rowsLimit = options.limit;
   }
-
+  const chunkFormatter = new ChunkFormatter();
   return pumpify.obj([
     this.requestStream(grpcOpts, reqOpts),
-    through.obj(function(data, enc, next) {
-      var throughStream = this;
-      var rows = Row.formatChunks_(data.chunks, {
-        decode: options.decode,
-      });
-
-      rows.forEach(function(rowData) {
-        var row = self.row(rowData.key);
-
-        row.data = rowData.data;
-        throughStream.push(row);
-      });
-
-      next();
-    }),
+    through.obj(
+      function(data, enc, next) {
+        var throughStream = this;
+        chunkFormatter.formatChunks(
+          data.chunks,
+          {
+            decode: options.decode,
+          },
+          (err, rowData) => {
+            if (err) {
+              throughStream.emit('error', err);
+            } else {
+              var row = self.row(rowData.key);
+              row.data = rowData.data;
+              throughStream.push(row);
+            }
+          }
+        );
+        next();
+      },
+      function(callback) {
+        var throughStream = this;
+        chunkFormatter.onStreamEnd(err => {
+          if (err) {
+            throughStream.emit('error', err);
+          }
+        });
+        callback();
+      }
+    ),
   ]);
 };
 
