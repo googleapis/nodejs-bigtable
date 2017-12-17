@@ -30,6 +30,7 @@ var commonGrpc = require('@google-cloud/common-grpc');
 var Family = require('../src/family.js');
 var Mutation = require('../src/mutation.js');
 var Row = require('../src/row.js');
+var ChunkFormatter = require('../src/chunkformatter.js');
 
 var promisified = false;
 var fakeUtil = extend({}, common.util, {
@@ -63,6 +64,11 @@ FakeFamily.formatRule_ = sinon.spy(function(rule) {
 var FakeRow = createFake(Row);
 
 FakeRow.formatChunks_ = sinon.spy(function(chunks) {
+  return chunks;
+});
+
+var FakeChunkFormatter = createFake(ChunkFormatter);
+FakeChunkFormatter.prototype.formatChunks = sinon.spy(function(chunks) {
   return chunks;
 });
 
@@ -110,6 +116,7 @@ describe('Bigtable/Table', function() {
       './filter.js': FakeFilter,
       pumpify: pumpify,
       './row.js': FakeRow,
+      './chunkformatter.js': FakeChunkFormatter,
     });
   });
 
@@ -572,9 +579,14 @@ describe('Bigtable/Table', function() {
           return {};
         });
 
-        FakeRow.formatChunks_ = sinon.spy(function() {
-          return formattedRows;
+        FakeChunkFormatter.prototype.formatChunks = sinon.spy(function(
+          chunks,
+          options,
+          callback
+        ) {
+          formattedRows.forEach(row => callback(null, row));
         });
+        FakeChunkFormatter.prototype.onStreamEnd = sinon.spy(function() {});
 
         table.requestStream = function() {
           var stream = new Stream({
@@ -600,7 +612,9 @@ describe('Bigtable/Table', function() {
           .on('error', done)
           .on('data', function() {})
           .on('end', function() {
-            var formatArgs = FakeRow.formatChunks_.getCall(0).args[1];
+            var formatArgs = FakeChunkFormatter.prototype.formatChunks.getCall(
+              0
+            ).args[1];
 
             assert.strictEqual(formatArgs.decode, options.decode);
             done();
@@ -618,7 +632,7 @@ describe('Bigtable/Table', function() {
           })
           .on('end', function() {
             var rowSpy = table.row;
-            var formatSpy = FakeRow.formatChunks_;
+            var formatSpy = FakeChunkFormatter.prototype.formatChunks;
 
             assert.strictEqual(rows.length, formattedRows.length);
             assert.strictEqual(rowSpy.callCount, formattedRows.length);
@@ -654,8 +668,38 @@ describe('Bigtable/Table', function() {
 
     describe('error', function() {
       var error = new Error('err');
+      var fakeChunks = {
+        chunks: [
+          {
+            rowKey: 'a',
+          },
+          {
+            commitRow: true,
+          },
+          {
+            rowKey: 'b',
+          },
+          {
+            commitRow: true,
+          },
+        ],
+      };
 
-      beforeEach(function() {
+      // beforeEach(function() {
+      //   table.requestStream = function() {
+      //     var stream = new Stream({
+      //       objectMode: true,
+      //     });
+
+      //     setImmediate(function() {
+      //       stream.emit('error', error);
+      //     });
+
+      //     return stream;
+      //   };
+      // });
+
+      it('should emit an error event', function(done) {
         table.requestStream = function() {
           var stream = new Stream({
             objectMode: true,
@@ -667,9 +711,53 @@ describe('Bigtable/Table', function() {
 
           return stream;
         };
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
       });
+      it('should emit an error event when chunk format returns error', function(done) {
+        table.requestStream = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
 
-      it('should emit an error event', function(done) {
+          setImmediate(function() {
+            stream.push(fakeChunks);
+            stream.push(null);
+          });
+
+          return stream;
+        };
+        FakeChunkFormatter.prototype.formatChunks = sinon.spy(function() {
+          throw error;
+        });
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
+      });
+      it('should emit an error event when chunkformatter returns error onstream end', function(done) {
+        table.requestStream = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            stream.push(null);
+          });
+
+          return stream;
+        };
+        FakeChunkFormatter.prototype.onStreamEnd = sinon.spy(function() {
+          throw error;
+        });
         table
           .createReadStream()
           .on('error', function(err) {

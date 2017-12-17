@@ -31,6 +31,7 @@ var Family = require('./family.js');
 var Filter = require('./filter.js');
 var Mutation = require('./mutation.js');
 var Row = require('./row.js');
+const ChunkFormatter = require('./chunkformatter.js');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -488,30 +489,45 @@ Table.prototype.createReadStream = function(options) {
   if (options.limit) {
     reqOpts.rowsLimit = options.limit;
   }
-
+  const chunkFormatter = new ChunkFormatter();
   var stream = pumpify.obj([
     this.requestStream(grpcOpts, reqOpts),
-    through.obj(function(data, enc, next) {
-      var throughStream = this;
-      var rows = Row.formatChunks_(data.chunks, {
-        decode: options.decode,
-      });
-
-      rows.forEach(function(rowData) {
-        if (stream._ended) {
-          return;
+    through.obj(
+      function(data, enc, next) {
+        var throughStream = this;
+        try {
+          chunkFormatter.formatChunks(
+            data.chunks,
+            {
+              decode: options.decode,
+            },
+            (err, rowData) => {
+              if (stream._ended) {
+                throw new Error('stream ended');
+              } else {
+                var row = self.row(rowData.key);
+                row.data = rowData.data;
+                throughStream.push(row);
+              }
+            }
+          );
+        } catch (err) {
+          if (!stream._ended) {
+            return next(err);
+          }
         }
-
-        var row = self.row(rowData.key);
-
-        row.data = rowData.data;
-        throughStream.push(row);
-      });
-
-      next();
-    }),
+        next();
+      },
+      function(callback) {
+        try {
+          chunkFormatter.onStreamEnd();
+        } catch (err) {
+          return callback(err);
+        }
+        callback();
+      }
+    ),
   ]);
-
   return stream;
 };
 
