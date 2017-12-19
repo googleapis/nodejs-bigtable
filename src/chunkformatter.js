@@ -15,17 +15,27 @@
  */
 'use strict';
 const Mutation = require('./mutation.js');
+/**
+ * Enum for chunk formatter Row state.
+ * NEW_ROW: inital state or state after commitRow or resetRow
+ * ROW_IN_PROGRESS: state after first valid chunk without commitRow or resetRow
+ * CELL_IN_PROGRESS: state when valueSize > 0(partial cell)
+ */
+const RowStateEnum = Object.freeze({
+  NEW_ROW: 1,
+  ROW_IN_PROGRESS: 2,
+  CELL_IN_PROGRESS: 3,
+});
+/**
+ * ChunkFormatter formats all incoming chunks in to row
+ * keeps all intermediate state until end of stream.
+ * Should use new instance for each request.
+ */
 function ChunkFormatter() {
   if (!(this instanceof ChunkFormatter)) {
     return new ChunkFormatter();
   }
-
-  this.prevRowKey = '';
-  this.family = {};
-  this.qualifiers = [];
-  this.qualifier = {};
-  this.row = {};
-  this.state = this.newRow;
+  this.reset();
 }
 /**
  * Formats the row chunks into friendly format. Chunks contain 3 properties:
@@ -43,9 +53,10 @@ function ChunkFormatter() {
  *
  * @param {chunk[]} chunks The list of chunks.
  * @param {object} [options] Formatting options.
- *
+ * @param {callback} callback callback will be called with parsed rows
+ * @throws Error if it detects invalid state
  * @example
- * Row.formatChunks_(chunks);
+ * ChunkFormatter.formatChunks(chunks);
  * // {
  * //   follows: {
  * //     gwashington: [
@@ -58,50 +69,162 @@ function ChunkFormatter() {
  */
 ChunkFormatter.prototype.formatChunks = function(chunks, options, callback) {
   options = options || {};
-  chunks.forEach(chunk => {
-    if (this.state(chunk, options, callback)) {
-      this.state = this.newRow;
-      this.family = {};
-      this.qualifier = {};
-      this.qualifiers = [];
-      this.row = {};
+  for (const chunk of chunks) {
+    switch (this.state) {
+      case RowStateEnum.NEW_ROW:
+        this.newRow(chunk, options, callback);
+        break;
+      case RowStateEnum.ROW_IN_PROGRESS:
+        this.rowInProgress(chunk, options, callback);
+        break;
+      case RowStateEnum.CELL_IN_PROGRESS:
+        this.cellInProgress(chunk, options, callback);
+        break;
     }
-  }, this);
+  }
 };
-
+/**
+ * should be called at end of the stream to check if there is any pending row.
+ * @public
+ * @throws Error if there is any uncommitted row.
+ */
 ChunkFormatter.prototype.onStreamEnd = function() {
   if (typeof this.row.key !== 'undefined') {
     throw new Error('Response ended with pending row without commit');
   }
 };
-
-ChunkFormatter.prototype.newRow = function(chunk, options, callback) {
+/**
+ * Resets state of formatter
+ * @private
+ */
+ChunkFormatter.prototype.reset = function() {
+  this.prevRowKey = '';
+  this.family = {};
+  this.qualifiers = [];
+  this.qualifier = {};
+  this.row = {};
+  this.state = RowStateEnum.NEW_ROW;
+};
+/**
+ * sets prevRowkey and calls reset when row is committed.
+ * @private
+ */
+ChunkFormatter.prototype.commit = function() {
+  const row = this.row;
+  this.reset();
+  this.prevRowKey = row.key;
+};
+/**
+ * Error checker if true throws error
+ * @private
+ * @param {boolean} condition condition to evaluate
+ * @param {string} text Error text
+ * @param {object} chunk chunk object to append to text
+ */
+ChunkFormatter.prototype.isError = function(condition, text, chunk) {
+  if (condition) {
+    throw new Error(`${text}: ${chunk}`);
+  }
+};
+/**
+ * Validates valuesize and commitrow in a chunk
+ * @private
+ * @param {chunk} chunk chunk to validate for valuesize and commitRow
+ */
+ChunkFormatter.prototype.validateValueSizeAndCommitRow = function(chunk) {
+  this.isError(
+    chunk.valueSize > 0 && chunk.commitRow,
+    'A row cannot be have a value size and be a commit row',
+    chunk
+  );
+};
+/**
+ * Validates resetRow condition for chunk
+ * @private
+ * @param {chunk} chunk chunk to validate for resetrow
+ */
+ChunkFormatter.prototype.validateResetRow = function(chunk) {
+  this.isError(
+    chunk.resetRow &&
+      (chunk.rowKey ||
+        chunk.familyName ||
+        chunk.qualifier ||
+        chunk.value ||
+        chunk.timestampMicros > 0),
+    'A reset should have no data',
+    chunk
+  );
+};
+/**
+ * Validates state for new row.
+ * @private
+ * @param {chunk} chunk chunk to validate
+ */
+ChunkFormatter.prototype.validateNewRow = function(chunk) {
   const row = this.row;
   const prevRowKey = this.prevRowKey;
-  if (typeof row.key !== 'undefined') {
-    throw new Error('A new row cannot have existing state: ' + chunk);
-  }
-  if (typeof chunk.rowKey === 'undefined') {
-    throw new Error('A row key must be set' + chunk);
-  }
-  if (chunk.resetRow) {
-    throw new Error('A new row cannot be reset: ' + chunk);
-  }
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-  if (prevRowKey === newRowKey) {
-    throw new Error('A commit happened but the same key followed: ' + chunk);
-  }
-  if (!chunk.familyName) {
-    throw new Error('A family must be set: ' + chunk);
-  }
-  if (!chunk.qualifier) {
-    throw new Error('A column qualifier must be set: ' + chunk);
-  }
-  if (chunk.valueSize > 0 && chunk.commitRow) {
-    throw new Error(
-      'A row cannot be have a value size and be a commit row: ' + chunk
-    );
-  }
+  this.isError(
+    typeof row.key !== 'undefined',
+    'A new row cannot have existing state',
+    chunk
+  );
+  this.isError(
+    typeof chunk.rowKey === 'undefined' || chunk.rowKey === '',
+    'A row key must be set',
+    chunk
+  );
+  this.isError(chunk.resetRow, 'A new row cannot be reset', chunk);
+  this.isError(
+    prevRowKey === newRowKey,
+    'A commit happened but the same key followed',
+    chunk
+  );
+  this.isError(!chunk.familyName, 'A family must be set', chunk);
+  this.isError(!chunk.qualifier, 'A column qualifier must be set', chunk);
+  this.validateValueSizeAndCommitRow(chunk);
+};
+/**
+ * Validates state for rowInProgress
+ * @private
+ * @param {chunk} chunk chunk to validate
+ */
+ChunkFormatter.prototype.validateRowInProgress = function(chunk) {
+  const row = this.row;
+  this.validateResetRow(chunk);
+  const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+  this.isError(
+    chunk.rowKey && newRowKey !== row.key,
+    'A commit is required between row keys',
+    chunk
+  );
+  this.validateValueSizeAndCommitRow(chunk);
+  this.isError(
+    chunk.familyName && !chunk.qualifier,
+    'A qualifier must be specified',
+    chunk
+  );
+};
+/**
+ * Validates chunk for cellInProgress state.
+ * @private
+ * @param {chunk} chunk chunk to validate
+ */
+ChunkFormatter.prototype.validateCellInProgress = function(chunk) {
+  this.validateResetRow(chunk);
+  this.validateValueSizeAndCommitRow(chunk);
+};
+/**
+ * Process chunk when in NEW_ROW state.
+ * @private
+ * @param {chunks} chunk chunk to process
+ * @param {options} options options
+ * @param {callback} callback callback to call with row as and when generates
+ */
+ChunkFormatter.prototype.newRow = function(chunk, options, callback) {
+  const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+  this.validateNewRow(chunk);
+  const row = this.row;
   row.key = newRowKey;
   row.data = {};
   this.family = row.data[chunk.familyName.value] = {};
@@ -115,45 +238,30 @@ ChunkFormatter.prototype.newRow = function(chunk, options, callback) {
   };
   this.qualifiers.push(this.qualifier);
   if (chunk.commitRow) {
-    this.prevRowKey = row.key;
     callback(null, row);
-    return true;
+    this.commit();
   } else {
     if (chunk.valueSize > 0) {
-      this.state = this.cellInProgress;
+      this.state = RowStateEnum.CELL_IN_PROGRESS;
     } else {
-      this.state = this.rowInProgress;
+      this.state = RowStateEnum.ROW_IN_PROGRESS;
     }
-    return false;
   }
 };
+/**
+ * Process chunk when in ROW_IN_PROGRESS state.
+ * @private
+ * @param {chunk} chunk chunk to process
+ * @param {*} options  option
+ * @param {*} callback callback to call with row as and when generates
+ */
 ChunkFormatter.prototype.rowInProgress = function(chunk, options, callback) {
-  const row = this.row;
+  this.validateRowInProgress(chunk);
   if (chunk.resetRow) {
-    if (
-      chunk.rowKey ||
-      chunk.familyName ||
-      chunk.qualifier ||
-      chunk.value ||
-      chunk.timestampMicros > 0
-    ) {
-      throw new Error('A reset should have no data' + chunk);
-    }
-    return true;
+    return this.reset();
   }
-  const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-  if (chunk.rowKey && newRowKey !== row.key) {
-    throw new Error('A commit is required between row keys: ' + chunk);
-  }
-  if (chunk.valueSize > 0 && chunk.commitRow) {
-    throw new Error(
-      'A row cannot be have a value size and be a commit row: ' + chunk
-    );
-  }
+  const row = this.row;
   if (chunk.familyName) {
-    if (!chunk.qualifier) {
-      throw new Error('A qualifier must be specified: ' + chunk);
-    }
     this.family = row.data[chunk.familyName.value] =
       row.data[chunk.familyName.value] || {};
   }
@@ -170,48 +278,39 @@ ChunkFormatter.prototype.rowInProgress = function(chunk, options, callback) {
   };
   this.qualifiers.push(this.qualifier);
   if (chunk.commitRow) {
-    this.prevRowKey = row.key;
     callback(null, row);
-    return true;
+    this.commit();
   } else {
     if (chunk.valueSize > 0) {
-      this.state = this.cellInProgress;
+      this.state = RowStateEnum.CELL_IN_PROGRESS;
     }
-    return false;
   }
 };
+/**
+ * Process chunk when in CELl_IN_PROGRESS state.
+ * @private
+ * @param {chunk} chunk chunk to process
+ * @param {options} options options
+ * @param {callback} callback callback to call with row as and when generates
+ */
 ChunkFormatter.prototype.cellInProgress = function(chunk, options, callback) {
-  const row = this.row;
+  this.validateCellInProgress(chunk);
   if (chunk.resetRow) {
-    if (
-      chunk.rowKey ||
-      chunk.familyName ||
-      chunk.qualifier ||
-      chunk.value ||
-      chunk.timestampMicros > 0
-    ) {
-      throw new Error('A reset should have no data' + chunk);
-    }
-    return true;
+    return this.reset();
   }
-  if (chunk.valueSize > 0 && chunk.commitRow) {
-    throw new Error(
-      'A row cannot be have a value size and be a commit row: ' + chunk
-    );
-  }
+  const row = this.row;
   this.qualifier.value =
     this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
   this.qualifier.size = 0;
   if (chunk.commitRow) {
-    this.prevRowKey = row.key;
     callback(null, row);
-    return true;
+    this.commit();
   } else {
     if (chunk.valueSize === 0) {
-      this.state = this.rowInProgress;
+      this.state = RowStateEnum.ROW_IN_PROGRESS;
     }
-    return false;
   }
 };
 
 module.exports = ChunkFormatter;
+module.exports.RowStateEnum = RowStateEnum;

@@ -22,6 +22,7 @@ const sinon = require('sinon').sandbox.create();
 const Mutation = require('../src/mutation.js');
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
+const RowStateEnum = require('../src/chunkformatter.js').RowStateEnum;
 
 const FakeMutation = {
   methods: Mutation.methods,
@@ -59,7 +60,7 @@ describe('Bigtable/ChunkFormatter', function() {
       this.qualifiers = [];
       this.qualifier = {};
       this.row = {};
-      this.state = this.newRow;
+      this.state = RowStateEnum.NEW_ROW;
       assert.deepEqual(chunkFormatter.row, {}, 'invalid initial state');
       assert.deepEqual(chunkFormatter.prevRowKey, '', 'invalid initial state');
       assert.deepEqual(chunkFormatter.family, {}, 'invalid initial state');
@@ -67,7 +68,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(chunkFormatter.qualifier, {}, 'invalid initial state');
       assert.deepEqual(
         chunkFormatter.state,
-        chunkFormatter.newRow,
+        RowStateEnum.NEW_ROW,
         'invalid initial state'
       );
     });
@@ -79,9 +80,13 @@ describe('Bigtable/ChunkFormatter', function() {
   describe('newRow', function() {
     var newRowSpy;
     var callback;
+    var resetSpy;
+    var commitSpy;
     beforeEach(function() {
       newRowSpy = sinon.spy(chunkFormatter, 'newRow');
       callback = sinon.spy();
+      resetSpy = sinon.spy(chunkFormatter, 'reset');
+      commitSpy = sinon.spy(chunkFormatter, 'commit');
     });
     it('should throw exception when row key is undefined ', function() {
       try {
@@ -186,8 +191,9 @@ describe('Bigtable/ChunkFormatter', function() {
         commitRow: true,
         value: 'value',
       };
-      const returnValue = chunkFormatter.newRow(chunk, {}, callback);
-      assert(returnValue, true, 'reset state failed');
+      chunkFormatter.newRow(chunk, {}, callback);
+      assert(resetSpy.called, 'reset state failed');
+      assert(commitSpy.called, 'commit row failed');
       assert(callback.called);
       assert.equal(
         chunkFormatter.prevRowKey,
@@ -223,9 +229,10 @@ describe('Bigtable/ChunkFormatter', function() {
         commitRow: false,
         value: 'value',
       };
-      const returnValue = chunkFormatter.newRow(chunk, {}, callback);
-      assert.equal(returnValue, false, 'reset state failed');
-      assert.equal(callback.called, false, 'wrong callback');
+      chunkFormatter.newRow(chunk, {}, callback);
+      assert(!resetSpy.called, 'invalid call to reset');
+      assert(!commitSpy.called, 'inavlid call to commit');
+      assert(!callback.called, 'wrong callback');
       let partialRow = {
         key: chunk.rowKey,
         data: {
@@ -244,7 +251,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(chunkFormatter.row, partialRow);
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.rowInProgress,
+        RowStateEnum.ROW_IN_PROGRESS,
         'wrong state'
       );
     });
@@ -259,9 +266,10 @@ describe('Bigtable/ChunkFormatter', function() {
         commitRow: false,
         value: 'value',
       };
-      const returnValue = chunkFormatter.newRow(chunk, {}, callback);
-      assert.equal(returnValue, false, 'reset state failed');
-      assert.equal(callback.called, false, 'wrong callback');
+      chunkFormatter.newRow(chunk, {}, callback);
+      assert(!resetSpy.called, 'invalid call to reset');
+      assert(!commitSpy.called, 'inavlid call to commit');
+      assert(!callback.called, 'wrong callback');
       let partialRow = {
         key: chunk.rowKey,
         data: {
@@ -280,7 +288,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(chunkFormatter.row, partialRow);
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.cellInProgress,
+        RowStateEnum.CELL_IN_PROGRESS,
         'wrong state'
       );
     });
@@ -288,9 +296,13 @@ describe('Bigtable/ChunkFormatter', function() {
   describe('rowInProgress', function() {
     var rowInProgressSpy;
     var callback;
+    var resetSpy;
+    var commitSpy;
     beforeEach(function() {
       rowInProgressSpy = sinon.spy(chunkFormatter, 'rowInProgress');
       callback = sinon.spy();
+      resetSpy = sinon.spy(chunkFormatter, 'reset');
+      commitSpy = sinon.spy(chunkFormatter, 'commit');
     });
     it('should throw exception when resetRow and rowkey', function() {
       try {
@@ -397,11 +409,12 @@ describe('Bigtable/ChunkFormatter', function() {
       }
       assert(rowInProgressSpy.threw());
     });
-    it('should return true on resetRow ', function() {
+    it('should reset on resetRow ', function() {
       const chunk = {resetRow: true};
-      const returnValue = chunkFormatter.rowInProgress(chunk, {}, callback);
-      assert(returnValue);
-      assert(!callback.called);
+      chunkFormatter.rowInProgress(chunk, {}, callback);
+      assert(resetSpy.called, 'Did not reset');
+      assert(!callback.called, 'unexpected callback');
+      assert(!commitSpy.called, 'unexpected commit');
     });
     it('bare commitRow should produce qualifer ', function() {
       chunkFormatter.qualifiers = [];
@@ -414,8 +427,9 @@ describe('Bigtable/ChunkFormatter', function() {
         },
       };
       const chunk = {commitRow: true};
-      const returnValue = chunkFormatter.rowInProgress(chunk, {}, callback);
-      assert(returnValue);
+      chunkFormatter.rowInProgress(chunk, {}, callback);
+      assert(commitSpy.called, 'did not call commit');
+      assert(resetSpy.called, 'did not call reset');
       assert(callback.called);
       const expectedRow = {
         key: 'key',
@@ -436,7 +450,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(row, expectedRow, 'row mismatch');
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.newRow,
+        RowStateEnum.NEW_ROW,
         'state mismatch'
       );
     });
@@ -459,8 +473,9 @@ describe('Bigtable/ChunkFormatter', function() {
         labels: [],
         valueSize: 0,
       };
-      const returnValue = chunkFormatter.rowInProgress(chunk, {}, callback);
-      assert(returnValue);
+      chunkFormatter.rowInProgress(chunk, {}, callback);
+      assert(commitSpy.called, 'did not call commit');
+      assert(resetSpy.called, 'did not call reset');
       assert(callback.called);
       const expectedRow = {
         key: 'key',
@@ -482,7 +497,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(row, expectedRow, 'row mismatch');
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.newRow,
+        RowStateEnum.NEW_ROW,
         'state mismatch'
       );
     });
@@ -506,8 +521,9 @@ describe('Bigtable/ChunkFormatter', function() {
         labels: [],
         valueSize: 0,
       };
-      const returnValue = chunkFormatter.rowInProgress(chunk, {}, callback);
-      assert(returnValue);
+      chunkFormatter.rowInProgress(chunk, {}, callback);
+      assert(commitSpy.called, 'did not call commit');
+      assert(resetSpy.called, 'did not call reset');
       assert(callback.called);
       const expectedRow = {
         key: 'key',
@@ -531,7 +547,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(row, expectedRow, 'row mismatch');
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.newRow,
+        RowStateEnum.NEW_ROW,
         'state mismatch'
       );
     });
@@ -552,8 +568,9 @@ describe('Bigtable/ChunkFormatter', function() {
         timestampMicros: 0,
         labels: [],
       };
-      const returnValue = chunkFormatter.rowInProgress(chunk, {}, callback);
-      assert(!returnValue);
+      chunkFormatter.rowInProgress(chunk, {}, callback);
+      assert(!commitSpy.called, 'invalid call to commit');
+      assert(!resetSpy.called, 'invalid call to reset');
       assert(!callback.called);
       const expectedState = {
         key: 'key',
@@ -573,7 +590,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(chunkFormatter.row, expectedState, 'row state mismatch');
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.cellInProgress,
+        RowStateEnum.CELL_IN_PROGRESS,
         'state mismatch'
       );
     });
@@ -581,9 +598,13 @@ describe('Bigtable/ChunkFormatter', function() {
   describe('cellInProgress', function() {
     var cellInProgressSpy;
     var callback;
+    var resetSpy;
+    var commitSpy;
     beforeEach(function() {
       cellInProgressSpy = sinon.spy(chunkFormatter, 'cellInProgress');
       callback = sinon.spy();
+      resetSpy = sinon.spy(chunkFormatter, 'reset');
+      commitSpy = sinon.spy(chunkFormatter, 'commit');
     });
     it('should throw exception when resetRow and rowkey', function() {
       try {
@@ -677,8 +698,9 @@ describe('Bigtable/ChunkFormatter', function() {
     });
     it('should return true on resetRow ', function() {
       const chunk = {resetRow: true};
-      const returnValue = chunkFormatter.cellInProgress(chunk, {}, callback);
-      assert(returnValue);
+      chunkFormatter.cellInProgress(chunk, {}, callback);
+      assert(resetSpy.called, 'did not call reset');
+      assert(!commitSpy.called, 'unexpected call to commit');
       assert(!callback.called);
     });
     it('should produce row on commitRow', function() {
@@ -702,8 +724,9 @@ describe('Bigtable/ChunkFormatter', function() {
         commitRow: true,
         value: '2',
       };
-      const returnValue = chunkFormatter.cellInProgress(chunk, {}, callback);
-      assert(returnValue);
+      chunkFormatter.cellInProgress(chunk, {}, callback);
+      assert(commitSpy.called, 'did not call commit');
+      assert(resetSpy.called, 'did not call reste');
       assert(callback.called);
       const expectedRow = {
         key: 'key',
@@ -724,7 +747,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(row, expectedRow, 'row mismatch');
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.newRow,
+        RowStateEnum.NEW_ROW,
         'state mismatch'
       );
     });
@@ -750,8 +773,9 @@ describe('Bigtable/ChunkFormatter', function() {
         value: '2',
         valueSize: 0,
       };
-      const returnValue = chunkFormatter.cellInProgress(chunk, {}, callback);
-      assert(!returnValue);
+      chunkFormatter.cellInProgress(chunk, {}, callback);
+      assert(!resetSpy.called, 'invalid call to reset');
+      assert(!commitSpy.called, 'invalid call to commit');
       assert(!callback.called);
       const expectedState = {
         key: 'key',
@@ -771,7 +795,7 @@ describe('Bigtable/ChunkFormatter', function() {
       assert.deepEqual(chunkFormatter.row, expectedState, 'row mismatch');
       assert.equal(
         chunkFormatter.state,
-        chunkFormatter.rowInProgress,
+        RowStateEnum.ROW_IN_PROGRESS,
         'state mismatch'
       );
     });
@@ -802,28 +826,162 @@ describe('Bigtable/ChunkFormatter', function() {
   });
   describe('formatChunks', function() {
     var callback;
-    // var formatChunksSpy;
+    var newRowSpy;
+    var rowInProgressSpy;
+    var cellInProgressSpy;
     beforeEach(function() {
-      // formatChunksSpy = sinon.spy(chunkFormatter.formatChunks);
       callback = sinon.spy();
+      newRowSpy = sinon.spy(chunkFormatter, 'newRow');
+      rowInProgressSpy = sinon.spy(chunkFormatter, 'rowInProgress');
+      cellInProgressSpy = sinon.spy(chunkFormatter, 'cellInProgress');
     });
-    it('when current state returns true it should reset state', function() {
+    it('when current state is NEW_ROW should call newRow', function() {
       chunkFormatter.state = sinon.spy(function() {
         return true;
       });
-      chunkFormatter.row = {key: 'key'};
-      const chunks = [{key: 'key'}];
-      chunkFormatter.formatChunks(chunks, {}, callback);
-      assert.deepEqual(chunkFormatter.row, {}, ' state mismatch');
+      const chunk = {
+        rowKey: 'key',
+        familyName: {value: 'family'},
+        qualifier: {value: 'qualifier'},
+        valueSize: 0,
+        timestampMicros: 0,
+        labels: [],
+        commitRow: true,
+        value: 'value',
+      };
+      chunkFormatter.state = RowStateEnum.NEW_ROW;
+      const chunks = [chunk];
+      try {
+        chunkFormatter.formatChunks(chunks, {}, callback);
+      } catch (err) {
+        //pass
+      }
+      assert(newRowSpy.called, 'did not call newRow');
     });
-    it('when current state returns false it should keep state', function() {
+    it('when current state is ROW_IN_PROGRESS should call rowInProgress', function() {
       chunkFormatter.state = sinon.spy(function() {
         return false;
       });
       chunkFormatter.row = {key: 'key'};
+      chunkFormatter.state = RowStateEnum.ROW_IN_PROGRESS;
       const chunks = [{key: 'key'}];
-      chunkFormatter.formatChunks(chunks, {}, callback);
-      assert.deepEqual(chunkFormatter.row, {key: 'key'}, ' state mismatch');
+      try {
+        chunkFormatter.formatChunks(chunks, {}, callback);
+      } catch (err) {
+        //pass
+      }
+      assert(rowInProgressSpy.called, 'did not call rowInProgress');
+    });
+    it('when current state is CELL_IN_PROGRESS should call cellInProgress', function() {
+      chunkFormatter.state = sinon.spy(function() {
+        return false;
+      });
+      chunkFormatter.row = {key: 'key'};
+      chunkFormatter.state = RowStateEnum.CELL_IN_PROGRESS;
+      const chunks = [{key: 'key'}];
+      try {
+        chunkFormatter.formatChunks(chunks, {}, callback);
+      } catch (err) {
+        //pass
+      }
+      assert(cellInProgressSpy.called, 'did not call cellInProgress');
+    });
+  });
+  describe('reset', function() {
+    it('should reset initial state', function() {
+      chunkFormatter.prevRowKey = 'prevkey';
+      chunkFormatter.qualifier = {
+        value: 'value',
+        size: 0,
+        timestamp: 0,
+        labels: [],
+      };
+      chunkFormatter.qualifiers = [chunkFormatter.qualifier];
+      chunkFormatter.family = {
+        qualifier: chunkFormatter.qualifiers,
+      };
+      chunkFormatter.row = {
+        key: 'key',
+        data: {
+          family: chunkFormatter.family,
+        },
+      };
+      this.state = RowStateEnum.CELL_IN_PROGRESS;
+      chunkFormatter.reset();
+      assert.deepEqual(chunkFormatter.row, {}, 'invalid initial state');
+      assert.deepEqual(chunkFormatter.prevRowKey, '', 'invalid initial state');
+      assert.deepEqual(chunkFormatter.family, {}, 'invalid initial state');
+      assert.deepEqual(chunkFormatter.qualifiers, [], 'invalid initial state');
+      assert.deepEqual(chunkFormatter.qualifier, {}, 'invalid initial state');
+      assert.deepEqual(
+        chunkFormatter.state,
+        RowStateEnum.NEW_ROW,
+        'invalid initial state'
+      );
+    });
+  });
+  describe('commit', function() {
+    var resetSpy;
+    beforeEach(function() {
+      resetSpy = sinon.spy(chunkFormatter, 'reset');
+    });
+    it('should reset to initial state and set prevRowKey', function() {
+      chunkFormatter.prevRowKey = '';
+      chunkFormatter.qualifier = {
+        value: 'value',
+        size: 0,
+        timestamp: 0,
+        labels: [],
+      };
+      chunkFormatter.qualifiers = [chunkFormatter.qualifier];
+      chunkFormatter.family = {
+        qualifier: chunkFormatter.qualifiers,
+      };
+      chunkFormatter.row = {
+        key: 'key',
+        data: {
+          family: chunkFormatter.family,
+        },
+      };
+      this.state = RowStateEnum.CELL_IN_PROGRESS;
+      chunkFormatter.commit();
+      assert(resetSpy.called, 'did not call reset');
+      assert.deepEqual(chunkFormatter.row, {}, 'invalid initial state');
+      assert.deepEqual(
+        chunkFormatter.prevRowKey,
+        'key',
+        'invalid initial state'
+      );
+      assert.deepEqual(chunkFormatter.family, {}, 'invalid initial state');
+      assert.deepEqual(chunkFormatter.qualifiers, [], 'invalid initial state');
+      assert.deepEqual(chunkFormatter.qualifier, {}, 'invalid initial state');
+      assert.deepEqual(
+        chunkFormatter.state,
+        RowStateEnum.NEW_ROW,
+        'invalid initial state'
+      );
+    });
+  });
+  describe('isError', function() {
+    var isErrorSpy;
+    beforeEach(function() {
+      isErrorSpy = sinon.spy(chunkFormatter, 'isError');
+    });
+    it('should throw error on true', function() {
+      try {
+        isErrorSpy(true, '', '');
+      } catch (err) {
+        //pass
+      }
+      assert(isErrorSpy.threw(), 'did not threw error');
+    });
+    it('should not throw error on false', function() {
+      try {
+        isErrorSpy(false, '', '');
+      } catch (err) {
+        //pass
+      }
+      assert(!isErrorSpy.threw(), 'unexpected error');
     });
   });
 });
