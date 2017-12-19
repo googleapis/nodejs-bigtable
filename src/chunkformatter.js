@@ -301,7 +301,6 @@ ChunkFormatter.prototype.cellInProgress = function(chunk, options, callback) {
   if (chunk.resetRow) {
     return this.reset();
   }
-  const row = this.row;
   this.qualifier.value =
     this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
   this.qualifier.size = 0;
