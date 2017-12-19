@@ -215,6 +215,25 @@ ChunkFormatter.prototype.validateCellInProgress = function(chunk) {
   this.validateValueSizeAndCommitRow(chunk);
 };
 /**
+ * Moves to next state in processing.
+ * @private
+ * @param {chunk} chunk chunk in process
+ * @param {*} callback callback to call with row as and when generates
+ */
+ChunkFormatter.prototype.moveToNextState = function(chunk, callback) {
+  const row = this.row;
+  if (chunk.commitRow) {
+    callback(null, row);
+    this.commit();
+  } else {
+    if (chunk.valueSize > 0) {
+      this.state = RowStateEnum.CELL_IN_PROGRESS;
+    } else {
+      this.state = RowStateEnum.ROW_IN_PROGRESS;
+    }
+  }
+};
+/**
  * Process chunk when in NEW_ROW state.
  * @private
  * @param {chunks} chunk chunk to process
@@ -237,16 +256,7 @@ ChunkFormatter.prototype.newRow = function(chunk, options, callback) {
     size: chunk.valueSize,
   };
   this.qualifiers.push(this.qualifier);
-  if (chunk.commitRow) {
-    callback(null, row);
-    this.commit();
-  } else {
-    if (chunk.valueSize > 0) {
-      this.state = RowStateEnum.CELL_IN_PROGRESS;
-    } else {
-      this.state = RowStateEnum.ROW_IN_PROGRESS;
-    }
-  }
+  this.moveToNextState(chunk, callback);
 };
 /**
  * Process chunk when in ROW_IN_PROGRESS state.
@@ -277,14 +287,7 @@ ChunkFormatter.prototype.rowInProgress = function(chunk, options, callback) {
     size: chunk.valueSize,
   };
   this.qualifiers.push(this.qualifier);
-  if (chunk.commitRow) {
-    callback(null, row);
-    this.commit();
-  } else {
-    if (chunk.valueSize > 0) {
-      this.state = RowStateEnum.CELL_IN_PROGRESS;
-    }
-  }
+  this.moveToNextState(chunk, callback);
 };
 /**
  * Process chunk when in CELl_IN_PROGRESS state.
@@ -302,14 +305,7 @@ ChunkFormatter.prototype.cellInProgress = function(chunk, options, callback) {
   this.qualifier.value =
     this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
   this.qualifier.size = 0;
-  if (chunk.commitRow) {
-    callback(null, row);
-    this.commit();
-  } else {
-    if (chunk.valueSize === 0) {
-      this.state = RowStateEnum.ROW_IN_PROGRESS;
-    }
-  }
+  this.moveToNextState(chunk, callback);
 };
 
 module.exports = ChunkFormatter;

@@ -984,4 +984,88 @@ describe('Bigtable/ChunkFormatter', function() {
       assert(!isErrorSpy.threw(), 'unexpected error');
     });
   });
+  describe('moveToNextState', function() {
+    var callback;
+    var commitSpy;
+    beforeEach(function() {
+      commitSpy = sinon.spy(chunkFormatter, 'commit');
+      callback = sinon.spy();
+    });
+    it('chunk with commit row should call callback with row and call commit state', function() {
+      chunkFormatter.qualifier = {
+        value: 'value',
+        size: 0,
+        timestamp: 0,
+        labels: [],
+      };
+      chunkFormatter.qualifiers = [chunkFormatter.qualifier];
+      chunkFormatter.family = {
+        qualifier: chunkFormatter.qualifiers,
+      };
+      chunkFormatter.row = {
+        key: 'key',
+        data: {
+          family: chunkFormatter.family,
+        },
+      };
+      const chunk = {
+        commitRow: true,
+      };
+      chunkFormatter.moveToNextState(chunk, callback);
+      assert(commitSpy.called, 'did not call commit');
+      assert(callback.called);
+      const expectedRow = {
+        key: 'key',
+        data: {
+          family: {
+            qualifier: [
+              {
+                value: 'value',
+                size: 0,
+                timestamp: 0,
+                labels: [],
+              },
+            ],
+          },
+        },
+      };
+      const row = callback.getCall(0).args[1];
+      assert.deepEqual(row, expectedRow, 'row mismatch');
+      assert.equal(
+        chunkFormatter.state,
+        RowStateEnum.NEW_ROW,
+        'state mismatch'
+      );
+    });
+    it('chunk without commitRow and value size>0 should move to CELL_IN_PROGRESS', function() {
+      const chunk = {
+        commitRow: false,
+        valueSize: 10,
+      };
+      chunkFormatter.state = RowStateEnum.NEW_ROW;
+      chunkFormatter.moveToNextState(chunk, callback);
+      assert(!commitSpy.called, 'did not call commit');
+      assert(!callback.called);
+      assert.equal(
+        chunkFormatter.state,
+        RowStateEnum.CELL_IN_PROGRESS,
+        'wrong state'
+      );
+    });
+    it('chunk without commitRow and value size==0 should move to ROW_IN_PROGRESS', function() {
+      const chunk = {
+        commitRow: false,
+        valueSize: 0,
+      };
+      chunkFormatter.state = RowStateEnum.CELL_IN_PROGRESS;
+      chunkFormatter.moveToNextState(chunk, callback);
+      assert(!commitSpy.called, 'did not call commit');
+      assert(!callback.called);
+      assert.equal(
+        chunkFormatter.state,
+        RowStateEnum.ROW_IN_PROGRESS,
+        'wrong state'
+      );
+    });
+  });
 });
