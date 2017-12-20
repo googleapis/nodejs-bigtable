@@ -303,7 +303,7 @@ ChunkFormatter.prototype.cellInProgress = function(chunk, options, callback) {
   }
   this.qualifier.value =
     this.qualifier.value + Mutation.convertFromBytes(chunk.value, options);
-  this.qualifier.size = 0;
+  this.qualifier.size = chunk.valueSize;
   this.moveToNextState(chunk, callback);
 };
 

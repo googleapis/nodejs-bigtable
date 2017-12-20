@@ -723,6 +723,7 @@ describe('Bigtable/ChunkFormatter', function() {
       const chunk = {
         commitRow: true,
         value: '2',
+        valueSize: 0,
       };
       chunkFormatter.cellInProgress(chunk, {}, callback);
       assert(commitSpy.called, 'did not call commit');
