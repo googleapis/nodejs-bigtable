@@ -89,9 +89,11 @@ ChunkFormatter.prototype.formatChunks = function(chunks, options, callback) {
  * @throws Error if there is any uncommitted row.
  */
 ChunkFormatter.prototype.onStreamEnd = function() {
-  if (typeof this.row.key !== 'undefined') {
-    throw new Error('Response ended with pending row without commit');
-  }
+  this.isError(
+    typeof this.row.key !== 'undefined',
+    'Response ended with pending row without commit',
+    this.row
+  );
 };
 /**
  * Resets state of formatter
@@ -123,7 +125,7 @@ ChunkFormatter.prototype.commit = function() {
  */
 ChunkFormatter.prototype.isError = function(condition, text, chunk) {
   if (condition) {
-    throw new Error(`${text}: ${chunk}`);
+    throw new Error(`${text}: ${JSON.stringify(chunk)}`);
   }
 };
 /**
