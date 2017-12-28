@@ -503,18 +503,17 @@ Table.prototype.createReadStream = function(options) {
             },
             (err, rowData) => {
               if (stream._ended) {
-                throw new Error('stream ended');
+                return false;
               } else {
                 var row = self.row(rowData.key);
                 row.data = rowData.data;
                 throughStream.push(row);
+                return true;
               }
             }
           );
         } catch (err) {
-          if (!stream._ended) {
-            return next(err);
-          }
+          return next(err);
         }
         next();
       },

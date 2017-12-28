@@ -210,7 +210,6 @@ describe('Bigtable/ChunkFormatter', function() {
                 value: chunk.value,
                 timestamp: chunk.timestampMicros,
                 labels: chunk.labels,
-                size: chunk.valueSize,
               },
             ],
           },
@@ -242,7 +241,6 @@ describe('Bigtable/ChunkFormatter', function() {
                 value: chunk.value,
                 timestamp: chunk.timestampMicros,
                 labels: chunk.labels,
-                size: chunk.valueSize,
               },
             ],
           },
@@ -279,7 +277,6 @@ describe('Bigtable/ChunkFormatter', function() {
                 value: chunk.value,
                 timestamp: chunk.timestampMicros,
                 labels: chunk.labels,
-                size: chunk.valueSize,
               },
             ],
           },
@@ -438,7 +435,6 @@ describe('Bigtable/ChunkFormatter', function() {
             qualifier: [
               {
                 value: undefined,
-                size: undefined,
                 timestamp: undefined,
                 labels: undefined,
               },
@@ -485,7 +481,6 @@ describe('Bigtable/ChunkFormatter', function() {
             qualifier2: [
               {
                 value: 'value',
-                size: 0,
                 timestamp: 0,
                 labels: [],
               },
@@ -535,7 +530,6 @@ describe('Bigtable/ChunkFormatter', function() {
             qualifier2: [
               {
                 value: 'value',
-                size: 0,
                 timestamp: 0,
                 labels: [],
               },
@@ -579,7 +573,6 @@ describe('Bigtable/ChunkFormatter', function() {
             qualifier: [
               {
                 value: 'value2',
-                size: 10,
                 timestamp: 0,
                 labels: [],
               },
@@ -837,9 +830,6 @@ describe('Bigtable/ChunkFormatter', function() {
       cellInProgressSpy = sinon.spy(chunkFormatter, 'cellInProgress');
     });
     it('when current state is NEW_ROW should call newRow', function() {
-      chunkFormatter.state = sinon.spy(function() {
-        return true;
-      });
       const chunk = {
         rowKey: 'key',
         familyName: {value: 'family'},
@@ -860,9 +850,6 @@ describe('Bigtable/ChunkFormatter', function() {
       assert(newRowSpy.called, 'did not call newRow');
     });
     it('when current state is ROW_IN_PROGRESS should call rowInProgress', function() {
-      chunkFormatter.state = sinon.spy(function() {
-        return false;
-      });
       chunkFormatter.row = {key: 'key'};
       chunkFormatter.state = RowStateEnum.ROW_IN_PROGRESS;
       const chunks = [{key: 'key'}];
@@ -874,9 +861,6 @@ describe('Bigtable/ChunkFormatter', function() {
       assert(rowInProgressSpy.called, 'did not call rowInProgress');
     });
     it('when current state is CELL_IN_PROGRESS should call cellInProgress', function() {
-      chunkFormatter.state = sinon.spy(function() {
-        return false;
-      });
       chunkFormatter.row = {key: 'key'};
       chunkFormatter.state = RowStateEnum.CELL_IN_PROGRESS;
       const chunks = [{key: 'key'}];
@@ -886,6 +870,47 @@ describe('Bigtable/ChunkFormatter', function() {
         //pass
       }
       assert(cellInProgressSpy.called, 'did not call cellInProgress');
+    });
+    it('should early terminate loop when callback return false', function() {
+      chunkFormatter.row = {key: 'key'};
+      chunkFormatter.state = RowStateEnum.CELL_IN_PROGRESS;
+      const chunks = [
+        {
+          rowKey: 'key1',
+          familyName: {value: 'family'},
+          qualifier: {value: 'qualifier'},
+          valueSize: 0,
+          timestampMicros: 0,
+          labels: [],
+          commitRow: true,
+          value: 'value',
+        },
+        {
+          rowKey: 'key2',
+          familyName: {value: 'family'},
+          qualifier: {value: 'qualifier'},
+          valueSize: 0,
+          timestampMicros: 0,
+          labels: [],
+          commitRow: true,
+          value: 'value',
+        },
+      ];
+      const errors = [];
+      const rows = [];
+      try {
+        chunkFormatter.formatChunks(chunks, {}, function(err, row) {
+          if (err) {
+            errors.push(err);
+          } else {
+            rows.push(row);
+          }
+          return false;
+        });
+      } catch (err) {
+        //pass
+      }
+      assert.equal(rows.length, 1, 'did not early terminate loop');
     });
   });
   describe('reset', function() {
@@ -963,26 +988,26 @@ describe('Bigtable/ChunkFormatter', function() {
       );
     });
   });
-  describe('isError', function() {
-    var isErrorSpy;
+  describe('invariant', function() {
+    var invariantSpy;
     beforeEach(function() {
-      isErrorSpy = sinon.spy(chunkFormatter, 'isError');
+      invariantSpy = sinon.spy(chunkFormatter, 'invariant');
     });
     it('should throw error on true', function() {
       try {
-        isErrorSpy(true, '', '');
+        invariantSpy(true, '', '');
       } catch (err) {
         //pass
       }
-      assert(isErrorSpy.threw(), 'did not threw error');
+      assert(invariantSpy.threw(), 'did not threw error');
     });
     it('should not throw error on false', function() {
       try {
-        isErrorSpy(false, '', '');
+        invariantSpy(false, '', '');
       } catch (err) {
         //pass
       }
-      assert(!isErrorSpy.threw(), 'unexpected error');
+      assert(!invariantSpy.threw(), 'unexpected error');
     });
   });
   describe('moveToNextState', function() {

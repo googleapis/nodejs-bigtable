@@ -58,7 +58,6 @@ describe('Read Row Acceptance tests', function() {
           value: result.value,
           timestamp: '' + result.ts,
           labels: resultLabels,
-          size: 0,
         });
       });
       const tableRows = results.map(rawRow => {
