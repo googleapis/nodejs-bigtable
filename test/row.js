@@ -129,7 +129,7 @@ describe('Bigtable/Row', function() {
   });
 
   describe('formatChunks_', function() {
-    var convert;
+    var convert = FakeMutation.convertFromBytes;
 
     beforeEach(function() {
       convert = FakeMutation.convertFromBytes;
@@ -325,6 +325,15 @@ describe('Bigtable/Row', function() {
     });
 
     it('should not decode values when applicable', function() {
+      var formatOptions = {
+        decode: false,
+      };
+
+      FakeMutation.convertFromBytes = sinon.spy(function(val, options) {
+        assert.strictEqual(options, formatOptions);
+        return val.replace('unconverted', 'converted');
+      });
+
       var timestamp1 = 123;
       var timestamp2 = 345;
 
@@ -355,9 +364,6 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var formatOptions = {
-        decode: false,
-      };
       var rows = Row.formatChunks_(chunks, formatOptions);
 
       assert.deepEqual(rows, [
