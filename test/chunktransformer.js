@@ -93,91 +93,69 @@ describe('Bigtable/ChunkTransformer', function() {
     var processNewRowSpy;
     var resetSpy;
     var commitSpy;
+    var destroySpy;
     beforeEach(function() {
       processNewRowSpy = sinon.spy(chunkTransformer, 'processNewRow');
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
+      destroySpy = sinon.spy(chunkTransformer, 'destroy');
     });
-    it('should throw exception when row key is defined ', function() {
-      try {
-        chunkTransformer.row = {key: 'abc'};
-        processNewRowSpy.call(chunkTransformer, {});
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+    it('should destroy when row key is defined ', function() {
+      chunkTransformer.row = {key: 'abc'};
+      processNewRowSpy.call(chunkTransformer, {});
+      assert(destroySpy.called);
     });
-    it('should throw exception when chunk key is undefined ', function() {
-      try {
-        processNewRowSpy.call(chunkTransformer, {});
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+    it('should destroy when chunk key is undefined ', function() {
+      processNewRowSpy.call(chunkTransformer, {});
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow is true ', function() {
-      try {
-        processNewRowSpy.call(chunkTransformer, {
-          rowKey: 'key',
-          resetRow: true,
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+    it('should destroy when resetRow is true ', function() {
+      processNewRowSpy.call(chunkTransformer, {
+        rowKey: 'key',
+        resetRow: true,
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow ', function() {
-      try {
-        processNewRowSpy.call(chunkTransformer, {resetRow: true});
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+    it('should destroy when resetRow ', function() {
+      processNewRowSpy.call(chunkTransformer, {resetRow: true});
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when row key is equal to previous row key ', function() {
+    it('should destroy when row key is equal to previous row key ', function() {
       chunkTransformer.prevRowKey = 'key';
-      try {
-        processNewRowSpy.call(chunkTransformer, {
-          rowKey: 'key',
-          resetRow: false,
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+
+      processNewRowSpy.call(chunkTransformer, {
+        rowKey: 'key',
+        resetRow: false,
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when family name is undefined ', function() {
-      try {
-        processNewRowSpy.call(chunkTransformer, {rowKey: 'key'});
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+    it('should destroy when family name is undefined ', function() {
+      processNewRowSpy.call(chunkTransformer, {rowKey: 'key'});
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when qualifier is undefined ', function() {
-      try {
-        processNewRowSpy.call(chunkTransformer, {
-          rowKey: 'key',
-          familyName: 'family',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+    it('should destroy when qualifier is undefined ', function() {
+      processNewRowSpy.call(chunkTransformer, {
+        rowKey: 'key',
+        familyName: 'family',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when valueSize>0 and commitRow=true ', function() {
-      try {
-        processNewRowSpy.call(chunkTransformer, {
-          rowKey: 'key',
-          familyName: 'family',
-          qualifier: 'qualifier',
-          valueSize: 10,
-          commitRow: true,
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processNewRowSpy.threw());
+    it('should destroy when valueSize>0 and commitRow=true ', function() {
+      processNewRowSpy.call(chunkTransformer, {
+        rowKey: 'key',
+        familyName: 'family',
+        qualifier: 'qualifier',
+        valueSize: 10,
+        commitRow: true,
+      });
+
+      assert(destroySpy.called);
     });
     it('should commit 1 row ', function() {
       const chunk = {
@@ -291,6 +269,7 @@ describe('Bigtable/ChunkTransformer', function() {
     var processRowInProgressSpy;
     var resetSpy;
     var commitSpy;
+    var destroySpy;
     beforeEach(function() {
       processRowInProgressSpy = sinon.spy(
         chunkTransformer,
@@ -298,91 +277,67 @@ describe('Bigtable/ChunkTransformer', function() {
       );
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
+      destroySpy = sinon.spy(chunkTransformer, 'destroy');
     });
-    it('should throw exception when resetRow and rowkey', function() {
-      try {
-        processRowInProgressSpy.call(chunkTransformer, {
-          resetRow: true,
-          rowKey: 'key',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when resetRow and rowkey', function() {
+      processRowInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        rowKey: 'key',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow and familyName', function() {
-      try {
-        processRowInProgressSpy.call(chunkTransformer, {
-          resetRow: true,
-          familyName: 'family',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when resetRow and familyName', function() {
+      processRowInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        familyName: 'family',
+      });
+      assert(destroySpy);
     });
-    it('should throw exception when resetRow and qualifier', function() {
-      try {
-        processRowInProgressSpy.call(chunkTransformer, {
-          resetRow: true,
-          qualifier: 'qualifier',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when resetRow and qualifier', function() {
+      processRowInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        qualifier: 'qualifier',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow and value', function() {
-      try {
-        processRowInProgressSpy.call(chunkTransformer, {
-          resetRow: true,
-          value: 'value',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when resetRow and value', function() {
+      processRowInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        value: 'value',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow and timestampMicros', function() {
-      try {
-        processRowInProgressSpy.call(chunkTransformer, {
-          resetRow: true,
-          timestampMicros: 10,
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when resetRow and timestampMicros', function() {
+      processRowInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        timestampMicros: 10,
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when rowKey not equal to prevRowKey', function() {
-      try {
-        chunkTransformer.row = {key: 'key1'};
-        processRowInProgressSpy.call(chunkTransformer, {rowKey: 'key'});
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when rowKey not equal to prevRowKey', function() {
+      chunkTransformer.row = {key: 'key1'};
+      processRowInProgressSpy.call(chunkTransformer, {rowKey: 'key'});
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when valueSize>0 and commitRow=true ', function() {
-      try {
-        processRowInProgressSpy.call(chunkTransformer, {
-          valueSize: 10,
-          commitRow: true,
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when valueSize>0 and commitRow=true ', function() {
+      processRowInProgressSpy.call(chunkTransformer, {
+        valueSize: 10,
+        commitRow: true,
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when familyName without qualifier ', function() {
-      try {
-        processRowInProgressSpy.call(chunkTransformer, {
-          familyName: 'family',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processRowInProgressSpy.threw());
+    it('should destroy when familyName without qualifier ', function() {
+      processRowInProgressSpy.call(chunkTransformer, {
+        familyName: 'family',
+      });
+
+      assert(destroySpy.called);
     });
     it('should reset on resetRow ', function() {
       const chunk = {resetRow: true};
@@ -574,6 +529,7 @@ describe('Bigtable/ChunkTransformer', function() {
     var processCellInProgressSpy;
     var resetSpy;
     var commitSpy;
+    var destroySpy;
     beforeEach(function() {
       processCellInProgressSpy = sinon.spy(
         chunkTransformer,
@@ -581,77 +537,63 @@ describe('Bigtable/ChunkTransformer', function() {
       );
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
+      destroySpy = sinon.spy(chunkTransformer, 'destroy');
     });
-    it('should throw exception when resetRow and rowkey', function() {
-      try {
-        processCellInProgressSpy.call(this, {resetRow: true, rowKey: 'key'});
-      } catch (err) {
-        //pass
-      }
-      assert(processCellInProgressSpy.threw());
+    it('should destroy when resetRow and rowkey', function() {
+      processCellInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        rowKey: 'key',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow and familyName', function() {
-      try {
-        processCellInProgressSpy.call(this, {
-          resetRow: true,
-          familyName: 'family',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processCellInProgressSpy.threw());
+    it('should destroy when resetRow and familyName', function() {
+      processCellInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        familyName: 'family',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow and qualifier', function() {
-      try {
-        processCellInProgressSpy.call(this, {
-          resetRow: true,
-          qualifier: 'qualifier',
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processCellInProgressSpy.threw());
+    it('should destroy when resetRow and qualifier', function() {
+      processCellInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        qualifier: 'qualifier',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow and value', function() {
-      try {
-        processCellInProgressSpy.call(this, {resetRow: true, value: 'value'});
-      } catch (err) {
-        //pass
-      }
-      assert(processCellInProgressSpy.threw());
+    it('should destroy when resetRow and value', function() {
+      processCellInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        value: 'value',
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when resetRow and timestampMicros', function() {
-      try {
-        processCellInProgressSpy.call(this, {
-          resetRow: true,
-          timestampMicros: 10,
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processCellInProgressSpy.threw());
+    it('should destroy when resetRow and timestampMicros', function() {
+      processCellInProgressSpy.call(chunkTransformer, {
+        resetRow: true,
+        timestampMicros: 10,
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when rowKey not equal to prevRowKey', function() {
-      try {
-        chunkTransformer.row = {key: 'key'};
-        processCellInProgressSpy.call(this, {rowKey: 'key'});
-      } catch (err) {
-        //pass
-      }
-      assert(processCellInProgressSpy.threw());
+    // it('should destroy when rowKey not equal to prevRowKey', function() {
+    //   chunkTransformer.row = {prevRowKey: 'key1'};
+    //   processCellInProgressSpy.call(chunkTransformer, {rowKey: 'key'});
+
+    //   assert(destroySpy.called);
+    // });
+    it('should destroy when valueSize>0 and commitRow=true ', function() {
+      processCellInProgressSpy.call(chunkTransformer, {
+        valueSize: 10,
+        commitRow: true,
+      });
+
+      assert(destroySpy.called);
     });
-    it('should throw exception when valueSize>0 and commitRow=true ', function() {
-      try {
-        processCellInProgressSpy.call(this, {
-          valueSize: 10,
-          commitRow: true,
-        });
-      } catch (err) {
-        //pass
-      }
-      assert(processCellInProgressSpy.threw());
-    });
-    it('should return true on resetRow ', function() {
+    it('should reset on resetRow ', function() {
       const chunk = {resetRow: true};
       chunkTransformer.processCellInProgress(chunk);
       assert(resetSpy.called, 'did not call reset');
@@ -759,16 +701,11 @@ describe('Bigtable/ChunkTransformer', function() {
   describe('_flush', function() {
     var _flushSpy;
     var callback;
+    var destroySpy;
     beforeEach(function() {
       _flushSpy = sinon.spy(chunkTransformer, '_flush');
       callback = sinon.spy();
-    });
-    it('pending row should throw exception', function() {
-      chunkTransformer.row = {key: 'key'};
-      _flushSpy.call(chunkTransformer, callback);
-      assert(callback.called, 'did not call callback');
-      const err = callback.getCall(0).args[0];
-      assert(err instanceof Error, 'did not threw error');
+      destroySpy = sinon.spy(chunkTransformer, 'destroy');
     });
     it('completed row should complete successfully', function() {
       chunkTransformer.row = {};
@@ -776,6 +713,11 @@ describe('Bigtable/ChunkTransformer', function() {
       assert(callback.called, 'did not call callback');
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
+    });
+    it('should call destroy when there is uncommitted row', function() {
+      chunkTransformer.row = {key: 'abc'};
+      _flushSpy.call(chunkTransformer, callback);
+      assert(destroySpy.called, 'did not destroyed');
     });
   });
   describe('_transform', function() {
@@ -837,16 +779,11 @@ describe('Bigtable/ChunkTransformer', function() {
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
     });
-    it('should call callback with error when processNewRow throws error', function() {
-      const error = new Error('processNewRowError');
-      chunkTransformer.processNewRow = function() {
-        throw error;
-      };
-      chunkTransformer.state = RowStateEnum.NEW_ROW;
+    it('should return when stream is destroyed', function() {
+      chunkTransformer._destroyed = true;
       const chunks = [{key: 'key'}];
       chunkTransformer._transform({chunks: chunks}, {}, callback);
-      const err = callback.getCall(0).args[0];
-      assert.equal(err, error, 'did not call callback with error');
+      assert(!callback.called, 'unexpected call to  next');
     });
   });
   describe('reset', function() {
@@ -934,28 +871,6 @@ describe('Bigtable/ChunkTransformer', function() {
         RowStateEnum.NEW_ROW,
         'invalid initial state'
       );
-    });
-  });
-  describe('invariant', function() {
-    var invariantSpy;
-    beforeEach(function() {
-      invariantSpy = sinon.spy(chunkTransformer, 'invariant');
-    });
-    it('should throw error on true', function() {
-      try {
-        invariantSpy(true, '', '');
-      } catch (err) {
-        //pass
-      }
-      assert(invariantSpy.threw(), 'did not threw error');
-    });
-    it('should not throw error on false', function() {
-      try {
-        invariantSpy(false, '', '');
-      } catch (err) {
-        //pass
-      }
-      assert(!invariantSpy.threw(), 'unexpected error');
     });
   });
   describe('moveToNextState', function() {

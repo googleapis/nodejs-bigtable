@@ -18,6 +18,11 @@ const Mutation = require('./mutation.js');
 const stream = require('stream');
 const util = require('util');
 const Transform = stream.Transform;
+const createErrorClass = require('create-error-class');
+
+const TransformError = createErrorClass('TransformError', function(props) {
+  this.message = `${props.message}: ${JSON.stringify(props.chunk)}`;
+});
 
 /**
  * Enum for chunk formatter Row state.
@@ -65,24 +70,23 @@ util.inherits(ChunkTransformer, Transform);
  * @param {callback} next callback will be called once data is processed, with error if any error in processing
  */
 ChunkTransformer.prototype._transform = function(data, enc, next) {
-  try {
-    for (const chunk of data.chunks) {
-      switch (this.state) {
-        case RowStateEnum.NEW_ROW:
-          this.processNewRow(chunk, this.options);
-          break;
-        case RowStateEnum.ROW_IN_PROGRESS:
-          this.processRowInProgress(chunk, this.options);
-          break;
-        case RowStateEnum.CELL_IN_PROGRESS:
-          this.processCellInProgress(chunk, this.options);
-          break;
-      }
+  for (const chunk of data.chunks) {
+    switch (this.state) {
+      case RowStateEnum.NEW_ROW:
+        this.processNewRow(chunk);
+        break;
+      case RowStateEnum.ROW_IN_PROGRESS:
+        this.processRowInProgress(chunk);
+        break;
+      case RowStateEnum.CELL_IN_PROGRESS:
+        this.processCellInProgress(chunk);
+        break;
     }
-    next();
-  } catch (err) {
-    next(err);
+    if (this._destroyed) {
+      return;
+    }
   }
+  next();
 };
 
 /**
@@ -91,16 +95,16 @@ ChunkTransformer.prototype._transform = function(data, enc, next) {
  * @param {callback} callback callback will be called with error if there is any uncommitted row
  */
 ChunkTransformer.prototype._flush = function(cb) {
-  try {
-    this.invariant(
-      typeof this.row.key !== 'undefined',
-      'Response ended with pending row without commit',
-      this.row
+  if (typeof this.row.key !== 'undefined') {
+    this.destroy(
+      new TransformError({
+        message: 'Response ended with pending row without commit',
+        chunk: null,
+      })
     );
-    cb();
-  } catch (err) {
-    cb(err);
+    return;
   }
+  cb();
 };
 
 /**
@@ -142,28 +146,19 @@ ChunkTransformer.prototype.commit = function() {
   this.prevRowKey = row.key;
 };
 /**
- * Error checker if true throws error
- * @private
- * @param {boolean} condition condition to evaluate
- * @param {string} text Error text
- * @param {object} chunk chunk object to append to text
- */
-ChunkTransformer.prototype.invariant = function(condition, text, chunk) {
-  if (condition) {
-    throw new Error(`${text}: ${JSON.stringify(chunk)}`);
-  }
-};
-/**
  * Validates valuesize and commitrow in a chunk
  * @private
  * @param {chunk} chunk chunk to validate for valuesize and commitRow
  */
 ChunkTransformer.prototype.validateValueSizeAndCommitRow = function(chunk) {
-  this.invariant(
-    chunk.valueSize > 0 && chunk.commitRow,
-    'A row cannot be have a value size and be a commit row',
-    chunk
-  );
+  if (chunk.valueSize > 0 && chunk.commitRow) {
+    this.destroy(
+      new TransformError({
+        message: 'A row cannot be have a value size and be a commit row',
+        chunk: chunk,
+      })
+    );
+  }
 };
 /**
  * Validates resetRow condition for chunk
@@ -171,16 +166,21 @@ ChunkTransformer.prototype.validateValueSizeAndCommitRow = function(chunk) {
  * @param {chunk} chunk chunk to validate for resetrow
  */
 ChunkTransformer.prototype.validateResetRow = function(chunk) {
-  this.invariant(
+  if (
     chunk.resetRow &&
-      (chunk.rowKey ||
-        chunk.familyName ||
-        chunk.qualifier ||
-        chunk.value ||
-        chunk.timestampMicros > 0),
-    'A reset should have no data',
-    chunk
-  );
+    (chunk.rowKey ||
+      chunk.familyName ||
+      chunk.qualifier ||
+      chunk.value ||
+      chunk.timestampMicros > 0)
+  ) {
+    this.destroy(
+      new TransformError({
+        message: 'A reset should have no data',
+        chunk: chunk,
+      })
+    );
+  }
 };
 /**
  * Validates state for new row.
@@ -191,24 +191,60 @@ ChunkTransformer.prototype.validateNewRow = function(chunk) {
   const row = this.row;
   const prevRowKey = this.prevRowKey;
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-  this.invariant(
-    typeof row.key !== 'undefined',
-    'A new row cannot have existing state',
-    chunk
-  );
-  this.invariant(
-    typeof chunk.rowKey === 'undefined' || chunk.rowKey === '',
-    'A row key must be set',
-    chunk
-  );
-  this.invariant(chunk.resetRow, 'A new row cannot be reset', chunk);
-  this.invariant(
-    prevRowKey === newRowKey,
-    'A commit happened but the same key followed',
-    chunk
-  );
-  this.invariant(!chunk.familyName, 'A family must be set', chunk);
-  this.invariant(!chunk.qualifier, 'A column qualifier must be set', chunk);
+  if (typeof row.key !== 'undefined') {
+    this.destroy(
+      new TransformError({
+        message: 'A new row cannot have existing state',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
+  if (typeof chunk.rowKey === 'undefined' || chunk.rowKey === '') {
+    this.destroy(
+      new TransformError({
+        message: 'A row key must be set',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
+  if (chunk.resetRow) {
+    this.destroy(
+      new TransformError({
+        message: 'A new row cannot be reset',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
+  if (prevRowKey === newRowKey) {
+    this.destroy(
+      new TransformError({
+        message: 'A commit happened but the same key followed',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
+  if (!chunk.familyName) {
+    this.destroy(
+      new TransformError({
+        message: 'A family must be set',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
+  if (!chunk.qualifier) {
+    this.destroy(
+      new TransformError({
+        message: 'A column qualifier must be set',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
   this.validateValueSizeAndCommitRow(chunk);
 };
 /**
@@ -218,19 +254,27 @@ ChunkTransformer.prototype.validateNewRow = function(chunk) {
  */
 ChunkTransformer.prototype.validateRowInProgress = function(chunk) {
   const row = this.row;
-  this.validateResetRow(chunk);
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-  this.invariant(
-    chunk.rowKey && newRowKey !== row.key,
-    'A commit is required between row keys',
-    chunk
-  );
+  if (chunk.rowKey && newRowKey !== row.key) {
+    this.destroy(
+      new TransformError({
+        message: 'A commit is required between row keys',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
+  if (chunk.familyName && !chunk.qualifier) {
+    this.destroy(
+      new TransformError({
+        message: 'A qualifier must be specified',
+        chunk: chunk,
+      })
+    );
+    return;
+  }
+  this.validateResetRow(chunk);
   this.validateValueSizeAndCommitRow(chunk);
-  this.invariant(
-    chunk.familyName && !chunk.qualifier,
-    'A qualifier must be specified',
-    chunk
-  );
 };
 /**
  * Validates chunk for cellInProgress state.
@@ -270,6 +314,9 @@ ChunkTransformer.prototype.moveToNextState = function(chunk) {
 ChunkTransformer.prototype.processNewRow = function(chunk) {
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
   this.validateNewRow(chunk);
+  if (this._destroyed) {
+    return;
+  }
   const row = this.row;
   row.key = newRowKey;
   row.data = {};
@@ -294,6 +341,9 @@ ChunkTransformer.prototype.processNewRow = function(chunk) {
  */
 ChunkTransformer.prototype.processRowInProgress = function(chunk) {
   this.validateRowInProgress(chunk);
+  if (this._destroyed) {
+    return;
+  }
   if (chunk.resetRow) {
     return this.reset();
   }
@@ -325,6 +375,9 @@ ChunkTransformer.prototype.processRowInProgress = function(chunk) {
  */
 ChunkTransformer.prototype.processCellInProgress = function(chunk) {
   this.validateCellInProgress(chunk);
+  if (this._destroyed) {
+    return;
+  }
   if (chunk.resetRow) {
     return this.reset();
   }
