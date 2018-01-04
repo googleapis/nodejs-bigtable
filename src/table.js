@@ -497,11 +497,9 @@ Table.prototype.createReadStream = function(options) {
       if (stream._ended) {
         return next();
       }
-      const throughStream = this;
       const row = self.row(rowData.key);
       row.data = rowData.data;
-      throughStream.push(row);
-      next();
+      next(null, row);
     }),
   ]);
   return stream;

@@ -116,12 +116,10 @@ ChunkTransformer.prototype.destroy = function(err) {
   if (this._destroyed) return;
   this._destroyed = true;
   var self = this;
-  process.nextTick(function() {
-    if (err) {
-      self.emit('error', err);
-    }
-    self.emit('close');
-  });
+  if (err) {
+    self.emit('error', err);
+  }
+  self.emit('close');
 };
 
 /**
@@ -166,14 +164,13 @@ ChunkTransformer.prototype.validateValueSizeAndCommitRow = function(chunk) {
  * @param {chunk} chunk chunk to validate for resetrow
  */
 ChunkTransformer.prototype.validateResetRow = function(chunk) {
-  if (
-    chunk.resetRow &&
-    (chunk.rowKey ||
-      chunk.familyName ||
-      chunk.qualifier ||
-      chunk.value ||
-      chunk.timestampMicros > 0)
-  ) {
+  const containsData =
+    chunk.rowKey ||
+    chunk.familyName ||
+    chunk.qualifier ||
+    chunk.value ||
+    chunk.timestampMicros > 0;
+  if (chunk.resetRow && containsData) {
     this.destroy(
       new TransformError({
         message: 'A reset should have no data',
@@ -191,58 +188,23 @@ ChunkTransformer.prototype.validateNewRow = function(chunk) {
   const row = this.row;
   const prevRowKey = this.prevRowKey;
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+  let errorMessage;
+
   if (typeof row.key !== 'undefined') {
-    this.destroy(
-      new TransformError({
-        message: 'A new row cannot have existing state',
-        chunk: chunk,
-      })
-    );
-    return;
+    errorMessage = 'A new row cannot have existing state';
+  } else if (typeof chunk.rowKey === 'undefined' || chunk.rowKey === '') {
+    errorMessage = 'A row key must be set';
+  } else if (chunk.resetRow) {
+    errorMessage = 'A new row cannot be reset';
+  } else if (prevRowKey === newRowKey) {
+    errorMessage = 'A commit happened but the same key followed';
+  } else if (!chunk.familyName) {
+    errorMessage = 'A family must be set';
+  } else if (!chunk.qualifier) {
+    errorMessage = 'A column qualifier must be set';
   }
-  if (typeof chunk.rowKey === 'undefined' || chunk.rowKey === '') {
-    this.destroy(
-      new TransformError({
-        message: 'A row key must be set',
-        chunk: chunk,
-      })
-    );
-    return;
-  }
-  if (chunk.resetRow) {
-    this.destroy(
-      new TransformError({
-        message: 'A new row cannot be reset',
-        chunk: chunk,
-      })
-    );
-    return;
-  }
-  if (prevRowKey === newRowKey) {
-    this.destroy(
-      new TransformError({
-        message: 'A commit happened but the same key followed',
-        chunk: chunk,
-      })
-    );
-    return;
-  }
-  if (!chunk.familyName) {
-    this.destroy(
-      new TransformError({
-        message: 'A family must be set',
-        chunk: chunk,
-      })
-    );
-    return;
-  }
-  if (!chunk.qualifier) {
-    this.destroy(
-      new TransformError({
-        message: 'A column qualifier must be set',
-        chunk: chunk,
-      })
-    );
+  if (errorMessage) {
+    this.destroy(new TransformError({message: errorMessage, chunk}));
     return;
   }
   this.validateValueSizeAndCommitRow(chunk);
@@ -255,22 +217,14 @@ ChunkTransformer.prototype.validateNewRow = function(chunk) {
 ChunkTransformer.prototype.validateRowInProgress = function(chunk) {
   const row = this.row;
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+  let errorMessage;
   if (chunk.rowKey && newRowKey !== row.key) {
-    this.destroy(
-      new TransformError({
-        message: 'A commit is required between row keys',
-        chunk: chunk,
-      })
-    );
-    return;
+    errorMessage = 'A commit is required between row keys';
+  } else if (chunk.familyName && !chunk.qualifier) {
+    errorMessage = 'A qualifier must be specified';
   }
-  if (chunk.familyName && !chunk.qualifier) {
-    this.destroy(
-      new TransformError({
-        message: 'A qualifier must be specified',
-        chunk: chunk,
-      })
-    );
+  if (errorMessage) {
+    this.destroy(new TransformError({message: errorMessage, chunk}));
     return;
   }
   this.validateResetRow(chunk);
@@ -314,22 +268,21 @@ ChunkTransformer.prototype.moveToNextState = function(chunk) {
 ChunkTransformer.prototype.processNewRow = function(chunk) {
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
   this.validateNewRow(chunk);
-  if (this._destroyed) {
-    return;
+  if (chunk.familyName && chunk.qualifier) {
+    const row = this.row;
+    row.key = newRowKey;
+    row.data = {};
+    this.family = row.data[chunk.familyName.value] = {};
+    const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+    this.qualifiers = this.family[qualifierName] = [];
+    this.qualifier = {
+      value: Mutation.convertFromBytes(chunk.value, this.options),
+      labels: chunk.labels,
+      timestamp: chunk.timestampMicros,
+    };
+    this.qualifiers.push(this.qualifier);
+    this.moveToNextState(chunk);
   }
-  const row = this.row;
-  row.key = newRowKey;
-  row.data = {};
-  this.family = row.data[chunk.familyName.value] = {};
-  const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
-  this.qualifiers = this.family[qualifierName] = [];
-  this.qualifier = {
-    value: Mutation.convertFromBytes(chunk.value, this.options),
-    labels: chunk.labels,
-    timestamp: chunk.timestampMicros,
-  };
-  this.qualifiers.push(this.qualifier);
-  this.moveToNextState(chunk);
 };
 /**
  * Process chunk when in ROW_IN_PROGRESS state.
@@ -341,9 +294,6 @@ ChunkTransformer.prototype.processNewRow = function(chunk) {
  */
 ChunkTransformer.prototype.processRowInProgress = function(chunk) {
   this.validateRowInProgress(chunk);
-  if (this._destroyed) {
-    return;
-  }
   if (chunk.resetRow) {
     return this.reset();
   }
@@ -375,14 +325,10 @@ ChunkTransformer.prototype.processRowInProgress = function(chunk) {
  */
 ChunkTransformer.prototype.processCellInProgress = function(chunk) {
   this.validateCellInProgress(chunk);
-  if (this._destroyed) {
-    return;
-  }
   if (chunk.resetRow) {
     return this.reset();
   }
-  this.qualifier.value =
-    this.qualifier.value + Mutation.convertFromBytes(chunk.value, this.options);
+  this.qualifier.value += Mutation.convertFromBytes(chunk.value, this.options);
   this.moveToNextState(chunk);
 };
 
