@@ -131,7 +131,7 @@ Row.formatChunks_ = function(chunks, options) {
     row.data = row.data || {};
 
     if (chunk.rowKey) {
-      row.key = Mutation.convertFromBytes(chunk.rowKey);
+      row.key = Mutation.convertFromBytes(chunk.rowKey, options);
     }
 
     if (chunk.familyName) {
@@ -143,7 +143,7 @@ Row.formatChunks_ = function(chunks, options) {
     }
 
     if (chunk.qualifier) {
-      qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+      qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, options);
     }
 
     if (family && qualifierName) {
