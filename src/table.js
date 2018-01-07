@@ -456,7 +456,7 @@ Table.prototype.createReadStream = function(options) {
   let ranges = options.ranges || [];
   let filter;
   let rowsLimit;
-  let rowsRead = 0
+  let rowsRead = 0;
   let numRequestsMade = 0;
 
   if (options.start || options.end) {
@@ -502,7 +502,10 @@ Table.prototype.createReadStream = function(options) {
     };
     if (lastRowKey) {
       const lessThan = (lhs, rhs) => {
-        return Mutation.convertToBytes(lhs).compare(Mutation.convertToBytes(rhs)) === -1;
+        return (
+          Mutation.convertToBytes(lhs).compare(Mutation.convertToBytes(rhs)) ===
+          -1
+        );
       };
       const greaterThan = (lhs, rhs) => {
         return lessThan(rhs, lhs);
@@ -526,10 +529,11 @@ Table.prototype.createReadStream = function(options) {
           const range = ranges[index];
           const normalizeRangeValue = rangeSide => {
             return is.object(rangeSide) ? rangeSide.value : rangeSide;
-          }
+          };
           const startValue = normalizeRangeValue(range.start);
           const endValue = normalizeRangeValue(range.end);
-          const isWithinStart = !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
+          const isWithinStart =
+            !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
           const isWithinEnd = !endValue || lessThan(lastRowKey, endValue);
           if (isWithinStart) {
             if (isWithinEnd) {
@@ -573,7 +577,7 @@ Table.prototype.createReadStream = function(options) {
       reqOpts.rowsLimit = rowsLimit - rowsRead;
     }
 
-    const requestStream = this.requestStream(grpcOpts, reqOpts)
+    const requestStream = this.requestStream(grpcOpts, reqOpts);
     requestStream.on('request', () => numRequestsMade++);
 
     const stream = pumpify.obj([
@@ -593,15 +597,18 @@ Table.prototype.createReadStream = function(options) {
 
     stream.on('error', error => {
       // TODO - DO NOT MERGE - @stephenplusplus is this unpipe needed?
-      stream.unpipe(retryStream)
-      if (numRequestsMade <= maxRetries && READ_ROWS_RETRYABLE_STATUS_CODES.has(error.code)) {
+      stream.unpipe(retryStream);
+      if (
+        numRequestsMade <= maxRetries &&
+        READ_ROWS_RETRYABLE_STATUS_CODES.has(error.code)
+      ) {
         makeNewRequest();
       } else {
         retryStream.emit('error', error);
       }
     });
     stream.pipe(retryStream);
-  }
+  };
 
   makeNewRequest();
   return retryStream;

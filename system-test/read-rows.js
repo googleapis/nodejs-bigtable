@@ -6,29 +6,27 @@ const mutation = require('../src/mutation.js');
 const tests = require('./data/read-rows-retry-test.json').tests;
 
 const assert = require('assert');
-const Buffer = require('buffer').Buffer;
 const grpc = require('@google-cloud/common-grpc').grpc;
 const sinon = require('sinon');
 const through = require('through2');
 
-
 function dispatch(emitter, response) {
-  let emits = [{ name: 'request' },];
+  let emits = [{name: 'request'}];
   if (response.row_keys) {
     emits.push.apply(emits, [
-      { name: 'response', arg: 200 },
+      {name: 'response', arg: 200},
       {
         name: 'data',
-        arg: { chunks: response.row_keys.map(rowResponse) }
+        arg: {chunks: response.row_keys.map(rowResponse)},
       },
     ]);
   }
   if (response.end_with_error) {
     const error = new Error();
     error.code = response.end_with_error;
-    emits.push( { name: 'error', arg: error } );
+    emits.push({name: 'error', arg: error});
   } else {
-    emits.push( { name: 'end' } );
+    emits.push({name: 'end'});
   }
   let index = 0;
   setImmediate(next);
@@ -59,7 +57,6 @@ function rowResponse(rowKey) {
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.grpcCredentials = grpc.credentials.createInsecure();
-  const bigtableService = bigtable.getService_({service: 'Bigtable'});
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
@@ -69,7 +66,6 @@ describe('Bigtable/Table', () => {
     let endCalled;
     let error;
     let requestedOptions;
-    let requestedRowRanges;
     let responses;
     let rowKeysRead;
     let stub;
@@ -91,28 +87,34 @@ describe('Bigtable/Table', () => {
       error = null;
       responses = null;
       rowKeysRead = [];
-      requestedOptions = []
-      stub = sinon.stub(TABLE, 'requestStream').callsFake((grpcOpts, reqOpts) => {
-        let requestOptions = {}
-        if (reqOpts.rows && reqOpts.rows.rowRanges) {
-          requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
-            const convertedRowRange = {};
-            Object.keys(range).forEach(key => convertedRowRange[key] = range[key].asciiSlice());
-            return convertedRowRange;
-          });
-        }
-        if (reqOpts.rows && reqOpts.rows.rowKeys) {
-          requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys => rowKeys.asciiSlice());
-        }
-        if (reqOpts.rowsLimit) {
-          requestOptions.rowsLimit = reqOpts.rowsLimit;
-        }
-        requestedOptions.push(requestOptions)
-        rowKeysRead.push([]);
-        const emitter = through.obj();
-        dispatch(emitter, responses.shift());
-        return emitter;
-      });
+      requestedOptions = [];
+      stub = sinon
+        .stub(TABLE, 'requestStream')
+        .callsFake((grpcOpts, reqOpts) => {
+          let requestOptions = {};
+          if (reqOpts.rows && reqOpts.rows.rowRanges) {
+            requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
+              const convertedRowRange = {};
+              Object.keys(range).forEach(
+                key => (convertedRowRange[key] = range[key].asciiSlice())
+              );
+              return convertedRowRange;
+            });
+          }
+          if (reqOpts.rows && reqOpts.rows.rowKeys) {
+            requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys =>
+              rowKeys.asciiSlice()
+            );
+          }
+          if (reqOpts.rowsLimit) {
+            requestOptions.rowsLimit = reqOpts.rowsLimit;
+          }
+          requestedOptions.push(requestOptions);
+          rowKeysRead.push([]);
+          const emitter = through.obj();
+          dispatch(emitter, responses.shift());
+          return emitter;
+        });
     });
 
     afterEach(() => {
@@ -126,22 +128,24 @@ describe('Bigtable/Table', () => {
         TABLE.maxRetries = test.max_retries;
         TABLE.createReadStream(test.createReadStream_options)
           .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
-          .on('end', () => endCalled = true)
-          .on('error', err => error = err);
+          .on('end', () => (endCalled = true))
+          .on('error', err => (error = err));
         clock.runAll();
         if (test.error) {
           assert(!endCalled, `.on('end') should not have been invoked`);
-          assert.strictEqual(error.code, test.error)
+          assert.strictEqual(error.code, test.error);
         } else {
           assert(endCalled, `.on('end') shoud have been invoked`);
           assert.ifError(error);
         }
         assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
-        assert.strictEqual(responses.length, 0, 'not all the responses were used');
+        assert.strictEqual(
+          responses.length,
+          0,
+          'not all the responses were used'
+        );
         assert.deepStrictEqual(requestedOptions, test.request_options);
       });
-    })
-
-
+    });
   });
 });
