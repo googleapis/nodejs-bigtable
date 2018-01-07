@@ -48,6 +48,7 @@ function ChunkTransformer(options) {
   this.options.objectMode = true; // forcing object mode
   Transform.call(this, options);
   this._destroyed = false;
+  this.lastRowKey = undefined;
   this.reset();
 }
 util.inherits(ChunkTransformer, Transform);
@@ -85,6 +86,9 @@ ChunkTransformer.prototype._transform = function(data, enc, next) {
     if (this._destroyed) {
       return;
     }
+  }
+  if (data.lastScannedRowKey) {
+    this.lastRowKey = data.lastScannedRowKey;
   }
   next();
 };
@@ -249,6 +253,7 @@ ChunkTransformer.prototype.moveToNextState = function(chunk) {
   if (chunk.commitRow) {
     this.push(row);
     this.commit();
+    this.lastRowKey = row.key;
   } else {
     if (chunk.valueSize > 0) {
       this.state = RowStateEnum.CELL_IN_PROGRESS;

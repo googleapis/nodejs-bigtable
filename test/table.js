@@ -375,6 +375,9 @@ describe('Bigtable/Table', function() {
           assert.deepEqual(grpcOpts, {
             service: 'Bigtable',
             method: 'readRows',
+            retryOpts: {
+              currentRetryAttempt: 0,
+            },
           });
 
           assert.strictEqual(reqOpts.tableName, TABLE_NAME);

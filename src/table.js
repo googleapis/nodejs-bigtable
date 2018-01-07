@@ -35,7 +35,12 @@ const ChunkTransformer = require('./chunktransformer.js');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
-const RETRY_STATUS_CODES = new Set([4, 10, 14]);
+const MUTATE_ROWS_RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
+
+// TODO - DO NOT MERGE - Figure out exactly what codes need to be here. Some combination of
+// https://github.com/GoogleCloudPlatform/google-cloud-node/blob/94f855a506e632f5e3b93ec23a5b2c9fe9a50e31/packages/common-grpc/src/service.js#L44
+// and protos/google/rpc/code.proto
+const READ_ROWS_RETRYABLE_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
@@ -445,64 +450,161 @@ Table.prototype.createReadStream = function(options) {
   var self = this;
 
   options = options || {};
-  options.ranges = options.ranges || [];
+  let maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
 
-  var grpcOpts = {
-    service: 'Bigtable',
-    method: 'readRows',
-  };
-
-  var reqOpts = {
-    tableName: this.id,
-    objectMode: true,
-  };
+  let rowKeys;
+  let ranges = options.ranges || [];
+  let filter;
+  let rowsLimit;
+  let rowsRead = 0
+  let numRequestsMade = 0;
 
   if (options.start || options.end) {
-    options.ranges.push({
+    ranges.push({
       start: options.start,
       end: options.end,
     });
   }
 
-  if (options.prefix) {
-    options.ranges.push(Table.createPrefixRange_(options.prefix));
+  if (options.keys) {
+    rowKeys = options.keys;
   }
 
-  if (options.keys || options.ranges.length) {
-    reqOpts.rows = {};
-
-    if (options.keys) {
-      reqOpts.rows.rowKeys = options.keys.map(Mutation.convertToBytes);
-    }
-
-    if (options.ranges.length) {
-      reqOpts.rows.rowRanges = options.ranges.map(function(range) {
-        return Filter.createRange(range.start, range.end, 'Key');
-      });
-    }
+  if (options.prefix) {
+    ranges.push(Table.createPrefixRange_(options.prefix));
   }
 
   if (options.filter) {
-    reqOpts.filter = Filter.parse(options.filter);
+    filter = Filter.parse(options.filter);
   }
 
   if (options.limit) {
-    reqOpts.rowsLimit = options.limit;
+    rowsLimit = options.limit;
   }
-  const chunkTransformer = new ChunkTransformer({decode: options.decode});
-  const stream = pumpify.obj([
-    this.requestStream(grpcOpts, reqOpts),
-    chunkTransformer,
-    through.obj(function(rowData, enc, next) {
-      if (stream._ended) {
-        return next();
+
+  const retryStream = through.obj();
+  let chunkTransformer;
+
+  const makeNewRequest = () => {
+    let lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
+    chunkTransformer = new ChunkTransformer({decode: options.decode});
+    var grpcOpts = {
+      service: 'Bigtable',
+      method: 'readRows',
+      retryOpts: {
+        currentRetryAttempt: numRequestsMade,
+      },
+    };
+
+    var reqOpts = {
+      tableName: this.id,
+      objectMode: true,
+    };
+    if (lastRowKey) {
+      const lessThan = (lhs, rhs) => {
+        return Mutation.convertToBytes(lhs).compare(Mutation.convertToBytes(rhs)) === -1;
+      };
+      const greaterThan = (lhs, rhs) => {
+        return lessThan(rhs, lhs);
+      };
+      const greaterThanOrEqualTo = (lhs, rhs) => {
+        return !lessThan(rhs, lhs);
+      };
+
+      if (ranges.length === 0) {
+        ranges.push({
+          start: {
+            value: lastRowKey,
+            inclusive: false,
+          },
+        });
+      } else {
+        // Readjust and/or remove ranges based on previous valid row reads.
+
+        // Iterate backward since items may need to be removed.
+        for (let index = ranges.length - 1; index >= 0; index--) {
+          const range = ranges[index];
+          const normalizeRangeValue = rangeSide => {
+            return is.object(rangeSide) ? rangeSide.value : rangeSide;
+          }
+          const startValue = normalizeRangeValue(range.start);
+          const endValue = normalizeRangeValue(range.end);
+          const isWithinStart = !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
+          const isWithinEnd = !endValue || lessThan(lastRowKey, endValue);
+          if (isWithinStart) {
+            if (isWithinEnd) {
+              // The lastRowKey is within this range, adjust the start value.
+              range.start = {
+                value: lastRowKey,
+                inclusive: false,
+              };
+            } else {
+              // The lastRowKey is past this range, remove this range.
+              ranges.splice(index, 1);
+            }
+          }
+        }
       }
-      const row = self.row(rowData.key);
-      row.data = rowData.data;
-      next(null, row);
-    }),
-  ]);
-  return stream;
+
+      // Remove rowKeys already read.
+      if (rowKeys) {
+        rowKeys = rowKeys.filter(rowKey => greaterThan(rowKey, lastRowKey));
+        if (rowKeys.length === 0) {
+          rowKeys = null;
+        }
+      }
+    }
+    if (rowKeys || ranges.length) {
+      reqOpts.rows = {};
+      if (rowKeys) {
+        reqOpts.rows.rowKeys = rowKeys.map(Mutation.convertToBytes);
+      }
+      if (ranges.length) {
+        reqOpts.rows.rowRanges = ranges.map(function(range) {
+          return Filter.createRange(range.start, range.end, 'Key');
+        });
+      }
+    }
+    if (filter) {
+      reqOpts.filter = filter;
+    }
+
+    if (rowsLimit) {
+      reqOpts.rowsLimit = rowsLimit - rowsRead;
+    }
+
+    const requestStream = this.requestStream(grpcOpts, reqOpts)
+    requestStream.on('request', () => numRequestsMade++);
+
+    const stream = pumpify.obj([
+      requestStream,
+      chunkTransformer,
+      through.obj(function(rowData, enc, next) {
+        if (chunkTransformer._destroyed || retryStream._writableState.ended) {
+          return next();
+        }
+        numRequestsMade = 0;
+        rowsRead++;
+        const row = self.row(rowData.key);
+        row.data = rowData.data;
+        next(null, row);
+      }),
+    ]);
+
+    stream.on('error', error => {
+      // TODO - DO NOT MERGE - @stephenplusplus is this unpipe needed?
+      stream.unpipe(retryStream)
+      if (numRequestsMade <= maxRetries && READ_ROWS_RETRYABLE_STATUS_CODES.has(error.code)) {
+        makeNewRequest();
+      } else {
+        retryStream.emit('error', error);
+      }
+    });
+    stream.pipe(retryStream);
+  }
+
+  makeNewRequest();
+  return retryStream;
 };
 
 /**
@@ -987,7 +1089,7 @@ Table.prototype.mutate = function(entries, callback) {
             return;
           }
 
-          if (!RETRY_STATUS_CODES.has(entry.status.code)) {
+          if (!MUTATE_ROWS_RETRYABLE_STATUS_CODES.has(entry.status.code)) {
             pendingEntryIndices.delete(originalEntriesIndex);
           }
 
