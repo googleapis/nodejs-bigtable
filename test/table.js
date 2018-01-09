@@ -30,6 +30,7 @@ var commonGrpc = require('@google-cloud/common-grpc');
 var Family = require('../src/family.js');
 var Mutation = require('../src/mutation.js');
 var Row = require('../src/row.js');
+var ChunkTransformer = require('../src/chunktransformer.js');
 
 var promisified = false;
 var fakeUtil = extend({}, common.util, {
@@ -65,6 +66,11 @@ var FakeRow = createFake(Row);
 FakeRow.formatChunks_ = sinon.spy(function(chunks) {
   return chunks;
 });
+
+var FakeChunkTransformer = createFake(ChunkTransformer);
+FakeChunkTransformer.prototype._transform = function(rows) {
+  rows.forEach(row => this.push(row));
+};
 
 var FakeMutation = {
   methods: Mutation.methods,
@@ -110,6 +116,7 @@ describe('Bigtable/Table', function() {
       './filter.js': FakeFilter,
       pumpify: pumpify,
       './row.js': FakeRow,
+      './chunktransformer.js': FakeChunkTransformer,
     });
   });
 
@@ -571,10 +578,17 @@ describe('Bigtable/Table', function() {
         sinon.stub(table, 'row').callsFake(function() {
           return {};
         });
-
-        FakeRow.formatChunks_ = sinon.spy(function() {
-          return formattedRows;
-        });
+        FakeChunkTransformer.prototype._transform = function(
+          chunks,
+          enc,
+          next
+        ) {
+          formattedRows.forEach(row => this.push(row));
+          next();
+        };
+        FakeChunkTransformer.prototype._flush = function(cb) {
+          cb();
+        };
 
         table.requestStream = function() {
           var stream = new Stream({
@@ -590,23 +604,6 @@ describe('Bigtable/Table', function() {
         };
       });
 
-      it('should pass the decode option', function(done) {
-        var options = {
-          decode: false,
-        };
-
-        table
-          .createReadStream(options)
-          .on('error', done)
-          .on('data', function() {})
-          .on('end', function() {
-            var formatArgs = FakeRow.formatChunks_.getCall(0).args[1];
-
-            assert.strictEqual(formatArgs.decode, options.decode);
-            done();
-          });
-      });
-
       it('should stream Row objects', function(done) {
         var rows = [];
 
@@ -618,12 +615,9 @@ describe('Bigtable/Table', function() {
           })
           .on('end', function() {
             var rowSpy = table.row;
-            var formatSpy = FakeRow.formatChunks_;
 
             assert.strictEqual(rows.length, formattedRows.length);
             assert.strictEqual(rowSpy.callCount, formattedRows.length);
-
-            assert.strictEqual(formatSpy.getCall(0).args[0], fakeChunks.chunks);
 
             assert.strictEqual(rowSpy.getCall(0).args[0], formattedRows[0].key);
             assert.strictEqual(rows[0].data, formattedRows[0].data);
@@ -654,8 +648,38 @@ describe('Bigtable/Table', function() {
 
     describe('error', function() {
       var error = new Error('err');
+      var fakeChunks = {
+        chunks: [
+          {
+            rowKey: 'a',
+          },
+          {
+            commitRow: true,
+          },
+          {
+            rowKey: 'b',
+          },
+          {
+            commitRow: true,
+          },
+        ],
+      };
 
-      beforeEach(function() {
+      // beforeEach(function() {
+      //   table.requestStream = function() {
+      //     var stream = new Stream({
+      //       objectMode: true,
+      //     });
+
+      //     setImmediate(function() {
+      //       stream.emit('error', error);
+      //     });
+
+      //     return stream;
+      //   };
+      // });
+
+      it('should emit an error event', function(done) {
         table.requestStream = function() {
           var stream = new Stream({
             objectMode: true,
@@ -667,9 +691,57 @@ describe('Bigtable/Table', function() {
 
           return stream;
         };
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
       });
+      it('should emit an error event when chunk format returns error', function(done) {
+        table.requestStream = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
 
-      it('should emit an error event', function(done) {
+          setImmediate(function() {
+            stream.push(fakeChunks);
+            stream.push(null);
+          });
+
+          return stream;
+        };
+        FakeChunkTransformer.prototype._transform = function(
+          chunks,
+          enc,
+          next
+        ) {
+          next(error);
+        };
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
+      });
+      it('should emit an error event when chunktransformer returns error on flush end', function(done) {
+        table.requestStream = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            stream.push(null);
+          });
+
+          return stream;
+        };
+        FakeChunkTransformer.prototype._flush = function(next) {
+          next(error);
+        };
         table
           .createReadStream()
           .on('error', function(err) {
