@@ -900,6 +900,22 @@ describe('Bigtable/Row', function() {
 
       row.get(keys, options, assert.ifError);
     });
+    it('should respect filter in options object', function(done) {
+      var keys = [];
+
+      var options = {
+        decode: false,
+        filter: [{column: 'abc'}],
+      };
+      var expectedFilter = options.filter;
+
+      row.parent.getRows = function(reqOpts) {
+        assert.deepEqual(reqOpts.filter, expectedFilter);
+        done();
+      };
+
+      row.get(keys, options, assert.ifError);
+    });
 
     it('should accept options without keys', function(done) {
       var options = {
