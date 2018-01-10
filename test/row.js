@@ -906,6 +906,7 @@ describe('Bigtable/Row', function() {
 
       row.get(keys, options, assert.ifError);
     });
+
     it('should respect filter in options object', function(done) {
       var keys = [];
 
