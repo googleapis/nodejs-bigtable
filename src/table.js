@@ -482,7 +482,7 @@ Table.prototype.createReadStream = function(options) {
     rowsLimit = options.limit;
   }
 
-  const retryStream = through.obj();
+  const userStream = through.obj();
   let chunkTransformer;
 
   const makeNewRequest = () => {
@@ -502,17 +502,12 @@ Table.prototype.createReadStream = function(options) {
     };
     if (lastRowKey) {
       const lessThan = (lhs, rhs) => {
-        return (
-          Mutation.convertToBytes(lhs).compare(Mutation.convertToBytes(rhs)) ===
-          -1
-        );
+        const lhsBytes = Mutation.convertToBytes(lhs);
+        const rhsBytes = Mutation.convertToBytes(rhs);
+        return lhsBytes.compare(rhsBytes) === -1;
       };
-      const greaterThan = (lhs, rhs) => {
-        return lessThan(rhs, lhs);
-      };
-      const greaterThanOrEqualTo = (lhs, rhs) => {
-        return !lessThan(rhs, lhs);
-      };
+      const greaterThan = (lhs, rhs) => lessThan(rhs, lhs);
+      const greaterThanOrEqualTo = (lhs, rhs) => !lessThan(rhs, lhs);
 
       if (ranges.length === 0) {
         ranges.push({
@@ -580,11 +575,11 @@ Table.prototype.createReadStream = function(options) {
     const requestStream = this.requestStream(grpcOpts, reqOpts);
     requestStream.on('request', () => numRequestsMade++);
 
-    const stream = pumpify.obj([
+    const rowStream = pumpify.obj([
       requestStream,
       chunkTransformer,
       through.obj(function(rowData, enc, next) {
-        if (chunkTransformer._destroyed || retryStream._writableState.ended) {
+        if (chunkTransformer._destroyed || userStream._writableState.ended) {
           return next();
         }
         numRequestsMade = 0;
@@ -595,23 +590,22 @@ Table.prototype.createReadStream = function(options) {
       }),
     ]);
 
-    stream.on('error', error => {
-      // TODO - DO NOT MERGE - @stephenplusplus is this unpipe needed?
-      stream.unpipe(retryStream);
+    rowStream.on('error', error => {
+      rowStream.unpipe(userStream);
       if (
         numRequestsMade <= maxRetries &&
         READ_ROWS_RETRYABLE_STATUS_CODES.has(error.code)
       ) {
         makeNewRequest();
       } else {
-        retryStream.emit('error', error);
+        userStream.emit('error', error);
       }
     });
-    stream.pipe(retryStream);
+    rowStream.pipe(userStream);
   };
 
   makeNewRequest();
-  return retryStream;
+  return userStream;
 };
 
 /**
