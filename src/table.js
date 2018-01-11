@@ -35,12 +35,10 @@ const ChunkTransformer = require('./chunktransformer.js');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
-const MUTATE_ROWS_RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
+const GRPC_RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
 
-// TODO - DO NOT MERGE - Figure out exactly what codes need to be here. Some combination of
-// https://github.com/GoogleCloudPlatform/google-cloud-node/blob/94f855a506e632f5e3b93ec23a5b2c9fe9a50e31/packages/common-grpc/src/service.js#L44
-// and protos/google/rpc/code.proto
-const READ_ROWS_RETRYABLE_STATUS_CODES = new Set([429, 500, 502, 503, 504]);
+// (409=ABORTED, 503=UNAVAILABLE, 14=DEADLINE_EXCEEDED)
+const HTTP_RETRYABLE_STATUS_CODES = new Set([409, 503, 504]);
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
@@ -591,7 +589,7 @@ Table.prototype.createReadStream = function(options) {
       rowStream.unpipe(userStream);
       if (
         numRequestsMade <= maxRetries &&
-        READ_ROWS_RETRYABLE_STATUS_CODES.has(error.code)
+        HTTP_RETRYABLE_STATUS_CODES.has(error.code)
       ) {
         makeNewRequest();
       } else {
@@ -1087,7 +1085,7 @@ Table.prototype.mutate = function(entries, callback) {
             return;
           }
 
-          if (!MUTATE_ROWS_RETRYABLE_STATUS_CODES.has(entry.status.code)) {
+          if (!GRPC_RETRYABLE_STATUS_CODES.has(entry.status.code)) {
             pendingEntryIndices.delete(originalEntriesIndex);
           }
 

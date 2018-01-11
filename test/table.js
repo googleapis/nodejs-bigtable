@@ -781,7 +781,7 @@ describe('Bigtable/Table', function() {
         emitters = null; // This needs to be assigned in each test case.
         makeRetryableError = () => {
           var error = new Error('retry me!');
-          error.code = 429;
+          error.code = 409;
           return error;
         };
         FakeFilter.createRange = function(start, end) {
