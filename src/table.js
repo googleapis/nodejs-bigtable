@@ -522,11 +522,8 @@ Table.prototype.createReadStream = function(options) {
         // Iterate backward since items may need to be removed.
         for (let index = ranges.length - 1; index >= 0; index--) {
           const range = ranges[index];
-          const normalizeRangeValue = rangeSide => {
-            return is.object(rangeSide) ? rangeSide.value : rangeSide;
-          };
-          const startValue = normalizeRangeValue(range.start);
-          const endValue = normalizeRangeValue(range.end);
+          const startValue = is.object(range.start) ? range.start.value : range.start;
+          const endValue = is.object(range.end) ? range.end.value : range.end;
           const isWithinStart =
             !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
           const isWithinEnd = !endValue || lessThan(lastRowKey, endValue);
