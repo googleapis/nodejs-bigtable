@@ -620,28 +620,31 @@ Row.prototype.get = function(columns, options, callback) {
   }
 
   var filter;
+  if (options.filter) {
+    filter = options.filter;
+  } else {
+    columns = arrify(columns);
 
-  columns = arrify(columns);
+    if (columns.length) {
+      var filters = columns.map(Mutation.parseColumnName).map(function(column) {
+        var filters = [{family: column.family}];
 
-  if (columns.length) {
-    var filters = columns.map(Mutation.parseColumnName).map(function(column) {
-      var filters = [{family: column.family}];
+        if (column.qualifier) {
+          filters.push({column: column.qualifier});
+        }
 
-      if (column.qualifier) {
-        filters.push({column: column.qualifier});
+        return filters;
+      });
+
+      if (filters.length > 1) {
+        filter = [
+          {
+            interleave: filters,
+          },
+        ];
+      } else {
+        filter = filters[0];
       }
-
-      return filters;
-    });
-
-    if (filters.length > 1) {
-      filter = [
-        {
-          interleave: filters,
-        },
-      ];
-    } else {
-      filter = filters[0];
     }
   }
 
