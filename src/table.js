@@ -520,7 +520,9 @@ Table.prototype.createReadStream = function(options) {
         // Iterate backward since items may need to be removed.
         for (let index = ranges.length - 1; index >= 0; index--) {
           const range = ranges[index];
-          const startValue = is.object(range.start) ? range.start.value : range.start;
+          const startValue = is.object(range.start)
+            ? range.start.value
+            : range.start;
           const endValue = is.object(range.end) ? range.end.value : range.end;
           const isWithinStart =
             !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
