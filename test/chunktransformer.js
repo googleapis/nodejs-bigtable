@@ -132,9 +132,7 @@ describe('Bigtable/ChunkTransformer', function() {
       });
       processNewRowSpy.call(chunkTransformer, {resetRow: true});
     });
-    it('should destroy when row key is equal to previous row key ', function(
-      done
-    ) {
+    it('should destroy when row key is equal to previous row key ', function(done) {
       chunkTransformer.on('error', function() {
         assert(destroySpy.called);
         done();

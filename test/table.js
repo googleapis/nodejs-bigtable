@@ -704,9 +704,7 @@ describe('Bigtable/Table', function() {
           })
           .on('data', done);
       });
-      it('should emit an error event when chunk format returns error', function(
-        done
-      ) {
+      it('should emit an error event when chunk format returns error', function(done) {
         table.requestStream = function() {
           var stream = new Stream({
             objectMode: true,
@@ -734,9 +732,7 @@ describe('Bigtable/Table', function() {
           })
           .on('data', done);
       });
-      it('should emit an error event when chunktransformer returns error on flush end', function(
-        done
-      ) {
+      it('should emit an error event when chunktransformer returns error on flush end', function(done) {
         table.requestStream = function() {
           var stream = new Stream({
             objectMode: true,
@@ -839,9 +835,7 @@ describe('Bigtable/Table', function() {
         });
       });
 
-      it('should have a range which starts after the last read key', function(
-        done
-      ) {
+      it('should have a range which starts after the last read key', function(done) {
         emitters = [
           function(stream) {
             stream.push([{key: 'a'}]);
@@ -860,9 +854,7 @@ describe('Bigtable/Table', function() {
         });
       });
 
-      it('should move the active range start to after the last read key', function(
-        done
-      ) {
+      it('should move the active range start to after the last read key', function(done) {
         emitters = [
           function(stream) {
             stream.push([{key: 'a'}]);
