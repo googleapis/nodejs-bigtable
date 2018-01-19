@@ -828,6 +828,14 @@ describe('Bigtable/ChunkTransformer', function() {
       chunkTransformer._transform({chunks: chunks}, {}, callback);
       assert(!callback.called, 'unexpected call to  next');
     });
+    it('should change the `lastRowKey` value for `data.lastScannedRowKey`', function() {
+      chunkTransformer._transform(
+        {chunks: [], lastScannedRowKey: 'foo'},
+        {},
+        callback
+      );
+      assert.deepEqual(chunkTransformer.lastRowKey, 'foo');
+    });
   });
   describe('reset', function() {
     it('should reset initial state', function() {

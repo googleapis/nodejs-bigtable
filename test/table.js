@@ -17,6 +17,7 @@
 'use strict';
 
 var assert = require('assert');
+var Buffer = require('buffer').Buffer;
 var extend = require('extend');
 var nodeutil = require('util');
 var proxyquire = require('proxyquire');
@@ -68,8 +69,9 @@ FakeRow.formatChunks_ = sinon.spy(function(chunks) {
 });
 
 var FakeChunkTransformer = createFake(ChunkTransformer);
-FakeChunkTransformer.prototype._transform = function(rows) {
+FakeChunkTransformer.prototype._transform = function(rows, enc, next) {
   rows.forEach(row => this.push(row));
+  next();
 };
 
 var FakeMutation = {
@@ -375,6 +377,9 @@ describe('Bigtable/Table', function() {
           assert.deepEqual(grpcOpts, {
             service: 'Bigtable',
             method: 'readRows',
+            retryOpts: {
+              currentRetryAttempt: 0,
+            },
           });
 
           assert.strictEqual(reqOpts.tableName, TABLE_NAME);
@@ -749,6 +754,190 @@ describe('Bigtable/Table', function() {
             done();
           })
           .on('data', done);
+      });
+    });
+
+    describe('retries', function() {
+      var callCreateReadStream;
+      var emitters; // = [function(stream) { stream.push([{ key: 'a' }]); stream.end(); }, ...];
+      var makeRetryableError;
+      var reqOptsCalls;
+      var setTimeoutSpy;
+      beforeEach(function() {
+        FakeChunkTransformer.prototype._transform = function(rows, enc, next) {
+          rows.forEach(row => this.push(row));
+          this.lastRowKey = rows[rows.length - 1].key;
+          next();
+        };
+        FakeChunkTransformer.prototype._flush = function(cb) {
+          cb();
+        };
+        callCreateReadStream = (options, verify) => {
+          table
+            .createReadStream(options)
+            .on('end', verify)
+            .resume(); // The stream starts paused unless it has a `.data()` callback.
+        };
+        emitters = null; // This needs to be assigned in each test case.
+        makeRetryableError = () => {
+          var error = new Error('retry me!');
+          error.code = 409;
+          return error;
+        };
+        FakeFilter.createRange = function(start, end) {
+          var range = {};
+          if (start) {
+            range.start = start.value || start;
+            range.startInclusive =
+              typeof start === 'object' ? start.inclusive : true;
+          }
+          if (end) {
+            range.end = end.value || end;
+          }
+          return range;
+        };
+        FakeMutation.convertToBytes = function(value) {
+          return Buffer.from(value);
+        };
+        reqOptsCalls = [];
+        setTimeoutSpy = sinon.stub(global, 'setTimeout').callsFake(fn => fn());
+        table.requestStream = function(_, reqOpts) {
+          reqOptsCalls.push(reqOpts);
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            stream.emit('request');
+            emitters.shift()(stream);
+          });
+
+          return stream;
+        };
+      });
+      afterEach(function() {
+        setTimeoutSpy.restore();
+      });
+
+      it('should do a retry the stream is interrupted', function(done) {
+        emitters = [
+          function(stream) {
+            stream.emit('error', makeRetryableError());
+            stream.end();
+          },
+          function(stream) {
+            stream.end();
+          },
+        ];
+        callCreateReadStream(null, () => {
+          assert.strictEqual(reqOptsCalls.length, 2);
+          done();
+        });
+      });
+
+      it('should have a range which starts after the last read key', function(done) {
+        emitters = [
+          function(stream) {
+            stream.push([{key: 'a'}]);
+            stream.emit('error', makeRetryableError());
+          },
+          function(stream) {
+            stream.end();
+          },
+        ];
+        callCreateReadStream(null, () => {
+          assert.strictEqual(reqOptsCalls[0].rows, undefined);
+          assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowRanges: [{start: 'a', startInclusive: false}],
+          });
+          done();
+        });
+      });
+
+      it('should move the active range start to after the last read key', function(done) {
+        emitters = [
+          function(stream) {
+            stream.push([{key: 'a'}]);
+            stream.emit('error', makeRetryableError());
+          },
+          function(stream) {
+            stream.end();
+          },
+        ];
+        callCreateReadStream({ranges: [{start: 'a'}]}, () => {
+          assert.deepStrictEqual(reqOptsCalls[0].rows, {
+            rowRanges: [{start: 'a', startInclusive: true}],
+          });
+          assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowRanges: [{start: 'a', startInclusive: false}],
+          });
+          done();
+        });
+      });
+
+      it('should remove ranges which were already read', function(done) {
+        emitters = [
+          function(stream) {
+            stream.push([{key: 'a'}]);
+            stream.push([{key: 'b'}]);
+            stream.emit('error', makeRetryableError());
+          },
+          function(stream) {
+            stream.push([{key: 'c'}]);
+            stream.end();
+          },
+        ];
+        callCreateReadStream(
+          {ranges: [{start: 'a', end: 'b'}, {start: 'c'}]},
+          () => {
+            var allRanges = [
+              {start: 'a', end: 'b', startInclusive: true},
+              {start: 'c', startInclusive: true},
+            ];
+            assert.deepStrictEqual(reqOptsCalls[0].rows, {
+              rowRanges: allRanges,
+            });
+            assert.deepStrictEqual(reqOptsCalls[1].rows, {
+              rowRanges: allRanges.slice(1),
+            });
+            done();
+          }
+        );
+      });
+
+      it('should remove the keys which were already read', function(done) {
+        emitters = [
+          function(stream) {
+            stream.push([{key: 'a'}]);
+            stream.emit('error', makeRetryableError());
+          },
+          function(stream) {
+            stream.end([{key: 'c'}]);
+          },
+        ];
+        callCreateReadStream({keys: ['a', 'b']}, () => {
+          assert.strictEqual(reqOptsCalls[0].rows.rowKeys.length, 2);
+          assert.strictEqual(reqOptsCalls[1].rows.rowKeys.length, 1);
+          done();
+        });
+      });
+
+      it('should remove `keys` if they were all read', function(done) {
+        emitters = [
+          function(stream) {
+            stream.push([{key: 'a'}]);
+            stream.emit('error', makeRetryableError());
+          },
+          function(stream) {
+            stream.push([{key: 'c'}]);
+            stream.end();
+          },
+        ];
+        callCreateReadStream({keys: ['a']}, () => {
+          assert.strictEqual(reqOptsCalls[0].rows.rowKeys.length, 1);
+          assert.strictEqual(reqOptsCalls[1].rows.rowKeys, undefined);
+          done();
+        });
       });
     });
   });
