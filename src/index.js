@@ -328,11 +328,10 @@ var Instance = require('./instance.js');
  */
 function Bigtable(options) {
   if (!(this instanceof Bigtable)) {
-    options = common.util.normalizeArguments(this, options);
     return new Bigtable(options);
   }
 
-  options = options || {};
+  options = common.util.normalizeArguments(this, options);
 
   var baseUrl = 'bigtable.googleapis.com';
   var adminBaseUrl = 'bigtableadmin.googleapis.com';
