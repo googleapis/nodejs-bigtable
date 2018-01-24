@@ -621,9 +621,7 @@ class BigtableClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate
-      .match(tableName)
-      .project;
+    return this._pathTemplates.tablePathTemplate.match(tableName).project;
   }
 
   /**
@@ -634,9 +632,7 @@ class BigtableClient {
    * @returns {String} - A string representing the instance.
    */
   matchInstanceFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate
-      .match(tableName)
-      .instance;
+    return this._pathTemplates.tablePathTemplate.match(tableName).instance;
   }
 
   /**
@@ -647,11 +643,8 @@ class BigtableClient {
    * @returns {String} - A string representing the table.
    */
   matchTableFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate
-      .match(tableName)
-      .table;
+    return this._pathTemplates.tablePathTemplate.match(tableName).table;
   }
 }
-
 
 module.exports = BigtableClient;
