@@ -353,7 +353,9 @@ Row.prototype.create = function(entry, callback) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.createRules = function(rules, callback) {
+Row.prototype.createRules = function(rules, gaxOptions, callback) {
+  var bigtable = this.parent;
+
   if (!rules || rules.length === 0) {
     throw new Error('At least one rule must be provided.');
   }
@@ -376,18 +378,18 @@ Row.prototype.createRules = function(rules, callback) {
     return ruleData;
   });
 
-  var grpcOpts = {
-    service: 'Bigtable',
-    method: 'readModifyWriteRow',
-  };
-
   var reqOpts = {
-    tableName: this.parent.id,
+    tableName: bigtable.id,
     rowKey: Mutation.convertToBytes(this.id),
     rules: rules,
   };
 
-  this.request(grpcOpts, reqOpts, callback);
+  bigtable.request({
+    client: 'BigtableClient',
+    method: 'readModifyWriteRow',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOpts,
+  }, callback);
 };
 
 /**
@@ -395,11 +397,12 @@ Row.prototype.createRules = function(rules, callback) {
  * whether or not any results are yielded, either the `onMatch` or `onNoMatch`
  * callback will be executed.
  *
- * @param {Filter} filter Filter ot be applied to the contents
- *     of the row.
+ * @param {Filter} filter Filter to be applied to the contents of the row.
  * @param {?object[]} onMatch A list of entries to be ran if a match is found.
  * @param {object[]} [onNoMatch] A list of entries to be ran if no matches are
  *     found.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -415,9 +418,11 @@ Row.prototype.createRules = function(rules, callback) {
  * var filter = [
  *   {
  *     family: 'follows'
- *   }, {
+ *   },
+ *   {
  *     column: 'alincoln',
- *   }, {
+ *   },
+ *   {
  *     value: 1
  *   }
  * ];
@@ -448,15 +453,20 @@ Row.prototype.createRules = function(rules, callback) {
  *   var matched = data[0];
  * });
  */
-Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
-  var grpcOpts = {
-    service: 'Bigtable',
-    method: 'checkAndMutateRow',
-  };
+Row.prototype.filter = function(filter, onMatch, onNoMatch, gaxOptions, callback) {
+  if (is.object(onNoMatch)) {
+    gaxOptions = onNoMatch;
+    onNoMatch = [];
+  }
 
   if (is.function(onNoMatch)) {
     callback = onNoMatch;
     onNoMatch = [];
+  }
+
+  if (is.function(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
   }
 
   var reqOpts = {
@@ -467,7 +477,12 @@ Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
     falseMutations: createFlatMutationsList(onNoMatch),
   };
 
-  this.request(grpcOpts, reqOpts, function(err, apiResponse) {
+  this.request({
+    client: 'BigtableClient',
+    method: 'checkAndMutateRow',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOptions,
+  }, function(err, apiResponse) {
     if (err) {
       callback(err, null, apiResponse);
       return;

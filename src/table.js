@@ -263,7 +263,8 @@ Table.createPrefixRange_ = function(start) {
  * @throws {error} If a name is not provided.
  *
  * @param {string} name The name of column family.
- * @param {object} [rule] Garbage collection rule.
+ * @param {object} [rule] Garbage collection rule or request configuration
+ *     options, outlined here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {object} [rule.age] Delete cells in a column older than the given
  *     age. Values must be at least 1 millisecond.
  * @param {number} [rule.versions] Maximum number of versions to delete cells
@@ -306,6 +307,13 @@ Table.createPrefixRange_ = function(start) {
  */
 Table.prototype.createFamily = function(name, rule, callback) {
   var self = this;
+  var bigtable = this.parent;
+  var gaxOpts = {};
+
+  if (is.object(rule)) {
+    gaxOpts = rule;
+    rule = null;
+  }
 
   if (is.function(rule)) {
     callback = rule;
@@ -315,11 +323,6 @@ Table.prototype.createFamily = function(name, rule, callback) {
   if (!name) {
     throw new Error('A name is required to create a family.');
   }
-
-  var grpcOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'modifyColumnFamilies',
-  };
 
   var mod = {
     id: name,
@@ -335,7 +338,12 @@ Table.prototype.createFamily = function(name, rule, callback) {
     modifications: [mod],
   };
 
-  this.request(grpcOpts, reqOpts, function(err, resp) {
+  bigtable.request({
+    client: 'BigtableTableAdmin',
+    method: 'modifyColumnFamilies',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOpts,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, resp);
       return;
@@ -446,6 +454,7 @@ Table.prototype.createFamily = function(name, rule, callback) {
  */
 Table.prototype.createReadStream = function(options) {
   var self = this;
+  var bigtable = this.parent;
 
   options = options || {};
   let maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
@@ -486,13 +495,13 @@ Table.prototype.createReadStream = function(options) {
   const makeNewRequest = () => {
     let lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
     chunkTransformer = new ChunkTransformer({decode: options.decode});
-    var grpcOpts = {
-      service: 'Bigtable',
-      method: 'readRows',
-      retryOpts: {
-        currentRetryAttempt: numRequestsMade,
-      },
-    };
+
+    // @todo Figure out how to do this in gapic.
+    // var grpcOpts = {
+    //   retryOpts: {
+    //     currentRetryAttempt: numRequestsMade,
+    //   },
+    // };
 
     var reqOpts = {
       tableName: this.id,
@@ -569,7 +578,12 @@ Table.prototype.createReadStream = function(options) {
       reqOpts.rowsLimit = rowsLimit - rowsRead;
     }
 
-    const requestStream = this.requestStream(grpcOpts, reqOpts);
+    const requestStream = bigtable.request({
+      client: 'BigtableClient',
+      method: 'readRows',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+    });
     requestStream.on('request', () => numRequestsMade++);
 
     const rowStream = pumpify.obj([
@@ -653,11 +667,6 @@ Table.prototype.deleteRows = function(options, callback) {
     options = {};
   }
 
-  var grpcOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'dropRowRange',
-  };
-
   var reqOpts = {
     name: this.id,
   };
@@ -668,7 +677,12 @@ Table.prototype.deleteRows = function(options, callback) {
     reqOpts.deleteAllDataFromTable = true;
   }
 
-  this.request(grpcOpts, reqOpts, callback);
+  this.request({
+    client: 'BigtableTableAdmin',
+    method: 'dropRowRange',
+    reqOpts: reqOpts,
+    gaxOpts: options.gaxOptions,
+  }, callback);
 };
 
 /**
@@ -770,17 +784,17 @@ Table.prototype.getMetadata = function(options, callback) {
     options = {};
   }
 
-  var protoOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'getTable',
-  };
-
   var reqOpts = {
     name: this.id,
     view: Table.VIEWS[options.view || 'unspecified'],
   };
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  this.request({
+    client: 'BigtableTableAdmin',
+    method: 'getTable',
+    reqOpts: reqOpts,
+    gaxOpts: options.gaxOptions,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, resp);
       return;
@@ -1058,13 +1072,12 @@ Table.prototype.mutate = function(entries, callback) {
   }
 
   function makeNextBatchRequest() {
-    var grpcOpts = {
-      service: 'Bigtable',
-      method: 'mutateRows',
-      retryOpts: {
-        currentRetryAttempt: numRequestsMade,
-      },
-    };
+    // @todo Figure out how to do this in gapic.
+    // var grpcOpts = {
+    //   retryOpts: {
+    //     currentRetryAttempt: numRequestsMade,
+    //   },
+    // };
 
     var entryBatch = entries.filter((entry, index) => {
       return pendingEntryIndices.has(index);
@@ -1076,8 +1089,13 @@ Table.prototype.mutate = function(entries, callback) {
       entries: entryBatch.map(Mutation.parse),
     };
 
-    self
-      .requestStream(grpcOpts, reqOpts)
+    bigtable
+      .request({
+        client: 'BigtableClient',
+        method: 'mutateRows',
+        reqOpts: reqOpts,
+        gaxOpts: options.gaxOptions,
+      })
       .on('request', () => numRequestsMade++)
       .on('error', onBatchResponse.bind(null, numRequestsMade))
       .on('data', function(obj) {
@@ -1187,19 +1205,19 @@ Table.prototype.sampleRowKeys = function(callback) {
  *     this.end();
  *   });
  */
-Table.prototype.sampleRowKeysStream = function() {
-  var grpcOpts = {
-    service: 'Bigtable',
-    method: 'sampleRowKeys',
-  };
-
+Table.prototype.sampleRowKeysStream = function(gaxOptions) {
   var reqOpts = {
     tableName: this.id,
     objectMode: true,
   };
 
   return pumpify.obj([
-    this.requestStream(grpcOpts, reqOpts),
+    this.request({
+      client: 'BigtableClient',
+      method: 'sampleRowKeys',
+      reqOpts: reqOpts,
+      gaxOpts: gaxOptions,
+    }),
     through.obj(function(key, enc, next) {
       next(null, {
         key: key.rowKey,

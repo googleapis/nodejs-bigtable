@@ -27,9 +27,8 @@ var util = require('util');
 var Cluster = require('./cluster.js');
 var Instance = require('./instance.js');
 
-const gapic = Object.freeze({
-  v2: require('./v2'),
-});
+const PKG = require('../package.json');
+const v2 = require('./v2');
 
 /**
  * @typedef {object} ClientConfig
@@ -348,42 +347,33 @@ function Bigtable(options) {
     adminBaseUrl = baseUrl;
   }
 
-  var config = {
-    baseUrl: baseUrl,
-    customEndpoint: !!customEndpoint,
-    protosDir: path.resolve(__dirname, '../protos'),
-    protoServices: {
-      Bigtable: {
-        baseUrl: baseUrl,
-        path: 'google/bigtable/v2/bigtable.proto',
-        service: 'bigtable.v2',
-      },
-      BigtableTableAdmin: {
-        baseUrl: adminBaseUrl,
-        path: 'google/bigtable/admin/v2/bigtable_table_admin.proto',
-        service: 'bigtable.admin.v2',
-      },
-      BigtableInstanceAdmin: {
-        baseUrl: adminBaseUrl,
-        path: 'google/bigtable/admin/v2/bigtable_instance_admin.proto',
-        service: 'bigtable.admin.v2',
-      },
-      Operations: {
-        baseUrl: adminBaseUrl,
-        path: 'google/longrunning/operations.proto',
-        service: 'longrunning',
-      },
+  // Determine what scopes are needed.
+  // It is the union of the scopes on all three clients.
+  let scopes = [];
+  let clientClasses = [
+    v2.BigtableClient,
+  ];
+  for (let clientClass of clientClasses) {
+    for (let scope of clientClass.scopes) {
+      if (clientClasses.indexOf(scope) === -1) {
+        scopes.push(scope);
+      }
+    }
+  }
+
+  var options_ = extend(
+    {
+      libName: 'gccl',
+      libVersion: PKG.version,
+      scopes: scopes,
     },
-    scopes: [
-      'https://www.googleapis.com/auth/bigtable.admin',
-      'https://www.googleapis.com/auth/bigtable.data',
-      'https://www.googleapis.com/auth/cloud-platform',
-    ],
-    packageJson: require('../package.json'),
-  };
+    options
+  );
 
-  commonGrpc.Service.call(this, config, options);
-
+  this.api = {};
+  this.auth = googleAuth(options_);
+  this.options = options_;
+  this.projectId = this.options.projectId || '{{projectId}}';
   this.projectName = 'projects/' + this.projectId;
 }
 
@@ -455,11 +445,6 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
     options = {};
   }
 
-  var protoOpts = {
-    service: 'BigtableInstanceAdmin',
-    method: 'createInstance',
-  };
-
   var reqOpts = {
     parent: this.projectName,
     instanceId: name,
@@ -482,7 +467,12 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
   },
   {});
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  this.request({
+    client: 'BigtableInstanceAdmin',
+    method: 'createInstance',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOpts,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, null, resp);
       return;
@@ -552,16 +542,16 @@ Bigtable.prototype.getInstances = function(query, callback) {
     query = {};
   }
 
-  var protoOpts = {
-    service: 'BigtableInstanceAdmin',
-    method: 'listInstances',
-  };
-
   var reqOpts = extend({}, query, {
     parent: this.projectName,
   });
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  this.request({
+    client: 'BigtableInstanceAdmin',
+    method: 'listInstances',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOpts,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, null, resp);
       return;
@@ -634,6 +624,95 @@ Bigtable.prototype.instance = function(name) {
  */
 Bigtable.prototype.operation = function(name) {
   return new commonGrpc.Operation(this, name);
+};
+
+/**
+ * Funnel all API requests through this method, to be sure we have a project ID.
+ *
+ * @param {object} config Configuration object.
+ * @param {object} config.gaxOpts GAX options.
+ * @param {function} config.method The gax method to call.
+ * @param {object} config.reqOpts Request options.
+ * @param {function} [callback] Callback function.
+ */
+Bigtable.prototype.request = function(config, callback) {
+  var self = this;
+  var isStreamMode = !callback;
+
+  var gaxStream;
+  var stream;
+
+  if (isStreamMode) {
+    stream = streamEvents(through.obj());
+
+    stream.abort = function() {
+      if (gaxStream && gaxStream.cancel) {
+        gaxStream.cancel();
+      }
+    };
+
+    stream.once('reading', makeRequestStream);
+  } else {
+    makeRequestCallback();
+  }
+
+  function prepareGaxRequest(callback) {
+    self.auth.getProjectId(function(err, projectId) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      var gaxClient = self.api[config.client];
+
+      if (!gaxClient) {
+        // Lazily instantiate client.
+        gaxClient = new v2[config.client](self.options);
+        self.api[config.client] = gaxClient;
+      }
+
+      var reqOpts = extend(true, {}, config.reqOpts);
+      reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
+
+      var requestFn = gaxClient[config.method].bind(
+        gaxClient,
+        reqOpts,
+        config.gaxOpts
+      );
+
+      callback(null, requestFn);
+    });
+  }
+
+  function makeRequestCallback() {
+    prepareGaxRequest(function(err, requestFn) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      requestFn(callback);
+    });
+  }
+
+  function makeRequestStream() {
+    prepareGaxRequest(function(err, requestFn) {
+      if (err) {
+        stream.destroy(err);
+        return;
+      }
+
+      gaxStream = requestFn();
+
+      gaxStream
+        .on('error', function(err) {
+          stream.destroy(err);
+        })
+        .pipe(stream);
+    });
+  }
+
+  return stream;
 };
 
 /*! Developer Documentation

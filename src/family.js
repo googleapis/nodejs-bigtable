@@ -309,6 +309,8 @@ Family.prototype.getMetadata = function(callback) {
  *
  * @param {object} metadata Metadata object.
  * @param {object} [metadata.rule] Garbage collection rule.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -331,13 +333,14 @@ Family.prototype.getMetadata = function(callback) {
  *   var apiResponse = data[0];
  * });
  */
-Family.prototype.setMetadata = function(metadata, callback) {
+Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
   var self = this;
+  var bigtable = this.parent;
 
-  var grpcOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'modifyColumnFamilies',
-  };
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
 
   var mod = {
     id: this.familyName,
@@ -349,11 +352,16 @@ Family.prototype.setMetadata = function(metadata, callback) {
   }
 
   var reqOpts = {
-    name: this.parent.id,
+    name: bigtable.id,
     modifications: [mod],
   };
 
-  this.request(grpcOpts, reqOpts, function(err, resp) {
+  bigtable.request({
+    client: 'BigtableTableAdmin',
+    method: 'modifyColumnFamilies',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOptions,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, resp);
       return;

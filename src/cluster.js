@@ -299,11 +299,6 @@ Cluster.getStorageType_ = function(type) {
  * });
  */
 Cluster.prototype.setMetadata = function(options, callback) {
-  var protoOpts = {
-    service: 'BigtableInstanceAdmin',
-    method: 'updateCluster',
-  };
-
   var reqOpts = {
     name: this.id,
   };
@@ -325,7 +320,12 @@ Cluster.prototype.setMetadata = function(options, callback) {
     reqOpts.defaultStorageType = Cluster.getStorageType_(options.storage);
   }
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  bigtable.request({
+    client: 'BigtableInstanceAdmin',
+    method: 'updateCluster',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOpts,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, resp);
       return;

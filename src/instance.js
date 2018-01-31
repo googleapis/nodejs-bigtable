@@ -260,6 +260,8 @@ util.inherits(Instance, commonGrpc.ServiceObject);
  * @param {string} name The name to be used when referring to the new
  *     cluster within its instance.
  * @param {object} [options] Cluster creation options.
+ * @param {object} [options.gaxOptions]  Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {string} [options.location] The location where this cluster's nodes
  *     and storage reside. For best performance clients should be located as
  *     as close as possible to this cluster. Currently only zones are
@@ -313,16 +315,12 @@ util.inherits(Instance, commonGrpc.ServiceObject);
  */
 Instance.prototype.createCluster = function(name, options, callback) {
   var self = this;
+  var bigtable = this.parent;
 
   if (is.function(options)) {
     callback = options;
     options = {};
   }
-
-  var protoOpts = {
-    service: 'BigtableInstanceAdmin',
-    method: 'createCluster',
-  };
 
   var reqOpts = {
     parent: this.id,
@@ -349,7 +347,12 @@ Instance.prototype.createCluster = function(name, options, callback) {
     reqOpts.cluster.defaultStorageType = storageType;
   }
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  bigtable.request({
+    client: 'BigtableInstanceAdmin',
+    method: 'createCluster',
+    reqOpts: reqOpts,
+    gaxOpts: options.gaxOptions,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, null, resp);
       return;
@@ -447,6 +450,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
  */
 Instance.prototype.createTable = function(name, options, callback) {
   var self = this;
+  var bigtable = this.parent;
 
   if (!name) {
     throw new Error('A name is required to create a table.');
@@ -458,11 +462,6 @@ Instance.prototype.createTable = function(name, options, callback) {
     callback = options;
     options = {};
   }
-
-  var protoOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'createTable',
-  };
 
   var reqOpts = {
     parent: this.id,
@@ -502,7 +501,12 @@ Instance.prototype.createTable = function(name, options, callback) {
     reqOpts.table.columnFamilies = columnFamilies;
   }
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  bigtable.request({
+    client: 'BigtableTableAdmin',
+    method: 'createTable',
+    reqOpts: reqOpts,
+    gaxOpts: options.gaxOptions,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, resp);
       return;
@@ -576,22 +580,23 @@ Instance.prototype.cluster = function(name) {
  */
 Instance.prototype.getClusters = function(query, callback) {
   var self = this;
+  var bigtable = this.parent;
 
   if (is.function(query)) {
     callback = query;
     query = {};
   }
 
-  var protoOpts = {
-    service: 'BigtableInstanceAdmin',
-    method: 'listClusters',
-  };
-
   var reqOpts = extend({}, query, {
     parent: this.id,
   });
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  bigtable.request({
+    client: 'BigtableInstanceAdmin',
+    method: 'listClusters',
+    reqOpts: reqOpts,
+    gaxOpts: options.gaxOptions,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, null, resp);
       return;
@@ -649,14 +654,16 @@ Instance.prototype.getClustersStream = common.paginator.streamify(
 /**
  * Get Table objects for all the tables in your Compute instance.
  *
- * @param {object} [query] Query object.
- * @param {boolean} [query.autoPaginate=true] Have pagination handled
+ * @param {object} [options] Query object.
+ * @param {boolean} [options.autoPaginate=true] Have pagination handled
  *     automatically.
- * @param {number} [query.maxApiCalls] Maximum number of API calls to make.
- * @param {number} [query.maxResults] Maximum number of items to return.
- * @param {string} [query.pageToken] A previously-returned page token
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {number} [options.maxApiCalls] Maximum number of API calls to make.
+ * @param {number} [options.maxResults] Maximum number of items to return.
+ * @param {string} [options.pageToken] A previously-returned page token
  *     representing part of a larger set of results to view.
- * @param {string} [query.view] View over the table's fields. Possible options
+ * @param {string} [options.view] View over the table's fields. Possible options
  *     are 'name', 'schema' or 'full'. Default: 'name'.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
@@ -696,25 +703,31 @@ Instance.prototype.getClustersStream = common.paginator.streamify(
  *   const tables = data[0];
  * });
  */
-Instance.prototype.getTables = function(query, callback) {
+Instance.prototype.getTables = function(options, callback) {
   var self = this;
+  var bigtable = this.parent;
 
-  if (is.function(query)) {
-    callback = query;
-    query = {};
+  if (is.function(options)) {
+    callback = options;
+    options = {};
   }
 
-  var protoOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'listTables',
-  };
+  var originalOptions = extend({}, options);
 
-  var reqOpts = extend({}, query, {
+  var reqOpts = extend({}, options, {
     parent: this.id,
-    view: Table.VIEWS[query.view || 'unspecified'],
+    view: Table.VIEWS[options.view || 'unspecified'],
   });
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
+  var gaxOpts = reqOpts.gaxOptions;
+  delete reqOpts.gaxOptions;
+
+  bigtable.request({
+    client: 'BigtableTableAdmin',
+    method: 'listTables',
+    reqOpts: reqOpts,
+    gaxOpts: gaxOpts,
+  }, function(err, resp) {
     if (err) {
       callback(err, null, resp);
       return;
@@ -730,7 +743,7 @@ Instance.prototype.getTables = function(query, callback) {
 
     var nextQuery = null;
     if (resp.nextPageToken) {
-      nextQuery = extend({}, query, {
+      nextQuery = extend({}, originalOptions, {
         pageToken: resp.nextPageToken,
       });
     }
