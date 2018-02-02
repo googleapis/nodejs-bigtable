@@ -27,6 +27,10 @@ var util = require('util');
 var Cluster = require('./cluster.js');
 var Instance = require('./instance.js');
 
+const gapic = Object.freeze({
+  v2: require('./v2'),
+});
+
 /**
  * @typedef {object} ClientConfig
  * @property {string} [apiEndpoint] Override the default API endpoint used
@@ -695,3 +699,4 @@ Bigtable.Instance = Instance;
  * Full quickstart example:
  */
 module.exports = Bigtable;
+module.exports.v2 = gapic.v2;
