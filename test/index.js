@@ -40,6 +40,7 @@ var fakeUtil = extend({}, common.util, {
     assert.deepEqual(options.exclude, ['instance', 'operation']);
   },
 });
+var originalFakeUtil = extend(true, {}, fakeUtil);
 
 var fakePaginator = {
   extend: function() {
@@ -90,6 +91,7 @@ describe('Bigtable', function() {
   });
 
   beforeEach(function() {
+    extend(fakeUtil, originalFakeUtil);
     delete process.env.BIGTABLE_EMULATOR_HOST;
     bigtable = new Bigtable({projectId: PROJECT_ID});
   });
@@ -110,25 +112,24 @@ describe('Bigtable', function() {
       assert(promisified);
     });
 
+    it('should work without new', function() {
+      assert.doesNotThrow(function() {
+        Bigtable({projectId: PROJECT_ID});
+      });
+    });
+
     it('should normalize the arguments', function() {
-      var normalizeArguments = fakeUtil.normalizeArguments;
       var normalizeArgumentsCalled = false;
-      var fakeOptions = {
-        projectId: PROJECT_ID,
-      };
-      var fakeContext = {};
+      var options = {};
 
-      fakeUtil.normalizeArguments = function(context, options) {
+      fakeUtil.normalizeArguments = function(context, options_) {
         normalizeArgumentsCalled = true;
-        assert.strictEqual(context, fakeContext);
-        assert.strictEqual(options, fakeOptions);
-        return options;
+        assert.strictEqual(options_, options);
+        return options_;
       };
 
-      Bigtable.call(fakeContext, fakeOptions);
-      assert(normalizeArgumentsCalled);
-
-      fakeUtil.normalizeArguments = normalizeArguments;
+      new Bigtable(options);
+      assert.strictEqual(normalizeArgumentsCalled, true);
     });
 
     it('should inherit from GrpcService', function() {
