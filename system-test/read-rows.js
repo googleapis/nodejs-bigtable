@@ -88,33 +88,32 @@ describe('Bigtable/Table', () => {
       responses = null;
       rowKeysRead = [];
       requestedOptions = [];
-      stub = sinon
-        .stub(TABLE, 'requestStream')
-        .callsFake((grpcOpts, reqOpts) => {
-          let requestOptions = {};
-          if (reqOpts.rows && reqOpts.rows.rowRanges) {
-            requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
-              const convertedRowRange = {};
-              Object.keys(range).forEach(
-                key => (convertedRowRange[key] = range[key].asciiSlice())
-              );
-              return convertedRowRange;
-            });
-          }
-          if (reqOpts.rows && reqOpts.rows.rowKeys) {
-            requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys =>
-              rowKeys.asciiSlice()
+      stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
+        const reqOpts = cfg.reqOpts;
+        let requestOptions = {};
+        if (reqOpts.rows && reqOpts.rows.rowRanges) {
+          requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
+            const convertedRowRange = {};
+            Object.keys(range).forEach(
+              key => (convertedRowRange[key] = range[key].asciiSlice())
             );
-          }
-          if (reqOpts.rowsLimit) {
-            requestOptions.rowsLimit = reqOpts.rowsLimit;
-          }
-          requestedOptions.push(requestOptions);
-          rowKeysRead.push([]);
-          const emitter = through.obj();
-          dispatch(emitter, responses.shift());
-          return emitter;
-        });
+            return convertedRowRange;
+          });
+        }
+        if (reqOpts.rows && reqOpts.rows.rowKeys) {
+          requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys =>
+            rowKeys.asciiSlice()
+          );
+        }
+        if (reqOpts.rowsLimit) {
+          requestOptions.rowsLimit = reqOpts.rowsLimit;
+        }
+        requestedOptions.push(requestOptions);
+        rowKeysRead.push([]);
+        const emitter = through.obj();
+        dispatch(emitter, responses.shift());
+        return emitter;
+      });
     });
 
     afterEach(() => {

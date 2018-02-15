@@ -17,7 +17,6 @@
 'use strict';
 
 var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
 var format = require('string-format-obj');
 var is = require('is');
 var util = require('util');
@@ -36,167 +35,233 @@ var util = require('util');
  * const cluster = instance.cluster('my-cluster');
  */
 function Cluster(instance, name) {
+  this.bigtable = instance.bigtable;
+  this.instance = instance;
+
   var id = name;
 
   if (id.indexOf('/') === -1) {
     id = instance.id + '/clusters/' + name;
   }
 
-  var methods = {
-    /**
-     * Create a cluster.
-     *
-     * @method Cluster#create
-     * @param {object} options See {@link Instance#createCluster}
-     *
-     * @example
-     * const Bigtable = require('@google-cloud/bigtable');
-     * const bigtable = new Bigtable();
-     * const instance = bigtable.instance('my-instance');
-     * const cluster = instance.cluster('my-cluster');
-     *
-     * cluster.create(function(err, cluster, operation, apiResponse) {
-     *   if (err) {
-     *     // Error handling omitted.
-     *   }
-     *
-     *   operation
-     *     .on('error', console.error)
-     *     .on('complete', function() {
-     *       // The cluster was created successfully.
-     *     });
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * cluster.create().then(function(data) {
-     *   const cluster = data[0];
-     *   const operation = data[1];
-     *   const apiResponse = data[2];
-     * });
-     */
-    create: true,
-
-    /**
-     * Delete the cluster.
-     *
-     * @method Cluster#delete
-     * @param {function} [callback] The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {object} callback.apiResponse The full API response.
-     *
-     * @example
-     * cluster.delete(function(err, apiResponse) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * cluster.delete().then(function(data) {
-     *   var apiResponse = data[0];
-     * });
-     */
-    delete: {
-      protoOpts: {
-        service: 'BigtableInstanceAdmin',
-        method: 'deleteCluster',
-      },
-      reqOpts: {
-        name: id,
-      },
-    },
-
-    /**
-     * Check if a cluster exists.
-     *
-     * @method Cluster#exists
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {boolean} callback.exists Whether the cluster exists or not.
-     *
-     * @example
-     * cluster.exists(function(err, exists) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * cluster.exists().then(function(data) {
-     *   var exists = data[0];
-     * });
-     */
-    exists: true,
-
-    /**
-     * Get a cluster if it exists.
-     *
-     * @method Cluster#get
-     *
-     * @example
-     * cluster.get(function(err, cluster, apiResponse) {
-     *   // The `cluster` data has been populated.
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * cluster.get().then(function(data) {
-     *   var cluster = data[0];
-     *   var apiResponse = data[1];
-     * });
-     */
-    get: true,
-
-    /**
-     * Get the cluster metadata.
-     *
-     * @method Cluster#getMetadata
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {object} callback.metadata The metadata.
-     * @param {object} callback.apiResponse The full API response.
-     *
-     * @example
-     * cluster.getMetadata(function(err, metadata, apiResponse) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * cluster.getMetadata().then(function(data) {
-     *   var metadata = data[0];
-     *   var apiResponse = data[1];
-     * });
-     */
-    getMetadata: {
-      protoOpts: {
-        service: 'BigtableInstanceAdmin',
-        method: 'getCluster',
-      },
-      reqOpts: {
-        name: id,
-      },
-    },
-  };
-
-  var config = {
-    parent: instance,
-    /**
-     * @name Cluster#id
-     * @type {string}
-     */
-    id: id,
-    methods: methods,
-    createMethod: function(_, options, callback) {
-      instance.createCluster(name, options, callback);
-    },
-  };
-
-  commonGrpc.ServiceObject.call(this, config);
+  this.id = id;
+  this.name = id.split('/').pop();
 }
 
-util.inherits(Cluster, commonGrpc.ServiceObject);
+/**
+ * Create a cluster.
+ *
+ * @param {object} [options] See {@link Instance#createCluster}.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const cluster = instance.cluster('my-cluster');
+ *
+ * cluster.create(function(err, cluster, operation, apiResponse) {
+ *   if (err) {
+ *     // Error handling omitted.
+ *   }
+ *
+ *   operation
+ *     .on('error', console.error)
+ *     .on('complete', function() {
+ *       // The cluster was created successfully.
+ *     });
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * cluster.create().then(function(data) {
+ *   const cluster = data[0];
+ *   const operation = data[1];
+ *   const apiResponse = data[2];
+ * });
+ */
+Cluster.prototype.create = function(options, callback) {
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
+  }
+
+  this.instance.createCluster(this.name, options, callback);
+};
+
+/**
+ * Delete the cluster.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} [callback] The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * cluster.delete(function(err, apiResponse) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * cluster.delete().then(function(data) {
+ *   var apiResponse = data[0];
+ * });
+ */
+Cluster.prototype.delete = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'deleteCluster',
+      reqOpts: {
+        name: this.id,
+      },
+      gaxOpts: gaxOptions,
+    },
+    callback
+  );
+};
+
+/**
+ * Check if a cluster exists.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {boolean} callback.exists Whether the cluster exists or not.
+ *
+ * @example
+ * cluster.exists(function(err, exists) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * cluster.exists().then(function(data) {
+ *   var exists = data[0];
+ * });
+ */
+Cluster.prototype.exists = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.getMetadata(gaxOptions, function(err) {
+    if (!err) {
+      callback(null, true);
+      return;
+    }
+
+    if (err.code === 5) {
+      callback(null, false);
+      return;
+    }
+
+    callback(err);
+  });
+};
+
+/**
+ * Get a cluster if it exists.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {boolean} [gaxOptions.autoCreate=false] Automatically create the
+ *     instance if it does not already exist.
+ *
+ * @example
+ * cluster.get(function(err, cluster, apiResponse) {
+ *   // The `cluster` data has been populated.
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * cluster.get().then(function(data) {
+ *   var cluster = data[0];
+ *   var apiResponse = data[1];
+ * });
+ */
+Cluster.prototype.get = function(gaxOptions, callback) {
+  var self = this;
+
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  var autoCreate = !!gaxOptions.autoCreate;
+  delete gaxOptions.autoCreate;
+
+  this.getMetadata(gaxOptions, function(err, apiResponse) {
+    if (!err) {
+      callback(null, self, apiResponse);
+      return;
+    }
+
+    if (err.code !== 5 || !autoCreate) {
+      callback(err, null, apiResponse);
+      return;
+    }
+
+    self.create({gaxOptions}, callback);
+  });
+};
+
+/**
+ * Get the cluster metadata.
+ *
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.metadata The metadata.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * cluster.getMetadata(function(err, metadata, apiResponse) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * cluster.getMetadata().then(function(data) {
+ *   var metadata = data[0];
+ *   var apiResponse = data[1];
+ * });
+ */
+Cluster.prototype.getMetadata = function(gaxOptions, callback) {
+  var self = this;
+
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'getCluster',
+      reqOpts: {
+        name: this.id,
+      },
+      gaxOpts: gaxOptions,
+    },
+    function() {
+      if (arguments[1]) {
+        self.metadata = arguments[1];
+      }
+
+      callback.apply(null, arguments);
+    }
+  );
+};
 
 /**
  * Formats zone location.
@@ -251,13 +316,10 @@ Cluster.getStorageType_ = function(type) {
 /**
  * Set the cluster metadata.
  *
- * See {@link Instance#createCluster} for a detailed explanation of
- * the arguments.
- *
- * @param {object} metadata Metadata object.
- * @param {string} metadata.location The cluster location.
- * @param {number} metadata.nodes Number of nodes allocated to the cluster.
- * @param {string} metadata.storage The cluster storage type.
+ * @param {object} [options] See {@link Instance#createCluster} for the
+ *     available options.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {Operation} callback.operation An operation object that can be used
@@ -298,44 +360,40 @@ Cluster.getStorageType_ = function(type) {
  *   const apiResponse = data[1];
  * });
  */
-Cluster.prototype.setMetadata = function(options, callback) {
+Cluster.prototype.setMetadata = function(metadata, gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
   var reqOpts = {
     name: this.id,
   };
 
-  var bigtable = this.parent.parent;
-
-  if (options.location) {
+  if (metadata.location) {
     reqOpts.location = Cluster.getLocation_(
-      bigtable.projectId,
-      options.location
+      this.bigtable.projectId,
+      metadata.location
     );
   }
 
-  if (options.nodes) {
-    reqOpts.serveNodes = options.nodes;
+  if (metadata.nodes) {
+    reqOpts.serveNodes = metadata.nodes;
   }
 
-  if (options.storage) {
-    reqOpts.defaultStorageType = Cluster.getStorageType_(options.storage);
+  if (metadata.storage) {
+    reqOpts.defaultStorageType = Cluster.getStorageType_(metadata.storage);
   }
 
-  bigtable.request({
-    client: 'BigtableInstanceAdmin',
-    method: 'updateCluster',
-    reqOpts: reqOpts,
-    gaxOpts: gaxOpts,
-  }, function(err, resp) {
-    if (err) {
-      callback(err, null, resp);
-      return;
-    }
-
-    var operation = bigtable.operation(resp.name);
-    operation.metadata = resp;
-
-    callback(null, operation, resp);
-  });
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'updateCluster',
+      reqOpts: reqOpts,
+      gaxOpts: gaxOptions,
+    },
+    callback
+  );
 };
 
 /*! Developer Documentation

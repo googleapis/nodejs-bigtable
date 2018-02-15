@@ -1,5 +1,7 @@
 'use strict';
 
+/*
+
 const Bigtable = require('../');
 
 const tests = require('./data/mutate-rows-retry-test.json').tests;
@@ -136,3 +138,5 @@ describe('Bigtable/Table', () => {
     });
   });
 });
+*/
+

@@ -17,7 +17,6 @@
 'use strict';
 
 var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var is = require('is');
 var util = require('util');
@@ -40,219 +39,59 @@ var Table = require('./table.js');
  * const instance = bigtable.instance('my-instance');
  */
 function Instance(bigtable, name) {
+  this.bigtable = bigtable;
+
   var id = name;
 
   if (id.indexOf('/') === -1) {
     id = bigtable.projectName + '/instances/' + name;
   }
 
-  var methods = {
-    /**
-     * Create an instance.
-     *
-     * @method Instance#create
-     * @param {object} [options] See {@link Bigtable#createInstance}.
-     *
-     * @example
-     * const Bigtable = require('@google-cloud/bigtable');
-     * const bigtable = new Bigtable();
-     * const instance = bigtable.instance('my-instance');
-     *
-     * instance.create(function(err, instance, operation, apiResponse) {
-     *   if (err) {
-     *     // Error handling omitted.
-     *   }
-     *
-     *   operation
-     *     .on('error', console.error)
-     *     .on('complete', function() {
-     *       // The instance was created successfully.
-     *     });
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * instance.create().then(function(data) {
-     *   var instance = data[0];
-     *   var operation = data[1];
-     *   var apiResponse = data[2];
-     * });
-     */
-    create: true,
-
-    /**
-     * Delete the instance.
-     *
-     * @method Instance#delete
-     * @param {function} [callback] The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {object} callback.apiResponse The full API response.
-     *
-     * @example
-     * const Bigtable = require('@google-cloud/bigtable');
-     * const bigtable = new Bigtable();
-     * const instance = bigtable.instance('my-instance');
-     *
-     * instance.delete(function(err, apiResponse) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * instance.delete().then(function(data) {
-     *   var apiResponse = data[0];
-     * });
-     */
-    delete: {
-      protoOpts: {
-        service: 'BigtableInstanceAdmin',
-        method: 'deleteInstance',
-      },
-      reqOpts: {
-        name: id,
-      },
-    },
-
-    /**
-     * Check if an instance exists.
-     *
-     * @method Instance#exists
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {boolean} callback.exists Whether the instance exists or not.
-     *
-     * @example
-     * const Bigtable = require('@google-cloud/bigtable');
-     * const bigtable = new Bigtable();
-     * const instance = bigtable.instance('my-instance');
-     *
-     * instance.exists(function(err, exists) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * instance.exists().then(function(data) {
-     *   var exists = data[0];
-     * });
-     */
-    exists: true,
-
-    /**
-     * Get an instance if it exists.
-     *
-     * @method Instance#get
-     *
-     * @example
-     * const Bigtable = require('@google-cloud/bigtable');
-     * const bigtable = new Bigtable();
-     * const instance = bigtable.instance('my-instance');
-     *
-     * instance.get(function(err, instance, apiResponse) {
-     *   // The `instance` data has been populated.
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * instance.get().then(function(data) {
-     *   var instance = data[0];
-     *   var apiResponse = data[1];
-     * });
-     */
-    get: true,
-
-    /**
-     * Get the instance metadata.
-     *
-     * @method Instance#getMetadata
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {object} callback.metadata The metadata.
-     * @param {object} callback.apiResponse The full API response.
-     *
-     * @example
-     * const Bigtable = require('@google-cloud/bigtable');
-     * const bigtable = new Bigtable();
-     * const instance = bigtable.instance('my-instance');
-     *
-     * instance.getMetadata(function(err, metadata, apiResponse) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * instance.getMetadata().then(function(data) {
-     *   var metadata = data[0];
-     *   var apiResponse = data[1];
-     * });
-     */
-    getMetadata: {
-      protoOpts: {
-        service: 'BigtableInstanceAdmin',
-        method: 'getInstance',
-      },
-      reqOpts: {
-        name: id,
-      },
-    },
-
-    /**
-     * Set the instance metadata.
-     *
-     * @method Instance#setMetadata
-     * @param {object} metadata Metadata object.
-     * @param {string} metadata.displayName The descriptive name for this
-     *     instance as it appears in UIs. It can be changed at any time, but
-     *     should be kept globally unique to avoid confusion.
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {object} callback.apiResponse The full API response.
-     *
-     * @example
-     * const Bigtable = require('@google-cloud/bigtable');
-     * const bigtable = new Bigtable();
-     * const instance = bigtable.instance('my-instance');
-     *
-     * var metadata = {
-     *   displayName: 'updated-name'
-     * };
-     *
-     * instance.setMetadata(metadata, function(err, apiResponse) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * instance.setMetadata(metadata).then(function(data) {
-     *   var apiResponse = data[0];
-     * });
-     */
-    setMetadata: {
-      protoOpts: {
-        service: 'BigtableInstanceAdmin',
-        method: 'updateInstance',
-      },
-      reqOpts: {
-        name: id,
-      },
-    },
-  };
-
-  var config = {
-    parent: bigtable,
-    id: id,
-    methods: methods,
-    createMethod: function(_, options, callback) {
-      bigtable.createInstance(name, options, callback);
-    },
-  };
-
-  commonGrpc.ServiceObject.call(this, config);
+  this.id = id;
+  this.name = id.split('/').pop();
 }
 
-util.inherits(Instance, commonGrpc.ServiceObject);
+/**
+ * Create an instance.
+ *
+ * @param {object} [options] See {@link Bigtable#createInstance}.
+ * @param {object} [options.gaxOptions]  Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * instance.create(function(err, instance, operation, apiResponse) {
+ *   if (err) {
+ *     // Error handling omitted.
+ *   }
+ *
+ *   operation
+ *     .on('error', console.error)
+ *     .on('complete', function() {
+ *       // The instance was created successfully.
+ *     });
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.create().then(function(data) {
+ *   var instance = data[0];
+ *   var operation = data[1];
+ *   var apiResponse = data[2];
+ * });
+ */
+Instance.prototype.create = function(options, callback) {
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
+  }
+
+  this.bigtable.createInstance(this.name, options, callback);
+};
 
 /**
  * Create a cluster.
@@ -277,7 +116,6 @@ util.inherits(Instance, commonGrpc.ServiceObject);
  *     cluster.
  * @param {Operation} callback.operation An operation object that can be used
  *     to check the status of the request.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -315,7 +153,6 @@ util.inherits(Instance, commonGrpc.ServiceObject);
  */
 Instance.prototype.createCluster = function(name, options, callback) {
   var self = this;
-  var bigtable = this.parent;
 
   if (is.function(options)) {
     callback = options;
@@ -333,7 +170,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
 
   if (options.location) {
     reqOpts.cluster.location = Cluster.getLocation_(
-      this.parent.projectName,
+      this.bigtable.projectName,
       options.location
     );
   }
@@ -347,25 +184,18 @@ Instance.prototype.createCluster = function(name, options, callback) {
     reqOpts.cluster.defaultStorageType = storageType;
   }
 
-  bigtable.request({
-    client: 'BigtableInstanceAdmin',
-    method: 'createCluster',
-    reqOpts: reqOpts,
-    gaxOpts: options.gaxOptions,
-  }, function(err, resp) {
-    if (err) {
-      callback(err, null, null, resp);
-      return;
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'createCluster',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+    },
+    function(err, operation) {
+      var cluster = err ? self.cluster(name) : null;
+      callback(err, cluster, operation);
     }
-
-    var bigtable = self.parent;
-
-    var cluster = self.cluster(name);
-    var operation = bigtable.operation(resp.name);
-    operation.metadata = resp;
-
-    callback(null, cluster, operation, resp);
-  });
+  );
 };
 
 /**
@@ -450,7 +280,6 @@ Instance.prototype.createCluster = function(name, options, callback) {
  */
 Instance.prototype.createTable = function(name, options, callback) {
   var self = this;
-  var bigtable = this.parent;
 
   if (!name) {
     throw new Error('A name is required to create a table.');
@@ -501,22 +330,23 @@ Instance.prototype.createTable = function(name, options, callback) {
     reqOpts.table.columnFamilies = columnFamilies;
   }
 
-  bigtable.request({
-    client: 'BigtableTableAdmin',
-    method: 'createTable',
-    reqOpts: reqOpts,
-    gaxOpts: options.gaxOptions,
-  }, function(err, resp) {
-    if (err) {
-      callback(err, null, resp);
-      return;
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'createTable',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+    },
+    function() {
+      if (arguments[1]) {
+        var table = self.table(arguments[1].name);
+        table.metadata = arguments[1];
+        arguments[1] = table;
+      }
+
+      callback.apply(null, arguments);
     }
-
-    var table = self.table(resp.name);
-    table.metadata = resp;
-
-    callback(null, table, resp);
-  });
+  );
 };
 
 /**
@@ -527,6 +357,145 @@ Instance.prototype.createTable = function(name, options, callback) {
  */
 Instance.prototype.cluster = function(name) {
   return new Cluster(this, name);
+};
+
+/**
+ * Delete the instance.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} [callback] The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * instance.delete(function(err, apiResponse) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.delete().then(function(data) {
+ *   var apiResponse = data[0];
+ * });
+ */
+Instance.prototype.delete = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'deleteInstance',
+      reqOpts: {
+        name: this.id,
+      },
+      gaxOpts: gaxOptions,
+    },
+    callback
+  );
+};
+
+/**
+ * Check if an instance exists.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {boolean} callback.exists Whether the instance exists or not.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * instance.exists(function(err, exists) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.exists().then(function(data) {
+ *   var exists = data[0];
+ * });
+ */
+Instance.prototype.exists = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.getMetadata(gaxOptions, function(err) {
+    if (!err) {
+      callback(null, true);
+      return;
+    }
+
+    if (err.code === 5) {
+      callback(null, false);
+      return;
+    }
+
+    callback(err);
+  });
+};
+
+/**
+ * Get an instance if it exists.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {boolean} [gaxOptions.autoCreate=false] Automatically create the
+ *     instance if it does not already exist.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * instance.get(function(err, instance, apiResponse) {
+ *   // The `instance` data has been populated.
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.get().then(function(data) {
+ *   var instance = data[0];
+ *   var apiResponse = data[1];
+ * });
+ */
+Instance.prototype.get = function(gaxOptions, callback) {
+  var self = this;
+
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  var autoCreate = !!gaxOptions.autoCreate;
+  delete gaxOptions.autoCreate;
+
+  this.getMetadata(gaxOptions, function(err, apiResponse) {
+    if (!err) {
+      callback(null, self, apiResponse);
+      return;
+    }
+
+    if (err.code !== 5 || !autoCreate) {
+      callback(err, null, apiResponse);
+      return;
+    }
+
+    self.create({gaxOptions}, callback);
+  });
 };
 
 /**
@@ -580,7 +549,6 @@ Instance.prototype.cluster = function(name) {
  */
 Instance.prototype.getClusters = function(query, callback) {
   var self = this;
-  var bigtable = this.parent;
 
   if (is.function(query)) {
     callback = query;
@@ -590,34 +558,27 @@ Instance.prototype.getClusters = function(query, callback) {
   var reqOpts = extend({}, query, {
     parent: this.id,
   });
+  delete reqOpts.gaxOptions;
 
-  bigtable.request({
-    client: 'BigtableInstanceAdmin',
-    method: 'listClusters',
-    reqOpts: reqOpts,
-    gaxOpts: options.gaxOptions,
-  }, function(err, resp) {
-    if (err) {
-      callback(err, null, null, resp);
-      return;
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'listClusters',
+      reqOpts: reqOpts,
+      gaxOpts: query.gaxOptions,
+    },
+    function(err, resp) {
+      if (arguments[1]) {
+        arguments[1] = arguments[1].clusters.map(function(clusterObj) {
+          var cluster = self.cluster(clusterObj.name);
+          cluster.metadata = clusterObj;
+          return cluster;
+        });
+      }
+
+      callback.apply(null, arguments);
     }
-
-    var clusters = resp.clusters.map(function(clusterObj) {
-      var cluster = self.cluster(clusterObj.name);
-      cluster.metadata = clusterObj;
-      return cluster;
-    });
-
-    var nextQuery = null;
-
-    if (resp.nextPageToken) {
-      nextQuery = extend({}, query, {
-        pageToken: resp.nextPageToken,
-      });
-    }
-
-    callback(null, clusters, nextQuery, resp);
-  });
+  );
 };
 
 /**
@@ -650,6 +611,59 @@ Instance.prototype.getClusters = function(query, callback) {
 Instance.prototype.getClustersStream = common.paginator.streamify(
   'getClusters'
 );
+
+/**
+ * Get the instance metadata.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.metadata The metadata.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * instance.getMetadata(function(err, metadata, apiResponse) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.getMetadata().then(function(data) {
+ *   var metadata = data[0];
+ *   var apiResponse = data[1];
+ * });
+ */
+Instance.prototype.getMetadata = function(gaxOptions, callback) {
+  var self = this;
+
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'getInstance',
+      reqOpts: {
+        name: this.id,
+      },
+      gaxOpts: gaxOptions,
+    },
+    function() {
+      if (arguments[1]) {
+        self.metadata = arguments[1];
+      }
+
+      callback.apply(null, arguments);
+    }
+  );
+};
 
 /**
  * Get Table objects for all the tables in your Compute instance.
@@ -705,7 +719,6 @@ Instance.prototype.getClustersStream = common.paginator.streamify(
  */
 Instance.prototype.getTables = function(options, callback) {
   var self = this;
-  var bigtable = this.parent;
 
   if (is.function(options)) {
     callback = options;
@@ -722,34 +735,27 @@ Instance.prototype.getTables = function(options, callback) {
   var gaxOpts = reqOpts.gaxOptions;
   delete reqOpts.gaxOptions;
 
-  bigtable.request({
-    client: 'BigtableTableAdmin',
-    method: 'listTables',
-    reqOpts: reqOpts,
-    gaxOpts: gaxOpts,
-  }, function(err, resp) {
-    if (err) {
-      callback(err, null, resp);
-      return;
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'listTables',
+      reqOpts: reqOpts,
+      gaxOpts: gaxOpts,
+    },
+    function() {
+      if (arguments[1]) {
+        arguments[1] = arguments[1].map(function(metadata) {
+          var name = metadata.name.split('/').pop();
+          var table = self.table(name);
+
+          table.metadata = metadata;
+          return table;
+        });
+      }
+
+      callback.apply(null, arguments);
     }
-
-    var tables = resp.tables.map(function(metadata) {
-      var name = metadata.name.split('/').pop();
-      var table = self.table(name);
-
-      table.metadata = metadata;
-      return table;
-    });
-
-    var nextQuery = null;
-    if (resp.nextPageToken) {
-      nextQuery = extend({}, originalOptions, {
-        pageToken: resp.nextPageToken,
-      });
-    }
-
-    callback(null, tables, nextQuery, resp);
-  });
+  );
 };
 
 /**
@@ -784,6 +790,61 @@ Instance.prototype.getTables = function(options, callback) {
  *   });
  */
 Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
+
+/**
+ * Set the instance metadata.
+ *
+ * @param {object} metadata Metadata object.
+ * @param {string} metadata.displayName The descriptive name for this
+ *     instance as it appears in UIs. It can be changed at any time, but
+ *     should be kept globally unique to avoid confusion.
+ * @param {object} metadata.gaxOptions Request configuration options,
+ *     outlined here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * var metadata = {
+ *   displayName: 'updated-name'
+ * };
+ *
+ * instance.setMetadata(metadata, function(err, apiResponse) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.setMetadata(metadata).then(function(data) {
+ *   var apiResponse = data[0];
+ * });
+ */
+Instance.prototype.setMetadata = function(metadata, callback) {
+  var self = this;
+
+  var reqOpts = extend({name: this.id}, metadata);
+  delete reqOpts.gaxOptions;
+
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'updateInstance',
+      reqOpts: reqOpts,
+      gaxOpts: metadata.gaxOptions,
+    },
+    function() {
+      if (arguments[1]) {
+        self.metadata = arguments[1];
+      }
+
+      callback.apply(null, arguments);
+    }
+  );
+};
 
 /**
  * Get a reference to a Bigtable table.

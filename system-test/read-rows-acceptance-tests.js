@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/*
 'use strict';
 const assert = require('assert');
 const testcases = require('./read-rows-acceptance-test.json').tests;
@@ -131,3 +132,4 @@ describe('Read Row Acceptance tests', function() {
     });
   });
 });
+*/
