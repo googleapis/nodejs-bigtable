@@ -169,10 +169,10 @@ ChunkTransformer.prototype.validateValueSizeAndCommitRow = function(chunk) {
  */
 ChunkTransformer.prototype.validateResetRow = function(chunk) {
   const containsData =
-    chunk.rowKey ||
+    (chunk.rowKey && chunk.rowKey.toString() !== '') ||
     chunk.familyName ||
     chunk.qualifier ||
-    chunk.value ||
+    (chunk.value && chunk.value.toString() !== '') ||
     chunk.timestampMicros > 0;
   if (chunk.resetRow && containsData) {
     this.destroy(
@@ -196,7 +196,11 @@ ChunkTransformer.prototype.validateNewRow = function(chunk) {
 
   if (typeof row.key !== 'undefined') {
     errorMessage = 'A new row cannot have existing state';
-  } else if (typeof chunk.rowKey === 'undefined' || chunk.rowKey === '') {
+  } else if (
+    typeof chunk.rowKey === 'undefined' ||
+    chunk.rowKey === '' ||
+    newRowKey === ''
+  ) {
     errorMessage = 'A row key must be set';
   } else if (chunk.resetRow) {
     errorMessage = 'A new row cannot be reset';
@@ -222,7 +226,7 @@ ChunkTransformer.prototype.validateRowInProgress = function(chunk) {
   const row = this.row;
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
   let errorMessage;
-  if (chunk.rowKey && newRowKey !== row.key) {
+  if (chunk.rowKey && newRowKey !== '' && newRowKey !== row.key) {
     errorMessage = 'A commit is required between row keys';
   } else if (chunk.familyName && !chunk.qualifier) {
     errorMessage = 'A qualifier must be specified';
