@@ -378,7 +378,7 @@ describe('Bigtable', function() {
     });
   });
 
-  describe.skip('rows', function() {
+  describe('rows', function() {
     describe('.exists()', function() {
       var row = TABLE.row('alincoln');
 

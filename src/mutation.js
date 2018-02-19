@@ -62,7 +62,7 @@ var methods = (Mutation.methods = {
  * @returns {string|number|buffer}
  */
 Mutation.convertFromBytes = function(bytes, options) {
-  var buf = bytes; //Buffer.from(bytes, 'base64');
+  var buf = Buffer.from(bytes, 'base64');
   var num = new Int64(buf).toNumber();
 
   if (!isNaN(num) && isFinite(num)) {
