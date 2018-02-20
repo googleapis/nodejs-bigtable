@@ -76,7 +76,7 @@ describe('Bigtable/Mutation', function() {
       var encoded = Buffer.from(message);
       const stub = sinon.stub(Buffer, 'from');
       const decoded = Mutation.convertFromBytes(encoded);
-      assert.strictEqual(stub.called, false)
+      assert.strictEqual(stub.called, false);
       assert.strictEqual(decoded.toString(), message);
     });
   });

@@ -187,11 +187,11 @@ ChunkTransformer.prototype.validateResetRow = function(chunk) {
  * Validates state for new row.
  * @private
  * @param {chunk} chunk chunk to validate
+ * @param {newRowKey} newRowKey newRowKey of the new row
  */
-ChunkTransformer.prototype.validateNewRow = function(chunk) {
+ChunkTransformer.prototype.validateNewRow = function(chunk, newRowKey) {
   const row = this.row;
   const prevRowKey = this.prevRowKey;
-  const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
   let errorMessage;
 
   if (typeof row.key !== 'undefined') {
@@ -224,15 +224,30 @@ ChunkTransformer.prototype.validateNewRow = function(chunk) {
  */
 ChunkTransformer.prototype.validateRowInProgress = function(chunk) {
   const row = this.row;
-  const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-  let errorMessage;
-  if (chunk.rowKey && newRowKey !== '' && newRowKey !== row.key) {
-    errorMessage = 'A commit is required between row keys';
-  } else if (chunk.familyName && !chunk.qualifier) {
-    errorMessage = 'A qualifier must be specified';
+  if (chunk.rowKey && chunk.rowKey.length) {
+    const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+    if (
+      newRowKey &&
+      chunk.rowKey &&
+      newRowKey !== '' &&
+      newRowKey !== row.key
+    ) {
+      this.destroy(
+        new TransformError({
+          message: 'A commit is required between row keys',
+          chunk,
+        })
+      );
+      return;
+    }
   }
-  if (errorMessage) {
-    this.destroy(new TransformError({message: errorMessage, chunk}));
+  if (chunk.familyName && !chunk.qualifier) {
+    this.destroy(
+      new TransformError({
+        message: 'A qualifier must be specified',
+        chunk,
+      })
+    );
     return;
   }
   this.validateResetRow(chunk);
@@ -270,13 +285,10 @@ ChunkTransformer.prototype.moveToNextState = function(chunk) {
  * Process chunk when in NEW_ROW state.
  * @private
  * @param {chunks} chunk chunk to process
- * @param {options} options options
- * @param {callback} callback callback to call with row as and when generates
- * @returns {boolean} return false to stop further processing.
  */
 ChunkTransformer.prototype.processNewRow = function(chunk) {
   const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
-  this.validateNewRow(chunk);
+  this.validateNewRow(chunk, newRowKey);
   if (chunk.familyName && chunk.qualifier) {
     const row = this.row;
     row.key = newRowKey;
@@ -297,9 +309,6 @@ ChunkTransformer.prototype.processNewRow = function(chunk) {
  * Process chunk when in ROW_IN_PROGRESS state.
  * @private
  * @param {chunk} chunk chunk to process
- * @param {*} options  option
- * @param {*} callback callback to call with row as and when generates
- * @returns {boolean} return false to stop further processing.
  */
 ChunkTransformer.prototype.processRowInProgress = function(chunk) {
   this.validateRowInProgress(chunk);
@@ -328,9 +337,6 @@ ChunkTransformer.prototype.processRowInProgress = function(chunk) {
  * Process chunk when in CELl_IN_PROGRESS state.
  * @private
  * @param {chunk} chunk chunk to process
- * @param {options} options options
- * @param {callback} callback callback to call with row as and when generates
- * @returns {boolean} return false to stop further processing.
  */
 ChunkTransformer.prototype.processCellInProgress = function(chunk) {
   this.validateCellInProgress(chunk);
