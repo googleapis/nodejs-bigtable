@@ -342,6 +342,7 @@ function Bigtable(options) {
   var baseUrl = 'bigtable.googleapis.com';
   var adminBaseUrl = 'bigtableadmin.googleapis.com';
 
+  // @TODO figure out how to configure GAPIC for this
   var customEndpoint =
     options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
 
@@ -353,10 +354,14 @@ function Bigtable(options) {
   // Determine what scopes are needed.
   // It is the union of the scopes on all three clients.
   let scopes = [];
-  let clientClasses = [v2.BigtableClient];
+  let clientClasses = [
+    v2.BigtableClient,
+    v2.BigtableInstanceAdminClient,
+    v2.BigtableTableAdminClient,
+  ];
   for (let clientClass of clientClasses) {
     for (let scope of clientClass.scopes) {
-      if (clientClasses.indexOf(scope) === -1) {
+      if (scopes.indexOf(scope) === -1) {
         scopes.push(scope);
       }
     }
@@ -389,6 +394,8 @@ function Bigtable(options) {
  *     instance.
  * @param {string} [options.displayName] The descriptive name for this instance
  *     as it appears in UIs.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {Instance} callback.instance The newly created
@@ -473,14 +480,16 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function(err, operation) {
-      var instance;
+    function(err) {
+      var args = [].slice.call(arguments);
 
       if (!err) {
-        instance = self.instance(name);
+        // Push the new instance among the original arguments, so as not to
+        // tamper with GAPIC's natural response.
+        args.splice(1, 0, self.instance(name));
       }
 
-      callback(err, instance, operation);
+      callback.apply(null, args);
     }
   );
 };
@@ -550,7 +559,7 @@ Bigtable.prototype.getInstances = function(query, callback) {
       client: 'BigtableInstanceAdminClient',
       method: 'listInstances',
       reqOpts: reqOpts,
-      gaxOpts: query.gaxOpts,
+      gaxOpts: query.gaxOptions,
     },
     function(err, resp) {
       if (err) {

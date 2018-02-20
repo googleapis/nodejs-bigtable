@@ -131,7 +131,7 @@ describe('Bigtable/Table', () => {
           .on('error', err => (error = err));
         clock.runAll();
 
-        setImmediate(function () {
+        setImmediate(function() {
           if (test.error) {
             assert(!endCalled, `.on('end') should not have been invoked`);
             assert.strictEqual(error.code, test.error);
