@@ -337,7 +337,22 @@ ChunkTransformer.prototype.processCellInProgress = function(chunk) {
   if (chunk.resetRow) {
     return this.reset();
   }
-  this.qualifier.value += Mutation.convertFromBytes(chunk.value, this.options);
+  const chunkQualifierValue = Mutation.convertFromBytes(
+    chunk.value,
+    this.options
+  );
+
+  if (
+    chunkQualifierValue instanceof Buffer &&
+    this.qualifier.value instanceof Buffer
+  ) {
+    this.qualifier.value = Buffer.concat([
+      this.qualifier.value,
+      chunkQualifierValue,
+    ]);
+  } else {
+    this.qualifier.value += chunkQualifierValue;
+  }
   this.moveToNextState(chunk);
 };
 
