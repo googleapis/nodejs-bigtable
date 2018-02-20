@@ -130,20 +130,23 @@ describe('Bigtable/Table', () => {
           .on('end', () => (endCalled = true))
           .on('error', err => (error = err));
         clock.runAll();
-        if (test.error) {
-          assert(!endCalled, `.on('end') should not have been invoked`);
-          assert.strictEqual(error.code, test.error);
-        } else {
-          assert(endCalled, `.on('end') shoud have been invoked`);
-          assert.ifError(error);
-        }
-        assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
-        assert.strictEqual(
-          responses.length,
-          0,
-          'not all the responses were used'
-        );
-        assert.deepStrictEqual(requestedOptions, test.request_options);
+
+        setImmediate(function () {
+          if (test.error) {
+            assert(!endCalled, `.on('end') should not have been invoked`);
+            assert.strictEqual(error.code, test.error);
+          } else {
+            assert(endCalled, `.on('end') shoud have been invoked`);
+            assert.ifError(error);
+          }
+          assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
+          assert.strictEqual(
+            responses.length,
+            0,
+            'not all the responses were used'
+          );
+          assert.deepStrictEqual(requestedOptions, test.request_options);
+        });
       });
     });
   });
