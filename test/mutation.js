@@ -70,6 +70,15 @@ describe('Bigtable/Mutation', function() {
       assert(decoded instanceof Buffer);
       assert.strictEqual(decoded.toString(), message);
     });
+
+    it('should not create a new Buffer needlessly', function() {
+      var message = 'Hello!';
+      var encoded = Buffer.from(message);
+      const stub = sinon.stub(Buffer, 'from');
+      const decoded = Mutation.convertFromBytes(encoded);
+      assert.strictEqual(stub.called, false)
+      assert.strictEqual(decoded.toString(), message);
+    });
   });
 
   describe('convertToBytes', function() {
