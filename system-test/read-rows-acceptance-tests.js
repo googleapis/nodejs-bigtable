@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/*
 'use strict';
 const assert = require('assert');
 const testcases = require('./read-rows-acceptance-test.json').tests;
@@ -22,15 +21,32 @@ const Stream = require('stream').PassThrough;
 const Table = require('../src/table.js');
 const Row = require('../src/row.js');
 const ProtoBuf = require('protobufjs');
-ProtoBuf.convertFieldsToCamelCase = true;
 const path = require('path');
 const protosRoot = path.resolve(__dirname, '../protos');
-const builder = ProtoBuf.loadProtoFile({
-  root: protosRoot,
-  file: 'google/bigtable/v2/bigtable.proto',
-});
-const ReadRowsResponse = builder.build('google.bigtable.v2.ReadRowsResponse');
-const CellChunk = builder.build(
+function applyProtoRoot(filename, root) {
+  filename.root = path.resolve(filename.root) + '/';
+  root.resolvePath = function(originPath, importPath, alreadyNormalized) {
+    return ProtoBuf.util.path.resolve(
+      filename.root,
+      importPath,
+      alreadyNormalized
+    );
+  };
+  return filename.file;
+}
+const root = new ProtoBuf.Root();
+root.loadSync(
+  applyProtoRoot(
+    {
+      root: protosRoot,
+      file: 'google/bigtable/v2/bigtable.proto',
+    },
+    root
+  ),
+  {keepCase: false}
+);
+const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');
+const CellChunk = root.lookupType(
   'google.bigtable.v2.ReadRowsResponse.CellChunk'
 );
 describe('Read Row Acceptance tests', function() {
@@ -61,12 +77,9 @@ describe('Read Row Acceptance tests', function() {
           labels: resultLabels,
         });
       });
-      const tableRows = results.map(rawRow => {
-        const row = new Row(table, rawRow.key);
-        row.data = rawRow.data;
-        return row;
-      });
-      table.requestStream = function() {
+
+      table.bigtable = {};
+      table.bigtable.request = function() {
         var stream = new Stream({
           objectMode: true,
         });
@@ -74,12 +87,14 @@ describe('Read Row Acceptance tests', function() {
         setImmediate(function() {
           test.chunks_base64
             .map(chunk => {
-              let readRowsResponse = new ReadRowsResponse();
-              const cellChunk = CellChunk.decode64(chunk);
-              readRowsResponse.set('chunks', [cellChunk]);
-              readRowsResponse = ReadRowsResponse.decode(
-                readRowsResponse.encode().toBuffer()
-              ).toRaw(true, true);
+              const cellChunk = CellChunk.decode(Buffer.from(chunk, 'base64')); //.decode64(chunk);
+              let readRowsResponse = {chunks: [cellChunk]};
+              readRowsResponse = ReadRowsResponse.create(readRowsResponse);
+              readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {
+                defaults: true,
+                longs: String,
+                oneofs: true,
+              });
               return readRowsResponse;
             })
             .forEach(readRowsResponse => stream.push(readRowsResponse));
@@ -88,6 +103,12 @@ describe('Read Row Acceptance tests', function() {
 
         return stream;
       };
+
+      const tableRows = results.map(rawRow => {
+        const row = new Row(table, rawRow.key);
+        row.data = rawRow.data;
+        return row;
+      });
 
       const errors = [];
       const rows = [];
@@ -113,4 +134,3 @@ describe('Read Row Acceptance tests', function() {
     });
   });
 });
-*/

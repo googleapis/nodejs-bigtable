@@ -1,7 +1,5 @@
 'use strict';
 
-/*
-
 const Bigtable = require('../');
 
 const tests = require('./data/mutate-rows-retry-test.json').tests;
@@ -46,11 +44,10 @@ function getDeltas(array) {
   }, []);
 }
 
-describe('Bigtable/Table', () => {
+describe.skip('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.grpcCredentials = grpc.credentials.createInsecure();
   bigtable.projectId = 'test';
-  const bigtableService = bigtable.getService_({service: 'Bigtable'});
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
@@ -78,9 +75,10 @@ describe('Bigtable/Table', () => {
       mutationBatchesInvoked = [];
       mutationCallTimes = [];
       responses = null;
-      stub = sinon.stub(bigtableService, 'mutateRows').callsFake(grpcOpts => {
+      stub = sinon.stub(bigtable, 'request').callsFake(config => {
+        const reqOpts = config.reqOpts;
         mutationBatchesInvoked.push(
-          grpcOpts.entries.map(entry => entry.rowKey.asciiSlice())
+          reqOpts.entries.map(entry => entry.rowKey.asciiSlice())
         );
         mutationCallTimes.push(new Date().getTime());
         const emitter = through.obj();
@@ -138,5 +136,3 @@ describe('Bigtable/Table', () => {
     });
   });
 });
-*/
-
