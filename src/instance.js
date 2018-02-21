@@ -210,6 +210,8 @@ Instance.prototype.createCluster = function(name, options, callback) {
  * @param {object} [options] Table creation options.
  * @param {object|string[]} [options.families] Column families to be created
  *     within the table.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {string[]} [options.splits] Initial
  *    [split keys](https://cloud.google.com/bigtable/docs/managing-tables#splits).
  * @param {function} callback The callback function.
@@ -450,8 +452,8 @@ Instance.prototype.exists = function(gaxOptions, callback) {
 /**
  * Get an instance if it exists.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {boolean} [gaxOptions.autoCreate=false] Automatically create the
  *     instance if it does not already exist.
  *
@@ -504,6 +506,8 @@ Instance.prototype.get = function(gaxOptions, callback) {
  * @param {object} [query] Query object.
  * @param {boolean} [query.autoPaginate=true] Have pagination handled
  *     automatically.
+ * @param {object} [query.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {number} [query.maxApiCalls] Maximum number of API calls to make.
  * @param {number} [query.maxResults] Maximum number of results to return.
  * @param {string} [query.pageToken] Token returned from a previous call, to
@@ -567,7 +571,7 @@ Instance.prototype.getClusters = function(query, callback) {
       reqOpts: reqOpts,
       gaxOpts: query.gaxOptions,
     },
-    function(err, resp) {
+    function() {
       if (arguments[1]) {
         arguments[1] = arguments[1].clusters.map(function(clusterObj) {
           var cluster = self.cluster(clusterObj.name);
@@ -582,8 +586,8 @@ Instance.prototype.getClusters = function(query, callback) {
 };
 
 /**
- * Get {@link Cluster} objects for all of your clusters as a readable
- * object stream.
+ * Get {@link Cluster} objects for all of your clusters as a readable object
+ * stream.
  *
  * @param {object} [query] Configuration object. See
  *     {@link Instance#getClusters} for a complete list of options.
@@ -615,8 +619,8 @@ Instance.prototype.getClustersStream = common.paginator.streamify(
 /**
  * Get the instance metadata.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -725,14 +729,11 @@ Instance.prototype.getTables = function(options, callback) {
     options = {};
   }
 
-  var originalOptions = extend({}, options);
-
   var reqOpts = extend({}, options, {
     parent: this.id,
     view: Table.VIEWS[options.view || 'unspecified'],
   });
 
-  var gaxOpts = reqOpts.gaxOptions;
   delete reqOpts.gaxOptions;
 
   this.bigtable.request(
@@ -740,7 +741,7 @@ Instance.prototype.getTables = function(options, callback) {
       client: 'BigtableTableAdminClient',
       method: 'listTables',
       reqOpts: reqOpts,
-      gaxOpts: gaxOpts,
+      gaxOpts: options.gaxOptions,
     },
     function() {
       if (arguments[1]) {
@@ -798,8 +799,8 @@ Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
  * @param {string} metadata.displayName The descriptive name for this
  *     instance as it appears in UIs. It can be changed at any time, but
  *     should be kept globally unique to avoid confusion.
- * @param {object} metadata.gaxOptions Request configuration options,
- *     outlined here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -823,18 +824,20 @@ Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
  *   var apiResponse = data[0];
  * });
  */
-Instance.prototype.setMetadata = function(metadata, callback) {
+Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
   var self = this;
 
-  var reqOpts = extend({name: this.id}, metadata);
-  delete reqOpts.gaxOptions;
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
 
   this.bigtable.request(
     {
       client: 'BigtableInstanceAdminClient',
       method: 'updateInstance',
-      reqOpts: reqOpts,
-      gaxOpts: metadata.gaxOptions,
+      reqOpts: extend({name: this.id}, metadata),
+      gaxOpts: gaxOptions,
     },
     function() {
       if (arguments[1]) {
