@@ -170,6 +170,8 @@ Family.prototype.create = function(options, callback) {
 /**
  * Delete the column family.
  *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -213,8 +215,8 @@ Family.prototype.delete = function(gaxOptions, callback) {
 /**
  * Check if the column family exists.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -259,8 +261,8 @@ Family.prototype.exists = function(gaxOptions, callback) {
  * normally required for the `create` method must be contained within this
  * object as well.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {boolean} [gaxOptions.autoCreate=false] Automatically create the
  *     instance if it does not already exist.
  *

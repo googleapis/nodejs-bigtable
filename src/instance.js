@@ -362,8 +362,8 @@ Instance.prototype.cluster = function(name) {
 /**
  * Delete the instance.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.

@@ -182,14 +182,18 @@ Table.prototype.create = function(options, callback) {
  * @throws {error} If a name is not provided.
  *
  * @param {string} name The name of column family.
- * @param {object} [rule] Garbage collection rule or request configuration
- *     options, outlined here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
- * @param {object} [rule.age] Delete cells in a column older than the given
- *     age. Values must be at least 1 millisecond.
- * @param {number} [rule.versions] Maximum number of versions to delete cells
- *     in a column, except for the most recent.
- * @param {boolean} [rule.intersect] Cells to delete should match all rules.
- * @param {boolean} [rule.union] Cells to delete should match any of the rules.
+ * @param {object} [options] Configuration object.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {object} [options.rule] Garbage collection rule
+ * @param {object} [options.rule.age] Delete cells in a column older than the
+ *     given age. Values must be at least 1 millisecond.
+ * @param {number} [options.rule.versions] Maximum number of versions to delete
+ *     cells in a column, except for the most recent.
+ * @param {boolean} [options.rule.intersect] Cells to delete should match all
+ *     rules.
+ * @param {boolean} [options.rule.union] Cells to delete should match any of the
+ *     rules.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {Family} callback.family The newly created Family.
@@ -224,18 +228,12 @@ Table.prototype.create = function(options, callback) {
  *   const apiResponse = data[1];
  * });
  */
-Table.prototype.createFamily = function(name, rule, callback) {
+Table.prototype.createFamily = function(name, options, callback) {
   var self = this;
-  var gaxOpts = {};
 
-  if (is.object(rule)) {
-    gaxOpts = rule;
-    rule = null;
-  }
-
-  if (is.function(rule)) {
-    callback = rule;
-    rule = null;
+  if (is.function(options)) {
+    callback = options;
+    options = {};
   }
 
   if (!name) {
@@ -247,8 +245,8 @@ Table.prototype.createFamily = function(name, rule, callback) {
     create: {},
   };
 
-  if (rule) {
-    mod.create.gcRule = Family.formatRule_(rule);
+  if (options.rule) {
+    mod.create.gcRule = Family.formatRule_(options.rule);
   }
 
   var reqOpts = {
@@ -261,7 +259,7 @@ Table.prototype.createFamily = function(name, rule, callback) {
       client: 'BigtableTableAdminClient',
       method: 'modifyColumnFamilies',
       reqOpts: reqOpts,
-      gaxOpts: gaxOpts,
+      gaxOpts: options.gaxOptions,
     },
     function(err, resp) {
       if (err) {
