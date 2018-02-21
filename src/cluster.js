@@ -92,8 +92,8 @@ Cluster.prototype.create = function(options, callback) {
 /**
  * Delete the cluster.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -219,6 +219,8 @@ Cluster.prototype.get = function(gaxOptions, callback) {
 /**
  * Get the cluster metadata.
  *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -316,8 +318,8 @@ Cluster.getStorageType_ = function(type) {
 /**
  * Set the cluster metadata.
  *
- * @param {object} [options] See {@link Instance#createCluster} for the
- *     available options.
+ * @param {object} metadata See {@link Instance#createCluster} for the
+ *     available metadata options.
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
