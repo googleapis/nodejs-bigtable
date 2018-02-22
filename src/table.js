@@ -25,7 +25,6 @@ var is = require('is');
 var propAssign = require('prop-assign');
 var pumpify = require('pumpify');
 var through = require('through2');
-var util = require('util');
 
 var Family = require('./family.js');
 var Filter = require('./filter.js');

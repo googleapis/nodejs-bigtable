@@ -23,7 +23,6 @@ var dotProp = require('dot-prop');
 var extend = require('extend');
 var flatten = require('lodash.flatten');
 var is = require('is');
-var util = require('util');
 
 var Filter = require('./filter.js');
 var Mutation = require('./mutation.js');

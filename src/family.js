@@ -19,7 +19,6 @@
 var common = require('@google-cloud/common');
 var createErrorClass = require('create-error-class');
 var is = require('is');
-var util = require('util');
 
 /**
  * @private

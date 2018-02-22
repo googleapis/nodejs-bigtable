@@ -18,14 +18,11 @@
 
 var arrify = require('arrify');
 var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var googleAuth = require('google-auto-auth');
-var path = require('path');
 var is = require('is');
 var streamEvents = require('stream-events');
 var through = require('through2');
-var util = require('util');
 
 var Cluster = require('./cluster.js');
 var Instance = require('./instance.js');
@@ -339,17 +336,17 @@ function Bigtable(options) {
 
   options = common.util.normalizeArguments(this, options);
 
-  var baseUrl = 'bigtable.googleapis.com';
-  var adminBaseUrl = 'bigtableadmin.googleapis.com';
-
   // @TODO figure out how to configure GAPIC for this
-  var customEndpoint =
-    options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
+  // var baseUrl = 'bigtable.googleapis.com';
+  // var adminBaseUrl = 'bigtableadmin.googleapis.com';
 
-  if (customEndpoint) {
-    baseUrl = customEndpoint;
-    adminBaseUrl = baseUrl;
-  }
+  // var customEndpoint =
+  //   options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
+
+  // if (customEndpoint) {
+  //   baseUrl = customEndpoint;
+  //   adminBaseUrl = baseUrl;
+  // }
 
   // Determine what scopes are needed.
   // It is the union of the scopes on all three clients.

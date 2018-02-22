@@ -18,15 +18,12 @@
 
 var assert = require('assert');
 var extend = require('extend');
-var is = require('is');
 var nodeutil = require('util');
-var path = require('path');
 var proxyquire = require('proxyquire');
 var sinon = require('sinon').sandbox.create();
 var through = require('through2');
 
 var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
 var Cluster = require('../src/cluster.js');
 var Instance = require('../src/instance.js');
 var v2 = require('../src/v2');

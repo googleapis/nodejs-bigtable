@@ -19,7 +19,6 @@
 var common = require('@google-cloud/common');
 var format = require('string-format-obj');
 var is = require('is');
-var util = require('util');
 
 /**
  * Create a cluster object to interact with your cluster.
