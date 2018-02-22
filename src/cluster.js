@@ -41,12 +41,62 @@ function Cluster(instance, name) {
   var id = name;
 
   if (id.indexOf('/') === -1) {
-    id = instance.id + '/clusters/' + name;
+    id = `${instance.id}/clusters/${name}`;
   }
 
   this.id = id;
   this.name = id.split('/').pop();
 }
+
+/**
+ * Formats zone location.
+ *
+ * @private
+ *
+ * @param {string} project The project.
+ * @param {string} location The zone location.
+ * @returns {string}
+ *
+ * @example
+ * Cluster.getLocation_('my-project', 'us-central1-b');
+ * // 'projects/my-project/locations/us-central1-b'
+ */
+Cluster.getLocation_ = function(project, location) {
+  if (location.indexOf('/') > -1) {
+    return location;
+  }
+
+  return format('projects/{project}/locations/{location}', {
+    project: project,
+    location: location,
+  });
+};
+
+/**
+ * Maps the storage type to the proper integer.
+ *
+ * @private
+ *
+ * @param {string} type The storage type (hdd, ssd).
+ * @returns {number}
+ *
+ * @example
+ * Cluster.getStorageType_('ssd');
+ * // 1
+ */
+Cluster.getStorageType_ = function(type) {
+  var storageTypes = {
+    unspecified: 0,
+    ssd: 1,
+    hdd: 2,
+  };
+
+  if (is.string(type)) {
+    type = type.toLowerCase();
+  }
+
+  return storageTypes[type] || storageTypes.unspecified;
+};
 
 /**
  * Create a cluster.
@@ -155,27 +205,28 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
   }
 
   this.getMetadata(gaxOptions, function(err) {
-    if (!err) {
-      callback(null, true);
+    if (err) {
+      if (err.code === 5) {
+        callback(null, false);
+        return;
+      }
+
+      callback(err);
       return;
     }
 
-    if (err.code === 5) {
-      callback(null, false);
-      return;
-    }
-
-    callback(err);
+    callback(null, true);
   });
 };
 
 /**
  * Get a cluster if it exists.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {boolean} [gaxOptions.autoCreate=false] Automatically create the
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.autoCreate=false] Automatically create the
  *     instance if it does not already exist.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  *
  * @example
  * cluster.get(function(err, cluster, apiResponse) {
@@ -190,29 +241,29 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Cluster.prototype.get = function(gaxOptions, callback) {
+Cluster.prototype.get = function(options, callback) {
   var self = this;
 
-  if (is.fn(gaxOptions)) {
-    callback = gaxOptions;
-    gaxOptions = {};
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
   }
 
-  var autoCreate = !!gaxOptions.autoCreate;
-  delete gaxOptions.autoCreate;
+  var autoCreate = !!options.autoCreate;
+  var gaxOptions = options.gaxOptions;
 
   this.getMetadata(gaxOptions, function(err, apiResponse) {
-    if (!err) {
-      callback(null, self, apiResponse);
-      return;
-    }
+    if (err) {
+      if (err.code === 5 && autoCreate) {
+        self.create({gaxOptions}, callback);
+        return;
+      }
 
-    if (err.code !== 5 || !autoCreate) {
       callback(err, null, apiResponse);
       return;
     }
 
-    self.create({gaxOptions}, callback);
+    callback(null, self, apiResponse);
   });
 };
 
@@ -263,56 +314,6 @@ Cluster.prototype.getMetadata = function(gaxOptions, callback) {
       callback.apply(null, arguments);
     }
   );
-};
-
-/**
- * Formats zone location.
- *
- * @private
- *
- * @param {string} project The project.
- * @param {string} location The zone location.
- * @returns {string}
- *
- * @example
- * Cluster.getLocation_('my-project', 'us-central1-b');
- * // 'projects/my-project/locations/us-central1-b'
- */
-Cluster.getLocation_ = function(project, location) {
-  if (location.indexOf('/') > -1) {
-    return location;
-  }
-
-  return format('projects/{project}/locations/{location}', {
-    project: project,
-    location: location,
-  });
-};
-
-/**
- * Maps the storage type to the proper integer.
- *
- * @private
- *
- * @param {string} type The storage type (hdd, ssd).
- * @returns {number}
- *
- * @example
- * Cluster.getStorageType_('ssd');
- * // 1
- */
-Cluster.getStorageType_ = function(type) {
-  var storageTypes = {
-    unspecified: 0,
-    ssd: 1,
-    hdd: 2,
-  };
-
-  if (is.string(type)) {
-    type = type.toLowerCase();
-  }
-
-  return storageTypes[type] || storageTypes.unspecified;
 };
 
 /**

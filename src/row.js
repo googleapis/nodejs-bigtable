@@ -213,8 +213,9 @@ Row.formatFamilies_ = function(families, options) {
 /**
  * Create a new row in your table.
  *
- * @param {object} [entry] An entry. See {@link Table#insert}.
- * @param {object} [entry.gaxOptions] Request configuration options, outlined
+ * @param {object} [options] Configuration object.
+ * @param {object} [options.entry] An entry. See {@link Table#insert}.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
@@ -235,8 +236,10 @@ Row.formatFamilies_ = function(families, options) {
  * // Optionally, you can supply entry data.
  * //-
  * row.create({
- *   follows: {
- *      alincoln: 1
+ *   entry: {
+ *     follows: {
+ *       alincoln: 1
+ *     }
  *   }
  * }, callback);
  *
@@ -247,23 +250,21 @@ Row.formatFamilies_ = function(families, options) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.create = function(entry, callback) {
+Row.prototype.create = function(options, callback) {
   var self = this;
 
-  if (is.function(entry)) {
-    callback = entry;
-    entry = {};
+  if (is.function(options)) {
+    callback = options;
+    options = {};
   }
 
-  entry = {
+  var entry = {
     key: this.id,
-    data: extend({}, entry),
+    data: extend({}, options.entry),
     method: Mutation.methods.INSERT,
   };
 
-  delete entry.data.gaxOptions;
-
-  this.table.mutate(entry, entry.gaxOptions, function(err, apiResponse) {
+  this.table.mutate(entry, options.gaxOptions, function(err, apiResponse) {
     if (err) {
       callback(err, null, apiResponse);
       return;

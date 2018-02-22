@@ -23,7 +23,6 @@ var proxyquire = require('proxyquire');
 var util = require('util');
 
 var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
 
 var promisified = false;
 var fakeUtil = extend({}, common.util, {
@@ -34,22 +33,13 @@ var fakeUtil = extend({}, common.util, {
   },
 });
 
-var GrpcServiceObject = commonGrpc.ServiceObject;
-
-function FakeGrpcServiceObject() {
-  this.calledWith_ = arguments;
-  GrpcServiceObject.apply(this, arguments);
-}
-
-util.inherits(FakeGrpcServiceObject, GrpcServiceObject);
-
 describe('Bigtable/Cluster', function() {
   var CLUSTER_NAME = 'my-cluster';
   var PROJECT_ID = 'grape-spaceship-123';
 
   var INSTANCE = {
     id: 'projects/p/instances/i',
-    parent: {projectId: PROJECT_ID},
+    bigtable: {projectId: PROJECT_ID},
   };
 
   var CLUSTER_ID = format('{instance}/clusters/{cluster}', {
@@ -65,9 +55,6 @@ describe('Bigtable/Cluster', function() {
       '@google-cloud/common': {
         util: fakeUtil,
       },
-      '@google-cloud/common-grpc': {
-        ServiceObject: FakeGrpcServiceObject,
-      },
     });
   });
 
@@ -76,86 +63,29 @@ describe('Bigtable/Cluster', function() {
   });
 
   describe('instantiation', function() {
-    it('should inherit from GrpcServiceObject', function() {
-      assert(cluster instanceof FakeGrpcServiceObject);
-
-      var config = cluster.calledWith_[0];
-
-      assert.strictEqual(config.parent, INSTANCE);
-      assert.strictEqual(config.id, CLUSTER_ID);
-
-      assert.deepEqual(config.methods, {
-        create: true,
-        delete: {
-          protoOpts: {
-            service: 'BigtableInstanceAdmin',
-            method: 'deleteCluster',
-          },
-          reqOpts: {
-            name: CLUSTER_ID,
-          },
-        },
-        exists: true,
-        get: true,
-        getMetadata: {
-          protoOpts: {
-            service: 'BigtableInstanceAdmin',
-            method: 'getCluster',
-          },
-          reqOpts: {
-            name: CLUSTER_ID,
-          },
-        },
-      });
-    });
-
     it('should promisify all the things', function() {
       assert(promisified);
     });
 
-    it('should Instance#createCluster to create the cluster', function(done) {
-      var config = cluster.calledWith_[0];
-      var fakeOptions = {};
+    it('should localize Bigtable instance', function() {
+      assert.strictEqual(cluster.bigtable, INSTANCE.bigtable);
+    });
 
-      INSTANCE.createCluster = function(name, options, callback) {
-        assert.strictEqual(name, CLUSTER_NAME);
-        assert.strictEqual(options, fakeOptions);
-        callback();
-      };
+    it('should localize Instance instance', function() {
+      assert.strictEqual(cluster.instance, INSTANCE);
+    });
 
-      config.createMethod(null, fakeOptions, done);
+    it('should expand name into full resource path', function() {
+      assert.strictEqual(cluster.id, CLUSTER_ID);
     });
 
     it('should leave full cluster names unaltered', function() {
-      var fakeName = 'a/b/c/d';
-      var cluster = new Cluster(INSTANCE, fakeName);
-      var config = cluster.calledWith_[0];
+      var cluster = new Cluster(INSTANCE, CLUSTER_ID);
+      assert.strictEqual(cluster.id, CLUSTER_ID);
+    });
 
-      assert.strictEqual(config.id, fakeName);
-
-      assert.deepEqual(config.methods, {
-        create: true,
-        delete: {
-          protoOpts: {
-            service: 'BigtableInstanceAdmin',
-            method: 'deleteCluster',
-          },
-          reqOpts: {
-            name: fakeName,
-          },
-        },
-        exists: true,
-        get: true,
-        getMetadata: {
-          protoOpts: {
-            service: 'BigtableInstanceAdmin',
-            method: 'getCluster',
-          },
-          reqOpts: {
-            name: fakeName,
-          },
-        },
-      });
+    it('should localize the name from the ID', function() {
+      assert.strictEqual(cluster.name, CLUSTER_NAME);
     });
   });
 
@@ -204,19 +134,301 @@ describe('Bigtable/Cluster', function() {
     });
   });
 
-  describe('setMetadata', function() {
-    it('should provide the proper request options', function(done) {
-      cluster.request = function(grpcOpts, reqOpts) {
-        assert.deepEqual(grpcOpts, {
-          service: 'BigtableInstanceAdmin',
-          method: 'updateCluster',
+  describe('create', function() {
+    it('should call createCluster from instance', function(done) {
+      var options = {};
+
+      cluster.instance.createCluster = function(name, options_, callback) {
+        assert.strictEqual(name, cluster.name);
+        assert.strictEqual(options_, options);
+        callback(); // done()
+      };
+
+      cluster.create(options, done);
+    });
+
+    it('should not require options', function(done) {
+      cluster.instance.createCluster = function(name, options, callback) {
+        assert.deepStrictEqual(options, {});
+        callback(); // done()
+      };
+
+      cluster.create(done);
+    });
+  });
+
+  describe('delete', function() {
+    it('should accept gaxOptions', function(done) {
+      cluster.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
+        assert.strictEqual(config.method, 'deleteCluster');
+
+        assert.deepEqual(config.reqOpts, {
+          name: cluster.id,
         });
 
-        assert.strictEqual(reqOpts.name, CLUSTER_ID);
+        assert.deepEqual(config.gaxOpts, {});
+
+        callback(); // done()
+      };
+
+      cluster.delete(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      cluster.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
 
-      cluster.setMetadata({}, assert.ifError);
+      cluster.delete(gaxOptions, assert.ifError);
+    });
+  });
+
+  describe('exists', function() {
+    it('should not require gaxOptions', function(done) {
+      cluster.getMetadata = function(gaxOptions) {
+        assert.deepStrictEqual(gaxOptions, {});
+        done();
+      };
+
+      cluster.exists(assert.ifError);
+    });
+
+    it('should pass gaxOptions to getMetadata', function(done) {
+      var gaxOptions = {};
+
+      cluster.getMetadata = function(gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      cluster.exists(gaxOptions, assert.ifError);
+    });
+
+    it('should return false if error code is 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 5;
+
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      cluster.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, false);
+        done();
+      });
+    });
+
+    it('should return error if code is not 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 'NOT-5';
+
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      cluster.exists(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return true if no error', function(done) {
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(null, {});
+      };
+
+      cluster.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, true);
+        done();
+      });
+    });
+  });
+
+  describe('get', function() {
+    it('should call getMetadata', function(done) {
+      var options = {
+        gaxOptions: {},
+      };
+
+      cluster.getMetadata = function(gaxOptions) {
+        assert.strictEqual(gaxOptions, options.gaxOptions);
+        done();
+      };
+
+      cluster.get(options, assert.ifError);
+    });
+
+    it('should not require an options object', function(done) {
+      cluster.getMetadata = function(gaxOptions) {
+        assert.deepStrictEqual(gaxOptions, undefined);
+        done();
+      };
+
+      cluster.get(assert.ifError);
+    });
+
+    it('should auto create with error code 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 5;
+
+      var options = {
+        autoCreate: true,
+        gaxOptions: {},
+      };
+
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      cluster.create = function(options_, callback) {
+        assert.strictEqual(options_.gaxOptions, options.gaxOptions);
+        callback(); // done()
+      };
+
+      cluster.get(options, done);
+    });
+
+    it('should not auto create without error code 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 'NOT-5';
+
+      var options = {
+        autoCreate: true,
+      };
+
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      cluster.create = function() {
+        throw new Error('Should not create.');
+      };
+
+      cluster.get(options, function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should not auto create unless requested', function(done) {
+      var error = new Error('Error.');
+      error.code = 5;
+
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      cluster.create = function() {
+        throw new Error('Should not create.');
+      };
+
+      cluster.get(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return an error from getMetadata', function(done) {
+      var error = new Error('Error.');
+
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      cluster.get(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return self and API response', function(done) {
+      var apiResponse = {};
+
+      cluster.getMetadata = function(gaxOptions, callback) {
+        callback(null, apiResponse);
+      };
+
+      cluster.get(function(err, cluster_, apiResponse_) {
+        assert.ifError(err);
+        assert.strictEqual(cluster_, cluster);
+        assert.strictEqual(apiResponse_, apiResponse);
+        done();
+      });
+    });
+  });
+
+  describe('getMetadata', function() {
+    it('should make correct request', function(done) {
+      cluster.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
+        assert.strictEqual(config.method, 'getCluster');
+
+        assert.deepEqual(config.reqOpts, {
+          name: cluster.id,
+        });
+
+        assert.deepEqual(config.gaxOpts, {});
+
+        done();
+      };
+
+      cluster.getMetadata(assert.ifError);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      cluster.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      cluster.getMetadata(gaxOptions, assert.ifError);
+    });
+
+    it('should update metadata', function(done) {
+      var metadata = {};
+
+      cluster.bigtable.request = function(config, callback) {
+        callback(null, metadata);
+      };
+
+      cluster.getMetadata(function() {
+        assert.strictEqual(cluster.metadata, metadata);
+        done();
+      });
+    });
+
+    it('should execute callback with original arguments', function(done) {
+      var args = [{}, {}, {}];
+
+      cluster.bigtable.request = function(config, callback) {
+        callback.apply(null, args);
+      };
+
+      cluster.getMetadata(function() {
+        assert.deepStrictEqual([].slice.call(arguments), args);
+        done();
+      });
+    });
+  });
+
+  describe('setMetadata', function() {
+    it('should provide the proper request options', function(done) {
+      cluster.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
+        assert.strictEqual(config.method, 'updateCluster');
+        assert.strictEqual(config.reqOpts.name, CLUSTER_ID);
+        callback(); // done()
+      };
+
+      cluster.setMetadata({}, done);
     });
 
     it('should respect the location option', function(done) {
@@ -233,8 +445,8 @@ describe('Bigtable/Cluster', function() {
         return fakeLocation;
       };
 
-      cluster.request = function(grpcOpts, reqOpts) {
-        assert.strictEqual(reqOpts.location, fakeLocation);
+      cluster.bigtable.request = function(config) {
+        assert.strictEqual(config.reqOpts.location, fakeLocation);
         Cluster.getLocation_ = getLocation;
         done();
       };
@@ -247,8 +459,8 @@ describe('Bigtable/Cluster', function() {
         nodes: 3,
       };
 
-      cluster.request = function(grpcOpts, reqOpts) {
-        assert.strictEqual(reqOpts.serveNodes, options.nodes);
+      cluster.bigtable.request = function(config) {
+        assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
         done();
       };
 
@@ -268,53 +480,13 @@ describe('Bigtable/Cluster', function() {
         return fakeStorageType;
       };
 
-      cluster.request = function(grpcOpts, reqOpts) {
-        assert.strictEqual(reqOpts.defaultStorageType, fakeStorageType);
+      cluster.bigtable.request = function(config) {
+        assert.strictEqual(config.reqOpts.defaultStorageType, fakeStorageType);
         Cluster.getStorageType_ = getStorageType;
         done();
       };
 
       cluster.setMetadata(options, assert.ifError);
-    });
-
-    it('should return an error to the callback', function(done) {
-      var error = new Error('err');
-      var response = {};
-
-      cluster.request = function(grpcOpts, reqOpts, callback) {
-        callback(error, response);
-      };
-
-      cluster.setMetadata({}, function(err, operation, apiResponse) {
-        assert.strictEqual(err, error);
-        assert.strictEqual(operation, null);
-        assert.strictEqual(apiResponse, response);
-        done();
-      });
-    });
-
-    it('should return an operation to the callback', function(done) {
-      var response = {
-        name: 'my-operation',
-      };
-      var fakeOperation = {};
-
-      cluster.request = function(grpcOpts, reqOpts, callback) {
-        callback(null, response);
-      };
-
-      INSTANCE.parent.operation = function(name) {
-        assert.strictEqual(name, response.name);
-        return fakeOperation;
-      };
-
-      cluster.setMetadata({}, function(err, operation, apiResponse) {
-        assert.ifError(err);
-        assert.strictEqual(operation, fakeOperation);
-        assert.strictEqual(operation.metadata, response);
-        assert.strictEqual(apiResponse, response);
-        done();
-      });
     });
   });
 });

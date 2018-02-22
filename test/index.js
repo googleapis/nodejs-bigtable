@@ -82,7 +82,7 @@ function createFake(Class) {
 var FakeCluster = createFake(Cluster);
 var FakeInstance = createFake(Instance);
 
-describe.only('Bigtable', function() {
+describe('Bigtable', function() {
   var PROJECT_ID = 'test-project';
 
   var Bigtable;
