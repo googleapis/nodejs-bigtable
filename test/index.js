@@ -18,6 +18,7 @@
 
 var assert = require('assert');
 var extend = require('extend');
+var grpc = require('google-gax').grpc().grpc;
 var nodeutil = require('util');
 var proxyquire = require('proxyquire');
 var sinon = require('sinon').sandbox.create();
@@ -164,8 +165,6 @@ describe('Bigtable', function() {
       assert.strictEqual(normalizeArgumentsCalled, true);
     });
 
-    it.skip('should work with the emulator', function() {});
-
     it('should initialize the API object', function() {
       assert.deepEqual(bigtable.api, {});
     });
@@ -207,13 +206,120 @@ describe('Bigtable', function() {
       };
 
       var bigtable = new Bigtable(options);
-
-      assert.deepEqual(bigtable.options, {
+      var defaultOptions = {
         a: 'b',
         c: 'd',
         libName: 'gccl',
         libVersion: PKG.version,
         scopes: EXPECTED_SCOPES,
+      };
+
+      assert.deepEqual(bigtable.options, {
+        BigtableClient: extend(
+          {
+            servicePath: 'bigtable.googleapis.com',
+            port: 443,
+            sslCreds: undefined,
+          },
+          defaultOptions
+        ),
+        BigtableInstanceAdminClient: extend(
+          {
+            servicePath: 'bigtableadmin.googleapis.com',
+            port: 443,
+            sslCreds: undefined,
+          },
+          defaultOptions
+        ),
+        BigtableTableAdminClient: extend(
+          {
+            servicePath: 'bigtableadmin.googleapis.com',
+            port: 443,
+            sslCreds: undefined,
+          },
+          defaultOptions
+        ),
+      });
+    });
+
+    it('should work with the emulator', function() {
+      process.env.BIGTABLE_EMULATOR_HOST = 'override:8080';
+
+      var options = {
+        a: 'b',
+        c: 'd',
+        libName: 'gccl',
+        libVersion: PKG.version,
+        scopes: EXPECTED_SCOPES,
+      };
+
+      var bigtable = new Bigtable(options);
+
+      assert.deepEqual(bigtable.options, {
+        BigtableClient: extend(
+          {
+            servicePath: 'override',
+            port: 8080,
+            sslCreds: grpc.credentials.createInsecure(),
+          },
+          options
+        ),
+        BigtableInstanceAdminClient: extend(
+          {
+            servicePath: 'override',
+            port: 8080,
+            sslCreds: grpc.credentials.createInsecure(),
+          },
+          options
+        ),
+        BigtableTableAdminClient: extend(
+          {
+            servicePath: 'override',
+            port: 8080,
+            sslCreds: grpc.credentials.createInsecure(),
+          },
+          options
+        ),
+      });
+    });
+
+    it('should work with a customEndpoint', function() {
+      var options = {
+        apiEndpoint: 'customEndpoint:9090',
+        a: 'b',
+        c: 'd',
+        libName: 'gccl',
+        libVersion: PKG.version,
+        scopes: EXPECTED_SCOPES,
+      };
+
+      var bigtable = new Bigtable(options);
+
+      assert.deepEqual(bigtable.options, {
+        BigtableClient: extend(
+          {
+            servicePath: 'customEndpoint',
+            port: 9090,
+            sslCreds: grpc.credentials.createInsecure(),
+          },
+          options
+        ),
+        BigtableInstanceAdminClient: extend(
+          {
+            servicePath: 'customEndpoint',
+            port: 9090,
+            sslCreds: grpc.credentials.createInsecure(),
+          },
+          options
+        ),
+        BigtableTableAdminClient: extend(
+          {
+            servicePath: 'customEndpoint',
+            port: 9090,
+            sslCreds: grpc.credentials.createInsecure(),
+          },
+          options
+        ),
       });
     });
 
@@ -553,7 +659,7 @@ describe('Bigtable', function() {
         };
 
         fakeV2[CONFIG.client] = function(options) {
-          assert.strictEqual(options, bigtable.options);
+          assert.strictEqual(options, bigtable.options[CONFIG.client]);
           return fakeClient;
         };
 

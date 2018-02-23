@@ -594,8 +594,6 @@ Row.prototype.filter = function(filter, config, callback) {
     falseMutations: createFlatMutationsList(config.onNoMatch),
   };
 
-  console.log(reqOpts);
-
   this.bigtable.request(
     {
       client: 'BigtableClient',

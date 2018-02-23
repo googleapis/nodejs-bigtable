@@ -20,6 +20,7 @@ var arrify = require('arrify');
 var common = require('@google-cloud/common');
 var extend = require('extend');
 var googleAuth = require('google-auto-auth');
+var grpc = require('google-gax').grpc().grpc;
 var is = require('is');
 var streamEvents = require('stream-events');
 var through = require('through2');
@@ -336,18 +337,6 @@ function Bigtable(options) {
 
   options = common.util.normalizeArguments(this, options);
 
-  // @TODO figure out how to configure GAPIC for this
-  // var baseUrl = 'bigtable.googleapis.com';
-  // var adminBaseUrl = 'bigtableadmin.googleapis.com';
-
-  // var customEndpoint =
-  //   options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
-
-  // if (customEndpoint) {
-  //   baseUrl = customEndpoint;
-  //   adminBaseUrl = baseUrl;
-  // }
-
   // Determine what scopes are needed.
   // It is the union of the scopes on all three clients.
   let scopes = [];
@@ -364,6 +353,20 @@ function Bigtable(options) {
     }
   }
 
+  var defaultBaseUrl = 'bigtable.googleapis.com';
+  var defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
+
+  var customEndpoint =
+    options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
+  var customEndpointBaseUrl;
+  var customEndpointPort;
+
+  if (customEndpoint) {
+    var customEndpointParts = customEndpoint.split(':');
+    customEndpointBaseUrl = customEndpointParts[0];
+    customEndpointPort = customEndpointParts[1];
+  }
+
   var options_ = extend(
     {
       libName: 'gccl',
@@ -373,10 +376,46 @@ function Bigtable(options) {
     options
   );
 
+  this.options = {
+    BigtableClient: extend(
+      {
+        servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
+        port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+        sslCreds: customEndpoint
+          ? grpc.credentials.createInsecure()
+          : undefined,
+      },
+      options_
+    ),
+    BigtableInstanceAdminClient: extend(
+      {
+        servicePath: customEndpoint
+          ? customEndpointBaseUrl
+          : defaultAdminBaseUrl,
+        port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+        sslCreds: customEndpoint
+          ? grpc.credentials.createInsecure()
+          : undefined,
+      },
+      options_
+    ),
+    BigtableTableAdminClient: extend(
+      {
+        servicePath: customEndpoint
+          ? customEndpointBaseUrl
+          : defaultAdminBaseUrl,
+        port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+        sslCreds: customEndpoint
+          ? grpc.credentials.createInsecure()
+          : undefined,
+      },
+      options_
+    ),
+  };
+
   this.api = {};
   this.auth = googleAuth(options_);
-  this.options = options_;
-  this.projectId = this.options.projectId || '{{projectId}}';
+  this.projectId = options.projectId || '{{projectId}}';
   this.projectName = 'projects/' + this.projectId;
 }
 
@@ -481,8 +520,6 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
       var args = [].slice.call(arguments);
 
       if (!err) {
-        // Push the new instance among the original arguments, so as not to
-        // tamper with GAPIC's natural response.
         args.splice(1, 0, self.instance(name));
       }
 
@@ -669,7 +706,7 @@ Bigtable.prototype.request = function(config, callback) {
 
       if (!gaxClient) {
         // Lazily instantiate client.
-        gaxClient = new v2[config.client](self.options);
+        gaxClient = new v2[config.client](self.options[config.client]);
         self.api[config.client] = gaxClient;
       }
 
