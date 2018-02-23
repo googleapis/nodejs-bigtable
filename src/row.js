@@ -872,6 +872,12 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
  * @param {object} callback.apiResponse The full API response.
  *
  * @example
+ * var entry = {
+ *   follows: {
+ *     jadams: 1
+ *   }
+ * };
+ *
  * //-
  * // Update a single cell.
  * //-
@@ -881,22 +887,17 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
  *   }
  * };
  *
- * row.save('follows:jadams', 1, callback);
+ * row.save(entry, 1, callback);
  *
  * //-
  * // Or update several cells at once.
  * //-
- * row.save({
- *   follows: {
- *     jadams: 1,
- *     wmckinley: 1
- *   }
- * }, callback);
+ * row.save(entry, callback);
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.
  * //-
- * row.save('follows:jadams', 1).then(function(data) {
+ * row.save(entry).then(function(data) {
  *   var apiResponse = data[0];
  * });
  */
