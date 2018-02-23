@@ -31,7 +31,7 @@ var fakeUtil = extend({}, util, {
   },
 });
 
-describe.only('Bigtable/Family', function() {
+describe('Bigtable/Family', function() {
   var FAMILY_NAME = 'family-test';
   var TABLE = {
     bigtable: {},

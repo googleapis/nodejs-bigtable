@@ -17,14 +17,11 @@
 'use strict';
 
 var assert = require('assert');
+var common = require('@google-cloud/common');
 var extend = require('extend');
-var nodeutil = require('util');
 var proxyquire = require('proxyquire');
 var sinon = require('sinon').sandbox.create();
 
-var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
-var GrpcServiceObject = commonGrpc.ServiceObject;
 var Mutation = require('../src/mutation.js');
 
 var promisified = false;
@@ -36,16 +33,10 @@ var fakeUtil = extend({}, common.util, {
   },
 });
 
-function FakeGrpcServiceObject() {
-  this.calledWith_ = arguments;
-  GrpcServiceObject.apply(this, arguments);
-}
-
-nodeutil.inherits(FakeGrpcServiceObject, GrpcServiceObject);
-
 var ROW_ID = 'my-row';
 var CONVERTED_ROW_ID = 'my-converted-row';
 var TABLE = {
+  bigtable: {},
   id: 'my-table',
 };
 
@@ -76,7 +67,7 @@ var FakeFilter = {
   }),
 };
 
-describe('Bigtable/Row', function() {
+describe.only('Bigtable/Row', function() {
   var Row;
   var row;
 
@@ -84,9 +75,6 @@ describe('Bigtable/Row', function() {
     Row = proxyquire('../src/row.js', {
       '@google-cloud/common': {
         util: fakeUtil,
-      },
-      '@google-cloud/common-grpc': {
-        ServiceObject: FakeGrpcServiceObject,
       },
       './mutation.js': FakeMutation,
       './filter.js': FakeFilter,
@@ -98,33 +86,32 @@ describe('Bigtable/Row', function() {
   });
 
   afterEach(function() {
-    sinon.restore();
-
     Object.keys(FakeMutation).forEach(function(spy) {
-      if (FakeMutation[spy].reset) {
-        FakeMutation[spy].reset();
+      if (FakeMutation[spy].resetHistory) {
+        FakeMutation[spy].resetHistory();
       }
     });
   });
 
   describe('instantiation', function() {
-    it('should inherit from GrpcServiceObject', function() {
-      var config = row.calledWith_[0];
+    it('should promisify all the things', function() {
+      assert(promisified);
+    });
 
-      assert(row instanceof FakeGrpcServiceObject);
-      assert.strictEqual(config.parent, TABLE);
-      assert.deepEqual(config.methods, {
-        exists: true,
-      });
-      assert.strictEqual(config.id, ROW_ID);
+    it('should localize Bigtable instance', function() {
+      assert.strictEqual(row.bigtable, TABLE.bigtable);
+    });
+
+    it('should localize Table instance', function() {
+      assert.strictEqual(row.table, TABLE);
+    });
+
+    it('should localize ID', function() {
+      assert.strictEqual(row.id, ROW_ID);
     });
 
     it('should create an empty data object', function() {
       assert.deepEqual(row.data, {});
-    });
-
-    it('should promisify all the things', function() {
-      assert(promisified);
     });
   });
 
@@ -513,10 +500,11 @@ describe('Bigtable/Row', function() {
 
   describe('create', function() {
     it('should provide the proper request options', function(done) {
-      row.parent.mutate = function(entry) {
+      row.table.mutate = function(entry, gaxOptions) {
         assert.strictEqual(entry.key, row.id);
-        assert.deepEqual(entry.data, {});
+        assert.strictEqual(entry.data, undefined);
         assert.strictEqual(entry.method, Mutation.methods.INSERT);
+        assert.strictEqual(gaxOptions, undefined);
         done();
       };
 
@@ -524,38 +512,39 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept data to populate the row', function(done) {
-      var data = {
-        a: 'a',
-        b: 'b',
+      var options = {
+        entry: {
+          a: 'a',
+          b: 'b',
+        },
       };
 
-      row.parent.mutate = function(entry) {
-        assert.strictEqual(entry.data, data);
+      row.table.mutate = function(entry) {
+        assert.strictEqual(entry.data, options.entry);
         done();
       };
 
-      row.create(data, assert.ifError);
+      row.create(options, assert.ifError);
     });
 
     it('should accept options when inserting data', function(done) {
-      var data = {
-        a: 'a',
-        b: 'b',
+      var options = {
+        gaxOptions: {},
       };
 
-      row.parent.mutate = function(entry) {
-        assert.strictEqual(entry.data, data);
+      row.table.mutate = function(entry, gaxOptions) {
+        assert.strictEqual(gaxOptions, options.gaxOptions);
         done();
       };
 
-      row.create(data, assert.ifError);
+      row.create(options, assert.ifError);
     });
 
     it('should return an error to the callback', function(done) {
       var err = new Error('err');
       var response = {};
 
-      row.parent.mutate = function(entry, callback) {
+      row.table.mutate = function(entry, gaxOptions, callback) {
         callback(err, response);
       };
 
@@ -570,7 +559,7 @@ describe('Bigtable/Row', function() {
     it('should return the Row instance', function(done) {
       var response = {};
 
-      row.parent.mutate = function(entry, callback) {
+      row.table.mutate = function(entry, gaxOptions, callback) {
         callback(null, response);
       };
 
@@ -599,16 +588,14 @@ describe('Bigtable/Row', function() {
     });
 
     it('should read/modify/write rules', function(done) {
-      row.request = function(grpcOpts, reqOpts, callback) {
-        assert.deepEqual(grpcOpts, {
-          service: 'Bigtable',
-          method: 'readModifyWriteRow',
-        });
+      row.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableClient');
+        assert.strictEqual(config.method, 'readModifyWriteRow');
 
-        assert.strictEqual(reqOpts.tableName, TABLE.id);
-        assert.strictEqual(reqOpts.rowKey, CONVERTED_ROW_ID);
+        assert.strictEqual(config.reqOpts.tableName, TABLE.id);
+        assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
 
-        assert.deepEqual(reqOpts.rules, [
+        assert.deepEqual(config.reqOpts.rules, [
           {
             familyName: 'a',
             columnQualifier: 'b',
@@ -622,23 +609,132 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(spy.getCall(0).args[0], 'b');
         assert.strictEqual(spy.getCall(1).args[0], 'c');
         assert.strictEqual(spy.getCall(2).args[0], ROW_ID);
-        callback();
+
+        callback(); // done()
       };
 
       row.createRules(rules, done);
     });
 
-    it('should return an error to the callback', function(done) {
-      var err = new Error('err');
-      var response = {};
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
 
-      row.request = function(g, r, callback) {
-        callback(err, response);
+      row.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
       };
 
-      row.createRules(rules, function(err_, apiResponse) {
-        assert.strictEqual(err, err_);
-        assert.strictEqual(response, apiResponse);
+      row.createRules(rules, gaxOptions, assert.ifError);
+    });
+  });
+
+  describe('delete', function() {
+    it('should provide the proper request options', function(done) {
+      row.table.mutate = function(mutation, gaxOptions, callback) {
+        assert.strictEqual(mutation.key, ROW_ID);
+        assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
+        assert.deepStrictEqual(gaxOptions, {});
+        callback(); // done()
+      };
+
+      row.delete(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      row.table.mutate = function(mutation, gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      row.delete(gaxOptions, done);
+    });
+  });
+
+  describe('deleteCells', function() {
+    var columns = ['a:b', 'c'];
+
+    it('should provide the proper request options', function(done) {
+      row.table.mutate = function(mutation, gaxOptions, callback) {
+        assert.strictEqual(mutation.key, ROW_ID);
+        assert.strictEqual(mutation.data, columns);
+        assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
+        assert.deepStrictEqual(gaxOptions, {});
+        callback(); // done()
+      };
+
+      row.deleteCells(columns, done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      row.table.mutate = function(mutation, gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      row.deleteCells(columns, gaxOptions, done);
+    });
+  });
+
+  describe('exists', function() {
+    it('should not require gaxOptions', function(done) {
+      row.getMetadata = function(gaxOptions) {
+        assert.deepStrictEqual(gaxOptions, {});
+        done();
+      };
+
+      row.exists(assert.ifError);
+    });
+
+    it('should pass gaxOptions to getMetadata', function(done) {
+      var gaxOptions = {};
+
+      row.getMetadata = function(gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      row.exists(gaxOptions, assert.ifError);
+    });
+
+    it('should return false if error is RowError', function(done) {
+      var error = new Row.RowError('Error.');
+
+      row.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      row.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, false);
+        done();
+      });
+    });
+
+    it('should return error if not RowError', function(done) {
+      var error = new Error('Error.');
+
+      row.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      row.exists(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return true if no error', function(done) {
+      row.getMetadata = function(gaxOptions, callback) {
+        callback(null, {});
+      };
+
+      row.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, true);
         done();
       });
     });
@@ -663,14 +759,15 @@ describe('Bigtable/Row', function() {
     };
 
     beforeEach(function() {
-      FakeMutation.parse.reset();
-      FakeFilter.parse.reset();
+      FakeMutation.parse.resetHistory();
+      FakeFilter.parse.resetHistory();
     });
 
     it('should provide the proper request options', function(done) {
       var filter = {
         column: 'a',
       };
+
       var fakeParsedFilter = {
         column: 'b',
       };
@@ -683,17 +780,20 @@ describe('Bigtable/Row', function() {
         return fakeMutations;
       });
 
-      row.request = function(grpcOpts, reqOpts) {
-        assert.deepEqual(grpcOpts, {
-          service: 'Bigtable',
-          method: 'checkAndMutateRow',
-        });
+      row.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableClient');
+        assert.strictEqual(config.method, 'checkAndMutateRow');
 
-        assert.strictEqual(reqOpts.tableName, TABLE.id);
-        assert.strictEqual(reqOpts.rowKey, CONVERTED_ROW_ID);
-        assert.deepEqual(reqOpts.predicateFilter, fakeParsedFilter);
-        assert.deepEqual(reqOpts.trueMutations, fakeMutations.mutations);
-        assert.deepEqual(reqOpts.falseMutations, fakeMutations.mutations);
+        assert.strictEqual(config.reqOpts.tableName, TABLE.id);
+        assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
+        assert.deepEqual(config.reqOpts.predicateFilter, fakeParsedFilter);
+        assert.deepEqual(config.reqOpts.trueMutations, fakeMutations.mutations);
+        assert.deepEqual(
+          config.reqOpts.falseMutations,
+          fakeMutations.mutations
+        );
+
+        assert.strictEqual(config.gaxOpts, undefined);
 
         assert.strictEqual(FakeMutation.parse.callCount, 2);
         assert.strictEqual(FakeMutation.parse.getCall(0).args[0], mutations[0]);
@@ -701,39 +801,39 @@ describe('Bigtable/Row', function() {
 
         assert.strictEqual(FakeFilter.parse.callCount, 1);
         assert(FakeFilter.parse.calledWithExactly(filter));
+
         done();
       };
 
-      row.filter(filter, mutations, mutations, assert.ifError);
+      row.filter(
+        filter,
+        {
+          onMatch: mutations,
+          onNoMatch: mutations,
+        },
+        assert.ifError
+      );
     });
 
-    it('should optionally accept onNoMatch mutations', function(done) {
-      row.request = function(g, reqOpts) {
-        assert.deepEqual(reqOpts.falseMutations, []);
-        assert.strictEqual(FakeMutation.parse.callCount, 1);
-        assert(FakeMutation.parse.calledWithExactly(mutations[0]));
+    it('should accept gaxOptions', function(done) {
+      var filter = {
+        column: 'a',
+      };
+      var gaxOptions = {};
+
+      row.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
 
-      row.filter({}, mutations, assert.ifError);
-    });
-
-    it('should optionally accept onMatch mutations', function(done) {
-      row.request = function(g, reqOpts) {
-        assert.deepEqual(reqOpts.trueMutations, []);
-        assert.strictEqual(FakeMutation.parse.callCount, 1);
-        assert(FakeMutation.parse.calledWithExactly(mutations[0]));
-        done();
-      };
-
-      row.filter({}, null, mutations, assert.ifError);
+      row.filter(filter, {gaxOptions}, assert.ifError);
     });
 
     it('should return an error to the callback', function(done) {
       var err = new Error('err');
       var response = {};
 
-      row.request = function(g, r, callback) {
+      row.bigtable.request = function(config, callback) {
         callback(err, response);
       };
 
@@ -750,7 +850,7 @@ describe('Bigtable/Row', function() {
         predicateMatched: true,
       };
 
-      row.request = function(g, r, callback) {
+      row.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
@@ -763,36 +863,9 @@ describe('Bigtable/Row', function() {
     });
   });
 
-  describe('delete', function() {
-    it('should provide the proper request options', function(done) {
-      row.parent.mutate = function(mutation, callback) {
-        assert.strictEqual(mutation.key, ROW_ID);
-        assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
-        callback();
-      };
-
-      row.delete(done);
-    });
-  });
-
-  describe('deleteCells', function() {
-    var columns = ['a:b', 'c'];
-
-    it('should provide the proper request options', function(done) {
-      row.parent.mutate = function(mutation, callback) {
-        assert.strictEqual(mutation.key, ROW_ID);
-        assert.strictEqual(mutation.data, columns);
-        assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
-        callback();
-      };
-
-      row.deleteCells(columns, done);
-    });
-  });
-
   describe('get', function() {
     it('should provide the proper request options', function(done) {
-      row.parent.getRows = function(reqOpts) {
+      row.table.getRows = function(reqOpts) {
         assert.strictEqual(reqOpts.keys[0], ROW_ID);
         assert.strictEqual(reqOpts.filter, undefined);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 0);
@@ -814,7 +887,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      row.parent.getRows = function(reqOpts) {
+      row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
@@ -850,7 +923,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      row.parent.getRows = function(reqOpts) {
+      row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
 
         var spy = FakeMutation.parseColumnName;
@@ -873,7 +946,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      row.parent.getRows = function(reqOpts) {
+      row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
@@ -896,7 +969,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      row.parent.getRows = function(reqOpts) {
+      row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
@@ -916,7 +989,7 @@ describe('Bigtable/Row', function() {
       };
       var expectedFilter = options.filter;
 
-      row.parent.getRows = function(reqOpts) {
+      row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
         done();
       };
@@ -929,7 +1002,7 @@ describe('Bigtable/Row', function() {
         decode: false,
       };
 
-      row.parent.getRows = function(reqOpts) {
+      row.table.getRows = function(reqOpts) {
         assert.strictEqual(reqOpts.decode, options.decode);
         assert(!reqOpts.filter);
         done();
@@ -940,39 +1013,32 @@ describe('Bigtable/Row', function() {
 
     it('should return an error to the callback', function(done) {
       var error = new Error('err');
-      var response = {};
 
-      row.parent.getRows = function(r, callback) {
-        callback(error, null, response);
+      row.table.getRows = function(r, callback) {
+        callback(error);
       };
 
-      row.get(function(err, row_, apiResponse) {
+      row.get(function(err, row) {
         assert.strictEqual(error, err);
-        assert.strictEqual(row_, null);
-        assert.strictEqual(response, apiResponse);
+        assert.strictEqual(row, undefined);
         done();
       });
     });
 
     it('should return a custom error if the row is not found', function(done) {
-      var response = {};
-
-      row.parent.getRows = function(r, callback) {
-        callback(null, [], response);
+      row.table.getRows = function(r, callback) {
+        callback(null, []);
       };
 
-      row.get(function(err, row_, apiResponse) {
+      row.get(function(err, row_) {
         assert(err instanceof Row.RowError);
         assert.strictEqual(err.message, 'Unknown row: ' + row.id + '.');
-        assert.strictEqual(err.code, 404);
-        assert.deepEqual(row_, null);
-        assert.strictEqual(response, apiResponse);
+        assert.deepEqual(row_, undefined);
         done();
       });
     });
 
     it('should update the row data upon success', function(done) {
-      var response = {};
       var fakeRow = new Row(TABLE, ROW_ID);
 
       fakeRow.data = {
@@ -980,21 +1046,19 @@ describe('Bigtable/Row', function() {
         b: 'b',
       };
 
-      row.parent.getRows = function(r, callback) {
-        callback(null, [fakeRow], response);
+      row.table.getRows = function(r, callback) {
+        callback(null, [fakeRow]);
       };
 
-      row.get(function(err, row_, apiResponse) {
+      row.get(function(err, row_) {
         assert.ifError(err);
         assert.strictEqual(row_, row);
         assert.deepEqual(row.data, fakeRow.data);
-        assert.strictEqual(response, apiResponse);
         done();
       });
     });
 
     it('should return only data for the keys provided', function(done) {
-      var response = {};
       var fakeRow = new Row(TABLE, ROW_ID);
 
       fakeRow.data = {
@@ -1008,14 +1072,13 @@ describe('Bigtable/Row', function() {
         c: 'c',
       };
 
-      row.parent.getRows = function(r, callback) {
-        callback(null, [fakeRow], response);
+      row.table.getRows = function(r, callback) {
+        callback(null, [fakeRow]);
       };
 
-      row.get(keys, function(err, data, apiResponse) {
+      row.get(keys, function(err, data) {
         assert.ifError(err);
         assert.deepEqual(Object.keys(data), keys);
-        assert.strictEqual(response, apiResponse);
         done();
       });
     });
@@ -1024,43 +1087,38 @@ describe('Bigtable/Row', function() {
   describe('getMetadata', function() {
     it('should return an error to the callback', function(done) {
       var error = new Error('err');
-      var response = {};
 
       row.get = function(options, callback) {
-        callback(error, null, response);
+        callback(error);
       };
 
-      row.getMetadata(function(err, metadata, apiResponse) {
+      row.getMetadata(function(err, metadata) {
         assert.strictEqual(error, err);
-        assert.strictEqual(metadata, null);
-        assert.strictEqual(response, apiResponse);
+        assert.strictEqual(metadata, undefined);
         done();
       });
     });
 
     it('should return metadata to the callback', function(done) {
-      var response = {};
       var fakeMetadata = {
         a: 'a',
         b: 'b',
       };
 
       row.get = function(options, callback) {
-        callback(null, row, response);
+        callback(null, row);
       };
 
       row.metadata = fakeMetadata;
 
-      row.getMetadata(function(err, metadata, apiResponse) {
+      row.getMetadata(function(err, metadata) {
         assert.ifError(err);
         assert.strictEqual(metadata, fakeMetadata);
-        assert.strictEqual(response, apiResponse);
         done();
       });
     });
 
     it('should accept an options object', function(done) {
-      var response = {};
       var fakeMetadata = {};
       var fakeOptions = {
         decode: false,
@@ -1068,15 +1126,14 @@ describe('Bigtable/Row', function() {
 
       row.get = function(options, callback) {
         assert.strictEqual(options, fakeOptions);
-        callback(null, row, response);
+        callback(null, row);
       };
 
       row.metadata = fakeMetadata;
 
-      row.getMetadata(fakeOptions, function(err, metadata, apiResponse) {
+      row.getMetadata(fakeOptions, function(err, metadata) {
         assert.ifError(err);
         assert.strictEqual(metadata, fakeMetadata);
-        assert.strictEqual(response, apiResponse);
         done();
       });
     });
@@ -1098,10 +1155,15 @@ describe('Bigtable/Row', function() {
       });
     });
 
+    afterEach(function() {
+      formatFamiliesSpy.restore();
+    });
+
     it('should provide the proper request options', function(done) {
-      row.createRules = function(reqOpts) {
+      row.createRules = function(reqOpts, gaxOptions) {
         assert.strictEqual(reqOpts.column, COLUMN_NAME);
         assert.strictEqual(reqOpts.increment, 1);
+        assert.deepStrictEqual(gaxOptions, {});
         done();
       };
 
@@ -1112,7 +1174,6 @@ describe('Bigtable/Row', function() {
       var increment = 10;
 
       row.createRules = function(reqOpts) {
-        assert.strictEqual(reqOpts.column, COLUMN_NAME);
         assert.strictEqual(reqOpts.increment, increment);
         done();
       };
@@ -1120,11 +1181,35 @@ describe('Bigtable/Row', function() {
       row.increment(COLUMN_NAME, increment, assert.ifError);
     });
 
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      row.createRules = function(reqOpts, gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      row.increment(COLUMN_NAME, gaxOptions, assert.ifError);
+    });
+
+    it('should accept increment amount and gaxOptions', function(done) {
+      var increment = 10;
+      var gaxOptions = {};
+
+      row.createRules = function(reqOpts, gaxOptions_) {
+        assert.strictEqual(reqOpts.increment, increment);
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      row.increment(COLUMN_NAME, increment, gaxOptions, assert.ifError);
+    });
+
     it('should return an error to the callback', function(done) {
       var error = new Error('err');
       var response = {};
 
-      row.createRules = function(r, callback) {
+      row.createRules = function(r, gaxOptions, callback) {
         callback(error, response);
       };
 
@@ -1160,7 +1245,7 @@ describe('Bigtable/Row', function() {
         },
       };
 
-      row.createRules = function(r, callback) {
+      row.createRules = function(r, gaxOptions, callback) {
         callback(null, response);
       };
 
@@ -1176,55 +1261,30 @@ describe('Bigtable/Row', function() {
   });
 
   describe('save', function() {
-    describe('key value pair', function() {
-      var key = 'a:b';
-      var value = 'c';
+    var data = {
+      a: {
+        b: 'c',
+      },
+    };
 
-      var expectedData = {
-        d: {
-          e: 'c',
-        },
+    it('should insert an object', function(done) {
+      row.table.mutate = function(entry, gaxOptions, callback) {
+        assert.strictEqual(entry.data, data);
+        callback(); // done()
       };
 
-      var parseSpy;
-
-      beforeEach(function() {
-        parseSpy = Mutation.parseColumnName = sinon.spy(function() {
-          return {
-            family: 'd',
-            qualifier: 'e',
-          };
-        });
-      });
-
-      it('should insert a key value pair', function(done) {
-        row.parent.mutate = function(entry, callback) {
-          assert.strictEqual(entry.key, ROW_ID);
-          assert.deepEqual(entry.data, expectedData);
-          assert.strictEqual(entry.method, FakeMutation.methods.INSERT);
-          assert(parseSpy.calledWithExactly(key));
-          callback();
-        };
-
-        row.save(key, value, done);
-      });
+      row.save(data, done);
     });
 
-    describe('object mode', function() {
-      var data = {
-        a: {
-          b: 'c',
-        },
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      row.table.mutate = function(entry, gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
       };
 
-      it('should insert an object', function(done) {
-        row.parent.mutate = function(entry) {
-          assert.strictEqual(entry.data, data);
-          done();
-        };
-
-        row.save(data, assert.ifError);
-      });
+      row.save(data, gaxOptions, assert.ifError);
     });
   });
 

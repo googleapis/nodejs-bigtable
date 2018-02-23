@@ -259,7 +259,7 @@ Row.prototype.create = function(options, callback) {
 
   var entry = {
     key: this.id,
-    data: extend({}, options.entry),
+    data: options.entry,
     method: Mutation.methods.INSERT,
   };
 
@@ -493,17 +493,17 @@ Row.prototype.exists = function(gaxOptions, callback) {
   }
 
   this.getMetadata(gaxOptions, function(err) {
-    if (!err) {
-      callback(null, true);
+    if (err) {
+      if (err instanceof RowError) {
+        callback(null, false);
+        return;
+      }
+
+      callback(err);
       return;
     }
 
-    if (err instanceof RowError) {
-      callback(null, false);
-      return;
-    }
-
-    callback(err);
+    callback(null, true);
   });
 };
 
@@ -513,11 +513,13 @@ Row.prototype.exists = function(gaxOptions, callback) {
  * callback will be executed.
  *
  * @param {Filter} filter Filter to be applied to the contents of the row.
- * @param {?object[]} onMatch A list of entries to be ran if a match is found.
- * @param {object[]} [onNoMatch] A list of entries to be ran if no matches are
+ * @param {object} config Configuration object.
+ * @param {?object[]} config.onMatch A list of entries to be ran if a match is
  *     found.
- * @param {object} [gaxOptions] Request configuration options, outlined here:
- *     https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {object[]} [config.onNoMatch] A list of entries to be ran if no
+ *     matches are found.
+ * @param {object} [config.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -542,60 +544,54 @@ Row.prototype.exists = function(gaxOptions, callback) {
  *   }
  * ];
  *
- * var entries = [
- *   {
- *     method: 'insert',
- *     data: {
- *       follows: {
- *         jadams: 1
+ * var config = {
+ *   onMatch: [
+ *     {
+ *       method: 'insert',
+ *       data: {
+ *         follows: {
+ *           jadams: 1
+ *         }
  *       }
  *     }
- *   }
- * ];
+ *   ]
+ * };
  *
- * row.filter(filter, entries, callback);
+ * row.filter(filter, config, callback);
  *
  * //-
  * // Optionally, you can pass in an array of entries to be ran in the event
  * // that a match is not made.
  * //-
- * row.filter(filter, null, entries, callback);
+ * var config = {
+ *   onNoMatch: [
+ *     {
+ *       method: 'insert',
+ *       data: {
+ *         follows: {
+ *           jadams: 1
+ *         }
+ *       }
+ *     }
+ *   ]
+ * };
+ *
+ * row.filter(filter, config, callback);
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.
  * //-
- * row.filter(filter, null, entries).then(function(data) {
+ * row.filter(filter, config).then(function(data) {
  *   var matched = data[0];
  * });
  */
-Row.prototype.filter = function(
-  filter,
-  onMatch,
-  onNoMatch,
-  gaxOptions,
-  callback
-) {
-  if (is.object(onNoMatch)) {
-    gaxOptions = onNoMatch;
-    onNoMatch = [];
-  }
-
-  if (is.function(onNoMatch)) {
-    callback = onNoMatch;
-    onNoMatch = [];
-  }
-
-  if (is.function(gaxOptions)) {
-    callback = gaxOptions;
-    gaxOptions = {};
-  }
-
+Row.prototype.filter = function(filter, config, callback) {
   var reqOpts = {
     tableName: this.table.id,
     rowKey: Mutation.convertToBytes(this.id),
     predicateFilter: Filter.parse(filter),
-    trueMutations: createFlatMutationsList(onMatch),
-    falseMutations: createFlatMutationsList(onNoMatch),
+    trueMutations: createFlatMutationsList(config.onMatch),
+    falseMutations: createFlatMutationsList(config.onNoMatch),
   };
 
   this.bigtable.request(
@@ -603,7 +599,7 @@ Row.prototype.filter = function(
       client: 'BigtableClient',
       method: 'checkAndMutateRow',
       reqOpts: reqOpts,
-      gaxOpts: gaxOptions,
+      gaxOpts: config.gaxOptions,
     },
     function(err, apiResponse) {
       if (err) {
@@ -637,7 +633,6 @@ Row.prototype.filter = function(
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {Row} callback.row The updated Row object.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * //-
@@ -751,7 +746,6 @@ Row.prototype.get = function(columns, options, callback) {
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {object} callback.metadata The row's metadata.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * row.getMetadata(function(err, metadata, apiResponse) {});
@@ -770,13 +764,13 @@ Row.prototype.getMetadata = function(options, callback) {
     options = {};
   }
 
-  this.get(options, function(err, row, resp) {
+  this.get(options, function(err, row) {
     if (err) {
-      callback(err, null, resp);
+      callback(err);
       return;
     }
 
-    callback(null, row.metadata, resp);
+    callback(null, row.metadata);
   });
 };
 
@@ -826,6 +820,7 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
   if (is.function(value)) {
     callback = value;
     value = 1;
+    gaxOptions = {};
   }
 
   // increment('column', value, callback)
