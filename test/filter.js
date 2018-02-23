@@ -42,8 +42,7 @@ describe('Bigtable/Filter', function() {
   });
 
   afterEach(function() {
-    sinon.restore();
-    FakeMutation.convertToBytes.reset();
+    FakeMutation.convertToBytes.resetHistory();
   });
 
   describe('instantiation', function() {
@@ -189,12 +188,14 @@ describe('Bigtable/Filter', function() {
         },
       ];
 
-      sinon.stub(Filter.prototype, 'toProto').returns(fakeProto);
+      var stub = sinon.stub(Filter.prototype, 'toProto').returns(fakeProto);
 
       var parsedFilter = Filter.parse(fakeFilter);
 
       assert.strictEqual(parsedFilter, fakeProto);
       assert.strictEqual(Filter.prototype.toProto.callCount, 1);
+
+      stub.restore();
     });
   });
 
@@ -233,6 +234,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(value, column.name);
         assert(spy.calledWithExactly(column.name));
         assert(FakeMutation.convertToBytes.calledWithExactly(column.name));
+        spy.restore();
         done();
       };
 
@@ -281,6 +283,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(filterName, 'columnRangeFilter');
         assert.strictEqual(value, fakeRange);
         assert(spy.calledWithExactly(column.start, column.end, 'Qualifier'));
+        spy.restore();
         done();
       };
 
@@ -309,6 +312,9 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(spy.getCall(0).args[0], condition.test);
         assert.strictEqual(spy.getCall(1).args[0], condition.pass);
         assert.strictEqual(spy.getCall(2).args[0], condition.fail);
+
+        spy.restore();
+
         done();
       };
 
@@ -326,6 +332,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(filterName, 'familyNameRegexFilter');
         assert.strictEqual(value, familyName);
         assert(spy.calledWithExactly(familyName));
+        spy.restore();
         done();
       };
 
@@ -347,6 +354,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(spy.getCall(0).args[0], fakeFilters[0]);
         assert.strictEqual(spy.getCall(1).args[0], fakeFilters[1]);
         assert.strictEqual(spy.getCall(2).args[0], fakeFilters[2]);
+        spy.restore();
         done();
       };
 
@@ -384,6 +392,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(value, convertedKey);
         assert(spy.calledWithExactly(row.key));
         assert(FakeMutation.convertToBytes.calledWithExactly(convertedKey));
+        spy.restore();
         done();
       };
 
@@ -536,6 +545,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value.value));
         assert(bytesSpy.calledWithExactly(fakeRegExValue));
+        regSpy.restore();
         done();
       };
 
@@ -561,6 +571,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value));
         assert(bytesSpy.calledWithExactly(fakeRegExValue));
+        regSpy.restore();
         done();
       };
 
@@ -583,6 +594,7 @@ describe('Bigtable/Filter', function() {
         assert.strictEqual(filterName, 'valueRangeFilter');
         assert.strictEqual(val, fakeRange);
         assert(spy.calledWithExactly(value.start, value.end, 'Value'));
+        spy.restore();
         done();
       };
 

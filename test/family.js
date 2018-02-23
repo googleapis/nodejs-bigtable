@@ -419,47 +419,37 @@ describe('Bigtable/Family', function() {
         callback(err, null, response);
       };
 
-      family.getMetadata(function(err_, metadata, apiResponse) {
+      family.getMetadata(function(err_) {
         assert.strictEqual(err, err_);
-        assert.strictEqual(response, apiResponse);
         done();
       });
     });
 
     it('should update the metadata', function(done) {
-      var FAMILY = new Family(TABLE, FAMILY_NAME);
-      var response = {
-        families: {},
-      };
-
-      FAMILY.metadata = {
+      var family = new Family(TABLE, FAMILY_NAME);
+      family.metadata = {
         a: 'a',
         b: 'b',
       };
 
       family.table.getFamilies = function(gaxOptions, callback) {
-        callback(null, [FAMILY], response);
+        callback(null, [family]);
       };
 
-      family.getMetadata(function(err, metadata, apiResponse) {
+      family.getMetadata(function(err, metadata) {
         assert.ifError(err);
-        assert.strictEqual(FAMILY.metadata, metadata);
-        assert.strictEqual(apiResponse, response);
+        assert.strictEqual(metadata, family.metadata);
         done();
       });
     });
 
-    it('should throw a custom error', function(done) {
-      var response = {};
-
+    it('should return a custom error if no results', function(done) {
       family.table.getFamilies = function(gaxOptions, callback) {
-        callback(null, [], response);
+        callback(null, []);
       };
 
-      family.getMetadata(function(err, metadata, apiResponse) {
+      family.getMetadata(function(err) {
         assert(err instanceof FamilyError);
-        assert.strictEqual(metadata, null);
-        assert.strictEqual(apiResponse, response);
         done();
       });
     });

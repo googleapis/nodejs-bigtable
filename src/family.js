@@ -238,7 +238,7 @@ Family.prototype.exists = function(gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  this.getMetadata({gaxOptions}, function(err) {
+  this.getMetadata(gaxOptions, function(err) {
     if (err) {
       if (err.name === 'FamilyError') {
         callback(null, false);
@@ -318,7 +318,6 @@ Family.prototype.get = function(options, callback) {
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {object} callback.metadata The metadata.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * family.getMetadata(function(err, metadata, apiResponse) {});
