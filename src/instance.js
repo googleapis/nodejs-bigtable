@@ -190,9 +190,14 @@ Instance.prototype.createCluster = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function(err, operation) {
-      var cluster = err ? self.cluster(name) : null;
-      callback(err, cluster, operation);
+    function() {
+      var args = [].slice.call(arguments);
+
+      if (args[1]) {
+        args.splice(1, 0, self.cluster(name));
+      }
+
+      callback.apply(null, args);
     }
   );
 };
@@ -339,13 +344,15 @@ Instance.prototype.createTable = function(name, options, callback) {
       gaxOpts: options.gaxOptions,
     },
     function() {
-      if (arguments[1]) {
-        var table = self.table(arguments[1].name);
-        table.metadata = arguments[1];
-        arguments[1] = table;
+      var args = [].slice.call(arguments);
+
+      if (args[1]) {
+        var table = self.table(args[1].name);
+        table.metadata = args[1];
+        args.splice(1, 0, table);
       }
 
-      callback.apply(null, arguments);
+      callback.apply(null, args);
     }
   );
 };
@@ -434,27 +441,28 @@ Instance.prototype.exists = function(gaxOptions, callback) {
   }
 
   this.getMetadata(gaxOptions, function(err) {
-    if (!err) {
-      callback(null, true);
+    if (err) {
+      if (err.code === 5) {
+        callback(null, false);
+        return;
+      }
+
+      callback(err);
       return;
     }
 
-    if (err.code === 5) {
-      callback(null, false);
-      return;
-    }
-
-    callback(err);
+    callback(null, true);
   });
 };
 
 /**
  * Get an instance if it exists.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined here:
- *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {boolean} [gaxOptions.autoCreate=false] Automatically create the
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.autoCreate=false] Automatically create the
  *     instance if it does not already exist.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -473,29 +481,29 @@ Instance.prototype.exists = function(gaxOptions, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Instance.prototype.get = function(gaxOptions, callback) {
+Instance.prototype.get = function(options, callback) {
   var self = this;
 
-  if (is.fn(gaxOptions)) {
-    callback = gaxOptions;
-    gaxOptions = {};
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
   }
 
-  var autoCreate = !!gaxOptions.autoCreate;
-  delete gaxOptions.autoCreate;
+  var autoCreate = !!options.autoCreate;
+  var gaxOptions = options.gaxOptions;
 
   this.getMetadata(gaxOptions, function(err, apiResponse) {
-    if (!err) {
-      callback(null, self, apiResponse);
-      return;
-    }
+    if (err) {
+      if (err.code === 5 && autoCreate) {
+        self.create({gaxOptions}, callback);
+        return;
+      }
 
-    if (err.code !== 5 || !autoCreate) {
       callback(err, null, apiResponse);
       return;
     }
 
-    self.create({gaxOptions}, callback);
+    callback(null, self, apiResponse);
   });
 };
 
@@ -572,7 +580,7 @@ Instance.prototype.getClusters = function(query, callback) {
     },
     function() {
       if (arguments[1]) {
-        arguments[1] = arguments[1].clusters.map(function(clusterObj) {
+        arguments[1] = arguments[1].map(function(clusterObj) {
           var cluster = self.cluster(clusterObj.name);
           cluster.metadata = clusterObj;
           return cluster;
@@ -744,11 +752,10 @@ Instance.prototype.getTables = function(options, callback) {
     },
     function() {
       if (arguments[1]) {
-        arguments[1] = arguments[1].map(function(metadata) {
-          var name = metadata.name.split('/').pop();
+        arguments[1] = arguments[1].map(function(tableObj) {
+          var name = tableObj.name.split('/').pop();
           var table = self.table(name);
-
-          table.metadata = metadata;
+          table.metadata = tableObj;
           return table;
         });
       }

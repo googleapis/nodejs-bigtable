@@ -487,5 +487,18 @@ describe('Bigtable/Cluster', function() {
 
       cluster.setMetadata(options, assert.ifError);
     });
+
+    it('should execute callback with all arguments', function(done) {
+      var args = [{}, {}, {}];
+
+      cluster.bigtable.request = function(config, callback) {
+        callback.apply(null, args);
+      };
+
+      cluster.setMetadata({}, function() {
+        assert.deepStrictEqual([].slice.call(arguments), args);
+        done();
+      });
+    });
   });
 });

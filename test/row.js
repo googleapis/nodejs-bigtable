@@ -67,7 +67,7 @@ var FakeFilter = {
   }),
 };
 
-describe.only('Bigtable/Row', function() {
+describe('Bigtable/Row', function() {
   var Row;
   var row;
 
