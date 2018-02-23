@@ -711,12 +711,12 @@ Row.prototype.get = function(columns, options, callback) {
     }
   }
 
-  var reqOpts = extend({}, options, {
+  var getRowsOptions = extend({}, options, {
     keys: [this.id],
     filter: filter,
   });
 
-  this.table.getRows(reqOpts, function(err, rows) {
+  this.table.getRows(getRowsOptions, function(err, rows) {
     if (err) {
       callback(err);
       return;
@@ -862,11 +862,10 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
 /**
  * Update the row cells.
  *
- * @param {string|object} key Either a column name or an entry
- *     object to be inserted into the row. See {@link Table#insert}.
- * @param {*} [value] This can be omitted if using entry object.
- * @param {object} [options] Configuration options. See
- *     {@link Table#mutate}.
+ * @param {object} key An entry object to be inserted into the row. See
+ *     {@link Table#insert}.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -901,27 +900,19 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.save = function(key, value, callback) {
-  var rowData;
-
-  if (is.string(key)) {
-    var column = Mutation.parseColumnName(key);
-
-    rowData = {};
-    rowData[column.family] = {};
-    rowData[column.family][column.qualifier] = value;
-  } else {
-    rowData = key;
-    callback = value;
+Row.prototype.save = function(entry, gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
   }
 
   var mutation = {
     key: this.id,
-    data: rowData,
+    data: entry,
     method: Mutation.methods.INSERT,
   };
 
-  this.table.mutate(mutation, callback);
+  this.table.mutate(mutation, gaxOptions, callback);
 };
 
 /*! Developer Documentation
