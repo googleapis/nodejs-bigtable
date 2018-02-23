@@ -458,11 +458,20 @@ Instance.prototype.exists = function(gaxOptions, callback) {
 /**
  * Get an instance if it exists.
  *
+ * You may optionally use this to "get or create" an object by providing an
+ * object with `autoCreate` set to `true`. Any extra configuration that is
+ * normally required for the `create` method must be contained within this
+ * object as well.
+ *
  * @param {object} [options] Configuration object.
  * @param {boolean} [options.autoCreate=false] Automatically create the
  *     instance if it does not already exist.
  * @param {object} [options.gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.error An error returned while making this request.
+ * @param {Instance} callback.instance The Instance object.
+ * @param {object} callback.apiResponse The resource as it exists in the API.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -492,18 +501,18 @@ Instance.prototype.get = function(options, callback) {
   var autoCreate = !!options.autoCreate;
   var gaxOptions = options.gaxOptions;
 
-  this.getMetadata(gaxOptions, function(err, apiResponse) {
+  this.getMetadata(gaxOptions, function(err, metadata) {
     if (err) {
       if (err.code === 5 && autoCreate) {
         self.create({gaxOptions}, callback);
         return;
       }
 
-      callback(err, null, apiResponse);
+      callback(err);
       return;
     }
 
-    callback(null, self, apiResponse);
+    callback(null, self, metadata);
   });
 };
 
@@ -632,14 +641,13 @@ Instance.prototype.getClustersStream = common.paginator.streamify(
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {object} callback.metadata The metadata.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  *
- * instance.getMetadata(function(err, metadata, apiResponse) {});
+ * instance.getMetadata(function(err, metadata) {});
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.

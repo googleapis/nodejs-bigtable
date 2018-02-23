@@ -238,7 +238,7 @@ Family.prototype.exists = function(gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  this.getMetadata(gaxOptions, function(err) {
+  this.getMetadata({gaxOptions}, function(err) {
     if (err) {
       if (err.name === 'FamilyError') {
         callback(null, false);
@@ -266,6 +266,9 @@ Family.prototype.exists = function(gaxOptions, callback) {
  *     instance if it does not already exist.
  * @param {object} [options.gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {?error} callback.error An error returned while making this request.
+ * @param {Family} callback.family The Family object.
+ * @param {object} callback.apiResponse The resource as it exists in the API.
  *
  * @example
  * family.get(function(err, family, apiResponse) {
@@ -291,18 +294,18 @@ Family.prototype.get = function(options, callback) {
   var autoCreate = !!options.autoCreate;
   var gaxOptions = options.gaxOptions;
 
-  this.getMetadata(gaxOptions, function(err, apiResponse) {
+  this.getMetadata(gaxOptions, function(err, metadata) {
     if (err) {
       if (err.code === 5 && autoCreate) {
         self.create({gaxOptions}, callback);
         return;
       }
 
-      callback(err, null, apiResponse);
+      callback(err);
       return;
     }
 
-    callback(null, self, apiResponse);
+    callback(null, self, metadata);
   });
 };
 
@@ -336,22 +339,22 @@ Family.prototype.getMetadata = function(gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  this.table.getFamilies(gaxOptions, function(err, families, resp) {
+  this.table.getFamilies(gaxOptions, function(err, families) {
     if (err) {
-      callback(err, null, resp);
+      callback(err);
       return;
     }
 
     for (var i = 0, l = families.length; i < l; i++) {
       if (families[i].id === self.id) {
         self.metadata = families[i].metadata;
-        callback(null, self.metadata, resp);
+        callback(null, self.metadata);
         return;
       }
     }
 
     var error = new FamilyError(self.id);
-    callback(error, null, resp);
+    callback(error);
   });
 };
 

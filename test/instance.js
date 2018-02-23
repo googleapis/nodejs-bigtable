@@ -62,7 +62,7 @@ var FakeCluster = createFake(Cluster);
 var FakeFamily = createFake(Family);
 var FakeTable = createFake(Table);
 
-describe.only('Bigtable/Instance', function() {
+describe('Bigtable/Instance', function() {
   var INSTANCE_NAME = 'my-instance';
   var BIGTABLE = {projectName: 'projects/my-project'};
 
@@ -129,7 +129,7 @@ describe.only('Bigtable/Instance', function() {
   });
 
   describe('create', function() {
-    it('should call createInstance from instance', function(done) {
+    it('should call createInstance from bigtable', function(done) {
       var options = {};
 
       instance.bigtable.createInstance = function(name, options_, callback) {

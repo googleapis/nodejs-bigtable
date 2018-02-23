@@ -55,7 +55,6 @@ function createFake(Class) {
 }
 
 var FakeGrpcService = createFake(commonGrpc.Service);
-var FakeGrpcServiceObject = createFake(commonGrpc.ServiceObject);
 var FakeFamily = createFake(Family);
 
 FakeFamily.formatRule_ = sinon.spy(function(rule) {
@@ -96,6 +95,7 @@ var FakeFilter = {
 describe('Bigtable/Table', function() {
   var TABLE_ID = 'my-table';
   var INSTANCE = {
+    bigtable: {},
     id: 'a/b/c/d',
   };
 
@@ -111,7 +111,6 @@ describe('Bigtable/Table', function() {
       },
       '@google-cloud/common-grpc': {
         Service: FakeGrpcService,
-        ServiceObject: FakeGrpcServiceObject,
       },
       './family.js': FakeFamily,
       './mutation.js': FakeMutation,
@@ -127,62 +126,34 @@ describe('Bigtable/Table', function() {
   });
 
   afterEach(function() {
-    sinon.restore();
-
     Object.keys(FakeMutation).forEach(function(spy) {
       if (FakeMutation[spy].reset) {
-        FakeMutation[spy].reset();
+        FakeMutation[spy].resetHistory();
       }
     });
 
-    FakeFilter.parse.reset();
+    FakeFilter.parse.resetHistory();
   });
 
   describe('instantiation', function() {
-    it('should inherit from GrpcServiceObject', function() {
-      var FAKE_TABLE_NAME = 'fake-table-name';
-
-      sinon.stub(Table, 'formatName_').returns(FAKE_TABLE_NAME);
-
-      var table = new Table(INSTANCE, TABLE_ID);
-      var config = table.calledWith_[0];
-
-      assert(table instanceof FakeGrpcServiceObject);
-      assert.strictEqual(config.parent, INSTANCE);
-      assert.strictEqual(config.id, FAKE_TABLE_NAME);
-
-      assert.deepEqual(config.methods, {
-        create: true,
-        delete: {
-          protoOpts: {
-            service: 'BigtableTableAdmin',
-            method: 'deleteTable',
-          },
-          reqOpts: {
-            name: FAKE_TABLE_NAME,
-          },
-        },
-        exists: true,
-        get: true,
-      });
-
-      assert(Table.formatName_.calledWith(INSTANCE.id, TABLE_ID));
-    });
-
     it('should promisify all the things', function() {
       assert(promisified);
     });
 
-    it('should use Instance#createTable to create the table', function(done) {
-      var fakeOptions = {};
+    it('should localize Bigtable instance', function() {
+      assert.strictEqual(table.bigtable, INSTANCE.bigtable);
+    });
 
-      INSTANCE.createTable = function(name, options, callback) {
-        assert.strictEqual(name, TABLE_ID);
-        assert.strictEqual(options, fakeOptions);
-        callback();
-      };
+    it('should localize Instance instance', function() {
+      assert.strictEqual(table.instance, INSTANCE);
+    });
 
-      table.createMethod(null, fakeOptions, done);
+    it('should localize ID', function() {
+      assert.strictEqual(table.id, TABLE_NAME);
+    });
+
+    it('should localize table name', function() {
+      assert.strictEqual(table.name, TABLE_ID);
     });
   });
 
@@ -208,6 +179,29 @@ describe('Bigtable/Table', function() {
     it('should not re-format the table name', function() {
       var tableName = Table.formatName_(INSTANCE.id, TABLE_NAME);
       assert.strictEqual(tableName, TABLE_NAME);
+    });
+  });
+
+  describe('create', function() {
+    it('should call createTable from instance', function(done) {
+      var options = {};
+
+      table.instance.createTable = function(name, options_, callback) {
+        assert.strictEqual(name, table.name);
+        assert.strictEqual(options_, options);
+        callback(); // done()
+      };
+
+      table.create(options, done);
+    });
+
+    it('should not require options', function(done) {
+      table.instance.createTable = function(name, options, callback) {
+        assert.deepStrictEqual(options, {});
+        callback(); // done()
+      };
+
+      table.create(done);
     });
   });
 
@@ -283,24 +277,35 @@ describe('Bigtable/Table', function() {
     });
 
     it('should provide the proper request options', function(done) {
-      table.request = function(grpcOpts, reqOpts) {
-        assert.deepEqual(grpcOpts, {
-          service: 'BigtableTableAdmin',
-          method: 'modifyColumnFamilies',
-        });
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'modifyColumnFamilies');
 
-        assert.strictEqual(reqOpts.name, TABLE_NAME);
-        assert.deepEqual(reqOpts.modifications, [
+        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
+        assert.deepEqual(config.reqOpts.modifications, [
           {
             id: COLUMN_ID,
             create: {},
           },
         ]);
 
+        assert.strictEqual(config.gaxOpts, undefined);
+
         done();
       };
 
       table.createFamily(COLUMN_ID, assert.ifError);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      table.createFamily(COLUMN_ID, {gaxOptions}, assert.ifError);
     });
 
     it('should respect the gc rule option', function(done) {
@@ -317,8 +322,8 @@ describe('Bigtable/Table', function() {
         return convertedRule;
       }));
 
-      table.request = function(g, reqOpts) {
-        var modification = reqOpts.modifications[0];
+      table.bigtable.request = function(config) {
+        var modification = config.reqOpts.modifications[0];
 
         assert.strictEqual(modification.create.gcRule, convertedRule);
         assert.strictEqual(spy.callCount, 1);
@@ -326,14 +331,14 @@ describe('Bigtable/Table', function() {
         done();
       };
 
-      table.createFamily(COLUMN_ID, rule, assert.ifError);
+      table.createFamily(COLUMN_ID, {rule}, assert.ifError);
     });
 
     it('should return an error to the callback', function(done) {
       var error = new Error('err');
       var response = {};
 
-      table.request = function(g, r, callback) {
+      table.bigtable.request = function(config, callback) {
         callback(error, response);
       };
 
@@ -351,7 +356,7 @@ describe('Bigtable/Table', function() {
       };
       var fakeFamily = {};
 
-      table.request = function(g, r, callback) {
+      table.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
@@ -371,23 +376,28 @@ describe('Bigtable/Table', function() {
   });
 
   describe('createReadStream', function() {
-    describe('options', function() {
-      it('should provide the proper request options', function(done) {
-        table.requestStream = function(grpcOpts, reqOpts) {
-          assert.deepEqual(grpcOpts, {
-            service: 'Bigtable',
-            method: 'readRows',
-            retryOpts: {
-              currentRetryAttempt: 0,
-            },
-          });
+    it('should provide the proper request options', function(done) {
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableClient');
+        assert.strictEqual(config.method, 'readRows');
+        assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
+        assert.strictEqual(config.gaxOpts, undefined);
+        done();
+      };
 
-          assert.strictEqual(reqOpts.tableName, TABLE_NAME);
-          assert.strictEqual(reqOpts.objectMode, true);
+      table.createReadStream();
+    });
+
+    describe('options', function() {
+      it('should accept gaxOptions', function(done) {
+        var gaxOptions = {};
+
+        table.bigtable.request = function(config) {
+          assert.strictEqual(config.gaxOpts, gaxOptions);
           done();
         };
 
-        table.createReadStream();
+        table.createReadStream({gaxOptions});
       });
 
       it('should retrieve a range of rows', function(done) {
@@ -405,8 +415,8 @@ describe('Bigtable/Table', function() {
           return fakeRange;
         }));
 
-        table.requestStream = function(g, reqOpts) {
-          assert.deepEqual(reqOpts.rows.rowRanges[0], fakeRange);
+        table.bigtable.request = function(config) {
+          assert.deepEqual(config.reqOpts.rows.rowRanges[0], fakeRange);
           assert.strictEqual(formatSpy.callCount, 1);
           assert.deepEqual(formatSpy.getCall(0).args, [
             options.start,
@@ -432,8 +442,8 @@ describe('Bigtable/Table', function() {
           return convertedKeys[keyIndex];
         }));
 
-        table.requestStream = function(g, reqOpts) {
-          assert.deepEqual(reqOpts.rows.rowKeys, convertedKeys);
+        table.bigtable.request = function(config) {
+          assert.deepEqual(config.reqOpts.rows.rowKeys, convertedKeys);
           assert.strictEqual(convertSpy.callCount, 2);
           assert.strictEqual(convertSpy.getCall(0).args[0], options.keys[0]);
           assert.strictEqual(convertSpy.getCall(1).args[0], options.keys[1]);
@@ -472,8 +482,8 @@ describe('Bigtable/Table', function() {
           return fakeRanges[formatSpy.callCount - 1];
         }));
 
-        table.requestStream = function(g, reqOpts) {
-          assert.deepEqual(reqOpts.rows.rowRanges, fakeRanges);
+        table.bigtable.request = function(config) {
+          assert.deepEqual(config.reqOpts.rows.rowRanges, fakeRanges);
           assert.strictEqual(formatSpy.callCount, 2);
           assert.deepEqual(formatSpy.getCall(0).args, [
             options.ranges[0].start,
@@ -502,8 +512,8 @@ describe('Bigtable/Table', function() {
           return fakeFilter;
         }));
 
-        table.requestStream = function(g, reqOpts) {
-          assert.strictEqual(reqOpts.filter, fakeFilter);
+        table.bigtable.request = function(config) {
+          assert.strictEqual(config.reqOpts.filter, fakeFilter);
           assert.strictEqual(parseSpy.callCount, 1);
           assert.strictEqual(parseSpy.getCall(0).args[0], options.filter);
           done();
@@ -517,8 +527,8 @@ describe('Bigtable/Table', function() {
           limit: 10,
         };
 
-        table.requestStream = function(g, reqOpts) {
-          assert.strictEqual(reqOpts.rowsLimit, options.limit);
+        table.bigtable.request = function(config) {
+          assert.strictEqual(config.reqOpts.rowsLimit, options.limit);
           done();
         };
 
@@ -542,9 +552,9 @@ describe('Bigtable/Table', function() {
           return fakeRange;
         }));
 
-        table.requestStream = function(g, reqOpts) {
+        table.bigtable.request = function(config) {
           assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
-          assert.deepEqual(reqOpts.rows.rowRanges, [fakeRange]);
+          assert.deepEqual(config.reqOpts.rows.rowRanges, [fakeRange]);
 
           assert.deepEqual(rangeSpy.getCall(0).args, [
             fakePrefixRange.start,
@@ -595,7 +605,7 @@ describe('Bigtable/Table', function() {
           cb();
         };
 
-        table.requestStream = function() {
+        table.bigtable.request = function() {
           var stream = new Stream({
             objectMode: true,
           });
@@ -671,7 +681,7 @@ describe('Bigtable/Table', function() {
       };
 
       // beforeEach(function() {
-      //   table.requestStream = function() {
+      //   table.bigtable.request = function() {
       //     var stream = new Stream({
       //       objectMode: true,
       //     });
@@ -685,7 +695,7 @@ describe('Bigtable/Table', function() {
       // });
 
       it('should emit an error event', function(done) {
-        table.requestStream = function() {
+        table.bigtable.request = function() {
           var stream = new Stream({
             objectMode: true,
           });
@@ -705,7 +715,7 @@ describe('Bigtable/Table', function() {
           .on('data', done);
       });
       it('should emit an error event when chunk format returns error', function(done) {
-        table.requestStream = function() {
+        table.bigtable.request = function() {
           var stream = new Stream({
             objectMode: true,
           });
@@ -733,7 +743,7 @@ describe('Bigtable/Table', function() {
           .on('data', done);
       });
       it('should emit an error event when chunktransformer returns error on flush end', function(done) {
-        table.requestStream = function() {
+        table.bigtable.request = function() {
           var stream = new Stream({
             objectMode: true,
           });
@@ -763,27 +773,33 @@ describe('Bigtable/Table', function() {
       var makeRetryableError;
       var reqOptsCalls;
       var setTimeoutSpy;
+
       beforeEach(function() {
         FakeChunkTransformer.prototype._transform = function(rows, enc, next) {
           rows.forEach(row => this.push(row));
           this.lastRowKey = rows[rows.length - 1].key;
           next();
         };
+
         FakeChunkTransformer.prototype._flush = function(cb) {
           cb();
         };
+
         callCreateReadStream = (options, verify) => {
           table
             .createReadStream(options)
             .on('end', verify)
             .resume(); // The stream starts paused unless it has a `.data()` callback.
         };
+
         emitters = null; // This needs to be assigned in each test case.
+
         makeRetryableError = () => {
           var error = new Error('retry me!');
           error.code = 409;
           return error;
         };
+
         FakeFilter.createRange = function(start, end) {
           var range = {};
           if (start) {
@@ -796,13 +812,18 @@ describe('Bigtable/Table', function() {
           }
           return range;
         };
+
         FakeMutation.convertToBytes = function(value) {
           return Buffer.from(value);
         };
+
         reqOptsCalls = [];
+
         setTimeoutSpy = sinon.stub(global, 'setTimeout').callsFake(fn => fn());
-        table.requestStream = function(_, reqOpts) {
-          reqOptsCalls.push(reqOpts);
+
+        table.bigtable.request = function(config) {
+          reqOptsCalls.push(config.reqOpts);
+
           var stream = new Stream({
             objectMode: true,
           });
@@ -815,6 +836,7 @@ describe('Bigtable/Table', function() {
           return stream;
         };
       });
+
       afterEach(function() {
         setTimeoutSpy.restore();
       });
@@ -845,6 +867,7 @@ describe('Bigtable/Table', function() {
             stream.end();
           },
         ];
+
         callCreateReadStream(null, () => {
           assert.strictEqual(reqOptsCalls[0].rows, undefined);
           assert.deepStrictEqual(reqOptsCalls[1].rows, {
@@ -864,6 +887,7 @@ describe('Bigtable/Table', function() {
             stream.end();
           },
         ];
+
         callCreateReadStream({ranges: [{start: 'a'}]}, () => {
           assert.deepStrictEqual(reqOptsCalls[0].rows, {
             rowRanges: [{start: 'a', startInclusive: true}],
@@ -887,22 +911,24 @@ describe('Bigtable/Table', function() {
             stream.end();
           },
         ];
-        callCreateReadStream(
-          {ranges: [{start: 'a', end: 'b'}, {start: 'c'}]},
-          () => {
-            var allRanges = [
-              {start: 'a', end: 'b', startInclusive: true},
-              {start: 'c', startInclusive: true},
-            ];
-            assert.deepStrictEqual(reqOptsCalls[0].rows, {
-              rowRanges: allRanges,
-            });
-            assert.deepStrictEqual(reqOptsCalls[1].rows, {
-              rowRanges: allRanges.slice(1),
-            });
-            done();
-          }
-        );
+
+        var options = {
+          ranges: [{start: 'a', end: 'b'}, {start: 'c'}],
+        };
+
+        callCreateReadStream(options, () => {
+          var allRanges = [
+            {start: 'a', end: 'b', startInclusive: true},
+            {start: 'c', startInclusive: true},
+          ];
+          assert.deepStrictEqual(reqOptsCalls[0].rows, {
+            rowRanges: allRanges,
+          });
+          assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowRanges: allRanges.slice(1),
+          });
+          done();
+        });
       });
 
       it('should remove the keys which were already read', function(done) {
@@ -915,6 +941,7 @@ describe('Bigtable/Table', function() {
             stream.end([{key: 'c'}]);
           },
         ];
+
         callCreateReadStream({keys: ['a', 'b']}, () => {
           assert.strictEqual(reqOptsCalls[0].rows.rowKeys.length, 2);
           assert.strictEqual(reqOptsCalls[1].rows.rowKeys.length, 1);
@@ -933,6 +960,7 @@ describe('Bigtable/Table', function() {
             stream.end();
           },
         ];
+
         callCreateReadStream({keys: ['a']}, () => {
           assert.strictEqual(reqOptsCalls[0].rows.rowKeys.length, 1);
           assert.strictEqual(reqOptsCalls[1].rows.rowKeys, undefined);
@@ -942,19 +970,60 @@ describe('Bigtable/Table', function() {
     });
   });
 
-  describe('deleteRows', function() {
-    it('should provide the proper request options', function(done) {
-      table.request = function(grpcOpts, reqOpts, callback) {
-        assert.deepEqual(grpcOpts, {
-          service: 'BigtableTableAdmin',
-          method: 'dropRowRange',
+  describe('delete', function() {
+    it('should make the correct request', function(done) {
+      table.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'deleteTable');
+
+        assert.deepEqual(config.reqOpts, {
+          name: table.id,
         });
 
-        assert.strictEqual(reqOpts.name, TABLE_NAME);
-        callback();
+        assert.deepEqual(config.gaxOpts, {});
+
+        callback(); // done()
+      };
+
+      table.delete(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      table.delete(gaxOptions, assert.ifError);
+    });
+  });
+
+  describe('deleteRows', function() {
+    it('should provide the proper request options', function(done) {
+      table.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'dropRowRange');
+        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
+        assert.strictEqual(config.gaxOpts, undefined);
+        callback(); // done()
       };
 
       table.deleteRows(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var options = {
+        gaxOptions: {},
+      };
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, options.gaxOptions);
+        done();
+      };
+
+      table.deleteRows(options, assert.ifError);
     });
 
     it('should respect the row key prefix option', function(done) {
@@ -967,24 +1036,86 @@ describe('Bigtable/Table', function() {
         return fakePrefix;
       }));
 
-      table.request = function(g, reqOpts, callback) {
-        assert.strictEqual(reqOpts.rowKeyPrefix, fakePrefix);
-
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.reqOpts.rowKeyPrefix, fakePrefix);
         assert.strictEqual(spy.callCount, 1);
         assert.strictEqual(spy.getCall(0).args[0], options.prefix);
-        callback();
+        done();
       };
 
-      table.deleteRows(options, done);
+      table.deleteRows(options, assert.ifError);
     });
 
     it('should delete all data when no options are provided', function(done) {
-      table.request = function(g, reqOpts, callback) {
-        assert.strictEqual(reqOpts.deleteAllDataFromTable, true);
-        callback();
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.reqOpts.deleteAllDataFromTable, true);
+        done();
       };
 
-      table.deleteRows(done);
+      table.deleteRows(assert.ifError);
+    });
+  });
+
+  describe('exists', function() {
+    it('should not require gaxOptions', function(done) {
+      table.getMetadata = function(gaxOptions) {
+        assert.deepStrictEqual(gaxOptions, {});
+        done();
+      };
+
+      table.exists(assert.ifError);
+    });
+
+    it('should pass gaxOptions to getMetadata', function(done) {
+      var gaxOptions = {};
+
+      table.getMetadata = function(gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      table.exists(gaxOptions, assert.ifError);
+    });
+
+    it('should return false if error code is 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 5;
+
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      table.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, false);
+        done();
+      });
+    });
+
+    it('should return error if code is not 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 'NOT-5';
+
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      table.exists(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return true if no error', function(done) {
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(null, {});
+      };
+
+      table.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, true);
+        done();
+      });
     });
   });
 
@@ -1006,19 +1137,141 @@ describe('Bigtable/Table', function() {
     });
   });
 
+  describe('get', function() {
+    it('should call getMetadata', function(done) {
+      var options = {
+        gaxOptions: {},
+      };
+
+      table.getMetadata = function(gaxOptions) {
+        assert.strictEqual(gaxOptions, options.gaxOptions);
+        done();
+      };
+
+      table.get(options, assert.ifError);
+    });
+
+    it('should not require an options object', function(done) {
+      table.getMetadata = function(gaxOptions) {
+        assert.deepStrictEqual(gaxOptions, undefined);
+        done();
+      };
+
+      table.get(assert.ifError);
+    });
+
+    it('should auto create with error code 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 5;
+
+      var options = {
+        autoCreate: true,
+        gaxOptions: {},
+      };
+
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      table.create = function(options_, callback) {
+        assert.strictEqual(options_.gaxOptions, options.gaxOptions);
+        callback(); // done()
+      };
+
+      table.get(options, done);
+    });
+
+    it('should not auto create without error code 5', function(done) {
+      var error = new Error('Error.');
+      error.code = 'NOT-5';
+
+      var options = {
+        autoCreate: true,
+      };
+
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      table.create = function() {
+        throw new Error('Should not create.');
+      };
+
+      table.get(options, function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should not auto create unless requested', function(done) {
+      var error = new Error('Error.');
+      error.code = 5;
+
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      table.create = function() {
+        throw new Error('Should not create.');
+      };
+
+      table.get(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return an error from getMetadata', function(done) {
+      var error = new Error('Error.');
+
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      table.get(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return self and API response', function(done) {
+      var apiResponse = {};
+
+      table.getMetadata = function(gaxOptions, callback) {
+        callback(null, apiResponse);
+      };
+
+      table.get(function(err, table_, apiResponse_) {
+        assert.ifError(err);
+        assert.strictEqual(table_, table);
+        assert.strictEqual(apiResponse_, apiResponse);
+        done();
+      });
+    });
+  });
+
   describe('getFamilies', function() {
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.getMetadata = function(options) {
+        assert.strictEqual(options.gaxOptions, gaxOptions);
+        done();
+      };
+
+      table.getFamilies(gaxOptions, assert.ifError);
+    });
+
     it('should return an error to the callback', function(done) {
       var error = new Error('err');
       var response = {};
 
-      table.getMetadata = function(callback) {
+      table.getMetadata = function(options, callback) {
         callback(error, response);
       };
 
-      table.getFamilies(function(err, families, apiResponse) {
+      table.getFamilies(function(err) {
         assert.strictEqual(err, error);
-        assert.strictEqual(families, null);
-        assert.strictEqual(response, apiResponse);
         done();
       });
     });
@@ -1036,7 +1289,7 @@ describe('Bigtable/Table', function() {
 
       var fakeFamily = {};
 
-      table.getMetadata = function(callback) {
+      table.getMetadata = function(options, callback) {
         callback(null, response);
       };
 
@@ -1051,7 +1304,9 @@ describe('Bigtable/Table', function() {
         var family = families[0];
         assert.strictEqual(family, fakeFamily);
         assert.strictEqual(family.metadata, metadata);
-        assert.strictEqual(response, apiResponse);
+
+        assert.strictEqual(apiResponse, response.columnFamilies);
+
         done();
       });
     });
@@ -1069,18 +1324,32 @@ describe('Bigtable/Table', function() {
     });
 
     it('should provide the proper request options', function(done) {
-      table.request = function(grpcOpts, reqOpts) {
-        assert.deepEqual(grpcOpts, {
-          service: 'BigtableTableAdmin',
-          method: 'getTable',
-        });
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'getTable');
 
-        assert.strictEqual(reqOpts.name, table.id);
-        assert.strictEqual(reqOpts.view, views.unspecified);
+        assert.strictEqual(config.reqOpts.name, table.id);
+        assert.strictEqual(config.reqOpts.view, views.unspecified);
+
+        assert.strictEqual(config.gaxOpts, undefined);
+
         done();
       };
 
       table.getMetadata(assert.ifError);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var options = {
+        gaxOptions: {},
+      };
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, options.gaxOptions);
+        done();
+      };
+
+      table.getMetadata(options, assert.ifError);
     });
 
     Object.keys(views).forEach(function(view) {
@@ -1089,8 +1358,8 @@ describe('Bigtable/Table', function() {
           view: view,
         };
 
-        table.request = function(grpcOpts, reqOpts) {
-          assert.strictEqual(reqOpts.view, views[view]);
+        table.bigtable.request = function(config) {
+          assert.strictEqual(config.reqOpts.view, views[view]);
           done();
         };
 
@@ -1098,34 +1367,30 @@ describe('Bigtable/Table', function() {
       });
     });
 
-    it('should return an error to the callback', function(done) {
-      var error = new Error('err');
+    it('should update the metadata', function(done) {
       var response = {};
 
-      table.request = function(grpcOpts, reqOpts, callback) {
-        callback(error, response);
+      table.bigtable.request = function(config, callback) {
+        callback(null, response);
       };
 
-      table.getMetadata(function(err, metadata, apiResponse) {
-        assert.strictEqual(err, error);
-        assert.strictEqual(metadata, null);
-        assert.strictEqual(apiResponse, response);
+      table.getMetadata(function(err, metadata) {
+        assert.ifError(err);
+        assert.strictEqual(metadata, response);
+        assert.strictEqual(table.metadata, response);
         done();
       });
     });
 
-    it('should update the metadata', function(done) {
-      var response = {};
+    it('should execute callback with original arguments', function(done) {
+      var args = [{}, {}, {}];
 
-      table.request = function(grpcOpts, reqOpts, callback) {
-        callback(null, response);
+      table.bigtable.request = function(config, callback) {
+        callback.apply(null, args);
       };
 
-      table.getMetadata(function(err, metadata, apiResponse) {
-        assert.ifError(err);
-        assert.strictEqual(metadata, response);
-        assert.strictEqual(apiResponse, response);
-        assert.strictEqual(table.metadata, response);
+      table.getMetadata(function() {
+        assert.deepStrictEqual([].slice.call(arguments), args);
         done();
       });
     });
@@ -1214,7 +1479,7 @@ describe('Bigtable/Table', function() {
         },
       ];
 
-      table.mutate = function(entries, callback) {
+      table.mutate = function(entries, gaxOptions, callback) {
         assert.deepEqual(entries[0], {
           key: fakeEntries[0].key,
           data: fakeEntries[0].data,
@@ -1231,6 +1496,17 @@ describe('Bigtable/Table', function() {
       };
 
       table.insert(fakeEntries, done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.mutate = function(entries, gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      table.insert([], gaxOptions, assert.ifError);
     });
   });
 
@@ -1249,17 +1525,12 @@ describe('Bigtable/Table', function() {
     it('should provide the proper request options', function(done) {
       var stream = through.obj();
 
-      table.requestStream = function(grpcOpts, reqOpts) {
-        assert.deepEqual(grpcOpts, {
-          service: 'Bigtable',
-          method: 'mutateRows',
-          retryOpts: {
-            currentRetryAttempt: 0,
-          },
-        });
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableClient');
+        assert.strictEqual(config.method, 'mutateRows');
 
-        assert.strictEqual(reqOpts.tableName, TABLE_NAME);
-        assert.deepEqual(reqOpts.entries, fakeEntries);
+        assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
+        assert.deepEqual(config.reqOpts.entries, fakeEntries);
 
         assert.strictEqual(parseSpy.callCount, 2);
         assert.strictEqual(parseSpy.getCall(0).args[0], entries[0]);
@@ -1278,7 +1549,7 @@ describe('Bigtable/Table', function() {
         var error = new Error('err');
 
         beforeEach(function() {
-          table.requestStream = function() {
+          table.bigtable.request = function() {
             var stream = new Stream({
               objectMode: true,
             });
@@ -1320,7 +1591,7 @@ describe('Bigtable/Table', function() {
         var parsedStatuses = [{}, {}];
 
         beforeEach(function() {
-          table.requestStream = function() {
+          table.bigtable.request = function() {
             var stream = through.obj();
 
             stream.push({entries: fakeStatuses});
@@ -1380,7 +1651,7 @@ describe('Bigtable/Table', function() {
       ];
 
       beforeEach(function() {
-        table.requestStream = function() {
+        table.bigtable.request = function() {
           var stream = new Stream({
             objectMode: true,
           });
@@ -1433,8 +1704,8 @@ describe('Bigtable/Table', function() {
         FakeGrpcService.decorateStatus_ = function() {
           return {};
         };
-        table.requestStream = function(_, reqOpts) {
-          entryRequests.push(reqOpts.entries);
+        table.bigtable.request = function(config) {
+          entryRequests.push(config.reqOpts.entries);
           var stream = new Stream({
             objectMode: true,
           });
@@ -1505,105 +1776,18 @@ describe('Bigtable/Table', function() {
     });
   });
 
-  describe('sampleRowKeysStream', function() {
-    it('should provide the proper request options', function(done) {
-      table.requestStream = function(grpcOpts, reqOpts) {
-        assert.deepEqual(grpcOpts, {
-          service: 'Bigtable',
-          method: 'sampleRowKeys',
-        });
+  describe('sampleRowKeys', function() {
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
 
-        assert.strictEqual(reqOpts.tableName, TABLE_NAME);
-        assert.strictEqual(reqOpts.objectMode, true);
-        setImmediate(done);
-
-        return new Stream({
-          objectMode: true,
-        });
+      table.sampleRowKeysStream = function(gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
       };
 
-      table.sampleRowKeysStream();
+      table.sampleRowKeys(gaxOptions);
     });
 
-    describe('success', function() {
-      var fakeKeys = [
-        {
-          rowKey: 'a',
-          offsetBytes: 10,
-        },
-        {
-          rowKey: 'b',
-          offsetByte: 20,
-        },
-      ];
-
-      beforeEach(function() {
-        table.requestStream = function() {
-          var stream = new Stream({
-            objectMode: true,
-          });
-
-          setImmediate(function() {
-            fakeKeys.forEach(function(key) {
-              stream.push(key);
-            });
-
-            stream.push(null);
-          });
-
-          return stream;
-        };
-      });
-
-      it('should stream key objects', function(done) {
-        var keys = [];
-
-        table
-          .sampleRowKeysStream()
-          .on('error', done)
-          .on('data', function(key) {
-            keys.push(key);
-          })
-          .on('end', function() {
-            assert.strictEqual(keys[0].key, fakeKeys[0].rowKey);
-            assert.strictEqual(keys[0].offset, fakeKeys[0].offsetBytes);
-            assert.strictEqual(keys[1].key, fakeKeys[1].rowKey);
-            assert.strictEqual(keys[1].offset, fakeKeys[1].offsetBytes);
-            done();
-          });
-      });
-    });
-
-    describe('error', function() {
-      var error = new Error('err');
-
-      beforeEach(function() {
-        table.requestStream = function() {
-          var stream = new Stream({
-            objectMode: true,
-          });
-
-          setImmediate(function() {
-            stream.emit('error', error);
-          });
-
-          return stream;
-        };
-      });
-
-      it('should emit an error event', function(done) {
-        table
-          .sampleRowKeysStream()
-          .on('error', function(err) {
-            assert.strictEqual(err, error);
-            done();
-          })
-          .on('data', done);
-      });
-    });
-  });
-
-  describe('sampleRowKeys', function() {
     describe('success', function() {
       var fakeKeys = [
         {
@@ -1665,6 +1849,118 @@ describe('Bigtable/Table', function() {
           assert.strictEqual(err, error);
           done();
         });
+      });
+    });
+  });
+
+  describe('sampleRowKeysStream', function() {
+    it('should provide the proper request options', function(done) {
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableClient');
+        assert.strictEqual(config.method, 'sampleRowKeys');
+        assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
+        assert.strictEqual(config.gaxOpts, undefined);
+
+        setImmediate(done);
+
+        return new Stream({
+          objectMode: true,
+        });
+      };
+
+      table.sampleRowKeysStream();
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+
+        setImmediate(done);
+
+        return new Stream({
+          objectMode: true,
+        });
+      };
+
+      table.sampleRowKeysStream(gaxOptions);
+    });
+
+    describe('success', function() {
+      var fakeKeys = [
+        {
+          rowKey: 'a',
+          offsetBytes: 10,
+        },
+        {
+          rowKey: 'b',
+          offsetByte: 20,
+        },
+      ];
+
+      beforeEach(function() {
+        table.bigtable.request = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            fakeKeys.forEach(function(key) {
+              stream.push(key);
+            });
+
+            stream.push(null);
+          });
+
+          return stream;
+        };
+      });
+
+      it('should stream key objects', function(done) {
+        var keys = [];
+
+        table
+          .sampleRowKeysStream()
+          .on('error', done)
+          .on('data', function(key) {
+            keys.push(key);
+          })
+          .on('end', function() {
+            assert.strictEqual(keys[0].key, fakeKeys[0].rowKey);
+            assert.strictEqual(keys[0].offset, fakeKeys[0].offsetBytes);
+            assert.strictEqual(keys[1].key, fakeKeys[1].rowKey);
+            assert.strictEqual(keys[1].offset, fakeKeys[1].offsetBytes);
+            done();
+          });
+      });
+    });
+
+    describe('error', function() {
+      var error = new Error('err');
+
+      beforeEach(function() {
+        table.bigtable.request = function() {
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            stream.emit('error', error);
+          });
+
+          return stream;
+        };
+      });
+
+      it('should emit an error event', function(done) {
+        table
+          .sampleRowKeysStream()
+          .on('error', function(err) {
+            assert.strictEqual(err, error);
+            done();
+          })
+          .on('data', done);
       });
     });
   });
