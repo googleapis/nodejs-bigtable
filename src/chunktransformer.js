@@ -297,7 +297,7 @@ ChunkTransformer.prototype.processNewRow = function(chunk) {
     const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
     this.qualifiers = this.family[qualifierName] = [];
     this.qualifier = {
-      value: Mutation.convertFromBytes(chunk.value, this.options),
+      value: Mutation.convertFromBytes(chunk.value, this.options, true),
       labels: chunk.labels,
       timestamp: chunk.timestampMicros,
     };

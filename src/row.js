@@ -225,7 +225,7 @@ Row.formatFamilies_ = function(families, options) {
         var value = cell.value;
 
         if (options.decode !== false) {
-          value = Mutation.convertFromBytes(value);
+          value = Mutation.convertFromBytes(value, null, true);
         }
 
         return {
