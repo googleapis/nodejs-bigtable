@@ -1143,8 +1143,8 @@ describe('Bigtable/Table', function() {
         gaxOptions: {},
       };
 
-      table.getMetadata = function(gaxOptions) {
-        assert.strictEqual(gaxOptions, options.gaxOptions);
+      table.getMetadata = function(options_) {
+        assert.strictEqual(options_.gaxOptions, options.gaxOptions);
         done();
       };
 
@@ -1152,8 +1152,8 @@ describe('Bigtable/Table', function() {
     });
 
     it('should not require an options object', function(done) {
-      table.getMetadata = function(gaxOptions) {
-        assert.deepStrictEqual(gaxOptions, undefined);
+      table.getMetadata = function(options) {
+        assert.deepStrictEqual(options, {gaxOptions: undefined});
         done();
       };
 

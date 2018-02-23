@@ -752,7 +752,7 @@ Table.prototype.get = function(options, callback) {
   var autoCreate = !!options.autoCreate;
   var gaxOptions = options.gaxOptions;
 
-  this.getMetadata(gaxOptions, function(err, metadata) {
+  this.getMetadata({gaxOptions}, function(err, metadata) {
     if (err) {
       if (err.code === 5 && autoCreate) {
         self.create({gaxOptions}, callback);
@@ -823,6 +823,8 @@ Table.prototype.getFamilies = function(gaxOptions, callback) {
  * Get the table's metadata.
  *
  * @param {object} [options] Table request options.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {string} [options.view] The view to be applied to the table fields.
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this
