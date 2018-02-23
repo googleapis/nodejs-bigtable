@@ -391,7 +391,12 @@ describe('Bigtable', function() {
           },
         };
 
-        row.create(rowData, done);
+        row.create(
+          {
+            entry: rowData,
+          },
+          done
+        );
       });
 
       afterEach(row.delete.bind(row));
@@ -459,7 +464,7 @@ describe('Bigtable', function() {
           },
         };
 
-        row.create(rowData, done);
+        row.create({entry: rowData}, done);
       });
 
       it('should insert individual cells', function(done) {
@@ -507,19 +512,26 @@ describe('Bigtable', function() {
           append: '-wood',
         };
 
-        row.save('traits:teeth', 'shiny', function(err) {
-          assert.ifError(err);
-
-          row.createRules(rule, function(err) {
+        row.save(
+          {
+            traits: {
+              teeth: 'shiny',
+            },
+          },
+          function(err) {
             assert.ifError(err);
 
-            row.get(['traits:teeth'], function(err, data) {
+            row.createRules(rule, function(err) {
               assert.ifError(err);
-              assert.strictEqual(data.traits.teeth[0].value, 'shiny-wood');
-              done();
+
+              row.get(['traits:teeth'], function(err, data) {
+                assert.ifError(err);
+                assert.strictEqual(data.traits.teeth[0].value, 'shiny-wood');
+                done();
+              });
             });
-          });
-        });
+          }
+        );
       });
 
       it('should check and mutate a row', function(done) {
@@ -536,7 +548,7 @@ describe('Bigtable', function() {
           },
         ];
 
-        row.filter(filter, mutations, function(err, matched) {
+        row.filter(filter, {onMatch: mutations}, function(err, matched) {
           assert.ifError(err);
           assert(matched);
           done();
