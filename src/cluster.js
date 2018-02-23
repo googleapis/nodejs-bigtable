@@ -221,6 +221,11 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
 /**
  * Get a cluster if it exists.
  *
+ * You may optionally use this to "get or create" an object by providing an
+ * object with `autoCreate` set to `true`. Any extra configuration that is
+ * normally required for the `create` method must be contained within this
+ * object as well.
+ *
  * @param {object} [options] Configuration object.
  * @param {boolean} [options.autoCreate=false] Automatically create the
  *     instance if it does not already exist.

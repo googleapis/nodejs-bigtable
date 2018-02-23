@@ -47,6 +47,7 @@ function Family(table, name) {
   this.table = table;
 
   this.id = Family.formatName_(table.id, name);
+
   /**
    * @name Family#familyName
    * @type {string}
@@ -238,17 +239,17 @@ Family.prototype.exists = function(gaxOptions, callback) {
   }
 
   this.getMetadata(gaxOptions, function(err) {
-    if (!err) {
-      callback(null, true);
+    if (err) {
+      if (err.name === 'FamilyError') {
+        callback(null, false);
+        return;
+      }
+
+      callback(err);
       return;
     }
 
-    if (err.name === 'FamilyError') {
-      callback(null, false);
-      return;
-    }
-
-    callback(err);
+    callback(null, true);
   });
 };
 
@@ -260,10 +261,11 @@ Family.prototype.exists = function(gaxOptions, callback) {
  * normally required for the `create` method must be contained within this
  * object as well.
  *
- * @param {object} [gaxOptions] Request configuration options, outlined here:
- *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {boolean} [gaxOptions.autoCreate=false] Automatically create the
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.autoCreate=false] Automatically create the
  *     instance if it does not already exist.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  *
  * @example
  * family.get(function(err, family, apiResponse) {
@@ -278,29 +280,29 @@ Family.prototype.exists = function(gaxOptions, callback) {
  *   const apiResponse = data[1];
  * });
  */
-Family.prototype.get = function(gaxOptions, callback) {
+Family.prototype.get = function(options, callback) {
   var self = this;
 
-  if (is.fn(gaxOptions)) {
-    callback = gaxOptions;
-    gaxOptions = {};
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
   }
 
-  var autoCreate = !!gaxOptions.autoCreate;
-  delete gaxOptions.autoCreate;
+  var autoCreate = !!options.autoCreate;
+  var gaxOptions = options.gaxOptions;
 
   this.getMetadata(gaxOptions, function(err, apiResponse) {
-    if (!err) {
-      callback(null, self, apiResponse);
-      return;
-    }
+    if (err) {
+      if (err.code === 5 && autoCreate) {
+        self.create({gaxOptions}, callback);
+        return;
+      }
 
-    if (err.code !== 5 || !autoCreate) {
       callback(err, null, apiResponse);
       return;
     }
 
-    self.create({gaxOptions}, callback);
+    callback(null, self, apiResponse);
   });
 };
 
@@ -417,12 +419,14 @@ Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
       gaxOpts: gaxOptions,
     },
     function() {
-      if (arguments[1]) {
-        self.metadata = arguments[1].columnFamilies[self.familyName];
-        arguments[1] = self.metadata;
+      var args = [].slice.call(arguments);
+
+      if (args[1]) {
+        self.metadata = args[1].columnFamilies[self.familyName];
+        args.splice(1, 0, self.metadata);
       }
 
-      callback.apply(null, arguments);
+      callback.apply(null, args);
     }
   );
 };

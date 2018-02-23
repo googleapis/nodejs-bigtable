@@ -157,7 +157,7 @@ describe('Bigtable/Cluster', function() {
   });
 
   describe('delete', function() {
-    it('should accept gaxOptions', function(done) {
+    it('should make the correct request', function(done) {
       cluster.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteCluster');
