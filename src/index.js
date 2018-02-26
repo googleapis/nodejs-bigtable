@@ -756,15 +756,14 @@ Bigtable.prototype.request = function(config, callback) {
 
             intercept.patch(gaxStream);
 
-            return gaxStream
-              .intercept('response', function(response, done) {
-                // See https://github.com/googleapis/nodejs-common-grpc/blob/3f3442f22b0859ea16512efe971f906f4fe78def/src/service.js#L392
-                var grcpStatus = GrpcService.decorateStatus_({code: 0});
-                done(null, grcpStatus);
-              });
+            return gaxStream.intercept('response', function(response, done) {
+              // See https://github.com/googleapis/nodejs-common-grpc/blob/3f3442f22b0859ea16512efe971f906f4fe78def/src/service.js#L392
+              var grcpStatus = GrpcService.decorateStatus_({code: 0});
+              done(null, grcpStatus);
+            });
           },
         },
-        config.retryOpts,
+        config.retryOpts
       );
 
       retryRequest(null, retryOpts)

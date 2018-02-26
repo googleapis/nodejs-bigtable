@@ -67,9 +67,7 @@ describe.skip('Bigtable/Table', () => {
 
     beforeEach(() => {
       clock = sinon.useFakeTimers({
-        toFake: [
-          'setTimeout',
-        ],
+        toFake: ['setTimeout'],
       });
       mutationBatchesInvoked = [];
       mutationCallTimes = [];
