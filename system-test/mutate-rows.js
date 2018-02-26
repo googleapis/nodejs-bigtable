@@ -44,14 +44,16 @@ function getDeltas(array) {
   }, []);
 }
 
-describe('Bigtable/Table', () => {
+describe.skip('Bigtable/Table', () => {
   const bigtable = new Bigtable();
+  bigtable.api = {};
+  bigtable.auth = {
+    getProjectId: function(callback) {
+      callback(null, 'project-id');
+    },
+  };
   bigtable.grpcCredentials = grpc.credentials.createInsecure();
-<<<<<<< HEAD
   bigtable.projectId = 'test';
-=======
-  const bigtableService = bigtable.getService_({service: 'Bigtable'});
->>>>>>> retries
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
@@ -67,32 +69,26 @@ describe('Bigtable/Table', () => {
       clock = sinon.useFakeTimers({
         toFake: [
           'setTimeout',
-          'clearTimeout',
-          'setImmediate',
-          'clearImmediate',
-          'setInterval',
-          'clearInterval',
-          'Date',
-          'nextTick',
         ],
       });
       mutationBatchesInvoked = [];
       mutationCallTimes = [];
       responses = null;
-      stub = sinon.stub(bigtableService, 'mutateRows').callsFake(grpcOpts => {
-        mutationBatchesInvoked.push(
-          grpcOpts.entries.map(entry => entry.rowKey.asciiSlice())
-        );
-        mutationCallTimes.push(new Date().getTime());
-        const emitter = through.obj();
-        dispatch(emitter, responses.shift());
-        return emitter;
-      });
+      bigtable.api.BigtableClient = {
+        mutateRows: reqOpts => {
+          mutationBatchesInvoked.push(
+            reqOpts.entries.map(entry => entry.rowKey.asciiSlice())
+          );
+          mutationCallTimes.push(new Date().getTime());
+          const emitter = through.obj();
+          dispatch(emitter, responses.shift());
+          return emitter;
+        },
+      };
     });
 
     afterEach(() => {
       clock.uninstall();
-      stub.restore();
     });
 
     tests.forEach(test => {

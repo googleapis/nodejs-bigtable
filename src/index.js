@@ -752,12 +752,14 @@ Bigtable.prototype.request = function(config, callback) {
           objectMode: true,
           shouldRetryFn: GrpcService.shouldRetryRequest_,
           request: function() {
-            return intercept.patch(requestFn())
-              .on('metadata', console.log)
+            var gaxStream = requestFn();
+
+            intercept.patch(gaxStream);
+
+            return gaxStream
               .intercept('response', function(response, done) {
                 // See https://github.com/googleapis/nodejs-common-grpc/blob/3f3442f22b0859ea16512efe971f906f4fe78def/src/service.js#L392
                 var grcpStatus = GrpcService.decorateStatus_({code: 0});
-                console.log('intercepted ')
                 done(null, grcpStatus);
               });
           },
