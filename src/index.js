@@ -19,9 +19,12 @@
 var arrify = require('arrify');
 var common = require('@google-cloud/common');
 var extend = require('extend');
+var GrpcService = require('@google-cloud/common-grpc').Service;
 var googleAuth = require('google-auto-auth');
 var grpc = require('google-gax').grpc().grpc;
+var intercept = require('events-intercept');
 var is = require('is');
+var retryRequest = require('retry-request');
 var streamEvents = require('stream-events');
 var through = require('through2');
 
@@ -741,12 +744,33 @@ Bigtable.prototype.request = function(config, callback) {
         return;
       }
 
-      gaxStream = requestFn();
+      // @TODO: remove `retry-request` when gax supports retryable streams.
+      // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
+      var retryOpts = extend(
+        {
+          currentRetryAttempt: 0,
+          objectMode: true,
+          shouldRetryFn: GrpcService.shouldRetryRequest_,
+          request: function() {
+            return intercept.patch(requestFn())
+              .on('metadata', console.log)
+              .intercept('response', function(response, done) {
+                // See https://github.com/googleapis/nodejs-common-grpc/blob/3f3442f22b0859ea16512efe971f906f4fe78def/src/service.js#L392
+                var grcpStatus = GrpcService.decorateStatus_({code: 0});
+                console.log('intercepted ')
+                done(null, grcpStatus);
+              });
+          },
+        },
+        config.retryOpts,
+      );
 
-      gaxStream
+      retryRequest(null, retryOpts)
         .on('error', function(err) {
-          stream.destroy(err);
+          var grpcError = GrpcService.decorateError_(err);
+          stream.destroy(grpcError || err);
         })
+        .on('request', stream.emit.bind(stream, 'request'))
         .pipe(stream);
     });
   }
