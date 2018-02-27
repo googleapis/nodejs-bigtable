@@ -62,7 +62,10 @@ function fakeGoogleAutoAuth() {
 
 var retryRequestOverride;
 function fakeRetryRequest() {
-  return (retryRequestOverride || require('retry-request')).apply(null, arguments);
+  return (retryRequestOverride || require('retry-request')).apply(
+    null,
+    arguments
+  );
 }
 
 var fakePaginator = {
@@ -772,7 +775,10 @@ describe('Bigtable', function() {
         retryRequestOverride = function(_, config) {
           assert.strictEqual(config.currentRetryAttempt, 0);
           assert.strictEqual(config.objectMode, true);
-          assert.strictEqual(config.shouldRetryFn, commonGrpc.Service.shouldRetryRequest_);
+          assert.strictEqual(
+            config.shouldRetryFn,
+            commonGrpc.Service.shouldRetryRequest_
+          );
           done();
         };
 
@@ -838,15 +844,13 @@ describe('Bigtable', function() {
       });
 
       it('should re-emit request event from retry-request', function(done) {
-        var error = new Error('Error.');
-
         retryRequestOverride = function() {
           var fakeRetryRequestStream = through.obj();
           setImmediate(function() {
             fakeRetryRequestStream.emit('request');
           });
           return fakeRetryRequestStream;
-        }
+        };
 
         var requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
