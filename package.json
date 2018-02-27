@@ -61,7 +61,6 @@
     "concat-stream": "^1.5.0",
     "create-error-class": "^3.0.2",
     "dot-prop": "^4.2.0",
-    "events-intercept": "^2.0.0",
     "extend": "^3.0.0",
     "google-auto-auth": "^0.9.3",
     "google-gax": "^0.16.0",

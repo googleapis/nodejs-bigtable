@@ -17,6 +17,8 @@
 'use strict';
 
 var assert = require('assert');
+var common = require('@google-cloud/common');
+var commonGrpc = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var grpc = require('google-gax').grpc().grpc;
 var nodeutil = require('util');
@@ -24,7 +26,6 @@ var proxyquire = require('proxyquire');
 var sinon = require('sinon').sandbox.create();
 var through = require('through2');
 
-var common = require('@google-cloud/common');
 var Cluster = require('../src/cluster.js');
 var Instance = require('../src/instance.js');
 var v2 = require('../src/v2');
@@ -57,6 +58,11 @@ var originalFakeUtil = extend(true, {}, fakeUtil);
 var googleAutoAuthOverride;
 function fakeGoogleAutoAuth() {
   return (googleAutoAuthOverride || common.util.noop).apply(null, arguments);
+}
+
+var retryRequestOverride;
+function fakeRetryRequest() {
+  return (retryRequestOverride || require('retry-request')).apply(null, arguments);
 }
 
 var fakePaginator = {
@@ -93,6 +99,7 @@ describe('Bigtable', function() {
         util: fakeUtil,
       },
       'google-auto-auth': fakeGoogleAutoAuth,
+      'retry-request': fakeRetryRequest,
       './cluster.js': FakeCluster,
       './instance.js': FakeInstance,
       './v2': fakeV2,
@@ -107,6 +114,7 @@ describe('Bigtable', function() {
     extend(fakeUtil, originalFakeUtil);
 
     googleAutoAuthOverride = null;
+    retryRequestOverride = null;
     replaceProjectIdTokenOverride = null;
 
     delete process.env.BIGTABLE_EMULATOR_HOST;
@@ -760,6 +768,18 @@ describe('Bigtable', function() {
         };
       });
 
+      it('should use retry-request', function(done) {
+        retryRequestOverride = function(_, config) {
+          assert.strictEqual(config.currentRetryAttempt, 0);
+          assert.strictEqual(config.objectMode, true);
+          assert.strictEqual(config.shouldRetryFn, commonGrpc.Service.shouldRetryRequest_);
+          done();
+        };
+
+        var requestStream = bigtable.request(CONFIG);
+        requestStream.emit('reading');
+      });
+
       it('should expose an abort function', function(done) {
         GAX_STREAM.cancel = done;
 
@@ -815,6 +835,22 @@ describe('Bigtable', function() {
         });
 
         GAX_STREAM.emit('error', error);
+      });
+
+      it('should re-emit request event from retry-request', function(done) {
+        var error = new Error('Error.');
+
+        retryRequestOverride = function() {
+          var fakeRetryRequestStream = through.obj();
+          setImmediate(function() {
+            fakeRetryRequestStream.emit('request');
+          });
+          return fakeRetryRequestStream;
+        }
+
+        var requestStream = bigtable.request(CONFIG);
+        requestStream.emit('reading');
+        requestStream.on('request', done);
       });
     });
   });
