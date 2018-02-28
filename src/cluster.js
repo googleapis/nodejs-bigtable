@@ -221,16 +221,8 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
 /**
  * Get a cluster if it exists.
  *
- * You may optionally use this to "get or create" an object by providing an
- * object with `autoCreate` set to `true`. Any extra configuration that is
- * normally required for the `create` method must be contained within this
- * object as well.
- *
- * @param {object} [options] Configuration object.
- * @param {boolean} [options.autoCreate=false] Automatically create the
- *     instance if it does not already exist.
- * @param {object} [options.gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  *
  * @example
  * cluster.get(function(err, cluster, apiResponse) {
@@ -245,29 +237,16 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Cluster.prototype.get = function(options, callback) {
+Cluster.prototype.get = function(gaxOptions, callback) {
   var self = this;
 
-  if (is.fn(options)) {
-    callback = options;
-    options = {};
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
   }
 
-  var autoCreate = !!options.autoCreate;
-  var gaxOptions = options.gaxOptions;
-
-  this.getMetadata(gaxOptions, function(err, apiResponse) {
-    if (err) {
-      if (err.code === 5 && autoCreate) {
-        self.create({gaxOptions}, callback);
-        return;
-      }
-
-      callback(err, null, apiResponse);
-      return;
-    }
-
-    callback(null, self, apiResponse);
+  this.getMetadata(gaxOptions, function(err, metadata) {
+    callback(err, err ? null : self, metadata);
   });
 };
 

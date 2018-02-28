@@ -497,86 +497,23 @@ describe('Bigtable/Instance', function() {
 
   describe('get', function() {
     it('should call getMetadata', function(done) {
-      var options = {
-        gaxOptions: {},
-      };
+      var gaxOptions = {};
 
-      instance.getMetadata = function(gaxOptions) {
-        assert.strictEqual(gaxOptions, options.gaxOptions);
+      instance.getMetadata = function(gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       };
 
-      instance.get(options, assert.ifError);
+      instance.get(gaxOptions, assert.ifError);
     });
 
-    it('should not require an options object', function(done) {
+    it('should not require gaxOptions', function(done) {
       instance.getMetadata = function(gaxOptions) {
-        assert.deepStrictEqual(gaxOptions, undefined);
+        assert.deepEqual(gaxOptions, {});
         done();
       };
 
       instance.get(assert.ifError);
-    });
-
-    it('should auto create with error code 5', function(done) {
-      var error = new Error('Error.');
-      error.code = 5;
-
-      var options = {
-        autoCreate: true,
-        gaxOptions: {},
-      };
-
-      instance.getMetadata = function(gaxOptions, callback) {
-        callback(error);
-      };
-
-      instance.create = function(options_, callback) {
-        assert.strictEqual(options_.gaxOptions, options.gaxOptions);
-        callback(); // done()
-      };
-
-      instance.get(options, done);
-    });
-
-    it('should not auto create without error code 5', function(done) {
-      var error = new Error('Error.');
-      error.code = 'NOT-5';
-
-      var options = {
-        autoCreate: true,
-      };
-
-      instance.getMetadata = function(gaxOptions, callback) {
-        callback(error);
-      };
-
-      instance.create = function() {
-        throw new Error('Should not create.');
-      };
-
-      instance.get(options, function(err) {
-        assert.strictEqual(err, error);
-        done();
-      });
-    });
-
-    it('should not auto create unless requested', function(done) {
-      var error = new Error('Error.');
-      error.code = 5;
-
-      instance.getMetadata = function(gaxOptions, callback) {
-        callback(error);
-      };
-
-      instance.create = function() {
-        throw new Error('Should not create.');
-      };
-
-      instance.get(function(err) {
-        assert.strictEqual(err, error);
-        done();
-      });
     });
 
     it('should return an error from getMetadata', function(done) {
@@ -593,16 +530,16 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return self and API response', function(done) {
-      var apiResponse = {};
+      var metadata = {};
 
       instance.getMetadata = function(gaxOptions, callback) {
-        callback(null, apiResponse);
+        callback(null, metadata);
       };
 
-      instance.get(function(err, instance_, apiResponse_) {
+      instance.get(function(err, instance_, metadata_) {
         assert.ifError(err);
         assert.strictEqual(instance_, instance);
-        assert.strictEqual(apiResponse_, apiResponse);
+        assert.strictEqual(metadata_, metadata);
         done();
       });
     });
