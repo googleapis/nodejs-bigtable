@@ -743,8 +743,6 @@ Bigtable.prototype.request = function(config, callback) {
         return;
       }
 
-      var gaxStream;
-
       // @TODO: remove `retry-request` when gax supports retryable streams.
       // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
       var retryOpts = extend(
@@ -759,12 +757,6 @@ Bigtable.prototype.request = function(config, callback) {
         },
         config.retryOpts
       );
-
-      stream.abort = function() {
-        if (gaxStream) {
-          gaxStream.cancel();
-        }
-      };
 
       retryRequest(null, retryOpts)
         .on('error', stream.destroy.bind(stream))
