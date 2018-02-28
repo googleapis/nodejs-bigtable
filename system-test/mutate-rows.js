@@ -44,7 +44,7 @@ function getDeltas(array) {
   }, []);
 }
 
-describe.skip('Bigtable/Table', () => {
+describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.api = {};
   bigtable.auth = {
@@ -66,7 +66,12 @@ describe.skip('Bigtable/Table', () => {
 
     beforeEach(() => {
       clock = sinon.useFakeTimers({
-        toFake: ['setTimeout'],
+        toFake: [
+          'setTimeout',
+          'setImmediate',
+          'Date',
+          'nextTick',
+        ],
       });
       mutationBatchesInvoked = [];
       mutationCallTimes = [];
