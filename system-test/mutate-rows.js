@@ -19,10 +19,7 @@ function dispatch(emitter, response) {
   let index = 0;
   setImmediate(next);
 
-  console.log('Executes')
   function next() {
-    console.log('Never executes')
-
     if (index < emits.length) {
       const emit = emits[index];
       index++;
@@ -47,7 +44,7 @@ function getDeltas(array) {
   }, []);
 }
 
-describe.only('Bigtable/Table', () => {
+describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.api = {};
   bigtable.auth = {
@@ -69,12 +66,7 @@ describe.only('Bigtable/Table', () => {
 
     beforeEach(() => {
       clock = sinon.useFakeTimers({
-        toFake: [
-          'setTimeout',
-          'setImmediate',
-          'Date',
-          'nextTick',
-        ],
+        toFake: ['setTimeout', 'setImmediate', 'Date', 'nextTick'],
       });
       mutationBatchesInvoked = [];
       mutationCallTimes = [];
@@ -101,18 +93,6 @@ describe.only('Bigtable/Table', () => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.mutate(test.mutations_request, error => {
-          if (test.errors) {
-            const expectedIndices = test.errors.map(error => {
-              return error.index_in_mutations_request;
-            });
-            assert.deepEqual(error.name, 'PartialFailureError');
-            const actualIndices = error.errors.map(error => {
-              return test.mutations_request.indexOf(error.entry);
-            });
-            assert.deepEqual(expectedIndices, actualIndices);
-          } else {
-            assert.ifError(error);
-          }
           assert.deepEqual(
             mutationBatchesInvoked,
             test.mutation_batches_invoked
@@ -133,6 +113,18 @@ describe.only('Bigtable/Table', () => {
             assert(delta > minBackoff, message);
             assert(delta < maxBackoff, message);
           });
+          if (test.errors) {
+            const expectedIndices = test.errors.map(error => {
+              return error.index_in_mutations_request;
+            });
+            assert.deepEqual(error.name, 'PartialFailureError');
+            const actualIndices = error.errors.map(error => {
+              return test.mutations_request.indexOf(error.entry);
+            });
+            assert.deepEqual(expectedIndices, actualIndices);
+          } else {
+            assert.ifError(error);
+          }
           done();
         });
         clock.runAll();
