@@ -19,7 +19,10 @@ function dispatch(emitter, response) {
   let index = 0;
   setImmediate(next);
 
+  console.log('Executes')
   function next() {
+    console.log('Never executes')
+
     if (index < emits.length) {
       const emit = emits[index];
       index++;
@@ -44,7 +47,7 @@ function getDeltas(array) {
   }, []);
 }
 
-describe('Bigtable/Table', () => {
+describe.only('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.api = {};
   bigtable.auth = {
