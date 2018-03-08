@@ -1,5 +1,5 @@
 module.exports = {
   nextTick: function() {
-    process.nextTick.apply(this, arguments)
-  }
+    process.nextTick.apply(this, arguments);
+  },
 };
