@@ -47,7 +47,6 @@ function getDeltas(array) {
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.grpcCredentials = grpc.credentials.createInsecure();
-  bigtable.projectId = 'test';
   const bigtableService = bigtable.getService_({service: 'Bigtable'});
 
   const INSTANCE = bigtable.instance('instance');
@@ -97,18 +96,6 @@ describe('Bigtable/Table', () => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.mutate(test.mutations_request, error => {
-          if (test.errors) {
-            const expectedIndices = test.errors.map(error => {
-              return error.index_in_mutations_request;
-            });
-            assert.deepEqual(error.name, 'PartialFailureError');
-            const actualIndices = error.errors.map(error => {
-              return test.mutations_request.indexOf(error.entry);
-            });
-            assert.deepEqual(expectedIndices, actualIndices);
-          } else {
-            assert.ifError(error);
-          }
           assert.deepEqual(
             mutationBatchesInvoked,
             test.mutation_batches_invoked
@@ -129,6 +116,17 @@ describe('Bigtable/Table', () => {
             assert(delta > minBackoff, message);
             assert(delta < maxBackoff, message);
           });
+          if (test.errors) {
+            const expectedIndices = test.errors.map(error => {
+              return error.index_in_mutations_request;
+            });
+            const actualIndices = error.errors.map(error => {
+              return test.mutations_request.indexOf(error.entry);
+            });
+            assert.deepEqual(expectedIndices, actualIndices);
+          } else {
+            assert.ifError(error);
+          }
           done();
         });
         clock.runAll();
