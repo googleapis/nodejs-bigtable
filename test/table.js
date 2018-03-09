@@ -1482,7 +1482,7 @@ describe('Bigtable/Table', function() {
           assert.strictEqual(calls, 1);
           assert.strictEqual(err, error);
           done();
-        })
+        });
       });
     });
   });
