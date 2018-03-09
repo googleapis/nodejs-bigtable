@@ -1462,6 +1462,28 @@ describe('Bigtable/Table', function() {
           done();
         });
       });
+
+      it('should not retry a pre request error', function(done) {
+        var calls = 0;
+        var error = new Error('err');
+        table.requestStream = function() {
+          calls++;
+          var stream = new Stream({
+            objectMode: true,
+          });
+
+          setImmediate(function() {
+            stream.emit('error', error);
+          });
+
+          return stream;
+        };
+        table.mutate(entries, function(err) {
+          assert.strictEqual(calls, 1);
+          assert.strictEqual(err, error);
+          done();
+        })
+      });
     });
   });
 

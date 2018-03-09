@@ -1036,7 +1036,12 @@ Table.prototype.mutate = function(entries, callback) {
   var entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
   var mutationErrorsByEntryIndex = new Map();
 
-  function onBatchResponse(err) {
+  function onBatchResponse(previousNumRequestsMade, err) {
+    if (previousNumRequestsMade === numRequestsMade && err) {
+      // The error happened before a request was even made, don't retry.
+      callback(err);
+      return;
+    }
     if (pendingEntryIndices.size !== 0 && numRequestsMade <= maxRetries) {
       makeNextBatchRequest();
       return;
@@ -1073,8 +1078,8 @@ Table.prototype.mutate = function(entries, callback) {
 
     self
       .requestStream(grpcOpts, reqOpts)
-      .on('error', onBatchResponse)
       .on('request', () => numRequestsMade++)
+      .on('error', onBatchResponse.bind(null, numRequestsMade))
       .on('data', function(obj) {
         obj.entries.forEach(function(entry) {
           var originalEntry = entryBatch[entry.index];
