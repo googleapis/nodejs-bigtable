@@ -53,7 +53,6 @@ describe('Bigtable/Table', () => {
     },
   };
   bigtable.grpcCredentials = grpc.credentials.createInsecure();
-  bigtable.projectId = 'test';
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');

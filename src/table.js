@@ -1136,8 +1136,8 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
   var entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
   var mutationErrorsByEntryIndex = new Map();
 
-  function onBatchResponse(previousNumRequestsMade, err) {
-    if (previousNumRequestsMade === numRequestsMade && err) {
+  function onBatchResponse(err) {
+    if (err) {
       // The error happened before a request was even made, don't retry.
       callback(err);
       return;
@@ -1180,7 +1180,7 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
         retryOpts: retryOpts,
       })
       .on('request', () => numRequestsMade++)
-      .on('error', onBatchResponse.bind(null, numRequestsMade))
+      .on('error', onBatchResponse)
       .on('data', function(obj) {
         obj.entries.forEach(function(entry) {
           var originalEntry = entryBatch[entry.index];
