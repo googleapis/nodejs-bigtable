@@ -21,7 +21,6 @@ var async = require('async');
 var uuid = require('uuid');
 
 var Bigtable = require('../');
-var Instance = require('../src/instance.js');
 var Cluster = require('../src/cluster.js');
 var Table = require('../src/table.js');
 var Family = require('../src/family.js');
@@ -87,29 +86,13 @@ describe('Bigtable', function() {
     });
   });
 
-  describe.only('instances', function() {
+  describe('instances', function() {
     it('should get a list of instances', function(done) {
       bigtable.getInstances(function(err, instances) {
         assert.ifError(err);
         assert(instances.length > 0);
         done();
       });
-    });
-
-    it('should get a list of instances in stream mode', function(done) {
-      var instances = [];
-
-      bigtable
-        .getInstancesStream()
-        .on('error', done)
-        .on('data', function(instance) {
-          assert(instance instanceof Instance);
-          instances.push(instance);
-        })
-        .on('end', function() {
-          assert(instances.length > 0);
-          done();
-        });
     });
 
     it('should check if an instance exists', function(done) {
@@ -164,21 +147,6 @@ describe('Bigtable', function() {
         assert(clusters[0] instanceof Cluster);
         done();
       });
-    });
-
-    it('should retrieve a list of clusters in stream mode', function(done) {
-      var clusters = [];
-
-      INSTANCE.getClustersStream()
-        .on('error', done)
-        .on('data', function(cluster) {
-          assert(cluster instanceof Cluster);
-          clusters.push(cluster);
-        })
-        .on('end', function() {
-          assert(clusters.length > 0);
-          done();
-        });
     });
 
     it('should check if a cluster exists', function(done) {

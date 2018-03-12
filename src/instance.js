@@ -533,12 +533,8 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
   }
 
   var reqOpts = {
-    parent: this.projectName,
+    parent: this.id,
   };
-
-  // @TODO this option shouldn't exist in the GAPIC client.
-  // Ref: https://github.com/googleapis/nodejs-bigtable/pull/35/files#r173892576
-  gaxOptions.autoPaginate = false;
 
   this.bigtable.request(
     {
@@ -553,7 +549,7 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
         return;
       }
 
-      var clusters = resp.clusters.map(function(instanceData) {
+      var clusters = resp.clusters.map(function(clusterObj) {
         var cluster = self.cluster(clusterObj.name);
         cluster.metadata = clusterObj;
         return cluster;
@@ -563,37 +559,6 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
     }
   );
 };
-
-/**
- * Get {@link Cluster} objects for all of your clusters as a readable object
- * stream.
- *
- * @param {object} [query] Configuration object. See
- *     {@link Instance#getClusters} for a complete list of options.
- * @returns {stream}
- *
- * @example
- * instance.getClustersStream()
- *   .on('error', console.error)
- *   .on('data', function(cluster) {
- *     // `cluster` is a Cluster object.
- *   })
- *   .on('end', function() {
- *     // All clusters retrieved.
- *   });
- *
- * //-
- * // If you anticipate many results, you can end a stream early to prevent
- * // unnecessary processing and API requests.
- * //-
- * instance.getClustersStream()
- *   .on('data', function(cluster) {
- *     this.end();
- *   });
- */
-Instance.prototype.getClustersStream = common.paginator.streamify(
-  'getClusters'
-);
 
 /**
  * Get the instance metadata.
@@ -846,7 +811,7 @@ Instance.prototype.table = function(name) {
  *
  * These methods can be auto-paginated.
  */
-common.paginator.extend(Instance, ['getClusters', 'getTables']);
+common.paginator.extend(Instance, ['getTables']);
 
 /*! Developer Documentation
  *

@@ -68,15 +68,6 @@ function fakeRetryRequest() {
   );
 }
 
-var fakePaginator = {
-  extend: function() {
-    this.calledWith_ = arguments;
-  },
-  streamify: function(methodName) {
-    return methodName;
-  },
-};
-
 function createFake(Class) {
   function Fake() {
     this.calledWith_ = arguments;
@@ -98,7 +89,6 @@ describe('Bigtable', function() {
   before(function() {
     Bigtable = proxyquire('../', {
       '@google-cloud/common': {
-        paginator: fakePaginator,
         util: fakeUtil,
       },
       'google-auto-auth': fakeGoogleAutoAuth,
@@ -140,17 +130,6 @@ describe('Bigtable', function() {
         }
       }
     }
-
-    it('should extend the correct methods', function() {
-      var args = fakePaginator.calledWith_;
-
-      assert.strictEqual(args[0], Bigtable);
-      assert.deepEqual(args[1], ['getInstances']);
-    });
-
-    it('should streamify the correct methods', function() {
-      assert.strictEqual(bigtable.getInstancesStream, 'getInstances');
-    });
 
     it('should promisify all the things', function() {
       assert(promisified);
@@ -484,8 +463,10 @@ describe('Bigtable', function() {
       bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listInstances');
-        assert.strictEqual(config.reqOpts.parent, bigtable.projectName);
-        assert.strictEqual(config.gaxOpts, undefined);
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: bigtable.projectName,
+        });
+        assert.deepEqual(config.gaxOpts, {});
         done();
       };
 
@@ -500,40 +481,18 @@ describe('Bigtable', function() {
         done();
       };
 
-      bigtable.getInstances({gaxOptions}, assert.ifError);
-    });
-
-    it('should copy all query options', function(done) {
-      var fakeOptions = {
-        a: 'a',
-        b: 'b',
-      };
-
-      bigtable.request = function(config) {
-        Object.keys(fakeOptions).forEach(function(key) {
-          assert.strictEqual(config.reqOpts[key], fakeOptions[key]);
-        });
-
-        assert.notStrictEqual(config.reqOpts, fakeOptions);
-        done();
-      };
-
-      bigtable.getInstances(fakeOptions, assert.ifError);
+      bigtable.getInstances(gaxOptions, assert.ifError);
     });
 
     it('should return an error to the callback', function(done) {
       var error = new Error('err');
-      var response = {};
 
       bigtable.request = function(config, callback) {
-        callback(error, response);
+        callback(error);
       };
 
-      bigtable.getInstances(function(err, instances, nextQuery, apiResponse) {
+      bigtable.getInstances(function(err) {
         assert.strictEqual(err, error);
-        assert.strictEqual(instances, null);
-        assert.strictEqual(nextQuery, null);
-        assert.strictEqual(apiResponse, response);
         done();
       });
     });
@@ -550,13 +509,10 @@ describe('Bigtable', function() {
         ],
       };
 
-      var responseArg2 = {};
-      var responseArg3 = {};
-
       var fakeInstances = [{}, {}];
 
       bigtable.request = function(config, callback) {
-        callback(null, response, responseArg2, responseArg3);
+        callback(null, response);
       };
 
       var instanceCount = 0;
@@ -566,39 +522,13 @@ describe('Bigtable', function() {
         return fakeInstances[instanceCount++];
       };
 
-      bigtable.getInstances(function(err, instances, nextQuery, apiResponse) {
+      bigtable.getInstances(function(err, instances, apiResponse) {
         assert.ifError(err);
         assert.strictEqual(instances[0], fakeInstances[0]);
         assert.strictEqual(instances[0].metadata, response.instances[0]);
         assert.strictEqual(instances[1], fakeInstances[1]);
         assert.strictEqual(instances[1].metadata, response.instances[1]);
-        assert.strictEqual(nextQuery, null);
         assert.strictEqual(apiResponse, response);
-        done();
-      });
-    });
-
-    it('should provide a nextQuery object', function(done) {
-      var response = {
-        instances: [],
-        nextPageToken: 'a',
-      };
-
-      var options = {
-        a: 'b',
-      };
-
-      bigtable.request = function(config, callback) {
-        callback(null, response);
-      };
-
-      bigtable.getInstances(options, function(err, instances, nextQuery) {
-        var expectedQuery = extend({}, options, {
-          pageToken: response.nextPageToken,
-        });
-
-        assert.ifError(err);
-        assert.deepEqual(nextQuery, expectedQuery);
         done();
       });
     });

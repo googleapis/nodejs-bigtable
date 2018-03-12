@@ -570,10 +570,6 @@ Bigtable.prototype.getInstances = function(gaxOptions, callback) {
     parent: this.projectName,
   };
 
-  // @TODO this option shouldn't exist in the GAPIC client.
-  // Ref: https://github.com/googleapis/nodejs-bigtable/pull/35/files#r173892576
-  // gaxOptions.autoPaginate = false;
-
   this.request(
     {
       client: 'BigtableInstanceAdminClient',
@@ -597,40 +593,6 @@ Bigtable.prototype.getInstances = function(gaxOptions, callback) {
     }
   );
 };
-
-/**
- * Get {@link Instance} objects for all of your Compute instances as a readable
- * object stream.
- *
- * @param {object} [query] Configuration object. See
- *     {@link Bigtable#getInstances} for a complete list of options.
- * @returns {stream}
- *
- * @example
- * const Bigtable = require('@google-cloud/bigtable');
- * const bigtable = new Bigtable();
- *
- * bigtable.getInstancesStream()
- *   .on('error', console.error)
- *   .on('data', function(instance) {
- *     // `instance` is an Instance object.
- *   })
- *   .on('end', function() {
- *     // All instances retrieved.
- *   });
- *
- * //-
- * // If you anticipate many results, you can end a stream early to prevent
- * // unnecessary processing and API requests.
- * //-
- * bigtable.getInstancesStream()
- *   .on('data', function(instance) {
- *     this.end();
- *   });
- */
-Bigtable.prototype.getInstancesStream = common.paginator.streamify(
-  'getInstances'
-);
 
 /**
  * Get a reference to a Compute instance.
@@ -744,12 +706,6 @@ Bigtable.prototype.request = function(config, callback) {
     });
   }
 };
-
-/*! Developer Documentation
- *
- * These methods can be auto-paginated.
- */
-common.paginator.extend(Bigtable, ['getInstances']);
 
 /*! Developer Documentation
  *

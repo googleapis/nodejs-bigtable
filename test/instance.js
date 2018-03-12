@@ -97,11 +97,10 @@ describe('Bigtable/Instance', function() {
       var args = fakePaginator.calledWith_;
 
       assert.strictEqual(args[0], Instance);
-      assert.deepEqual(args[1], ['getClusters', 'getTables']);
+      assert.deepEqual(args[1], ['getTables']);
     });
 
     it('should streamify the correct methods', function() {
-      assert.strictEqual(instance.getClustersStream, 'getClusters');
       assert.strictEqual(instance.getTablesStream, 'getTables');
     });
 
@@ -550,53 +549,51 @@ describe('Bigtable/Instance', function() {
       instance.bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listClusters');
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
-        assert.strictEqual(config.gaxOpts, undefined);
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: INSTANCE_ID,
+        });
+        assert.deepEqual(config.gaxOpts, {});
         done();
       };
 
       instance.getClusters(assert.ifError);
     });
 
-    it('should copy all query options', function(done) {
-      var options = {
-        a: 'a',
-        b: 'b',
-      };
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
 
       instance.bigtable.request = function(config) {
-        Object.keys(options).forEach(function(key) {
-          assert.strictEqual(config.reqOpts[key], options[key]);
-        });
-        assert.notStrictEqual(config.reqOpts, options);
+        assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
 
-      instance.getClusters(options, assert.ifError);
+      instance.getClusters(gaxOptions, assert.ifError);
     });
 
-    it('should accept gaxOptions', function(done) {
-      var options = {
-        gaxOptions: {},
+    it('should return error from gapic', function(done) {
+      var error = new Error('Error.');
+
+      instance.bigtable.request = function(config, callback) {
+        callback(error);
       };
 
-      instance.bigtable.request = function(config) {
-        assert.strictEqual(config.gaxOpts, options.gaxOptions);
+      instance.getClusters(function(err) {
+        assert.strictEqual(err, error);
         done();
-      };
-
-      instance.getClusters(options, assert.ifError);
+      });
     });
 
     it('should return an array of cluster objects', function(done) {
-      var response = [
-        {
-          name: 'a',
-        },
-        {
-          name: 'b',
-        },
-      ];
+      var response = {
+        clusters: [
+          {
+            name: 'a',
+          },
+          {
+            name: 'b',
+          },
+        ],
+      };
 
       var fakeClusters = [{}, {}];
 
@@ -607,31 +604,17 @@ describe('Bigtable/Instance', function() {
       var clusterCount = 0;
 
       instance.cluster = function(name) {
-        assert.strictEqual(name, response[clusterCount].name);
+        assert.strictEqual(name, response.clusters[clusterCount].name);
         return fakeClusters[clusterCount++];
       };
 
-      instance.getClusters(function(err, clusters) {
+      instance.getClusters(function(err, clusters, apiResponse) {
         assert.ifError(err);
         assert.strictEqual(clusters[0], fakeClusters[0]);
-        assert.strictEqual(clusters[0].metadata, response[0]);
+        assert.strictEqual(clusters[0].metadata, response.clusters[0]);
         assert.strictEqual(clusters[1], fakeClusters[1]);
-        assert.strictEqual(clusters[1].metadata, response[1]);
-        done();
-      });
-    });
-
-    it('should return original GAPIC response arguments', function(done) {
-      var response = [{}, null, {}, {}];
-
-      instance.bigtable.request = function(config, callback) {
-        callback.apply(null, response);
-      };
-
-      instance.getClusters(function() {
-        assert.strictEqual(arguments[0], response[0]);
-        assert.strictEqual(arguments[2], response[2]);
-        assert.strictEqual(arguments[3], response[3]);
+        assert.strictEqual(clusters[1].metadata, response.clusters[1]);
+        assert.strictEqual(apiResponse, response);
         done();
       });
     });
