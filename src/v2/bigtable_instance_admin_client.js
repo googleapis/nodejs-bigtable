@@ -127,11 +127,6 @@ class BigtableInstanceAdminClient {
         'nextPageToken',
         'appProfiles'
       ),
-      listClusters: new gax.PageDescriptor(
-        'pageToken',
-        'nextPageToken',
-        'clusters'
-      ),
     };
     var protoFilesRoot = new gax.grpc.GoogleProtoFilesRoot();
     protoFilesRoot = protobuf.loadSync(

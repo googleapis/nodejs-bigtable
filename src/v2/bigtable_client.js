@@ -254,6 +254,7 @@ class BigtableClient {
    */
   readRows(request, options) {
     options = options || {};
+
     return this._innerApiCalls.readRows(request, options);
   }
 
@@ -425,6 +426,7 @@ class BigtableClient {
    */
   mutateRows(request, options) {
     options = options || {};
+
     return this._innerApiCalls.mutateRows(request, options);
   }
 

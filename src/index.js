@@ -533,13 +533,8 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
 /**
  * Get Instance objects for all of your Compute instances.
  *
- * @param {object} query Query object.
- * @param {boolean} query.autoPaginate Have pagination handled
- *     automatically. Default: true.
- * @param {number} query.maxApiCalls Maximum number of API calls to make.
- * @param {number} query.maxResults Maximum number of results to return.
- * @param {string} query.pageToken Token returned from a previous call, to
- *     request the next page of results.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.error An error returned while making this request.
  * @param {Instance[]} callback.instances List of all
@@ -557,49 +552,38 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
  * });
  *
  * //-
- * // To control how many API requests are made and page through the results
- * // manually, set `autoPaginate` to false.
- * //-
- * const callback = function(err, instances, nextQuery, apiResponse) {
- *   if (nextQuery) {
- *     // More results exist.
- *     bigtable.getInstances(nextQuery, calback);
- *   }
- * };
- *
- * bigtable.getInstances({
- *   autoPaginate: false
- * }, callback);
- *
- * //-
  * // If the callback is omitted, we'll return a Promise.
  * //-
  * bigtable.getInstances().then(function(data) {
  *   const instances = data[0];
  * });
  */
-Bigtable.prototype.getInstances = function(query, callback) {
+Bigtable.prototype.getInstances = function(gaxOptions, callback) {
   var self = this;
 
-  if (is.function(query)) {
-    callback = query;
-    query = {};
+  if (is.function(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
   }
 
-  var reqOpts = extend({}, query, {
+  var reqOpts = {
     parent: this.projectName,
-  });
+  };
+
+  // @TODO this option shouldn't exist in the GAPIC client.
+  // Ref: https://github.com/googleapis/nodejs-bigtable/pull/35/files#r173892576
+  // gaxOptions.autoPaginate = false;
 
   this.request(
     {
       client: 'BigtableInstanceAdminClient',
       method: 'listInstances',
       reqOpts: reqOpts,
-      gaxOpts: query.gaxOptions,
+      gaxOpts: gaxOptions,
     },
     function(err, resp) {
       if (err) {
-        callback(err, null, null, resp);
+        callback(err);
         return;
       }
 
@@ -609,19 +593,14 @@ Bigtable.prototype.getInstances = function(query, callback) {
         return instance;
       });
 
-      var nextQuery = null;
-      if (resp.nextPageToken) {
-        nextQuery = extend({}, query, {pageToken: resp.nextPageToken});
-      }
-
-      callback(null, instances, nextQuery, resp);
+      callback(null, instances, resp);
     }
   );
 };
 
 /**
- * Get {@link Iinstance} objects for all of your Compute instances as a
- * readable object stream.
+ * Get {@link Instance} objects for all of your Compute instances as a readable
+ * object stream.
  *
  * @param {object} [query] Configuration object. See
  *     {@link Bigtable#getInstances} for a complete list of options.

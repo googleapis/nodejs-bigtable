@@ -498,15 +498,8 @@ Instance.prototype.get = function(gaxOptions, callback) {
 /**
  * Get Cluster objects for all of your clusters.
  *
- * @param {object} [query] Query object.
- * @param {boolean} [query.autoPaginate=true] Have pagination handled
- *     automatically.
- * @param {object} [query.gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {number} [query.maxApiCalls] Maximum number of API calls to make.
- * @param {number} [query.maxResults] Maximum number of results to return.
- * @param {string} [query.pageToken] Token returned from a previous call, to
- *     request the next page of results.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.error An error returned while making this request.
  * @param {Cluster[]} callback.clusters List of all
@@ -525,57 +518,48 @@ Instance.prototype.get = function(gaxOptions, callback) {
  * });
  *
  * //-
- * // To control how many API requests are made and page through the results
- * // manually, set `autoPaginate` to false.
- * //-
- * const callback = function(err, clusters, nextQuery, apiResponse) {
- *   if (nextQuery) {
- *     // More results exist.
- *     instance.getClusters(nextQuery, calback);
- *   }
- * };
- *
- * instance.getClusters({
- *   autoPaginate: false
- * }, callback);
- *
- * //-
  * // If the callback is omitted, we'll return a Promise.
  * //-
  * instance.getClusters().then(function(data) {
  *   const clusters = data[0];
  * });
  */
-Instance.prototype.getClusters = function(query, callback) {
+Instance.prototype.getClusters = function(gaxOptions, callback) {
   var self = this;
 
-  if (is.function(query)) {
-    callback = query;
-    query = {};
+  if (is.function(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
   }
 
-  var reqOpts = extend({}, query, {
-    parent: this.id,
-  });
-  delete reqOpts.gaxOptions;
+  var reqOpts = {
+    parent: this.projectName,
+  };
+
+  // @TODO this option shouldn't exist in the GAPIC client.
+  // Ref: https://github.com/googleapis/nodejs-bigtable/pull/35/files#r173892576
+  gaxOptions.autoPaginate = false;
 
   this.bigtable.request(
     {
       client: 'BigtableInstanceAdminClient',
       method: 'listClusters',
       reqOpts: reqOpts,
-      gaxOpts: query.gaxOptions,
+      gaxOpts: gaxOptions,
     },
-    function() {
-      if (arguments[1]) {
-        arguments[1] = arguments[1].map(function(clusterObj) {
-          var cluster = self.cluster(clusterObj.name);
-          cluster.metadata = clusterObj;
-          return cluster;
-        });
+    function(err, resp) {
+      if (err) {
+        callback(err);
+        return;
       }
 
-      callback.apply(null, arguments);
+      var clusters = resp.clusters.map(function(instanceData) {
+        var cluster = self.cluster(clusterObj.name);
+        cluster.metadata = clusterObj;
+        return cluster;
+      });
+
+      callback(null, clusters, resp);
     }
   );
 };

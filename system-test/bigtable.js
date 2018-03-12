@@ -87,7 +87,7 @@ describe('Bigtable', function() {
     });
   });
 
-  describe('instances', function() {
+  describe.only('instances', function() {
     it('should get a list of instances', function(done) {
       bigtable.getInstances(function(err, instances) {
         assert.ifError(err);
