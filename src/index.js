@@ -355,11 +355,14 @@ function Bigtable(options) {
     }
   }
 
-  options = extend({
-    libName: 'gccl',
-    libVersion: PKG.version,
-    scopes: scopes,
-  }, options);
+  options = extend(
+    {
+      libName: 'gccl',
+      libVersion: PKG.version,
+      scopes: scopes,
+    },
+    options
+  );
 
   var defaultBaseUrl = 'bigtable.googleapis.com';
   var defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
