@@ -1545,6 +1545,31 @@ describe('Bigtable/Table', function() {
     });
 
     describe('error', function() {
+      describe('pre-request errors', function() {
+        var error = new Error('Error.');
+
+        beforeEach(function() {
+          table.bigtable.request = function() {
+            var stream = new Stream({
+              objectMode: true,
+            });
+
+            setImmediate(function() {
+              stream.emit('error', error);
+            });
+
+            return stream;
+          };
+        });
+
+        it('should return error', function(done) {
+          table.mutate(entries, function(err) {
+            assert.strictEqual(err, error);
+            done();
+          });
+        });
+      });
+
       describe('API errors', function() {
         var error = new Error('err');
 

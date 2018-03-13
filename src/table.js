@@ -1180,7 +1180,14 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
         retryOpts: retryOpts,
       })
       .on('request', () => numRequestsMade++)
-      .on('error', onBatchResponse)
+      .on('error', err => {
+        if (numRequestsMade === 0) {
+          callback(err); // Likely a "projectId not detected" error.
+          return;
+        }
+
+        onBatchResponse(err);
+      })
       .on('data', function(obj) {
         obj.entries.forEach(function(entry) {
           var originalEntry = entryBatch[entry.index];
