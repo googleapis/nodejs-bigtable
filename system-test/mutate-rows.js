@@ -46,9 +46,13 @@ function getDeltas(array) {
 
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
+  bigtable.api = {};
+  bigtable.auth = {
+    getProjectId: function(callback) {
+      callback(null, 'project-id');
+    },
+  };
   bigtable.grpcCredentials = grpc.credentials.createInsecure();
-  bigtable.projectId = 'test';
-  const bigtableService = bigtable.getService_({service: 'Bigtable'});
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
@@ -58,38 +62,29 @@ describe('Bigtable/Table', () => {
     let mutationBatchesInvoked;
     let mutationCallTimes;
     let responses;
-    let stub;
 
     beforeEach(() => {
       clock = sinon.useFakeTimers({
-        toFake: [
-          'setTimeout',
-          'clearTimeout',
-          'setImmediate',
-          'clearImmediate',
-          'setInterval',
-          'clearInterval',
-          'Date',
-          'nextTick',
-        ],
+        toFake: ['setTimeout', 'setImmediate', 'Date', 'nextTick'],
       });
       mutationBatchesInvoked = [];
       mutationCallTimes = [];
       responses = null;
-      stub = sinon.stub(bigtableService, 'mutateRows').callsFake(grpcOpts => {
-        mutationBatchesInvoked.push(
-          grpcOpts.entries.map(entry => entry.rowKey.asciiSlice())
-        );
-        mutationCallTimes.push(new Date().getTime());
-        const emitter = through.obj();
-        dispatch(emitter, responses.shift());
-        return emitter;
-      });
+      bigtable.api.BigtableClient = {
+        mutateRows: reqOpts => {
+          mutationBatchesInvoked.push(
+            reqOpts.entries.map(entry => entry.rowKey.asciiSlice())
+          );
+          mutationCallTimes.push(new Date().getTime());
+          const emitter = through.obj();
+          dispatch(emitter, responses.shift());
+          return emitter;
+        },
+      };
     });
 
     afterEach(() => {
       clock.uninstall();
-      stub.restore();
     });
 
     tests.forEach(test => {
@@ -97,18 +92,6 @@ describe('Bigtable/Table', () => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.mutate(test.mutations_request, error => {
-          if (test.errors) {
-            const expectedIndices = test.errors.map(error => {
-              return error.index_in_mutations_request;
-            });
-            assert.deepEqual(error.name, 'PartialFailureError');
-            const actualIndices = error.errors.map(error => {
-              return test.mutations_request.indexOf(error.entry);
-            });
-            assert.deepEqual(expectedIndices, actualIndices);
-          } else {
-            assert.ifError(error);
-          }
           assert.deepEqual(
             mutationBatchesInvoked,
             test.mutation_batches_invoked
@@ -129,6 +112,18 @@ describe('Bigtable/Table', () => {
             assert(delta > minBackoff, message);
             assert(delta < maxBackoff, message);
           });
+          if (test.errors) {
+            const expectedIndices = test.errors.map(error => {
+              return error.index_in_mutations_request;
+            });
+            assert.deepEqual(error.name, 'PartialFailureError');
+            const actualIndices = error.errors.map(error => {
+              return test.mutations_request.indexOf(error.entry);
+            });
+            assert.deepEqual(expectedIndices, actualIndices);
+          } else {
+            assert.ifError(error);
+          }
           done();
         });
         clock.runAll();
