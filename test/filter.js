@@ -43,6 +43,7 @@ describe('Bigtable/Filter', function() {
 
   afterEach(function() {
     FakeMutation.convertToBytes.resetHistory();
+    sinon.restore();
   });
 
   describe('instantiation', function() {
