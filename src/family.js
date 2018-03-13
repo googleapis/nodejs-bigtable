@@ -17,9 +17,8 @@
 'use strict';
 
 var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
 var createErrorClass = require('create-error-class');
-var util = require('util');
+var is = require('is');
 
 /**
  * @private
@@ -44,133 +43,17 @@ var FamilyError = createErrorClass('FamilyError', function(name) {
  * const family = table.family('follows');
  */
 function Family(table, name) {
-  var id = Family.formatName_(table.id, name);
+  this.bigtable = table.bigtable;
+  this.table = table;
+
+  this.id = Family.formatName_(table.id, name);
+
   /**
    * @name Family#familyName
    * @type {string}
    */
   this.familyName = name.split('/').pop();
-
-  var methods = {
-    /**
-     * Create a column family.
-     *
-     * @method Family#create
-     * @param {object} [options] See {@link Table#createFamily}.
-     *
-     * @example
-     * family.create(function(err, family, apiResponse) {
-     *   // The column family was created successfully.
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * family.create().then(function(data) {
-     *   const family = data[0];
-     *   const apiResponse = data[1];
-     * });
-     */
-    create: true,
-
-    /**
-     * Delete the column family.
-     *
-     * @method Family#delete
-     * @param {function} [callback] The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {object} callback.apiResponse The full API response.
-     *
-     * @example
-     * family.delete(function(err, apiResponse) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * family.delete().then(function(data) {
-     *   const apiResponse = data[0];
-     * });
-     */
-    delete: {
-      protoOpts: {
-        service: 'BigtableTableAdmin',
-        method: 'modifyColumnFamilies',
-      },
-      reqOpts: {
-        name: table.id,
-        modifications: [
-          {
-            id: this.familyName,
-            drop: true,
-          },
-        ],
-      },
-    },
-
-    /**
-     * Check if the column family exists.
-     *
-     * @method Family#exists
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {boolean} callback.exists Whether the family exists or not.
-     *
-     * @example
-     * family.exists(function(err, exists) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * family.exists().then(function(data) {
-     *   const exists = data[0];
-     * });
-     */
-    exists: true,
-
-    /**
-     * Get a column family if it exists.
-     *
-     * You may optionally use this to "get or create" an object by providing an
-     * object with `autoCreate` set to `true`. Any extra configuration that is
-     * normally required for the `create` method must be contained within this
-     * object as well.
-     *
-     * @method Family#get
-     * @param {object} [options] Configuration object.
-     * @param {boolean} [options.autoCreate=false] Automatically create the
-     *     object if it does not exist.
-     *
-     * @example
-     * family.get(function(err, family, apiResponse) {
-     *   // `family.metadata` has been populated.
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * family.get().then(function(data) {
-     *   const family = data[0];
-     *   const apiResponse = data[1];
-     * });
-     */
-    get: true,
-  };
-
-  var config = {
-    parent: table,
-    id: id,
-    methods: methods,
-    createMethod: function(_, options, callback) {
-      table.createFamily(name, options, callback);
-    },
-  };
-
-  commonGrpc.ServiceObject.call(this, config);
 }
-
-util.inherits(Family, commonGrpc.ServiceObject);
 
 /**
  * Format the Column Family name into the expected proto format.
@@ -258,13 +141,183 @@ Family.formatRule_ = function(ruleObj) {
 };
 
 /**
+ * Create a column family.
+ *
+ * @param {object} [options] See {@link Table#createFamily}.
+ *
+ * @example
+ * family.create(function(err, family, apiResponse) {
+ *   // The column family was created successfully.
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * family.create().then(function(data) {
+ *   const family = data[0];
+ *   const apiResponse = data[1];
+ * });
+ */
+Family.prototype.create = function(options, callback) {
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
+  }
+
+  this.table.createFamily(this.familyName, options, callback);
+};
+
+/**
+ * Delete the column family.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} [callback] The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * family.delete(function(err, apiResponse) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * family.delete().then(function(data) {
+ *   const apiResponse = data[0];
+ * });
+ */
+Family.prototype.delete = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'modifyColumnFamilies',
+      reqOpts: {
+        name: this.table.id,
+        modifications: [
+          {
+            id: this.familyName,
+            drop: true,
+          },
+        ],
+      },
+      gaxOpts: gaxOptions,
+    },
+    callback
+  );
+};
+
+/**
+ * Check if the column family exists.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {boolean} callback.exists Whether the family exists or not.
+ *
+ * @example
+ * family.exists(function(err, exists) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * family.exists().then(function(data) {
+ *   const exists = data[0];
+ * });
+ */
+Family.prototype.exists = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.getMetadata(gaxOptions, function(err) {
+    if (err) {
+      if (err instanceof FamilyError) {
+        callback(null, false);
+        return;
+      }
+
+      callback(err);
+      return;
+    }
+
+    callback(null, true);
+  });
+};
+
+/**
+ * Get a column family if it exists.
+ *
+ * You may optionally use this to "get or create" an object by providing an
+ * object with `autoCreate` set to `true`. Any extra configuration that is
+ * normally required for the `create` method must be contained within this
+ * object as well.
+ *
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.autoCreate=false] Automatically create the
+ *     instance if it does not already exist.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {?error} callback.error An error returned while making this request.
+ * @param {Family} callback.family The Family object.
+ * @param {object} callback.apiResponse The resource as it exists in the API.
+ *
+ * @example
+ * family.get(function(err, family, apiResponse) {
+ *   // `family.metadata` has been populated.
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * family.get().then(function(data) {
+ *   const family = data[0];
+ *   const apiResponse = data[1];
+ * });
+ */
+Family.prototype.get = function(options, callback) {
+  var self = this;
+
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
+  }
+
+  var autoCreate = !!options.autoCreate;
+  var gaxOptions = options.gaxOptions;
+
+  this.getMetadata(gaxOptions, function(err, metadata) {
+    if (err) {
+      if (err.code === 5 && autoCreate) {
+        self.create({gaxOptions}, callback);
+        return;
+      }
+
+      callback(err);
+      return;
+    }
+
+    callback(null, self, metadata);
+  });
+};
+
+/**
  * Get the column family's metadata.
  *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {object} callback.metadata The metadata.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * family.getMetadata(function(err, metadata, apiResponse) {});
@@ -277,25 +330,30 @@ Family.formatRule_ = function(ruleObj) {
  *   var apiResponse = data[1];
  * });
  */
-Family.prototype.getMetadata = function(callback) {
+Family.prototype.getMetadata = function(gaxOptions, callback) {
   var self = this;
 
-  this.parent.getFamilies(function(err, families, resp) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.table.getFamilies(gaxOptions, function(err, families) {
     if (err) {
-      callback(err, null, resp);
+      callback(err);
       return;
     }
 
     for (var i = 0, l = families.length; i < l; i++) {
       if (families[i].id === self.id) {
         self.metadata = families[i].metadata;
-        callback(null, self.metadata, resp);
+        callback(null, self.metadata);
         return;
       }
     }
 
     var error = new FamilyError(self.id);
-    callback(error, null, resp);
+    callback(error);
   });
 };
 
@@ -309,6 +367,8 @@ Family.prototype.getMetadata = function(callback) {
  *
  * @param {object} metadata Metadata object.
  * @param {object} [metadata.rule] Garbage collection rule.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -331,13 +391,13 @@ Family.prototype.getMetadata = function(callback) {
  *   var apiResponse = data[0];
  * });
  */
-Family.prototype.setMetadata = function(metadata, callback) {
+Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
   var self = this;
 
-  var grpcOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'modifyColumnFamilies',
-  };
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
 
   var mod = {
     id: this.familyName,
@@ -349,19 +409,28 @@ Family.prototype.setMetadata = function(metadata, callback) {
   }
 
   var reqOpts = {
-    name: this.parent.id,
+    name: this.table.id,
     modifications: [mod],
   };
 
-  this.request(grpcOpts, reqOpts, function(err, resp) {
-    if (err) {
-      callback(err, null, resp);
-      return;
-    }
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'modifyColumnFamilies',
+      reqOpts: reqOpts,
+      gaxOpts: gaxOptions,
+    },
+    function() {
+      var args = [].slice.call(arguments);
 
-    self.metadata = resp.columnFamilies[self.familyName];
-    callback(null, self.metadata, resp);
-  });
+      if (args[1]) {
+        self.metadata = args[1].columnFamilies[self.familyName];
+        args.splice(1, 0, self.metadata);
+      }
+
+      callback.apply(null, args);
+    }
+  );
 };
 
 /*! Developer Documentation

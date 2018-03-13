@@ -21,7 +21,6 @@ var async = require('async');
 var uuid = require('uuid');
 
 var Bigtable = require('../');
-var Instance = require('../src/instance.js');
 var Cluster = require('../src/cluster.js');
 var Table = require('../src/table.js');
 var Family = require('../src/family.js');
@@ -96,22 +95,6 @@ describe('Bigtable', function() {
       });
     });
 
-    it('should get a list of instances in stream mode', function(done) {
-      var instances = [];
-
-      bigtable
-        .getInstancesStream()
-        .on('error', done)
-        .on('data', function(instance) {
-          assert(instance instanceof Instance);
-          instances.push(instance);
-        })
-        .on('end', function() {
-          assert(instances.length > 0);
-          done();
-        });
-    });
-
     it('should check if an instance exists', function(done) {
       INSTANCE.exists(function(err, exists) {
         assert.ifError(err);
@@ -164,21 +147,6 @@ describe('Bigtable', function() {
         assert(clusters[0] instanceof Cluster);
         done();
       });
-    });
-
-    it('should retrieve a list of clusters in stream mode', function(done) {
-      var clusters = [];
-
-      INSTANCE.getClustersStream()
-        .on('error', done)
-        .on('data', function(cluster) {
-          assert(cluster instanceof Cluster);
-          clusters.push(cluster);
-        })
-        .on('end', function() {
-          assert(clusters.length > 0);
-          done();
-        });
     });
 
     it('should check if a cluster exists', function(done) {
@@ -391,7 +359,12 @@ describe('Bigtable', function() {
           },
         };
 
-        row.create(rowData, done);
+        row.create(
+          {
+            entry: rowData,
+          },
+          done
+        );
       });
 
       afterEach(row.delete.bind(row));
@@ -459,7 +432,7 @@ describe('Bigtable', function() {
           },
         };
 
-        row.create(rowData, done);
+        row.create({entry: rowData}, done);
       });
 
       it('should insert individual cells', function(done) {
@@ -507,19 +480,26 @@ describe('Bigtable', function() {
           append: '-wood',
         };
 
-        row.save('traits:teeth', 'shiny', function(err) {
-          assert.ifError(err);
-
-          row.createRules(rule, function(err) {
+        row.save(
+          {
+            traits: {
+              teeth: 'shiny',
+            },
+          },
+          function(err) {
             assert.ifError(err);
 
-            row.get(['traits:teeth'], function(err, data) {
+            row.createRules(rule, function(err) {
               assert.ifError(err);
-              assert.strictEqual(data.traits.teeth[0].value, 'shiny-wood');
-              done();
+
+              row.get(['traits:teeth'], function(err, data) {
+                assert.ifError(err);
+                assert.strictEqual(data.traits.teeth[0].value, 'shiny-wood');
+                done();
+              });
             });
-          });
-        });
+          }
+        );
       });
 
       it('should check and mutate a row', function(done) {
@@ -536,7 +516,7 @@ describe('Bigtable', function() {
           },
         ];
 
-        row.filter(filter, mutations, function(err, matched) {
+        row.filter(filter, {onMatch: mutations}, function(err, matched) {
           assert.ifError(err);
           assert(matched);
           done();

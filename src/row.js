@@ -18,13 +18,11 @@
 
 var arrify = require('arrify');
 var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
 var createErrorClass = require('create-error-class');
 var dotProp = require('dot-prop');
 var extend = require('extend');
 var flatten = require('lodash.flatten');
 var is = require('is');
-var util = require('util');
 
 var Filter = require('./filter.js');
 var Mutation = require('./mutation.js');
@@ -52,41 +50,12 @@ var RowError = createErrorClass('RowError', function(row) {
  * const row = table.row('gwashington');
  */
 function Row(table, key) {
-  var methods = {
-    /**
-     * Check if the table row exists.
-     *
-     * @method Row#exists
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {boolean} callback.exists Whether the row exists or not.
-     *
-     * @example
-     * row.exists(function(err, exists) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * row.exists().then(function(data) {
-     *   var exists = data[0];
-     * });
-     */
-    exists: true,
-  };
-
-  var config = {
-    parent: table,
-    methods: methods,
-    id: key,
-  };
-
-  commonGrpc.ServiceObject.call(this, config);
+  this.bigtable = table.bigtable;
+  this.table = table;
+  this.id = key;
 
   this.data = {};
 }
-
-util.inherits(Row, commonGrpc.ServiceObject);
 
 /**
  * Formats the row chunks into friendly format. Chunks contain 3 properties:
@@ -243,7 +212,10 @@ Row.formatFamilies_ = function(families, options) {
 /**
  * Create a new row in your table.
  *
- * @param {object} [entry] An entry. See {@link Table#insert}.
+ * @param {object} [options] Configuration object.
+ * @param {object} [options.entry] An entry. See {@link Table#insert}.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -263,8 +235,10 @@ Row.formatFamilies_ = function(families, options) {
  * // Optionally, you can supply entry data.
  * //-
  * row.create({
- *   follows: {
- *      alincoln: 1
+ *   entry: {
+ *     follows: {
+ *       alincoln: 1
+ *     }
  *   }
  * }, callback);
  *
@@ -275,21 +249,21 @@ Row.formatFamilies_ = function(families, options) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.create = function(entry, callback) {
+Row.prototype.create = function(options, callback) {
   var self = this;
 
-  if (is.function(entry)) {
-    callback = entry;
-    entry = {};
+  if (is.function(options)) {
+    callback = options;
+    options = {};
   }
 
-  entry = {
+  var entry = {
     key: this.id,
-    data: entry,
+    data: options.entry,
     method: Mutation.methods.INSERT,
   };
 
-  this.parent.mutate(entry, function(err, apiResponse) {
+  this.table.mutate(entry, options.gaxOptions, function(err, apiResponse) {
     if (err) {
       callback(err, null, apiResponse);
       return;
@@ -307,6 +281,8 @@ Row.prototype.create = function(entry, callback) {
  * @throws {error} If no rules are provided.
  *
  * @param {object|object[]} rules The rules to apply to this row.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -353,7 +329,12 @@ Row.prototype.create = function(entry, callback) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.createRules = function(rules, callback) {
+Row.prototype.createRules = function(rules, gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
   if (!rules || rules.length === 0) {
     throw new Error('At least one rule must be provided.');
   }
@@ -376,118 +357,28 @@ Row.prototype.createRules = function(rules, callback) {
     return ruleData;
   });
 
-  var grpcOpts = {
-    service: 'Bigtable',
-    method: 'readModifyWriteRow',
-  };
-
   var reqOpts = {
-    tableName: this.parent.id,
+    tableName: this.table.id,
     rowKey: Mutation.convertToBytes(this.id),
     rules: rules,
   };
 
-  this.request(grpcOpts, reqOpts, callback);
-};
-
-/**
- * Mutates a row atomically based on the output of a filter. Depending on
- * whether or not any results are yielded, either the `onMatch` or `onNoMatch`
- * callback will be executed.
- *
- * @param {Filter} filter Filter ot be applied to the contents
- *     of the row.
- * @param {?object[]} onMatch A list of entries to be ran if a match is found.
- * @param {object[]} [onNoMatch] A list of entries to be ran if no matches are
- *     found.
- * @param {function} callback The callback function.
- * @param {?error} callback.err An error returned while making this
- *     request.
- * @param {boolean} callback.matched Whether a match was found or not.
- *
- * @example
- * var callback = function(err, matched) {
- *   if (!err) {
- *     // `matched` will let us know if a match was found or not.
- *   }
- * };
- *
- * var filter = [
- *   {
- *     family: 'follows'
- *   }, {
- *     column: 'alincoln',
- *   }, {
- *     value: 1
- *   }
- * ];
- *
- * var entries = [
- *   {
- *     method: 'insert',
- *     data: {
- *       follows: {
- *         jadams: 1
- *       }
- *     }
- *   }
- * ];
- *
- * row.filter(filter, entries, callback);
- *
- * //-
- * // Optionally, you can pass in an array of entries to be ran in the event
- * // that a match is not made.
- * //-
- * row.filter(filter, null, entries, callback);
- *
- * //-
- * // If the callback is omitted, we'll return a Promise.
- * //-
- * row.filter(filter, null, entries).then(function(data) {
- *   var matched = data[0];
- * });
- */
-Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
-  var grpcOpts = {
-    service: 'Bigtable',
-    method: 'checkAndMutateRow',
-  };
-
-  if (is.function(onNoMatch)) {
-    callback = onNoMatch;
-    onNoMatch = [];
-  }
-
-  var reqOpts = {
-    tableName: this.parent.id,
-    rowKey: Mutation.convertToBytes(this.id),
-    predicateFilter: Filter.parse(filter),
-    trueMutations: createFlatMutationsList(onMatch),
-    falseMutations: createFlatMutationsList(onNoMatch),
-  };
-
-  this.request(grpcOpts, reqOpts, function(err, apiResponse) {
-    if (err) {
-      callback(err, null, apiResponse);
-      return;
-    }
-
-    callback(null, apiResponse.predicateMatched, apiResponse);
-  });
-
-  function createFlatMutationsList(entries) {
-    entries = arrify(entries).map(function(entry) {
-      return Mutation.parse(entry).mutations;
-    });
-
-    return flatten(entries);
-  }
+  this.bigtable.request(
+    {
+      client: 'BigtableClient',
+      method: 'readModifyWriteRow',
+      reqOpts: reqOpts,
+      gaxOpts: gaxOptions,
+    },
+    callback
+  );
 };
 
 /**
  * Deletes all cells in the row.
  *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -503,19 +394,26 @@ Row.prototype.filter = function(filter, onMatch, onNoMatch, callback) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.delete = function(callback) {
+Row.prototype.delete = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
   var mutation = {
     key: this.id,
     method: Mutation.methods.DELETE,
   };
 
-  this.parent.mutate(mutation, callback);
+  this.table.mutate(mutation, gaxOptions, callback);
 };
 
 /**
  * Delete specified cells from the row. See {@link Table#mutate}.
  *
  * @param {string[]} columns Column names for the cells to be deleted.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -553,14 +451,173 @@ Row.prototype.delete = function(callback) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.deleteCells = function(columns, callback) {
+Row.prototype.deleteCells = function(columns, gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
   var mutation = {
     key: this.id,
     data: arrify(columns),
     method: Mutation.methods.DELETE,
   };
 
-  this.parent.mutate(mutation, callback);
+  this.table.mutate(mutation, gaxOptions, callback);
+};
+
+/**
+ * Check if the table row exists.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {boolean} callback.exists Whether the row exists or not.
+ *
+ * @example
+ * row.exists(function(err, exists) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * row.exists().then(function(data) {
+ *   var exists = data[0];
+ * });
+ */
+Row.prototype.exists = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.getMetadata(gaxOptions, function(err) {
+    if (err) {
+      if (err instanceof RowError) {
+        callback(null, false);
+        return;
+      }
+
+      callback(err);
+      return;
+    }
+
+    callback(null, true);
+  });
+};
+
+/**
+ * Mutates a row atomically based on the output of a filter. Depending on
+ * whether or not any results are yielded, either the `onMatch` or `onNoMatch`
+ * callback will be executed.
+ *
+ * @param {Filter} filter Filter to be applied to the contents of the row.
+ * @param {object} config Configuration object.
+ * @param {?object[]} config.onMatch A list of entries to be ran if a match is
+ *     found.
+ * @param {object[]} [config.onNoMatch] A list of entries to be ran if no
+ *     matches are found.
+ * @param {object} [config.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {boolean} callback.matched Whether a match was found or not.
+ *
+ * @example
+ * var callback = function(err, matched) {
+ *   if (!err) {
+ *     // `matched` will let us know if a match was found or not.
+ *   }
+ * };
+ *
+ * var filter = [
+ *   {
+ *     family: 'follows'
+ *   },
+ *   {
+ *     column: 'alincoln',
+ *   },
+ *   {
+ *     value: 1
+ *   }
+ * ];
+ *
+ * var config = {
+ *   onMatch: [
+ *     {
+ *       method: 'insert',
+ *       data: {
+ *         follows: {
+ *           jadams: 1
+ *         }
+ *       }
+ *     }
+ *   ]
+ * };
+ *
+ * row.filter(filter, config, callback);
+ *
+ * //-
+ * // Optionally, you can pass in an array of entries to be ran in the event
+ * // that a match is not made.
+ * //-
+ * var config = {
+ *   onNoMatch: [
+ *     {
+ *       method: 'insert',
+ *       data: {
+ *         follows: {
+ *           jadams: 1
+ *         }
+ *       }
+ *     }
+ *   ]
+ * };
+ *
+ * row.filter(filter, config, callback);
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * row.filter(filter, config).then(function(data) {
+ *   var matched = data[0];
+ * });
+ */
+Row.prototype.filter = function(filter, config, callback) {
+  var reqOpts = {
+    tableName: this.table.id,
+    rowKey: Mutation.convertToBytes(this.id),
+    predicateFilter: Filter.parse(filter),
+    trueMutations: createFlatMutationsList(config.onMatch),
+    falseMutations: createFlatMutationsList(config.onNoMatch),
+  };
+
+  this.bigtable.request(
+    {
+      client: 'BigtableClient',
+      method: 'checkAndMutateRow',
+      reqOpts: reqOpts,
+      gaxOpts: config.gaxOptions,
+    },
+    function(err, apiResponse) {
+      if (err) {
+        callback(err, null, apiResponse);
+        return;
+      }
+
+      callback(null, apiResponse.predicateMatched, apiResponse);
+    }
+  );
+
+  function createFlatMutationsList(entries) {
+    entries = arrify(entries).map(function(entry) {
+      return Mutation.parse(entry).mutations;
+    });
+
+    return flatten(entries);
+  }
 };
 
 /**
@@ -570,11 +627,12 @@ Row.prototype.deleteCells = function(columns, callback) {
  * @param {object} [options] Configuration object.
  * @param {boolean} [options.decode=true] If set to `false` it will not decode Buffer
  *     values returned from Bigtable.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {Row} callback.row The updated Row object.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * //-
@@ -648,14 +706,14 @@ Row.prototype.get = function(columns, options, callback) {
     }
   }
 
-  var reqOpts = extend({}, options, {
+  var getRowsOptions = extend({}, options, {
     keys: [this.id],
     filter: filter,
   });
 
-  this.parent.getRows(reqOpts, function(err, rows, apiResponse) {
+  this.table.getRows(getRowsOptions, function(err, rows) {
     if (err) {
-      callback(err, null, apiResponse);
+      callback(err);
       return;
     }
 
@@ -663,7 +721,7 @@ Row.prototype.get = function(columns, options, callback) {
 
     if (!row) {
       err = new RowError(self.id);
-      callback(err, null, apiResponse);
+      callback(err);
       return;
     }
 
@@ -672,7 +730,7 @@ Row.prototype.get = function(columns, options, callback) {
     // If the user specifies column names, we'll return back the row data we
     // received. Otherwise, we'll return the row itself in a typical
     // GrpcServiceObject#get fashion.
-    callback(null, columns.length ? row.data : self, apiResponse);
+    callback(null, columns.length ? row.data : self);
   });
 };
 
@@ -680,13 +738,14 @@ Row.prototype.get = function(columns, options, callback) {
  * Get the row's metadata.
  *
  * @param {object} [options] Configuration object.
- * @param {boolean} [options.decode=true] If set to `false` it will not decode Buffer
- *     values returned from Bigtable.
+ * @param {boolean} [options.decode=true] If set to `false` it will not decode
+ *     Buffer values returned from Bigtable.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {object} callback.metadata The row's metadata.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * row.getMetadata(function(err, metadata, apiResponse) {});
@@ -705,13 +764,13 @@ Row.prototype.getMetadata = function(options, callback) {
     options = {};
   }
 
-  this.get(options, function(err, row, resp) {
+  this.get(options, function(err, row) {
     if (err) {
-      callback(err, null, resp);
+      callback(err);
       return;
     }
 
-    callback(null, row.metadata, resp);
+    callback(null, row.metadata);
   });
 };
 
@@ -721,6 +780,8 @@ Row.prototype.getMetadata = function(options, callback) {
  *
  * @param {string} column The column we are incrementing a value in.
  * @param {number} [value] The amount to increment by, defaults to 1.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -754,9 +815,24 @@ Row.prototype.getMetadata = function(options, callback) {
  *   var apiResponse = data[1];
  * });
  */
-Row.prototype.increment = function(column, value, callback) {
+Row.prototype.increment = function(column, value, gaxOptions, callback) {
+  // increment('column', callback)
   if (is.function(value)) {
     callback = value;
+    value = 1;
+    gaxOptions = {};
+  }
+
+  // increment('column', value, callback)
+  if (is.function(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  // increment('column', { gaxOptions }, callback)
+  if (is.object(value)) {
+    callback = gaxOptions;
+    gaxOptions = value;
     value = 1;
   }
 
@@ -765,7 +841,7 @@ Row.prototype.increment = function(column, value, callback) {
     increment: value,
   };
 
-  this.createRules(reqOpts, function(err, resp) {
+  this.createRules(reqOpts, gaxOptions, function(err, resp) {
     if (err) {
       callback(err, null, resp);
       return;
@@ -781,17 +857,22 @@ Row.prototype.increment = function(column, value, callback) {
 /**
  * Update the row cells.
  *
- * @param {string|object} key Either a column name or an entry
- *     object to be inserted into the row. See {@link Table#insert}.
- * @param {*} [value] This can be omitted if using entry object.
- * @param {object} [options] Configuration options. See
- *     {@link Table#mutate}.
+ * @param {object} key An entry object to be inserted into the row. See
+ *     {@link Table#insert}.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {object} callback.apiResponse The full API response.
  *
  * @example
+ * var entry = {
+ *   follows: {
+ *     jadams: 1
+ *   }
+ * };
+ *
  * //-
  * // Update a single cell.
  * //-
@@ -801,46 +882,33 @@ Row.prototype.increment = function(column, value, callback) {
  *   }
  * };
  *
- * row.save('follows:jadams', 1, callback);
+ * row.save(entry, 1, callback);
  *
  * //-
  * // Or update several cells at once.
  * //-
- * row.save({
- *   follows: {
- *     jadams: 1,
- *     wmckinley: 1
- *   }
- * }, callback);
+ * row.save(entry, callback);
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.
  * //-
- * row.save('follows:jadams', 1).then(function(data) {
+ * row.save(entry).then(function(data) {
  *   var apiResponse = data[0];
  * });
  */
-Row.prototype.save = function(key, value, callback) {
-  var rowData;
-
-  if (is.string(key)) {
-    var column = Mutation.parseColumnName(key);
-
-    rowData = {};
-    rowData[column.family] = {};
-    rowData[column.family][column.qualifier] = value;
-  } else {
-    rowData = key;
-    callback = value;
+Row.prototype.save = function(entry, gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
   }
 
   var mutation = {
     key: this.id,
-    data: rowData,
+    data: entry,
     method: Mutation.methods.INSERT,
   };
 
-  this.parent.mutate(mutation, callback);
+  this.table.mutate(mutation, gaxOptions, callback);
 };
 
 /*! Developer Documentation

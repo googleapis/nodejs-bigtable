@@ -77,12 +77,9 @@ describe('Read Row Acceptance tests', function() {
           labels: resultLabels,
         });
       });
-      const tableRows = results.map(rawRow => {
-        const row = new Row(table, rawRow.key);
-        row.data = rawRow.data;
-        return row;
-      });
-      table.requestStream = function() {
+
+      table.bigtable = {};
+      table.bigtable.request = function() {
         var stream = new Stream({
           objectMode: true,
         });
@@ -106,6 +103,12 @@ describe('Read Row Acceptance tests', function() {
 
         return stream;
       };
+
+      const tableRows = results.map(rawRow => {
+        const row = new Row(table, rawRow.key);
+        row.data = rawRow.data;
+        return row;
+      });
 
       const errors = [];
       const rows = [];
