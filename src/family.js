@@ -240,7 +240,7 @@ Family.prototype.exists = function(gaxOptions, callback) {
 
   this.getMetadata(gaxOptions, function(err) {
     if (err) {
-      if (err.name === 'FamilyError') {
+      if (err instanceof FamilyError) {
         callback(null, false);
         return;
       }

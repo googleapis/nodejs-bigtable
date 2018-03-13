@@ -244,9 +244,8 @@ describe('Bigtable/Family', function() {
       family.exists(gaxOptions, assert.ifError);
     });
 
-    it('should return false if error name is FamilyError', function(done) {
-      var error = new Error('Error.');
-      error.name = 'FamilyError';
+    it('should return false if FamilyError', function(done) {
+      var error = new FamilyError('Error.');
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -259,9 +258,8 @@ describe('Bigtable/Family', function() {
       });
     });
 
-    it('should return error if name is not FamilyError', function(done) {
+    it('should return error if not FamilyError', function(done) {
       var error = new Error('Error.');
-      error.name = 'NOT-FamilyError';
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(error);
