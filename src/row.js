@@ -100,7 +100,7 @@ Row.formatChunks_ = function(chunks, options) {
     row.data = row.data || {};
 
     if (chunk.rowKey) {
-      row.key = Mutation.convertFromBytes(chunk.rowKey, options);
+      row.key = Mutation.convertFromBytes(chunk.rowKey, {userOptions: options});
     }
 
     if (chunk.familyName) {
@@ -112,7 +112,9 @@ Row.formatChunks_ = function(chunks, options) {
     }
 
     if (chunk.qualifier) {
-      qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, options);
+      qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
+        userOptions: options,
+      });
     }
 
     if (family && qualifierName) {
@@ -121,7 +123,7 @@ Row.formatChunks_ = function(chunks, options) {
 
     if (qualifier && chunk.value) {
       qualifier.push({
-        value: Mutation.convertFromBytes(chunk.value, options),
+        value: Mutation.convertFromBytes(chunk.value, {userOptions: options}),
         labels: chunk.labels,
         timestamp: chunk.timestampMicros,
         size: chunk.valueSize,
@@ -194,7 +196,7 @@ Row.formatFamilies_ = function(families, options) {
         var value = cell.value;
 
         if (options.decode !== false) {
-          value = Mutation.convertFromBytes(value, null, true);
+          value = Mutation.convertFromBytes(value, {isPossibleNumber: true});
         }
 
         return {

@@ -297,7 +297,10 @@ ChunkTransformer.prototype.processNewRow = function(chunk) {
     const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
     this.qualifiers = this.family[qualifierName] = [];
     this.qualifier = {
-      value: Mutation.convertFromBytes(chunk.value, this.options, true),
+      value: Mutation.convertFromBytes(chunk.value, {
+        userOptions: this.options,
+        isPossibleNumber: true,
+      }),
       labels: chunk.labels,
       timestamp: chunk.timestampMicros,
     };
@@ -326,7 +329,7 @@ ChunkTransformer.prototype.processRowInProgress = function(chunk) {
       this.family[qualifierName] || [];
   }
   this.qualifier = {
-    value: Mutation.convertFromBytes(chunk.value, this.options),
+    value: Mutation.convertFromBytes(chunk.value, {userOptions: this.options}),
     labels: chunk.labels,
     timestamp: chunk.timestampMicros,
   };
@@ -343,7 +346,9 @@ ChunkTransformer.prototype.processCellInProgress = function(chunk) {
   if (chunk.resetRow) {
     return this.reset();
   }
-  this.qualifier.value += Mutation.convertFromBytes(chunk.value, this.options);
+  this.qualifier.value += Mutation.convertFromBytes(chunk.value, {
+    userOptions: this.options,
+  });
   this.moveToNextState(chunk);
 };
 

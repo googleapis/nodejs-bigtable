@@ -48,7 +48,9 @@ describe('Bigtable/Mutation', function() {
       it('should convert a base64 encoded number when true', function() {
         var num = 10;
         var encoded = new Int64(num).toBuffer().toString('base64');
-        var decoded = Mutation.convertFromBytes(encoded, null, true);
+        var decoded = Mutation.convertFromBytes(encoded, {
+          isPossibleNumber: true,
+        });
 
         assert.strictEqual(num, decoded);
       });
@@ -72,8 +74,9 @@ describe('Bigtable/Mutation', function() {
     it('should return a buffer if decode is set to false', function() {
       var message = 'Hello!';
       var encoded = Buffer.from(message).toString('base64');
+      const userOptions = {decode: false};
       var decoded = Mutation.convertFromBytes(encoded, {
-        decode: false,
+        userOptions: userOptions,
       });
 
       assert(decoded instanceof Buffer);
