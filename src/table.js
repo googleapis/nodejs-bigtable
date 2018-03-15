@@ -25,7 +25,6 @@ var is = require('is');
 var propAssign = require('prop-assign');
 var pumpify = require('pumpify');
 var through = require('through2');
-var util = require('util');
 
 var Family = require('./family.js');
 var Filter = require('./filter.js');
@@ -54,126 +53,14 @@ const HTTP_RETRYABLE_STATUS_CODES = new Set([409, 503, 504]);
  * const table = instance.table('prezzy');
  */
 function Table(instance, name) {
+  this.bigtable = instance.bigtable;
+  this.instance = instance;
+
   var id = Table.formatName_(instance.id, name);
 
-  var methods = {
-    /**
-     * Create a table.
-     *
-     * @method Table#create
-     * @param {object} [options] See {@link Instance#createTable}.
-     *
-     * @example
-     * table.create(function(err, table, apiResponse) {
-     *   if (!err) {
-     *     // The table was created successfully.
-     *   }
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * table.create().then(function(data) {
-     *   var table = data[0];
-     *   var apiResponse = data[1];
-     * });
-     */
-    create: true,
-
-    /**
-     * Delete the table.
-     *
-     * @method Table#delete
-     * @param {function} [callback] The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {object} callback.apiResponse The full API response.
-     *
-     * @example
-     * table.delete(function(err, apiResponse) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * table.delete().then(function(data) {
-     *   var apiResponse = data[0];
-     * });
-     */
-    delete: {
-      protoOpts: {
-        service: 'BigtableTableAdmin',
-        method: 'deleteTable',
-      },
-      reqOpts: {
-        name: id,
-      },
-    },
-
-    /**
-     * Check if a table exists.
-     *
-     * @method Table#exists
-     * @param {function} callback The callback function.
-     * @param {?error} callback.err An error returned while making this
-     *     request.
-     * @param {boolean} callback.exists Whether the table exists or not.
-     *
-     * @example
-     * table.exists(function(err, exists) {});
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * table.exists().then(function(data) {
-     *   var exists = data[0];
-     * });
-     */
-    exists: true,
-
-    /**
-     * Get a table if it exists.
-     *
-     * You may optionally use this to "get or create" an object by providing an
-     * object with `autoCreate` set to `true`. Any extra configuration that is
-     * normally required for the `create` method must be contained within this
-     * object as well.
-     *
-     * @method Table#get
-     * @param {object} [options] Configuration object.
-     * @param {boolean} [options.autoCreate=false] Automatically create the
-     *     object if it does not exist.
-     * @param {string} [options.view] The view to be applied to the table
-     *   fields. See {@link Table#getMetadata}.
-     *
-     * @example
-     * table.get(function(err, table, apiResponse) {
-     *   // The `table` data has been populated.
-     * });
-     *
-     * //-
-     * // If the callback is omitted, we'll return a Promise.
-     * //-
-     * table.get().then(function(data) {
-     *   var table = data[0];
-     *   var apiResponse = data[0];
-     * });
-     */
-    get: true,
-  };
-
-  var config = {
-    parent: instance,
-    id: id,
-    methods: methods,
-    createMethod: function(_, options, callback) {
-      instance.createTable(name, options, callback);
-    },
-  };
-
-  commonGrpc.ServiceObject.call(this, config);
+  this.id = id;
+  this.name = id.split('/').pop();
 }
-
-util.inherits(Table, commonGrpc.ServiceObject);
 
 /**
  * The view to be applied to the returned table's fields.
@@ -251,6 +138,37 @@ Table.createPrefixRange_ = function(start) {
 };
 
 /**
+ * Create a table.
+ *
+ * @param {object} [options] See {@link Instance#createTable}.
+ * @param {object} [options.gaxOptions]  Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ *
+ * @example
+ * table.create(function(err, table, apiResponse) {
+ *   if (!err) {
+ *     // The table was created successfully.
+ *   }
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * table.create().then(function(data) {
+ *   var table = data[0];
+ *   var apiResponse = data[1];
+ * });
+ */
+Table.prototype.create = function(options, callback) {
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
+  }
+
+  this.instance.createTable(this.name, options, callback);
+};
+
+/**
  * Create a column family.
  *
  * Optionally you can send garbage collection rules and when creating a family.
@@ -263,13 +181,18 @@ Table.createPrefixRange_ = function(start) {
  * @throws {error} If a name is not provided.
  *
  * @param {string} name The name of column family.
- * @param {object} [rule] Garbage collection rule.
- * @param {object} [rule.age] Delete cells in a column older than the given
- *     age. Values must be at least 1 millisecond.
- * @param {number} [rule.versions] Maximum number of versions to delete cells
- *     in a column, except for the most recent.
- * @param {boolean} [rule.intersect] Cells to delete should match all rules.
- * @param {boolean} [rule.union] Cells to delete should match any of the rules.
+ * @param {object} [options] Configuration object.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {object} [options.rule] Garbage collection rule
+ * @param {object} [options.rule.age] Delete cells in a column older than the
+ *     given age. Values must be at least 1 millisecond.
+ * @param {number} [options.rule.versions] Maximum number of versions to delete
+ *     cells in a column, except for the most recent.
+ * @param {boolean} [options.rule.intersect] Cells to delete should match all
+ *     rules.
+ * @param {boolean} [options.rule.union] Cells to delete should match any of the
+ *     rules.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {Family} callback.family The newly created Family.
@@ -304,30 +227,25 @@ Table.createPrefixRange_ = function(start) {
  *   const apiResponse = data[1];
  * });
  */
-Table.prototype.createFamily = function(name, rule, callback) {
+Table.prototype.createFamily = function(name, options, callback) {
   var self = this;
 
-  if (is.function(rule)) {
-    callback = rule;
-    rule = null;
+  if (is.function(options)) {
+    callback = options;
+    options = {};
   }
 
   if (!name) {
     throw new Error('A name is required to create a family.');
   }
 
-  var grpcOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'modifyColumnFamilies',
-  };
-
   var mod = {
     id: name,
     create: {},
   };
 
-  if (rule) {
-    mod.create.gcRule = Family.formatRule_(rule);
+  if (options.rule) {
+    mod.create.gcRule = Family.formatRule_(options.rule);
   }
 
   var reqOpts = {
@@ -335,16 +253,25 @@ Table.prototype.createFamily = function(name, rule, callback) {
     modifications: [mod],
   };
 
-  this.request(grpcOpts, reqOpts, function(err, resp) {
-    if (err) {
-      callback(err, null, resp);
-      return;
-    }
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'modifyColumnFamilies',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+    },
+    function(err, resp) {
+      if (err) {
+        callback(err, null, resp);
+        return;
+      }
 
-    var family = self.family(resp.name);
-    family.metadata = resp;
-    callback(null, family, resp);
-  });
+      var family = self.family(resp.name);
+      family.metadata = resp;
+
+      callback(null, family, resp);
+    }
+  );
 };
 
 /**
@@ -357,6 +284,8 @@ Table.prototype.createFamily = function(name, rule, callback) {
  * @param {string} [options.end] End value for key range.
  * @param {Filter} [options.filter] Row filters allow you to
  *     both make advanced queries and format how the data is returned.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {string[]} [options.keys] A list of row keys.
  * @param {number} [options.limit] Maximum number of rows to be returned.
  * @param {string} [options.prefix] Prefix that the row key must match.
@@ -486,18 +415,15 @@ Table.prototype.createReadStream = function(options) {
   const makeNewRequest = () => {
     let lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
     chunkTransformer = new ChunkTransformer({decode: options.decode});
-    var grpcOpts = {
-      service: 'Bigtable',
-      method: 'readRows',
-      retryOpts: {
-        currentRetryAttempt: numRequestsMade,
-      },
-    };
 
     var reqOpts = {
       tableName: this.id,
-      objectMode: true,
     };
+
+    var retryOpts = {
+      currentRetryAttempt: numRequestsMade,
+    };
+
     if (lastRowKey) {
       const lessThan = (lhs, rhs) => {
         const lhsBytes = Mutation.convertToBytes(lhs);
@@ -552,15 +478,18 @@ Table.prototype.createReadStream = function(options) {
     }
     if (rowKeys || ranges.length) {
       reqOpts.rows = {};
+
       if (rowKeys) {
         reqOpts.rows.rowKeys = rowKeys.map(Mutation.convertToBytes);
       }
+
       if (ranges.length) {
         reqOpts.rows.rowRanges = ranges.map(function(range) {
           return Filter.createRange(range.start, range.end, 'Key');
         });
       }
     }
+
     if (filter) {
       reqOpts.filter = filter;
     }
@@ -569,7 +498,14 @@ Table.prototype.createReadStream = function(options) {
       reqOpts.rowsLimit = rowsLimit - rowsRead;
     }
 
-    const requestStream = this.requestStream(grpcOpts, reqOpts);
+    const requestStream = this.bigtable.request({
+      client: 'BigtableClient',
+      method: 'readRows',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+      retryOpts: retryOpts,
+    });
+
     requestStream.on('request', () => numRequestsMade++);
 
     const rowStream = pumpify.obj([
@@ -603,6 +539,45 @@ Table.prototype.createReadStream = function(options) {
 
   makeNewRequest();
   return userStream;
+};
+
+/**
+ * Delete the table.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} [callback] The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * table.delete(function(err, apiResponse) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * table.delete().then(function(data) {
+ *   var apiResponse = data[0];
+ * });
+ */
+Table.prototype.delete = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'deleteTable',
+      reqOpts: {
+        name: this.id,
+      },
+      gaxOpts: gaxOptions,
+    },
+    callback
+  );
 };
 
 /**
@@ -653,11 +628,6 @@ Table.prototype.deleteRows = function(options, callback) {
     options = {};
   }
 
-  var grpcOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'dropRowRange',
-  };
-
   var reqOpts = {
     name: this.id,
   };
@@ -668,7 +638,56 @@ Table.prototype.deleteRows = function(options, callback) {
     reqOpts.deleteAllDataFromTable = true;
   }
 
-  this.request(grpcOpts, reqOpts, callback);
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'dropRowRange',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+    },
+    callback
+  );
+};
+
+/**
+ * Check if a table exists.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {boolean} callback.exists Whether the table exists or not.
+ *
+ * @example
+ * table.exists(function(err, exists) {});
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * table.exists().then(function(data) {
+ *   var exists = data[0];
+ * });
+ */
+Table.prototype.exists = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.getMetadata(gaxOptions, function(err) {
+    if (err) {
+      if (err.code === 5) {
+        callback(null, false);
+        return;
+      }
+
+      callback(err);
+      return;
+    }
+
+    callback(null, true);
+  });
 };
 
 /**
@@ -691,8 +710,66 @@ Table.prototype.family = function(name) {
 };
 
 /**
+ * Get a table if it exists.
+ *
+ * You may optionally use this to "get or create" an object by providing an
+ * object with `autoCreate` set to `true`. Any extra configuration that is
+ * normally required for the `create` method must be contained within this
+ * object as well.
+ *
+ * @param {object} [options] Configuration object.
+ * @param {boolean} [options.autoCreate=false] Automatically create the
+ *     instance if it does not already exist.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {?error} callback.error An error returned while making this request.
+ * @param {Table} callback.table The Table object.
+ * @param {object} callback.apiResponse The resource as it exists in the API.
+ *
+ * @example
+ * table.get(function(err, table, apiResponse) {
+ *   // The `table` data has been populated.
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * table.get().then(function(data) {
+ *   var table = data[0];
+ *   var apiResponse = data[0];
+ * });
+ */
+Table.prototype.get = function(options, callback) {
+  var self = this;
+
+  if (is.fn(options)) {
+    callback = options;
+    options = {};
+  }
+
+  var autoCreate = !!options.autoCreate;
+  var gaxOptions = options.gaxOptions;
+
+  this.getMetadata({gaxOptions}, function(err, metadata) {
+    if (err) {
+      if (err.code === 5 && autoCreate) {
+        self.create({gaxOptions}, callback);
+        return;
+      }
+
+      callback(err);
+      return;
+    }
+
+    callback(null, self, metadata);
+  });
+};
+
+/**
  * Get Family objects for all the column familes in your table.
  *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {Family[]} callback.families The list of families.
@@ -716,22 +793,27 @@ Table.prototype.family = function(name) {
  *   var apiResponse = data[1];
  * });
  */
-Table.prototype.getFamilies = function(callback) {
+Table.prototype.getFamilies = function(gaxOptions, callback) {
   var self = this;
 
-  this.getMetadata(function(err, resp) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.getMetadata({gaxOptions}, function(err, metadata) {
     if (err) {
-      callback(err, null, resp);
+      callback(err);
       return;
     }
 
-    var families = Object.keys(resp.columnFamilies).map(function(familyId) {
+    var families = Object.keys(metadata.columnFamilies).map(function(familyId) {
       var family = self.family(familyId);
-      family.metadata = resp.columnFamilies[familyId];
+      family.metadata = metadata.columnFamilies[familyId];
       return family;
     });
 
-    callback(null, families, resp);
+    callback(null, families, metadata.columnFamilies);
   });
 };
 
@@ -739,12 +821,13 @@ Table.prototype.getFamilies = function(callback) {
  * Get the table's metadata.
  *
  * @param {object} [options] Table request options.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {string} [options.view] The view to be applied to the table fields.
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
  * @param {object} callback.metadata The table's metadata.
- * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -752,7 +835,7 @@ Table.prototype.getFamilies = function(callback) {
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
  *
- * table.getMetadata(function(err, metadata, apiResponse) {});
+ * table.getMetadata(function(err, metadata) {});
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.
@@ -770,25 +853,26 @@ Table.prototype.getMetadata = function(options, callback) {
     options = {};
   }
 
-  var protoOpts = {
-    service: 'BigtableTableAdmin',
-    method: 'getTable',
-  };
-
   var reqOpts = {
     name: this.id,
     view: Table.VIEWS[options.view || 'unspecified'],
   };
 
-  this.request(protoOpts, reqOpts, function(err, resp) {
-    if (err) {
-      callback(err, null, resp);
-      return;
-    }
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'getTable',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+    },
+    function() {
+      if (arguments[1]) {
+        self.metadata = arguments[1];
+      }
 
-    self.metadata = resp;
-    callback(null, self.metadata, resp);
-  });
+      callback.apply(null, arguments);
+    }
+  );
 };
 
 /**
@@ -800,6 +884,8 @@ Table.prototype.getMetadata = function(options, callback) {
  *
  * @param {object} [options] Configuration object. See
  *     {@link Table#createReadStream} for a complete list of options.
+ * @param {object} [options.gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {Row[]} callback.rows List of Row objects.
@@ -845,6 +931,8 @@ Table.prototype.getRows = function(options, callback) {
  *
  * @param {object|object[]} entries List of entries to be inserted.
  *     See {@link Table#mutate}.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {object[]} callback.err.errors If present, these represent partial
@@ -912,10 +1000,15 @@ Table.prototype.getRows = function(options, callback) {
  * });
  * //-
  */
-Table.prototype.insert = function(entries, callback) {
+Table.prototype.insert = function(entries, gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
   entries = arrify(entries).map(propAssign('method', Mutation.methods.INSERT));
 
-  return this.mutate(entries, callback);
+  return this.mutate(entries, gaxOptions, callback);
 };
 
 /**
@@ -925,6 +1018,8 @@ Table.prototype.insert = function(entries, callback) {
  *
  * @param {object|object[]} entries List of entities to be inserted or
  *     deleted.
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {object[]} callback.err.errors If present, these represent partial
@@ -1024,8 +1119,13 @@ Table.prototype.insert = function(entries, callback) {
  *   // All requested mutations have been processed.
  * });
  */
-Table.prototype.mutate = function(entries, callback) {
+Table.prototype.mutate = function(entries, gaxOptions, callback) {
   var self = this;
+
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
 
   entries = flatten(arrify(entries));
 
@@ -1037,6 +1137,11 @@ Table.prototype.mutate = function(entries, callback) {
   var mutationErrorsByEntryIndex = new Map();
 
   function onBatchResponse(err) {
+    if (err) {
+      // The error happened before a request was even made, don't retry.
+      callback(err);
+      return;
+    }
     if (pendingEntryIndices.size !== 0 && numRequestsMade <= maxRetries) {
       makeNextBatchRequest();
       return;
@@ -1053,28 +1158,36 @@ Table.prototype.mutate = function(entries, callback) {
   }
 
   function makeNextBatchRequest() {
-    var grpcOpts = {
-      service: 'Bigtable',
-      method: 'mutateRows',
-      retryOpts: {
-        currentRetryAttempt: numRequestsMade,
-      },
-    };
-
     var entryBatch = entries.filter((entry, index) => {
       return pendingEntryIndices.has(index);
     });
 
     var reqOpts = {
-      objectMode: true,
       tableName: self.id,
       entries: entryBatch.map(Mutation.parse),
     };
 
-    self
-      .requestStream(grpcOpts, reqOpts)
-      .on('error', onBatchResponse)
+    var retryOpts = {
+      currentRetryAttempt: numRequestsMade,
+    };
+
+    self.bigtable
+      .request({
+        client: 'BigtableClient',
+        method: 'mutateRows',
+        reqOpts: reqOpts,
+        gaxOpts: gaxOptions,
+        retryOpts: retryOpts,
+      })
       .on('request', () => numRequestsMade++)
+      .on('error', err => {
+        if (numRequestsMade === 0) {
+          callback(err); // Likely a "projectId not detected" error.
+          return;
+        }
+
+        onBatchResponse(err);
+      })
       .on('data', function(obj) {
         obj.entries.forEach(function(entry) {
           var originalEntry = entryBatch[entry.index];
@@ -1127,6 +1240,8 @@ Table.prototype.row = function(key) {
  * contigous sections of the table of approximately equal size, which can be
  * used to break up the data for distributed tasks like mapreduces.
  *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {object[]} callback.keys The list of keys.
@@ -1149,8 +1264,13 @@ Table.prototype.row = function(key) {
  *   var keys = data[0];
  * });
  */
-Table.prototype.sampleRowKeys = function(callback) {
-  this.sampleRowKeysStream()
+Table.prototype.sampleRowKeys = function(gaxOptions, callback) {
+  if (is.fn(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  this.sampleRowKeysStream(gaxOptions)
     .on('error', callback)
     .pipe(
       concat(function(keys) {
@@ -1164,6 +1284,8 @@ Table.prototype.sampleRowKeys = function(callback) {
  *
  * See {@link Table#sampleRowKeys} for more details.
  *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @returns {stream}
  *
  * @example
@@ -1182,19 +1304,18 @@ Table.prototype.sampleRowKeys = function(callback) {
  *     this.end();
  *   });
  */
-Table.prototype.sampleRowKeysStream = function() {
-  var grpcOpts = {
-    service: 'Bigtable',
-    method: 'sampleRowKeys',
-  };
-
+Table.prototype.sampleRowKeysStream = function(gaxOptions) {
   var reqOpts = {
     tableName: this.id,
-    objectMode: true,
   };
 
   return pumpify.obj([
-    this.requestStream(grpcOpts, reqOpts),
+    this.bigtable.request({
+      client: 'BigtableClient',
+      method: 'sampleRowKeys',
+      reqOpts: reqOpts,
+      gaxOpts: gaxOptions,
+    }),
     through.obj(function(key, enc, next) {
       next(null, {
         key: key.rowKey,

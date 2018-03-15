@@ -88,33 +88,32 @@ describe('Bigtable/Table', () => {
       responses = null;
       rowKeysRead = [];
       requestedOptions = [];
-      stub = sinon
-        .stub(TABLE, 'requestStream')
-        .callsFake((grpcOpts, reqOpts) => {
-          let requestOptions = {};
-          if (reqOpts.rows && reqOpts.rows.rowRanges) {
-            requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
-              const convertedRowRange = {};
-              Object.keys(range).forEach(
-                key => (convertedRowRange[key] = range[key].asciiSlice())
-              );
-              return convertedRowRange;
-            });
-          }
-          if (reqOpts.rows && reqOpts.rows.rowKeys) {
-            requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys =>
-              rowKeys.asciiSlice()
+      stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
+        const reqOpts = cfg.reqOpts;
+        let requestOptions = {};
+        if (reqOpts.rows && reqOpts.rows.rowRanges) {
+          requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
+            const convertedRowRange = {};
+            Object.keys(range).forEach(
+              key => (convertedRowRange[key] = range[key].asciiSlice())
             );
-          }
-          if (reqOpts.rowsLimit) {
-            requestOptions.rowsLimit = reqOpts.rowsLimit;
-          }
-          requestedOptions.push(requestOptions);
-          rowKeysRead.push([]);
-          const emitter = through.obj();
-          dispatch(emitter, responses.shift());
-          return emitter;
-        });
+            return convertedRowRange;
+          });
+        }
+        if (reqOpts.rows && reqOpts.rows.rowKeys) {
+          requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys =>
+            rowKeys.asciiSlice()
+          );
+        }
+        if (reqOpts.rowsLimit) {
+          requestOptions.rowsLimit = reqOpts.rowsLimit;
+        }
+        requestedOptions.push(requestOptions);
+        rowKeysRead.push([]);
+        const emitter = through.obj();
+        dispatch(emitter, responses.shift());
+        return emitter;
+      });
     });
 
     afterEach(() => {
@@ -131,20 +130,23 @@ describe('Bigtable/Table', () => {
           .on('end', () => (endCalled = true))
           .on('error', err => (error = err));
         clock.runAll();
-        if (test.error) {
-          assert(!endCalled, `.on('end') should not have been invoked`);
-          assert.strictEqual(error.code, test.error);
-        } else {
-          assert(endCalled, `.on('end') shoud have been invoked`);
-          assert.ifError(error);
-        }
-        assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
-        assert.strictEqual(
-          responses.length,
-          0,
-          'not all the responses were used'
-        );
-        assert.deepStrictEqual(requestedOptions, test.request_options);
+
+        setImmediate(function() {
+          if (test.error) {
+            assert(!endCalled, `.on('end') should not have been invoked`);
+            assert.strictEqual(error.code, test.error);
+          } else {
+            assert(endCalled, `.on('end') shoud have been invoked`);
+            assert.ifError(error);
+          }
+          assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
+          assert.strictEqual(
+            responses.length,
+            0,
+            'not all the responses were used'
+          );
+          assert.deepStrictEqual(requestedOptions, test.request_options);
+        });
       });
     });
   });
