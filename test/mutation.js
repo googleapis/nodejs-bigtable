@@ -44,12 +44,23 @@ describe('Bigtable/Mutation', function() {
   });
 
   describe('convertFromBytes', function() {
-    it('should convert a base64 encoded number', function() {
-      var num = 10;
-      var encoded = new Int64(num).toBuffer().toString('base64');
-      var decoded = Mutation.convertFromBytes(encoded);
+    describe('isPossibleNumber', function() {
+      it('should convert a base64 encoded number when true', function() {
+        var num = 10;
+        var encoded = new Int64(num).toBuffer().toString('base64');
+        var decoded = Mutation.convertFromBytes(encoded, {
+          isPossibleNumber: true,
+        });
 
-      assert.strictEqual(num, decoded);
+        assert.strictEqual(num, decoded);
+      });
+      it('should not convert a base64 encoded number when false', function() {
+        var num = 10;
+        var encoded = new Int64(num).toBuffer().toString('base64');
+        var decoded = Mutation.convertFromBytes(encoded);
+
+        assert.notEqual(num, decoded);
+      });
     });
 
     it('should convert a base64 encoded string', function() {
@@ -63,11 +74,21 @@ describe('Bigtable/Mutation', function() {
     it('should return a buffer if decode is set to false', function() {
       var message = 'Hello!';
       var encoded = Buffer.from(message).toString('base64');
+      const userOptions = {decode: false};
       var decoded = Mutation.convertFromBytes(encoded, {
-        decode: false,
+        userOptions: userOptions,
       });
 
       assert(decoded instanceof Buffer);
+      assert.strictEqual(decoded.toString(), message);
+    });
+
+    it('should not create a new Buffer needlessly', function() {
+      var message = 'Hello!';
+      var encoded = Buffer.from(message);
+      const stub = sinon.stub(Buffer, 'from');
+      const decoded = Mutation.convertFromBytes(encoded);
+      assert.strictEqual(stub.called, false);
       assert.strictEqual(decoded.toString(), message);
     });
   });

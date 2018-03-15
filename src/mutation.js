@@ -62,14 +62,16 @@ var methods = (Mutation.methods = {
  * @returns {string|number|buffer}
  */
 Mutation.convertFromBytes = function(bytes, options) {
-  var buf = Buffer.from(bytes, 'base64');
-  var num = new Int64(buf).toNumber();
+  var buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
+  if (options && options.isPossibleNumber) {
+    var num = new Int64(buf).toNumber();
 
-  if (!isNaN(num) && isFinite(num)) {
-    return num;
+    if (!isNaN(num) && isFinite(num)) {
+      return num;
+    }
   }
 
-  if (options && options.decode === false) {
+  if (options && options.userOptions && options.userOptions.decode === false) {
     return buf;
   }
 

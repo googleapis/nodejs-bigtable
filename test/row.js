@@ -317,7 +317,7 @@ describe('Bigtable/Row', function() {
       };
 
       FakeMutation.convertFromBytes = sinon.spy(function(val, options) {
-        assert.strictEqual(options, formatOptions);
+        assert.deepStrictEqual(options, {userOptions: formatOptions});
         return val.replace('unconverted', 'converted');
       });
 
@@ -381,7 +381,7 @@ describe('Bigtable/Row', function() {
       // 1 === qualifier
       // 2 === value
       var args = FakeMutation.convertFromBytes.getCall(2).args;
-      assert.strictEqual(args[1], formatOptions);
+      assert.deepStrictEqual(args[1], {userOptions: formatOptions});
     });
 
     it('should discard old data when reset row is found', function() {
