@@ -47,5 +47,5 @@ For more information, see https://cloud.google.com/bigtable/docs
 [instances_0_docs]: https://cloud.google.com/bigtable/docs/
 [instances_0_code]: instances.js
 
-[shell_img]: http://gstatic.com/cloudssh/images/open-btn.png
+[shell_img]: //gstatic.com/cloudssh/images/open-btn.png
 [shell_link]: https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/README.md
