@@ -796,7 +796,7 @@ describe('Bigtable/Table', function() {
 
         makeRetryableError = () => {
           var error = new Error('retry me!');
-          error.code = 409;
+          error.code = 4;
           return error;
         };
 
