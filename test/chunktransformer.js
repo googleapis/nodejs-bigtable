@@ -737,6 +737,65 @@ describe('Bigtable/ChunkTransformer', function() {
         'state mismatch'
       );
     });
+    it('should concat buffer when decode option is false', function() {
+      chunkTransformer = new ChunkTransformer({decode: false});
+      processCellInProgressSpy = sinon.spy(
+        chunkTransformer,
+        'processCellInProgress'
+      );
+      resetSpy = sinon.spy(chunkTransformer, 'reset');
+      commitSpy = sinon.spy(chunkTransformer, 'commit');
+      destroySpy = sinon.spy(chunkTransformer, 'destroy');
+      chunkTransformer.qualifier = {
+        value: Buffer.from('value'.toString('base64'), 'base64'),
+        size: 0,
+        timestamp: 0,
+        labels: [],
+      };
+      chunkTransformer.qualifiers = [chunkTransformer.qualifier];
+      chunkTransformer.family = {
+        qualifier: chunkTransformer.qualifiers,
+      };
+      chunkTransformer.row = {
+        key: 'key',
+        data: {
+          family: chunkTransformer.family,
+        },
+      };
+      const chunk = {
+        commitRow: false,
+        value: Buffer.from('value'.toString('base64'), 'base64'),
+        valueSize: 0,
+      };
+      chunkTransformer.processCellInProgress(chunk);
+      assert(!resetSpy.called, 'invalid call to reset');
+      assert(!commitSpy.called, 'invalid call to commit');
+      assert.equal(rows.length, 0, 'wrong call to push');
+      const expectedState = {
+        key: 'key',
+        data: {
+          family: {
+            qualifier: [
+              {
+                value: Buffer.concat([
+                  Buffer.from('value'.toString('base64'), 'base64'),
+                  Buffer.from('value'.toString('base64'), 'base64'),
+                ]),
+                size: 0,
+                timestamp: 0,
+                labels: [],
+              },
+            ],
+          },
+        },
+      };
+      assert.deepEqual(chunkTransformer.row, expectedState, 'row mismatch');
+      assert.equal(
+        chunkTransformer.state,
+        RowStateEnum.ROW_IN_PROGRESS,
+        'state mismatch'
+      );
+    });
   });
   describe('_flush', function() {
     var _flushSpy;
