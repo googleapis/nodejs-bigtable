@@ -87,8 +87,8 @@ ChunkTransformer.prototype._transform = function(data, enc, next) {
       return;
     }
   }
-  if (data.lastScannedRowKey) {
-    this.lastRowKey = data.lastScannedRowKey;
+  if (data.lastScannedRowKey && data.lastScannedRowKey.length > 0) {
+    this.lastRowKey = Mutation.convertFromBytes(data.lastScannedRowKey);
   }
   next();
 };
