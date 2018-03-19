@@ -26,7 +26,7 @@
         { "rowRanges": [ { "startKeyOpen": "b" } ] }
       ],
       "responses": [
-        { "row_keys": [ "a", "b" ], "end_with_error": 503 },
+        { "row_keys": [ "a", "b" ], "end_with_error": 4 },
         { "row_keys": [ "c" ] }
       ],
       "row_keys_read": [
@@ -44,15 +44,15 @@
         {}, {}, {}, {}
       ],
       "responses": [
-        { "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "end_with_error": 503 }
+        { "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "end_with_error": 4 }
       ],
       "row_keys_read": [
         [], [], [], []
       ],
-      "error": 503
+      "error": 4
     },
 
 
@@ -72,13 +72,13 @@
         { "rowRanges": [ { "startKeyOpen": "b" } ] }
       ],
       "responses": [
-        { "row_keys": [ "a" ], "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "row_keys": [ "b" ], "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "end_with_error": 503 },
+        { "row_keys": [ "a" ], "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "row_keys": [ "b" ], "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "end_with_error": 4 },
         { "row_keys": [ "c" ] }
       ],
       "row_keys_read": [
@@ -102,7 +102,7 @@
         { "rowRanges": [ { "startKeyOpen": "b", "endKeyClosed": "z" } ] }
       ],
       "responses": [
-        { "row_keys": [ "a", "b" ], "end_with_error": 503 },
+        { "row_keys": [ "a", "b" ], "end_with_error": 4 },
         { "row_keys": [ "c" ] }
       ],
       "row_keys_read": [
@@ -133,7 +133,7 @@
         { "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
       ],
       "responses": [
-        { "row_keys": [ "a", "b", "c" ], "end_with_error": 503 },
+        { "row_keys": [ "a", "b", "c" ], "end_with_error": 4 },
         { "row_keys": [ "x" ] }
       ],
       "row_keys_read": [
@@ -155,7 +155,7 @@
         { "rowKeys": [ "x" ], "rowRanges": [ { "startKeyOpen": "c" } ] }
       ],
       "responses": [
-        { "row_keys": [ "a", "b", "c" ], "end_with_error": 503 },
+        { "row_keys": [ "a", "b", "c" ], "end_with_error": 4 },
         { "row_keys": [ "x" ] }
       ],
       "row_keys_read": [
@@ -176,7 +176,7 @@
         { "rowsLimit": 8, "rowRanges": [ { "startKeyOpen": "b" } ] }
       ],
       "responses": [
-        { "row_keys": [ "a", "b" ], "end_with_error": 503 },
+        { "row_keys": [ "a", "b" ], "end_with_error": 4 },
         { "row_keys": [ "x" ] }
       ],
       "row_keys_read": [
@@ -285,14 +285,14 @@
         }
       ],
       "responses": [
-        { "row_keys": [ "a" ], "end_with_error": 503 },
-        { "row_keys": [ "b" ], "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "end_with_error": 503 },
-        { "row_keys": [ "c" ], "end_with_error": 503 },
-        { "row_keys": [ "p", "q", "r", "s", "x" ], "end_with_error": 503 },
-        { "row_keys": [ "y" ], "end_with_error": 503 },
+        { "row_keys": [ "a" ], "end_with_error": 4 },
+        { "row_keys": [ "b" ], "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "end_with_error": 4 },
+        { "row_keys": [ "c" ], "end_with_error": 4 },
+        { "row_keys": [ "p", "q", "r", "s", "x" ], "end_with_error": 4 },
+        { "row_keys": [ "y" ], "end_with_error": 4 },
         { "row_keys": [ "z" ] }
       ],
       "row_keys_read": [
