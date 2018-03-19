@@ -34,10 +34,7 @@ const ChunkTransformer = require('./chunktransformer.js');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
-const GRPC_RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
-
-// (409=ABORTED, 503=UNAVAILABLE, 14=DEADLINE_EXCEEDED)
-const HTTP_RETRYABLE_STATUS_CODES = new Set([409, 503, 504]);
+const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
@@ -527,7 +524,7 @@ Table.prototype.createReadStream = function(options) {
       rowStream.unpipe(userStream);
       if (
         numRequestsMade <= maxRetries &&
-        HTTP_RETRYABLE_STATUS_CODES.has(error.code)
+        RETRYABLE_STATUS_CODES.has(error.code)
       ) {
         makeNewRequest();
       } else {
@@ -1200,7 +1197,7 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
             return;
           }
 
-          if (!GRPC_RETRYABLE_STATUS_CODES.has(entry.status.code)) {
+          if (!RETRYABLE_STATUS_CODES.has(entry.status.code)) {
             pendingEntryIndices.delete(originalEntriesIndex);
           }
 
