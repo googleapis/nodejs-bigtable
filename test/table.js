@@ -1458,7 +1458,7 @@ describe('Bigtable/Table', function() {
           done();
         };
 
-        table.getRows({appProfileId}, function(err, rows) {
+        table.getRows({appProfileId}, function() {
           done();
         });
       });

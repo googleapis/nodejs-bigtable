@@ -629,11 +629,14 @@ describe('Bigtable/Row', function() {
 
     it('should accept appProfileId', function(done) {
       var gaxOptions = {
-        appProfileId: "app-profile-id-12345",
+        appProfileId: 'app-profile-id-12345',
       };
 
       row.bigtable.request = function(config) {
-        assert.strictEqual(config.gaxOpts.appProfileId, gaxOptions.appProfileId);
+        assert.strictEqual(
+          config.gaxOpts.appProfileId,
+          gaxOptions.appProfileId
+        );
         done();
       };
 
