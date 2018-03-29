@@ -400,6 +400,17 @@ describe('Bigtable/Table', function() {
         table.createReadStream({gaxOptions});
       });
 
+      it('should accept appProfileId', function(done) {
+        var appProfileId = 'app-profile-id-12345';
+
+        table.bigtable.request = function(config) {
+          assert.strictEqual(config.reqOpts.appProfileId, appProfileId);
+          done();
+        };
+
+        table.createReadStream({appProfileId});
+      });
+
       it('should retrieve a range of rows', function(done) {
         var options = {
           start: 'gwashington',
@@ -1438,6 +1449,19 @@ describe('Bigtable/Table', function() {
           done();
         });
       });
+
+      it('should accept appProfileId', function(done) {
+        var appProfileId = 'app-profile-id-12345';
+
+        table.bigtable.request = function(config) {
+          assert.strictEqual(config.appProfileId, appProfileId);
+          done();
+        };
+
+        table.getRows({appProfileId}, function(err, rows) {
+          done();
+        });
+      });
     });
 
     describe('error', function() {
@@ -1507,6 +1531,17 @@ describe('Bigtable/Table', function() {
       };
 
       table.insert([], gaxOptions, assert.ifError);
+    });
+
+    it('should accept appProfileId', function(done) {
+      var appProfileId = 'app-profile-id-12345';
+
+      table.mutate = function(entries, gaxOptions_) {
+        assert.strictEqual(gaxOptions_.appProfileId, appProfileId);
+        done();
+      };
+
+      table.insert([], {appProfileId}, assert.ifError);
     });
   });
 
@@ -1789,6 +1824,17 @@ describe('Bigtable/Table', function() {
       };
 
       table.sampleRowKeys(gaxOptions);
+    });
+
+    it('should accept appProfileId', function(done) {
+      var appProfileId = 'app-profile-id-12345';
+
+      table.sampleRowKeysStream = function(gaxOptions_) {
+        assert.strictEqual(gaxOptions_.appProfileId, appProfileId);
+        done();
+      };
+
+      table.sampleRowKeys({appProfileId});
     });
 
     describe('success', function() {
