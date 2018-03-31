@@ -279,7 +279,6 @@ Table.prototype.createFamily = function(name, options, callback) {
  * @param {boolean} [options.decode=true] If set to `false` it will not decode
  *     Buffer values returned from Bigtable.
  * @param {string} [options.end] End value for key range.
- * @param {string} [options.appProfileId] Applicaion Profile Id
  * @param {Filter} [options.filter] Row filters allow you to
  *     both make advanced queries and format how the data is returned.
  * @param {object} [options.gaxOptions] Request configuration options, outlined
@@ -416,11 +415,8 @@ Table.prototype.createReadStream = function(options) {
 
     var reqOpts = {
       tableName: this.id,
+      appProfileId: this.appProfileId,
     };
-
-    if (options.appProfileId) {
-      reqOpts.appProfileId = options.appProfileId;
-    }
 
     var retryOpts = {
       currentRetryAttempt: numRequestsMade,
@@ -888,7 +884,6 @@ Table.prototype.getMetadata = function(options, callback) {
  *     {@link Table#createReadStream} for a complete list of options.
  * @param {object} [options.gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {string} [options.appProfileId] Applicaion Profile Id
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {Row[]} callback.rows List of Row objects.
@@ -936,7 +931,6 @@ Table.prototype.getRows = function(options, callback) {
  *     See {@link Table#mutate}.
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {string} [gaxOptions.appProfileId] Applicaion Profile Id
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {object[]} callback.err.errors If present, these represent partial
@@ -1024,7 +1018,6 @@ Table.prototype.insert = function(entries, gaxOptions, callback) {
  *     deleted.
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {string} [gaxOptions.appProfileId] Applicaion Profile Id.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {object[]} callback.err.errors If present, these represent partial
@@ -1169,7 +1162,7 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
 
     var reqOpts = {
       tableName: self.id,
-      appProfileId: gaxOptions ? gaxOptions.appProfileId : null,
+      appProfileId: self.appProfileId,
       entries: entryBatch.map(Mutation.parse),
     };
 
@@ -1248,7 +1241,6 @@ Table.prototype.row = function(key) {
  *
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {string} [gaxOptions.appProfileId] Applicaion Profile Id.
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {object[]} callback.keys The list of keys.
@@ -1293,7 +1285,6 @@ Table.prototype.sampleRowKeys = function(gaxOptions, callback) {
  *
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {string} [gaxOptions.appProfileId] Applicaion Profile Id.
  * @returns {stream}
  *
  * @example
@@ -1315,7 +1306,7 @@ Table.prototype.sampleRowKeys = function(gaxOptions, callback) {
 Table.prototype.sampleRowKeysStream = function(gaxOptions) {
   var reqOpts = {
     tableName: this.id,
-    appProfileId: gaxOptions ? gaxOptions.appProfileId : null,
+    appProfileId: this.appProfileId,
   };
 
   return pumpify.obj([

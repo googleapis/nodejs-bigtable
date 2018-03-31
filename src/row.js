@@ -285,7 +285,6 @@ Row.prototype.create = function(options, callback) {
  * @param {object|object[]} rules The rules to apply to this row.
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {string} [gaxOptions.appProfileId] Applicaion Profile Id.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
@@ -362,7 +361,7 @@ Row.prototype.createRules = function(rules, gaxOptions, callback) {
 
   var reqOpts = {
     tableName: this.table.id,
-    appProfileId: gaxOptions ? gaxOptions.appProfileId : null,
+    appProfileId: this.appProfileId,
     rowKey: Mutation.convertToBytes(this.id),
     rules: rules,
   };
@@ -522,7 +521,6 @@ Row.prototype.exists = function(gaxOptions, callback) {
  *     found.
  * @param {object[]} [config.onNoMatch] A list of entries to be ran if no
  *     matches are found.
- * @param {string} [config.appProfileId] Applicaion Profile Id.
  * @param {object} [config.gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
  * @param {function} callback The callback function.
@@ -593,7 +591,7 @@ Row.prototype.exists = function(gaxOptions, callback) {
 Row.prototype.filter = function(filter, config, callback) {
   var reqOpts = {
     tableName: this.table.id,
-    appProfileId: config.appProfileId || null,
+    appProfileId: this.appProfileId,
     rowKey: Mutation.convertToBytes(this.id),
     predicateFilter: Filter.parse(filter),
     trueMutations: createFlatMutationsList(config.onMatch),

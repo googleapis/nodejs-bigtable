@@ -626,22 +626,6 @@ describe('Bigtable/Row', function() {
 
       row.createRules(rules, gaxOptions, assert.ifError);
     });
-
-    it('should accept appProfileId', function(done) {
-      var gaxOptions = {
-        appProfileId: 'app-profile-id-12345',
-      };
-
-      row.bigtable.request = function(config) {
-        assert.strictEqual(
-          config.gaxOpts.appProfileId,
-          gaxOptions.appProfileId
-        );
-        done();
-      };
-
-      row.createRules(rules, gaxOptions, assert.ifError);
-    });
   });
 
   describe('delete', function() {
@@ -843,20 +827,6 @@ describe('Bigtable/Row', function() {
       };
 
       row.filter(filter, {gaxOptions}, assert.ifError);
-    });
-
-    it('should accept appProfileId', function(done) {
-      var filter = {
-        column: 'a',
-      };
-      var appProfileId = 'app-profile-id-12345';
-
-      row.bigtable.request = function(config) {
-        assert.strictEqual(config.reqOpts.appProfileId, appProfileId);
-        done();
-      };
-
-      row.filter(filter, {appProfileId}, assert.ifError);
     });
 
     it('should return an error to the callback', function(done) {
