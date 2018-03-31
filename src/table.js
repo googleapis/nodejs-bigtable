@@ -415,7 +415,7 @@ Table.prototype.createReadStream = function(options) {
 
     var reqOpts = {
       tableName: this.id,
-      appProfileId: this.appProfileId,
+      appProfileId: this.bigtable.appProfileId,
     };
 
     var retryOpts = {
@@ -1162,7 +1162,7 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
 
     var reqOpts = {
       tableName: self.id,
-      appProfileId: self.appProfileId,
+      appProfileId: self.bigtable.appProfileId,
       entries: entryBatch.map(Mutation.parse),
     };
 
@@ -1306,7 +1306,7 @@ Table.prototype.sampleRowKeys = function(gaxOptions, callback) {
 Table.prototype.sampleRowKeysStream = function(gaxOptions) {
   var reqOpts = {
     tableName: this.id,
-    appProfileId: this.appProfileId,
+    appProfileId: this.bigtable.appProfileId,
   };
 
   return pumpify.obj([
