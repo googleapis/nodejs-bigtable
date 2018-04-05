@@ -95,8 +95,7 @@ var FakeFilter = {
 describe('Bigtable/Table', function() {
   var TABLE_ID = 'my-table';
   var INSTANCE;
-
-  var TABLE_NAME = INSTANCE.id + '/tables/' + TABLE_ID;
+  var TABLE_NAME;
 
   var Table;
   var table;
@@ -123,6 +122,7 @@ describe('Bigtable/Table', function() {
       bigtable: {},
       id: 'a/b/c/d',
     };
+    TABLE_NAME = INSTANCE.id + '/tables/' + TABLE_ID;
     table = new Table(INSTANCE, TABLE_ID);
   });
 
