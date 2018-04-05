@@ -421,7 +421,7 @@ function Bigtable(options) {
   this.api = {};
   this.auth = googleAuth(options);
   this.projectId = options.projectId || '{{projectId}}';
-  this.appProfileId = options.appProfileId || undefined;
+  this.appProfileId = options.appProfileId;
   this.projectName = 'projects/' + this.projectId;
 }
 
