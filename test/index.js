@@ -82,6 +82,7 @@ var FakeInstance = createFake(Instance);
 
 describe('Bigtable', function() {
   var PROJECT_ID = 'test-project';
+  var PROJECT_ID_TOKEN = '{{projectId}}';
 
   var Bigtable;
   var bigtable;
@@ -245,6 +246,11 @@ describe('Bigtable', function() {
 
       var bigtable = new Bigtable(options);
 
+      assert.strictEqual(
+        bigtable.customEndpoint,
+        process.env.BIGTABLE_EMULATOR_HOST
+      );
+
       assert.deepEqual(bigtable.options, {
         BigtableClient: extend(
           {
@@ -285,6 +291,8 @@ describe('Bigtable', function() {
 
       var bigtable = new Bigtable(options);
 
+      assert.strictEqual(bigtable.customEndpoint, options.apiEndpoint);
+
       assert.deepEqual(bigtable.options, {
         BigtableClient: extend(
           {
@@ -315,7 +323,7 @@ describe('Bigtable', function() {
 
     it('should default projectId to token', function() {
       var bigtable = new Bigtable();
-      assert.strictEqual(bigtable.projectId, '{{projectId}}');
+      assert.strictEqual(bigtable.projectId, PROJECT_ID_TOKEN);
     });
 
     it('should set the projectName', function() {
@@ -568,13 +576,9 @@ describe('Bigtable', function() {
       gaxOpts: {},
     };
 
-    var PROJECT_ID = 'project-id';
-
     beforeEach(function() {
-      bigtable.auth = {
-        getProjectId: function(callback) {
-          callback(null, PROJECT_ID);
-        },
+      bigtable.getProjectId_ = function(callback) {
+        callback(null, PROJECT_ID);
       };
 
       bigtable.api[CONFIG.client] = {
@@ -584,7 +588,7 @@ describe('Bigtable', function() {
 
     describe('prepareGaxRequest', function() {
       it('should get the project ID', function(done) {
-        bigtable.auth.getProjectId = function() {
+        bigtable.getProjectId_ = function() {
           done();
         };
 
@@ -594,7 +598,7 @@ describe('Bigtable', function() {
       it('should return error if getting project ID failed', function(done) {
         var error = new Error('Error.');
 
-        bigtable.auth.getProjectId = function(callback) {
+        bigtable.getProjectId_ = function(callback) {
           callback(error);
         };
 
@@ -644,6 +648,28 @@ describe('Bigtable', function() {
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind: function(gaxClient, reqOpts) {
             assert.strictEqual(reqOpts, replacedReqOpts);
+
+            setImmediate(done);
+
+            return common.util.noop;
+          },
+        };
+
+        bigtable.request(CONFIG, assert.ifError);
+      });
+
+      it('should not replace token when project ID not detected', function(done) {
+        replaceProjectIdTokenOverride = function(reqOpts, projectId) {
+          throw new Error('Should not have tried to replace token.');
+        };
+
+        bigtable.getProjectId_ = function(callback) {
+          callback(null, PROJECT_ID_TOKEN);
+        };
+
+        bigtable.api[CONFIG.client][CONFIG.method] = {
+          bind: function(gaxClient, reqOpts) {
+            assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
 
             setImmediate(done);
 
@@ -756,7 +782,7 @@ describe('Bigtable', function() {
       it('should destroy the stream with prepare error', function(done) {
         var error = new Error('Error.');
 
-        bigtable.auth.getProjectId = function(callback) {
+        bigtable.getProjectId_ = function(callback) {
           callback(error);
         };
 
@@ -795,6 +821,79 @@ describe('Bigtable', function() {
         var requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
         requestStream.on('request', done);
+      });
+    });
+  });
+
+  describe('getProjectId_', function() {
+    beforeEach(function() {
+      bigtable.auth = {
+        getProjectId: function(callback) {
+          callback(null, PROJECT_ID);
+        },
+      };
+    });
+
+    it('should return the provided project ID', function(done) {
+      var providedProjectId = 'provided-project-id';
+
+      bigtable.auth.getProjectId = function() {
+        throw new Error('Auth client should not be called.');
+      };
+
+      bigtable.projectId = providedProjectId;
+
+      bigtable.getProjectId_(function(err, projectId) {
+        assert.ifError(err);
+        assert.strictEqual(projectId, providedProjectId);
+        done();
+      });
+    });
+
+    it('should return any project ID if in custom endpoint', function(done) {
+      bigtable.auth.getProjectId = function() {
+        throw new Error('Aut client should not be called.');
+      };
+
+      bigtable.projectId = PROJECT_ID_TOKEN;
+      bigtable.customEndpoint = 'custom-endpoint';
+
+      bigtable.getProjectId_(function(err, projectId) {
+        assert.ifError(err);
+        assert.strictEqual(projectId, PROJECT_ID_TOKEN);
+        done();
+      });
+    });
+
+    it('should return error if project ID detection failed', function(done) {
+      var error = new Error('Error.');
+
+      bigtable.auth.getProjectId = function(callback) {
+        callback(error);
+      };
+
+      bigtable.projectId = PROJECT_ID_TOKEN;
+
+      bigtable.getProjectId_(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should get and cache the project ID if not provided', function(done) {
+      var detectedProjectId = 'detected-project-id';
+
+      bigtable.auth.getProjectId = function(callback) {
+        callback(null, detectedProjectId);
+      };
+
+      bigtable.projectId = PROJECT_ID_TOKEN;
+
+      bigtable.getProjectId_(function(err, projectId) {
+        assert.ifError(err);
+        assert.strictEqual(projectId, detectedProjectId);
+        assert.strictEqual(bigtable.projectId, detectedProjectId);
+        done();
       });
     });
   });
