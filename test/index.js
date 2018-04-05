@@ -659,7 +659,7 @@ describe('Bigtable', function() {
       });
 
       it('should not replace token when project ID not detected', function(done) {
-        replaceProjectIdTokenOverride = function(reqOpts, projectId) {
+        replaceProjectIdTokenOverride = function() {
           throw new Error('Should not have tried to replace token.');
         };
 
