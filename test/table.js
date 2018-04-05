@@ -1540,14 +1540,13 @@ describe('Bigtable/Table', function() {
 
     it('should provide the proper request options', function(done) {
       var stream = through.obj();
-      table.bigtable.appProfileId = 'app-profile-id-12345';
 
       table.bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'mutateRows');
 
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
-        assert.strictEqual(config.reqOpts.appProfileId, 'app-profile-id-12345');
+        assert.strictEqual(config.reqOpts.appProfileId, undefined);
         assert.deepEqual(config.reqOpts.entries, fakeEntries);
 
         assert.strictEqual(parseSpy.callCount, 2);
