@@ -377,14 +377,27 @@ describe('Bigtable/Table', function() {
 
   describe('createReadStream', function() {
     it('should provide the proper request options', function(done) {
-      table.bigtable.appProfileId = 'app-profile-id-12345';
-
       table.bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'readRows');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
-        assert.strictEqual(config.reqOpts.appProfileId, 'app-profile-id-12345');
+        assert.strictEqual(config.reqOpts.appProfileId, undefined);
         assert.strictEqual(config.gaxOpts, undefined);
+        done();
+      };
+
+      table.createReadStream();
+    });
+    
+    it('should use an appProfileId', function(done) {
+      var bigtableInstance = table.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+
+      bigtableInstance.request = function(config) {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
         done();
       };
 
@@ -401,21 +414,6 @@ describe('Bigtable/Table', function() {
         };
 
         table.createReadStream({gaxOptions});
-      });
-
-      it('should use an appProfileId', function(done) {
-        var bigtableInstance = table.bigtable;
-        bigtableInstance.appProfileId = 'app-profile-id-12345';
-
-        bigtableInstance.request = function(config) {
-          assert.strictEqual(
-            config.reqOpts.appProfileId,
-            bigtableInstance.appProfileId
-          );
-          done();
-        };
-
-        table.createReadStream();
       });
 
       it('should retrieve a range of rows', function(done) {
