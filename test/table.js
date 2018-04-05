@@ -389,7 +389,7 @@ describe('Bigtable/Table', function() {
 
       table.createReadStream();
     });
-    
+
     it('should use an appProfileId', function(done) {
       var bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
