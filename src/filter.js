@@ -73,6 +73,7 @@ var FilterError = createErrorClass('FilterError', function(filter) {
  * | jadams      | 1                   |                | 1                  |
  *
  * @class
+ * @private
  */
 function Filter() {
   this.filters_ = [];
