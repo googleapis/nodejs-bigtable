@@ -329,7 +329,10 @@ ChunkTransformer.prototype.processRowInProgress = function(chunk) {
       this.family[qualifierName] || [];
   }
   this.qualifier = {
-    value: Mutation.convertFromBytes(chunk.value, {userOptions: this.options}),
+    value: Mutation.convertFromBytes(chunk.value, {
+      userOptions: this.options,
+      isPossibleNumber: true,
+    }),
     labels: chunk.labels,
     timestamp: chunk.timestampMicros,
   };

@@ -20,6 +20,7 @@ const assert = require('assert');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon').sandbox.create();
 const Mutation = require('../src/mutation.js');
+const Int64 = require('node-int64');
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
 const RowStateEnum = require('../src/chunktransformer.js').RowStateEnum;
@@ -555,6 +556,54 @@ describe('Bigtable/ChunkTransformer', function() {
       assert.equal(
         chunkTransformer.state,
         RowStateEnum.CELL_IN_PROGRESS,
+        'state mismatch'
+      );
+    });
+    it('should decode numbers', function() {
+      const RealChunkTransformer = require('../src/chunktransformer.js');
+      chunkTransformer = new RealChunkTransformer({decode: true});
+      resetSpy = sinon.spy(chunkTransformer, 'reset');
+      commitSpy = sinon.spy(chunkTransformer, 'commit');
+      destroySpy = sinon.spy(chunkTransformer, 'destroy');
+
+      chunkTransformer.qualifiers = [];
+      chunkTransformer.row = {
+        key: 'key',
+        data: {
+          family: {
+            qualifier: chunkTransformer.qualifiers,
+          },
+        },
+      };
+      const chunk = {
+        commitRow: false,
+        value: new Int64(10).toBuffer().toString('base64'),
+        valueSize: 0,
+        timestampMicros: 0,
+        labels: [],
+      };
+      chunkTransformer.processRowInProgress(chunk);
+      assert(!resetSpy.called, 'invalid call to reset');
+      assert(!commitSpy.called, 'invalid call to commit');
+      assert.equal(rows.length, 0, 'wrong call to push');
+      const expectedState = {
+        key: 'key',
+        data: {
+          family: {
+            qualifier: [
+              {
+                value: 10,
+                timestamp: 0,
+                labels: [],
+              },
+            ],
+          },
+        },
+      };
+      assert.deepEqual(chunkTransformer.row, expectedState, 'row mismatch');
+      assert.equal(
+        chunkTransformer.state,
+        RowStateEnum.ROW_IN_PROGRESS,
         'state mismatch'
       );
     });
