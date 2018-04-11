@@ -1398,6 +1398,87 @@ Table.VIEWS = {
   full: 4,
 };
 
+/**
+ * Generates Consistency-Token and check consistency for generated token
+ * In-case consistency check returns false, retrial is done in interval
+ * of 5 seconds till 10 minutes, after that it returns false.
+ *
+ * @param {function(?error, ?boolean)} callback The callback function.
+ * @param {?Error} callback.err An error returned while making this request.
+ * @param {?Boolean} callback.resp Boolean value.
+ */
+Table.prototype.waitForReplication = function(callback) {
+  const self = this;
+
+  const reqOpts = {
+    name: self.id,
+  };
+
+  self.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'generateConsistencyToken',
+      reqOpts: reqOpts,
+    },
+    (err, resp) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      const timeoutAfterTenMinutes = setTimeout(() => {
+        callback(null, false);
+      }, 10 * 60 * 1000);
+
+      function retryIfNecessary(err, res) {
+        if (!err && res === true) {
+          clearTimeout(timeoutAfterTenMinutes);
+          callback(null, true);
+          return;
+        }
+        setTimeout(checkConsistency, 5000);
+      }
+
+      function checkConsistency() {
+        const token = resp[0].consistencyToken;
+        self.checkConsistency(token, retryIfNecessary);
+      }
+
+      checkConsistency();
+    }
+  );
+};
+
+/**
+ * Checks consistency for given ConsistencyToken
+ *
+ * @param {function(?error, ?boolean)} callback The callback function.
+ * @param {?Error} callback.err An error returned while making this request.
+ * @param {?Boolean} callback.resp Boolean value.
+ */
+Table.prototype.checkConsistency = function(token, callback) {
+  const reqOpts = {
+    name: this.id,
+    consistencyToken: token,
+  };
+
+  this.bigtable.request(
+    {
+      client: 'BigtableTableAdminClient',
+      method: 'checkConsistency',
+      reqOpts: reqOpts,
+    },
+    (err, resp) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      callback(null, resp.consistent === 1);
+    }
+  );
+};
+
 /*! Developer Documentation
  *
  * All async methods (except for streams) will return a Promise in the event

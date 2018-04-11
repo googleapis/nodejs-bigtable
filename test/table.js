@@ -1391,6 +1391,19 @@ describe('Bigtable/Table', function() {
     });
   });
 
+  describe('waitForReplication', function() {
+    it('should provide the proper request options', function(done) {
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'generateConsistencyToken');
+        assert.strictEqual(config.reqOpts.name, table.id);
+        done();
+      };
+
+      table.waitForReplication(assert.ifError);
+    });
+  });
+
   describe('getMetadata', function() {
     var views = {
       unspecified: 0,
