@@ -47,6 +47,9 @@ const v2 = require('./v2');
  *     downloaded from the Google Developers Console. If you provide a path to a
  *     JSON file, the `projectId` option above is not necessary. NOTE: .pem and
  *     .p12 require you to specify the `email` option as well.
+ * @property {string} [appProfileId] An application profile ID, a configuration
+ *     string value describing how Cloud Bigtable should treat traffic from a
+ *     particular end user application.
  * @property {string} [email] Account email address. Required when using a .pem
  *     or .p12 keyFilename.
  * @property {object} [credentials] Credentials object.
@@ -418,6 +421,7 @@ function Bigtable(options) {
   this.api = {};
   this.auth = googleAuth(options);
   this.projectId = options.projectId || '{{projectId}}';
+  this.appProfileId = options.appProfileId;
   this.projectName = 'projects/' + this.projectId;
 }
 

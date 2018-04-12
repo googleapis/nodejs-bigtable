@@ -94,12 +94,8 @@ var FakeFilter = {
 
 describe('Bigtable/Table', function() {
   var TABLE_ID = 'my-table';
-  var INSTANCE = {
-    bigtable: {},
-    id: 'a/b/c/d',
-  };
-
-  var TABLE_NAME = INSTANCE.id + '/tables/' + TABLE_ID;
+  var INSTANCE;
+  var TABLE_NAME;
 
   var Table;
   var table;
@@ -122,6 +118,11 @@ describe('Bigtable/Table', function() {
   });
 
   beforeEach(function() {
+    INSTANCE = {
+      bigtable: {},
+      id: 'a/b/c/d',
+    };
+    TABLE_NAME = INSTANCE.id + '/tables/' + TABLE_ID;
     table = new Table(INSTANCE, TABLE_ID);
   });
 
@@ -381,7 +382,23 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'readRows');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
+        assert.strictEqual(config.reqOpts.appProfileId, undefined);
         assert.strictEqual(config.gaxOpts, undefined);
+        done();
+      };
+
+      table.createReadStream();
+    });
+
+    it('should use an appProfileId', function(done) {
+      var bigtableInstance = table.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+
+      bigtableInstance.request = function(config) {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
         done();
       };
 
@@ -1530,6 +1547,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.method, 'mutateRows');
 
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
+        assert.strictEqual(config.reqOpts.appProfileId, undefined);
         assert.deepEqual(config.reqOpts.entries, fakeEntries);
 
         assert.strictEqual(parseSpy.callCount, 2);
@@ -1542,6 +1560,21 @@ describe('Bigtable/Table', function() {
       };
 
       table.mutate(entries, assert.ifError);
+    });
+
+    it('should use an appProfileId', function(done) {
+      var bigtableInstance = table.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+
+      bigtableInstance.request = function(config) {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
+        done();
+      };
+
+      table.mutate(done);
     });
 
     describe('error', function() {
@@ -1872,6 +1905,21 @@ describe('Bigtable/Table', function() {
       };
 
       table.sampleRowKeysStream();
+    });
+
+    it('should use an appProfileId', function(done) {
+      var bigtableInstance = table.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+
+      bigtableInstance.request = function(config) {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
+        done();
+      };
+
+      table.sampleRowKeysStream(done);
     });
 
     it('should accept gaxOptions', function(done) {

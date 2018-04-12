@@ -321,6 +321,16 @@ describe('Bigtable', function() {
     it('should set the projectName', function() {
       assert.strictEqual(bigtable.projectName, 'projects/' + PROJECT_ID);
     });
+
+    it('should set the appProfileId', function() {
+      var options = {
+        appProfileId: 'app-profile-id-12345',
+      };
+
+      var bigtable = new Bigtable(options);
+
+      assert.strictEqual(bigtable.appProfileId, 'app-profile-id-12345');
+    });
   });
 
   describe('createInstance', function() {

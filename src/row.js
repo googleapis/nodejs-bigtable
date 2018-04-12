@@ -361,6 +361,7 @@ Row.prototype.createRules = function(rules, gaxOptions, callback) {
 
   var reqOpts = {
     tableName: this.table.id,
+    appProfileId: this.bigtable.appProfileId,
     rowKey: Mutation.convertToBytes(this.id),
     rules: rules,
   };
@@ -590,6 +591,7 @@ Row.prototype.exists = function(gaxOptions, callback) {
 Row.prototype.filter = function(filter, config, callback) {
   var reqOpts = {
     tableName: this.table.id,
+    appProfileId: this.bigtable.appProfileId,
     rowKey: Mutation.convertToBytes(this.id),
     predicateFilter: Filter.parse(filter),
     trueMutations: createFlatMutationsList(config.onMatch),

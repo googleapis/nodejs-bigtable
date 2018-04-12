@@ -616,6 +616,21 @@ describe('Bigtable/Row', function() {
       row.createRules(rules, done);
     });
 
+    it('should use an appProfileId', function(done) {
+      var bigtableInstance = row.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+
+      bigtableInstance.request = function(config) {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
+        done();
+      };
+
+      row.createRules(rules, assert.ifError);
+    });
+
     it('should accept gaxOptions', function(done) {
       var gaxOptions = {};
 
@@ -827,6 +842,25 @@ describe('Bigtable/Row', function() {
       };
 
       row.filter(filter, {gaxOptions}, assert.ifError);
+    });
+
+    it('should use an appProfileId', function(done) {
+      var filter = {
+        column: 'a',
+      };
+
+      var bigtableInstance = row.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+
+      bigtableInstance.request = function(config) {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
+        done();
+      };
+
+      row.filter(filter, assert.ifError);
     });
 
     it('should return an error to the callback', function(done) {
