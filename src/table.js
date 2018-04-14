@@ -1402,7 +1402,6 @@ Table.VIEWS = {
  * Generates Consistency-Token and check consistency for generated token
  * In-case consistency check returns false, retrial is done in interval
  * of 5 seconds till 10 minutes, after that it returns false.
- *
  * @param {function(?error, ?boolean)} callback The callback function.
  * @param {?Error} callback.err An error returned while making this request.
  * @param {?Boolean} callback.resp Boolean value.
@@ -1451,7 +1450,6 @@ Table.prototype.waitForReplication = function(callback) {
 
 /**
  * Checks consistency for given ConsistencyToken
- *
  * @param {function(?error, ?boolean)} callback The callback function.
  * @param {?Error} callback.err An error returned while making this request.
  * @param {?Boolean} callback.resp Boolean value.
