@@ -1402,6 +1402,91 @@ describe('Bigtable/Table', function() {
 
       table.waitForReplication(assert.ifError);
     });
+
+    describe('error', function() {
+      var error = new Error('err');
+
+      beforeEach(function() {
+        table.bigtable.request = function(config, callback) {
+          callback(error);
+        };
+      });
+
+      it('should return the error to the callback', function(done) {
+        table.waitForReplication(function(err) {
+          assert.strictEqual(err, error);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('checkConsistency', function() {
+    it('should provide the proper request options', function(done) {
+      var cToken = 'consistency-token-123';
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'checkConsistency');
+        assert.strictEqual(config.reqOpts.name, table.id);
+        assert.strictEqual(config.reqOpts.consistencyToken, cToken);
+        done();
+      };
+
+      table.checkConsistency(cToken);
+    });
+
+    describe('error', function() {
+      var cToken = 'consistency-token-123';
+      var error = new Error('err');
+
+      beforeEach(function() {
+        table.bigtable.request = function(config, callback) {
+          callback(error);
+        };
+      });
+
+      it('should return the error to the callback', function(done) {
+        table.checkConsistency(cToken, function(err) {
+          assert.strictEqual(err, error);
+          done();
+        });
+      });
+    });
+
+    describe('success when token is consistent', function() {
+      beforeEach(function() {
+        table.bigtable.request = function(config, callback) {
+          callback(null, {
+            consistent: 1,
+          });
+        };
+      });
+
+      it('should return true if consistent', function(done) {
+        table.checkConsistency('', function(err, resp) {
+          assert.strictEqual(resp, true);
+          done();
+        });
+      });
+    });
+
+    describe('success when token is in-consistent', function() {
+      beforeEach(function() {
+        table.bigtable.request = function(config, callback) {
+          callback(null, {
+            consistent: 0,
+          });
+        };
+      });
+
+      it('should return false if in-consistent', function(done) {
+        table.checkConsistency('', function(err, resp) {
+          assert.strictEqual(resp, false);
+          done();
+        });
+      });
+    });
   });
 
   describe('getMetadata', function() {
