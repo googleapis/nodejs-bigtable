@@ -370,8 +370,10 @@ function Bigtable(options) {
   var defaultBaseUrl = 'bigtable.googleapis.com';
   var defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
 
-  var customEndpoint = (this.customEndpoint =
-    options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST);
+  var customEndpoint =
+    options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
+  this.customEndpoint = customEndpoint;
+
   var customEndpointBaseUrl;
   var customEndpointPort;
 

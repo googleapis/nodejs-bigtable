@@ -852,7 +852,7 @@ describe('Bigtable', function() {
 
     it('should return any project ID if in custom endpoint', function(done) {
       bigtable.auth.getProjectId = function() {
-        throw new Error('Aut client should not be called.');
+        throw new Error('Auth client should not be called.');
       };
 
       bigtable.projectId = PROJECT_ID_TOKEN;
