@@ -264,6 +264,14 @@ describe('Bigtable', function() {
         done();
       });
     });
+
+    it('should create a table if autoCreate is true', function(done) {
+      var table = INSTANCE.table(generateName('table'));
+      async.series(
+        [table.get.bind(table, {autoCreate: true}), table.delete.bind(table)],
+        done
+      );
+    });
   });
 
   describe('column families', function() {
@@ -312,6 +320,18 @@ describe('Bigtable', function() {
         assert.strictEqual(exists, false);
         done();
       });
+    });
+
+    it('should create a family if autoCreate is true', function(done) {
+      var family = TABLE.family('prezzies');
+
+      async.series(
+        [
+          family.get.bind(family, {autoCreate: true}),
+          family.delete.bind(family),
+        ],
+        done
+      );
     });
 
     it('should get the column family metadata', function(done) {
