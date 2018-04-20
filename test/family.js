@@ -308,8 +308,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should auto create with error code 5', function(done) {
-      var error = new Error('Error.');
-      error.code = 5;
+      var error = new FamilyError(TABLE.id);
 
       var options = {
         autoCreate: true,
@@ -322,7 +321,7 @@ describe('Bigtable/Family', function() {
 
       family.create = function(options_, callback) {
         assert.strictEqual(options_.gaxOptions, options.gaxOptions);
-        callback(); // done()
+        callback();
       };
 
       family.get(options, done);
@@ -351,8 +350,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should not auto create unless requested', function(done) {
-      var error = new Error('Error.');
-      error.code = 5;
+      var error = new FamilyError(TABLE.id);
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(error);
