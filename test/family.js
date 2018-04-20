@@ -307,7 +307,7 @@ describe('Bigtable/Family', function() {
       family.get(assert.ifError);
     });
 
-    it('should auto create with error code 5', function(done) {
+    it('should auto create with a FamilyError error', function(done) {
       var error = new FamilyError(TABLE.id);
 
       var options = {
@@ -327,7 +327,7 @@ describe('Bigtable/Family', function() {
       family.get(options, done);
     });
 
-    it('should not auto create without error code 5', function(done) {
+    it('should not auto create without a FamilyError error', function(done) {
       var error = new Error('Error.');
       error.code = 'NOT-5';
 
