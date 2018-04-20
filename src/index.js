@@ -372,6 +372,8 @@ function Bigtable(options) {
 
   var customEndpoint =
     options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
+  this.customEndpoint = customEndpoint;
+
   var customEndpointBaseUrl;
   var customEndpointPort;
 
@@ -641,13 +643,11 @@ Bigtable.prototype.request = function(config, callback) {
   }
 
   function prepareGaxRequest(callback) {
-    self.auth.getProjectId(function(err, projectId) {
+    self.getProjectId_(function(err, projectId) {
       if (err) {
         callback(err);
         return;
       }
-
-      self.projectId = projectId;
 
       var gaxClient = self.api[config.client];
 
@@ -658,7 +658,10 @@ Bigtable.prototype.request = function(config, callback) {
       }
 
       var reqOpts = extend(true, {}, config.reqOpts);
-      reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
+
+      if (projectId !== '{{projectId}}') {
+        reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
+      }
 
       var requestFn = gaxClient[config.method].bind(
         gaxClient,
@@ -709,6 +712,39 @@ Bigtable.prototype.request = function(config, callback) {
         .pipe(stream);
     });
   }
+};
+
+/**
+ * Determine and localize the project ID. If a user provides an ID, we bypass
+ * checking with the auth client for an ID.
+ *
+ * @private
+ *
+ * @param {function} callback Callback function.
+ * @param {?error} callback.err An error returned from the auth client.
+ * @param {string} callback.projectId The detected project ID.
+ */
+Bigtable.prototype.getProjectId_ = function(callback) {
+  var self = this;
+
+  var projectIdRequired =
+    this.projectId === '{{projectId}}' && !this.customEndpoint;
+
+  if (!projectIdRequired) {
+    setImmediate(callback, null, this.projectId);
+    return;
+  }
+
+  this.auth.getProjectId(function(err, projectId) {
+    if (err) {
+      callback(err);
+      return;
+    }
+
+    self.projectId = projectId;
+
+    callback(null, self.projectId);
+  });
 };
 
 /*! Developer Documentation
