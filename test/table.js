@@ -1027,11 +1027,12 @@ describe('Bigtable/Table', function() {
         callback(); // done()
       };
 
-      table.deleteRows(done);
+      table.deleteRows({ prefix: 'a' }, done);
     });
 
     it('should accept gaxOptions', function(done) {
       var options = {
+        prefix: 'a',
         gaxOptions: {},
       };
 
@@ -1063,13 +1064,43 @@ describe('Bigtable/Table', function() {
       table.deleteRows(options, assert.ifError);
     });
 
+    it('should throw if prefix is not provided', function() {
+      assert.throws(function() {
+        table.deleteRows(assert.ifError);
+      }, /Use the truncate method to truncate a table\./);
+    });
+  });
+
+  describe('truncate', function() {
+    it('should provide the proper request options', function(done) {
+      table.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'dropRowRange');
+        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
+        callback();
+      };
+
+      table.truncate(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      table.truncate(gaxOptions, assert.ifError);
+    });
+
     it('should delete all data when no options are provided', function(done) {
       table.bigtable.request = function(config) {
         assert.strictEqual(config.reqOpts.deleteAllDataFromTable, true);
         done();
       };
 
-      table.deleteRows(assert.ifError);
+      table.truncate(assert.ifError);
     });
   });
 

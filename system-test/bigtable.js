@@ -1015,19 +1015,49 @@ describe('Bigtable', function() {
 
         row.delete(done);
       });
+    });
 
-      it('should delete all the rows', function(done) {
-        TABLE.deleteRows(function(err) {
-          assert.ifError(err);
+    describe('.truncate()', function() {
+      var table = INSTANCE.table(generateName('table'));
+      var row = table.row('alincoln');
 
-          TABLE.getRows(function(err, rows) {
-            assert.ifError(err);
-            assert.strictEqual(rows.length, 0);
-            done();
-          });
-        });
+      beforeEach(function(done) {
+        var tableOptions = {
+          families: ['follows']
+        }
+        var rows = [
+          {
+            key: 'gwashington',
+            data: {
+              follows: {
+                jadams: 1,
+              },
+            },
+          }
+        ];
+
+        async.series([
+          table.create.bind(table, tableOptions),
+          table.insert.bind(table, rows),
+        ], done);
+      });
+
+      afterEach(table.delete.bind(table));
+
+      it('should truncate a table', function(done) {
+        async.series([
+          table.truncate.bind(table),
+          function() {
+            table.getRows(function(err, rows) {
+              assert.ifError(err);
+              assert.strictEqual(rows.length, 0);
+              done();
+            })
+          }
+        ]);
       });
     });
+
   });
 });
 
