@@ -617,7 +617,7 @@ Table.prototype.truncate = function(gaxOptions, callback) {
     },
     callback
   );
-}
+};
 
 /**
  * Delete all rows in the table, optionally corresponding to a particular

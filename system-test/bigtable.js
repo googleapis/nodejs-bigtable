@@ -1039,12 +1039,11 @@ describe('Bigtable', function() {
 
     describe('.truncate()', function() {
       var table = INSTANCE.table(generateName('table'));
-      var row = table.row('alincoln');
 
       beforeEach(function(done) {
         var tableOptions = {
-          families: ['follows']
-        }
+          families: ['follows'],
+        };
         var rows = [
           {
             key: 'gwashington',
@@ -1053,13 +1052,16 @@ describe('Bigtable', function() {
                 jadams: 1,
               },
             },
-          }
+          },
         ];
 
-        async.series([
-          table.create.bind(table, tableOptions),
-          table.insert.bind(table, rows),
-        ], done);
+        async.series(
+          [
+            table.create.bind(table, tableOptions),
+            table.insert.bind(table, rows),
+          ],
+          done
+        );
       });
 
       afterEach(table.delete.bind(table));
@@ -1072,12 +1074,11 @@ describe('Bigtable', function() {
               assert.ifError(err);
               assert.strictEqual(rows.length, 0);
               done();
-            })
-          }
+            });
+          },
         ]);
       });
     });
-
   });
 });
 
