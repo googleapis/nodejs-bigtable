@@ -1036,7 +1036,8 @@ describe('Bigtable', function() {
         row.delete(done);
       });
 
-      it('should delete all the rows', function(done) {
+      // @TODO fix https://github.com/googleapis/nodejs-bigtable/issues/79
+      it.skip('should delete all the rows', function(done) {
         TABLE.deleteRows(function(err) {
           assert.ifError(err);
 
