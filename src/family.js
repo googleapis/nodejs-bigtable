@@ -296,7 +296,7 @@ Family.prototype.get = function(options, callback) {
 
   this.getMetadata(gaxOptions, function(err, metadata) {
     if (err) {
-      if (err.code === 5 && autoCreate) {
+      if (err instanceof FamilyError && autoCreate) {
         self.create({gaxOptions}, callback);
         return;
       }
