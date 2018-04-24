@@ -623,6 +623,8 @@ Table.prototype.truncate = function(gaxOptions, callback) {
  * Delete all rows in the table, optionally corresponding to a particular
  * prefix.
  *
+ * @throws {error} If a prefix is not provided.
+ *
  * @param {string} prefix Row key prefix.
  * @param {object} [gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
@@ -660,7 +662,7 @@ Table.prototype.deleteRows = function(prefix, gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  if (!prefix || typeof prefix === 'function') {
+  if (!prefix || is.fn(prefix)) {
     throw new Error('A prefix is required for deleteRows.');
   }
 
