@@ -623,8 +623,9 @@ Table.prototype.truncate = function(gaxOptions, callback) {
  * Delete all rows in the table, optionally corresponding to a particular
  * prefix.
  *
- * @param {object} [options] Configuration object.
- * @param {string} [options.prefix] Row key prefix.
+ * @param {string} [prefix] Row key prefix. This field is required.
+ * @param {object} [gaxOptions] Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this request.
  * @param {object} callback.apiResponse The full API response.
@@ -644,30 +645,28 @@ Table.prototype.truncate = function(gaxOptions, callback) {
  *   }
  * };
  *
- * table.deleteRows({
- *   prefix: 'alincoln'
- * }, callback);
+ * table.deleteRows('alincoln', callback);
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.
  * //-
- * table.deleteRows({ prefix: 'alincoln' }).then(function(data) {
+ * table.deleteRows('alincoln').then(function(data) {
  *   const apiResponse = data[0];
  * });
  */
-Table.prototype.deleteRows = function(options, callback) {
-  if (is.function(options)) {
-    callback = options;
-    options = {};
+Table.prototype.deleteRows = function(prefix, gaxOptions, callback) {
+  if (is.function(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
   }
 
-  if (!options || !options.prefix) {
-    throw new Error('Use the truncate method to truncate a table.');
+  if (!prefix || typeof prefix === 'function') {
+    throw new Error('A prefix is required for deleteRows.');
   }
 
   var reqOpts = {
     name: this.id,
-    rowKeyPrefix: Mutation.convertToBytes(options.prefix),
+    rowKeyPrefix: Mutation.convertToBytes(prefix),
   };
 
   this.bigtable.request(
@@ -675,7 +674,7 @@ Table.prototype.deleteRows = function(options, callback) {
       client: 'BigtableTableAdminClient',
       method: 'dropRowRange',
       reqOpts: reqOpts,
-      gaxOpts: options.gaxOptions,
+      gaxOpts: gaxOptions,
     },
     callback
   );

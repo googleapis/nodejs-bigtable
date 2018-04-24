@@ -1037,6 +1037,58 @@ describe('Bigtable', function() {
       });
     });
 
+    describe('.deleteRows()', function() {
+      var table = INSTANCE.table(generateName('table'));
+
+      beforeEach(function(done) {
+        var tableOptions = {
+          families: ['cf1'],
+        };
+        var data = {
+          cf1: {
+            foo: 1,
+          },
+        };
+        var rows = [
+          {
+            key: 'aaa',
+            data,
+          },
+          {
+            key: 'abc',
+            data,
+          },
+          {
+            key: 'def',
+            data,
+          },
+        ];
+
+        async.series(
+          [
+            table.create.bind(table, tableOptions),
+            table.insert.bind(table, rows),
+          ],
+          done
+        );
+      });
+
+      afterEach(table.delete.bind(table));
+
+      it('should delete the prefixes', function(done) {
+        async.series([
+          table.deleteRows.bind(table, 'a'),
+          function() {
+            table.getRows(function(err, rows) {
+              assert.ifError(err);
+              assert.strictEqual(rows.length, 1);
+              done();
+            });
+          },
+        ]);
+      });
+    });
+
     describe('.truncate()', function() {
       var table = INSTANCE.table(generateName('table'));
 
@@ -1066,7 +1118,8 @@ describe('Bigtable', function() {
 
       afterEach(table.delete.bind(table));
 
-      it('should truncate a table', function(done) {
+      // @TODO fix https://github.com/googleapis/nodejs-bigtable/issues/79
+      it.skip('should truncate a table', function(done) {
         async.series([
           table.truncate.bind(table),
           function() {

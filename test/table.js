@@ -1023,31 +1023,26 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'dropRowRange');
         assert.strictEqual(config.reqOpts.name, TABLE_NAME);
-        assert.strictEqual(config.gaxOpts, undefined);
-        callback(); // done()
+        assert.deepStrictEqual(config.gaxOpts, {});
+        callback();
       };
 
-      table.deleteRows({ prefix: 'a' }, done);
+      table.deleteRows('a', done);
     });
 
     it('should accept gaxOptions', function(done) {
-      var options = {
-        prefix: 'a',
-        gaxOptions: {},
-      };
+      var gaxOptions = {};
 
       table.bigtable.request = function(config) {
-        assert.strictEqual(config.gaxOpts, options.gaxOptions);
+        assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
 
-      table.deleteRows(options, assert.ifError);
+      table.deleteRows('a', gaxOptions, assert.ifError);
     });
 
     it('should respect the row key prefix option', function(done) {
-      var options = {
-        prefix: 'a',
-      };
+      var prefix = 'a';
       var fakePrefix = 'b';
 
       var spy = (FakeMutation.convertToBytes = sinon.spy(function() {
@@ -1057,17 +1052,17 @@ describe('Bigtable/Table', function() {
       table.bigtable.request = function(config) {
         assert.strictEqual(config.reqOpts.rowKeyPrefix, fakePrefix);
         assert.strictEqual(spy.callCount, 1);
-        assert.strictEqual(spy.getCall(0).args[0], options.prefix);
+        assert.strictEqual(spy.getCall(0).args[0], prefix);
         done();
       };
 
-      table.deleteRows(options, assert.ifError);
+      table.deleteRows('a', assert.ifError);
     });
 
     it('should throw if prefix is not provided', function() {
       assert.throws(function() {
         table.deleteRows(assert.ifError);
-      }, /Use the truncate method to truncate a table\./);
+      }, /A prefix is required for deleteRows\./);
     });
   });
 
