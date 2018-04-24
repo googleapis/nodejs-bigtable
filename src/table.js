@@ -623,7 +623,7 @@ Table.prototype.truncate = function(gaxOptions, callback) {
  * Delete all rows in the table, optionally corresponding to a particular
  * prefix.
  *
- * @param {string} [prefix] Row key prefix. This field is required.
+ * @param {string} prefix Row key prefix.
  * @param {object} [gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
