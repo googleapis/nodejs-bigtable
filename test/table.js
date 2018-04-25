@@ -552,37 +552,93 @@ describe('Bigtable/Table', function() {
         table.createReadStream(options);
       });
 
-      it('should transform the prefix into a range', function(done) {
-        var fakeRange = {};
-        var fakePrefixRange = {
-          start: 'a',
-          end: 'b',
-        };
+      describe('prefixes', function() {
+        beforeEach(function() {
+          FakeFilter.createRange = common.util.noop;
+        });
 
-        var fakePrefix = 'abc';
+        afterEach(function() {
+          Table.createPrefixRange_.restore();
+        });
 
-        var prefixSpy = (Table.createPrefixRange_ = sinon.spy(function() {
-          return fakePrefixRange;
-        }));
+        it('should transform the prefix into a range', function(done) {
+          var fakeRange = {};
+          var fakePrefixRange = {
+            start: 'a',
+            end: 'b',
+          };
 
-        var rangeSpy = (FakeFilter.createRange = sinon.spy(function() {
-          return fakeRange;
-        }));
+          var fakePrefix = 'abc';
 
-        table.bigtable.request = function(config) {
-          assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
-          assert.deepEqual(config.reqOpts.rows.rowRanges, [fakeRange]);
+          var prefixSpy = sinon
+            .stub(Table, 'createPrefixRange_')
+            .callsFake(function() {
+              return fakePrefixRange;
+            });
 
-          assert.deepEqual(rangeSpy.getCall(0).args, [
-            fakePrefixRange.start,
-            fakePrefixRange.end,
-            'Key',
-          ]);
+          var rangeSpy = sinon
+            .stub(FakeFilter, 'createRange')
+            .callsFake(function() {
+              return fakeRange;
+            });
 
-          done();
-        };
+          table.bigtable.request = function(config) {
+            assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
+            assert.deepEqual(config.reqOpts.rows.rowRanges, [fakeRange]);
 
-        table.createReadStream({prefix: fakePrefix});
+            assert.deepEqual(rangeSpy.getCall(0).args, [
+              fakePrefixRange.start,
+              fakePrefixRange.end,
+              'Key',
+            ]);
+
+            done();
+          };
+
+          table.createReadStream({prefix: fakePrefix});
+        });
+
+        it('should accept multiple prefixes', function(done) {
+          var prefixes = ['abc', 'def'];
+          var prefixRanges = [
+            {start: 'abc', end: 'abd'},
+            {start: 'def', end: 'deg'},
+          ];
+          var prefixSpy = sinon
+            .stub(Table, 'createPrefixRange_')
+            .callsFake(function() {
+              var callIndex = prefixSpy.callCount - 1;
+              return prefixRanges[callIndex];
+            });
+
+          var ranges = [{}, {}];
+          var rangeSpy = sinon
+            .stub(FakeFilter, 'createRange')
+            .callsFake(function() {
+              var callIndex = rangeSpy.callCount - 1;
+              return ranges[callIndex];
+            });
+
+          table.bigtable.request = function(config) {
+            assert.strictEqual(prefixSpy.callCount, 2);
+
+            prefixes.forEach(function(prefix, i) {
+              var prefixRange = prefixRanges[i];
+
+              assert.deepEqual(prefixSpy.getCall(i).args, [prefix]);
+              assert.deepEqual(rangeSpy.getCall(i).args, [
+                prefixRange.start,
+                prefixRange.end,
+                'Key',
+              ]);
+              assert.strictEqual(config.reqOpts.rows.rowRanges[i], ranges[i]);
+            });
+
+            done();
+          };
+
+          table.createReadStream({prefixes});
+        });
       });
     });
 
@@ -1018,6 +1074,8 @@ describe('Bigtable/Table', function() {
   });
 
   describe('deleteRows', function() {
+    var prefix = 'a';
+
     it('should provide the proper request options', function(done) {
       table.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
@@ -1027,7 +1085,7 @@ describe('Bigtable/Table', function() {
         callback();
       };
 
-      table.deleteRows('a', done);
+      table.deleteRows(prefix, done);
     });
 
     it('should accept gaxOptions', function(done) {
@@ -1038,11 +1096,10 @@ describe('Bigtable/Table', function() {
         done();
       };
 
-      table.deleteRows('a', gaxOptions, assert.ifError);
+      table.deleteRows(prefix, gaxOptions, assert.ifError);
     });
 
     it('should respect the row key prefix option', function(done) {
-      var prefix = 'a';
       var fakePrefix = 'b';
 
       var spy = (FakeMutation.convertToBytes = sinon.spy(function() {
@@ -2015,6 +2072,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'dropRowRange');
         assert.strictEqual(config.reqOpts.name, TABLE_NAME);
+        assert.strictEqual(config.reqOpts.deleteAllDataFromTable, true);
         assert.deepStrictEqual(config.gaxOpts, {});
         callback();
       };
@@ -2031,15 +2089,6 @@ describe('Bigtable/Table', function() {
       };
 
       table.truncate(gaxOptions, assert.ifError);
-    });
-
-    it('should delete all data when no options are provided', function(done) {
-      table.bigtable.request = function(config) {
-        assert.strictEqual(config.reqOpts.deleteAllDataFromTable, true);
-        done();
-      };
-
-      table.truncate(assert.ifError);
     });
   });
 });
