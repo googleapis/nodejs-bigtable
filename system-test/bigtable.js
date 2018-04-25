@@ -1035,18 +1035,101 @@ describe('Bigtable', function() {
 
         row.delete(done);
       });
+    });
+
+    describe('.deleteRows()', function() {
+      var table = INSTANCE.table(generateName('table'));
+
+      beforeEach(function(done) {
+        var tableOptions = {
+          families: ['cf1'],
+        };
+        var data = {
+          cf1: {
+            foo: 1,
+          },
+        };
+        var rows = [
+          {
+            key: 'aaa',
+            data,
+          },
+          {
+            key: 'abc',
+            data,
+          },
+          {
+            key: 'def',
+            data,
+          },
+        ];
+
+        async.series(
+          [
+            table.create.bind(table, tableOptions),
+            table.insert.bind(table, rows),
+          ],
+          done
+        );
+      });
+
+      afterEach(table.delete.bind(table));
+
+      it('should delete the prefixes', function(done) {
+        async.series([
+          table.deleteRows.bind(table, 'a'),
+          function() {
+            table.getRows(function(err, rows) {
+              assert.ifError(err);
+              assert.strictEqual(rows.length, 1);
+              done();
+            });
+          },
+        ]);
+      });
+    });
+
+    describe('.truncate()', function() {
+      var table = INSTANCE.table(generateName('table'));
+
+      beforeEach(function(done) {
+        var tableOptions = {
+          families: ['follows'],
+        };
+        var rows = [
+          {
+            key: 'gwashington',
+            data: {
+              follows: {
+                jadams: 1,
+              },
+            },
+          },
+        ];
+
+        async.series(
+          [
+            table.create.bind(table, tableOptions),
+            table.insert.bind(table, rows),
+          ],
+          done
+        );
+      });
+
+      afterEach(table.delete.bind(table));
 
       // @TODO fix https://github.com/googleapis/nodejs-bigtable/issues/79
-      it.skip('should delete all the rows', function(done) {
-        TABLE.deleteRows(function(err) {
-          assert.ifError(err);
-
-          TABLE.getRows(function(err, rows) {
-            assert.ifError(err);
-            assert.strictEqual(rows.length, 0);
-            done();
-          });
-        });
+      it.skip('should truncate a table', function(done) {
+        async.series([
+          table.truncate.bind(table),
+          function() {
+            table.getRows(function(err, rows) {
+              assert.ifError(err);
+              assert.strictEqual(rows.length, 0);
+              done();
+            });
+          },
+        ]);
       });
     });
   });
