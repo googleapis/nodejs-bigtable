@@ -286,6 +286,8 @@ Table.prototype.createFamily = function(name, options, callback) {
  * @param {string[]} [options.keys] A list of row keys.
  * @param {number} [options.limit] Maximum number of rows to be returned.
  * @param {string} [options.prefix] Prefix that the row key must match.
+ * @param {string[]} [options.prefixes] List of prefixes that a row key must
+ *     match.
  * @param {object[]} [options.ranges] A list of key ranges.
  * @param {string} [options.start] Start value for key range.
  * @returns {stream}
@@ -396,6 +398,12 @@ Table.prototype.createReadStream = function(options) {
 
   if (options.prefix) {
     ranges.push(Table.createPrefixRange_(options.prefix));
+  }
+
+  if (options.prefixes) {
+    options.prefixes.forEach(function(prefix) {
+      ranges.push(Table.createPrefixRange_(prefix));
+    });
   }
 
   if (options.filter) {
