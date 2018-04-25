@@ -1056,46 +1056,13 @@ describe('Bigtable/Table', function() {
         done();
       };
 
-      table.deleteRows('a', assert.ifError);
+      table.deleteRows(prefix, assert.ifError);
     });
 
     it('should throw if prefix is not provided', function() {
       assert.throws(function() {
         table.deleteRows(assert.ifError);
       }, /A prefix is required for deleteRows\./);
-    });
-  });
-
-  describe('truncate', function() {
-    it('should provide the proper request options', function(done) {
-      table.bigtable.request = function(config, callback) {
-        assert.strictEqual(config.client, 'BigtableTableAdminClient');
-        assert.strictEqual(config.method, 'dropRowRange');
-        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
-        callback();
-      };
-
-      table.truncate(done);
-    });
-
-    it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
-
-      table.bigtable.request = function(config) {
-        assert.strictEqual(config.gaxOpts, gaxOptions);
-        done();
-      };
-
-      table.truncate(gaxOptions, assert.ifError);
-    });
-
-    it('should delete all data when no options are provided', function(done) {
-      table.bigtable.request = function(config) {
-        assert.strictEqual(config.reqOpts.deleteAllDataFromTable, true);
-        done();
-      };
-
-      table.truncate(assert.ifError);
     });
   });
 
@@ -2039,6 +2006,40 @@ describe('Bigtable/Table', function() {
           })
           .on('data', done);
       });
+    });
+  });
+
+  describe('truncate', function() {
+    it('should provide the proper request options', function(done) {
+      table.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'dropRowRange');
+        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
+        assert.deepStrictEqual(config.gaxOpts, {});
+        callback();
+      };
+
+      table.truncate(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      table.truncate(gaxOptions, assert.ifError);
+    });
+
+    it('should delete all data when no options are provided', function(done) {
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.reqOpts.deleteAllDataFromTable, true);
+        done();
+      };
+
+      table.truncate(assert.ifError);
     });
   });
 });
