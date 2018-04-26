@@ -1408,13 +1408,11 @@ Table.VIEWS = {
  * @param {?Boolean} callback.resp Boolean value.
  */
 Table.prototype.waitForReplication = function(callback) {
-  const self = this;
-
   const reqOpts = {
-    name: self.id,
+    name: this.id,
   };
 
-  self.bigtable.request(
+  this.bigtable.request(
     {
       client: 'BigtableTableAdminClient',
       method: 'generateConsistencyToken',
@@ -1430,21 +1428,24 @@ Table.prototype.waitForReplication = function(callback) {
         callback(null, false);
       }, 10 * 60 * 1000);
 
-      function retryIfNecessary(err, res) {
-        if (!err && res === true) {
+      // method to launch token consistency check
+      const launchCheck = () => {
+        const token = resp[0].consistencyToken;
+        this.checkConsistency(token, retryIfNecessary);
+      };
+
+      // method checks if retrial is required & init retrial with 5 sec delay
+      const retryIfNecessary = (err, res) => {
+        if (err || res === true) {
           clearTimeout(timeoutAfterTenMinutes);
-          callback(null, true);
+          callback(err, res);
           return;
         }
-        setTimeout(checkConsistency, 5000);
-      }
 
-      function checkConsistency() {
-        const token = resp[0].consistencyToken;
-        self.checkConsistency(token, retryIfNecessary);
-      }
+        setTimeout(launchCheck, 5000);
+      };
 
-      checkConsistency();
+      launchCheck();
     }
   );
 };
