@@ -146,7 +146,7 @@ Mutation.createTimeRange = function(start, end) {
  * //     setCell: {
  * //       familyName: 'follows',
  * //       columnQualifier: 'alincoln', // as buffer
- * //       timestampMicros: -1,
+ * //       timestampMicros: new Date(), // uses the client's current time
  * //       value: 1 // as buffer
  * //     }
  * //   }
@@ -167,7 +167,7 @@ Mutation.encodeSetCell = function(data) {
         };
       }
 
-      var timestamp = cell.timestamp;
+      var timestamp = cell.timestamp || new Date();
 
       if (is.date(timestamp)) {
         timestamp = timestamp.getTime() * 1000;
@@ -176,7 +176,7 @@ Mutation.encodeSetCell = function(data) {
       var setCell = {
         familyName: familyName,
         columnQualifier: Mutation.convertToBytes(cellName),
-        timestampMicros: timestamp || -1,
+        timestampMicros: timestamp,
         value: Mutation.convertToBytes(cell.value),
       };
 
