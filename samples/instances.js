@@ -125,7 +125,6 @@ function getInstance() {
     });
 }
 
-
 /**
  * Delete the instance
  */
@@ -137,7 +136,7 @@ function delInstance() {
   instance
     .delete()
     .then(result => {
-      console.log('deleted the ssd-instance instance');
+      console.log(`deleted instance ssd-instance: ${JSON.stringify(result)}`);
     })
     .catch(err => {
       console.error('ERROR:', err);
@@ -148,51 +147,26 @@ require(`yargs`)
   .demand(1)
 
   // command to check if instance exists and delete if true
-  .command(
-    `del-if-exists`,
-    `Deletes the Instance if Exists`,
-    {},
-    delIfExists
-  )
+  .command(`del-if-exists`, `Deletes the Instance if Exists`, {}, delIfExists)
   .example(
     `node $0 del-if-exists <instanceId>`,
     `Deletes the Instance if Exists`
   )
 
   // command to create an instance
-  .command(
-    `create-instance`,
-    `Creates a PRODUCTION instance`,
-    {},
-    createInstance
-  )
+  .command(`create-instance`, `Create Instance`, {}, createInstance)
   .example(`node $0 create-instance`, `Creates a PRODUCTION instance`)
 
   // command to list all instances and check 'ssd-instance' is listed
-  .command(
-    `list`,
-    `Lists all instances in the current project.`,
-    {},
-    listInstances
-  )
+  .command(`list-instances`, `Lists all instances`, {}, listInstances)
   .example(`node $0 list`, `Lists all instances in the current project.`)
 
   // command to get the instance 'ssd-instance'
-  .command(
-    `get-instance`,
-    `Get the Instance`,
-    {},
-    getInstance
-  )
+  .command(`get-instance`, `Get the Instance`, {}, getInstance)
   .example(`node $0 get-instance`, `Get the Instance`)
 
   // command to delete the instance 'ssd-instance'
-  .command(
-    `del-instance`,
-    `Delete the Instance`,
-    {},
-    delInstance
-  )
+  .command(`del-instance`, `Delete the Instance`, {}, delInstance)
   .example(`node $0 del-instance`, `Delete the Instance`)
 
   .wrap(120)
