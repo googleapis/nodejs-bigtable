@@ -388,6 +388,21 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
     });
 
+    it('should respect the type option', function(done) {
+      var options = {type: 'development'};
+      sinon.spy(FakeInstance, 'getTypeType_');
+
+      bigtable.request = function(config) {
+        assert.deepEqual(config.reqOpts.instance.type, 2);
+        assert.deepStrictEqual(FakeInstance.getTypeType_.args, [
+          ['development'],
+        ]);
+        done();
+      };
+
+      bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
+    });
+
     it('should respect the clusters option', function(done) {
       var cluster = {
         name: 'my-cluster',
