@@ -1,6 +1,8 @@
 /**
  * A minimal application that demonstrates using the Nodejs Google Cloud API
- * to connect to and interact with Cloud Bigtable.
+ * to connect to and interact with Cloud Bigtable. See
+ * https://github.com/googleapis/nodejs-bigtable/blob/master/samples/hello-world/README.md
+ * for more details
  */
 
 // This file will only work on node v8.x since it uses async/await.
