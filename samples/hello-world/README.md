@@ -29,20 +29,20 @@ API to connect to and interact with Cloud Bigtable.
 
 Download the sample app and navigate into the app directory:
 
-1.  Clone the [Cloud Bigtable examples repository][github-repo], to your local
+1.  Clone the [Cloud Bigtable Node.js repository][github-repo], to your local
     machine:
 
-        git clone https://github.com/GoogleCloudPlatform/cloud-bigtable-examples.git
+        git clone https://github.com/googleapis/nodejs-bigtable.git
 
     Alternatively, you can [download the sample][github-zip] as a zip file and
     extract it.
 
 1.  Change to the Hello World code sample directory.
 
-        cd cloud-bigtable-examples/node/hello-world
+        cd nodejs-bigtable/samples/hello-world
 
-[github-repo]: https://github.com/GoogleCloudPlatform/cloud-bigtable-examples
-[github-zip]: https://github.com/GoogleCloudPlatform/cloud-bigtable-examples/archive/master.zip
+[github-repo]: https://github.com/googleapis/nodejs-bigtable
+[github-zip]: https://github.com/googleapis/nodejs-bigtable/archive/master.zip
 
 
 ## Costs

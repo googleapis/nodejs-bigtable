@@ -1,3 +1,12 @@
+/**
+ * A minimal application that demonstrates using the Nodejs Google Cloud API
+ * to connect to and interact with Cloud Bigtable.
+ */
+
+// This file works on node v6.x and newer.
+// A node v8.x version that uses async/await of this script is available
+// in index.js
+
 /*eslint node/no-unsupported-features: ["error", {version: 6}]*/
 
 const bigtable = require('@google-cloud/bigtable');
