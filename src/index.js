@@ -438,6 +438,8 @@ function Bigtable(options) {
  *     instance.
  * @param {string} [options.displayName] The descriptive name for this instance
  *     as it appears in UIs.
+ * @param {string} [options.type] The type of the instance. Options are
+ *     'production' or 'development'.
  * @param {object} [options.gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
@@ -502,6 +504,10 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
       displayName: options.displayName || name,
     },
   };
+
+  if (options.type) {
+    reqOpts.instance.type = Instance.getTypeType_(options.type);
+  }
 
   reqOpts.clusters = arrify(options.clusters).reduce(function(
     clusters,
