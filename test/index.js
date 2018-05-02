@@ -390,13 +390,15 @@ describe('Bigtable', function() {
 
     it('should respect the type option', function(done) {
       var options = {type: 'development'};
-      sinon.spy(FakeInstance, 'getTypeType_');
+      var fakeTypeType = 99;
+
+      FakeInstance.getTypeType_ = function(type) {
+        assert.strictEqual(type, options.type);
+        return fakeTypeType;
+      };
 
       bigtable.request = function(config) {
-        assert.deepEqual(config.reqOpts.instance.type, 2);
-        assert.deepStrictEqual(FakeInstance.getTypeType_.args, [
-          ['development'],
-        ]);
+        assert.deepEqual(config.reqOpts.instance.type, fakeTypeType);
         done();
       };
 

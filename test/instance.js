@@ -127,6 +127,28 @@ describe('Bigtable/Instance', function() {
     });
   });
 
+  describe('getTypeType_', function() {
+    var types = {
+      unspecified: 0,
+      production: 1,
+      development: 2,
+    };
+
+    it('should default to unspecified', function() {
+      assert.strictEqual(Instance.getTypeType_(), types.unspecified);
+    });
+
+    it('should lowercase a type', function() {
+      assert.strictEqual(Instance.getTypeType_('production'), types.production);
+    });
+
+    Object.keys(types).forEach(function(type) {
+      it('should get the storage type for "' + type + '"', function() {
+        assert.strictEqual(Instance.getTypeType_(type), types[type]);
+      });
+    });
+  });
+
   describe('create', function() {
     it('should call createInstance from bigtable', function(done) {
       var options = {};
