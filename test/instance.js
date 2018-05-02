@@ -136,10 +136,14 @@ describe('Bigtable/Instance', function() {
 
     it('should default to unspecified', function() {
       assert.strictEqual(Instance.getTypeType_(), types.unspecified);
+      assert.strictEqual(
+        Instance.getTypeType_('not-real-type'),
+        types.unspecified
+      );
     });
 
     it('should lowercase a type', function() {
-      assert.strictEqual(Instance.getTypeType_('production'), types.production);
+      assert.strictEqual(Instance.getTypeType_('PRODUCTION'), types.production);
     });
 
     Object.keys(types).forEach(function(type) {
