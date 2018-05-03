@@ -15,5 +15,9 @@
 'use strict';
 
 const BigtableClient = require('./bigtable_client');
+const BigtableInstanceAdminClient = require('./bigtable_instance_admin_client');
+const BigtableTableAdminClient = require('./bigtable_table_admin_client');
 
 module.exports.BigtableClient = BigtableClient;
+module.exports.BigtableInstanceAdminClient = BigtableInstanceAdminClient;
+module.exports.BigtableTableAdminClient = BigtableTableAdminClient;
