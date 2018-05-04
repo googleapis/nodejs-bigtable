@@ -27,6 +27,7 @@ var retryRequest = require('retry-request');
 var streamEvents = require('stream-events');
 var through = require('through2');
 
+var AppProfile = require('./app-profile');
 var Cluster = require('./cluster.js');
 var Instance = require('./instance.js');
 
@@ -761,6 +762,15 @@ Bigtable.prototype.getProjectId_ = function(callback) {
 common.util.promisifyAll(Bigtable, {
   exclude: ['instance', 'operation', 'request'],
 });
+
+/**
+ * {@link AppProfile} class.
+ *
+ * @name Bigtable.AppProfile
+ * @see AppProfile
+ * @type {Constructor}
+ */
+Bigtable.AppProfile = AppProfile;
 
 /**
  * {@link Cluster} class.

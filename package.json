@@ -69,6 +69,7 @@
     "is": "^3.0.1",
     "lodash.flatten": "^4.2.0",
     "lodash.merge": "^4.6.0",
+    "lodash.snakecase": "^4.1.1",
     "lodash.union": "^4.6.0",
     "node-int64": "^0.4.0",
     "prop-assign": "^1.0.0",

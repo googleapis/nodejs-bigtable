@@ -20,6 +20,7 @@ var common = require('@google-cloud/common');
 var extend = require('extend');
 var is = require('is');
 
+var AppProfile = require('./app-profile.js');
 var Cluster = require('./cluster.js');
 var Family = require('./family.js');
 var Table = require('./table.js');
@@ -77,6 +78,16 @@ Instance.getTypeType_ = function(type) {
 };
 
 /**
+ * Get a reference to a Bigtable App Profile.
+ *
+ * @param {string} name The name of the cluster.
+ * @returns {Cluster}
+ */
+Instance.prototype.appProfile = function(name) {
+  return new AppProfile(this, name);
+};
+
+/**
  * Create an instance.
  *
  * @param {object} [options] See {@link Bigtable#createInstance}.
@@ -116,6 +127,101 @@ Instance.prototype.create = function(options, callback) {
   }
 
   this.bigtable.createInstance(this.name, options, callback);
+};
+
+/**
+ * Create an app profile.
+ *
+ * @param {string} name The name to be used when referring to the new
+ *     app profile within its instance.
+ * @param {object} options AppProfile creation options.
+ * @param {'any'|Cluster} options.routing  The routing policy for all
+ *     read/write requests which use this app profile. This can be either the
+ *     string 'any' or an instance of a cluster. This value is required when
+ *     creating the app profile and optional when setting the metadata.
+ * @param {object} [options.gaxOptions]  Request configuration options, outlined
+ *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+ * @param {boolean} [options.allowTransactionalWrites] Whether or not
+ *     CheckAndMutateRow and ReadModifyWriteRow requests are allowed by this
+ *     app profile. It is unsafe to send these requests to the same
+ *     table/row/column in multiple clusters. This is only used when the
+ *     routing value is a cluster.
+ * @param {string} [options.description] The long form description of the use
+ *     case for this AppProfile.
+ * @param {string} [options.etag] Strongly validated etag for optimistic
+ *     concurrency control.
+ * @param {string} [options.ignoreWarnings] Whether to ignore safety checks
+ *     when creating the app profile
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Cluster} callback.appProfile The newly created app profile.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * const callback = function(err, appProfile, apiResponse) {
+ *   // `appProfile` is an AppProfile object.
+ * };
+ *
+ * const options = {
+ *   routing: instance,
+ *   allowTransactionalWrites: true,
+ *   ignoreWarnings: true,
+ * };
+ *
+ * instance.createAppProfile('my-app-profile', options, callback);
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.createAppProfile('my-app-profile', options).then(function(data) {
+ *   const appProfile = data[0];
+ *   const apiResponse = data[1];
+ * });
+ */
+Instance.prototype.createAppProfile = function(name, options, callback) {
+  const self = this;
+
+  if (is.function(options)) {
+    callback = options;
+    options = {};
+  }
+
+  if (!options.routing) {
+    throw new Error('An app profile must contain a routing policy.');
+  }
+
+  const appProfile = AppProfile.formatAppProfile_(options);
+
+  const reqOpts = {
+    parent: this.id,
+    appProfileId: name,
+    appProfile,
+  };
+
+  if (is.boolean(options.ignoreWarnings)) {
+    reqOpts.ignoreWarnings = options.ignoreWarnings;
+  }
+
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'createAppProfile',
+      reqOpts: reqOpts,
+      gaxOpts: options.gaxOptions,
+    },
+    function() {
+      var args = [].slice.call(arguments);
+
+      if (args[1]) {
+        args.splice(1, 0, self.appProfile(name));
+      }
+
+      callback.apply(null, args);
+    }
+  );
 };
 
 /**
@@ -522,6 +628,70 @@ Instance.prototype.get = function(gaxOptions, callback) {
 };
 
 /**
+ * Get App Profile objects for this instance.
+ *
+ * @param {object} [gaxOptions] Request configuration options, outlined here:
+ *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.error An error returned while making this request.
+ * @param {AppProfile[]} callback.appProfiles List of all AppProfiles.
+ * @param {object} callback.apiResponse The full API response.
+ *
+ * @example
+ * const Bigtable = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ *
+ * instance.getAppProfiles(function(err, appProfiles) {
+ *   if (!err) {
+ *     // `appProfiles` is an array of AppProfile objects.
+ *   }
+ * });
+ *
+ * //-
+ * // If the callback is omitted, we'll return a Promise.
+ * //-
+ * instance.getAppProfiles().then(function(data) {
+ *   const appProfiles = data[0];
+ * });
+ */
+Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
+  var self = this;
+
+  if (is.function(gaxOptions)) {
+    callback = gaxOptions;
+    gaxOptions = {};
+  }
+
+  var reqOpts = {
+    parent: this.id,
+  };
+
+  this.bigtable.request(
+    {
+      client: 'BigtableInstanceAdminClient',
+      method: 'listAppProfiles',
+      reqOpts: reqOpts,
+      gaxOpts: gaxOptions,
+    },
+    function(err, resp) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      var appProfiles = resp.map(function(appProfileObj) {
+        var appProfile = self.appProfile(appProfileObj.name);
+        appProfile.metadata = appProfileObj;
+        return appProfile;
+      });
+
+      callback(null, appProfiles, resp);
+    }
+  );
+};
+
+/**
  * Get Cluster objects for all of your clusters.
  *
  * @param {object} [gaxOptions] Request configuration options, outlined here:
@@ -845,7 +1015,7 @@ common.paginator.extend(Instance, ['getTables']);
  * that a callback is omitted.
  */
 common.util.promisifyAll(Instance, {
-  exclude: ['cluster', 'table'],
+  exclude: ['appProfile', 'cluster', 'table'],
 });
 
 /**
