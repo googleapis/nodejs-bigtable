@@ -52,7 +52,7 @@ function Cluster(instance, name) {
  *
  * @private
  *
- * @param {string} project The project.
+ * @param {string} project The project ID.
  * @param {string} location The zone location.
  * @returns {string}
  *
