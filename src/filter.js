@@ -811,7 +811,7 @@ Filter.prototype.toProto = function() {
  * // Or you can provide a Buffer or an array of Buffers if you wish to match
  * // against specfic binary value(s).
  * //-
- * var userInputedFaces = [Buffer.from('.|.'), Buffer.from(':-)')]
+ * var userInputedFaces = [Buffer.from('.|.'), Buffer.from(':-)')];
  * var filter = [
  *   {
  *     value: userInputedFaces
