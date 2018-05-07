@@ -214,7 +214,7 @@ describe('Bigtable/Instance', function() {
       var fakeLocation = 'a/b/c/d';
 
       FakeCluster.getLocation_ = function(project, location) {
-        assert.strictEqual(project, BIGTABLE.projectName);
+        assert.strictEqual(project, BIGTABLE.projectId);
         assert.strictEqual(location, options.location);
         return fakeLocation;
       };
