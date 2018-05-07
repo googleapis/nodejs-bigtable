@@ -1118,8 +1118,7 @@ describe('Bigtable', function() {
 
       afterEach(table.delete.bind(table));
 
-      // @TODO fix https://github.com/googleapis/nodejs-bigtable/issues/79
-      it.skip('should truncate a table', function(done) {
+      it('should truncate a table', function(done) {
         async.series([
           table.truncate.bind(table),
           function() {
