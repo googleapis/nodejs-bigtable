@@ -19,6 +19,7 @@
 var arrify = require('arrify');
 var createErrorClass = require('create-error-class');
 var extend = require('extend');
+var escapeStringRegexp = require('escape-string-regexp');
 var is = require('is');
 
 var Mutation = require('./mutation.js');
@@ -100,7 +101,7 @@ Filter.convertToRegExpString = function(regex) {
   }
 
   if (is.array(regex)) {
-    return '(' + regex.join('|') + ')';
+    return '(' + regex.map(Filter.convertToRegExpString).join('|') + ')';
   }
 
   if (is.string(regex)) {
@@ -109,6 +110,10 @@ Filter.convertToRegExpString = function(regex) {
 
   if (is.number(regex)) {
     return regex.toString();
+  }
+
+  if (Buffer.isBuffer(regex)) {
+    return escapeStringRegexp(regex.toString());
   }
 
   throw new TypeError("Can't convert to RegExp String from unknown type.");
@@ -793,12 +798,23 @@ Filter.prototype.toProto = function() {
  * ];
  *
  * //-
- * // Or you can provide an array of strings if you wish to match against
+ * // You can also provide an array of strings if you wish to match against
  * // multiple values.
  * //-
  * var filter = [
  *   {
  *     value: ['1', '9']
+ *   }
+ * ];
+ *
+ * //-
+ * // Or you can provide a Buffer or an array of Buffers if you wish to match
+ * // against specfic binary value(s).
+ * //-
+ * var userInputedFaces = [Buffer.from('.|.'), Buffer.from(':-)')];
+ * var filter = [
+ *   {
+ *     value: userInputedFaces
  *   }
  * ];
  *
