@@ -88,10 +88,6 @@ AppProfile.formatAppProfile_ = function(options) {
     }
   }
 
-  if (is.string(options.etag)) {
-    appProfile.etag = options.etag;
-  }
-
   if (is.string(options.description)) {
     appProfile.description = options.description;
   }

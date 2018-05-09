@@ -148,8 +148,6 @@ Instance.prototype.create = function(options, callback) {
  *     routing value is a cluster.
  * @param {string} [options.description] The long form description of the use
  *     case for this AppProfile.
- * @param {string} [options.etag] Strongly validated etag for optimistic
- *     concurrency control.
  * @param {string} [options.ignoreWarnings] Whether to ignore safety checks
  *     when creating the app profile
  * @param {function} callback The callback function.

@@ -125,14 +125,6 @@ describe('Bigtable/AppProfile', function() {
         });
       });
 
-      it(`should accept etag`, function() {
-        const etag = 'my-etag';
-        const formattedAppProfile = AppProfile.formatAppProfile_({
-          etag,
-        });
-        assert.strictEqual(formattedAppProfile.etag, etag);
-      });
-
       it(`should accept description`, function() {
         const description = 'my-description';
         const formattedAppProfile = AppProfile.formatAppProfile_({
