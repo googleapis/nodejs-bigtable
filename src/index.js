@@ -500,6 +500,7 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
     instanceId: name,
     instance: {
       displayName: options.displayName || name,
+      labels:options.labels,
     },
   };
 
@@ -803,5 +804,6 @@ Bigtable.Instance = Instance;
  * region_tag:bigtable_quickstart
  * Full quickstart example:
  */
+
 module.exports = Bigtable;
 module.exports.v2 = v2;
