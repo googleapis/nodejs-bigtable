@@ -500,7 +500,7 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
     instanceId: name,
     instance: {
       displayName: options.displayName || name,
-      labels:options.labels,
+      labels: options.labels,
     },
   };
 
