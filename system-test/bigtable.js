@@ -442,19 +442,15 @@ describe('Bigtable', function() {
         TABLE.insert(rows, done);
       });
 
-      it('should insert a large row', function(done) {
-        var rows = [];
-
-        var row = {
+      it('should insert a large row', function() {
+        return TABLE.insert({
           key: 'gwashington',
           data: {
             follows: {
               jadams: Buffer.alloc(5000000),
             },
           },
-        };
-
-        return TABLE.insert(row);
+        });
       });
 
       it('should create an individual row', function(done) {
