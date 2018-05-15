@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Google, Inc.
+ * Copyright 2018, Google LLC
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,28 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-// Creates a client
+// The name of the Cloud Bigtable instance
+const instanceName = 'my-bigtable-instance';
+// The name of the Cloud Bigtable table
+const tableName = 'my-table';
+// Creates a Bigtable client
 const bigtable = new Bigtable();
 
-// The name for the new instance
-const instanceName = 'my-new-instance';
+// Connect to an existing instance:my-bigtable-instance
+const instance = bigtable.instance(instanceName);
 
-// Creates the new instance
-bigtable
-  .createInstance(instanceName, {
-    clusters: [
-      {
-        name: 'my-cluster',
-        location: 'us-central1-c',
-        nodes: 3,
-      },
-    ],
-  })
-  .then(() => {
-    console.log(`Instance ${instanceName} created.`);
-  })
-  .catch(err => {
-    console.log('ERROR:', err);
+// Connect to an existing table:my-table
+const table = instance.table(tableName);
+
+//Read data from my-table
+table.createReadStream()
+  .on('error', console.error)
+  .on('data', function (row) {
+    // `row` is a Row object.
+    // Print the row key and data (column value, timestamp)
+    console.log(`Row key: ${row.id}\nData: ${JSON.stringify(row.data, null, 4)}`);
+  }).on('end', function () {
+    // All rows retrieved.
   });
+
 // [END bigtable_quickstart]
