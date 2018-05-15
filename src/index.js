@@ -438,7 +438,7 @@ function Bigtable(options) {
  *     instance.
  * @param {string} [options.displayName] The descriptive name for this instance
  *     as it appears in UIs.
- * @param {Object.<string, string>} options.labels Labels are a flexible and
+ * @param {Object.<string, string>} [options.labels] Labels are a flexible and
  *     lightweight mechanism for organizing cloud resources into groups that
  *     reflect a customer's organizational needs and deployment strategies.
  *     They can be used to filter resources and aggregate metrics.
@@ -449,6 +449,8 @@ function Bigtable(options) {
  *     the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
  *   * No more than 64 labels can be associated with a given resource.
  *   * Keys and values must both be under 128 bytes.
+ * @param {string} [options.type] The type of the instance. Options are
+ *     'production' or 'development'.
  * @param {object} [options.gaxOptions] Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
  * @param {function} callback The callback function.
@@ -515,6 +517,10 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
       labels: options.labels,
     },
   };
+
+  if (options.type) {
+    reqOpts.instance.type = Instance.getTypeType_(options.type);
+  }
 
   reqOpts.clusters = arrify(options.clusters).reduce(function(
     clusters,
