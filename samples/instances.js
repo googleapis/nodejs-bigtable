@@ -15,17 +15,20 @@
 
 'use strict';
 
+// Imports the Google Cloud client library
+const Bigtable = require('@google-cloud/bigtable');
+
 /**
  * Creates a Production Instance with the name "ssd-instance"
  * with cluster name "ssd-cluster", 3 nodes and location us-central1-f
  */
 function createSsdInstance() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
+  // [END connecting_to_bigtable]
 
+  // [START set_instance_options]
   // Set options to create an Instance
   const options = {
     displayName: 'SSD Instance',
@@ -40,7 +43,9 @@ function createSsdInstance() {
     type: 'PRODUCTION', // Optional as default tyoe is PRODUCTION
     labels: {'prod-label': 'prod-label'},
   };
+  // [END set_instance_options]
 
+  // [START create_instance]
   // Creates an Instance
   bigtable
     .createInstance('ssd-instance', options)
@@ -57,6 +62,7 @@ function createSsdInstance() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END create_instance]
 }
 
 /**
@@ -65,12 +71,12 @@ function createSsdInstance() {
  * Cluster nodes should not be set while creating Development Instance
  */
 function createDevInstance() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
+  // [END connecting_to_bigtable]
 
+  // [START set_instance_options]
   // Set options to create an Instance
   const options = {
     displayName: 'HDD Instance',
@@ -84,7 +90,9 @@ function createDevInstance() {
     type: 'DEVELOPMENT',
     labels: {'dev-label': 'dev-label'},
   };
+  // [END set_instance_options]
 
+  // [START create_instance]
   // Creates an Instance
   bigtable
     .createInstance('hdd-instance', options)
@@ -101,18 +109,19 @@ function createDevInstance() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END create_instance]
 }
 
 /**
  * List instances in current project
  */
 function listInstances() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
+  // [END connecting_to_bigtable]
 
+  // [START get_instances]
   // Lists all instances in the current project
   bigtable
     .getInstances()
@@ -128,21 +137,20 @@ function listInstances() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END get_instances]
 }
 
 /**
  * Get the instance by name "ssd-instance"
  */
 function getInstance() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START get_instance]
   // check if instance exists
   instance
     .get()
@@ -156,21 +164,20 @@ function getInstance() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END get_instance]
 }
 
 /**
  * Get Clusters for the Instance "ssd-instance"
  */
 function getClusters() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START get_clusters]
   // check if instance exists
   instance
     .getClusters()
@@ -184,21 +191,20 @@ function getClusters() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END get_clusters]
 }
 
 /**
  * Delete the Instance "ssd-instance"
  */
 function deleteInstance() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START delete_instance]
   // check if instance exists
   instance
     .delete()
@@ -208,6 +214,7 @@ function deleteInstance() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END delete_instance]
 }
 
 /**
@@ -215,15 +222,13 @@ function deleteInstance() {
  * with 3 nodes at location us-central1-c
  */
 function createCluster() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START create_cluster]
   // define callback for createCluster
   const callback = (err, cluster, operations, apiResponse) => {
     if (err) {
@@ -245,21 +250,20 @@ function createCluster() {
   };
 
   instance.createCluster('ssd-cluster2', options, callback);
+  // [END create_cluster]
 }
 
 /**
  * Delete Cluster "ssd-cluster2" for the Instance "ssd-instance"
  */
 function deleteCluster() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START delete_cluster]
   // refer instance with id 'ssd-instance'
   let cluster = instance.cluster('ssd-cluster');
 
@@ -272,6 +276,7 @@ function deleteCluster() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END delete_cluster]
 }
 
 require(`yargs`)
