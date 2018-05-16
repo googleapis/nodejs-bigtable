@@ -405,6 +405,21 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
     });
 
+    it('should respect the labels option', function(done) {
+      var options = {
+        labels: {
+          env: 'prod'
+        },
+      };
+     
+      bigtable.request = function(config) {
+        assert.deepEqual(config.reqOpts.instance.labels, options.labels);
+        done();
+      };
+
+      bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
+    });
+    
     it('should respect the clusters option', function(done) {
       var cluster = {
         name: 'my-cluster',
