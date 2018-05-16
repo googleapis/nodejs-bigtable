@@ -15,20 +15,20 @@
 
 'use strict';
 
+const Bigtable = require('@google-cloud/bigtable');
+
 /**
  * Creates a table named "my_table" with 1 column family "simpleFamily"
  * that has a max versions of 1
  */
 function createTable() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // Set instance Object
   const instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START creating_a_table]
   // Set options
   const options = {
     families: [
@@ -53,21 +53,20 @@ function createTable() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END creating_a_table]
 }
 
 /**
  * check if a table by name "my-table" exists for instance "ssd-instance"
  */
 function checkTableExists() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   const instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START check_table_exists]
   // refer table with id 'my-table'
   const table = instance.table('my-table');
 
@@ -84,21 +83,20 @@ function checkTableExists() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END check_table_exists]
 }
 
 /**
  * Get the table by name "my-table"
  */
 function getTable() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   const instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START get_a_table]
   // refer table with id 'my-table'
   const table = instance.table('my-table2');
 
@@ -113,21 +111,20 @@ function getTable() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [START get_a_table]
 }
 
 /**
  * List tables for a instance
  */
 function listTables() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // Set instance Object
   const instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START list_tables]
   instance
     .getTables()
     .then(data => {
@@ -141,21 +138,20 @@ function listTables() {
     .catch(err => {
       console.error(`Error: ${err}`);
     });
+  // [END list_tables]
 }
 
 /**
  * Delete the Table "my-table"
  */
 function deleteTable() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START delete_a_table]
   // refer table with id 'my-table'
   const table = instance.table('my-table');
 
@@ -169,6 +165,7 @@ function deleteTable() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END delete_a_table]
 }
 
 /**
@@ -177,15 +174,13 @@ function deleteTable() {
  * no more than 10. Any additional columns past 2 should have a TTL of 30d
  */
 function addFamily() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
-
-  // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START create_column_family]
   // refer table with id 'my-table'
   const table = instance.table('my-table');
 
@@ -210,21 +205,22 @@ function addFamily() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END create_column_family]
 }
 
 /**
  * Delete a column family called "complex" on "my_table"
  */
 function delFamily() {
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
-
+  // [START connecting_to_bigtable]
   // Creates a client
   const bigtable = new Bigtable();
 
   // refer instance with id 'ssd-instance'
   let instance = bigtable.instance('ssd-instance');
+  // [END connecting_to_bigtable]
 
+  // [START delete_column_family]
   // refer table with id 'my-table'
   const table = instance.table('my-table');
 
@@ -239,6 +235,7 @@ function delFamily() {
     .catch(err => {
       console.error('ERROR:', err);
     });
+  // [END delete_column_family]
 }
 
 require(`yargs`)
