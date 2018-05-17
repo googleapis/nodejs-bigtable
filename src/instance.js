@@ -82,7 +82,12 @@ Instance.getTypeType_ = function(type) {
  * @param {object} [options] See {@link Bigtable#createInstance}.
  * @param {object} [options.gaxOptions]  Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
- *
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.metadata The metadata.
+ * @param {object} callback.apiResponse The full API response.
+ * 
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();

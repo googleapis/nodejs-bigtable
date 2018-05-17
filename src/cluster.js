@@ -101,6 +101,10 @@ Cluster.getStorageType_ = function(type) {
  * Create a cluster.
  *
  * @param {object} [options] See {@link Instance#createCluster}.
+ * @param {function} [callback] The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -223,7 +227,12 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
  *
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- *
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {object} callback.metadata The metadata.
+ * @param {object} callback.apiResponse The full API response.
+ * 
  * @example
  * cluster.get(function(err, cluster, apiResponse) {
  *   // The `cluster` data has been populated.
