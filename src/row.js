@@ -861,7 +861,7 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
 /**
  * Update the row cells.
  *
- * @param {object} key An entry object to be inserted into the row. See
+ * @param {object} entry An entry object to be inserted into the row. See
  *     {@link Table#insert}.
  * @param {object} [gaxOptions] Request configuration options, outlined here:
  *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
