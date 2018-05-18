@@ -87,7 +87,7 @@ Instance.getTypeType_ = function(type) {
  *     request.
  * @param {object} callback.metadata The metadata.
  * @param {object} callback.apiResponse The full API response.
- * 
+ *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();

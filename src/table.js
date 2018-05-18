@@ -143,7 +143,7 @@ Table.createPrefixRange_ = function(start) {
  * @param {function} [callback] The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.apiResponse The full API response. 
+ * @param {object} callback.apiResponse The full API response.
  * @example
  * table.create(function(err, table, apiResponse) {
  *   if (!err) {

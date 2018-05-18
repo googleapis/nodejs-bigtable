@@ -59,7 +59,7 @@ var methods = (Mutation.methods = {
  * Parses "bytes" returned from proto service.
  *
  * @param {string} bytes - Base64 encoded string.
- * @param {object} options 
+ * @param {object} options
  * @returns {string|number|buffer}
  */
 Mutation.convertFromBytes = function(bytes, options) {

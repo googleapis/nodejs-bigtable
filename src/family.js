@@ -149,7 +149,7 @@ Family.formatRule_ = function(ruleObj) {
  *     request.
  * @param {object} callback.metadata The metadata.
  * @param {object} callback.apiResponse The full API response.
- * 
+ *
  * @example
  * family.create(function(err, family, apiResponse) {
  *   // The column family was created successfully.
