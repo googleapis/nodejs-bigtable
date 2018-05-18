@@ -39,9 +39,9 @@ Here are the cbt commands to create a table, column family and add some data:
    cbt set my-table r1 cf1:c1=test-value
 ```
 
-Run the quick start to read the data you just wrote using `cbt`:
+Run the quick start to read the row you just wrote using `cbt`:
 ```
-   node.js quickstart.js
+   node quickstart.js
 ```
 Expected output similar to:
 ```
