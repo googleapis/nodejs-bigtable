@@ -232,7 +232,7 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
  *     request.
  * @param {object} callback.metadata The metadata.
  * @param {object} callback.apiResponse The full API response.
- * 
+ *
  * @example
  * cluster.get(function(err, cluster, apiResponse) {
  *   // The `cluster` data has been populated.
