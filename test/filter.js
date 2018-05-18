@@ -65,6 +65,13 @@ describe('Bigtable/Filter', function() {
       assert.strictEqual(str, '(a|b|c)');
     });
 
+    it('should convert an Array of buffers to a single string', function() {
+      var faces = [Buffer.from('.|.'), Buffer.from('=|=')];
+      var str = Filter.convertToRegExpString(faces);
+
+      assert.strictEqual(str, '(\\.\\|\\.|=\\|=)');
+    });
+
     it('should not do anything to a string', function() {
       var str1 = 'hello';
       var str2 = Filter.convertToRegExpString(str1);
@@ -76,6 +83,14 @@ describe('Bigtable/Filter', function() {
       var str = Filter.convertToRegExpString(1);
 
       assert.strictEqual(str, '1');
+    });
+
+    it('should convert a buffer to a string', function() {
+      var str1 = 'hello';
+      var buffer = Buffer.from(str1);
+      var str2 = Filter.convertToRegExpString(buffer);
+
+      assert.strictEqual(str1, str2);
     });
 
     it('should throw an error for unknown types', function() {

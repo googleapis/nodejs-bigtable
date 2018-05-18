@@ -175,6 +175,8 @@ describe('Bigtable', function() {
               libName: 'gccl',
               libVersion: PKG.version,
               scopes: EXPECTED_SCOPES,
+              'grpc.max_send_message_length': -1,
+              'grpc.max_receive_message_length': -1,
             },
             options
           )
@@ -203,6 +205,8 @@ describe('Bigtable', function() {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes: EXPECTED_SCOPES,
+        'grpc.max_send_message_length': -1,
+        'grpc.max_receive_message_length': -1,
       };
 
       assert.deepEqual(bigtable.options, {
@@ -242,6 +246,8 @@ describe('Bigtable', function() {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes: EXPECTED_SCOPES,
+        'grpc.max_send_message_length': -1,
+        'grpc.max_receive_message_length': -1,
       };
 
       var bigtable = new Bigtable(options);
@@ -287,6 +293,8 @@ describe('Bigtable', function() {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes: EXPECTED_SCOPES,
+        'grpc.max_send_message_length': -1,
+        'grpc.max_receive_message_length': -1,
       };
 
       var bigtable = new Bigtable(options);
@@ -382,6 +390,23 @@ describe('Bigtable', function() {
           config.reqOpts.instance.displayName,
           options.displayName
         );
+        done();
+      };
+
+      bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
+    });
+
+    it('should respect the type option', function(done) {
+      var options = {type: 'development'};
+      var fakeTypeType = 99;
+
+      FakeInstance.getTypeType_ = function(type) {
+        assert.strictEqual(type, options.type);
+        return fakeTypeType;
+      };
+
+      bigtable.request = function(config) {
+        assert.deepEqual(config.reqOpts.instance.type, fakeTypeType);
         done();
       };
 

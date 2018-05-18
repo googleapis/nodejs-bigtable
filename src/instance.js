@@ -51,6 +51,32 @@ function Instance(bigtable, name) {
 }
 
 /**
+ * Maps the instance type to the proper integer.
+ *
+ * @private
+ *
+ * @param {string} type The instance type (production, development).
+ * @returns {number}
+ *
+ * @example
+ * Instance.getTypeType_('production');
+ * // 1
+ */
+Instance.getTypeType_ = function(type) {
+  var types = {
+    unspecified: 0,
+    production: 1,
+    development: 2,
+  };
+
+  if (is.string(type)) {
+    type = type.toLowerCase();
+  }
+
+  return types[type] || types.unspecified;
+};
+
+/**
  * Create an instance.
  *
  * @param {object} [options] See {@link Bigtable#createInstance}.

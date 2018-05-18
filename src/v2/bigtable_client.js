@@ -37,10 +37,10 @@ class BigtableClient {
    * @param {string} [options.credentials.client_email]
    * @param {string} [options.credentials.private_key]
    * @param {string} [options.email] - Account email address. Required when
-   *   usaing a .pem or .p12 keyFilename.
+   *     using a .pem or .p12 keyFilename.
    * @param {string} [options.keyFilename] - Full path to the a .json, .pem, or
    *     .p12 key downloaded from the Google Developers Console. If you provide
-   *     a path to a JSON file, the projectId option above is not necessary.
+   *     a path to a JSON file, the projectId option below is not necessary.
    *     NOTE: .pem and .p12 require you to specify options.email as well.
    * @param {number} [options.port] - The port on which to connect to
    *     the remote host.
@@ -254,6 +254,13 @@ class BigtableClient {
    */
   readRows(request, options) {
     options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName,
+    });
 
     return this._innerApiCalls.readRows(request, options);
   }
@@ -299,6 +306,13 @@ class BigtableClient {
    */
   sampleRowKeys(request, options) {
     options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName,
+    });
 
     return this._innerApiCalls.sampleRowKeys(request, options);
   }
@@ -371,6 +385,13 @@ class BigtableClient {
       options = {};
     }
     options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName,
+    });
 
     return this._innerApiCalls.mutateRow(request, options, callback);
   }
@@ -426,6 +447,13 @@ class BigtableClient {
    */
   mutateRows(request, options) {
     options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName,
+    });
 
     return this._innerApiCalls.mutateRows(request, options);
   }
@@ -513,6 +541,13 @@ class BigtableClient {
       options = {};
     }
     options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName,
+    });
 
     return this._innerApiCalls.checkAndMutateRow(request, options, callback);
   }
@@ -589,6 +624,13 @@ class BigtableClient {
       options = {};
     }
     options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName,
+    });
 
     return this._innerApiCalls.readModifyWriteRow(request, options, callback);
   }

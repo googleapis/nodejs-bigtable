@@ -8,9 +8,17 @@
 
 ## Table of Contents
 
-* [Before you begin](#before-you-begin)
-* [Samples](#samples)
-  * [Instances](#instances)
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Before you begin](#before-you-begin)
+- [Samples](#samples)
+  - [Hello World](#hello-world)
+  - [Instances](#instances)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 ## Before you begin
 
@@ -19,6 +27,11 @@ Before running the samples, make sure you've followed the steps in the
 library's README.
 
 ## Samples
+
+### Hello World
+
+View the [Hello World][hello_world_directory] sample to see a basic usage of
+the Bigtable client library.
 
 ### Instances
 
@@ -46,6 +59,8 @@ For more information, see https://cloud.google.com/bigtable/docs
 
 [instances_0_docs]: https://cloud.google.com/bigtable/docs/
 [instances_0_code]: instances.js
+
+[hello_world_directory]: hello-world
 
 [shell_img]: //gstatic.com/cloudssh/images/open-btn.png
 [shell_link]: https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/README.md

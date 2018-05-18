@@ -327,6 +327,28 @@ describe('Bigtable/Family', function() {
       family.get(options, done);
     });
 
+    it('should pass the rules when auto creating', function(done) {
+      var error = new FamilyError(TABLE.id);
+
+      var options = {
+        autoCreate: true,
+        rule: {
+          versions: 1,
+        },
+      };
+
+      family.getMetadata = function(gaxOptions, callback) {
+        callback(error);
+      };
+
+      family.create = function(options_, callback) {
+        assert.deepStrictEqual(options.rule, {versions: 1});
+        callback();
+      };
+
+      family.get(options, done);
+    });
+
     it('should not auto create without a FamilyError error', function(done) {
       var error = new Error('Error.');
       error.code = 'NOT-5';

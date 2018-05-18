@@ -54,7 +54,7 @@
     "lint": "repo-tools lint --cmd eslint -- src/ samples/ system-test/ test/",
     "prettier": "repo-tools exec -- prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
     "publish-module": "node ../../scripts/publish.js bigtable",
-    "system-test": "repo-tools test run --cmd mocha -- system-test/*.js --no-timeouts"
+    "system-test": "repo-tools test run --cmd mocha -- system-test/*.js --timeout 600000"
   },
   "dependencies": {
     "@google-cloud/common": "^0.18.0",
@@ -63,6 +63,7 @@
     "concat-stream": "^1.5.0",
     "create-error-class": "^3.0.2",
     "dot-prop": "^4.2.0",
+    "escape-string-regexp": "^1.0.5",
     "extend": "^3.0.0",
     "google-auto-auth": "^0.10.0",
     "google-gax": "^0.16.0",
