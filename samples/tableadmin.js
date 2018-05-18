@@ -17,7 +17,6 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-
 async function runTableOperations(instanceName, tableName) {
     // const instanceName = "my-instance";
     // const tableName = "my-bigtable-name";
@@ -48,6 +47,20 @@ async function runTableOperations(instanceName, tableName) {
     } else {
         console.log(`Table exists.`);
     }
+
+    console.log('\nListing tables in current project...');
+    // [START bigtable_list_tables]
+    // List tables in current project
+    try {
+        let [tables] = await instance.getTables();
+        tables.forEach(table => {
+            console.log(table.name);
+        });
+    } catch (err) {
+        console.error(`Error listing tables in current project: ${err}`);
+        return;
+    }
+    // [END bigtable_list_tables]
 
     console.log('\nPrinting table metadata...');
     // [START bigtable_get_table_metadata]
