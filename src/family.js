@@ -147,7 +147,7 @@ Family.formatRule_ = function(ruleObj) {
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.metadata The metadata.
+ * @param {Family} callback.family The metadata.
  * @param {object} callback.apiResponse The full API response.
  *
  * @example
