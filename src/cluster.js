@@ -230,7 +230,6 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
  * @param {function} callback The callback function.
  * @param {?error} callback.err An error returned while making this
  *     request.
- * @param {object} callback.metadata The metadata.
  * @param {object} callback.apiResponse The full API response.
  *
  * @example
