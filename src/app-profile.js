@@ -58,12 +58,28 @@ function AppProfile(instance, name) {
  * @returns {object}
  *
  * @example
+ * // Any cluster routing:
  * Family.formatAppProfile_({
  *   routing: 'any',
  *   description: 'My App Profile',
  * });
  * // {
  * //   multiClusterRoutingUseAny: {},
+ * //   description: 'My App Profile',
+ * // }
+ *
+ * // Single cluster routing:
+ * const cluster = myInstance.cluster('my-cluster');
+ * Family.formatAppProfile_({
+ *   routing: cluster,
+ *   allowTransactionalWrites: true,
+ *   description: 'My App Profile',
+ * });
+ * // {
+ * //   singleClusterRouting: {
+ * //     clusterId: 'my-cluster',
+ * //     allowTransactionalWrites: true,
+ * //   },
  * //   description: 'My App Profile',
  * // }
  */
