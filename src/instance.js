@@ -80,8 +80,8 @@ Instance.getTypeType_ = function(type) {
 /**
  * Get a reference to a Bigtable App Profile.
  *
- * @param {string} name The name of the cluster.
- * @returns {Cluster}
+ * @param {string} name The name of the app profile.
+ * @returns {AppProfile}
  */
 Instance.prototype.appProfile = function(name) {
   return new AppProfile(this, name);
@@ -137,7 +137,7 @@ Instance.prototype.create = function(options, callback) {
  * @param {object} options AppProfile creation options.
  * @param {'any'|Cluster} options.routing  The routing policy for all
  *     read/write requests which use this app profile. This can be either the
- *     string 'any' or an instance of a cluster. This value is required when
+ *     string 'any' or a cluster of an instance. This value is required when
  *     creating the app profile and optional when setting the metadata.
  * @param {object} [options.gaxOptions]  Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
@@ -158,13 +158,14 @@ Instance.prototype.create = function(options, callback) {
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
+ * const cluster = instance.cluster('my-cluster');
  *
  * const callback = function(err, appProfile, apiResponse) {
  *   // `appProfile` is an AppProfile object.
  * };
  *
  * const options = {
- *   routing: instance,
+ *   routing: cluster,
  *   allowTransactionalWrites: true,
  *   ignoreWarnings: true,
  * };

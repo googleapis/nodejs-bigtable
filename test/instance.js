@@ -222,10 +222,10 @@ describe('Bigtable/Instance', function() {
       instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
     });
 
-    describe('should respect the routing option when', function() {
+    describe('should respect the routing option with', function() {
       const cluster = new FakeCluster({}, CLUSTER_NAME);
 
-      it(`has an 'any' value`, function(done) {
+      it(`an 'any' value`, function(done) {
         var options = {
           routing: 'any',
         };
@@ -241,7 +241,7 @@ describe('Bigtable/Instance', function() {
         instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
       });
 
-      it(`has a cluster value`, function(done) {
+      it(`a cluster value`, function(done) {
         var options = {routing: cluster};
 
         instance.bigtable.request = function(config) {
