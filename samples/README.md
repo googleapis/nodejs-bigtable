@@ -93,6 +93,7 @@ For more information, see https://cloud.google.com/bigtable/docs
 View the [source code](tableadmin.js).
 This sample showcases the basic table / column family operations:
 1. Create a table (if does not exist)
+1. List tables in the current project
 1. Retrieve table metadata
 1. Create column families with supported garbage collection(GC) rules
 1. List table column families and GC rules
