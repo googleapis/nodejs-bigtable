@@ -65,6 +65,11 @@ Cluster.getLocation_ = function(project, location) {
     return location;
   }
 
+  // in-case project has '/', split and pick last component
+  if (project.indexOf('/') > -1) {
+    project = project.split('/').pop();
+  }
+
   return format('projects/{project}/locations/{location}', {
     project: project,
     location: location,

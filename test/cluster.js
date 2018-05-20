@@ -101,6 +101,17 @@ describe('Bigtable/Cluster', function() {
       assert.strictEqual(formatted, expected);
     });
 
+    it('should format the location name for project name with /', function() {
+      var PROJECT_NAME = 'projects/grape-spaceship-123';
+      var expected = format('projects/{project}/locations/{location}', {
+        project: PROJECT_NAME.split('/').pop(),
+        location: LOCATION,
+      });
+
+      var formatted = Cluster.getLocation_(PROJECT_NAME, LOCATION);
+      assert.strictEqual(formatted, expected);
+    });
+
     it('should not re-format a complete location', function() {
       var complete = format('projects/p/locations/{location}', {
         location: LOCATION,
