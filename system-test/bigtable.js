@@ -434,6 +434,63 @@ describe('Bigtable', function() {
       );
     });
 
+    it('should create a family with nested gc rules', function(done) {
+      var family = TABLE.family('prezzies');
+      var options = {
+        rule: {
+          union: true,
+          versions: 10,
+          rule: {
+            versions: 2,
+            age: {seconds: 60 * 60 * 24 * 30},
+          },
+        },
+      };
+
+      async.series(
+        [
+          family.create.bind(family, options),
+          next => {
+            family.getMetadata((err, metadata) => {
+              if (err) return next(err);
+              assert.deepStrictEqual(metadata.gcRule, {
+                union: {
+                  rules: [
+                    {
+                      maxNumVersions: 10,
+                      rule: 'maxNumVersions',
+                    },
+                    {
+                      intersection: {
+                        rules: [
+                          {
+                            maxAge: {
+                              seconds: '2592000',
+                              nanos: 0,
+                            },
+                            rule: 'maxAge',
+                          },
+                          {
+                            maxNumVersions: 2,
+                            rule: 'maxNumVersions',
+                          },
+                        ],
+                      },
+                      rule: 'intersection',
+                    },
+                  ],
+                },
+                rule: 'union',
+              });
+              next();
+            });
+          },
+          family.delete.bind(family),
+        ],
+        done
+      );
+    });
+
     it('should get the column family metadata', function(done) {
       FAMILY.getMetadata(function(err, metadata) {
         assert.ifError(err);

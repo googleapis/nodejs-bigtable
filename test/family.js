@@ -128,6 +128,7 @@ describe('Bigtable/Family', function() {
     it('should create a union rule', function() {
       var originalRule = {
         age: 10,
+        versions: 2,
         union: true,
       };
 
@@ -139,6 +140,9 @@ describe('Bigtable/Family', function() {
             {
               maxAge: originalRule.age,
             },
+            {
+              maxNumVersions: originalRule.versions,
+            },
           ],
         },
       });
@@ -146,8 +150,8 @@ describe('Bigtable/Family', function() {
 
     it('should create an intersecting rule', function() {
       var originalRule = {
+        age: 10,
         versions: 2,
-        intersection: true,
       };
 
       var rule = Family.formatRule_(originalRule);
@@ -156,11 +160,52 @@ describe('Bigtable/Family', function() {
         intersection: {
           rules: [
             {
+              maxAge: originalRule.age,
+            },
+            {
               maxNumVersions: originalRule.versions,
             },
           ],
         },
       });
+    });
+
+    it('should allow nested rules', function() {
+      var originalRule = {
+        age: 10,
+        rule: {age: 30, versions: 2},
+        union: true,
+      };
+
+      var rule = Family.formatRule_(originalRule);
+
+      assert.deepEqual(rule, {
+        union: {
+          rules: [
+            {maxAge: originalRule.age},
+            {
+              intersection: {
+                rules: [
+                  {maxAge: originalRule.rule.age},
+                  {maxNumVersions: originalRule.rule.versions},
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    it('should throw if union only has one rule', function() {
+      assert.throws(function() {
+        Family.formatRule_({age: 10, union: true});
+      }, /A union must have more than one garbage collection rule\./);
+    });
+
+    it('should throw if no rules are provided', function() {
+      assert.throws(function() {
+        Family.formatRule_({});
+      }, /No garbage collection rules were specified\./);
     });
   });
 
