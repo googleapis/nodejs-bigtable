@@ -440,6 +440,17 @@ function Bigtable(options) {
  *     instance.
  * @param {string} [options.displayName] The descriptive name for this instance
  *     as it appears in UIs.
+ * @param {Object.<string, string>} [options.labels] Labels are a flexible and
+ *     lightweight mechanism for organizing cloud resources into groups that
+ *     reflect a customer's organizational needs and deployment strategies.
+ *     They can be used to filter resources and aggregate metrics.
+ *
+ *   * Label keys must be between 1 and 63 characters long and must conform to
+ *     the regular expression: `[\p{Ll}\p{Lo}][\p{Ll}\p{Lo}\p{N}_-]{0,62}`.
+ *   * Label values must be between 0 and 63 characters long and must conform to
+ *     the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
+ *   * No more than 64 labels can be associated with a given resource.
+ *   * Keys and values must both be under 128 bytes.
  * @param {string} [options.type] The type of the instance. Options are
  *     'production' or 'development'.
  * @param {object} [options.gaxOptions] Request configuration options, outlined
@@ -470,6 +481,7 @@ function Bigtable(options) {
  *
  * const options = {
  *   displayName: 'my-sweet-instance',
+ *   labels: {env: 'prod'},
  *   clusters: [
  *     {
  *       name: 'my-sweet-cluster',
@@ -504,6 +516,7 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
     instanceId: name,
     instance: {
       displayName: options.displayName || name,
+      labels: options.labels,
     },
   };
 
@@ -811,5 +824,6 @@ Bigtable.Instance = Instance;
  * region_tag:bigtable_quickstart
  * Full quickstart example:
  */
+
 module.exports = Bigtable;
 module.exports.v2 = v2;
