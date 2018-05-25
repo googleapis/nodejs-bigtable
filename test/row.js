@@ -991,21 +991,88 @@ describe('Bigtable/Row', function() {
     });
 
     it('should respect the options object', function(done) {
-      var keys = ['a'];
+      var keys = ['a:b'];
 
       var options = {
-        decode: false,
+        filter: [
+          {
+            column: {
+              cellLimit: 1,
+            },
+          },
+        ],
+        descode: false,
       };
 
       var expectedFilter = [
         {
           family: 'a',
         },
+        {
+          column: 'b',
+        },
+        {
+          column: {
+            cellLimit: 1,
+          },
+        },
       ];
 
       row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
+        assert(FakeMutation.parseColumnName.calledWith(keys[0]));
+        assert.strictEqual(reqOpts.decode, options.decode);
+        done();
+      };
+
+      row.get(keys, options, assert.ifError);
+    });
+
+    it('should respect the options object with filter for multiple columns', function(done) {
+      var keys = ['a:b', 'c:d'];
+
+      var options = {
+        filter: [
+          {
+            column: {
+              cellLimit: 1,
+            },
+          },
+        ],
+      };
+
+      var expectedFilter = [
+        {
+          interleave: [
+            [
+              {
+                family: 'a',
+              },
+              {
+                column: 'b',
+              },
+            ],
+            [
+              {
+                family: 'c',
+              },
+              {
+                column: 'd',
+              },
+            ],
+          ],
+        },
+        {
+          column: {
+            cellLimit: 1,
+          },
+        },
+      ];
+
+      row.table.getRows = function(reqOpts) {
+        assert.deepEqual(reqOpts.filter, expectedFilter);
+        assert.strictEqual(FakeMutation.parseColumnName.callCount, 2);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
         assert.strictEqual(reqOpts.decode, options.decode);
         done();
