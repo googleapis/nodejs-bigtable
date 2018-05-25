@@ -23,6 +23,7 @@ var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
 var util = require('util');
 
+var AppProfile = require('../src/app-profile.js');
 var Cluster = require('../src/cluster.js');
 var Family = require('../src/family.js');
 var Table = require('../src/table.js');
@@ -35,7 +36,7 @@ var fakeUtil = extend({}, common.util, {
     }
 
     promisified = true;
-    assert.deepEqual(options.exclude, ['cluster', 'table']);
+    assert.deepEqual(options.exclude, ['appProfile', 'cluster', 'table']);
   },
 });
 
@@ -58,6 +59,7 @@ function createFake(Class) {
   return Fake;
 }
 
+var FakeAppProfile = createFake(AppProfile);
 var FakeCluster = createFake(Cluster);
 var FakeFamily = createFake(Family);
 var FakeTable = createFake(Table);
@@ -71,6 +73,7 @@ describe('Bigtable/Instance', function() {
     instance: INSTANCE_NAME,
   });
 
+  var APP_PROFILE_NAME = 'my-app-profile';
   var CLUSTER_NAME = 'my-cluster';
 
   var Instance;
@@ -82,6 +85,7 @@ describe('Bigtable/Instance', function() {
         paginator: fakePaginator,
         util: fakeUtil,
       },
+      './app-profile.js': FakeAppProfile,
       './cluster.js': FakeCluster,
       './family.js': FakeFamily,
       './table.js': FakeTable,
@@ -176,6 +180,159 @@ describe('Bigtable/Instance', function() {
     });
   });
 
+  describe('createAppProfile', function() {
+    it('should provide the proper request options', function(done) {
+      instance.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
+        assert.strictEqual(config.method, 'createAppProfile');
+
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.appProfileId, APP_PROFILE_NAME);
+
+        assert.strictEqual(config.gaxOpts, undefined);
+
+        done();
+      };
+
+      instance.createAppProfile(
+        APP_PROFILE_NAME,
+        {routing: 'any'},
+        assert.ifError
+      );
+    });
+
+    it('should throw if the routing option is not provided', function() {
+      assert.throws(
+        instance.createAppProfile.bind(null, APP_PROFILE_NAME, assert.ifError)
+      ),
+        /An app profile must contain a routing policy\./;
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var options = {
+        routing: 'any',
+        gaxOptions: {},
+      };
+
+      instance.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, options.gaxOptions);
+        done();
+      };
+
+      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+    });
+
+    describe('should respect the routing option with', function() {
+      const cluster = new FakeCluster({}, CLUSTER_NAME);
+
+      it(`an 'any' value`, function(done) {
+        var options = {
+          routing: 'any',
+        };
+
+        instance.bigtable.request = function(config) {
+          assert.deepStrictEqual(
+            config.reqOpts.appProfile.multiClusterRoutingUseAny,
+            {}
+          );
+          done();
+        };
+
+        instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      });
+
+      it(`a cluster value`, function(done) {
+        var options = {routing: cluster};
+
+        instance.bigtable.request = function(config) {
+          assert.deepStrictEqual(
+            config.reqOpts.appProfile.singleClusterRouting,
+            {clusterId: CLUSTER_NAME}
+          );
+          done();
+        };
+
+        instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      });
+    });
+
+    it('should respect the allowTransactionalWrites option', function(done) {
+      var cluster = instance.cluster(CLUSTER_NAME);
+      var options = {
+        routing: cluster,
+        allowTransactionalWrites: true,
+      };
+
+      instance.bigtable.request = function(config) {
+        assert.deepStrictEqual(
+          config.reqOpts.appProfile.singleClusterRouting
+            .allowTransactionalWrites,
+          true
+        );
+        done();
+      };
+
+      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+    });
+
+    it('should respect the description option', function(done) {
+      var options = {
+        routing: 'any',
+        description: 'My App Profile',
+      };
+
+      instance.bigtable.request = function(config) {
+        assert.deepStrictEqual(
+          config.reqOpts.appProfile.description,
+          options.description
+        );
+        done();
+      };
+
+      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+    });
+
+    it('should respect the ignoreWarnings option', function(done) {
+      var options = {
+        routing: 'any',
+        ignoreWarnings: true,
+      };
+
+      instance.bigtable.request = function(config) {
+        assert.deepStrictEqual(config.reqOpts.ignoreWarnings, true);
+        done();
+      };
+
+      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+    });
+
+    it('should execute callback with arguments from GAPIC', function(done) {
+      var response = {};
+
+      instance.bigtable.request = function(config, callback) {
+        callback(null, response);
+      };
+
+      var fakeAppProfile = {};
+
+      instance.appProfile = function(name) {
+        assert.strictEqual(name, APP_PROFILE_NAME);
+        return fakeAppProfile;
+      };
+
+      instance.createAppProfile(APP_PROFILE_NAME, {routing: 'any'}, function(
+        err,
+        appProfile,
+        apiResponse
+      ) {
+        assert.ifError(err);
+        assert.strictEqual(arguments[1], fakeAppProfile);
+        assert.strictEqual(apiResponse, response);
+        done();
+      });
+    });
+  });
+
   describe('createCluster', function() {
     it('should provide the proper request options', function(done) {
       instance.bigtable.request = function(config) {
@@ -214,7 +371,7 @@ describe('Bigtable/Instance', function() {
       var fakeLocation = 'a/b/c/d';
 
       FakeCluster.getLocation_ = function(project, location) {
-        assert.strictEqual(project, BIGTABLE.projectName);
+        assert.strictEqual(project, BIGTABLE.projectId);
         assert.strictEqual(location, options.location);
         return fakeLocation;
       };
@@ -565,6 +722,64 @@ describe('Bigtable/Instance', function() {
         assert.ifError(err);
         assert.strictEqual(instance_, instance);
         assert.strictEqual(metadata_, metadata);
+        done();
+      });
+    });
+  });
+
+  describe('getAppProfiles', function() {
+    it('should provide the proper request options', function(done) {
+      instance.bigtable.request = function(config) {
+        assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
+        assert.strictEqual(config.method, 'listAppProfiles');
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: INSTANCE_ID,
+        });
+        assert.deepEqual(config.gaxOpts, {});
+        done();
+      };
+
+      instance.getAppProfiles(assert.ifError);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      instance.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      instance.getAppProfiles(gaxOptions, assert.ifError);
+    });
+
+    it('should return error from gapic', function(done) {
+      var error = new Error('Error.');
+
+      instance.bigtable.request = function(config, callback) {
+        callback(error);
+      };
+
+      instance.getAppProfiles(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return an array of AppProfile objects', function(done) {
+      var response = [{name: 'a'}, {name: 'b'}];
+
+      instance.bigtable.request = function(config, callback) {
+        callback(null, response);
+      };
+
+      instance.getAppProfiles(function(err, appProfiles, apiResponse) {
+        assert.ifError(err);
+        assert.strictEqual(appProfiles[0].name, 'a');
+        assert.deepStrictEqual(appProfiles[0].metadata, response[0]);
+        assert.strictEqual(appProfiles[1].name, 'b');
+        assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
+        assert.strictEqual(apiResponse, response);
         done();
       });
     });
