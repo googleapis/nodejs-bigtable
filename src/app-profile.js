@@ -329,11 +329,12 @@ AppProfile.prototype.getMetadata = function(gaxOptions, callback) {
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
+ * const cluster = instance.cluster('my-cluster');
  * const appProfile = instance.appProfile('my-appProfile');
  *
  * const metadata = {
  *   description: 'My Updated App Profile',
- *   routing: myCluster,
+ *   routing: cluster,
  *   allowTransactionalWrites: true,
  * };
  *
