@@ -300,7 +300,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
 
   if (options.location) {
     reqOpts.cluster.location = Cluster.getLocation_(
-      this.bigtable.projectName,
+      this.bigtable.projectId,
       options.location
     );
   }
