@@ -764,11 +764,16 @@ Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
  * Set the instance metadata.
  *
  * @param {object} metadata Metadata object.
- * @param {Object} metadata.instance
- * The Instance which will (partially) replace the current value.
- *
- * This object should have the same structure as [Instance]{@link google.bigtable.admin.v2.Instance}
- * @param {Object} metadata.updateMask
+ * @param {string} [metadata.displayName]
+ * The descriptive name for this instance as it appears in UIs. It can be changed at any time, but
+ *     should be kept globally unique to avoid confusion.
+ * @param {string} [metadata.type] The type of the instance. Options are
+ *     'production' or 'development'.
+ * @param {Object.<string, string>} [metadata.labels]  Labels are a flexible and lightweight mechanism for organizing cloud
+ *     resources into groups that reflect a customer's organizational needs and
+ *     deployment strategies. They can be used to filter resources and aggregate
+ *     metrics.
+ * @param {Object} [updateMask]
  * The subset of Instance fields which should be replaced.
  * Must be explicitly set.
  *
@@ -786,12 +791,12 @@ Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  *
- * var instance = {
- * name: 'projects/<project_id>/instances/<instance_id>',
- * displayName: 'instanceName',};
+ * var instanceToUpdate = {
+ * displayName: 'updated-name'
+ * };
  * var updateMask = {paths : ['display_name']};
  * var metadata = {
- *   instance: instance,
+ *   instance: instanceToUpdate,
  *   updateMask: updateMask,
  * };
  * instance.setMetadata(metadata, function(err, apiResponse) {});
@@ -810,12 +815,22 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     callback = gaxOptions;
     gaxOptions = {};
   }
+  var updateMask = metadata.updateMask? metadata.updateMask :{
+    paths : [
+    'display_name',
+    'type',
+    'labels']
+  };
+  var reqOpts = {
+    instance : extend({name: this.id}, metadata),
+    updateMask : updateMask, 
+  };
 
   this.bigtable.request(
     {
       client: 'BigtableInstanceAdminClient',
       method: 'partialUpdateInstance',
-      reqOpts: metadata,
+      reqOpts: reqOpts,
       gaxOpts: gaxOptions,
     },
     function() {

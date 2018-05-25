@@ -803,15 +803,19 @@ describe('Bigtable/Instance', function() {
   describe('setMetadata', function() {
     it('should provide the proper request options', function(done) {
       var metadata = {
-        instance: {name: 'a', labels: {}},
+        displayName: 'updateName',
         updateMask: {
-          paths: ['labels'],
+          paths: ['display_name'],
         },
       };
       instance.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'partialUpdateInstance');
-        assert.deepStrictEqual(config.reqOpts, metadata);
+        assert.strictEqual(
+          config.reqOpts.instance.displayName,
+          metadata.displayName
+        );
+        assert.deepStrictEqual(config.reqOpts.updateMask, metadata.updateMask);
         callback(); // done()
       };
 
