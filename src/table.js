@@ -140,7 +140,10 @@ Table.createPrefixRange_ = function(start) {
  * @param {object} [options] See {@link Instance#createTable}.
  * @param {object} [options.gaxOptions]  Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
- *
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Table} callback.table The newly created table.
+ * @param {object} callback.apiResponse The full API response.
  * @example
  * table.create(function(err, table, apiResponse) {
  *   if (!err) {
