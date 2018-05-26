@@ -815,15 +815,14 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     callback = gaxOptions;
     gaxOptions = {};
   }
-  var updateMask = metadata.updateMask? metadata.updateMask :{
-    paths : [
-    'display_name',
-    'type',
-    'labels']
-  };
+  var updateMask = metadata.updateMask
+    ? metadata.updateMask
+    : {
+        paths: ['display_name', 'type', 'labels'],
+      };
   var reqOpts = {
-    instance : extend({name: this.id}, metadata),
-    updateMask : updateMask, 
+    instance: extend({name: this.id}, metadata),
+    updateMask: updateMask,
   };
 
   this.bigtable.request(
