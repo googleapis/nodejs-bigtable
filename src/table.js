@@ -208,7 +208,9 @@ Table.prototype.create = function(options, callback) {
  *   // `family` is a Family object
  * };
  *
- * const rule = {
+ * const options={};
+ *
+ * options.rule = {
  *   age: {
  *     seconds: 0,
  *     nanos: 5000
@@ -217,7 +219,7 @@ Table.prototype.create = function(options, callback) {
  *   union: true
  * };
  *
- * table.createFamily('follows', rule, callback);
+ * table.createFamily('follows', options, callback);
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.
