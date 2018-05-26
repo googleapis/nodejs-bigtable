@@ -773,7 +773,7 @@ Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
  *     resources into groups that reflect a customer's organizational needs and
  *     deployment strategies. They can be used to filter resources and aggregate
  *     metrics.
- * @param {Object} [updateMask]
+ * @param {Object} [metadata.updateMask]
  * The subset of Instance fields which should be replaced.
  * Must be explicitly set.
  *
