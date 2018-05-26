@@ -252,7 +252,7 @@ Filter.prototype.all = function(pass) {
  * Matches only cells from columns whose qualifiers satisfy the given RE2
  * regex.
  * @param {?regex|string|object} column Matching Column to filter with
- * 
+ *
  * Note that, since column qualifiers can contain arbitrary bytes, the '\C'
  * escape sequence must be used if a true wildcard is desired. The '.'
  * character will not match the new line character '\n', which may be
