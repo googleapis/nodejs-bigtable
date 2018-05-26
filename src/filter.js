@@ -222,6 +222,9 @@ Filter.parse = function(filters) {
 };
 
 /**
+ * Sets pallAllFilter or blockAllFilter
+ *
+ * @param {boolean} pass Whether to pallAllFilter or blockAllFilter
  * @example
  * //-
  * // Matches all cells, regardless of input. Functionally equivalent to
@@ -248,7 +251,8 @@ Filter.prototype.all = function(pass) {
 /**
  * Matches only cells from columns whose qualifiers satisfy the given RE2
  * regex.
- *
+ * @param {?regex|string|object} column Matching Column to filter with
+ * 
  * Note that, since column qualifiers can contain arbitrary bytes, the '\C'
  * escape sequence must be used if a true wildcard is desired. The '.'
  * character will not match the new line character '\n', which may be
@@ -397,6 +401,8 @@ Filter.prototype.column = function(column) {
  * results. Additionally, condition filters have poor performance, especially
  * when filters are set for the fail condition.
  *
+ * @param {object} condition Condition to filter.
+ *
  * @example
  * //-
  * // In the following example we're creating a filter that will check if
@@ -454,6 +460,8 @@ Filter.prototype.condition = function(condition) {
  * '\n', it is sufficient to use '.' as a full wildcard when matching
  * column family names.
  *
+ * @param {regex} family Expression to filter family
+ *
  * @example
  * var filter = [
  *   {
@@ -469,7 +477,7 @@ Filter.prototype.family = function(family) {
 /**
  * Applies several filters to the data in parallel and combines the results.
  *
- * The elements of "filters" all process a copy of the input row, and the
+ * @param {object} filters The elements of "filters" all process a copy of the input row, and the
  * results are pooled, sorted, and combined into a single output row.
  * If multiple cells are produced with the same column and timestamp,
  * they will all appear in the output row in an unspecified mutual order.
@@ -515,6 +523,7 @@ Filter.prototype.interleave = function(filters) {
  * the client to determine which results were produced from which part of
  * the filter.
  *
+ * @param {string} label Label to determine filter point
  * Values must be at most 15 characters in length, and match the RE2
  * pattern [a-z0-9\\-]+
  *
@@ -535,21 +544,23 @@ Filter.prototype.label = function(label) {
 };
 
 /**
+ * Matches only cells from rows whose keys satisfy the given RE2 regex. In
+ * other words, passes through the entire row when the key matches, and
+ * otherwise produces an empty row.
+ *
+ * @param {?regex|string|string[]} row Row format to Filter
+ *
+ * Note that, since row keys can contain arbitrary bytes, the '\C' escape
+ * sequence must be used if a true wildcard is desired. The '.' character
+ * will not match the new line character '\n', which may be present in a
+ * binary key.
+ *
  * @example
- * //-
- * // Matches only cells from rows whose keys satisfy the given RE2 regex. In
- * // other words, passes through the entire row when the key matches, and
- * // otherwise produces an empty row.
- * //
- * // Note that, since row keys can contain arbitrary bytes, the '\C' escape
- * // sequence must be used if a true wildcard is desired. The '.' character
- * // will not match the new line character '\n', which may be present in a
- * // binary key.
- * //
- * // In the following example we'll use a regular expression to match all
- * // row keys ending with the letters "on", which would then yield
- * // `gwashington` and `tjefferson`.
- * //-
+ *
+ * In the following example we'll use a regular expression to match all
+ * row keys ending with the letters "on", which would then yield
+ * `gwashington` and `tjefferson`.
+ *
  * var filter = [
  *   {
  *     row: /[a-z]+on$/
@@ -681,14 +692,14 @@ Filter.prototype.set = function(key, value) {
  * This filter is meant for advanced use only. Hook for introspection into the
  * filter. Outputs all cells directly to the output of the read rather than to
  * any parent filter.
- *
  * Despite being excluded by the qualifier filter, a copy of every cell that
  * reaches the sink is present in the final result.
- *
  * As with an {@link Filter#interleave} filter, duplicate cells are
  * possible, and appear in an unspecified mutual order.
  *
  * Cannot be used within {@link Filter#condition} filter.
+ *
+ * @param {boolean} sink
  *
  * @example
  * //-
@@ -738,6 +749,8 @@ Filter.prototype.sink = function(sink) {
 /**
  * Matches only cells with timestamps within the given range.
  *
+ * @param {object} time Start and End time Object
+ *
  * @example
  * var filter = [
  *   {
@@ -779,6 +792,8 @@ Filter.prototype.toProto = function() {
  * sequence must be used if a true wildcard is desired. The '.' character
  * will not match the new line character '\n', which may be present in a
  * binary value.
+ *
+ * @param {?string|string[]|object} value Value to filter cells
  *
  * @example
  * var filter = [

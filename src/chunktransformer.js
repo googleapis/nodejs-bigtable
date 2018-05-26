@@ -96,7 +96,7 @@ ChunkTransformer.prototype._transform = function(data, enc, next) {
 /**
  * called at end of the stream.
  * @public
- * @param {callback} callback callback will be called with error if there is any uncommitted row
+ * @param {callback} cb callback will be called with error if there is any uncommitted row
  */
 ChunkTransformer.prototype._flush = function(cb) {
   if (typeof this.row.key !== 'undefined') {
@@ -114,7 +114,7 @@ ChunkTransformer.prototype._flush = function(cb) {
 /**
  * called when stream is destroyed.
  * @public
- * @param {error} error error if any
+ * @param {error} err error if any
  */
 ChunkTransformer.prototype.destroy = function(err) {
   if (this._destroyed) return;
