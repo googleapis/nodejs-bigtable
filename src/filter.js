@@ -556,7 +556,6 @@ Filter.prototype.label = function(label) {
  * binary key.
  *
  * @example
- *
  * In the following example we'll use a regular expression to match all
  * row keys ending with the letters "on", which would then yield
  * `gwashington` and `tjefferson`.
