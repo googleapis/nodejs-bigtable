@@ -505,7 +505,6 @@ describe('Bigtable', function() {
           seconds: 10000,
           nanos: 10000,
         },
-        union: true,
       };
 
       FAMILY.setMetadata({rule: rule}, function(err, metadata) {
