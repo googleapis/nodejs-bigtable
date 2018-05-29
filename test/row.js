@@ -692,6 +692,38 @@ describe('Bigtable/Row', function() {
 
       row.deleteCells(columns, gaxOptions, done);
     });
+
+    it('should remove the column qualifier from the data object', function() {
+      row.data = {
+        family: {
+          qualifier: 'removed',
+          notQualifier: 'kept',
+        },
+      };
+      row.table.mutate = function(mutation, gaxOptions, callback) {
+        callback(null);
+      };
+      row.deleteCells(['family:qualifier'], function() {
+        assert.deepStrictEqual(row.data, {
+          family: {notQualifier: 'kept'},
+        });
+      });
+    });
+
+    it('should remove the column family from the data object', function() {
+      row.data = {
+        family: {
+          qualifier1: 'removed',
+          qualifier2: 'also removed',
+        },
+      };
+      row.table.mutate = function(mutation, gaxOptions, callback) {
+        callback(null);
+      };
+      row.deleteCells(['family'], function() {
+        assert.deepStrictEqual(row.data, {});
+      });
+    });
   });
 
   describe('exists', function() {
