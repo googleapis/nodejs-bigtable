@@ -223,6 +223,19 @@ Table.prototype.create = function(options, callback) {
  *   const family = data[0];
  *   const apiResponse = data[1];
  * });
+ *
+ * // Note that rules can have nested rules. For example The following rule
+ * // will delete cells that are either older than 10 versions OR if the cell
+ * // is is a month old and has at least 2 newer version.
+ * // Essentially: (version > 10 OR (age > 30 AND version > 2))
+ * const rule = {
+ *   union: true,
+ *   versions: 10,
+ *   rule: {
+ *     versions: 2,
+ *     age: { seconds: 60 * 60 * 24 * 30 }, // one month
+ *   },
+ * };
  */
 Table.prototype.createFamily = function(name, options, callback) {
   var self = this;
