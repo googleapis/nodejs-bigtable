@@ -63,10 +63,10 @@ var methods = (Mutation.methods = {
  */
 Mutation.convertFromBytes = function(bytes, options) {
   var buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
-  if (options && options.isPossibleNumber) {
+  if (options && options.isPossibleNumber && buf.length === 8) {
     var num = Long.fromBytes(buf).toNumber();
 
-    if (!isNaN(num) && isFinite(num)) {
+    if (Number.MIN_SAFE_INTEGER < num && num < Number.MAX_SAFE_INTEGER) {
       return num;
     }
   }
