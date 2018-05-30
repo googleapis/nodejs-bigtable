@@ -1428,12 +1428,6 @@ Table.prototype.waitForReplication = function(callback) {
         callback(null, false);
       }, 10 * 60 * 1000);
 
-      // method to launch token consistency check
-      const launchCheck = () => {
-        const token = resp[0].consistencyToken;
-        this.checkConsistency(token, retryIfNecessary);
-      };
-
       // method checks if retrial is required & init retrial with 5 sec delay
       const retryIfNecessary = (err, res) => {
         if (err || res === true) {
@@ -1441,8 +1435,13 @@ Table.prototype.waitForReplication = function(callback) {
           callback(err, res);
           return;
         }
-
         setTimeout(launchCheck, 5000);
+      };
+
+      // method to launch token consistency check
+      const launchCheck = () => {
+        const token = resp[0].consistencyToken;
+        this.checkConsistency(token, retryIfNecessary);
       };
 
       launchCheck();
@@ -1475,7 +1474,7 @@ Table.prototype.checkConsistency = function(token, callback) {
         return;
       }
 
-      callback(null, resp.consistent === 1);
+      callback(null, resp.consistent === true);
     }
   );
 };

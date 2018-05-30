@@ -1458,7 +1458,7 @@ describe('Bigtable/Table', function() {
       beforeEach(function() {
         table.bigtable.request = function(config, callback) {
           callback(null, {
-            consistent: 1,
+            consistent: true,
           });
         };
       });
@@ -1475,7 +1475,7 @@ describe('Bigtable/Table', function() {
       beforeEach(function() {
         table.bigtable.request = function(config, callback) {
           callback(null, {
-            consistent: 0,
+            consistent: false,
           });
         };
       });
