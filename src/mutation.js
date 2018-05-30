@@ -18,7 +18,7 @@
 
 var arrify = require('arrify');
 var Buffer = require('safe-buffer').Buffer;
-var Int64 = require('node-int64');
+var Long = require('long');
 var is = require('is');
 
 /**
@@ -68,7 +68,7 @@ var methods = (Mutation.methods = {
 Mutation.convertFromBytes = function(bytes, options) {
   var buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
   if (options && options.isPossibleNumber) {
-    var num = new Int64(buf).toNumber();
+    var num = Long.fromBytes(buf).toNumber();
 
     if (!isNaN(num) && isFinite(num)) {
       return num;
@@ -94,7 +94,7 @@ Mutation.convertToBytes = function(data) {
   }
 
   if (is.number(data)) {
-    return new Int64(data).toBuffer();
+    return Buffer.from(Long.fromNumber(data).toBytesBE());
   }
 
   try {
