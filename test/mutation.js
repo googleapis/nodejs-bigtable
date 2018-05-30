@@ -18,7 +18,7 @@
 
 var assert = require('assert');
 var Buffer = require('safe-buffer').Buffer;
-var Long = require("long");
+var Long = require('long');
 var Mutation = require('../src/mutation.js');
 var sinon = require('sinon').sandbox.create();
 
@@ -47,7 +47,9 @@ describe('Bigtable/Mutation', function() {
     describe('isPossibleNumber', function() {
       it('should convert a base64 encoded number when true', function() {
         var num = 10;
-        var encoded = Buffer.from(Long.fromNumber(num).toBytes()).toString('base64');
+        var encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
+          'base64'
+        );
         var decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
         });
@@ -56,7 +58,9 @@ describe('Bigtable/Mutation', function() {
       });
       it('should not convert a base64 encoded number when false', function() {
         var num = 10;
-        var encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString('base64');
+        var encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
+          'base64'
+        );
         var decoded = Mutation.convertFromBytes(encoded);
 
         assert.notEqual(num, decoded);
@@ -104,7 +108,7 @@ describe('Bigtable/Mutation', function() {
     it('should pack numbers into int64 values', function() {
       var num = 10;
       var encoded = Mutation.convertToBytes(num);
-      var decoded = new Long.fromBytes(encoded).toNumber();
+      var decoded = Long.fromBytes(encoded).toNumber();
 
       assert.strictEqual(num, decoded);
     });
