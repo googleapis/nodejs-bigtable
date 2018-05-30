@@ -126,8 +126,21 @@ Family.formatRule_ = function(ruleObj) {
     });
   }
 
-  if (!ruleObj.intersection && !ruleObj.union) {
+  if (ruleObj.rule) {
+    rules.push(Family.formatRule_(ruleObj.rule));
+  }
+
+  if (rules.length === 1) {
+    if (ruleObj.union) {
+      throw new Error(
+        'A union must have more than one garbage collection rule.'
+      );
+    }
     return rules[0];
+  }
+
+  if (rules.length === 0) {
+    throw new Error('No garbage collection rules were specified.');
   }
 
   var rule = {};

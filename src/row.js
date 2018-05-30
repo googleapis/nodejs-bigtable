@@ -682,32 +682,33 @@ Row.prototype.get = function(columns, options, callback) {
   }
 
   var filter;
-  if (options.filter) {
-    filter = options.filter;
-  } else {
-    columns = arrify(columns);
+  columns = arrify(columns);
 
-    if (columns.length) {
-      var filters = columns.map(Mutation.parseColumnName).map(function(column) {
-        var filters = [{family: column.family}];
-
-        if (column.qualifier) {
-          filters.push({column: column.qualifier});
-        }
-
-        return filters;
-      });
-
-      if (filters.length > 1) {
-        filter = [
-          {
-            interleave: filters,
-          },
-        ];
-      } else {
-        filter = filters[0];
+  // if there is column filter
+  if (columns.length) {
+    var filters = columns.map(Mutation.parseColumnName).map(column => {
+      var colmFilters = [{family: column.family}];
+      if (column.qualifier) {
+        colmFilters.push({column: column.qualifier});
       }
+      return colmFilters;
+    });
+
+    // if there is more then one filter, make it type inteleave filter
+    if (filters.length > 1) {
+      filter = [
+        {
+          interleave: filters,
+        },
+      ];
+    } else {
+      filter = filters[0];
     }
+  }
+
+  // if there is also a second option.filter append to filter array
+  if (options.filter) {
+    filter = arrify(filter).concat(options.filter);
   }
 
   var getRowsOptions = extend({}, options, {

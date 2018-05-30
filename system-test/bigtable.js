@@ -21,6 +21,7 @@ var async = require('async');
 var uuid = require('uuid');
 
 var Bigtable = require('../');
+var AppProfile = require('../src/app-profile.js');
 var Cluster = require('../src/cluster.js');
 var Table = require('../src/table.js');
 var Family = require('../src/family.js');
@@ -33,6 +34,8 @@ describe('Bigtable', function() {
 
   var INSTANCE = bigtable.instance(generateName('instance'));
   var TABLE = INSTANCE.table(generateName('table'));
+  var APP_PROFILE_NAME = generateName('appProfile');
+  var APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_NAME);
   var CLUSTER_NAME = generateName('cluster');
 
   before(function(done) {
@@ -57,7 +60,20 @@ describe('Bigtable', function() {
             {
               families: ['follows', 'traits'],
             },
-            done
+            function(err) {
+              if (err) {
+                done(err);
+                return;
+              }
+              INSTANCE.createAppProfile(
+                APP_PROFILE_NAME,
+                {
+                  routing: 'any',
+                  ignoreWarnings: true,
+                },
+                done
+              );
+            }
           );
         });
       }
@@ -128,6 +144,90 @@ describe('Bigtable', function() {
         INSTANCE.getMetadata(function(err, metadata_) {
           assert.ifError(err);
           assert.strictEqual(metadata.displayName, metadata_.displayName);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('appProfiles', function() {
+    it('should retrieve a list of app profiles', function(done) {
+      INSTANCE.getAppProfiles(function(err, appProfiles) {
+        assert.ifError(err);
+        assert(appProfiles[0] instanceof AppProfile);
+        done();
+      });
+    });
+
+    it('should check if an app profile exists', function(done) {
+      APP_PROFILE.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, true);
+        done();
+      });
+    });
+
+    it('should check if an app profile does not exist', function(done) {
+      var appProfile = INSTANCE.appProfile('should-not-exist');
+
+      appProfile.exists(function(err, exists) {
+        assert.ifError(err);
+        assert.strictEqual(exists, false);
+        done();
+      });
+    });
+
+    it('should get an app profile', function(done) {
+      APP_PROFILE.get(done);
+    });
+
+    it('should delete an app profile', function(done) {
+      var appProfile = INSTANCE.appProfile(generateName('app-profile'));
+
+      async.series(
+        [
+          appProfile.create.bind(appProfile, {
+            routing: 'any',
+            ignoreWarnings: true,
+          }),
+          appProfile.delete.bind(appProfile, {ignoreWarnings: true}),
+        ],
+        done
+      );
+    });
+
+    it('should get the app profiles metadata', function(done) {
+      APP_PROFILE.getMetadata(function(err, metadata) {
+        assert.strictEqual(
+          metadata.name,
+          APP_PROFILE.id.replace('{{projectId}}', bigtable.projectId)
+        );
+        done();
+      });
+    });
+
+    it('should update an app profile', function(done) {
+      var cluster = INSTANCE.cluster(CLUSTER_NAME);
+      var options = {
+        routing: cluster,
+        allowTransactionalWrites: true,
+        description: 'My Updated App Profile',
+      };
+      APP_PROFILE.setMetadata(options, function(err) {
+        assert.ifError(err);
+        APP_PROFILE.get(function(err, updatedAppProfile) {
+          assert.ifError(err);
+          assert.strictEqual(
+            updatedAppProfile.metadata.description,
+            options.description
+          );
+          assert.deepStrictEqual(
+            updatedAppProfile.metadata.singleClusterRouting,
+            {
+              clusterId: CLUSTER_NAME,
+              allowTransactionalWrites: true,
+            }
+          );
           done();
         });
       });
@@ -334,6 +434,63 @@ describe('Bigtable', function() {
       );
     });
 
+    it('should create a family with nested gc rules', function(done) {
+      var family = TABLE.family('prezzies');
+      var options = {
+        rule: {
+          union: true,
+          versions: 10,
+          rule: {
+            versions: 2,
+            age: {seconds: 60 * 60 * 24 * 30},
+          },
+        },
+      };
+
+      async.series(
+        [
+          family.create.bind(family, options),
+          next => {
+            family.getMetadata((err, metadata) => {
+              if (err) return next(err);
+              assert.deepStrictEqual(metadata.gcRule, {
+                union: {
+                  rules: [
+                    {
+                      maxNumVersions: 10,
+                      rule: 'maxNumVersions',
+                    },
+                    {
+                      intersection: {
+                        rules: [
+                          {
+                            maxAge: {
+                              seconds: '2592000',
+                              nanos: 0,
+                            },
+                            rule: 'maxAge',
+                          },
+                          {
+                            maxNumVersions: 2,
+                            rule: 'maxNumVersions',
+                          },
+                        ],
+                      },
+                      rule: 'intersection',
+                    },
+                  ],
+                },
+                rule: 'union',
+              });
+              next();
+            });
+          },
+          family.delete.bind(family),
+        ],
+        done
+      );
+    });
+
     it('should get the column family metadata', function(done) {
       FAMILY.getMetadata(function(err, metadata) {
         assert.ifError(err);
@@ -348,7 +505,6 @@ describe('Bigtable', function() {
           seconds: 10000,
           nanos: 10000,
         },
-        union: true,
       };
 
       FAMILY.setMetadata({rule: rule}, function(err, metadata) {
@@ -440,6 +596,17 @@ describe('Bigtable', function() {
         ];
 
         TABLE.insert(rows, done);
+      });
+
+      it('should insert a large row', function() {
+        return TABLE.insert({
+          key: 'gwashington',
+          data: {
+            follows: {
+              jadams: Buffer.alloc(5000000),
+            },
+          },
+        });
       });
 
       it('should create an individual row', function(done) {
@@ -1118,8 +1285,7 @@ describe('Bigtable', function() {
 
       afterEach(table.delete.bind(table));
 
-      // @TODO fix https://github.com/googleapis/nodejs-bigtable/issues/79
-      it.skip('should truncate a table', function(done) {
+      it('should truncate a table', function(done) {
         async.series([
           table.truncate.bind(table),
           function() {

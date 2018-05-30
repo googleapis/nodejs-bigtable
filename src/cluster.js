@@ -52,7 +52,7 @@ function Cluster(instance, name) {
  *
  * @private
  *
- * @param {string} project The project.
+ * @param {string} project The project ID.
  * @param {string} location The zone location.
  * @returns {string}
  *
@@ -63,6 +63,11 @@ function Cluster(instance, name) {
 Cluster.getLocation_ = function(project, location) {
   if (location.indexOf('/') > -1) {
     return location;
+  }
+
+  // in-case project has '/', split and pick last component
+  if (project.indexOf('/') > -1) {
+    project = project.split('/').pop();
   }
 
   return format('projects/{project}/locations/{location}', {
