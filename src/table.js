@@ -1408,6 +1408,45 @@ Table.VIEWS = {
  * @param {?Boolean} callback.resp Boolean value.
  */
 Table.prototype.waitForReplication = function(callback) {
+  // handler for generated consistency-token
+  const tokenHandler = (err, resp) => {
+    if (err) {
+      return callback(err);
+    }
+
+    // set timeout for 10 minutes
+    const timeoutAfterTenMinutes = setTimeout(() => {
+      callback(null, false);
+    }, 10 * 60 * 1000);
+
+    // method checks if retrial is required & init retrial with 5 sec delay
+    const retryIfNecessary = (err, res) => {
+      if (err || res.consistent === true) {
+        clearTimeout(timeoutAfterTenMinutes);
+        callback(err, true);
+        return;
+      }
+      setTimeout(launchCheck, 5000);
+    };
+
+    // method to launch token consistency check
+    const launchCheck = () => {
+      const token = resp.consistency_token;
+      this.checkConsistency(token, retryIfNecessary);
+    };
+
+    launchCheck();
+  };
+
+  // generate consistency-token
+  this.generateConsistencyToken(tokenHandler);
+};
+
+/**
+ * Generates Consistency-Token
+ * @param {function(?error, ?boolean)} callback The callback function.
+ */
+Table.prototype.generateConsistencyToken = function(callback) {
   const reqOpts = {
     name: this.id,
   };
@@ -1418,34 +1457,7 @@ Table.prototype.waitForReplication = function(callback) {
       method: 'generateConsistencyToken',
       reqOpts: reqOpts,
     },
-    (err, resp) => {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      const timeoutAfterTenMinutes = setTimeout(() => {
-        callback(null, false);
-      }, 10 * 60 * 1000);
-
-      // method checks if retrial is required & init retrial with 5 sec delay
-      const retryIfNecessary = (err, res) => {
-        if (err || res === true) {
-          clearTimeout(timeoutAfterTenMinutes);
-          callback(err, res);
-          return;
-        }
-        setTimeout(launchCheck, 5000);
-      };
-
-      // method to launch token consistency check
-      const launchCheck = () => {
-        const token = resp[0].consistencyToken;
-        this.checkConsistency(token, retryIfNecessary);
-      };
-
-      launchCheck();
-    }
+    callback
   );
 };
 
@@ -1454,7 +1466,7 @@ Table.prototype.waitForReplication = function(callback) {
  *
  * @param {function(?error, ?boolean)} callback The callback function.
  * @param {?Error} callback.err An error returned while making this request.
- * @param {?Boolean} callback.resp Boolean value.
+ * @param {?Boolean} callback.resp.consistent Boolean value.
  */
 Table.prototype.checkConsistency = function(token, callback) {
   const reqOpts = {
@@ -1468,14 +1480,7 @@ Table.prototype.checkConsistency = function(token, callback) {
       method: 'checkConsistency',
       reqOpts: reqOpts,
     },
-    (err, resp) => {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      callback(null, resp.consistent === true);
-    }
+    callback
   );
 };
 
