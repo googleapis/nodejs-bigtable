@@ -225,6 +225,9 @@ Filter.parse = function(filters) {
  * Sets passAllFilter or blockAllFilter
  *
  * @param {boolean} pass Whether to passAllFilter or blockAllFilter
+ *
+ * Assign true for enabling passAllFilter and false for enabling blockAllFilter
+ *
  * @example
  * //-
  * // Matches all cells, regardless of input. Functionally equivalent to
