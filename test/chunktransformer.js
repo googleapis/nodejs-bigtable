@@ -20,7 +20,7 @@ const assert = require('assert');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon').sandbox.create();
 const Mutation = require('../src/mutation.js');
-const Int64 = require('node-int64');
+const Long = require('long');
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
 const RowStateEnum = require('../src/chunktransformer.js').RowStateEnum;
@@ -577,7 +577,7 @@ describe('Bigtable/ChunkTransformer', function() {
       };
       const chunk = {
         commitRow: false,
-        value: new Int64(10).toBuffer().toString('base64'),
+        value: Buffer.from(Long.fromNumber(10).toBytesBE()).toString('base64'),
         valueSize: 0,
         timestampMicros: 0,
         labels: [],
