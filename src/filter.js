@@ -222,9 +222,9 @@ Filter.parse = function(filters) {
 };
 
 /**
- * Sets pallAllFilter or blockAllFilter
+ * Sets passAllFilter or blockAllFilter
  *
- * @param {boolean} pass Whether to pallAllFilter or blockAllFilter
+ * @param {boolean} pass Whether to passAllFilter or blockAllFilter
  * @example
  * //-
  * // Matches all cells, regardless of input. Functionally equivalent to
@@ -556,10 +556,11 @@ Filter.prototype.label = function(label) {
  * binary key.
  *
  * @example
- * In the following example we'll use a regular expression to match all
- * row keys ending with the letters "on", which would then yield
- * `gwashington` and `tjefferson`.
- *
+ * //-
+ * // In the following example we'll use a regular expression to match all
+ * // row keys ending with the letters "on", which would then yield
+ * // `gwashington` and `tjefferson`.
+ * //-
  * var filter = [
  *   {
  *     row: /[a-z]+on$/
