@@ -63,6 +63,11 @@ workflows:
               only: master
     jobs: *workflow_jobs
 jobs:
+  node4:
+    docker:
+      - image: 'node:4'
+        user: node
+    steps: *unit_tests_steps
   node6:
     docker:
       - image: 'node:6'
