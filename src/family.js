@@ -157,6 +157,11 @@ Family.formatRule_ = function(ruleObj) {
  * Create a column family.
  *
  * @param {object} [options] See {@link Table#createFamily}.
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this
+ *     request.
+ * @param {Family} callback.family The metadata.
+ * @param {object} callback.apiResponse The full API response.
  *
  * @example
  * family.create(function(err, family, apiResponse) {
