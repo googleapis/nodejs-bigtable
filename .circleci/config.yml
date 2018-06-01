@@ -3,15 +3,15 @@ workflows:
   version: 2
   tests:
     jobs: &workflow_jobs
+      - node6:
+          filters: &all_commits
+            tags:
+              only: /.*/
       - node4:
           filters:
             branches:
               only:
                 - dummy-branch
-      - node6:
-          filters: &all_commits
-            tags:
-              only: /.*/
       - node8:
           filters: *all_commits
       - node9:
@@ -63,11 +63,6 @@ workflows:
               only: master
     jobs: *workflow_jobs
 jobs:
-  node4:
-    docker:
-      - image: 'node:4'
-        user: node
-    steps: *unit_tests_steps
   node6:
     docker:
       - image: 'node:6'
@@ -101,6 +96,11 @@ jobs:
           name: Submit coverage data to codecov.
           command: node_modules/.bin/codecov
           when: always
+  node4:
+    docker:
+      - image: 'node:4'
+        user: node
+    steps: *unit_tests_steps
   node8:
     docker:
       - image: 'node:8'
@@ -118,7 +118,7 @@ jobs:
     steps: *unit_tests_steps
   lint:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
@@ -140,7 +140,7 @@ jobs:
             NPM_CONFIG_PREFIX: /home/node/.npm-global
   docs:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
     steps:
       - checkout
       - run: *remove_package_lock
@@ -150,7 +150,7 @@ jobs:
           command: npm run docs
   sample_tests:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
@@ -177,7 +177,7 @@ jobs:
     working_directory: /home/node/bigtable-samples/
   system_tests:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
@@ -200,7 +200,7 @@ jobs:
           when: always
   publish_npm:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
