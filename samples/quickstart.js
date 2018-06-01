@@ -20,9 +20,9 @@
 const Bigtable = require('@google-cloud/bigtable');
 
 // The name of the Cloud Bigtable instance
-const instanceName = 'my-bigtable-instance';
+const INSTANCE_NAME = 'my-bigtable-instance';
 // The name of the Cloud Bigtable table
-const tableName = 'my-table';
+const TABLE_NAME = 'my-table';
 
 (async () => {
   try {
@@ -30,20 +30,25 @@ const tableName = 'my-table';
     const bigtable = new Bigtable();
 
     // Connect to an existing instance:my-bigtable-instance
-    const instance = bigtable.instance(instanceName);
+    const instance = bigtable.instance(INSTANCE_NAME);
 
     // Connect to an existing table:my-table
-    const table = instance.table(tableName);
+    const table = instance.table(TABLE_NAME);
 
-    //Read a row from my-table using a row key
+    // Read a row from my-table using a row key
     let [singleRow] = await table.row('r1').get();
 
     // Print the row key and data (column value, labels, timestamp)
-    console.log(`Row key: ${singleRow.id}\nData: ${JSON.stringify(singleRow.data, null, 4)}`);
-
+    console.log(
+      `Row key: ${singleRow.id}\nData: ${JSON.stringify(
+        singleRow.data,
+        null,
+        4
+      )}`
+    );
   } catch (err) {
     // Handle error performing the read operation
-    console.err(`Error reading row r1: ${err}`);
+    console.error(`Error reading row r1:`, err);
   }
 })();
 // [END bigtable_quickstart]
