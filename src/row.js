@@ -460,13 +460,28 @@ Row.prototype.deleteCells = function(columns, gaxOptions, callback) {
     gaxOptions = {};
   }
 
+  columns = arrify(columns);
+
   var mutation = {
     key: this.id,
-    data: arrify(columns),
+    data: columns,
     method: Mutation.methods.DELETE,
   };
 
-  this.table.mutate(mutation, gaxOptions, callback);
+  this.table.mutate(mutation, gaxOptions, err => {
+    if (!err) {
+      columns.map(Mutation.parseColumnName).forEach(column => {
+        if (this.data[column.family]) {
+          if (column.qualifier) {
+            delete this.data[column.family][column.qualifier];
+          } else {
+            delete this.data[column.family];
+          }
+        }
+      });
+    }
+    callback(err);
+  });
 };
 
 /**
