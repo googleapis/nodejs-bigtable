@@ -85,10 +85,6 @@ describe('Bigtable/ChunkTransformer', function() {
         'invalid initial state'
       );
     });
-    it('calling as function should return chunkTransformer instance', function() {
-      const instance = ChunkTransformer();
-      assert(instance instanceof ChunkTransformer);
-    });
   });
   describe('processNewRow', function() {
     var processNewRowSpy;

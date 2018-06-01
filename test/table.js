@@ -19,7 +19,6 @@
 var assert = require('assert');
 var Buffer = require('buffer').Buffer;
 var extend = require('extend');
-var nodeutil = require('util');
 var proxyquire = require('proxyquire');
 var pumpify = require('pumpify');
 var sinon = require('sinon').sandbox.create();
@@ -46,12 +45,12 @@ var fakeUtil = extend({}, common.util, {
 });
 
 function createFake(Class) {
-  function Fake() {
-    this.calledWith_ = arguments;
-    Class.apply(this, arguments);
-  }
-  nodeutil.inherits(Fake, Class);
-  return Fake;
+  return class Fake extends Class {
+    constructor() {
+      super(...arguments);
+      this.calledWith_ = arguments;
+    }
+  };
 }
 
 var FakeGrpcService = createFake(commonGrpc.Service);
