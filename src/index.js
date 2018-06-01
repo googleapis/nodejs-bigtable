@@ -546,14 +546,14 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function(err) {
-      var args = [].slice.call(arguments);
+    function(...args) {
+      const err = args[0];
 
       if (!err) {
         args.splice(1, 0, self.instance(name));
       }
 
-      callback.apply(null, args);
+      callback(...args);
     }
   );
 };

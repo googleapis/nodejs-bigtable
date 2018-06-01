@@ -41,12 +41,10 @@ const RowStateEnum = Object.freeze({
  * Should use new instance for each request.
  */
 function ChunkTransformer(options) {
-  if (!(this instanceof ChunkTransformer)) {
-    return new ChunkTransformer(options);
-  }
-  this.options = options || {};
-  this.options.objectMode = true; // forcing object mode
+  options = options || {};
+  options.objectMode = true; // forcing object mode
   Transform.call(this, options);
+  this.options = options;
   this._destroyed = false;
   this.lastRowKey = undefined;
   this.reset();

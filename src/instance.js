@@ -219,14 +219,12 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function() {
-      var args = [].slice.call(arguments);
-
+    function(...args) {
       if (args[1]) {
         args.splice(1, 0, self.appProfile(name));
       }
 
-      callback.apply(null, args);
+      callback(...args);
     }
   );
 };
@@ -329,14 +327,12 @@ Instance.prototype.createCluster = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function() {
-      var args = [].slice.call(arguments);
-
+    function(...args) {
       if (args[1]) {
         args.splice(1, 0, self.cluster(name));
       }
 
-      callback.apply(null, args);
+      callback(...args);
     }
   );
 };
@@ -482,16 +478,14 @@ Instance.prototype.createTable = function(name, options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function() {
-      var args = [].slice.call(arguments);
-
+    function(...args) {
       if (args[1]) {
         var table = self.table(args[1].name);
         table.metadata = args[1];
         args.splice(1, 0, table);
       }
 
-      callback.apply(null, args);
+      callback(...args);
     }
   );
 };
@@ -805,12 +799,12 @@ Instance.prototype.getMetadata = function(gaxOptions, callback) {
       },
       gaxOpts: gaxOptions,
     },
-    function() {
-      if (arguments[1]) {
-        self.metadata = arguments[1];
+    function(...args) {
+      if (args[1]) {
+        self.metadata = args[1];
       }
 
-      callback.apply(null, arguments);
+      callback(...args);
     }
   );
 };
@@ -889,9 +883,9 @@ Instance.prototype.getTables = function(options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function() {
-      if (arguments[1]) {
-        arguments[1] = arguments[1].map(function(tableObj) {
+    function(...args) {
+      if (args[1]) {
+        args[1] = args[1].map(function(tableObj) {
           var name = tableObj.name.split('/').pop();
           var table = self.table(name);
           table.metadata = tableObj;
@@ -899,7 +893,7 @@ Instance.prototype.getTables = function(options, callback) {
         });
       }
 
-      callback.apply(null, arguments);
+      callback(...args);
     }
   );
 };
@@ -1009,12 +1003,12 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
       reqOpts: reqOpts,
       gaxOpts: gaxOptions,
     },
-    function() {
-      if (arguments[1]) {
-        self.metadata = arguments[1];
+    function(...args) {
+      if (args[1]) {
+        self.metadata = args[1];
       }
 
-      callback.apply(null, arguments);
+      callback(...args);
     }
   );
 };

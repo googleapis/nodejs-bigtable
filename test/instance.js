@@ -21,7 +21,6 @@ var common = require('@google-cloud/common');
 var extend = require('extend');
 var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
-var util = require('util');
 
 var AppProfile = require('../src/app-profile.js');
 var Cluster = require('../src/cluster.js');
@@ -50,13 +49,12 @@ var fakePaginator = {
 };
 
 function createFake(Class) {
-  function Fake() {
-    this.calledWith_ = arguments;
-    Class.apply(this, arguments);
-  }
-
-  util.inherits(Fake, Class);
-  return Fake;
+  return class Fake extends Class {
+    constructor() {
+      super(...arguments);
+      this.calledWith_ = arguments;
+    }
+  };
 }
 
 var FakeAppProfile = createFake(AppProfile);
