@@ -21,7 +21,6 @@ var common = require('@google-cloud/common');
 var commonGrpc = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var grpc = require('google-gax').grpc().grpc;
-var nodeutil = require('util');
 var proxyquire = require('proxyquire');
 var sinon = require('sinon').sandbox.create();
 var through = require('through2');
@@ -69,12 +68,12 @@ function fakeRetryRequest() {
 }
 
 function createFake(Class) {
-  function Fake() {
-    this.calledWith_ = arguments;
-    Class.apply(this, arguments);
-  }
-  nodeutil.inherits(Fake, Class);
-  return Fake;
+  return class Fake extends Class {
+    constructor() {
+      super(...arguments);
+      this.calledWith_ = arguments;
+    }
+  };
 }
 
 var FakeCluster = createFake(Cluster);
