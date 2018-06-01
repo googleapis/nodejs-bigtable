@@ -9,7 +9,9 @@ workflows:
               only:
                 - dummy-branch
       - node6:
-          filters: *all_commits
+          filters: &all_commits
+            tags:
+              only: /.*/
       - node8:
           filters: *all_commits
       - node9:
