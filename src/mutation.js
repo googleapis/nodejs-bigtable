@@ -59,6 +59,10 @@ var methods = (Mutation.methods = {
  * Parses "bytes" returned from proto service.
  *
  * @param {string} bytes - Base64 encoded string.
+ * @param {object} [options] Options to device return types
+ * @param {boolean} [options.isPossibleNumber] Check if byte is number
+ * @param {object} [options.userOptions]
+ * @param {boolean} [options.userOptions.decode] Check if decode is required
  * @returns {string|number|buffer}
  */
 Mutation.convertFromBytes = function(bytes, options) {
@@ -286,7 +290,7 @@ Mutation.encodeDelete = function(data) {
 /**
  * Creates a new Mutation object and returns the proto JSON form.
  *
- * @param {object} entry - The entity data.
+ * @param {object} mutation - The entity data.
  * @returns {object}
  */
 Mutation.parse = function(mutation) {
