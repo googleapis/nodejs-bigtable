@@ -3,10 +3,13 @@ workflows:
   version: 2
   tests:
     jobs: &workflow_jobs
+      - node4:
+          filters:
+            branches:
+              only:
+                - dummy-branch
       - node6:
-          filters: &all_commits
-            tags:
-              only: /.*/
+          filters: *all_commits
       - node8:
           filters: *all_commits
       - node9:
@@ -60,7 +63,7 @@ workflows:
 jobs:
   node6:
     docker:
-      - image: 'node:4'
+      - image: 'node:6'
         user: node
     steps: &unit_tests_steps
       - checkout
