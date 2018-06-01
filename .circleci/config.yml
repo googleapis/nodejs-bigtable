@@ -3,6 +3,8 @@ workflows:
   version: 2
   tests:
     jobs: &workflow_jobs
+      - node4:
+          filters: *all_commits
       - node6:
           filters: &all_commits
             tags:
@@ -58,6 +60,11 @@ workflows:
               only: master
     jobs: *workflow_jobs
 jobs:
+  node4:
+    docker:
+      - image: 'node:4'
+        user: node
+    steps: *unit_tests_steps
   node6:
     docker:
       - image: 'node:6'
@@ -108,7 +115,7 @@ jobs:
     steps: *unit_tests_steps
   lint:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
