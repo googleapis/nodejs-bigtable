@@ -883,12 +883,12 @@ Table.prototype.getMetadata = function(options, callback) {
       reqOpts: reqOpts,
       gaxOpts: options.gaxOptions,
     },
-    function() {
-      if (arguments[1]) {
-        self.metadata = arguments[1];
+    function(...args) {
+      if (args[1]) {
+        self.metadata = args[1];
       }
 
-      callback.apply(null, arguments);
+      callback(...args);
     }
   );
 };
