@@ -140,7 +140,10 @@ Table.createPrefixRange_ = function(start) {
  * @param {object} [options] See {@link Instance#createTable}.
  * @param {object} [options.gaxOptions]  Request configuration options, outlined
  *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
- *
+ * @param {function} callback The callback function.
+ * @param {?error} callback.err An error returned while making this request.
+ * @param {Table} callback.table The newly created table.
+ * @param {object} callback.apiResponse The full API response.
  * @example
  * table.create(function(err, table, apiResponse) {
  *   if (!err) {
@@ -205,7 +208,9 @@ Table.prototype.create = function(options, callback) {
  *   // `family` is a Family object
  * };
  *
- * const rule = {
+ * const options={};
+ *
+ * options.rule = {
  *   age: {
  *     seconds: 0,
  *     nanos: 5000
@@ -214,7 +219,7 @@ Table.prototype.create = function(options, callback) {
  *   union: true
  * };
  *
- * table.createFamily('follows', rule, callback);
+ * table.createFamily('follows', options, callback);
  *
  * //-
  * // If the callback is omitted, we'll return a Promise.
