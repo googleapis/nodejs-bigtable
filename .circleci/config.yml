@@ -17,7 +17,6 @@ workflows:
           filters: *all_commits
       - lint:
           requires:
-            - node4
             - node6
             - node8
             - node9
@@ -25,7 +24,6 @@ workflows:
           filters: *all_commits
       - docs:
           requires:
-            - node4
             - node6
             - node8
             - node9
