@@ -438,15 +438,13 @@ Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
       reqOpts: reqOpts,
       gaxOpts: gaxOptions,
     },
-    function() {
-      var args = [].slice.call(arguments);
-
+    function(...args) {
       if (args[1]) {
         self.metadata = args[1].columnFamilies[self.familyName];
         args.splice(1, 0, self.metadata);
       }
 
-      callback.apply(null, args);
+      callback(...args);
     }
   );
 };
