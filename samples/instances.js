@@ -18,7 +18,7 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-async function runInstanceOperations(instanceName, clusterName, clusterName2) {
+async function runInstanceOperations(instanceName, clusterName1, clusterName2) {
   const bigtable = new Bigtable();
 
   console.log(`Creating a PRODUCTION Instance`);
@@ -30,7 +30,7 @@ async function runInstanceOperations(instanceName, clusterName, clusterName2) {
   const instanceOptions = {
     clusters: [
       {
-        name: clusterName,
+        name: clusterName1,
         nodes: 3,
         location: 'us-central1-f',
         storage: 'ssd',
