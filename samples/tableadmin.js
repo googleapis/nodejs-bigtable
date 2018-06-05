@@ -188,6 +188,38 @@ async function runTableOperations(instanceName, tableName) {
   // [END bigtable_create_family_gc_intersection]
 
   console.log();
+  console.log('Creating column family cf5 with a nested GC rule...');
+  // [START bigtable_create_family_gc_nested]
+  // Create a nested GC rule:
+  // Drop cells that are either older than the 10 recent versions
+  // OR
+  // Drop cells that are older than a month AND older than the 2 recent versions
+  const nestedRule = {
+    union: true,
+    versions: 10,
+    rule: {
+      versions: 2,
+      age: {
+       // one month
+        seconds: 60 * 60 * 24 * 30,
+        nanos: 0,
+      },
+    },
+  };
+
+  try {
+    const [family, apiResponse] = await table.createFamily(
+      'cf5',
+      nestedRule
+    );
+    console.log(`Created column family ${family.id}`);
+  } catch (err) {
+    console.error(`Error creating column family:`, err);
+    return;
+  }
+  // [END bigtable_create_family_gc_nested]
+
+  console.log();
   console.log('Printing ID and GC Rule for all column families...');
   // [START bigtable_list_column_families]
   // List all families in the table with GC rules
@@ -199,7 +231,7 @@ async function runTableOperations(instanceName, tableName) {
         `Column family: ${family.id}, Metadata: ${JSON.stringify(
           family.metadata
         )}`
-        /* cf4 would output something like:
+        /* Sample output:
             Column family: projects/{{projectId}}/instances/my-instance/tables/my-table/columnFamilies/cf4,
             Metadata: {"gcRule":{"intersection":{"rules":[{"maxAge":{"seconds":"432000","nanos":0},"rule":"maxAge"},{"maxNumVersions":2,"rule":"maxNumVersions"}]},"rule":"intersection"}}
         */
