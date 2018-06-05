@@ -1446,7 +1446,8 @@ describe('Bigtable/Table', function() {
 
       it('should return true if token is consistent', function(done) {
         responses = [
-          (config, callback) => callback(null, [{consistency_token: 'sample-token12345'}]),
+          (config, callback) =>
+            callback(null, [{consistency_token: 'sample-token12345'}]),
           (config, callback) => callback(null, {consistent: true}),
         ];
 
@@ -1474,7 +1475,8 @@ describe('Bigtable/Table', function() {
 
       it('should retry checkConsistency', done => {
         responses = [
-          (config, callback) => callback(null, [{consistency_token: 'sample-token12345'}]),
+          (config, callback) =>
+            callback(null, [{consistency_token: 'sample-token12345'}]),
           (config, callback) => callback(null, {consistent: false}),
           (config, callback) => callback(null, {consistent: true}),
         ];
@@ -1591,9 +1593,9 @@ describe('Bigtable/Table', function() {
 
     describe('success', function() {
       let responses = [
-        (config, callback) => {callback(null, {consistent: true})},
-        (config, callback) => {callback(null, {consistent: false})},
-      ]
+        (config, callback) => callback(null, {consistent: true}),
+        (config, callback) => callback(null, {consistent: false}),
+      ];
       beforeEach(function() {
         table.bigtable.request = function(config, callback) {
           responses.shift()(config, callback);
