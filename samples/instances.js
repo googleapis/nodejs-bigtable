@@ -21,7 +21,7 @@ const Bigtable = require('@google-cloud/bigtable');
 async function runInstanceOperations(instanceName, clusterName, clusterName2) {
   const bigtable = new Bigtable();
 
-  console.log(`\nCreating a PRODUCTION Instance`);
+  console.log(`Creating a PRODUCTION Instance`);
   // [START bigtable_create_prod_instance]
   // Creates a Production Instance with the name "ssd-instance"
   // with cluster name "ssd-cluster", 3 nodes and location us-central1-f
@@ -47,14 +47,15 @@ async function runInstanceOperations(instanceName, clusterName, clusterName2) {
       instanceOptions
     );
 
-    console.log(`\nCreated Instance: ${instance.name}`);
+    console.log(`Created Instance: ${instance.name}`);
   } catch (err) {
-    console.error(`Error creating prod-instance ${err}`);
+    console.error(new Error('Error creating prod-instance'));
     return;
   }
   // [END bigtable_create_prod_instance]
 
-  console.log(`\nListing Instances\n`);
+  console.log(); //for just a new-line
+  console.log(`Listing Instances`);
   // [START bigtable_list_instances]
   try {
     const [instances] = await bigtable.getInstances();
@@ -62,24 +63,26 @@ async function runInstanceOperations(instanceName, clusterName, clusterName2) {
       console.log(instance.name);
     });
   } catch (err) {
-    console.error(`Error listing instances ${err}`);
+    console.error(new Error('Error listing instances'));
     return;
   }
   // [END bigtable_list_instances]
 
-  console.log(`\nGet Instance`);
+  console.log(); //for just a new-line
+  console.log(`Get Instance`);
   // [START bigtable_get_instance]
   try {
     const [instance] = await bigtable.instance(instanceName).get();
     console.log(`Instance Name: ${instance.name}`);
     console.log(`Instance Meta: ${JSON.stringify(instance.metadata)}`);
   } catch (err) {
-    console.log(`Error getting instance ${err}`);
+    console.error(new Error('Error getting instance'));
     return;
   }
   // [END bigtable_get_instance]
 
-  console.log(`\nAdd more Cluster to Instance`);
+  console.log(); //for just a new-line
+  console.log(`Add more Cluster to Instance`);
   // [START bigtable_create_cluster]
   // Create Cluster for "ssd-instance"
   // with 3 nodes at location us-central1-c
@@ -97,12 +100,13 @@ async function runInstanceOperations(instanceName, clusterName, clusterName2) {
     );
     console.log(`Cluster created: ${cluster.name}`);
   } catch (err) {
-    console.log(`Error creating cluster ${err}`);
+    console.Error(new Error('Error creating cluster'));
     return;
   }
   // [END bigtable_create_cluster]
 
-  console.log(`\nListing Clusters...`);
+  console.log(); //for just a new-line
+  console.log(`Listing Clusters...`);
   // [START bigtable_get_clusters]
   try {
     const instance = bigtable.instance(instanceName);
@@ -111,7 +115,7 @@ async function runInstanceOperations(instanceName, clusterName, clusterName2) {
       console.log(cluster.name);
     });
   } catch (err) {
-    console.log(`Error creating cluster ${err}`);
+    console.error(new Error('Error creating cluster'));
     return;
   }
   // [END bigtable_get_clusters]
@@ -124,7 +128,8 @@ async function createDevInstance(instanceName, clusterName) {
   const bigtable = new Bigtable();
 
   // [START bigtable_create_dev_instance]
-  console.log(`\nCreating a DEVELOPMENT Instance`);
+  console.log(); //for just a new-line
+  console.log(`Creating a DEVELOPMENT Instance`);
   // Set options to create an Instance
   const options = {
     clusters: [
@@ -143,7 +148,7 @@ async function createDevInstance(instanceName, clusterName) {
     let [instance] = await bigtable.createInstance(instanceName, options);
     console.log(`Created development instance: ${instance.name}`);
   } catch (err) {
-    console.error(`Error creating dev-instance ${err}`);
+    console.error(new Error('Error creating dev-instance'));
     return;
   }
   // [END bigtable_create_dev_instance]
@@ -156,12 +161,13 @@ async function deleteInstance(instanceName) {
   const instance = bigtable.instance(instanceName);
 
   // [START bigtable_delete_instance]
-  console.log(`\nDeleting Instance`);
+  console.log(); //for just a new-line
+  console.log(`Deleting Instance`);
   try {
     await instance.delete();
     console.log(`Instance deleted: ${instance.name}`);
   } catch (err) {
-    console.log(`Error deleting instance: ${err}`);
+    console.error(new Error('Error deleting instance'));
   }
   // [END bigtable_delete_instance]
 }
@@ -173,11 +179,12 @@ async function deleteCluster(instanceName, clusterName) {
   const cluster = instance.cluster(clusterName);
 
   // [START bigtable_delete_cluster]
-  console.log(`\nDeleting Cluster`);
+  console.log(); //for just a new-line
+  console.log(`Deleting Cluster`);
   try {
     await cluster.delete();
   } catch (err) {
-    console.log(`Error deleting cluster ${err}`);
+    console.error(new Error('Error deleting cluster'));
     return;
   }
   console.log(`Cluster deleted: ${cluster.name}`);
