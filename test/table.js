@@ -1424,7 +1424,7 @@ describe('Bigtable/Table', function() {
       });
     });
 
-    describe('retiries', () => {
+    describe('retries', () => {
       let clock;
       let setTimeoutSpy;
       let clearTimeoutSpy;
