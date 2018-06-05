@@ -1015,12 +1015,15 @@ describe('Bigtable/Instance', function() {
 
   describe('setMetadata', function() {
     it('should provide the proper request options', function(done) {
-      var metadata = {a: 'b'};
-      var expectedMetadata = extend({name: instance.id}, metadata);
+      var metadata = {displayName: 'updateDisplayName'};
+      var expectedMetadata = {
+        instance: extend({name: instance.id}, metadata),
+        updateMask: {paths: ['display_name']},
+      };
 
       instance.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
-        assert.strictEqual(config.method, 'updateInstance');
+        assert.strictEqual(config.method, 'partialUpdateInstance');
         assert.deepStrictEqual(config.reqOpts, expectedMetadata);
         callback(); // done()
       };
