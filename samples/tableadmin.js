@@ -208,7 +208,7 @@ async function runTableOperations(instanceName, tableName) {
   };
 
   try {
-    const [family, apiResponse] = await table.createFamily('cf5',·nestedRule);
+    const [family, apiResponse] = await table.createFamily('cf5', nestedRule);
     console.log(`Created column family ${family.id}`);
   } catch (err) {
     console.error(`Error creating column family:`, err);
