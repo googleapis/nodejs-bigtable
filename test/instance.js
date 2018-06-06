@@ -773,9 +773,9 @@ describe('Bigtable/Instance', function() {
 
       instance.getAppProfiles(function(err, appProfiles, apiResponse) {
         assert.ifError(err);
-        assert.strictEqual(appProfiles[0].name, 'a');
+        assert.strictEqual(appProfiles[0].id, 'a');
         assert.deepStrictEqual(appProfiles[0].metadata, response[0]);
-        assert.strictEqual(appProfiles[1].name, 'b');
+        assert.strictEqual(appProfiles[1].id, 'b');
         assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
         assert.strictEqual(apiResponse, response);
         done();
