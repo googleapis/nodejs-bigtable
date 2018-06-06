@@ -348,7 +348,7 @@ class Bigtable {
     ];
     for (let clientClass of clientClasses) {
       for (let scope of clientClass.scopes) {
-        if (scopes.indexOf(scope) === -1) {
+        if (!scopes.includes(scope)) {
           scopes.push(scope);
         }
       }

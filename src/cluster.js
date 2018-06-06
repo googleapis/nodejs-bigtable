@@ -38,7 +38,7 @@ class Cluster {
 
     let id = name;
 
-    if (id.indexOf('/') === -1) {
+    if (!id.includes('/')) {
       id = `${instance.id}/clusters/${name}`;
     }
 
@@ -60,12 +60,12 @@ class Cluster {
    * // 'projects/my-project/locations/us-central1-b'
    */
   static getLocation_(project, location) {
-    if (location.indexOf('/') > -1) {
+    if (location.includes('/')) {
       return location;
     }
 
     // in-case project has '/', split and pick last component
-    if (project.indexOf('/') > -1) {
+    if (project.includes('/')) {
       project = project.split('/').pop();
     }
 

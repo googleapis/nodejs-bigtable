@@ -71,7 +71,7 @@ class Family {
    * // 'projects/p/zones/z/clusters/c/tables/t/columnFamilies/my-family'
    */
   static formatName_(tableName, name) {
-    if (name.indexOf('/') > -1) {
+    if (name.includes('/')) {
       return name;
     }
 

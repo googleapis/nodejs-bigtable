@@ -42,7 +42,7 @@ class Instance {
 
     let id = name;
 
-    if (id.indexOf('/') === -1) {
+    if (!id.includes('/')) {
       id = `${bigtable.projectName}/instances/${name}`;
     }
 

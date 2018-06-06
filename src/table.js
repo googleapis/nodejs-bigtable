@@ -74,7 +74,7 @@ class Table {
    * // 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
    */
   static formatName_(instanceName, name) {
-    if (name.indexOf('/') > -1) {
+    if (name.includes('/')) {
       return name;
     }
 
