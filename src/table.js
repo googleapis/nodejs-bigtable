@@ -78,7 +78,7 @@ class Table {
       return name;
     }
 
-    return instanceName + '/tables/' + name;
+    return `${instanceName}/tables/${name}`;
   }
 
   /**

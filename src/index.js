@@ -422,7 +422,7 @@ class Bigtable {
     this.auth = googleAuth(options);
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
-    this.projectName = 'projects/' + this.projectId;
+    this.projectName = `projects/${this.projectId}`;
   }
 
   /**

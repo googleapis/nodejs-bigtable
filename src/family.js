@@ -22,7 +22,7 @@ const is = require('is');
  * @private
  */
 const FamilyError = createErrorClass('FamilyError', function(name) {
-  this.message = 'Column family not found: ' + name + '.';
+  this.message = `Column family not found: ${name}.`;
   this.code = 404;
 });
 
@@ -75,7 +75,7 @@ class Family {
       return name;
     }
 
-    return tableName + '/columnFamilies/' + name;
+    return `${tableName}/columnFamilies/${name}`;
   }
 
   /**

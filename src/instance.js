@@ -43,7 +43,7 @@ class Instance {
     let id = name;
 
     if (id.indexOf('/') === -1) {
-      id = bigtable.projectName + '/instances/' + name;
+      id = `${bigtable.projectName}/instances/${name}`;
     }
 
     this.id = id;

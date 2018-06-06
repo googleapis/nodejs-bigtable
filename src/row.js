@@ -29,7 +29,7 @@ const Mutation = require('./mutation.js');
  * @private
  */
 const RowError = createErrorClass('RowError', function(row) {
-  this.message = 'Unknown row: ' + row + '.';
+  this.message = `Unknown row: ${row}.`;
   this.code = 404;
 });
 

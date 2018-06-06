@@ -26,7 +26,7 @@ const Mutation = require('./mutation.js');
  * @private
  */
 const FilterError = createErrorClass('FilterError', function(filter) {
-  this.message = 'Unknown filter: ' + filter + '.';
+  this.message = `Unknown filter: ${filter}.`;
 });
 
 /**
@@ -100,7 +100,7 @@ class Filter {
     }
 
     if (is.array(regex)) {
-      return '(' + regex.map(Filter.convertToRegExpString).join('|') + ')';
+      return `(${regex.map(Filter.convertToRegExpString).join('|')})`;
     }
 
     if (is.string(regex)) {
