@@ -15,7 +15,6 @@
  */
 const Mutation = require('./mutation.js');
 const stream = require('stream');
-const util = require('util');
 const Transform = stream.Transform;
 const createErrorClass = require('create-error-class');
 
