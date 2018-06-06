@@ -811,7 +811,9 @@ class Table {
         return;
       }
 
-      const families = Object.keys(metadata.columnFamilies).map(function(familyId) {
+      const families = Object.keys(metadata.columnFamilies).map(function(
+        familyId
+      ) {
         const family = self.family(familyId);
         family.metadata = metadata.columnFamilies[familyId];
         return family;
@@ -1010,7 +1012,9 @@ class Table {
       gaxOptions = {};
     }
 
-    entries = arrify(entries).map(propAssign('method', Mutation.methods.INSERT));
+    entries = arrify(entries).map(
+      propAssign('method', Mutation.methods.INSERT)
+    );
 
     return this.mutate(entries, gaxOptions, callback);
   }

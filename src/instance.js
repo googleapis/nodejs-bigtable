@@ -451,7 +451,10 @@ class Instance {
     }
 
     if (options.families) {
-      const columnFamilies = options.families.reduce(function(families, family) {
+      const columnFamilies = options.families.reduce(function(
+        families,
+        family
+      ) {
         if (is.string(family)) {
           family = {
             name: family,
@@ -465,7 +468,8 @@ class Instance {
         }
 
         return families;
-      }, {});
+      },
+      {});
 
       reqOpts.table.columnFamilies = columnFamilies;
     }

@@ -99,7 +99,9 @@ class Row {
       row.data = row.data || {};
 
       if (chunk.rowKey) {
-        row.key = Mutation.convertFromBytes(chunk.rowKey, {userOptions: options});
+        row.key = Mutation.convertFromBytes(chunk.rowKey, {
+          userOptions: options,
+        });
       }
 
       if (chunk.familyName) {

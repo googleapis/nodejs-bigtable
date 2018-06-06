@@ -63,7 +63,11 @@ class Mutation {
       }
     }
 
-    if (options && options.userOptions && options.userOptions.decode === false) {
+    if (
+      options &&
+      options.userOptions &&
+      options.userOptions.decode === false
+    ) {
       return buf;
     }
 
