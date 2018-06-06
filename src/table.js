@@ -53,10 +53,8 @@ function Table(instance, name) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  var id = Table.formatName_(instance.id, name);
-
-  this.id = id;
-  this.name = id.split('/').pop();
+  this.name = Table.formatName_(instance.id, name);
+  this.id = this.name.split('/').pop();
 }
 
 /**
@@ -165,7 +163,7 @@ Table.prototype.create = function(options, callback) {
     options = {};
   }
 
-  this.instance.createTable(this.name, options, callback);
+  this.instance.createTable(this.id, options, callback);
 };
 
 /**
@@ -264,7 +262,7 @@ Table.prototype.createFamily = function(name, options, callback) {
   }
 
   var reqOpts = {
-    name: this.id,
+    name: this.name,
     modifications: [mod],
   };
 
@@ -440,7 +438,7 @@ Table.prototype.createReadStream = function(options) {
     chunkTransformer = new ChunkTransformer({decode: options.decode});
 
     var reqOpts = {
-      tableName: this.id,
+      tableName: this.name,
       appProfileId: this.bigtable.appProfileId,
     };
 
@@ -596,7 +594,7 @@ Table.prototype.delete = function(gaxOptions, callback) {
       client: 'BigtableTableAdminClient',
       method: 'deleteTable',
       reqOpts: {
-        name: this.id,
+        name: this.name,
       },
       gaxOpts: gaxOptions,
     },
@@ -652,7 +650,7 @@ Table.prototype.deleteRows = function(prefix, gaxOptions, callback) {
   }
 
   var reqOpts = {
-    name: this.id,
+    name: this.name,
     rowKeyPrefix: Mutation.convertToBytes(prefix),
   };
 
@@ -872,7 +870,7 @@ Table.prototype.getMetadata = function(options, callback) {
   }
 
   var reqOpts = {
-    name: this.id,
+    name: this.name,
     view: Table.VIEWS[options.view || 'unspecified'],
   };
 
@@ -1325,7 +1323,7 @@ Table.prototype.sampleRowKeys = function(gaxOptions, callback) {
  */
 Table.prototype.sampleRowKeysStream = function(gaxOptions) {
   var reqOpts = {
-    tableName: this.id,
+    tableName: this.name,
     appProfileId: this.bigtable.appProfileId,
   };
 
@@ -1371,7 +1369,7 @@ Table.prototype.truncate = function(gaxOptions, callback) {
   }
 
   var reqOpts = {
-    name: this.id,
+    name: this.name,
     deleteAllDataFromTable: true,
   };
 
