@@ -45,8 +45,8 @@ function AppProfile(instance, name) {
     id = `${instance.id}/appProfiles/${name}`;
   }
 
-  this.id = id;
-  this.name = id.split('/').pop();
+  this.id = id.split('/').pop();
+  this.name = id;
 }
 
 /**
@@ -141,7 +141,7 @@ AppProfile.prototype.create = function(options, callback) {
     callback = options;
     options = {};
   }
-  this.instance.createAppProfile(this.name, options, callback);
+  this.instance.createAppProfile(this.id, options, callback);
 };
 
 /**
@@ -174,7 +174,7 @@ AppProfile.prototype.delete = function(options, callback) {
   }
 
   const reqOpts = {
-    name: this.id,
+    name: this.name,
   };
 
   if (is.boolean(options.ignoreWarnings)) {
@@ -300,7 +300,7 @@ AppProfile.prototype.getMetadata = function(gaxOptions, callback) {
       client: 'BigtableInstanceAdminClient',
       method: 'getAppProfile',
       reqOpts: {
-        name: this.id,
+        name: this.name,
       },
       gaxOpts: gaxOptions,
     },
@@ -359,7 +359,7 @@ AppProfile.prototype.setMetadata = function(metadata, gaxOptions, callback) {
       paths: [],
     },
   };
-  reqOpts.appProfile.name = this.id;
+  reqOpts.appProfile.name = this.name;
 
   const fieldsForMask = [
     'description',

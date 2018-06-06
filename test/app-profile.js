@@ -81,16 +81,16 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should expand name into full resource path', function() {
-      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
+      assert.strictEqual(appProfile.name, APP_PROFILE_ID);
     });
 
     it('should leave full app profile name unaltered', function() {
       var appProfile = new AppProfile(INSTANCE, APP_PROFILE_ID);
-      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
+      assert.strictEqual(appProfile.name, APP_PROFILE_ID);
     });
 
     it('should localize the name from the ID', function() {
-      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.id, APP_PROFILE_NAME);
     });
   });
 
@@ -155,7 +155,7 @@ describe('Bigtable/AppProfile', function() {
         options_,
         callback
       ) {
-        assert.strictEqual(name, appProfile.name);
+        assert.strictEqual(name, appProfile.id);
         assert.strictEqual(options_, options);
         callback();
       };
@@ -180,7 +180,7 @@ describe('Bigtable/AppProfile', function() {
         assert.strictEqual(config.method, 'deleteAppProfile');
 
         assert.deepEqual(config.reqOpts, {
-          name: appProfile.id,
+          name: appProfile.name,
         });
 
         callback();
@@ -330,7 +330,7 @@ describe('Bigtable/AppProfile', function() {
         assert.strictEqual(config.method, 'getAppProfile');
 
         assert.deepEqual(config.reqOpts, {
-          name: appProfile.id,
+          name: appProfile.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
