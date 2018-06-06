@@ -41,8 +41,7 @@ const RowStateEnum = Object.freeze({
  * Should use new instance for each request.
  */
 class ChunkTransformer extends Transform {
-  constructor(options) {
-    options = options || {};
+  constructor(options = {}) {
     options.objectMode = true; // forcing object mode
     super(options);
     this.options = options;
