@@ -716,7 +716,7 @@ Bigtable.prototype.request = function(config, callback) {
           currentRetryAttempt: 0,
           objectMode: true,
           shouldRetryFn: GrpcService.shouldRetryRequest_,
-          request: function() {
+          request() {
             gaxStream = requestFn();
             return gaxStream;
           },
