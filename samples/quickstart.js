@@ -1,5 +1,5 @@
 /**
- * Copyright 2017, Google, Inc.
+ * Copyright 2018, Google LLC
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,27 +19,36 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-// Creates a client
-const bigtable = new Bigtable();
+// The name of the Cloud Bigtable instance
+const INSTANCE_NAME = 'my-bigtable-instance';
+// The name of the Cloud Bigtable table
+const TABLE_NAME = 'my-table';
 
-// The name for the new instance
-const instanceName = 'my-new-instance';
+(async () => {
+  try {
+    // Creates a Bigtable client
+    const bigtable = new Bigtable();
 
-// Creates the new instance
-bigtable
-  .createInstance(instanceName, {
-    clusters: [
-      {
-        name: 'my-cluster',
-        location: 'us-central1-c',
-        nodes: 3,
-      },
-    ],
-  })
-  .then(() => {
-    console.log(`Instance ${instanceName} created.`);
-  })
-  .catch(err => {
-    console.log('ERROR:', err);
-  });
+    // Connect to an existing instance:my-bigtable-instance
+    const instance = bigtable.instance(INSTANCE_NAME);
+
+    // Connect to an existing table:my-table
+    const table = instance.table(TABLE_NAME);
+
+    // Read a row from my-table using a row key
+    let [singleRow] = await table.row('r1').get();
+
+    // Print the row key and data (column value, labels, timestamp)
+    console.log(
+      `Row key: ${singleRow.id}\nData: ${JSON.stringify(
+        singleRow.data,
+        null,
+        4
+      )}`
+    );
+  } catch (err) {
+    // Handle error performing the read operation
+    console.error(`Error reading row r1:`, err);
+  }
+})();
 // [END bigtable_quickstart]
