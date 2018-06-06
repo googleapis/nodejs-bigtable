@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use strict';
-
 var common = require('@google-cloud/common');
 var extend = require('extend');
 var is = require('is');

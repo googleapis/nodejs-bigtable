@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use strict';
-
 var arrify = require('arrify');
 var common = require('@google-cloud/common');
 var commonGrpc = require('@google-cloud/common-grpc');

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use strict';
-
 var arrify = require('arrify');
 var Buffer = require('safe-buffer').Buffer;
 var Long = require('long');

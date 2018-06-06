@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-'use strict';
 const Mutation = require('./mutation.js');
 const stream = require('stream');
 const util = require('util');

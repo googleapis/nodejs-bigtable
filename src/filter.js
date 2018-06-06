@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use strict';
-
 var arrify = require('arrify');
 var createErrorClass = require('create-error-class');
 var extend = require('extend');

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use strict';
-
 var common = require('@google-cloud/common');
 var is = require('is');
 var snakeCase = require('lodash.snakecase');
