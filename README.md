@@ -44,9 +44,9 @@ Google APIs Client Libraries, in [Client Libraries Explained][explained].
 
     [Enable billing][billing]
 
-1.  Enable the Cloud Bigtable API.
+1.  Enable the Cloud Bigtable and Cloud Bigtable Admin APIs.
 
-    [Enable the API][enable_api]
+    [Enable the APIs][enable_api]
 
 1.  [Set up authentication with a service account][auth] so you can access the
     API from your local workstation.
