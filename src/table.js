@@ -1445,6 +1445,8 @@ Table.prototype.waitForReplication = function(callback) {
 /**
  * Generates Consistency-Token
  * @param {function(?error, ?boolean)} callback The callback function.
+ * @param {?Error} callback.err An error returned while making this request.
+ * @param {?String} callback.resp.consistency_token The generated consistency token.
  */
 Table.prototype.generateConsistencyToken = function(callback) {
   const reqOpts = {
@@ -1463,7 +1465,7 @@ Table.prototype.generateConsistencyToken = function(callback) {
 
 /**
  * Checks consistency for given ConsistencyToken
- *
+ * @param {string} token consistency token
  * @param {function(?error, ?boolean)} callback The callback function.
  * @param {?Error} callback.err An error returned while making this request.
  * @param {?Boolean} callback.resp.consistent Boolean value.
