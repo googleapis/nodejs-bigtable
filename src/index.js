@@ -334,434 +334,436 @@ const v2 = require('./v2');
  *   }
  * });
  */
-function Bigtable(options) {
-  options = common.util.normalizeArguments(this, options);
+class Bigtable {
+  constructor(options) {
+    options = common.util.normalizeArguments(this, options);
 
-  // Determine what scopes are needed.
-  // It is the union of the scopes on all three clients.
-  let scopes = [];
-  let clientClasses = [
-    v2.BigtableClient,
-    v2.BigtableInstanceAdminClient,
-    v2.BigtableTableAdminClient,
-  ];
-  for (let clientClass of clientClasses) {
-    for (let scope of clientClass.scopes) {
-      if (scopes.indexOf(scope) === -1) {
-        scopes.push(scope);
+    // Determine what scopes are needed.
+    // It is the union of the scopes on all three clients.
+    let scopes = [];
+    let clientClasses = [
+      v2.BigtableClient,
+      v2.BigtableInstanceAdminClient,
+      v2.BigtableTableAdminClient,
+    ];
+    for (let clientClass of clientClasses) {
+      for (let scope of clientClass.scopes) {
+        if (scopes.indexOf(scope) === -1) {
+          scopes.push(scope);
+        }
       }
     }
-  }
 
-  options = extend(
-    {
-      libName: 'gccl',
-      libVersion: PKG.version,
-      scopes,
-      'grpc.max_send_message_length': -1,
-      'grpc.max_receive_message_length': -1,
-    },
-    options
-  );
-
-  const defaultBaseUrl = 'bigtable.googleapis.com';
-  const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
-
-  const customEndpoint =
-    options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
-  this.customEndpoint = customEndpoint;
-
-  let customEndpointBaseUrl;
-  let customEndpointPort;
-
-  if (customEndpoint) {
-    const customEndpointParts = customEndpoint.split(':');
-    customEndpointBaseUrl = customEndpointParts[0];
-    customEndpointPort = customEndpointParts[1];
-  }
-
-  this.options = {
-    BigtableClient: extend(
+    options = extend(
       {
-        servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
-        port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
-        sslCreds: customEndpoint
-          ? grpc.credentials.createInsecure()
-          : undefined,
+        libName: 'gccl',
+        libVersion: PKG.version,
+        scopes,
+        'grpc.max_send_message_length': -1,
+        'grpc.max_receive_message_length': -1,
       },
       options
-    ),
-    BigtableInstanceAdminClient: extend(
-      {
-        servicePath: customEndpoint
-          ? customEndpointBaseUrl
-          : defaultAdminBaseUrl,
-        port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
-        sslCreds: customEndpoint
-          ? grpc.credentials.createInsecure()
-          : undefined,
-      },
-      options
-    ),
-    BigtableTableAdminClient: extend(
-      {
-        servicePath: customEndpoint
-          ? customEndpointBaseUrl
-          : defaultAdminBaseUrl,
-        port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
-        sslCreds: customEndpoint
-          ? grpc.credentials.createInsecure()
-          : undefined,
-      },
-      options
-    ),
-  };
+    );
 
-  this.api = {};
-  this.auth = googleAuth(options);
-  this.projectId = options.projectId || '{{projectId}}';
-  this.appProfileId = options.appProfileId;
-  this.projectName = 'projects/' + this.projectId;
-}
+    const defaultBaseUrl = 'bigtable.googleapis.com';
+    const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
 
-/**
- * Create a Compute instance.
- *
- * @see [Creating a Compute Instance]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
- *
- * @param {string} name The unique name of the instance.
- * @param {object} [options] Instance creation options.
- * @param {object[]} [options.clusters] The clusters to be created within the
- *     instance.
- * @param {string} [options.displayName] The descriptive name for this instance
- *     as it appears in UIs.
- * @param {Object.<string, string>} [options.labels] Labels are a flexible and
- *     lightweight mechanism for organizing cloud resources into groups that
- *     reflect a customer's organizational needs and deployment strategies.
- *     They can be used to filter resources and aggregate metrics.
- *
- *   * Label keys must be between 1 and 63 characters long and must conform to
- *     the regular expression: `[\p{Ll}\p{Lo}][\p{Ll}\p{Lo}\p{N}_-]{0,62}`.
- *   * Label values must be between 0 and 63 characters long and must conform to
- *     the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
- *   * No more than 64 labels can be associated with a given resource.
- *   * Keys and values must both be under 128 bytes.
- * @param {string} [options.type] The type of the instance. Options are
- *     'production' or 'development'.
- * @param {object} [options.gaxOptions] Request configuration options, outlined
- *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {function} callback The callback function.
- * @param {?error} callback.err An error returned while making this request.
- * @param {Instance} callback.instance The newly created
- *     instance.
- * @param {Operation} callback.operation An operation object that can be used
- *     to check the status of the request.
- * @param {object} callback.apiResponse The full API response.
- *
- * @example
- * const Bigtable = require('@google-cloud/bigtable');
- * const bigtable = new Bigtable();
- *
- * const callback = function(err, instance, operation, apiResponse) {
- *   if (err) {
- *     // Error handling omitted.
- *   }
- *
- *   operation
- *     .on('error', console.log)
- *     .on('complete', function() {
- *       // The instance was created successfully.
- *     });
- * };
- *
- * const options = {
- *   displayName: 'my-sweet-instance',
- *   labels: {env: 'prod'},
- *   clusters: [
- *     {
- *       name: 'my-sweet-cluster',
- *       nodes: 3,
- *       location: 'us-central1-b',
- *       storage: 'ssd'
- *     }
- *   ]
- * };
- *
- * bigtable.createInstance('my-instance', options, callback);
- *
- * //-
- * // If the callback is omitted, we'll return a Promise.
- * //-
- * bigtable.createInstance('my-instance', options).then(function(data) {
- *   const instance = data[0];
- *   const operation = data[1];
- *   const apiResponse = data[2];
- * });
- */
-Bigtable.prototype.createInstance = function(name, options, callback) {
-  const self = this;
+    const customEndpoint =
+      options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
+    this.customEndpoint = customEndpoint;
 
-  if (is.function(options)) {
-    callback = options;
-    options = {};
-  }
+    let customEndpointBaseUrl;
+    let customEndpointPort;
 
-  const reqOpts = {
-    parent: this.projectName,
-    instanceId: name,
-    instance: {
-      displayName: options.displayName || name,
-      labels: options.labels,
-    },
-  };
-
-  if (options.type) {
-    reqOpts.instance.type = Instance.getTypeType_(options.type);
-  }
-
-  reqOpts.clusters = arrify(options.clusters).reduce(function(
-    clusters,
-    cluster
-  ) {
-    clusters[cluster.name] = {
-      location: Cluster.getLocation_(self.projectId, cluster.location),
-      serveNodes: cluster.nodes,
-      defaultStorageType: Cluster.getStorageType_(cluster.storage),
-    };
-
-    return clusters;
-  },
-  {});
-
-  this.request(
-    {
-      client: 'BigtableInstanceAdminClient',
-      method: 'createInstance',
-      reqOpts,
-      gaxOpts: options.gaxOptions,
-    },
-    function(...args) {
-      const err = args[0];
-
-      if (!err) {
-        args.splice(1, 0, self.instance(name));
-      }
-
-      callback(...args);
+    if (customEndpoint) {
+      const customEndpointParts = customEndpoint.split(':');
+      customEndpointBaseUrl = customEndpointParts[0];
+      customEndpointPort = customEndpointParts[1];
     }
-  );
-};
 
-/**
- * Get Instance objects for all of your Compute instances.
- *
- * @param {object} [gaxOptions] Request configuration options, outlined here:
- *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
- * @param {function} callback The callback function.
- * @param {?error} callback.error An error returned while making this request.
- * @param {Instance[]} callback.instances List of all
- *     instances.
- * @param {object} callback.apiResponse The full API response.
- *
- * @example
- * const Bigtable = require('@google-cloud/bigtable');
- * const bigtable = new Bigtable();
- *
- * bigtable.getInstances(function(err, instances) {
- *   if (!err) {
- *     // `instances` is an array of Instance objects.
- *   }
- * });
- *
- * //-
- * // If the callback is omitted, we'll return a Promise.
- * //-
- * bigtable.getInstances().then(function(data) {
- *   const instances = data[0];
- * });
- */
-Bigtable.prototype.getInstances = function(gaxOptions, callback) {
-  const self = this;
-
-  if (is.function(gaxOptions)) {
-    callback = gaxOptions;
-    gaxOptions = {};
-  }
-
-  const reqOpts = {
-    parent: this.projectName,
-  };
-
-  this.request(
-    {
-      client: 'BigtableInstanceAdminClient',
-      method: 'listInstances',
-      reqOpts,
-      gaxOpts: gaxOptions,
-    },
-    function(err, resp) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      const instances = resp.instances.map(function(instanceData) {
-        const instance = self.instance(instanceData.name);
-        instance.metadata = instanceData;
-        return instance;
-      });
-
-      callback(null, instances, resp);
-    }
-  );
-};
-
-/**
- * Get a reference to a Compute instance.
- *
- * @param {string} name The name of the instance.
- * @returns {Instance}
- */
-Bigtable.prototype.instance = function(name) {
-  return new Instance(this, name);
-};
-
-/**
- * Funnel all API requests through this method, to be sure we have a project ID.
- *
- * @param {object} config Configuration object.
- * @param {object} config.gaxOpts GAX options.
- * @param {function} config.method The gax method to call.
- * @param {object} config.reqOpts Request options.
- * @param {function} [callback] Callback function.
- */
-Bigtable.prototype.request = function(config, callback) {
-  const self = this;
-  const isStreamMode = !callback;
-
-  let gaxStream;
-  let stream;
-
-  if (isStreamMode) {
-    stream = streamEvents(through.obj());
-
-    stream.abort = function() {
-      if (gaxStream && gaxStream.cancel) {
-        gaxStream.cancel();
-      }
-    };
-
-    stream.once('reading', makeRequestStream);
-
-    return stream;
-  } else {
-    makeRequestCallback();
-  }
-
-  function prepareGaxRequest(callback) {
-    self.getProjectId_(function(err, projectId) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      let gaxClient = self.api[config.client];
-
-      if (!gaxClient) {
-        // Lazily instantiate client.
-        gaxClient = new v2[config.client](self.options[config.client]);
-        self.api[config.client] = gaxClient;
-      }
-
-      let reqOpts = extend(true, {}, config.reqOpts);
-
-      if (projectId !== '{{projectId}}') {
-        reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
-      }
-
-      const requestFn = gaxClient[config.method].bind(
-        gaxClient,
-        reqOpts,
-        config.gaxOpts
-      );
-
-      callback(null, requestFn);
-    });
-  }
-
-  function makeRequestCallback() {
-    prepareGaxRequest(function(err, requestFn) {
-      if (err) {
-        callback(err);
-        return;
-      }
-
-      requestFn(callback);
-    });
-  }
-
-  function makeRequestStream() {
-    prepareGaxRequest(function(err, requestFn) {
-      if (err) {
-        stream.destroy(err);
-        return;
-      }
-
-      // @TODO: remove `retry-request` when gax supports retryable streams.
-      // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
-      const retryOpts = extend(
+    this.options = {
+      BigtableClient: extend(
         {
-          currentRetryAttempt: 0,
-          objectMode: true,
-          shouldRetryFn: GrpcService.shouldRetryRequest_,
-          request() {
-            gaxStream = requestFn();
-            return gaxStream;
-          },
+          servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
+          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          sslCreds: customEndpoint
+            ? grpc.credentials.createInsecure()
+            : undefined,
         },
-        config.retryOpts
-      );
+        options
+      ),
+      BigtableInstanceAdminClient: extend(
+        {
+          servicePath: customEndpoint
+            ? customEndpointBaseUrl
+            : defaultAdminBaseUrl,
+          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          sslCreds: customEndpoint
+            ? grpc.credentials.createInsecure()
+            : undefined,
+        },
+        options
+      ),
+      BigtableTableAdminClient: extend(
+        {
+          servicePath: customEndpoint
+            ? customEndpointBaseUrl
+            : defaultAdminBaseUrl,
+          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          sslCreds: customEndpoint
+            ? grpc.credentials.createInsecure()
+            : undefined,
+        },
+        options
+      ),
+    };
 
-      retryRequest(null, retryOpts)
-        .on('error', stream.destroy.bind(stream))
-        .on('request', stream.emit.bind(stream, 'request'))
-        .pipe(stream);
-    });
+    this.api = {};
+    this.auth = googleAuth(options);
+    this.projectId = options.projectId || '{{projectId}}';
+    this.appProfileId = options.appProfileId;
+    this.projectName = 'projects/' + this.projectId;
   }
-};
 
-/**
- * Determine and localize the project ID. If a user provides an ID, we bypass
- * checking with the auth client for an ID.
- *
- * @private
- *
- * @param {function} callback Callback function.
- * @param {?error} callback.err An error returned from the auth client.
- * @param {string} callback.projectId The detected project ID.
- */
-Bigtable.prototype.getProjectId_ = function(callback) {
-  const self = this;
+  /**
+   * Create a Compute instance.
+   *
+   * @see [Creating a Compute Instance]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
+   *
+   * @param {string} name The unique name of the instance.
+   * @param {object} [options] Instance creation options.
+   * @param {object[]} [options.clusters] The clusters to be created within the
+   *     instance.
+   * @param {string} [options.displayName] The descriptive name for this instance
+   *     as it appears in UIs.
+   * @param {Object.<string, string>} [options.labels] Labels are a flexible and
+   *     lightweight mechanism for organizing cloud resources into groups that
+   *     reflect a customer's organizational needs and deployment strategies.
+   *     They can be used to filter resources and aggregate metrics.
+   *
+   *   * Label keys must be between 1 and 63 characters long and must conform to
+   *     the regular expression: `[\p{Ll}\p{Lo}][\p{Ll}\p{Lo}\p{N}_-]{0,62}`.
+   *   * Label values must be between 0 and 63 characters long and must conform to
+   *     the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
+   *   * No more than 64 labels can be associated with a given resource.
+   *   * Keys and values must both be under 128 bytes.
+   * @param {string} [options.type] The type of the instance. Options are
+   *     'production' or 'development'.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Instance} callback.instance The newly created
+   *     instance.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   *
+   * const callback = function(err, instance, operation, apiResponse) {
+   *   if (err) {
+   *     // Error handling omitted.
+   *   }
+   *
+   *   operation
+   *     .on('error', console.log)
+   *     .on('complete', function() {
+   *       // The instance was created successfully.
+   *     });
+   * };
+   *
+   * const options = {
+   *   displayName: 'my-sweet-instance',
+   *   labels: {env: 'prod'},
+   *   clusters: [
+   *     {
+   *       name: 'my-sweet-cluster',
+   *       nodes: 3,
+   *       location: 'us-central1-b',
+   *       storage: 'ssd'
+   *     }
+   *   ]
+   * };
+   *
+   * bigtable.createInstance('my-instance', options, callback);
+   *
+   * //-
+   * // If the callback is omitted, we'll return a Promise.
+   * //-
+   * bigtable.createInstance('my-instance', options).then(function(data) {
+   *   const instance = data[0];
+   *   const operation = data[1];
+   *   const apiResponse = data[2];
+   * });
+   */
+  createInstance(name, options, callback) {
+    const self = this;
 
-  const projectIdRequired =
-    this.projectId === '{{projectId}}' && !this.customEndpoint;
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
 
-  if (!projectIdRequired) {
-    setImmediate(callback, null, this.projectId);
-    return;
+    const reqOpts = {
+      parent: this.projectName,
+      instanceId: name,
+      instance: {
+        displayName: options.displayName || name,
+        labels: options.labels,
+      },
+    };
+
+    if (options.type) {
+      reqOpts.instance.type = Instance.getTypeType_(options.type);
+    }
+
+    reqOpts.clusters = arrify(options.clusters).reduce(function(
+      clusters,
+      cluster
+    ) {
+      clusters[cluster.name] = {
+        location: Cluster.getLocation_(self.projectId, cluster.location),
+        serveNodes: cluster.nodes,
+        defaultStorageType: Cluster.getStorageType_(cluster.storage),
+      };
+
+      return clusters;
+    },
+    {});
+
+    this.request(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'createInstance',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      function(...args) {
+        const err = args[0];
+
+        if (!err) {
+          args.splice(1, 0, self.instance(name));
+        }
+
+        callback(...args);
+      }
+    );
   }
 
-  this.auth.getProjectId(function(err, projectId) {
-    if (err) {
-      callback(err);
+  /**
+   * Get Instance objects for all of your Compute instances.
+   *
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Instance[]} callback.instances List of all
+   *     instances.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   *
+   * bigtable.getInstances(function(err, instances) {
+   *   if (!err) {
+   *     // `instances` is an array of Instance objects.
+   *   }
+   * });
+   *
+   * //-
+   * // If the callback is omitted, we'll return a Promise.
+   * //-
+   * bigtable.getInstances().then(function(data) {
+   *   const instances = data[0];
+   * });
+   */
+  getInstances(gaxOptions, callback) {
+    const self = this;
+
+    if (is.function(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+
+    const reqOpts = {
+      parent: this.projectName,
+    };
+
+    this.request(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'listInstances',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      function(err, resp) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        const instances = resp.instances.map(function(instanceData) {
+          const instance = self.instance(instanceData.name);
+          instance.metadata = instanceData;
+          return instance;
+        });
+
+        callback(null, instances, resp);
+      }
+    );
+  }
+
+  /**
+   * Get a reference to a Compute instance.
+   *
+   * @param {string} name The name of the instance.
+   * @returns {Instance}
+   */
+  instance(name) {
+    return new Instance(this, name);
+  }
+
+  /**
+   * Funnel all API requests through this method, to be sure we have a project ID.
+   *
+   * @param {object} config Configuration object.
+   * @param {object} config.gaxOpts GAX options.
+   * @param {function} config.method The gax method to call.
+   * @param {object} config.reqOpts Request options.
+   * @param {function} [callback] Callback function.
+   */
+  request(config, callback) {
+    const self = this;
+    const isStreamMode = !callback;
+
+    let gaxStream;
+    let stream;
+
+    if (isStreamMode) {
+      stream = streamEvents(through.obj());
+
+      stream.abort = function() {
+        if (gaxStream && gaxStream.cancel) {
+          gaxStream.cancel();
+        }
+      };
+
+      stream.once('reading', makeRequestStream);
+
+      return stream;
+    } else {
+      makeRequestCallback();
+    }
+
+    function prepareGaxRequest(callback) {
+      self.getProjectId_(function(err, projectId) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        let gaxClient = self.api[config.client];
+
+        if (!gaxClient) {
+          // Lazily instantiate client.
+          gaxClient = new v2[config.client](self.options[config.client]);
+          self.api[config.client] = gaxClient;
+        }
+
+        let reqOpts = extend(true, {}, config.reqOpts);
+
+        if (projectId !== '{{projectId}}') {
+          reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
+        }
+
+        const requestFn = gaxClient[config.method].bind(
+          gaxClient,
+          reqOpts,
+          config.gaxOpts
+        );
+
+        callback(null, requestFn);
+      });
+    }
+
+    function makeRequestCallback() {
+      prepareGaxRequest(function(err, requestFn) {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        requestFn(callback);
+      });
+    }
+
+    function makeRequestStream() {
+      prepareGaxRequest(function(err, requestFn) {
+        if (err) {
+          stream.destroy(err);
+          return;
+        }
+
+        // @TODO: remove `retry-request` when gax supports retryable streams.
+        // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
+        const retryOpts = extend(
+          {
+            currentRetryAttempt: 0,
+            objectMode: true,
+            shouldRetryFn: GrpcService.shouldRetryRequest_,
+            request() {
+              gaxStream = requestFn();
+              return gaxStream;
+            },
+          },
+          config.retryOpts
+        );
+
+        retryRequest(null, retryOpts)
+          .on('error', stream.destroy.bind(stream))
+          .on('request', stream.emit.bind(stream, 'request'))
+          .pipe(stream);
+      });
+    }
+  }
+
+  /**
+   * Determine and localize the project ID. If a user provides an ID, we bypass
+   * checking with the auth client for an ID.
+   *
+   * @private
+   *
+   * @param {function} callback Callback function.
+   * @param {?error} callback.err An error returned from the auth client.
+   * @param {string} callback.projectId The detected project ID.
+   */
+  getProjectId_(callback) {
+    const self = this;
+
+    const projectIdRequired =
+      this.projectId === '{{projectId}}' && !this.customEndpoint;
+
+    if (!projectIdRequired) {
+      setImmediate(callback, null, this.projectId);
       return;
     }
 
-    self.projectId = projectId;
+    this.auth.getProjectId(function(err, projectId) {
+      if (err) {
+        callback(err);
+        return;
+      }
 
-    callback(null, self.projectId);
-  });
-};
+      self.projectId = projectId;
+
+      callback(null, self.projectId);
+    });
+  }
+}
 
 /*! Developer Documentation
  *
