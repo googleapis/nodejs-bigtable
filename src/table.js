@@ -126,7 +126,7 @@ Table.createPrefixRange_ = function(start) {
   }
 
   return {
-    start: start,
+    start,
     end: {
       value: endKey,
       inclusive: !endKey,
@@ -272,7 +272,7 @@ Table.prototype.createFamily = function(name, options, callback) {
     {
       client: 'BigtableTableAdminClient',
       method: 'modifyColumnFamilies',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
     },
     function(err, resp) {
@@ -525,9 +525,9 @@ Table.prototype.createReadStream = function(options) {
     const requestStream = this.bigtable.request({
       client: 'BigtableClient',
       method: 'readRows',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
-      retryOpts: retryOpts,
+      retryOpts,
     });
 
     requestStream.on('request', () => numRequestsMade++);
@@ -660,7 +660,7 @@ Table.prototype.deleteRows = function(prefix, gaxOptions, callback) {
     {
       client: 'BigtableTableAdminClient',
       method: 'dropRowRange',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     callback
@@ -880,7 +880,7 @@ Table.prototype.getMetadata = function(options, callback) {
     {
       client: 'BigtableTableAdminClient',
       method: 'getTable',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
     },
     function(...args) {
@@ -1194,9 +1194,9 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
       .request({
         client: 'BigtableClient',
         method: 'mutateRows',
-        reqOpts: reqOpts,
+        reqOpts,
         gaxOpts: gaxOptions,
-        retryOpts: retryOpts,
+        retryOpts,
       })
       .on('request', () => numRequestsMade++)
       .on('error', err => {
@@ -1333,7 +1333,7 @@ Table.prototype.sampleRowKeysStream = function(gaxOptions) {
     this.bigtable.request({
       client: 'BigtableClient',
       method: 'sampleRowKeys',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     }),
     through.obj(function(key, enc, next) {
@@ -1379,7 +1379,7 @@ Table.prototype.truncate = function(gaxOptions, callback) {
     {
       client: 'BigtableTableAdminClient',
       method: 'dropRowRange',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     callback

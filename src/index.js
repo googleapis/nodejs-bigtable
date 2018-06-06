@@ -359,7 +359,7 @@ function Bigtable(options) {
     {
       libName: 'gccl',
       libVersion: PKG.version,
-      scopes: scopes,
+      scopes,
       'grpc.max_send_message_length': -1,
       'grpc.max_receive_message_length': -1,
     },
@@ -539,7 +539,7 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'createInstance',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
     },
     function(...args) {
@@ -598,7 +598,7 @@ Bigtable.prototype.getInstances = function(gaxOptions, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'listInstances',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     function(err, resp) {

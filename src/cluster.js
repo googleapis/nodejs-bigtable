@@ -71,8 +71,8 @@ Cluster.getLocation_ = function(project, location) {
   }
 
   return format('projects/{project}/locations/{location}', {
-    project: project,
-    location: location,
+    project,
+    location,
   });
 };
 
@@ -388,7 +388,7 @@ Cluster.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'updateCluster',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     callback

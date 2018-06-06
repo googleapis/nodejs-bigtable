@@ -889,7 +889,7 @@ Filter.prototype.toProto = function() {
 Filter.prototype.value = function(value) {
   if (!is.object(value)) {
     value = {
-      value: value,
+      value,
     };
   }
 

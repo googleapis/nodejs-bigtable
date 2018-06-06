@@ -382,7 +382,7 @@ AppProfile.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'updateAppProfile',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     callback

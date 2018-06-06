@@ -147,7 +147,7 @@ Family.formatRule_ = function(ruleObj) {
   var ruleType = ruleObj.union ? 'union' : 'intersection';
 
   rule[ruleType] = {
-    rules: rules,
+    rules,
   };
 
   return rule;
@@ -435,7 +435,7 @@ Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     {
       client: 'BigtableTableAdminClient',
       method: 'modifyColumnFamilies',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     function(...args) {

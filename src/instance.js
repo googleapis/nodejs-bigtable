@@ -216,7 +216,7 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'createAppProfile',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
     },
     function(...args) {
@@ -324,7 +324,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'createCluster',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
     },
     function(...args) {
@@ -446,7 +446,7 @@ Instance.prototype.createTable = function(name, options, callback) {
   if (options.splits) {
     reqOpts.initialSplits = options.splits.map(function(key) {
       return {
-        key: key,
+        key,
       };
     });
   }
@@ -475,7 +475,7 @@ Instance.prototype.createTable = function(name, options, callback) {
     {
       client: 'BigtableTableAdminClient',
       method: 'createTable',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
     },
     function(...args) {
@@ -672,7 +672,7 @@ Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'listAppProfiles',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     function(err, resp) {
@@ -737,7 +737,7 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'listClusters',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     function(err, resp) {
@@ -880,7 +880,7 @@ Instance.prototype.getTables = function(options, callback) {
     {
       client: 'BigtableTableAdminClient',
       method: 'listTables',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: options.gaxOptions,
     },
     function(...args) {

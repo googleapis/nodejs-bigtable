@@ -155,7 +155,7 @@ ChunkTransformer.prototype.validateValueSizeAndCommitRow = function(chunk) {
     this.destroy(
       new TransformError({
         message: 'A row cannot be have a value size and be a commit row',
-        chunk: chunk,
+        chunk,
       })
     );
   }
@@ -176,7 +176,7 @@ ChunkTransformer.prototype.validateResetRow = function(chunk) {
     this.destroy(
       new TransformError({
         message: 'A reset should have no data',
-        chunk: chunk,
+        chunk,
       })
     );
   }

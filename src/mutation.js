@@ -178,13 +178,13 @@ Mutation.encodeSetCell = function(data) {
       }
 
       var setCell = {
-        familyName: familyName,
+        familyName,
         columnQualifier: Mutation.convertToBytes(cellName),
         timestampMicros: timestamp,
         value: Mutation.convertToBytes(cell.value),
       };
 
-      mutations.push({setCell: setCell});
+      mutations.push({setCell});
     });
   });
 
@@ -281,7 +281,7 @@ Mutation.encodeDelete = function(data) {
       deleteFromColumn: {
         familyName: column.family,
         columnQualifier: Mutation.convertToBytes(column.qualifier),
-        timeRange: timeRange,
+        timeRange,
       },
     };
   });

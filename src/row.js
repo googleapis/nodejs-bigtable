@@ -200,7 +200,7 @@ Row.formatFamilies_ = function(families, options) {
         }
 
         return {
-          value: value,
+          value,
           timestamp: cell.timestampMicros,
           labels: cell.labels,
         };
@@ -363,14 +363,14 @@ Row.prototype.createRules = function(rules, gaxOptions, callback) {
     tableName: this.table.id,
     appProfileId: this.bigtable.appProfileId,
     rowKey: Mutation.convertToBytes(this.id),
-    rules: rules,
+    rules,
   };
 
   this.bigtable.request(
     {
       client: 'BigtableClient',
       method: 'readModifyWriteRow',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: gaxOptions,
     },
     callback
@@ -602,7 +602,7 @@ Row.prototype.filter = function(filter, config, callback) {
     {
       client: 'BigtableClient',
       method: 'checkAndMutateRow',
-      reqOpts: reqOpts,
+      reqOpts,
       gaxOpts: config.gaxOptions,
     },
     function(err, apiResponse) {
@@ -713,7 +713,7 @@ Row.prototype.get = function(columns, options, callback) {
 
   var getRowsOptions = extend({}, options, {
     keys: [this.id],
-    filter: filter,
+    filter,
   });
 
   this.table.getRows(getRowsOptions, function(err, rows) {
@@ -842,7 +842,7 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
   }
 
   var reqOpts = {
-    column: column,
+    column,
     increment: value,
   };
 
