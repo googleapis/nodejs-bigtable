@@ -18,41 +18,53 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-async function runInstanceOperations(instanceName, clusterName1, clusterName2) {
+async function runInstanceOperations(instanceName, clusterName) {
   const bigtable = new Bigtable();
+  const instance = bigtable.instance(instanceName);
 
-  console.log(`Creating a PRODUCTION Instance`);
-  // [START bigtable_create_prod_instance]
-  // Creates a Production Instance with the name "ssd-instance"
-  // with cluster name "ssd-cluster", 3 nodes and location us-central1-f
-
-  // Set options to create an Instance
-  const instanceOptions = {
-    clusters: [
-      {
-        name: clusterName1,
-        nodes: 3,
-        location: 'us-central1-f',
-        storage: 'ssd',
-      },
-    ],
-    type: 'PRODUCTION', // Optional as default type is PRODUCTION
-    labels: {'prod-label': 'prod-label'},
-  };
-
-  // Create production instance with given options
+  console.log(`Check Instance Exists`);
+  // [START bigtable_check_instance_exists]
+  let instanceExists;
   try {
-    const [instance] = await bigtable.createInstance(
-      instanceName,
-      instanceOptions
-    );
-
-    console.log(`Created Instance: ${instance.name}`);
+    [instanceExists] = await instance.exists();
   } catch (err) {
-    console.error('Error creating prod-instance:', err);
+    console.error(`Error checking if Instance exists:`, err);
     return;
   }
-  // [END bigtable_create_prod_instance]
+  // [END bigtable_check_instance_exists]
+
+  // Create instance if does not exists
+  if (!instanceExists) {
+    console.log(`Creating a PRODUCTION Instance`);
+    // [START bigtable_create_prod_instance]
+    // Creates a Production Instance with the name "ssd-instance"
+    // with cluster name "ssd-cluster", 3 nodes and location us-central1-f
+
+    const instanceOptions = {
+      clusters: [
+        {
+          name: clusterName,
+          nodes: 3,
+          location: 'us-central1-f',
+          storage: 'ssd',
+        },
+      ],
+      type: 'PRODUCTION', // Optional as default type is PRODUCTION
+      labels: {'prod-label': 'prod-label'},
+    };
+
+    // Create production instance with given options
+    try {
+      const [prodInstance] = await instance.create(instanceOptions);
+      console.log(`Created Instance: ${prodInstance.name}`);
+    } catch (err) {
+      console.error('Error creating prod-instance:', err);
+      return;
+    }
+    // [END bigtable_create_prod_instance]
+  } else {
+    console.log(`Instance ${instance.name} exists`);
+  }
 
   console.log(); //for just a new-line
   console.log(`Listing Instances`);
@@ -80,30 +92,6 @@ async function runInstanceOperations(instanceName, clusterName1, clusterName2) {
     return;
   }
   // [END bigtable_get_instance]
-
-  console.log(); //for just a new-line
-  console.log(`Add more Cluster to Instance`);
-  // [START bigtable_create_cluster]
-  // Create Cluster for "ssd-instance"
-  // with 3 nodes at location us-central1-c
-  const clusterOptions = {
-    location: 'us-central1-c',
-    nodes: 3,
-    storage: 'ssd',
-  };
-
-  try {
-    const instance = bigtable.instance(instanceName);
-    const [cluster] = await instance.createCluster(
-      clusterName2,
-      clusterOptions
-    );
-    console.log(`Cluster created: ${cluster.name}`);
-  } catch (err) {
-    console.error('Error creating cluster:', err);
-    return;
-  }
-  // [END bigtable_create_cluster]
 
   console.log(); //for just a new-line
   console.log(`Listing Clusters...`);
@@ -172,6 +160,45 @@ async function deleteInstance(instanceName) {
   // [END bigtable_delete_instance]
 }
 
+// Add Cluster
+async function addCluster(instanceName, clusterName) {
+  const bigtable = new Bigtable();
+  const instance = bigtable.instance(instanceName);
+
+  let instanceExists;
+  try {
+    [instanceExists] = await instance.exists();
+  } catch (err) {
+    console.error(`Error checking if Instance exists:`, err);
+    return;
+  }
+
+  if (!instanceExists) {
+    console.log(`Instance does not exists`);
+  } else {
+    console.log(); //for just a new-line
+    console.log(`Adding Cluster to Instance ${instance.name}`);
+    // [START bigtable_create_cluster]
+    const clusterOptions = {
+      location: 'us-central1-c',
+      nodes: 3,
+      storage: 'ssd',
+    };
+
+    try {
+      const [cluster] = await instance.createCluster(
+        clusterName,
+        clusterOptions
+      );
+      console.log(`Cluster created: ${cluster.name}`);
+    } catch (err) {
+      console.error('Error creating cluster:', err);
+      return;
+    }
+    // [END bigtable_create_cluster]
+  }
+}
+
 // Delete the Cluster
 async function deleteCluster(instanceName, clusterName) {
   const bigtable = new Bigtable();
@@ -193,31 +220,49 @@ async function deleteCluster(instanceName, clusterName) {
 
 require(`yargs`)
   .demand(1)
-  .command(`run-instance`, `Run create and list Instance`, {}, argv =>
-    runInstanceOperations(argv.instance, argv.cluster, argv.cluster2)
+  .command(
+    `run`,
+    `Creates an Instance(type: PRODUCTION) and run basic instance-operations`,
+    {},
+    argv => runInstanceOperations(argv.instance, argv.cluster)
   )
   .example(
-    `node $0 run-instance --instance [instanceName] --cluster [clusterName] --cluster2 [clusterName2]`,
-    `Delete the instance.`
+    `node $0 run --instance [instanceName] --cluster [clusterName]`,
+    `Run instance operations`
   )
   .command(`dev-instance`, `Create Development Instance`, {}, argv =>
     createDevInstance(argv.instance, argv.cluster)
   )
-  .example(`node $0 delete --instance [instanceName]`, `Delete the instance.`)
+  .example(
+    `node $0 dev-instance --instance [instanceName]`,
+    `Create Development Instance`
+  )
   .command(`del-instance`, `Delete the Instance`, {}, argv =>
     deleteInstance(argv.instance)
   )
-  .example(`node $0 delete --instance [instanceName]`, `Delete the instance.`)
+  .example(
+    `node $0 del-instance --instance [instanceName]`,
+    `Delete the Instance.`
+  )
+  .command(`add-cluster`, `Add Cluster`, {}, argv =>
+    addCluster(argv.instance, argv.cluster)
+  )
+  .example(
+    `node $0 add-cluster --instance [instanceName] --cluster [clusterName]`,
+    `Add Cluster`
+  )
   .command(`del-cluster`, `Delete the Cluster`, {}, argv =>
     deleteCluster(argv.instance, argv.cluster)
+  )
+  .example(
+    `node $0 del-cluster --instance [instanceName] --cluster [clusterName]`,
+    `Delete the Cluster`
   )
   .wrap(120)
   .nargs('instance', 1)
   .nargs('cluster', 1)
-  .nargs('cluster2', 1)
   .describe('instance', 'Cloud Bigtable Instance name')
   .describe('cluster', 'Cloud Bigtable Cluster name')
-  .describe('cluster2', 'Cloud Bigtable Cluster name')
   .recommendCommands()
   .epilogue(`For more information, see https://cloud.google.com/bigtable/docs`)
   .help()
