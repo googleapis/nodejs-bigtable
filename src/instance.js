@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-var common = require('@google-cloud/common');
-var extend = require('extend');
-var is = require('is');
+const common = require('@google-cloud/common');
+const extend = require('extend');
+const is = require('is');
 
-var AppProfile = require('./app-profile.js');
-var Cluster = require('./cluster.js');
-var Family = require('./family.js');
-var Table = require('./table.js');
+const AppProfile = require('./app-profile.js');
+const Cluster = require('./cluster.js');
+const Family = require('./family.js');
+const Table = require('./table.js');
 
 /**
  * Create an Instance object to interact with a Compute instance.
@@ -39,7 +39,7 @@ var Table = require('./table.js');
 function Instance(bigtable, name) {
   this.bigtable = bigtable;
 
-  var id = name;
+  let id = name;
 
   if (id.indexOf('/') === -1) {
     id = bigtable.projectName + '/instances/' + name;
@@ -62,7 +62,7 @@ function Instance(bigtable, name) {
  * // 1
  */
 Instance.getTypeType_ = function(type) {
-  var types = {
+  const types = {
     unspecified: 0,
     production: 1,
     development: 2,
@@ -286,14 +286,14 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
  * });
  */
 Instance.prototype.createCluster = function(name, options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(options)) {
     callback = options;
     options = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     parent: this.id,
     clusterId: name,
   };
@@ -314,7 +314,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
   }
 
   if (options.storage) {
-    var storageType = Cluster.getStorageType_(options.storage);
+    const storageType = Cluster.getStorageType_(options.storage);
     reqOpts.cluster.defaultStorageType = storageType;
   }
 
@@ -418,7 +418,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
  * });
  */
 Instance.prototype.createTable = function(name, options, callback) {
-  var self = this;
+  const self = this;
 
   if (!name) {
     throw new Error('A name is required to create a table.');
@@ -431,7 +431,7 @@ Instance.prototype.createTable = function(name, options, callback) {
     options = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     parent: this.id,
     tableId: name,
     table: {
@@ -450,14 +450,14 @@ Instance.prototype.createTable = function(name, options, callback) {
   }
 
   if (options.families) {
-    var columnFamilies = options.families.reduce(function(families, family) {
+    const columnFamilies = options.families.reduce(function(families, family) {
       if (is.string(family)) {
         family = {
           name: family,
         };
       }
 
-      var columnFamily = (families[family.name] = {});
+      const columnFamily = (families[family.name] = {});
 
       if (family.rule) {
         columnFamily.gcRule = Family.formatRule_(family.rule);
@@ -478,7 +478,7 @@ Instance.prototype.createTable = function(name, options, callback) {
     },
     function(...args) {
       if (args[1]) {
-        var table = self.table(args[1].name);
+        const table = self.table(args[1].name);
         table.metadata = args[1];
         args.splice(1, 0, table);
       }
@@ -614,7 +614,7 @@ Instance.prototype.exists = function(gaxOptions, callback) {
  * });
  */
 Instance.prototype.get = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -655,14 +655,14 @@ Instance.prototype.get = function(gaxOptions, callback) {
  * });
  */
 Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     parent: this.id,
   };
 
@@ -679,8 +679,8 @@ Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
         return;
       }
 
-      var appProfiles = resp.map(function(appProfileObj) {
-        var appProfile = self.appProfile(appProfileObj.name);
+      const appProfiles = resp.map(function(appProfileObj) {
+        const appProfile = self.appProfile(appProfileObj.name);
         appProfile.metadata = appProfileObj;
         return appProfile;
       });
@@ -720,14 +720,14 @@ Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
  * });
  */
 Instance.prototype.getClusters = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     parent: this.id,
   };
 
@@ -744,8 +744,8 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
         return;
       }
 
-      var clusters = resp.clusters.map(function(clusterObj) {
-        var cluster = self.cluster(clusterObj.name);
+      const clusters = resp.clusters.map(function(clusterObj) {
+        const cluster = self.cluster(clusterObj.name);
         cluster.metadata = clusterObj;
         return cluster;
       });
@@ -781,7 +781,7 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
  * });
  */
 Instance.prototype.getMetadata = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -860,14 +860,14 @@ Instance.prototype.getMetadata = function(gaxOptions, callback) {
  * });
  */
 Instance.prototype.getTables = function(options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(options)) {
     callback = options;
     options = {};
   }
 
-  var reqOpts = extend({}, options, {
+  const reqOpts = extend({}, options, {
     parent: this.id,
     view: Table.VIEWS[options.view || 'unspecified'],
   });
@@ -884,8 +884,8 @@ Instance.prototype.getTables = function(options, callback) {
     function(...args) {
       if (args[1]) {
         args[1] = args[1].map(function(tableObj) {
-          var name = tableObj.name.split('/').pop();
-          var table = self.table(name);
+          const name = tableObj.name.split('/').pop();
+          const table = self.table(name);
           table.metadata = tableObj;
           return table;
         });
@@ -962,7 +962,7 @@ Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
  * });
  */
 Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;

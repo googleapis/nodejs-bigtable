@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-var arrify = require('arrify');
-var Buffer = require('safe-buffer').Buffer;
-var Long = require('long');
-var is = require('is');
+const arrify = require('arrify');
+const Buffer = require('safe-buffer').Buffer;
+const Long = require('long');
+const is = require('is');
 
 /**
  * Formats table mutations to be in the expected proto format.
@@ -48,7 +48,7 @@ function Mutation(mutation) {
  * INSERT => setCell
  * DELETE => deleteFrom*
  */
-var methods = (Mutation.methods = {
+const methods = (Mutation.methods = {
   INSERT: 'insert',
   DELETE: 'delete',
 });
@@ -64,9 +64,9 @@ var methods = (Mutation.methods = {
  * @returns {string|number|buffer}
  */
 Mutation.convertFromBytes = function(bytes, options) {
-  var buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
+  const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
   if (options && options.isPossibleNumber && buf.length === 8) {
-    var num = Long.fromBytes(buf).toNumber();
+    const num = Long.fromBytes(buf).toNumber();
 
     if (Number.MIN_SAFE_INTEGER < num && num < Number.MAX_SAFE_INTEGER) {
       return num;
@@ -110,7 +110,7 @@ Mutation.convertToBytes = function(data) {
  * @returns {object}
  */
 Mutation.createTimeRange = function(start, end) {
-  var range = {};
+  const range = {};
 
   if (is.date(start)) {
     range.startTimestampMicros = start.getTime() * 1000;
@@ -155,13 +155,13 @@ Mutation.createTimeRange = function(start, end) {
  * // ]
  */
 Mutation.encodeSetCell = function(data) {
-  var mutations = [];
+  const mutations = [];
 
   Object.keys(data).forEach(function(familyName) {
-    var family = data[familyName];
+    const family = data[familyName];
 
     Object.keys(family).forEach(function(cellName) {
-      var cell = family[cellName];
+      let cell = family[cellName];
 
       if (!is.object(cell) || cell instanceof Buffer) {
         cell = {
@@ -169,13 +169,13 @@ Mutation.encodeSetCell = function(data) {
         };
       }
 
-      var timestamp = cell.timestamp || new Date();
+      let timestamp = cell.timestamp || new Date();
 
       if (is.date(timestamp)) {
         timestamp = timestamp.getTime() * 1000;
       }
 
-      var setCell = {
+      const setCell = {
         familyName,
         columnQualifier: Mutation.convertToBytes(cellName),
         timestampMicros: timestamp,
@@ -256,7 +256,7 @@ Mutation.encodeDelete = function(data) {
       };
     }
 
-    var column = Mutation.parseColumnName(mutation.column);
+    const column = Mutation.parseColumnName(mutation.column);
 
     if (!column.qualifier) {
       return {
@@ -266,7 +266,7 @@ Mutation.encodeDelete = function(data) {
       };
     }
 
-    var timeRange;
+    let timeRange;
 
     if (mutation.time) {
       timeRange = Mutation.createTimeRange(
@@ -313,7 +313,7 @@ Mutation.parse = function(mutation) {
  * // }
  */
 Mutation.parseColumnName = function(column) {
-  var parts = column.split(':');
+  const parts = column.split(':');
 
   return {
     family: parts[0],
@@ -327,7 +327,7 @@ Mutation.parseColumnName = function(column) {
  * @returns {object}
  */
 Mutation.prototype.toProto = function() {
-  var mutation = {};
+  const mutation = {};
 
   if (this.key) {
     mutation.rowKey = Mutation.convertToBytes(this.key);

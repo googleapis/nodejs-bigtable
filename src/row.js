@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-var arrify = require('arrify');
-var common = require('@google-cloud/common');
-var createErrorClass = require('create-error-class');
-var dotProp = require('dot-prop');
-var extend = require('extend');
-var flatten = require('lodash.flatten');
-var is = require('is');
+const arrify = require('arrify');
+const common = require('@google-cloud/common');
+const createErrorClass = require('create-error-class');
+const dotProp = require('dot-prop');
+const extend = require('extend');
+const flatten = require('lodash.flatten');
+const is = require('is');
 
-var Filter = require('./filter.js');
-var Mutation = require('./mutation.js');
+const Filter = require('./filter.js');
+const Mutation = require('./mutation.js');
 
 /**
  * @private
  */
-var RowError = createErrorClass('RowError', function(row) {
+const RowError = createErrorClass('RowError', function(row) {
   this.message = 'Unknown row: ' + row + '.';
   this.code = 404;
 });
@@ -85,15 +85,15 @@ function Row(table, key) {
  * // }
  */
 Row.formatChunks_ = function(chunks, options) {
-  var rows = [];
-  var familyName;
-  var qualifierName;
+  const rows = [];
+  let familyName;
+  let qualifierName;
 
   options = options || {};
 
   chunks.reduce(function(row, chunk) {
-    var family;
-    var qualifier;
+    let family;
+    let qualifier;
 
     row.data = row.data || {};
 
@@ -180,18 +180,18 @@ Row.formatChunks_ = function(chunks, options) {
  * // }
  */
 Row.formatFamilies_ = function(families, options) {
-  var data = {};
+  const data = {};
 
   options = options || {};
 
   families.forEach(function(family) {
-    var familyData = (data[family.name] = {});
+    const familyData = (data[family.name] = {});
 
     family.columns.forEach(function(column) {
-      var qualifier = Mutation.convertFromBytes(column.qualifier);
+      const qualifier = Mutation.convertFromBytes(column.qualifier);
 
       familyData[qualifier] = column.cells.map(function(cell) {
-        var value = cell.value;
+        let value = cell.value;
 
         if (options.decode !== false) {
           value = Mutation.convertFromBytes(value, {isPossibleNumber: true});
@@ -250,14 +250,14 @@ Row.formatFamilies_ = function(families, options) {
  * });
  */
 Row.prototype.create = function(options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(options)) {
     callback = options;
     options = {};
   }
 
-  var entry = {
+  const entry = {
     key: this.id,
     data: options.entry,
     method: Mutation.methods.INSERT,
@@ -340,8 +340,8 @@ Row.prototype.createRules = function(rules, gaxOptions, callback) {
   }
 
   rules = arrify(rules).map(function(rule) {
-    var column = Mutation.parseColumnName(rule.column);
-    var ruleData = {
+    const column = Mutation.parseColumnName(rule.column);
+    const ruleData = {
       familyName: column.family,
       columnQualifier: Mutation.convertToBytes(column.qualifier),
     };
@@ -357,7 +357,7 @@ Row.prototype.createRules = function(rules, gaxOptions, callback) {
     return ruleData;
   });
 
-  var reqOpts = {
+  const reqOpts = {
     tableName: this.table.id,
     appProfileId: this.bigtable.appProfileId,
     rowKey: Mutation.convertToBytes(this.id),
@@ -401,7 +401,7 @@ Row.prototype.delete = function(gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  var mutation = {
+  const mutation = {
     key: this.id,
     method: Mutation.methods.DELETE,
   };
@@ -458,7 +458,7 @@ Row.prototype.deleteCells = function(columns, gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  var mutation = {
+  const mutation = {
     key: this.id,
     data: arrify(columns),
     method: Mutation.methods.DELETE,
@@ -587,7 +587,7 @@ Row.prototype.exists = function(gaxOptions, callback) {
  * });
  */
 Row.prototype.filter = function(filter, config, callback) {
-  var reqOpts = {
+  const reqOpts = {
     tableName: this.table.id,
     appProfileId: this.bigtable.appProfileId,
     rowKey: Mutation.convertToBytes(this.id),
@@ -666,7 +666,7 @@ Row.prototype.filter = function(filter, config, callback) {
  * });
  */
 Row.prototype.get = function(columns, options, callback) {
-  var self = this;
+  const self = this;
 
   if (!is.array(columns)) {
     callback = options;
@@ -679,13 +679,13 @@ Row.prototype.get = function(columns, options, callback) {
     options = {};
   }
 
-  var filter;
+  let filter;
   columns = arrify(columns);
 
   // if there is column filter
   if (columns.length) {
-    var filters = columns.map(Mutation.parseColumnName).map(column => {
-      var colmFilters = [{family: column.family}];
+    const filters = columns.map(Mutation.parseColumnName).map(column => {
+      const colmFilters = [{family: column.family}];
       if (column.qualifier) {
         colmFilters.push({column: column.qualifier});
       }
@@ -709,7 +709,7 @@ Row.prototype.get = function(columns, options, callback) {
     filter = arrify(filter).concat(options.filter);
   }
 
-  var getRowsOptions = extend({}, options, {
+  const getRowsOptions = extend({}, options, {
     keys: [this.id],
     filter,
   });
@@ -720,7 +720,7 @@ Row.prototype.get = function(columns, options, callback) {
       return;
     }
 
-    var row = rows[0];
+    const row = rows[0];
 
     if (!row) {
       err = new RowError(self.id);
@@ -839,7 +839,7 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
     value = 1;
   }
 
-  var reqOpts = {
+  const reqOpts = {
     column,
     increment: value,
   };
@@ -850,8 +850,8 @@ Row.prototype.increment = function(column, value, gaxOptions, callback) {
       return;
     }
 
-    var data = Row.formatFamilies_(resp.row.families);
-    var value = dotProp.get(data, column.replace(':', '.'))[0].value;
+    const data = Row.formatFamilies_(resp.row.families);
+    const value = dotProp.get(data, column.replace(':', '.'))[0].value;
 
     callback(null, value, resp);
   });
@@ -905,7 +905,7 @@ Row.prototype.save = function(entry, gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  var mutation = {
+  const mutation = {
     key: this.id,
     data: entry,
     method: Mutation.methods.INSERT,

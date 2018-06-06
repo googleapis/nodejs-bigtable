@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-var common = require('@google-cloud/common');
-var is = require('is');
-var snakeCase = require('lodash.snakecase');
+const common = require('@google-cloud/common');
+const is = require('is');
+const snakeCase = require('lodash.snakecase');
 
-var Cluster = require('./cluster.js');
+const Cluster = require('./cluster.js');
 
 /**
  * Create an app profile object to interact with your app profile.
@@ -37,7 +37,7 @@ function AppProfile(instance, name) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  var id = name;
+  let id = name;
 
   if (id.indexOf('/') === -1) {
     id = `${instance.id}/appProfiles/${name}`;
@@ -251,7 +251,7 @@ AppProfile.prototype.exists = function(gaxOptions, callback) {
  * });
  */
 AppProfile.prototype.get = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -286,7 +286,7 @@ AppProfile.prototype.get = function(gaxOptions, callback) {
  * });
  */
 AppProfile.prototype.getMetadata = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -351,7 +351,7 @@ AppProfile.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     appProfile: AppProfile.formatAppProfile_(metadata),
     updateMask: {
       paths: [],

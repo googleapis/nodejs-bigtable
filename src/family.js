@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-var common = require('@google-cloud/common');
-var createErrorClass = require('create-error-class');
-var is = require('is');
+const common = require('@google-cloud/common');
+const createErrorClass = require('create-error-class');
+const is = require('is');
 
 /**
  * @private
  */
-var FamilyError = createErrorClass('FamilyError', function(name) {
+const FamilyError = createErrorClass('FamilyError', function(name) {
   this.message = 'Column family not found: ' + name + '.';
   this.code = 404;
 });
@@ -110,7 +110,7 @@ Family.formatName_ = function(tableName, name) {
  * // }
  */
 Family.formatRule_ = function(ruleObj) {
-  var rules = [];
+  const rules = [];
 
   if (ruleObj.age) {
     rules.push({
@@ -141,8 +141,8 @@ Family.formatRule_ = function(ruleObj) {
     throw new Error('No garbage collection rules were specified.');
   }
 
-  var rule = {};
-  var ruleType = ruleObj.union ? 'union' : 'intersection';
+  const rule = {};
+  const ruleType = ruleObj.union ? 'union' : 'intersection';
 
   rule[ruleType] = {
     rules,
@@ -300,15 +300,15 @@ Family.prototype.exists = function(gaxOptions, callback) {
  * });
  */
 Family.prototype.get = function(options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(options)) {
     callback = options;
     options = {};
   }
 
-  var autoCreate = !!options.autoCreate;
-  var gaxOptions = options.gaxOptions;
+  const autoCreate = !!options.autoCreate;
+  const gaxOptions = options.gaxOptions;
 
   this.getMetadata(gaxOptions, function(err, metadata) {
     if (err) {
@@ -347,7 +347,7 @@ Family.prototype.get = function(options, callback) {
  * });
  */
 Family.prototype.getMetadata = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -360,7 +360,7 @@ Family.prototype.getMetadata = function(gaxOptions, callback) {
       return;
     }
 
-    for (var i = 0, l = families.length; i < l; i++) {
+    for (let i = 0, l = families.length; i < l; i++) {
       if (families[i].id === self.id) {
         self.metadata = families[i].metadata;
         callback(null, self.metadata);
@@ -368,7 +368,7 @@ Family.prototype.getMetadata = function(gaxOptions, callback) {
       }
     }
 
-    var error = new FamilyError(self.id);
+    const error = new FamilyError(self.id);
     callback(error);
   });
 };
@@ -408,14 +408,14 @@ Family.prototype.getMetadata = function(gaxOptions, callback) {
  * });
  */
 Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
   }
 
-  var mod = {
+  const mod = {
     id: this.familyName,
     update: {},
   };
@@ -424,7 +424,7 @@ Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     mod.update.gcRule = Family.formatRule_(metadata.rule);
   }
 
-  var reqOpts = {
+  const reqOpts = {
     name: this.table.id,
     modifications: [mod],
   };

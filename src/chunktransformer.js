@@ -116,7 +116,7 @@ ChunkTransformer.prototype._flush = function(cb) {
 ChunkTransformer.prototype.destroy = function(err) {
   if (this._destroyed) return;
   this._destroyed = true;
-  var self = this;
+  const self = this;
   if (err) {
     self.emit('error', err);
   }

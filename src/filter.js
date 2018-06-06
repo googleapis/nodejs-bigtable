@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-var arrify = require('arrify');
-var createErrorClass = require('create-error-class');
-var extend = require('extend');
-var escapeStringRegexp = require('escape-string-regexp');
-var is = require('is');
+const arrify = require('arrify');
+const createErrorClass = require('create-error-class');
+const extend = require('extend');
+const escapeStringRegexp = require('escape-string-regexp');
+const is = require('is');
 
-var Mutation = require('./mutation.js');
+const Mutation = require('./mutation.js');
 
 /**
  * @private
  */
-var FilterError = createErrorClass('FilterError', function(filter) {
+const FilterError = createErrorClass('FilterError', function(filter) {
   this.message = 'Unknown filter: ' + filter + '.';
 });
 
@@ -151,7 +151,7 @@ Filter.convertToRegExpString = function(regex) {
  * // }
  */
 Filter.createRange = function(start, end, key) {
-  var range = {};
+  const range = {};
 
   if (start) {
     extend(range, createBound('start', start, key));
@@ -164,9 +164,9 @@ Filter.createRange = function(start, end, key) {
   return range;
 
   function createBound(boundName, boundData, key) {
-    var isInclusive = boundData.inclusive !== false;
-    var boundKey = boundName + key + (isInclusive ? 'Closed' : 'Open');
-    var bound = {};
+    const isInclusive = boundData.inclusive !== false;
+    const boundKey = boundName + key + (isInclusive ? 'Closed' : 'Open');
+    const bound = {};
 
     bound[boundKey] = Mutation.convertToBytes(boundData.value || boundData);
     return bound;
@@ -204,10 +204,10 @@ Filter.createRange = function(start, end, key) {
  * // }
  */
 Filter.parse = function(filters) {
-  var filter = new Filter();
+  const filter = new Filter();
 
   arrify(filters).forEach(function(filterObj) {
-    var key = Object.keys(filterObj)[0];
+    const key = Object.keys(filterObj)[0];
 
     if (!is.function(filter[key])) {
       throw new FilterError(key);
@@ -244,7 +244,7 @@ Filter.parse = function(filters) {
  * };
  */
 Filter.prototype.all = function(pass) {
-  var filterName = pass ? 'passAllFilter' : 'blockAllFilter';
+  const filterName = pass ? 'passAllFilter' : 'blockAllFilter';
 
   this.set(filterName, true);
 };
@@ -375,7 +375,7 @@ Filter.prototype.column = function(column) {
   }
 
   if (column.name) {
-    var name = Filter.convertToRegExpString(column.name);
+    let name = Filter.convertToRegExpString(column.name);
 
     name = Mutation.convertToBytes(name);
     this.set('columnQualifierRegexFilter', name);
@@ -386,7 +386,7 @@ Filter.prototype.column = function(column) {
   }
 
   if (column.start || column.end) {
-    var range = Filter.createRange(column.start, column.end, 'Qualifier');
+    const range = Filter.createRange(column.start, column.end, 'Qualifier');
 
     range.familyName = column.family;
     this.set('columnRangeFilter', range);
@@ -657,7 +657,7 @@ Filter.prototype.row = function(row) {
   }
 
   if (row.key) {
-    var key = Filter.convertToRegExpString(row.key);
+    let key = Filter.convertToRegExpString(row.key);
 
     key = Mutation.convertToBytes(key);
     this.set('rowKeyRegexFilter', key);
@@ -683,7 +683,7 @@ Filter.prototype.row = function(row) {
  * @param {*} value Filter value.
  */
 Filter.prototype.set = function(key, value) {
-  var filter = {};
+  const filter = {};
 
   filter[key] = value;
   this.filters_.push(filter);
@@ -763,7 +763,7 @@ Filter.prototype.sink = function(sink) {
  * ];
  */
 Filter.prototype.time = function(time) {
-  var range = Mutation.createTimeRange(time.start, time.end);
+  const range = Mutation.createTimeRange(time.start, time.end);
   this.set('timestampRangeFilter', range);
 };
 
@@ -892,14 +892,14 @@ Filter.prototype.value = function(value) {
   }
 
   if (value.value) {
-    var valueReg = Filter.convertToRegExpString(value.value);
+    let valueReg = Filter.convertToRegExpString(value.value);
 
     valueReg = Mutation.convertToBytes(valueReg);
     this.set('valueRegexFilter', valueReg);
   }
 
   if (value.start || value.end) {
-    var range = Filter.createRange(value.start, value.end, 'Value');
+    const range = Filter.createRange(value.start, value.end, 'Value');
 
     this.set('valueRangeFilter', range);
   }

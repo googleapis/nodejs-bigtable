@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-var arrify = require('arrify');
-var common = require('@google-cloud/common');
-var extend = require('extend');
-var GrpcService = require('@google-cloud/common-grpc').Service;
-var googleAuth = require('google-auto-auth');
-var grpc = require('google-gax').grpc().grpc;
-var is = require('is');
-var retryRequest = require('retry-request');
-var streamEvents = require('stream-events');
-var through = require('through2');
+const arrify = require('arrify');
+const common = require('@google-cloud/common');
+const extend = require('extend');
+const GrpcService = require('@google-cloud/common-grpc').Service;
+const googleAuth = require('google-auto-auth');
+const grpc = require('google-gax').grpc().grpc;
+const is = require('is');
+const retryRequest = require('retry-request');
+const streamEvents = require('stream-events');
+const through = require('through2');
 
-var AppProfile = require('./app-profile');
-var Cluster = require('./cluster.js');
-var Instance = require('./instance.js');
+const AppProfile = require('./app-profile');
+const Cluster = require('./cluster.js');
+const Instance = require('./instance.js');
 
 const PKG = require('../package.json');
 const v2 = require('./v2');
@@ -364,18 +364,18 @@ function Bigtable(options) {
     options
   );
 
-  var defaultBaseUrl = 'bigtable.googleapis.com';
-  var defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
+  const defaultBaseUrl = 'bigtable.googleapis.com';
+  const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
 
-  var customEndpoint =
+  const customEndpoint =
     options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
   this.customEndpoint = customEndpoint;
 
-  var customEndpointBaseUrl;
-  var customEndpointPort;
+  let customEndpointBaseUrl;
+  let customEndpointPort;
 
   if (customEndpoint) {
-    var customEndpointParts = customEndpoint.split(':');
+    const customEndpointParts = customEndpoint.split(':');
     customEndpointBaseUrl = customEndpointParts[0];
     customEndpointPort = customEndpointParts[1];
   }
@@ -499,14 +499,14 @@ function Bigtable(options) {
  * });
  */
 Bigtable.prototype.createInstance = function(name, options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(options)) {
     callback = options;
     options = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     parent: this.projectName,
     instanceId: name,
     instance: {
@@ -581,14 +581,14 @@ Bigtable.prototype.createInstance = function(name, options, callback) {
  * });
  */
 Bigtable.prototype.getInstances = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(gaxOptions)) {
     callback = gaxOptions;
     gaxOptions = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     parent: this.projectName,
   };
 
@@ -605,8 +605,8 @@ Bigtable.prototype.getInstances = function(gaxOptions, callback) {
         return;
       }
 
-      var instances = resp.instances.map(function(instanceData) {
-        var instance = self.instance(instanceData.name);
+      const instances = resp.instances.map(function(instanceData) {
+        const instance = self.instance(instanceData.name);
         instance.metadata = instanceData;
         return instance;
       });
@@ -636,11 +636,11 @@ Bigtable.prototype.instance = function(name) {
  * @param {function} [callback] Callback function.
  */
 Bigtable.prototype.request = function(config, callback) {
-  var self = this;
-  var isStreamMode = !callback;
+  const self = this;
+  const isStreamMode = !callback;
 
-  var gaxStream;
-  var stream;
+  let gaxStream;
+  let stream;
 
   if (isStreamMode) {
     stream = streamEvents(through.obj());
@@ -665,7 +665,7 @@ Bigtable.prototype.request = function(config, callback) {
         return;
       }
 
-      var gaxClient = self.api[config.client];
+      let gaxClient = self.api[config.client];
 
       if (!gaxClient) {
         // Lazily instantiate client.
@@ -673,13 +673,13 @@ Bigtable.prototype.request = function(config, callback) {
         self.api[config.client] = gaxClient;
       }
 
-      var reqOpts = extend(true, {}, config.reqOpts);
+      let reqOpts = extend(true, {}, config.reqOpts);
 
       if (projectId !== '{{projectId}}') {
         reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
       }
 
-      var requestFn = gaxClient[config.method].bind(
+      const requestFn = gaxClient[config.method].bind(
         gaxClient,
         reqOpts,
         config.gaxOpts
@@ -709,7 +709,7 @@ Bigtable.prototype.request = function(config, callback) {
 
       // @TODO: remove `retry-request` when gax supports retryable streams.
       // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
-      var retryOpts = extend(
+      const retryOpts = extend(
         {
           currentRetryAttempt: 0,
           objectMode: true,
@@ -741,9 +741,9 @@ Bigtable.prototype.request = function(config, callback) {
  * @param {string} callback.projectId The detected project ID.
  */
 Bigtable.prototype.getProjectId_ = function(callback) {
-  var self = this;
+  const self = this;
 
-  var projectIdRequired =
+  const projectIdRequired =
     this.projectId === '{{projectId}}' && !this.customEndpoint;
 
   if (!projectIdRequired) {

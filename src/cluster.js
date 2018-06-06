@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var common = require('@google-cloud/common');
-var format = require('string-format-obj');
-var is = require('is');
+const common = require('@google-cloud/common');
+const format = require('string-format-obj');
+const is = require('is');
 
 /**
  * Create a cluster object to interact with your cluster.
@@ -35,7 +35,7 @@ function Cluster(instance, name) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  var id = name;
+  let id = name;
 
   if (id.indexOf('/') === -1) {
     id = `${instance.id}/clusters/${name}`;
@@ -87,7 +87,7 @@ Cluster.getLocation_ = function(project, location) {
  * // 1
  */
 Cluster.getStorageType_ = function(type) {
-  var storageTypes = {
+  const storageTypes = {
     unspecified: 0,
     ssd: 1,
     hdd: 2,
@@ -249,7 +249,7 @@ Cluster.prototype.exists = function(gaxOptions, callback) {
  * });
  */
 Cluster.prototype.get = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -284,7 +284,7 @@ Cluster.prototype.get = function(gaxOptions, callback) {
  * });
  */
 Cluster.prototype.getMetadata = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -363,7 +363,7 @@ Cluster.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     name: this.id,
   };
 

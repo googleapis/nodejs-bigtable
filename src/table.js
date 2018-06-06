@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-var arrify = require('arrify');
-var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
-var concat = require('concat-stream');
-var flatten = require('lodash.flatten');
-var is = require('is');
-var propAssign = require('prop-assign');
-var pumpify = require('pumpify');
-var through = require('through2');
+const arrify = require('arrify');
+const common = require('@google-cloud/common');
+const commonGrpc = require('@google-cloud/common-grpc');
+const concat = require('concat-stream');
+const flatten = require('lodash.flatten');
+const is = require('is');
+const propAssign = require('prop-assign');
+const pumpify = require('pumpify');
+const through = require('through2');
 
-var Family = require('./family.js');
-var Filter = require('./filter.js');
-var Mutation = require('./mutation.js');
-var Row = require('./row.js');
+const Family = require('./family.js');
+const Filter = require('./filter.js');
+const Mutation = require('./mutation.js');
+const Row = require('./row.js');
 const ChunkTransformer = require('./chunktransformer.js');
 
 // See protos/google/rpc/code.proto
@@ -51,7 +51,7 @@ function Table(instance, name) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  var id = Table.formatName_(instance.id, name);
+  const id = Table.formatName_(instance.id, name);
 
   this.id = id;
   this.name = id.split('/').pop();
@@ -112,13 +112,13 @@ Table.formatName_ = function(instanceName, name) {
  * // }
  */
 Table.createPrefixRange_ = function(start) {
-  var prefix = start.replace(new RegExp('[\xff]+$'), '');
-  var endKey = '';
+  const prefix = start.replace(new RegExp('[\xff]+$'), '');
+  let endKey = '';
 
   if (prefix) {
-    var position = prefix.length - 1;
-    var charCode = prefix.charCodeAt(position);
-    var nextChar = String.fromCharCode(charCode + 1);
+    const position = prefix.length - 1;
+    const charCode = prefix.charCodeAt(position);
+    const nextChar = String.fromCharCode(charCode + 1);
 
     endKey = prefix.substring(0, position) + nextChar;
   }
@@ -241,7 +241,7 @@ Table.prototype.create = function(options, callback) {
  * };
  */
 Table.prototype.createFamily = function(name, options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(options)) {
     callback = options;
@@ -252,7 +252,7 @@ Table.prototype.createFamily = function(name, options, callback) {
     throw new Error('A name is required to create a family.');
   }
 
-  var mod = {
+  const mod = {
     id: name,
     create: {},
   };
@@ -261,7 +261,7 @@ Table.prototype.createFamily = function(name, options, callback) {
     mod.create.gcRule = Family.formatRule_(options.rule);
   }
 
-  var reqOpts = {
+  const reqOpts = {
     name: this.id,
     modifications: [mod],
   };
@@ -279,7 +279,7 @@ Table.prototype.createFamily = function(name, options, callback) {
         return;
       }
 
-      var family = self.family(resp.name);
+      const family = self.family(resp.name);
       family.metadata = resp;
 
       callback(null, family, resp);
@@ -389,7 +389,7 @@ Table.prototype.createFamily = function(name, options, callback) {
  * });
  */
 Table.prototype.createReadStream = function(options) {
-  var self = this;
+  const self = this;
 
   options = options || {};
   let maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
@@ -437,12 +437,12 @@ Table.prototype.createReadStream = function(options) {
     let lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
     chunkTransformer = new ChunkTransformer({decode: options.decode});
 
-    var reqOpts = {
+    const reqOpts = {
       tableName: this.id,
       appProfileId: this.bigtable.appProfileId,
     };
 
-    var retryOpts = {
+    const retryOpts = {
       currentRetryAttempt: numRequestsMade,
     };
 
@@ -649,7 +649,7 @@ Table.prototype.deleteRows = function(prefix, gaxOptions, callback) {
     throw new Error('A prefix is required for deleteRows.');
   }
 
-  var reqOpts = {
+  const reqOpts = {
     name: this.id,
     rowKeyPrefix: Mutation.convertToBytes(prefix),
   };
@@ -756,15 +756,15 @@ Table.prototype.family = function(name) {
  * });
  */
 Table.prototype.get = function(options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(options)) {
     callback = options;
     options = {};
   }
 
-  var autoCreate = !!options.autoCreate;
-  var gaxOptions = options.gaxOptions;
+  const autoCreate = !!options.autoCreate;
+  const gaxOptions = options.gaxOptions;
 
   this.getMetadata({gaxOptions}, function(err, metadata) {
     if (err) {
@@ -810,7 +810,7 @@ Table.prototype.get = function(options, callback) {
  * });
  */
 Table.prototype.getFamilies = function(gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -823,8 +823,8 @@ Table.prototype.getFamilies = function(gaxOptions, callback) {
       return;
     }
 
-    var families = Object.keys(metadata.columnFamilies).map(function(familyId) {
-      var family = self.family(familyId);
+    const families = Object.keys(metadata.columnFamilies).map(function(familyId) {
+      const family = self.family(familyId);
       family.metadata = metadata.columnFamilies[familyId];
       return family;
     });
@@ -862,14 +862,14 @@ Table.prototype.getFamilies = function(gaxOptions, callback) {
  * });
  */
 Table.prototype.getMetadata = function(options, callback) {
-  var self = this;
+  const self = this;
 
   if (is.function(options)) {
     callback = options;
     options = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     name: this.id,
     view: Table.VIEWS[options.view || 'unspecified'],
   };
@@ -1136,7 +1136,7 @@ Table.prototype.insert = function(entries, gaxOptions, callback) {
  * });
  */
 Table.prototype.mutate = function(entries, gaxOptions, callback) {
-  var self = this;
+  const self = this;
 
   if (is.fn(gaxOptions)) {
     callback = gaxOptions;
@@ -1145,12 +1145,12 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
 
   entries = flatten(arrify(entries));
 
-  var numRequestsMade = 0;
+  let numRequestsMade = 0;
 
-  var maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
-  var pendingEntryIndices = new Set(entries.map((entry, index) => index));
-  var entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
-  var mutationErrorsByEntryIndex = new Map();
+  const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
+  const pendingEntryIndices = new Set(entries.map((entry, index) => index));
+  const entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
+  const mutationErrorsByEntryIndex = new Map();
 
   function onBatchResponse(err) {
     if (err) {
@@ -1164,7 +1164,7 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
     }
 
     if (mutationErrorsByEntryIndex.size !== 0) {
-      var mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
+      const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
       err = new common.util.PartialFailureError({
         errors: mutationErrors,
       });
@@ -1174,17 +1174,17 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
   }
 
   function makeNextBatchRequest() {
-    var entryBatch = entries.filter((entry, index) => {
+    const entryBatch = entries.filter((entry, index) => {
       return pendingEntryIndices.has(index);
     });
 
-    var reqOpts = {
+    const reqOpts = {
       tableName: self.id,
       appProfileId: self.bigtable.appProfileId,
       entries: entryBatch.map(Mutation.parse),
     };
 
-    var retryOpts = {
+    const retryOpts = {
       currentRetryAttempt: numRequestsMade,
     };
 
@@ -1207,8 +1207,8 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
       })
       .on('data', function(obj) {
         obj.entries.forEach(function(entry) {
-          var originalEntry = entryBatch[entry.index];
-          var originalEntriesIndex = entryToIndex.get(originalEntry);
+          const originalEntry = entryBatch[entry.index];
+          const originalEntriesIndex = entryToIndex.get(originalEntry);
 
           // Mutation was successful.
           if (entry.status.code === 0) {
@@ -1221,7 +1221,7 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
             pendingEntryIndices.delete(originalEntriesIndex);
           }
 
-          var status = commonGrpc.Service.decorateStatus_(entry.status);
+          const status = commonGrpc.Service.decorateStatus_(entry.status);
           status.entry = originalEntry;
 
           mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
@@ -1322,7 +1322,7 @@ Table.prototype.sampleRowKeys = function(gaxOptions, callback) {
  *   });
  */
 Table.prototype.sampleRowKeysStream = function(gaxOptions) {
-  var reqOpts = {
+  const reqOpts = {
     tableName: this.id,
     appProfileId: this.bigtable.appProfileId,
   };
@@ -1368,7 +1368,7 @@ Table.prototype.truncate = function(gaxOptions, callback) {
     gaxOptions = {};
   }
 
-  var reqOpts = {
+  const reqOpts = {
     name: this.id,
     deleteAllDataFromTable: true,
   };
