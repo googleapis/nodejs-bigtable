@@ -33,7 +33,7 @@ var fakeUtil = extend({}, common.util, {
 });
 
 describe('Bigtable/AppProfile', function() {
-  var APP_PROFILE_NAME = 'my-app-profile';
+  var APP_PROFILE_ID = 'my-app-profile';
   var PROJECT_ID = 'grape-spaceship-123';
 
   var INSTANCE = {
@@ -41,9 +41,9 @@ describe('Bigtable/AppProfile', function() {
     bigtable: {projectId: PROJECT_ID},
   };
 
-  var APP_PROFILE_ID = format('{instance}/appProfiles/{appProfile}', {
+  var APP_PROFILE_NAME = format('{instance}/appProfiles/{appProfile}', {
     instance: INSTANCE.id,
-    appProfile: APP_PROFILE_NAME,
+    appProfile: APP_PROFILE_ID,
   });
 
   var AppProfile;
@@ -64,7 +64,7 @@ describe('Bigtable/AppProfile', function() {
   });
 
   beforeEach(function() {
-    appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
+    appProfile = new AppProfile(INSTANCE, APP_PROFILE_ID);
   });
 
   describe('instantiation', function() {
@@ -81,16 +81,16 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should expand name into full resource path', function() {
-      assert.strictEqual(appProfile.name, APP_PROFILE_ID);
+      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
     });
 
     it('should leave full app profile name unaltered', function() {
-      var appProfile = new AppProfile(INSTANCE, APP_PROFILE_ID);
-      assert.strictEqual(appProfile.name, APP_PROFILE_ID);
+      var appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
     });
 
     it('should localize the name from the ID', function() {
-      assert.strictEqual(appProfile.id, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
     });
   });
 
@@ -384,7 +384,7 @@ describe('Bigtable/AppProfile', function() {
       appProfile.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'updateAppProfile');
-        assert.strictEqual(config.reqOpts.appProfile.name, APP_PROFILE_ID);
+        assert.strictEqual(config.reqOpts.appProfile.name, APP_PROFILE_NAME);
         callback();
       };
 

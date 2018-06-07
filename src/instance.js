@@ -140,7 +140,7 @@ Instance.prototype.create = function(options, callback) {
 /**
  * Create an app profile.
  *
- * @param {string} name The name to be used when referring to the new
+ * @param {string} id The name to be used when referring to the new
  *     app profile within its instance.
  * @param {object} options AppProfile creation options.
  * @param {'any'|Cluster} options.routing  The routing policy for all
@@ -188,7 +188,7 @@ Instance.prototype.create = function(options, callback) {
  *   const apiResponse = data[1];
  * });
  */
-Instance.prototype.createAppProfile = function(name, options, callback) {
+Instance.prototype.createAppProfile = function(id, options, callback) {
   const self = this;
 
   if (is.function(options)) {
@@ -204,7 +204,7 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
 
   const reqOpts = {
     parent: this.id,
-    appProfileId: name,
+    appProfileId: id,
     appProfile,
   };
 
@@ -221,7 +221,7 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
     },
     function(...args) {
       if (args[1]) {
-        args.splice(1, 0, self.appProfile(name));
+        args.splice(1, 0, self.appProfile(id));
       }
 
       callback(...args);
