@@ -343,9 +343,9 @@ Instance.prototype.createCluster = function(name, options, callback) {
  * @see [Designing Your Schema]{@link https://cloud.google.com/bigtable/docs/schema-design}
  * @see [Splitting Keys]{@link https://cloud.google.com/bigtable/docs/managing-tables#splits}
  *
- * @throws {error} If a name is not provided.
+ * @throws {error} If a id is not provided.
  *
- * @param {string} name The name of the table.
+ * @param {string} id unique identifier for a table.
  * @param {object} [options] Table creation options.
  * @param {object|string[]} [options.families] Column families to be created
  *     within the table.
@@ -419,11 +419,11 @@ Instance.prototype.createCluster = function(name, options, callback) {
  *   const apiResponse = data[1];
  * });
  */
-Instance.prototype.createTable = function(name, options, callback) {
+Instance.prototype.createTable = function(id, options, callback) {
   var self = this;
 
-  if (!name) {
-    throw new Error('A name is required to create a table.');
+  if (!id) {
+    throw new Error('An id is required to create a table.');
   }
 
   options = options || {};
@@ -435,7 +435,7 @@ Instance.prototype.createTable = function(name, options, callback) {
 
   var reqOpts = {
     parent: this.id,
-    tableId: name,
+    tableId: id,
     table: {
       // The granularity at which timestamps are stored in the table.
       // Currently only milliseconds is supported, so it's not configurable.
@@ -480,7 +480,7 @@ Instance.prototype.createTable = function(name, options, callback) {
     },
     function(...args) {
       if (args[1]) {
-        var table = self.table(args[1].name);
+        var table = self.table(args[1].id);
         table.metadata = args[1];
         args.splice(1, 0, table);
       }
@@ -886,8 +886,8 @@ Instance.prototype.getTables = function(options, callback) {
     function(...args) {
       if (args[1]) {
         args[1] = args[1].map(function(tableObj) {
-          var name = tableObj.name.split('/').pop();
-          var table = self.table(name);
+          var id = tableObj.id;
+          var table = self.table(id);
           table.metadata = tableObj;
           return table;
         });
@@ -991,7 +991,7 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
 /**
  * Get a reference to a Bigtable table.
  *
- * @param {string} name The name of the table.
+ * @param {string} id unique identifier of the table.
  * @returns {Table}
  *
  * @example
@@ -1000,8 +1000,8 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('presidents');
  */
-Instance.prototype.table = function(name) {
-  return new Table(this, name);
+Instance.prototype.table = function(id) {
+  return new Table(this, id);
 };
 
 /*! Developer Documentation

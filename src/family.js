@@ -46,7 +46,7 @@ function Family(table, name) {
   this.bigtable = table.bigtable;
   this.table = table;
 
-  this.id = Family.formatName_(table.id, name);
+  this.id = Family.formatName_(table.name, name);
 
   /**
    * @name Family#familyName
@@ -216,7 +216,7 @@ Family.prototype.delete = function(gaxOptions, callback) {
       client: 'BigtableTableAdminClient',
       method: 'modifyColumnFamilies',
       reqOpts: {
-        name: this.table.id,
+        name: this.table.name,
         modifications: [
           {
             id: this.familyName,
@@ -427,7 +427,7 @@ Family.prototype.setMetadata = function(metadata, gaxOptions, callback) {
   }
 
   var reqOpts = {
-    name: this.table.id,
+    name: this.table.name,
     modifications: [mod],
   };
 
