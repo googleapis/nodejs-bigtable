@@ -51,7 +51,10 @@ test(`should list zones`, async t => {
   t.plan(0);
   await tools
     .tryTest(async assert => {
-      const output = await tools.runAsync(`${cmd} list`, cwd);
+      const output = await tools.runAsync(
+        `${cmd} run --instance ${instanceName}`,
+        cwd
+      );
       assert(output.includes(`Instances:`));
       assert(output.includes(instanceName));
     })
