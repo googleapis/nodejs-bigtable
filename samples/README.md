@@ -76,14 +76,27 @@ __Usage:__ `node instances.js --help`
 instances.js <command>
 
 Commands:
-  instances.js list  Lists all instances in the current project.
+  instances.js run           Creates an Instance(type: PRODUCTION) and run basic instance-operations
+  instances.js dev-instance  Create Development Instance
+  instances.js del-instance  Delete the Instance
+  instances.js add-cluster   Add Cluster
+  instances.js del-cluster   Delete the Cluster
 
 Options:
-  --version  Show version number                                                                               [boolean]
-  --help     Show help                                                                                         [boolean]
+  --version   Show version number                                                                              [boolean]
+  --instance  Cloud Bigtable Instance name
+  --cluster   Cloud Bigtable Cluster name
+  --help      Show help                                                                                        [boolean]
 
 Examples:
-  node instances.js list  Lists all instances in the current project.
+  node instances.js run --instance [instanceName] --cluster     Run instance operations
+  [clusterName]
+  node instances.js dev-instance --instance [instanceName]      Create Development Instance
+  node instances.js del-instance --instance [instanceName]      Delete the Instance.
+  node instances.js add-cluster --instance [instanceName]       Add Cluster
+  --cluster [clusterName]
+  node instances.js del-cluster --instance [instanceName]       Delete the Cluster
+  --cluster [clusterName]
 
 For more information, see https://cloud.google.com/bigtable/docs
 ```
