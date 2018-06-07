@@ -33,7 +33,7 @@ var fakeUtil = extend({}, common.util, {
 });
 
 describe('Bigtable/Cluster', function() {
-  var CLUSTER_NAME = 'my-cluster';
+  var CLUSTER_ID = 'my-cluster';
   var PROJECT_ID = 'grape-spaceship-123';
 
   var INSTANCE = {
@@ -41,9 +41,9 @@ describe('Bigtable/Cluster', function() {
     bigtable: {projectId: PROJECT_ID},
   };
 
-  var CLUSTER_ID = format('{instance}/clusters/{cluster}', {
-    instance: INSTANCE.name,
-    cluster: CLUSTER_NAME,
+  var CLUSTER_NAME = format('{instance}/clusters/{cluster}', {
+    instance: INSTANCE.id,
+    cluster: CLUSTER_ID,
   });
 
   var Cluster;
@@ -58,7 +58,7 @@ describe('Bigtable/Cluster', function() {
   });
 
   beforeEach(function() {
-    cluster = new Cluster(INSTANCE, CLUSTER_NAME);
+    cluster = new Cluster(INSTANCE, CLUSTER_ID);
   });
 
   describe('instantiation', function() {
@@ -75,16 +75,16 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should expand name into full resource path', function() {
-      assert.strictEqual(cluster.id, CLUSTER_ID);
+      assert.strictEqual(cluster.name, CLUSTER_NAME);
     });
 
     it('should leave full cluster names unaltered', function() {
       var cluster = new Cluster(INSTANCE, CLUSTER_ID);
-      assert.strictEqual(cluster.id, CLUSTER_ID);
+      assert.strictEqual(cluster.name, CLUSTER_NAME);
     });
 
     it('should localize the name from the ID', function() {
-      assert.strictEqual(cluster.name, CLUSTER_NAME);
+      assert.strictEqual(cluster.id, CLUSTER_ID);
     });
   });
 
@@ -149,7 +149,7 @@ describe('Bigtable/Cluster', function() {
       var options = {};
 
       cluster.instance.createCluster = function(name, options_, callback) {
-        assert.strictEqual(name, cluster.name);
+        assert.strictEqual(name, cluster.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -174,7 +174,7 @@ describe('Bigtable/Cluster', function() {
         assert.strictEqual(config.method, 'deleteCluster');
 
         assert.deepEqual(config.reqOpts, {
-          name: cluster.id,
+          name: cluster.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -317,7 +317,7 @@ describe('Bigtable/Cluster', function() {
         assert.strictEqual(config.method, 'getCluster');
 
         assert.deepEqual(config.reqOpts, {
-          name: cluster.id,
+          name: cluster.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -371,7 +371,7 @@ describe('Bigtable/Cluster', function() {
       cluster.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'updateCluster');
-        assert.strictEqual(config.reqOpts.name, CLUSTER_ID);
+        assert.strictEqual(config.reqOpts.name, CLUSTER_NAME);
         callback(); // done()
       };
 

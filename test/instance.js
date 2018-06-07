@@ -71,8 +71,13 @@ describe('Bigtable/Instance', function() {
     instance: INSTANCE_ID,
   });
 
+<<<<<<< HEAD
   var APP_PROFILE_ID = 'my-app-profile';
   var CLUSTER_NAME = 'my-cluster';
+=======
+  var APP_PROFILE_NAME = 'my-app-profile';
+  var CLUSTER_ID = 'my-cluster';
+>>>>>>> switching id and name for cluster
 
   var Instance;
   var instance;
@@ -221,7 +226,7 @@ describe('Bigtable/Instance', function() {
     });
 
     describe('should respect the routing option with', function() {
-      const cluster = new FakeCluster({}, CLUSTER_NAME);
+      const cluster = new FakeCluster({}, CLUSTER_ID);
 
       it(`an 'any' value`, function(done) {
         var options = {
@@ -245,7 +250,7 @@ describe('Bigtable/Instance', function() {
         instance.bigtable.request = function(config) {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.singleClusterRouting,
-            {clusterId: CLUSTER_NAME}
+            {clusterId: CLUSTER_ID}
           );
           done();
         };
@@ -255,7 +260,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should respect the allowTransactionalWrites option', function(done) {
-      var cluster = instance.cluster(CLUSTER_NAME);
+      var cluster = instance.cluster(CLUSTER_ID);
       var options = {
         routing: cluster,
         allowTransactionalWrites: true,
@@ -337,15 +342,15 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createCluster');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
-        assert.strictEqual(config.reqOpts.clusterId, CLUSTER_NAME);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.clusterId, CLUSTER_ID);
 
         assert.strictEqual(config.gaxOpts, undefined);
 
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, assert.ifError);
+      instance.createCluster(CLUSTER_ID, assert.ifError);
     });
 
     it('should accept gaxOptions', function(done) {
@@ -358,7 +363,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should respect the location option', function(done) {
@@ -379,7 +384,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should respect the nodes option', function(done) {
@@ -392,7 +397,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should respect the storage option', function(done) {
@@ -415,7 +420,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should execute callback with arguments from GAPIC', function(done) {
@@ -428,11 +433,11 @@ describe('Bigtable/Instance', function() {
       var fakeCluster = {};
 
       instance.cluster = function(name) {
-        assert.strictEqual(name, CLUSTER_NAME);
+        assert.strictEqual(name, CLUSTER_ID);
         return fakeCluster;
       };
 
-      instance.createCluster(CLUSTER_NAME, function(err, cluster, apiResponse) {
+      instance.createCluster(CLUSTER_ID, function(err, cluster, apiResponse) {
         assert.ifError(err);
         assert.strictEqual(arguments[1], fakeCluster);
         assert.strictEqual(apiResponse, response);
@@ -573,14 +578,14 @@ describe('Bigtable/Instance', function() {
 
   describe('cluster', function() {
     it('should return a Cluster object', function() {
-      var cluster = instance.cluster(CLUSTER_NAME);
+      var cluster = instance.cluster(CLUSTER_ID);
 
       assert(cluster instanceof FakeCluster);
 
       var args = cluster.calledWith_;
 
       assert.strictEqual(args[0], instance);
-      assert.strictEqual(args[1], CLUSTER_NAME);
+      assert.strictEqual(args[1], CLUSTER_ID);
     });
   });
 

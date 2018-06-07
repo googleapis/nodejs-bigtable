@@ -36,14 +36,14 @@ describe('Bigtable', function() {
   var TABLE = INSTANCE.table(generateName('table'));
   var APP_PROFILE_ID = generateName('appProfile');
   var APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
-  var CLUSTER_NAME = generateName('cluster');
+  var CLUSTER_IDee = generateName('cluster');
 
   before(function(done) {
     INSTANCE.create(
       {
         clusters: [
           {
-            name: CLUSTER_NAME,
+            id: CLUSTER_IDee,
             location: 'us-central1-c',
             nodes: 3,
           },
@@ -207,7 +207,7 @@ describe('Bigtable', function() {
     });
 
     it('should update an app profile', function(done) {
-      var cluster = INSTANCE.cluster(CLUSTER_NAME);
+      var cluster = INSTANCE.cluster(CLUSTER_IDee);
       var options = {
         routing: cluster,
         allowTransactionalWrites: true,
@@ -224,7 +224,7 @@ describe('Bigtable', function() {
           assert.deepStrictEqual(
             updatedAppProfile.metadata.singleClusterRouting,
             {
-              clusterId: CLUSTER_NAME,
+              clusterId: CLUSTER_IDee,
               allowTransactionalWrites: true,
             }
           );
@@ -238,7 +238,7 @@ describe('Bigtable', function() {
     var CLUSTER;
 
     beforeEach(function() {
-      CLUSTER = INSTANCE.cluster(CLUSTER_NAME);
+      CLUSTER = INSTANCE.cluster(CLUSTER_IDee);
     });
 
     it('should retrieve a list of clusters', function(done) {

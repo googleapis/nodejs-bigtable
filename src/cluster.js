@@ -23,7 +23,7 @@ const is = require('is');
  *
  * @class
  * @param {Instance} instance The parent instance of this cluster.
- * @param {string} name Name of the cluster.
+ * @param {string} id Id of the cluster.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -32,18 +32,16 @@ const is = require('is');
  * const cluster = instance.cluster('my-cluster');
  */
 class Cluster {
-  constructor(instance, name) {
+  constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    let id = name;
-
     if (!id.includes('/')) {
-      id = `${instance.name}/clusters/${name}`;
+      id = `${instance.id}/clusters/${id}`;
     }
 
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.id = id.split('/').pop();
+    this.name = id;
   }
 
   /**
@@ -143,7 +141,7 @@ class Cluster {
       options = {};
     }
 
-    this.instance.createCluster(this.name, options, callback);
+    this.instance.createCluster(this.id, options, callback);
   }
 
   /**
@@ -177,7 +175,7 @@ class Cluster {
         client: 'BigtableInstanceAdminClient',
         method: 'deleteCluster',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -297,7 +295,7 @@ class Cluster {
         client: 'BigtableInstanceAdminClient',
         method: 'getCluster',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -365,7 +363,7 @@ class Cluster {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
     };
 
     if (metadata.location) {
