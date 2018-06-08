@@ -74,7 +74,7 @@ describe('Bigtable/Cluster', function() {
       assert.strictEqual(cluster.instance, INSTANCE);
     });
 
-    it('should expand name into full resource path', function() {
+    it('should expand id into full resource path', function() {
       assert.strictEqual(cluster.name, CLUSTER_NAME);
     });
 
@@ -83,7 +83,7 @@ describe('Bigtable/Cluster', function() {
       assert.strictEqual(cluster.name, CLUSTER_NAME);
     });
 
-    it('should localize the name from the ID', function() {
+    it('should localize the id from the name', function() {
       assert.strictEqual(cluster.id, CLUSTER_ID);
     });
   });
@@ -148,8 +148,8 @@ describe('Bigtable/Cluster', function() {
     it('should call createCluster from instance', function(done) {
       var options = {};
 
-      cluster.instance.createCluster = function(name, options_, callback) {
-        assert.strictEqual(name, cluster.id);
+      cluster.instance.createCluster = function(id, options_, callback) {
+        assert.strictEqual(id, cluster.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -158,7 +158,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should not require options', function(done) {
-      cluster.instance.createCluster = function(name, options, callback) {
+      cluster.instance.createCluster = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
