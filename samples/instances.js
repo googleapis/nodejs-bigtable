@@ -67,7 +67,7 @@ async function runInstanceOperations(instanceName, clusterName) {
   }
 
   console.log(); //for just a new-line
-  console.log(`Listing Instances`);
+  console.log(`Listing Instances:`);
   // [START bigtable_list_instances]
   try {
     const [instances] = await bigtable.getInstances();
