@@ -35,14 +35,12 @@ var Cluster = require('./cluster.js');
  * const instance = bigtable.instance('my-instance');
  * const appProfile = instance.appProfile('my-app-profile');
  */
-function AppProfile(instance, name) {
+function AppProfile(instance, id) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  var id = name;
-
   if (id.indexOf('/') === -1) {
-    id = `${instance.id}/appProfiles/${name}`;
+    id = `${instance.id}/appProfiles/${id}`;
   }
 
   this.id = id.split('/').pop();
