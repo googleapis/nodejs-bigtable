@@ -88,7 +88,7 @@ class AppProfile {
         appProfile.multiClusterRoutingUseAny = {};
       } else if (options.routing instanceof Cluster) {
         appProfile.singleClusterRouting = {
-          clusterId: options.routing.name.split('/').pop(),
+          clusterId: options.routing.id,
         };
         if (is.boolean(options.allowTransactionalWrites)) {
           appProfile.singleClusterRouting.allowTransactionalWrites =

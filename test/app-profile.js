@@ -49,9 +49,9 @@ describe('Bigtable/AppProfile', function() {
   var AppProfile;
   var appProfile;
 
-  function FakeCluster(instance, name) {
+  function FakeCluster(instance, id) {
     this.instance = instance;
-    this.name = name;
+    this.id = id;
   }
 
   before(function() {
