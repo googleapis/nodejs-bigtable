@@ -150,12 +150,8 @@ describe('Bigtable/AppProfile', function() {
     it('should call createAppProfile from instance', function(done) {
       var options = {};
 
-      appProfile.instance.createAppProfile = function(
-        name,
-        options_,
-        callback
-      ) {
-        assert.strictEqual(name, appProfile.id);
+      appProfile.instance.createAppProfile = function(id, options_, callback) {
+        assert.strictEqual(id, appProfile.id);
         assert.strictEqual(options_, options);
         callback();
       };
@@ -164,7 +160,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should not require options', function(done) {
-      appProfile.instance.createAppProfile = function(name, options, callback) {
+      appProfile.instance.createAppProfile = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback();
       };
