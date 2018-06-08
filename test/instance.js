@@ -313,8 +313,8 @@ describe('Bigtable/Instance', function() {
 
       var fakeAppProfile = {};
 
-      instance.appProfile = function(name) {
-        assert.strictEqual(name, APP_PROFILE_ID);
+      instance.appProfile = function(id) {
+        assert.strictEqual(id, APP_PROFILE_ID);
         return fakeAppProfile;
       };
 
