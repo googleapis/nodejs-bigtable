@@ -981,7 +981,7 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
   const fieldsForMask = ['displayName', 'type', 'labels'];
 
   fieldsForMask.forEach(field => {
-    if (reqOpts.instance[field]) {
+    if (field in reqOpts.instance) {
       reqOpts.updateMask.paths.push(snakeCase(field));
     }
   });
