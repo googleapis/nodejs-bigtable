@@ -40,7 +40,7 @@ function Cluster(instance, name) {
   var id = name;
 
   if (id.indexOf('/') === -1) {
-    id = `${instance.id}/clusters/${name}`;
+    id = `${instance.name}/clusters/${name}`;
   }
 
   this.id = id;

@@ -53,7 +53,7 @@ function Table(instance, name) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  var id = Table.formatName_(instance.id, name);
+  var id = Table.formatName_(instance.name, name);
 
   this.id = id;
   this.name = id.split('/').pop();

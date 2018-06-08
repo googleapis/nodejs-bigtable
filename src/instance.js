@@ -31,24 +31,22 @@ var Table = require('./table.js');
  * @class
  * @param {Bigtable} bigtable The parent {@link Bigtable} object of this
  *     instance.
- * @param {string} name Name of the instance.
+ * @param {string} id Name of the instance.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  */
-function Instance(bigtable, name) {
+function Instance(bigtable, id) {
   this.bigtable = bigtable;
 
-  var id = name;
-
   if (id.indexOf('/') === -1) {
-    id = bigtable.projectName + '/instances/' + name;
+    id = bigtable.projectName + '/instances/' + id;
   }
 
-  this.id = id;
-  this.name = id.split('/').pop();
+  this.id = id.split('/').pop();
+  this.name = id;
 }
 
 /**
@@ -134,7 +132,7 @@ Instance.prototype.create = function(options, callback) {
     options = {};
   }
 
-  this.bigtable.createInstance(this.name, options, callback);
+  this.bigtable.createInstance(this.id, options, callback);
 };
 
 /**
@@ -203,7 +201,7 @@ Instance.prototype.createAppProfile = function(name, options, callback) {
   const appProfile = AppProfile.formatAppProfile_(options);
 
   const reqOpts = {
-    parent: this.id,
+    parent: this.name,
     appProfileId: name,
     appProfile,
   };
@@ -296,7 +294,7 @@ Instance.prototype.createCluster = function(name, options, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
     clusterId: name,
   };
 
@@ -434,7 +432,7 @@ Instance.prototype.createTable = function(name, options, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
     tableId: name,
     table: {
       // The granularity at which timestamps are stored in the table.
@@ -535,7 +533,7 @@ Instance.prototype.delete = function(gaxOptions, callback) {
       client: 'BigtableInstanceAdminClient',
       method: 'deleteInstance',
       reqOpts: {
-        name: this.id,
+        name: this.name,
       },
       gaxOpts: gaxOptions,
     },
@@ -665,7 +663,7 @@ Instance.prototype.getAppProfiles = function(gaxOptions, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
   };
 
   this.bigtable.request(
@@ -730,7 +728,7 @@ Instance.prototype.getClusters = function(gaxOptions, callback) {
   }
 
   var reqOpts = {
-    parent: this.id,
+    parent: this.name,
   };
 
   this.bigtable.request(
@@ -795,7 +793,7 @@ Instance.prototype.getMetadata = function(gaxOptions, callback) {
       client: 'BigtableInstanceAdminClient',
       method: 'getInstance',
       reqOpts: {
-        name: this.id,
+        name: this.name,
       },
       gaxOpts: gaxOptions,
     },
@@ -870,7 +868,7 @@ Instance.prototype.getTables = function(options, callback) {
   }
 
   var reqOpts = extend({}, options, {
-    parent: this.id,
+    parent: this.name,
     view: Table.VIEWS[options.view || 'unspecified'],
   });
 
@@ -975,7 +973,7 @@ Instance.prototype.setMetadata = function(metadata, gaxOptions, callback) {
     {
       client: 'BigtableInstanceAdminClient',
       method: 'updateInstance',
-      reqOpts: extend({name: this.id}, metadata),
+      reqOpts: extend({name: this.name}, metadata),
       gaxOpts: gaxOptions,
     },
     function(...args) {

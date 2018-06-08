@@ -42,7 +42,7 @@ function AppProfile(instance, name) {
   var id = name;
 
   if (id.indexOf('/') === -1) {
-    id = `${instance.id}/appProfiles/${name}`;
+    id = `${instance.name}/appProfiles/${name}`;
   }
 
   this.id = id;
