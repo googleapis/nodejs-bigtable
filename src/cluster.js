@@ -36,12 +36,13 @@ class Cluster {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    if (!id.includes('/')) {
-      id = `${instance.id}/clusters/${id}`;
+    if (id.indexOf('/') > -1){
+      throw new Error(
+        'Cluster Id is not formatted correclty. Just `mycluster` rather than `projects/myproject/instances/myinstance/clusters/mycluster`'
+      );
     }
-
-    this.id = id.split('/').pop();
-    this.name = id;
+    this.id = id;
+    this.name = `${instance.id}/clusters/${id}`;
   }
 
   /**
