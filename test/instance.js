@@ -1017,7 +1017,7 @@ describe('Bigtable/Instance', function() {
     it('should provide the proper request options', function(done) {
       var metadata = {displayName: 'updateDisplayName'};
       var expectedMetadata = {
-        instance: extend({name: instance.id}, metadata),
+        instance: {name: instance.id, displayName: 'updateDisplayName'},
         updateMask: {paths: ['display_name']},
       };
 
