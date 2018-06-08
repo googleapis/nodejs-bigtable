@@ -200,7 +200,7 @@ describe('Bigtable', function() {
       APP_PROFILE.getMetadata(function(err, metadata) {
         assert.strictEqual(
           metadata.name,
-          APP_PROFILE.id.replace('{{projectId}}', bigtable.projectId)
+          APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId)
         );
         done();
       });
