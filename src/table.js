@@ -41,7 +41,7 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  *
  * @class
  * @param {Instance} instance Name of the table.
- * @param {string} name Name of the table.
+ * @param {string} id Unique identifier of the table.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -49,11 +49,11 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
  */
-function Table(instance, name) {
+function Table(instance, id) {
   this.bigtable = instance.bigtable;
   this.instance = instance;
 
-  this.name = Table.formatName_(instance.id, name);
+  this.name = Table.formatName_(instance.id, id);
   this.id = this.name.split('/').pop();
 }
 

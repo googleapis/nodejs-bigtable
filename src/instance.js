@@ -480,7 +480,7 @@ Instance.prototype.createTable = function(id, options, callback) {
     },
     function(...args) {
       if (args[1]) {
-        var table = self.table(args[1].id);
+        var table = self.table(args[1].name.split('/').pop());
         table.metadata = args[1];
         args.splice(1, 0, table);
       }
@@ -886,7 +886,7 @@ Instance.prototype.getTables = function(options, callback) {
     function(...args) {
       if (args[1]) {
         args[1] = args[1].map(function(tableObj) {
-          var id = tableObj.id;
+          var id = tableObj.name.split('/').pop();
           var table = self.table(id);
           table.metadata = tableObj;
           return table;

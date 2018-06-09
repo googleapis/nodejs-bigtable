@@ -443,6 +443,8 @@ describe('Bigtable/Instance', function() {
 
   describe('createTable', function() {
     var TABLE_ID = 'my-table';
+    var TABLE_NAME =
+      'projects/my-project/instances/my-instance/tables/my-table';
 
     it('should throw if an id is not provided', function() {
       assert.throws(function() {
@@ -545,13 +547,13 @@ describe('Bigtable/Instance', function() {
 
     it('should return a Table object', function(done) {
       var response = {
-        id: TABLE_ID,
+        name: TABLE_NAME,
       };
 
       var fakeTable = {};
 
       instance.table = function(id) {
-        assert.strictEqual(id, response.id);
+        assert.strictEqual(id, response.name.split('/').pop());
         return fakeTable;
       };
 
@@ -967,10 +969,10 @@ describe('Bigtable/Instance', function() {
     it('should return an array of table objects', function(done) {
       var response = [
         {
-          id: 'a',
+          name: '/projects/my-project/instances/my-instance/tables/my-table-a',
         },
         {
-          id: 'b',
+          name: '/projects/my-project/instances/my-instance/tables/my-table-b',
         },
       ];
 
@@ -983,7 +985,7 @@ describe('Bigtable/Instance', function() {
       var tableCount = 0;
 
       instance.table = function(id) {
-        assert.strictEqual(id, response[tableCount].id);
+        assert.strictEqual(id, response[tableCount].name.split('/').pop());
         return fakeTables[tableCount++];
       };
 
