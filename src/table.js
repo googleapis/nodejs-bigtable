@@ -1179,7 +1179,7 @@ Table.prototype.mutate = function(entries, gaxOptions, callback) {
     });
 
     var reqOpts = {
-      tableName: self.id,
+      tableName: self.name,
       appProfileId: self.bigtable.appProfileId,
       entries: entryBatch.map(Mutation.parse),
     };

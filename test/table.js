@@ -1595,7 +1595,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'mutateRows');
 
-        assert.strictEqual(config.reqOpts.tableName, TABLE_ID);
+        assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
         assert.strictEqual(config.reqOpts.appProfileId, undefined);
         assert.deepEqual(config.reqOpts.entries, fakeEntries);
 
