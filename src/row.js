@@ -16,7 +16,6 @@
 
 const arrify = require('arrify');
 const common = require('@google-cloud/common');
-const createErrorClass = require('create-error-class');
 const dotProp = require('dot-prop');
 const extend = require('extend');
 const flatten = require('lodash.flatten');
@@ -28,10 +27,13 @@ const Mutation = require('./mutation');
 /**
  * @private
  */
-const RowError = createErrorClass('RowError', function(row) {
-  this.message = `Unknown row: ${row}.`;
-  this.code = 404;
-});
+class RowError extends Error {
+  constructor(row) {
+    super();
+    this.message = `Unknown row: ${row}.`;
+    this.code = 404;
+  }
+}
 
 /**
  * Create a Row object to interact with your table rows.

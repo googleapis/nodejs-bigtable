@@ -15,7 +15,6 @@
  */
 
 const common = require('@google-cloud/common');
-const format = require('string-format-obj');
 const is = require('is');
 
 /**
@@ -69,10 +68,7 @@ class Cluster {
       project = project.split('/').pop();
     }
 
-    return format('projects/{project}/locations/{location}', {
-      project,
-      location,
-    });
+    return `projects/${project}/locations/${location}`;
   }
 
   /**

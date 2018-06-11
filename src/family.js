@@ -15,16 +15,18 @@
  */
 
 const common = require('@google-cloud/common');
-const createErrorClass = require('create-error-class');
 const is = require('is');
 
 /**
  * @private
  */
-const FamilyError = createErrorClass('FamilyError', function(name) {
-  this.message = `Column family not found: ${name}.`;
-  this.code = 404;
-});
+class FamilyError extends Error {
+  constructor(name) {
+    super();
+    this.message = `Column family not found: ${name}.`;
+    this.code = 404;
+  }
+}
 
 /**
  * Create a Family object to interact with your table column families.
