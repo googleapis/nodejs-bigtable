@@ -24,11 +24,11 @@ const propAssign = require('prop-assign');
 const pumpify = require('pumpify');
 const through = require('through2');
 
-const Family = require('./family.js');
-const Filter = require('./filter.js');
-const Mutation = require('./mutation.js');
-const Row = require('./row.js');
-const ChunkTransformer = require('./chunktransformer.js');
+const Family = require('./family');
+const Filter = require('./filter');
+const Mutation = require('./mutation');
+const Row = require('./row');
+const ChunkTransformer = require('./chunktransformer');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)

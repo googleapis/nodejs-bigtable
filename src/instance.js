@@ -18,10 +18,10 @@ const common = require('@google-cloud/common');
 const extend = require('extend');
 const is = require('is');
 
-const AppProfile = require('./app-profile.js');
-const Cluster = require('./cluster.js');
-const Family = require('./family.js');
-const Table = require('./table.js');
+const AppProfile = require('./app-profile');
+const Cluster = require('./cluster');
+const Family = require('./family');
+const Table = require('./table');
 
 /**
  * Create an Instance object to interact with a Compute instance.

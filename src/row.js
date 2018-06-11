@@ -22,8 +22,8 @@ const extend = require('extend');
 const flatten = require('lodash.flatten');
 const is = require('is');
 
-const Filter = require('./filter.js');
-const Mutation = require('./mutation.js');
+const Filter = require('./filter');
+const Mutation = require('./mutation');
 
 /**
  * @private

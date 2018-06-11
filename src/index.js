@@ -26,8 +26,8 @@ const streamEvents = require('stream-events');
 const through = require('through2');
 
 const AppProfile = require('./app-profile');
-const Cluster = require('./cluster.js');
-const Instance = require('./instance.js');
+const Cluster = require('./cluster');
+const Instance = require('./instance');
 
 const PKG = require('../package.json');
 const v2 = require('./v2');

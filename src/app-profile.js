@@ -18,7 +18,7 @@ const common = require('@google-cloud/common');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
 
-const Cluster = require('./cluster.js');
+const Cluster = require('./cluster');
 
 /**
  * Create an app profile object to interact with your app profile.

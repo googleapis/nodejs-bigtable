@@ -20,7 +20,7 @@ const extend = require('extend');
 const escapeStringRegexp = require('escape-string-regexp');
 const is = require('is');
 
-const Mutation = require('./mutation.js');
+const Mutation = require('./mutation');
 
 /**
  * @private
