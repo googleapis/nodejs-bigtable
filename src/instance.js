@@ -945,7 +945,7 @@ class Instance {
       {
         client: 'BigtableInstanceAdminClient',
         method: 'updateInstance',
-        reqOpts: extend({name: this.id}, metadata),
+        reqOpts: extend({name: this.name}, metadata),
         gaxOpts: gaxOptions,
       },
       function(...args) {
