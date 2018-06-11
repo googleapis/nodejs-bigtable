@@ -20,7 +20,8 @@ const test = require(`ava`);
 const tools = require(`@google-cloud/nodejs-repo-tools`);
 const uuid = require(`uuid`);
 
-const bigtable = require(`@google-cloud/bigtable`)();
+const Bigtable = require(`@google-cloud/bigtable`);
+const bigtable = new Bigtable();
 const clusterName = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instanceName = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instance = bigtable.instance(instanceName);
@@ -51,7 +52,10 @@ test(`should list zones`, async t => {
   t.plan(0);
   await tools
     .tryTest(async assert => {
-      const output = await tools.runAsync(`${cmd} list`, cwd);
+      const output = await tools.runAsync(
+        `${cmd} run --instance ${instanceName}`,
+        cwd
+      );
       assert(output.includes(`Instances:`));
       assert(output.includes(instanceName));
     })
