@@ -41,12 +41,13 @@ class Instance {
   constructor(bigtable, id) {
     this.bigtable = bigtable;
 
-    if (!id.includes('/')) {
-      id = `${bigtable.projectName}/instances/${id}`;
+    let name = id
+    if (!name.includes('/')) {
+      name = `${bigtable.projectName}/instances/${id}`;
     }
 
-    this.id = id.split('/').pop();
-    this.name = id;
+    this.id = name.split('/').pop();
+    this.name = name;
   }
 
   /**
@@ -132,7 +133,7 @@ class Instance {
       options = {};
     }
 
-    this.bigtable.createInstance(this.name, options, callback);
+    this.bigtable.createInstance(this.id, options, callback);
   }
 
   /**
