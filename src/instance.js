@@ -29,7 +29,7 @@ const Table = require('./table.js');
  * @class
  * @param {Bigtable} bigtable The parent {@link Bigtable} object of this
  *     instance.
- * @param {string} id Name of the instance.
+ * @param {string} id Id of the instance.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -482,7 +482,7 @@ class Instance {
       },
       function(...args) {
         if (args[1]) {
-          const table = self.table(args[1].id);
+          const table = self.table(args[1].name);
           table.metadata = args[1];
           args.splice(1, 0, table);
         }
@@ -574,7 +574,7 @@ class Instance {
       callback = gaxOptions;
       gaxOptions = {};
     }
-    
+
     this.getMetadata(gaxOptions, function(err) {
       if (err) {
         if (err.code === 5) {
@@ -753,7 +753,6 @@ class Instance {
           cluster.metadata = clusterObj;
           return cluster;
         });
-
 
         callback(null, clusters, resp);
       }
@@ -953,7 +952,7 @@ class Instance {
           self.metadata = args[1];
         }
 
-        });
+        callback(...args);
       }
     );
   }
