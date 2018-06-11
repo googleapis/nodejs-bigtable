@@ -38,7 +38,7 @@ class Cluster {
 
     let id = name;
 
-    if (id.indexOf('/') === -1) {
+    if (!id.includes('/')) {
       id = `${instance.name}/clusters/${name}`;
     }
 
