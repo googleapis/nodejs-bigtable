@@ -713,6 +713,7 @@ class Bigtable {
         const retryOpts = extend(
           {
             currentRetryAttempt: 0,
+            noResponseRetries: 0,
             objectMode: true,
             shouldRetryFn: GrpcService.shouldRetryRequest_,
             request() {
