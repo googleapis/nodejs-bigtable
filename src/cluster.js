@@ -36,7 +36,7 @@ class Cluster {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    if (id.indexOf('/') > -1){
+    if (id.indexOf('/') > -1) {
       throw new Error(
         'Cluster Id is not formatted correclty. Just `mycluster` rather than `projects/myproject/instances/myinstance/clusters/mycluster`'
       );
