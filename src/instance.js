@@ -29,25 +29,25 @@ const Table = require('./table.js');
  * @class
  * @param {Bigtable} bigtable The parent {@link Bigtable} object of this
  *     instance.
- * @param {string} name Name of the instance.
+ * @param {string} id Id of the instance.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  */
+
 class Instance {
-  constructor(bigtable, name) {
+  constructor(bigtable, id) {
     this.bigtable = bigtable;
 
-    let id = name;
-
-    if (!id.includes('/')) {
-      id = `${bigtable.projectName}/instances/${name}`;
+    let name = id;
+    if (!name.includes('/')) {
+      name = `${bigtable.projectName}/instances/${id}`;
     }
 
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.id = name.split('/').pop();
+    this.name = name;
   }
 
   /**
@@ -133,7 +133,7 @@ class Instance {
       options = {};
     }
 
-    this.bigtable.createInstance(this.name, options, callback);
+    this.bigtable.createInstance(this.id, options, callback);
   }
 
   /**
@@ -202,7 +202,7 @@ class Instance {
     const appProfile = AppProfile.formatAppProfile_(options);
 
     const reqOpts = {
-      parent: this.id,
+      parent: this.name,
       appProfileId: name,
       appProfile,
     };
@@ -295,7 +295,7 @@ class Instance {
     }
 
     const reqOpts = {
-      parent: this.id,
+      parent: this.name,
       clusterId: name,
     };
 
@@ -433,7 +433,7 @@ class Instance {
     }
 
     const reqOpts = {
-      parent: this.id,
+      parent: this.name,
       tableId: name,
       table: {
         // The granularity at which timestamps are stored in the table.
@@ -538,7 +538,7 @@ class Instance {
         client: 'BigtableInstanceAdminClient',
         method: 'deleteInstance',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -668,7 +668,7 @@ class Instance {
     }
 
     const reqOpts = {
-      parent: this.id,
+      parent: this.name,
     };
 
     this.bigtable.request(
@@ -733,7 +733,7 @@ class Instance {
     }
 
     const reqOpts = {
-      parent: this.id,
+      parent: this.name,
     };
 
     this.bigtable.request(
@@ -798,7 +798,7 @@ class Instance {
         client: 'BigtableInstanceAdminClient',
         method: 'getInstance',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -873,7 +873,7 @@ class Instance {
     }
 
     const reqOpts = extend({}, options, {
-      parent: this.id,
+      parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     });
 
@@ -945,7 +945,7 @@ class Instance {
       {
         client: 'BigtableInstanceAdminClient',
         method: 'updateInstance',
-        reqOpts: extend({name: this.id}, metadata),
+        reqOpts: extend({name: this.name}, metadata),
         gaxOpts: gaxOptions,
       },
       function(...args) {
