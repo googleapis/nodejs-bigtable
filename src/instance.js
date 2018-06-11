@@ -41,7 +41,7 @@ class Instance {
   constructor(bigtable, id) {
     this.bigtable = bigtable;
 
-    let name = id
+    let name = id;
     if (!name.includes('/')) {
       name = `${bigtable.projectName}/instances/${id}`;
     }
