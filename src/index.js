@@ -802,14 +802,6 @@ Bigtable.Cluster = Cluster;
  */
 Bigtable.Instance = Instance;
 
-// Allow creating a `Bigtable` instance without using the `new` keyword.
-/* eslint-disable-next-line no-class-assign */
-Bigtable = new Proxy(Bigtable, {
-  apply(target, thisArg, argumentsList) {
-    return new target(...argumentsList);
-  },
-});
-
 /**
  * The default export of the `@google-cloud/bigtable` package is the
  * {@link Bigtable} class.
