@@ -24,7 +24,7 @@ const Family = require('./family.js');
 const Table = require('./table.js');
 
 /**
- * Create an Instance object to interact with a Compute instance.
+ * Create an Instance object to interact with a Cloud Bigtable instance.
  *
  * @class
  * @param {Bigtable} bigtable The parent {@link Bigtable} object of this
@@ -813,7 +813,7 @@ class Instance {
   }
 
   /**
-   * Get Table objects for all the tables in your Compute instance.
+   * Get Table objects for all the tables in your Cloud Bigtable instance.
    *
    * @param {object} [options] Query object.
    * @param {boolean} [options.autoPaginate=true] Have pagination handled
@@ -976,7 +976,7 @@ class Instance {
 }
 
 /**
- * Get {@link Table} objects for all the tables in your Compute
+ * Get {@link Table} objects for all the tables in your Cloud Bigtable
  * instance as a readable object stream.
  *
  * @param {object} [query] Configuration object. See
