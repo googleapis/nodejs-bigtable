@@ -207,7 +207,7 @@ class Filter {
   static parse(filters) {
     const filter = new Filter();
 
-    arrify(filters).forEach(function(filterObj) {
+    arrify(filters).forEach(filterObj => {
       const key = Object.keys(filterObj)[0];
 
       if (!is.function(filter[key])) {

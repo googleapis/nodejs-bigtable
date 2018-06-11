@@ -116,11 +116,10 @@ class ChunkTransformer extends Transform {
   destroy(err) {
     if (this._destroyed) return;
     this._destroyed = true;
-    const self = this;
     if (err) {
-      self.emit('error', err);
+      this.emit('error', err);
     }
-    self.emit('close');
+    this.emit('close');
   }
 
   /**

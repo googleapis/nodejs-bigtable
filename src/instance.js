@@ -188,8 +188,6 @@ class Instance {
    * });
    */
   createAppProfile(name, options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -218,9 +216,9 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          args.splice(1, 0, self.appProfile(name));
+          args.splice(1, 0, this.appProfile(name));
         }
 
         callback(...args);
@@ -287,8 +285,6 @@ class Instance {
    * });
    */
   createCluster(name, options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -326,9 +322,9 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          args.splice(1, 0, self.cluster(name));
+          args.splice(1, 0, this.cluster(name));
         }
 
         callback(...args);
@@ -419,8 +415,6 @@ class Instance {
    * });
    */
   createTable(name, options, callback) {
-    const self = this;
-
     if (!name) {
       throw new Error('A name is required to create a table.');
     }
@@ -443,18 +437,13 @@ class Instance {
     };
 
     if (options.splits) {
-      reqOpts.initialSplits = options.splits.map(function(key) {
-        return {
-          key,
-        };
-      });
+      reqOpts.initialSplits = options.splits.map(key => ({
+        key,
+      }));
     }
 
     if (options.families) {
-      const columnFamilies = options.families.reduce(function(
-        families,
-        family
-      ) {
+      const columnFamilies = options.families.reduce((families, family) => {
         if (is.string(family)) {
           family = {
             name: family,
@@ -468,8 +457,7 @@ class Instance {
         }
 
         return families;
-      },
-      {});
+      }, {});
 
       reqOpts.table.columnFamilies = columnFamilies;
     }
@@ -481,9 +469,9 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          const table = self.table(args[1].name);
+          const table = this.table(args[1].name);
           table.metadata = args[1];
           args.splice(1, 0, table);
         }
@@ -576,7 +564,7 @@ class Instance {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -619,15 +607,13 @@ class Instance {
    * });
    */
   get(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err, metadata) {
-      callback(err, err ? null : self, metadata);
+    this.getMetadata(gaxOptions, (err, metadata) => {
+      callback(err, err ? null : this, metadata);
     });
   }
 
@@ -660,8 +646,6 @@ class Instance {
    * });
    */
   getAppProfiles(gaxOptions, callback) {
-    const self = this;
-
     if (is.function(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -678,14 +662,14 @@ class Instance {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      function(err, resp) {
+      (err, resp) => {
         if (err) {
           callback(err);
           return;
         }
 
-        const appProfiles = resp.map(function(appProfileObj) {
-          const appProfile = self.appProfile(appProfileObj.name);
+        const appProfiles = resp.map(appProfileObj => {
+          const appProfile = this.appProfile(appProfileObj.name);
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
@@ -725,8 +709,6 @@ class Instance {
    * });
    */
   getClusters(gaxOptions, callback) {
-    const self = this;
-
     if (is.function(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -743,14 +725,14 @@ class Instance {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      function(err, resp) {
+      (err, resp) => {
         if (err) {
           callback(err);
           return;
         }
 
-        const clusters = resp.clusters.map(function(clusterObj) {
-          const cluster = self.cluster(clusterObj.name);
+        const clusters = resp.clusters.map(clusterObj => {
+          const cluster = this.cluster(clusterObj.name);
           cluster.metadata = clusterObj;
           return cluster;
         });
@@ -786,8 +768,6 @@ class Instance {
    * });
    */
   getMetadata(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -802,9 +782,9 @@ class Instance {
         },
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);
@@ -865,8 +845,6 @@ class Instance {
    * });
    */
   getTables(options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -886,11 +864,11 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          args[1] = args[1].map(function(tableObj) {
+          args[1] = args[1].map(tableObj => {
             const name = tableObj.name.split('/').pop();
-            const table = self.table(name);
+            const table = this.table(name);
             table.metadata = tableObj;
             return table;
           });
@@ -934,8 +912,6 @@ class Instance {
    * });
    */
   setMetadata(metadata, gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -948,9 +924,9 @@ class Instance {
         reqOpts: extend({name: this.id}, metadata),
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);
