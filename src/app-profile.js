@@ -41,7 +41,7 @@ class AppProfile {
     let id = name;
 
     if (!id.includes('/')) {
-      id = `${instance.id}/appProfiles/${name}`;
+      id = `${instance.name}/appProfiles/${name}`;
     }
 
     this.id = id;
