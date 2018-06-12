@@ -941,11 +941,11 @@ class Instance {
       gaxOptions = {};
     }
     var reqOpts = {
-        instance: extend({name: this.name}, metadata),
-        updateMask: {
-          paths: [],
-        },
-      };
+      instance: extend({name: this.name}, metadata),
+      updateMask: {
+        paths: [],
+      },
+    };
     const fieldsForMask = ['displayName', 'type', 'labels'];
 
     fieldsForMask.forEach(field => {
@@ -953,11 +953,11 @@ class Instance {
         reqOpts.updateMask.paths.push(snakeCase(field));
       }
     });
-    
+
     this.bigtable.request(
       {
         client: 'BigtableInstanceAdminClient',
-        method: 'updateInstance',
+        method: 'partialUpdateInstance',
         reqOpts: reqOpts,
         gaxOpts: gaxOptions,
       },
