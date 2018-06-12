@@ -33,18 +33,18 @@ const Cluster = require('./cluster.js');
  * const instance = bigtable.instance('my-instance');
  * const appProfile = instance.appProfile('my-app-profile');
  */
- function AppProfile(instance, id) {
+class AppProfile {
+  constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
     if (id.indexOf('/') === -1) {
-      id = `${instance.id}/appProfiles/${id}`;
+      id = `${instance.name}/appProfiles/${id}`;
     }
 
     this.id = id.split('/').pop();
     this.name = id;
-  };
-
+  }
 
   /**
    * Formats a app profile options object into proto format.
@@ -106,7 +106,7 @@ const Cluster = require('./cluster.js');
     }
 
     return appProfile;
-  };
+  }
 
   /**
    * Create an app profile.
@@ -139,7 +139,7 @@ const Cluster = require('./cluster.js');
       options = {};
     }
     this.instance.createAppProfile(this.id, options, callback);
-  };
+  }
   /**
    * Delete the app profile.
    *
@@ -168,7 +168,7 @@ const Cluster = require('./cluster.js');
       callback = options;
       options = {};
     }
-    
+
     const reqOpts = {
       name: this.name,
     };
@@ -186,7 +186,7 @@ const Cluster = require('./cluster.js');
       },
       callback
     );
-  };
+  }
 
   /**
    * Check if an app profile exists.
@@ -227,7 +227,7 @@ const Cluster = require('./cluster.js');
 
       callback(null, true);
     });
-  };
+  }
 
   /**
    * Get a appProfile if it exists.
@@ -259,7 +259,7 @@ const Cluster = require('./cluster.js');
     this.getMetadata(gaxOptions, function(err, metadata) {
       callback(err, err ? null : self, metadata);
     });
-  };
+  }
 
   /**
    * Get the app profile metadata.
@@ -308,7 +308,7 @@ const Cluster = require('./cluster.js');
         callback(...args);
       }
     );
-  };
+  }
 
   /**
    * Set the app profile metadata.
@@ -384,7 +384,7 @@ const Cluster = require('./cluster.js');
       callback
     );
   }
-};
+}
 
 /*! Developer Documentation
  *

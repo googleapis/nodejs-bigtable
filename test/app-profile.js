@@ -64,7 +64,7 @@ describe('Bigtable/AppProfile', function() {
   });
 
   beforeEach(function() {
-    appProfile = new AppProfile(INSTANCE, APP_PROFILE_ID);
+    appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
   });
 
   describe('instantiation', function() {
