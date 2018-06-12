@@ -186,8 +186,8 @@ describe('Bigtable/Table', function() {
     it('should call createTable from instance', function(done) {
       var options = {};
 
-      table.instance.createTable = function(name, options_, callback) {
-        assert.strictEqual(name, table.id);
+      table.instance.createTable = function(id, options_, callback) {
+        assert.strictEqual(id, table.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -196,7 +196,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should not require options', function(done) {
-      table.instance.createTable = function(name, options, callback) {
+      table.instance.createTable = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
