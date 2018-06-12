@@ -37,8 +37,7 @@ var ROW_ID = 'my-row';
 var CONVERTED_ROW_ID = 'my-converted-row';
 var TABLE = {
   bigtable: {},
-  id: 'my-table',
-  name: 'my-instance/tables/my-table',
+  name: '/projects/project/instances/my-instance/tables/my-table',
 };
 
 var FakeMutation = {
