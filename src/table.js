@@ -52,9 +52,7 @@ class Table {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    const name = Table.formatName_(instance.name, id);
-    
-    this.name = name;
+    this.name = Table.formatName_(instance.name, id);
     this.id = name.split('/').pop();
   }
 
