@@ -42,7 +42,7 @@ describe('Bigtable/Cluster', function() {
   };
 
   var CLUSTER_NAME = format('{instance}/clusters/{cluster}', {
-    instance: INSTANCE.id,
+    instance: INSTANCE.name,
     cluster: CLUSTER_ID,
   });
 
