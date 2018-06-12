@@ -34,18 +34,16 @@ const Cluster = require('./cluster.js');
  * const appProfile = instance.appProfile('my-app-profile');
  */
 class AppProfile {
-  constructor(instance, name) {
+  constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    let id = name;
-
-    if (!id.includes('/')) {
-      id = `${instance.name}/appProfiles/${name}`;
+    if (id.indexOf('/') === -1) {
+      id = `${instance.name}/appProfiles/${id}`;
     }
 
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.id = id.split('/').pop();
+    this.name = id;
   }
 
   /**
@@ -140,9 +138,8 @@ class AppProfile {
       callback = options;
       options = {};
     }
-    this.instance.createAppProfile(this.name, options, callback);
+    this.instance.createAppProfile(this.id, options, callback);
   }
-
   /**
    * Delete the app profile.
    *
@@ -173,7 +170,7 @@ class AppProfile {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
     };
 
     if (is.boolean(options.ignoreWarnings)) {
@@ -299,7 +296,7 @@ class AppProfile {
         client: 'BigtableInstanceAdminClient',
         method: 'getAppProfile',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -358,7 +355,7 @@ class AppProfile {
         paths: [],
       },
     };
-    reqOpts.appProfile.name = this.id;
+    reqOpts.appProfile.name = this.name;
 
     const fieldsForMask = [
       'description',

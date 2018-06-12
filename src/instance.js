@@ -139,7 +139,7 @@ class Instance {
   /**
    * Create an app profile.
    *
-   * @param {string} name The name to be used when referring to the new
+   * @param {string} id The name to be used when referring to the new
    *     app profile within its instance.
    * @param {object} options AppProfile creation options.
    * @param {'any'|Cluster} options.routing  The routing policy for all
@@ -187,14 +187,13 @@ class Instance {
    *   const apiResponse = data[1];
    * });
    */
-  createAppProfile(name, options, callback) {
+  createAppProfile(id, options, callback) {
     const self = this;
 
     if (is.function(options)) {
       callback = options;
       options = {};
     }
-
     if (!options.routing) {
       throw new Error('An app profile must contain a routing policy.');
     }
@@ -203,7 +202,7 @@ class Instance {
 
     const reqOpts = {
       parent: this.name,
-      appProfileId: name,
+      appProfileId: id,
       appProfile,
     };
 
@@ -220,7 +219,7 @@ class Instance {
       },
       function(...args) {
         if (args[1]) {
-          args.splice(1, 0, self.appProfile(name));
+          args.splice(1, 0, self.appProfile(id));
         }
 
         callback(...args);
