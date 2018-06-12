@@ -225,7 +225,7 @@ class Instance {
         callback(...args);
       }
     );
-  };
+  }
 
   /**
    * Create a cluster.
