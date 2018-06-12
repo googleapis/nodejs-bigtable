@@ -64,7 +64,7 @@ const v2 = require('./v2');
  */
 
 /**
- * @see [Creating a Cloud Bigtable Cluster]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
+ * @see [Creating a Cloud Bigtable Cluster]{@link https://cloud.google.com/bigtable/docs/creating-instance}
  * @see [Cloud Bigtable Concepts Overview]{@link https://cloud.google.com/bigtable/docs/concepts}
  *
  * @class
@@ -426,9 +426,9 @@ class Bigtable {
   }
 
   /**
-   * Create a Compute instance.
+   * Create a Cloud Bigtable instance.
    *
-   * @see [Creating a Compute Instance]{@link https://cloud.google.com/bigtable/docs/creating-compute-instance}
+   * @see [Creating a Cloud Bigtable Instance]{@link https://cloud.google.com/bigtable/docs/creating-instance}
    *
    * @param {string} name The unique name of the instance.
    * @param {object} [options] Instance creation options.
@@ -548,7 +548,7 @@ class Bigtable {
   }
 
   /**
-   * Get Instance objects for all of your Compute instances.
+   * Get Instance objects for all of your Cloud Bigtable instances.
    *
    * @param {object} [gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
@@ -610,7 +610,7 @@ class Bigtable {
   }
 
   /**
-   * Get a reference to a Compute instance.
+   * Get a reference to a Cloud Bigtable instance.
    *
    * @param {string} name The name of the instance.
    * @returns {Instance}

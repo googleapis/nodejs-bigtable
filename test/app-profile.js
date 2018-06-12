@@ -33,17 +33,17 @@ var fakeUtil = extend({}, common.util, {
 });
 
 describe('Bigtable/AppProfile', function() {
-  var APP_PROFILE_NAME = 'my-app-profile';
+  var APP_PROFILE_ID = 'my-app-profile';
   var PROJECT_ID = 'grape-spaceship-123';
 
   var INSTANCE = {
-    id: 'projects/p/instances/i',
+    name: 'projects/p/instances/i',
     bigtable: {projectId: PROJECT_ID},
   };
 
-  var APP_PROFILE_ID = format('{instance}/appProfiles/{appProfile}', {
-    instance: INSTANCE.id,
-    appProfile: APP_PROFILE_NAME,
+  var APP_PROFILE_NAME = format('{instance}/appProfiles/{appProfile}', {
+    instance: INSTANCE.name,
+    appProfile: APP_PROFILE_ID,
   });
 
   var AppProfile;
@@ -81,16 +81,16 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should expand name into full resource path', function() {
-      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
+      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
     });
 
     it('should leave full app profile name unaltered', function() {
-      var appProfile = new AppProfile(INSTANCE, APP_PROFILE_ID);
-      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
+      var appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
     });
 
     it('should localize the name from the ID', function() {
-      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
     });
   });
 
@@ -150,12 +150,8 @@ describe('Bigtable/AppProfile', function() {
     it('should call createAppProfile from instance', function(done) {
       var options = {};
 
-      appProfile.instance.createAppProfile = function(
-        name,
-        options_,
-        callback
-      ) {
-        assert.strictEqual(name, appProfile.name);
+      appProfile.instance.createAppProfile = function(id, options_, callback) {
+        assert.strictEqual(id, appProfile.id);
         assert.strictEqual(options_, options);
         callback();
       };
@@ -164,7 +160,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should not require options', function(done) {
-      appProfile.instance.createAppProfile = function(name, options, callback) {
+      appProfile.instance.createAppProfile = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback();
       };
@@ -180,7 +176,7 @@ describe('Bigtable/AppProfile', function() {
         assert.strictEqual(config.method, 'deleteAppProfile');
 
         assert.deepEqual(config.reqOpts, {
-          name: appProfile.id,
+          name: appProfile.name,
         });
 
         callback();
@@ -330,7 +326,7 @@ describe('Bigtable/AppProfile', function() {
         assert.strictEqual(config.method, 'getAppProfile');
 
         assert.deepEqual(config.reqOpts, {
-          name: appProfile.id,
+          name: appProfile.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -384,7 +380,7 @@ describe('Bigtable/AppProfile', function() {
       appProfile.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'updateAppProfile');
-        assert.strictEqual(config.reqOpts.appProfile.name, APP_PROFILE_ID);
+        assert.strictEqual(config.reqOpts.appProfile.name, APP_PROFILE_NAME);
         callback();
       };
 

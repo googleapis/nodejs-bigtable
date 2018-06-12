@@ -38,8 +38,8 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  * Create a Table object to interact with a Cloud Bigtable table.
  *
  * @class
- * @param {Instance} instance Name of the table.
- * @param {string} name Name of the table.
+ * @param {Instance} instance Instance Object.
+ * @param {string} id Unique identifier of the table.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -48,14 +48,14 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  * const table = instance.table('prezzy');
  */
 class Table {
-  constructor(instance, name) {
+  constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    const id = Table.formatName_(instance.id, name);
+    const name = Table.formatName_(instance.name, id);
 
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.name = name;
+    this.id = name.split('/').pop();
   }
 
   /**
@@ -73,12 +73,12 @@ class Table {
    * );
    * // 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
    */
-  static formatName_(instanceName, name) {
-    if (name.includes('/')) {
-      return name;
+  static formatName_(instanceName, id) {
+    if (id.includes('/')) {
+      return id;
     }
 
-    return `${instanceName}/tables/${name}`;
+    return `${instanceName}/tables/${id}`;
   }
 
   /**
@@ -124,7 +124,7 @@ class Table {
    * Create a table.
    *
    * @param {object} [options] See {@link Instance#createTable}.
-   * @param {object} [options.gaxOptions]  Request configuration options, outlined
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
@@ -151,7 +151,7 @@ class Table {
       options = {};
     }
 
-    this.instance.createTable(this.name, options, callback);
+    this.instance.createTable(this.id, options, callback);
   }
 
   /**
@@ -248,7 +248,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       modifications: [mod],
     };
 
@@ -422,7 +422,7 @@ class Table {
       chunkTransformer = new ChunkTransformer({decode: options.decode});
 
       const reqOpts = {
-        tableName: this.id,
+        tableName: this.name,
         appProfileId: this.bigtable.appProfileId,
       };
 
@@ -578,7 +578,7 @@ class Table {
         client: 'BigtableTableAdminClient',
         method: 'deleteTable',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -634,7 +634,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       rowKeyPrefix: Mutation.convertToBytes(prefix),
     };
 
@@ -848,7 +848,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     };
 
@@ -1004,7 +1004,7 @@ class Table {
       propAssign('method', Mutation.methods.INSERT)
     );
 
-    return this.mutate(entries, gaxOptions, callback);
+    return this.mutate(entries, {gaxOptions}, callback);
   }
 
   /**
@@ -1014,8 +1014,11 @@ class Table {
    *
    * @param {object|object[]} entries List of entities to be inserted or
    *     deleted.
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {object} [options] Configuration object.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {boolean} [options.rawMutation] If set to `true` will treat entries
+   *     as a raw Mutation object. See {@link Mutation#parse}.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {object[]} callback.err.errors If present, these represent partial
@@ -1116,9 +1119,11 @@ class Table {
    * });
    */
   mutate(entries, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
+    options = options || {};
+
+    if (is.fn(options)) {
+      callback = options;
+      options = {};
     }
 
     entries = flatten(arrify(entries));
@@ -1157,9 +1162,11 @@ class Table {
       });
 
       const reqOpts = {
-        tableName: this.id,
+        tableName: this.name,
         appProfileId: this.bigtable.appProfileId,
-        entries: entryBatch.map(Mutation.parse),
+        entries: options.rawMutation
+          ? entryBatch
+          : entryBatch.map(Mutation.parse),
       };
 
       const retryOpts = {
@@ -1171,7 +1178,7 @@ class Table {
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
-          gaxOpts: gaxOptions,
+          gaxOpts: options.gaxOptions,
           retryOpts,
         })
         .on('request', () => numRequestsMade++)
@@ -1301,7 +1308,7 @@ class Table {
    */
   sampleRowKeysStream(gaxOptions) {
     const reqOpts = {
-      tableName: this.id,
+      tableName: this.name,
       appProfileId: this.bigtable.appProfileId,
     };
 
@@ -1347,7 +1354,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       deleteAllDataFromTable: true,
     };
 

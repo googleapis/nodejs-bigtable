@@ -119,9 +119,9 @@ describe('Bigtable/Table', function() {
   beforeEach(function() {
     INSTANCE = {
       bigtable: {},
-      id: 'a/b/c/d',
+      name: 'a/b/c/d',
     };
-    TABLE_NAME = INSTANCE.id + '/tables/' + TABLE_ID;
+    TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
     table = new Table(INSTANCE, TABLE_ID);
   });
 
@@ -149,11 +149,11 @@ describe('Bigtable/Table', function() {
     });
 
     it('should localize ID', function() {
-      assert.strictEqual(table.id, TABLE_NAME);
+      assert.strictEqual(table.id, TABLE_ID);
     });
 
     it('should localize table name', function() {
-      assert.strictEqual(table.name, TABLE_ID);
+      assert.strictEqual(table.name, TABLE_NAME);
     });
   });
 
@@ -172,7 +172,7 @@ describe('Bigtable/Table', function() {
 
   describe('formatName_', function() {
     it('should format the table name to include the cluster name', function() {
-      var tableName = Table.formatName_(INSTANCE.id, TABLE_ID);
+      var tableName = Table.formatName_(INSTANCE.name, TABLE_ID);
       assert.strictEqual(tableName, TABLE_NAME);
     });
 
@@ -186,8 +186,8 @@ describe('Bigtable/Table', function() {
     it('should call createTable from instance', function(done) {
       var options = {};
 
-      table.instance.createTable = function(name, options_, callback) {
-        assert.strictEqual(name, table.name);
+      table.instance.createTable = function(id, options_, callback) {
+        assert.strictEqual(id, table.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -196,7 +196,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should not require options', function(done) {
-      table.instance.createTable = function(name, options, callback) {
+      table.instance.createTable = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
@@ -1049,7 +1049,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.method, 'deleteTable');
 
         assert.deepEqual(config.reqOpts, {
-          name: table.id,
+          name: table.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -1394,7 +1394,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getTable');
 
-        assert.strictEqual(config.reqOpts.name, table.id);
+        assert.strictEqual(config.reqOpts.name, table.name);
         assert.strictEqual(config.reqOpts.view, views.unspecified);
 
         assert.strictEqual(config.gaxOpts, undefined);
@@ -1545,7 +1545,7 @@ describe('Bigtable/Table', function() {
         },
       ];
 
-      table.mutate = function(entries, gaxOptions, callback) {
+      table.mutate = function(entries, options, callback) {
         assert.deepEqual(entries[0], {
           key: fakeEntries[0].key,
           data: fakeEntries[0].data,
@@ -1567,8 +1567,8 @@ describe('Bigtable/Table', function() {
     it('should accept gaxOptions', function(done) {
       var gaxOptions = {};
 
-      table.mutate = function(entries, gaxOptions_) {
-        assert.strictEqual(gaxOptions_, gaxOptions);
+      table.mutate = function(entries, options) {
+        assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
       };
 
@@ -1611,6 +1611,16 @@ describe('Bigtable/Table', function() {
       table.mutate(entries, assert.ifError);
     });
 
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      table.mutate(entries, {gaxOptions}, assert.ifError);
+    });
+
     it('should use an appProfileId', function(done) {
       var bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
@@ -1624,6 +1634,24 @@ describe('Bigtable/Table', function() {
       };
 
       table.mutate(done);
+    });
+
+    it('should parse the mutations', function(done) {
+      table.bigtable.request = function() {
+        assert.strictEqual(FakeMutation.parse.called, true);
+        done();
+      };
+
+      table.mutate(entries, done);
+    });
+
+    it('should allow raw mutations', function(done) {
+      table.bigtable.request = function() {
+        assert.strictEqual(FakeMutation.parse.called, false);
+        done();
+      };
+
+      table.mutate(entries, {rawMutation: true}, done);
     });
 
     describe('error', function() {
