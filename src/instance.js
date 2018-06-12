@@ -957,7 +957,7 @@ class Instance {
     this.bigtable.request(
       {
         client: 'BigtableInstanceAdminClient',
-        method: 'updateInstance',
+        method: 'partialUpdateInstance',
         reqOpts: reqOpts,
         gaxOpts: gaxOptions,
       },
