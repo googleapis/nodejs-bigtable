@@ -124,7 +124,7 @@ class Table {
    * Create a table.
    *
    * @param {object} [options] See {@link Instance#createTable}.
-   * @param {object} [options.gaxOptions]  Request configuration options, outlined
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
@@ -1016,7 +1016,7 @@ class Table {
       propAssign('method', Mutation.methods.INSERT)
     );
 
-    return this.mutate(entries, gaxOptions, callback);
+    return this.mutate(entries, {gaxOptions}, callback);
   }
 
   /**
@@ -1026,8 +1026,11 @@ class Table {
    *
    * @param {object|object[]} entries List of entities to be inserted or
    *     deleted.
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {object} [options] Configuration object.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {boolean} [options.rawMutation] If set to `true` will treat entries
+   *     as a raw Mutation object. See {@link Mutation#parse}.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {object[]} callback.err.errors If present, these represent partial
@@ -1127,12 +1130,14 @@ class Table {
    *   // All requested mutations have been processed.
    * });
    */
-  mutate(entries, gaxOptions, callback) {
+  mutate(entries, options, callback) {
     const self = this;
 
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
+    options = options || {};
+
+    if (is.fn(options)) {
+      callback = options;
+      options = {};
     }
 
     entries = flatten(arrify(entries));
@@ -1173,7 +1178,9 @@ class Table {
       const reqOpts = {
         tableName: self.name,
         appProfileId: self.bigtable.appProfileId,
-        entries: entryBatch.map(Mutation.parse),
+        entries: options.rawMutation
+          ? entryBatch
+          : entryBatch.map(Mutation.parse),
       };
 
       const retryOpts = {
@@ -1185,7 +1192,7 @@ class Table {
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
-          gaxOpts: gaxOptions,
+          gaxOpts: options.gaxOptions,
           retryOpts,
         })
         .on('request', () => numRequestsMade++)
