@@ -71,13 +71,8 @@ describe('Bigtable/Instance', function() {
     instance: INSTANCE_ID,
   });
 
-<<<<<<< HEAD
   var APP_PROFILE_ID = 'my-app-profile';
-  var CLUSTER_NAME = 'my-cluster';
-=======
-  var APP_PROFILE_NAME = 'my-app-profile';
   var CLUSTER_ID = 'my-cluster';
->>>>>>> switching id and name for cluster
 
   var Instance;
   var instance;
