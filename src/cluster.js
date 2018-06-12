@@ -47,7 +47,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
         );
       }
     } else {
-      name = `${instance.id}/clusters/${id}`;
+      name = `${instance.name}/clusters/${id}`;
     }
     this.id = name.split('/').pop();
     this.name = name;
