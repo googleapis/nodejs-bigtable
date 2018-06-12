@@ -38,7 +38,7 @@ async function runInstanceOperations(instanceName, clusterName) {
     console.log(`Creating a PRODUCTION Instance`);
     // [START bigtable_create_prod_instance]
     // Creates a Production Instance with the name "ssd-instance"
-    // with cluster name "ssd-cluster", 3 nodes and location us-central1-f
+    // with cluster id "ssd-cluster", 3 nodes and location us-central1-f
 
     const instanceOptions = {
       clusters: [
@@ -100,7 +100,7 @@ async function runInstanceOperations(instanceName, clusterName) {
     const instance = bigtable.instance(instanceName);
     const [clusters] = await instance.getClusters();
     clusters.forEach(cluster => {
-      console.log(cluster.name);
+      console.log(cluster.id);
     });
   } catch (err) {
     console.error('Error creating cluster:', err);
@@ -190,7 +190,7 @@ async function addCluster(instanceName, clusterName) {
         clusterName,
         clusterOptions
       );
-      console.log(`Cluster created: ${cluster.name}`);
+      console.log(`Cluster created: ${cluster.id}`);
     } catch (err) {
       console.error('Error creating cluster:', err);
       return;
@@ -214,7 +214,7 @@ async function deleteCluster(instanceName, clusterName) {
     console.error('Error deleting cluster:', err);
     return;
   }
-  console.log(`Cluster deleted: ${cluster.name}`);
+  console.log(`Cluster deleted: ${cluster.id}`);
   // [END bigtable_delete_cluster]
 }
 

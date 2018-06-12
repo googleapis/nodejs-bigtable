@@ -121,7 +121,7 @@ const v2 = require('./v2');
  * instance.create({
  *   clusters: [
  *     {
- *       name: 'my-cluster',
+ *       id: 'my-cluster',
  *       location: 'us-central1-b',
  *       nodes: 3
  *     }
@@ -480,7 +480,7 @@ class Bigtable {
    *   labels: {env: 'prod'},
    *   clusters: [
    *     {
-   *       name: 'my-sweet-cluster',
+   *       id: 'my-sweet-cluster',
    *       nodes: 3,
    *       location: 'us-central1-b',
    *       storage: 'ssd'
@@ -519,7 +519,7 @@ class Bigtable {
     }
 
     reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
-      clusters[cluster.name] = {
+      clusters[cluster.id] = {
         location: Cluster.getLocation_(this.projectId, cluster.location),
         serveNodes: cluster.nodes,
         defaultStorageType: Cluster.getStorageType_(cluster.storage),
