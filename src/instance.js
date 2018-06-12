@@ -341,9 +341,9 @@ class Instance {
    * @see [Designing Your Schema]{@link https://cloud.google.com/bigtable/docs/schema-design}
    * @see [Splitting Keys]{@link https://cloud.google.com/bigtable/docs/managing-tables#splits}
    *
-   * @throws {error} If a name is not provided.
+   * @throws {error} If a id is not provided.
    *
-   * @param {string} name The name of the table.
+   * @param {string} id Unique identifier of the table.
    * @param {object} [options] Table creation options.
    * @param {object|string[]} [options.families] Column families to be created
    *     within the table.
@@ -417,11 +417,11 @@ class Instance {
    *   const apiResponse = data[1];
    * });
    */
-  createTable(name, options, callback) {
+  createTable(id, options, callback) {
     const self = this;
 
-    if (!name) {
-      throw new Error('A name is required to create a table.');
+    if (!id) {
+      throw new Error('An id is required to create a table.');
     }
 
     options = options || {};
@@ -433,7 +433,7 @@ class Instance {
 
     const reqOpts = {
       parent: this.name,
-      tableId: name,
+      tableId: id,
       table: {
         // The granularity at which timestamps are stored in the table.
         // Currently only milliseconds is supported, so it's not configurable.
@@ -482,7 +482,7 @@ class Instance {
       },
       function(...args) {
         if (args[1]) {
-          const table = self.table(args[1].name);
+          const table = self.table(args[1].name.split('/').pop());
           table.metadata = args[1];
           args.splice(1, 0, table);
         }
@@ -888,8 +888,7 @@ class Instance {
       function(...args) {
         if (args[1]) {
           args[1] = args[1].map(function(tableObj) {
-            const name = tableObj.name.split('/').pop();
-            const table = self.table(name);
+            const table = self.table(tableObj.name.split('/').pop());
             table.metadata = tableObj;
             return table;
           });
@@ -960,7 +959,7 @@ class Instance {
   /**
    * Get a reference to a Bigtable table.
    *
-   * @param {string} name The name of the table.
+   * @param {string} id Unique identifier of the table.
    * @returns {Table}
    *
    * @example
@@ -969,8 +968,8 @@ class Instance {
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('presidents');
    */
-  table(name) {
-    return new Table(this, name);
+  table(id) {
+    return new Table(this, id);
   }
 }
 

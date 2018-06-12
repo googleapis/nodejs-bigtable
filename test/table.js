@@ -149,11 +149,11 @@ describe('Bigtable/Table', function() {
     });
 
     it('should localize ID', function() {
-      assert.strictEqual(table.id, TABLE_NAME);
+      assert.strictEqual(table.id, TABLE_ID);
     });
 
     it('should localize table name', function() {
-      assert.strictEqual(table.name, TABLE_ID);
+      assert.strictEqual(table.name, TABLE_NAME);
     });
   });
 
@@ -186,8 +186,8 @@ describe('Bigtable/Table', function() {
     it('should call createTable from instance', function(done) {
       var options = {};
 
-      table.instance.createTable = function(name, options_, callback) {
-        assert.strictEqual(name, table.name);
+      table.instance.createTable = function(id, options_, callback) {
+        assert.strictEqual(id, table.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -196,7 +196,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should not require options', function(done) {
-      table.instance.createTable = function(name, options, callback) {
+      table.instance.createTable = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
@@ -1049,7 +1049,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.method, 'deleteTable');
 
         assert.deepEqual(config.reqOpts, {
-          name: table.id,
+          name: table.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -1394,7 +1394,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getTable');
 
-        assert.strictEqual(config.reqOpts.name, table.id);
+        assert.strictEqual(config.reqOpts.name, table.name);
         assert.strictEqual(config.reqOpts.view, views.unspecified);
 
         assert.strictEqual(config.gaxOpts, undefined);
