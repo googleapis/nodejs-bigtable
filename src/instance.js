@@ -342,7 +342,7 @@ class Instance {
    * @see [Designing Your Schema]{@link https://cloud.google.com/bigtable/docs/schema-design}
    * @see [Splitting Keys]{@link https://cloud.google.com/bigtable/docs/managing-tables#splits}
    *
-   * @throws {error} If a name is not provided.
+   * @throws {error} If a id is not provided.
    *
    * @param {string} id Unique identifier of the table.
    * @param {object} [options] Table creation options.
