@@ -1118,7 +1118,7 @@ class Table {
    *   // All requested mutations have been processed.
    * });
    */
-  mutate(entries, gaxOptions, callback) {
+  mutate(entries, options, callback) {
     options = options || {};
 
     if (is.fn(options)) {
