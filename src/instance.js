@@ -217,7 +217,7 @@ class Instance {
       },
       (...args) => {
         if (args[1]) {
-          args.splice(1, 0, self.appProfile(id));
+          args.splice(1, 0, this.appProfile(id));
         }
 
         callback(...args);
@@ -866,7 +866,7 @@ class Instance {
       (...args) => {
         if (args[1]) {
           args[1] = args[1].map(tableObj => {
-            const table = self.table(tableObj.name.split('/').pop());
+            const table = this.table(tableObj.name.split('/').pop());
             table.metadata = tableObj;
             return table;
           });
