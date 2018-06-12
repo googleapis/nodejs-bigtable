@@ -1545,7 +1545,7 @@ describe('Bigtable/Table', function() {
         },
       ];
 
-      table.mutate = function(entries, gaxOptions, callback) {
+      table.mutate = function(entries, options, callback) {
         assert.deepEqual(entries[0], {
           key: fakeEntries[0].key,
           data: fakeEntries[0].data,
@@ -1567,8 +1567,8 @@ describe('Bigtable/Table', function() {
     it('should accept gaxOptions', function(done) {
       var gaxOptions = {};
 
-      table.mutate = function(entries, gaxOptions_) {
-        assert.strictEqual(gaxOptions_, gaxOptions);
+      table.mutate = function(entries, options) {
+        assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
       };
 
@@ -1611,6 +1611,16 @@ describe('Bigtable/Table', function() {
       table.mutate(entries, assert.ifError);
     });
 
+    it('should accept gaxOptions', function(done) {
+      var gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      table.mutate(entries, {gaxOptions}, assert.ifError);
+    });
+
     it('should use an appProfileId', function(done) {
       var bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
@@ -1624,6 +1634,24 @@ describe('Bigtable/Table', function() {
       };
 
       table.mutate(done);
+    });
+
+    it('should parse the mutations', function(done) {
+      table.bigtable.request = function() {
+        assert.strictEqual(FakeMutation.parse.called, true);
+        done();
+      };
+
+      table.mutate(entries, done);
+    });
+
+    it('should allow raw mutations', function(done) {
+      table.bigtable.request = function() {
+        assert.strictEqual(FakeMutation.parse.called, false);
+        done();
+      };
+
+      table.mutate(entries, {rawMutation: true}, done);
     });
 
     describe('error', function() {
