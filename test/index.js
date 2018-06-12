@@ -135,12 +135,6 @@ describe('Bigtable', function() {
       assert(promisified);
     });
 
-    it('should work without new', function() {
-      assert.doesNotThrow(function() {
-        Bigtable({projectId: PROJECT_ID});
-      });
-    });
-
     it('should normalize the arguments', function() {
       var normalizeArgumentsCalled = false;
       var options = {};
@@ -840,12 +834,12 @@ describe('Bigtable', function() {
         var requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
 
+        GAX_STREAM.emit('error', error);
+
         requestStream.on('error', function(err) {
           assert.strictEqual(err, error);
           done();
         });
-
-        GAX_STREAM.emit('error', error);
       });
 
       it('should re-emit request event from retry-request', function(done) {

@@ -36,12 +36,13 @@ describe('Bigtable/Family', function() {
   var TABLE = {
     bigtable: {},
     id: 'my-table',
+    name: 'projects/my-project/instances/my-inststance/tables/my-table',
     getFamilies: util.noop,
     createFamily: util.noop,
   };
 
   var FAMILY_ID = format('{t}/columnFamilies/{f}', {
-    t: TABLE.id,
+    t: TABLE.name,
     f: FAMILY_NAME,
   });
 
@@ -88,13 +89,13 @@ describe('Bigtable/Family', function() {
 
   describe('formatName_', function() {
     it('should format the column family name', function() {
-      var formatted = Family.formatName_(TABLE.id, FAMILY_NAME);
+      var formatted = Family.formatName_(TABLE.name, FAMILY_NAME);
 
       assert.strictEqual(formatted, FAMILY_ID);
     });
 
     it('should not re-format the name', function() {
-      var formatted = Family.formatName_(TABLE.id, FAMILY_ID);
+      var formatted = Family.formatName_(TABLE.name, FAMILY_ID);
 
       assert.strictEqual(formatted, FAMILY_ID);
     });
@@ -239,7 +240,7 @@ describe('Bigtable/Family', function() {
         assert.strictEqual(config.method, 'modifyColumnFamilies');
 
         assert.deepStrictEqual(config.reqOpts, {
-          name: family.table.id,
+          name: family.table.name,
           modifications: [
             {
               id: family.familyName,
@@ -524,7 +525,7 @@ describe('Bigtable/Family', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'modifyColumnFamilies');
 
-        assert.strictEqual(config.reqOpts.name, TABLE.id);
+        assert.strictEqual(config.reqOpts.name, TABLE.name);
         assert.deepEqual(config.reqOpts.modifications, [
           {
             id: FAMILY_NAME,
@@ -560,7 +561,7 @@ describe('Bigtable/Family', function() {
 
       family.bigtable.request = function(config) {
         assert.deepEqual(config.reqOpts, {
-          name: TABLE.id,
+          name: TABLE.name,
           modifications: [
             {
               id: family.familyName,

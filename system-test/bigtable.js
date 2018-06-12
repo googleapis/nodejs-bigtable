@@ -346,7 +346,7 @@ describe('Bigtable', function() {
       TABLE.getMetadata(function(err, metadata) {
         assert.strictEqual(
           metadata.name,
-          TABLE.id.replace('{{projectId}}', bigtable.projectId)
+          TABLE.name.replace('{{projectId}}', bigtable.projectId)
         );
         done();
       });
