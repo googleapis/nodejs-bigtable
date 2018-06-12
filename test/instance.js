@@ -342,7 +342,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createCluster');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.clusterId, CLUSTER_ID);
 
         assert.strictEqual(config.gaxOpts, undefined);
