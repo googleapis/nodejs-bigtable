@@ -39,11 +39,12 @@ class Cluster {
     var name;
 
     if (id.indexOf('/') > -1) {
-      if(id.includes(instance.id)) {
-        name = id
+      if (id.includes(`${instance.name}/clusters/`)) {
+        name = id;
       } else {
         throw new Error(
-          'Cluster id is not formatted correclty. Just `my-cluster` or `projects/myproject/instances/myinstance/clusters/my-cluster`'
+          `Cluster id '${id}' is not formatted correctly.  
+Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
         );
       }
     } else {
