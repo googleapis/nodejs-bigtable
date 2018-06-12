@@ -34,8 +34,8 @@ describe('Bigtable', function() {
 
   var INSTANCE = bigtable.instance(generateName('instance'));
   var TABLE = INSTANCE.table(generateName('table'));
-  var APP_PROFILE_NAME = generateName('appProfile');
-  var APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_NAME);
+  var APP_PROFILE_ID = generateName('appProfile');
+  var APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
   var CLUSTER_NAME = generateName('cluster');
 
   before(function(done) {
@@ -66,7 +66,7 @@ describe('Bigtable', function() {
                 return;
               }
               INSTANCE.createAppProfile(
-                APP_PROFILE_NAME,
+                APP_PROFILE_ID,
                 {
                   routing: 'any',
                   ignoreWarnings: true,
@@ -200,7 +200,7 @@ describe('Bigtable', function() {
       APP_PROFILE.getMetadata(function(err, metadata) {
         assert.strictEqual(
           metadata.name,
-          APP_PROFILE.id.replace('{{projectId}}', bigtable.projectId)
+          APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId)
         );
         done();
       });
