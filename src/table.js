@@ -71,12 +71,12 @@ class Table {
    * );
    * // 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
    */
-  static formatName_(instanceName, name) {
-    if (name.includes('/')) {
-      return name;
+  static formatName_(instanceName, id) {
+    if (id.includes('/')) {
+      return id;
     }
 
-    return `${instanceName}/tables/${name}`;
+    return `${instanceName}/tables/${id}`;
   }
 
   /**
