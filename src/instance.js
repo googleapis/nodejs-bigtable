@@ -732,7 +732,7 @@ class Instance {
         }
 
         const clusters = resp.clusters.map(clusterObj => {
-          const cluster = self.cluster(clusterObj.name.split('/').pop());
+          const cluster = this.cluster(clusterObj.name.split('/').pop());
           cluster.metadata = clusterObj;
           return cluster;
         });
