@@ -71,7 +71,7 @@ describe('Bigtable/Instance', function() {
     instance: INSTANCE_ID,
   });
 
-  var APP_PROFILE_NAME = 'my-app-profile';
+  var APP_PROFILE_ID = 'my-app-profile';
   var CLUSTER_NAME = 'my-cluster';
 
   var Instance;
@@ -185,7 +185,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.method, 'createAppProfile');
 
         assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
-        assert.strictEqual(config.reqOpts.appProfileId, APP_PROFILE_NAME);
+        assert.strictEqual(config.reqOpts.appProfileId, APP_PROFILE_ID);
 
         assert.strictEqual(config.gaxOpts, undefined);
 
@@ -193,7 +193,7 @@ describe('Bigtable/Instance', function() {
       };
 
       instance.createAppProfile(
-        APP_PROFILE_NAME,
+        APP_PROFILE_ID,
         {routing: 'any'},
         assert.ifError
       );
@@ -201,7 +201,7 @@ describe('Bigtable/Instance', function() {
 
     it('should throw if the routing option is not provided', function() {
       assert.throws(
-        instance.createAppProfile.bind(null, APP_PROFILE_NAME, assert.ifError)
+        instance.createAppProfile.bind(null, APP_PROFILE_ID, assert.ifError)
       ),
         /An app profile must contain a routing policy\./;
     });
@@ -217,7 +217,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     describe('should respect the routing option with', function() {
@@ -236,7 +236,7 @@ describe('Bigtable/Instance', function() {
           done();
         };
 
-        instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+        instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
       });
 
       it(`a cluster value`, function(done) {
@@ -250,7 +250,7 @@ describe('Bigtable/Instance', function() {
           done();
         };
 
-        instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+        instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
       });
     });
 
@@ -270,7 +270,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     it('should respect the description option', function(done) {
@@ -287,7 +287,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     it('should respect the ignoreWarnings option', function(done) {
@@ -301,7 +301,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     it('should execute callback with arguments from GAPIC', function(done) {
@@ -313,12 +313,12 @@ describe('Bigtable/Instance', function() {
 
       var fakeAppProfile = {};
 
-      instance.appProfile = function(name) {
-        assert.strictEqual(name, APP_PROFILE_NAME);
+      instance.appProfile = function(id) {
+        assert.strictEqual(id, APP_PROFILE_ID);
         return fakeAppProfile;
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, {routing: 'any'}, function(
+      instance.createAppProfile(APP_PROFILE_ID, {routing: 'any'}, function(
         err,
         appProfile,
         apiResponse
@@ -775,9 +775,9 @@ describe('Bigtable/Instance', function() {
 
       instance.getAppProfiles(function(err, appProfiles, apiResponse) {
         assert.ifError(err);
-        assert.strictEqual(appProfiles[0].name, 'a');
+        assert.strictEqual(appProfiles[0].id, 'a');
         assert.deepStrictEqual(appProfiles[0].metadata, response[0]);
-        assert.strictEqual(appProfiles[1].name, 'b');
+        assert.strictEqual(appProfiles[1].id, 'b');
         assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
         assert.strictEqual(apiResponse, response);
         done();
