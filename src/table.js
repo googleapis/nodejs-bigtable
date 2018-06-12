@@ -1016,7 +1016,7 @@ class Table {
       propAssign('method', Mutation.methods.INSERT)
     );
 
-    return this.mutate(entries, gaxOptions, callback);
+    return this.mutate(entries, {gaxOptions}, callback);
   }
 
   /**
