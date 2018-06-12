@@ -49,9 +49,9 @@ describe('Bigtable/AppProfile', function() {
   var AppProfile;
   var appProfile;
 
-  function FakeCluster(instance, name) {
+  function FakeCluster(instance, id) {
     this.instance = instance;
-    this.name = name;
+    this.id = id;
   }
 
   before(function() {
@@ -103,15 +103,15 @@ describe('Bigtable/AppProfile', function() {
     });
 
     describe(`with a single cluster routing policy`, function() {
-      const clusterName = 'my-cluster';
-      const cluster = new FakeCluster(INSTANCE, clusterName);
+      const clusterId = 'my-cluster';
+      const cluster = new FakeCluster(INSTANCE, clusterId);
 
       it('should accept allowTransactionalWrites not being set', function() {
         const formattedAppProfile = AppProfile.formatAppProfile_({
           routing: cluster,
         });
         assert.deepStrictEqual(formattedAppProfile.singleClusterRouting, {
-          clusterId: clusterName,
+          clusterId: clusterId,
         });
       });
       it('should accept allowTransactionalWrites', function() {
@@ -120,7 +120,7 @@ describe('Bigtable/AppProfile', function() {
           allowTransactionalWrites: true,
         });
         assert.deepStrictEqual(formattedAppProfile.singleClusterRouting, {
-          clusterId: clusterName,
+          clusterId: clusterId,
           allowTransactionalWrites: true,
         });
       });
@@ -417,8 +417,8 @@ describe('Bigtable/AppProfile', function() {
     });
 
     describe('should respect the routing option when', function() {
-      const clusterName = 'my-cluster';
-      const cluster = new FakeCluster(INSTANCE, clusterName);
+      const clusterId = 'my-cluster';
+      const cluster = new FakeCluster(INSTANCE, clusterId);
 
       it(`has an 'any' value`, function(done) {
         var options = {routing: 'any'};
@@ -452,7 +452,7 @@ describe('Bigtable/AppProfile', function() {
           );
           assert.deepStrictEqual(
             config.reqOpts.appProfile.singleClusterRouting,
-            {clusterId: clusterName}
+            {clusterId: clusterId}
           );
           done();
         };

@@ -231,7 +231,7 @@ class Instance {
   /**
    * Create a cluster.
    *
-   * @param {string} name The name to be used when referring to the new
+   * @param {string} id The id to be used when referring to the new
    *     cluster within its instance.
    * @param {object} [options] Cluster creation options.
    * @param {object} [options.gaxOptions]  Request configuration options, outlined
@@ -286,7 +286,7 @@ class Instance {
    *   const apiResponse = data[2];
    * });
    */
-  createCluster(name, options, callback) {
+  createCluster(id, options, callback) {
     const self = this;
 
     if (is.function(options)) {
@@ -296,7 +296,7 @@ class Instance {
 
     const reqOpts = {
       parent: this.name,
-      clusterId: name,
+      clusterId: id,
     };
 
     if (!is.empty(options)) {
@@ -328,7 +328,7 @@ class Instance {
       },
       function(...args) {
         if (args[1]) {
-          args.splice(1, 0, self.cluster(name));
+          args.splice(1, 0, self.cluster(id));
         }
 
         callback(...args);
@@ -496,11 +496,11 @@ class Instance {
   /**
    * Get a reference to a Bigtable Cluster.
    *
-   * @param {string} name The name of the cluster.
+   * @param {string} id The id of the cluster.
    * @returns {Cluster}
    */
-  cluster(name) {
-    return new Cluster(this, name);
+  cluster(id) {
+    return new Cluster(this, id);
   }
 
   /**
@@ -750,7 +750,7 @@ class Instance {
         }
 
         const clusters = resp.clusters.map(function(clusterObj) {
-          const cluster = self.cluster(clusterObj.name);
+          const cluster = self.cluster(clusterObj.name.split('/').pop());
           cluster.metadata = clusterObj;
           return cluster;
         });
