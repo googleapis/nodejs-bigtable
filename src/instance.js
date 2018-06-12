@@ -17,6 +17,7 @@
 const common = require('@google-cloud/common');
 const extend = require('extend');
 const is = require('is');
+const snakeCase = require('lodash.snakecase');
 
 const AppProfile = require('./app-profile.js');
 const Cluster = require('./cluster.js');
@@ -938,12 +939,25 @@ class Instance {
       callback = gaxOptions;
       gaxOptions = {};
     }
+    const reqOpts = {
+      instance: extend({name: this.name}, metadata),
+      updateMask: {
+        paths: [],
+      },
+    };
+    const fieldsForMask = ['displayName', 'type', 'labels'];
+
+    fieldsForMask.forEach(field => {
+      if (field in reqOpts.instance) {
+        reqOpts.updateMask.paths.push(snakeCase(field));
+      }
+    });
 
     this.bigtable.request(
       {
         client: 'BigtableInstanceAdminClient',
-        method: 'updateInstance',
-        reqOpts: extend({name: this.name}, metadata),
+        method: 'partialUpdateInstance',
+        reqOpts,
         gaxOpts: gaxOptions,
       },
       function(...args) {
