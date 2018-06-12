@@ -1178,7 +1178,6 @@ class Table {
       const reqOpts = {
         tableName: self.name,
         appProfileId: self.bigtable.appProfileId,
-
         entries: options.rawMutation
           ? entryBatch
           : entryBatch.map(Mutation.parse),
