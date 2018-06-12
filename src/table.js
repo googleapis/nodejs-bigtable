@@ -151,7 +151,7 @@ class Table {
       options = {};
     }
 
-    this.instance.createTable(this.name, options, callback);
+    this.instance.createTable(this.id, options, callback);
   }
 
   /**
