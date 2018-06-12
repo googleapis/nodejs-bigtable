@@ -37,12 +37,12 @@ describe('Bigtable/Cluster', function() {
   var PROJECT_ID = 'grape-spaceship-123';
 
   var INSTANCE = {
-    id: 'projects/p/instances/i',
+    name: 'projects/p/instances/i',
     bigtable: {projectId: PROJECT_ID},
   };
 
   var CLUSTER_ID = format('{instance}/clusters/{cluster}', {
-    instance: INSTANCE.id,
+    instance: INSTANCE.name,
     cluster: CLUSTER_NAME,
   });
 
