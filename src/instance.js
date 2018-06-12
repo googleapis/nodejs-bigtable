@@ -17,7 +17,7 @@
 const common = require('@google-cloud/common');
 const extend = require('extend');
 const is = require('is');
-var snakeCase = require('lodash.snakecase');
+const snakeCase = require('lodash.snakecase');
 
 const AppProfile = require('./app-profile.js');
 const Cluster = require('./cluster.js');
@@ -939,7 +939,7 @@ class Instance {
       callback = gaxOptions;
       gaxOptions = {};
     }
-    var reqOpts = {
+    const reqOpts = {
       instance: extend({name: this.name}, metadata),
       updateMask: {
         paths: [],
@@ -957,7 +957,7 @@ class Instance {
       {
         client: 'BigtableInstanceAdminClient',
         method: 'partialUpdateInstance',
-        reqOpts: reqOpts,
+        reqOpts,
         gaxOpts: gaxOptions,
       },
       function(...args) {
