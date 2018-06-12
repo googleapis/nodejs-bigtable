@@ -423,7 +423,7 @@ describe('Bigtable', function() {
 
     it('should respect the clusters option', function(done) {
       var cluster = {
-        name: 'my-cluster',
+        id: 'my-cluster',
         location: 'us-central1-b',
         nodes: 3,
         storage: 'ssd',
