@@ -38,8 +38,8 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  * Create a Table object to interact with a Cloud Bigtable table.
  *
  * @class
- * @param {Instance} instance Name of the table.
- * @param {string} name Name of the table.
+ * @param {Instance} instance Instance Object.
+ * @param {string} id Unique identifier of the table.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -48,14 +48,14 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  * const table = instance.table('prezzy');
  */
 class Table {
-  constructor(instance, name) {
+  constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    const id = Table.formatName_(instance.name, name);
+    const name = Table.formatName_(instance.name, id);
 
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.name = name;
+    this.id = name.split('/').pop();
   }
 
   /**
@@ -73,12 +73,12 @@ class Table {
    * );
    * // 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
    */
-  static formatName_(instanceName, name) {
-    if (name.includes('/')) {
-      return name;
+  static formatName_(instanceName, id) {
+    if (id.includes('/')) {
+      return id;
     }
 
-    return `${instanceName}/tables/${name}`;
+    return `${instanceName}/tables/${id}`;
   }
 
   /**
@@ -151,7 +151,7 @@ class Table {
       options = {};
     }
 
-    this.instance.createTable(this.name, options, callback);
+    this.instance.createTable(this.id, options, callback);
   }
 
   /**
@@ -250,7 +250,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       modifications: [mod],
     };
 
@@ -426,7 +426,7 @@ class Table {
       chunkTransformer = new ChunkTransformer({decode: options.decode});
 
       const reqOpts = {
-        tableName: this.id,
+        tableName: this.name,
         appProfileId: this.bigtable.appProfileId,
       };
 
@@ -582,7 +582,7 @@ class Table {
         client: 'BigtableTableAdminClient',
         method: 'deleteTable',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -638,7 +638,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       rowKeyPrefix: Mutation.convertToBytes(prefix),
     };
 
@@ -860,7 +860,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     };
 
@@ -1171,7 +1171,7 @@ class Table {
       });
 
       const reqOpts = {
-        tableName: self.id,
+        tableName: self.name,
         appProfileId: self.bigtable.appProfileId,
         entries: entryBatch.map(Mutation.parse),
       };
@@ -1315,7 +1315,7 @@ class Table {
    */
   sampleRowKeysStream(gaxOptions) {
     const reqOpts = {
-      tableName: this.id,
+      tableName: this.name,
       appProfileId: this.bigtable.appProfileId,
     };
 
@@ -1361,7 +1361,7 @@ class Table {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
       deleteAllDataFromTable: true,
     };
 

@@ -45,7 +45,7 @@ class Family {
     this.bigtable = table.bigtable;
     this.table = table;
 
-    this.id = Family.formatName_(table.id, name);
+    this.id = Family.formatName_(table.name, name);
 
     /**
      * @name Family#familyName
@@ -215,7 +215,7 @@ class Family {
         client: 'BigtableTableAdminClient',
         method: 'modifyColumnFamilies',
         reqOpts: {
-          name: this.table.id,
+          name: this.table.name,
           modifications: [
             {
               id: this.familyName,
@@ -426,7 +426,7 @@ class Family {
     }
 
     const reqOpts = {
-      name: this.table.id,
+      name: this.table.name,
       modifications: [mod],
     };
 
