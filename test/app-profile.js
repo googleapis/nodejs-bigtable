@@ -37,12 +37,12 @@ describe('Bigtable/AppProfile', function() {
   var PROJECT_ID = 'grape-spaceship-123';
 
   var INSTANCE = {
-    id: 'projects/p/instances/i',
+    name: 'projects/p/instances/i',
     bigtable: {projectId: PROJECT_ID},
   };
 
   var APP_PROFILE_ID = format('{instance}/appProfiles/{appProfile}', {
-    instance: INSTANCE.id,
+    instance: INSTANCE.name,
     appProfile: APP_PROFILE_NAME,
   });
 

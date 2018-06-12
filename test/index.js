@@ -135,12 +135,6 @@ describe('Bigtable', function() {
       assert(promisified);
     });
 
-    it('should work without new', function() {
-      assert.doesNotThrow(function() {
-        Bigtable({projectId: PROJECT_ID});
-      });
-    });
-
     it('should normalize the arguments', function() {
       var normalizeArgumentsCalled = false;
       var options = {};

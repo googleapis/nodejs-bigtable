@@ -63,12 +63,12 @@ var FakeFamily = createFake(Family);
 var FakeTable = createFake(Table);
 
 describe('Bigtable/Instance', function() {
-  var INSTANCE_NAME = 'my-instance';
+  var INSTANCE_ID = 'my-instance';
   var BIGTABLE = {projectName: 'projects/my-project'};
 
-  var INSTANCE_ID = format('{project}/instances/{instance}', {
+  var INSTANCE_NAME = format('{project}/instances/{instance}', {
     project: BIGTABLE.projectName,
-    instance: INSTANCE_NAME,
+    instance: INSTANCE_ID,
   });
 
   var APP_PROFILE_NAME = 'my-app-profile';
@@ -115,17 +115,17 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should create full ID from name', function() {
-      assert.strictEqual(instance.id, INSTANCE_ID);
+      assert.strictEqual(instance.name, INSTANCE_NAME);
     });
 
     it('should localize name', function() {
-      assert.strictEqual(instance.name, INSTANCE_NAME);
+      assert.strictEqual(instance.id, INSTANCE_ID);
     });
 
     it('should not alter full instance ids', function() {
-      var instance = new Instance(BIGTABLE, INSTANCE_ID);
-      assert.strictEqual(instance.id, INSTANCE_ID);
+      var instance = new Instance(BIGTABLE, INSTANCE_NAME);
       assert.strictEqual(instance.name, INSTANCE_NAME);
+      assert.strictEqual(instance.id, INSTANCE_ID);
     });
   });
 
@@ -159,8 +159,8 @@ describe('Bigtable/Instance', function() {
     it('should call createInstance from bigtable', function(done) {
       var options = {};
 
-      instance.bigtable.createInstance = function(name, options_, callback) {
-        assert.strictEqual(name, instance.name);
+      instance.bigtable.createInstance = function(id, options_, callback) {
+        assert.strictEqual(id, instance.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -169,7 +169,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should not require options', function(done) {
-      instance.bigtable.createInstance = function(name, options, callback) {
+      instance.bigtable.createInstance = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
@@ -184,7 +184,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createAppProfile');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.appProfileId, APP_PROFILE_NAME);
 
         assert.strictEqual(config.gaxOpts, undefined);
@@ -337,7 +337,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createCluster');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.clusterId, CLUSTER_NAME);
 
         assert.strictEqual(config.gaxOpts, undefined);
@@ -457,7 +457,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'createTable');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.tableId, TABLE_ID);
         assert.deepStrictEqual(config.reqOpts.table, {granularity: 0});
 
@@ -591,7 +591,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.method, 'deleteInstance');
 
         assert.deepEqual(config.reqOpts, {
-          name: instance.id,
+          name: instance.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -733,7 +733,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listAppProfiles');
         assert.deepStrictEqual(config.reqOpts, {
-          parent: INSTANCE_ID,
+          parent: INSTANCE_NAME,
         });
         assert.deepEqual(config.gaxOpts, {});
         done();
@@ -791,7 +791,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listClusters');
         assert.deepStrictEqual(config.reqOpts, {
-          parent: INSTANCE_ID,
+          parent: INSTANCE_NAME,
         });
         assert.deepEqual(config.gaxOpts, {});
         done();
@@ -868,7 +868,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.method, 'getInstance');
 
         assert.deepEqual(config.reqOpts, {
-          name: instance.id,
+          name: instance.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -929,7 +929,7 @@ describe('Bigtable/Instance', function() {
       instance.bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'listTables');
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.view, views.unspecified);
         assert.strictEqual(config.gaxOpts, undefined);
         done();
@@ -1018,7 +1018,7 @@ describe('Bigtable/Instance', function() {
   describe('setMetadata', function() {
     it('should provide the proper request options', function(done) {
       var metadata = {a: 'b'};
-      var expectedMetadata = extend({name: instance.id}, metadata);
+      var expectedMetadata = extend({name: instance.name}, metadata);
 
       instance.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
