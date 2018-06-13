@@ -23,6 +23,7 @@ const is = require('is');
 class FamilyError extends Error {
   constructor(name) {
     super();
+    this.name = 'FamilyError';
     this.message = `Column family not found: ${name}.`;
     this.code = 404;
   }

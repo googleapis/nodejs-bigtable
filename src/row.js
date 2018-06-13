@@ -30,6 +30,7 @@ const Mutation = require('./mutation');
 class RowError extends Error {
   constructor(row) {
     super();
+    this.name = 'RowError';
     this.message = `Unknown row: ${row}.`;
     this.code = 404;
   }

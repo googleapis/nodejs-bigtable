@@ -20,6 +20,7 @@ const Transform = stream.Transform;
 class TransformError extends Error {
   constructor(props) {
     super();
+    this.name = 'TransformError';
     this.message = `${props.message}: ${JSON.stringify(props.chunk)}`;
   }
 }
