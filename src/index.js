@@ -121,7 +121,7 @@ const v2 = require('./v2');
  * instance.create({
  *   clusters: [
  *     {
- *       name: 'my-cluster',
+ *       id: 'my-cluster',
  *       location: 'us-central1-b',
  *       nodes: 3
  *     }
@@ -430,7 +430,7 @@ class Bigtable {
    *
    * @see [Creating a Cloud Bigtable Instance]{@link https://cloud.google.com/bigtable/docs/creating-instance}
    *
-   * @param {string} name The unique name of the instance.
+   * @param {string} id The unique id of the instance.
    * @param {object} [options] Instance creation options.
    * @param {object[]} [options.clusters] The clusters to be created within the
    *     instance.
@@ -480,7 +480,7 @@ class Bigtable {
    *   labels: {env: 'prod'},
    *   clusters: [
    *     {
-   *       name: 'my-sweet-cluster',
+   *       id: 'my-sweet-cluster',
    *       nodes: 3,
    *       location: 'us-central1-b',
    *       storage: 'ssd'
@@ -499,7 +499,7 @@ class Bigtable {
    *   const apiResponse = data[2];
    * });
    */
-  createInstance(name, options, callback) {
+  createInstance(id, options, callback) {
     const self = this;
 
     if (is.function(options)) {
@@ -509,9 +509,9 @@ class Bigtable {
 
     const reqOpts = {
       parent: this.projectName,
-      instanceId: name,
+      instanceId: id,
       instance: {
-        displayName: options.displayName || name,
+        displayName: options.displayName || id,
         labels: options.labels,
       },
     };
@@ -524,7 +524,7 @@ class Bigtable {
       clusters,
       cluster
     ) {
-      clusters[cluster.name] = {
+      clusters[cluster.id] = {
         location: Cluster.getLocation_(self.projectId, cluster.location),
         serveNodes: cluster.nodes,
         defaultStorageType: Cluster.getStorageType_(cluster.storage),
@@ -545,7 +545,7 @@ class Bigtable {
         const err = args[0];
 
         if (!err) {
-          args.splice(1, 0, self.instance(name));
+          args.splice(1, 0, self.instance(id));
         }
 
         callback(...args);
@@ -620,7 +620,7 @@ class Bigtable {
   /**
    * Get a reference to a Cloud Bigtable instance.
    *
-   * @param {string} name The name of the instance.
+   * @param {string} id The id of the instance.
    * @returns {Instance}
    */
   instance(name) {

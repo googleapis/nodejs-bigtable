@@ -32,18 +32,18 @@ var PREFIX = 'gcloud-tests-';
 describe('Bigtable', function() {
   var bigtable = new Bigtable();
 
-  var INSTANCE = bigtable.instance(generateName('instance'));
-  var TABLE = INSTANCE.table(generateName('table'));
-  var APP_PROFILE_ID = generateName('appProfile');
+  var INSTANCE = bigtable.instance(generateId('instance'));
+  var TABLE = INSTANCE.table(generateId('table'));
+  var APP_PROFILE_ID = generateId('appProfile');
   var APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
-  var CLUSTER_NAME = generateName('cluster');
+  var CLUSTER_ID = generateId('cluster');
 
   before(function(done) {
     INSTANCE.create(
       {
         clusters: [
           {
-            name: CLUSTER_NAME,
+            id: CLUSTER_ID,
             location: 'us-central1-c',
             nodes: 3,
           },
@@ -182,7 +182,7 @@ describe('Bigtable', function() {
     });
 
     it('should delete an app profile', function(done) {
-      var appProfile = INSTANCE.appProfile(generateName('app-profile'));
+      var appProfile = INSTANCE.appProfile(generateId('app-profile'));
 
       async.series(
         [
@@ -207,7 +207,7 @@ describe('Bigtable', function() {
     });
 
     it('should update an app profile', function(done) {
-      var cluster = INSTANCE.cluster(CLUSTER_NAME);
+      var cluster = INSTANCE.cluster(CLUSTER_ID);
       var options = {
         routing: cluster,
         allowTransactionalWrites: true,
@@ -224,7 +224,7 @@ describe('Bigtable', function() {
           assert.deepStrictEqual(
             updatedAppProfile.metadata.singleClusterRouting,
             {
-              clusterId: CLUSTER_NAME,
+              clusterId: CLUSTER_ID,
               allowTransactionalWrites: true,
             }
           );
@@ -238,7 +238,7 @@ describe('Bigtable', function() {
     var CLUSTER;
 
     beforeEach(function() {
-      CLUSTER = INSTANCE.cluster(CLUSTER_NAME);
+      CLUSTER = INSTANCE.cluster(CLUSTER_ID);
     });
 
     it('should retrieve a list of clusters', function(done) {
@@ -337,7 +337,7 @@ describe('Bigtable', function() {
     });
 
     it('should delete a table', function(done) {
-      var table = INSTANCE.table(generateName('table'));
+      var table = INSTANCE.table(generateId('table'));
 
       async.series([table.create.bind(table), table.delete.bind(table)], done);
     });
@@ -353,7 +353,7 @@ describe('Bigtable', function() {
     });
 
     it('should create a table with column family data', function(done) {
-      var name = generateName('table');
+      var name = generateId('table');
       var options = {
         families: ['test'],
       };
@@ -366,7 +366,7 @@ describe('Bigtable', function() {
     });
 
     it('should create a table if autoCreate is true', function(done) {
-      var table = INSTANCE.table(generateName('table'));
+      var table = INSTANCE.table(generateId('table'));
       async.series(
         [table.get.bind(table, {autoCreate: true}), table.delete.bind(table)],
         done
@@ -1206,7 +1206,7 @@ describe('Bigtable', function() {
     });
 
     describe('.deleteRows()', function() {
-      var table = INSTANCE.table(generateName('table'));
+      var table = INSTANCE.table(generateId('table'));
 
       beforeEach(function(done) {
         var tableOptions = {
@@ -1258,7 +1258,7 @@ describe('Bigtable', function() {
     });
 
     describe('.truncate()', function() {
-      var table = INSTANCE.table(generateName('table'));
+      var table = INSTANCE.table(generateId('table'));
 
       beforeEach(function(done) {
         var tableOptions = {
@@ -1302,6 +1302,6 @@ describe('Bigtable', function() {
   });
 });
 
-function generateName(resourceType) {
+function generateId(resourceType) {
   return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
 }
