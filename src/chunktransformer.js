@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const Mutation = require('./mutation.js');
+const Mutation = require('./mutation');
 const stream = require('stream');
 const Transform = stream.Transform;
-const createErrorClass = require('create-error-class');
 
-const TransformError = createErrorClass('TransformError', function(props) {
-  this.message = `${props.message}: ${JSON.stringify(props.chunk)}`;
-});
+class TransformError extends Error {
+  constructor(props) {
+    super();
+    this.name = 'TransformError';
+    this.message = `${props.message}: ${JSON.stringify(props.chunk)}`;
+  }
+}
 
 /**
  * Enum for chunk formatter Row state.
@@ -116,11 +119,10 @@ class ChunkTransformer extends Transform {
   destroy(err) {
     if (this._destroyed) return;
     this._destroyed = true;
-    const self = this;
     if (err) {
-      self.emit('error', err);
+      this.emit('error', err);
     }
-    self.emit('close');
+    this.emit('close');
   }
 
   /**
