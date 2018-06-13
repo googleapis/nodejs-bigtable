@@ -20,7 +20,7 @@ var assert = require('assert');
 var common = require('@google-cloud/common');
 var commonGrpc = require('@google-cloud/common-grpc');
 var extend = require('extend');
-var grpc = require('google-gax').grpc().grpc;
+var gax = require('google-gax');
 var proxyquire = require('proxyquire');
 var sinon = require('sinon').sandbox.create();
 var through = require('through2');
@@ -30,6 +30,8 @@ var Instance = require('../src/instance.js');
 var v2 = require('../src/v2');
 
 var PKG = require('../package.json');
+
+var grpc = new gax.GrpcClient().grpc;
 
 function fakeV2() {}
 
