@@ -35,20 +35,7 @@ class Cluster {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    var name;
-
-    if (id.includes('/')) {
-      if (id.includes(`${instance.name}/clusters/`)) {
-        name = id;
-      } else {
-        throw new Error(
-          `Cluster id '${id}' is not formatted correctly.  
-Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
-        );
-      }
-    } else {
-      name = `${instance.name}/clusters/${id}`;
-    }
+    const name = `${instance.name}/clusters/${id}`;
     this.id = name.split('/').pop();
     this.name = name;
   }

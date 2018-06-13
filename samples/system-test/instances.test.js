@@ -22,9 +22,9 @@ const uuid = require(`uuid`);
 
 const Bigtable = require(`@google-cloud/bigtable`);
 const bigtable = new Bigtable();
-const clusterName = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const instanceName = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const instance = bigtable.instance(instanceName);
+const clusterId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const instanceId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const instance = bigtable.instance(instanceId);
 
 const cwd = path.join(__dirname, `..`);
 const cmd = `node instances.js`;
@@ -34,7 +34,7 @@ test.before(async () => {
   await instance.create({
     clusters: [
       {
-        name: clusterName,
+        id: clusterId,
         location: 'us-central1-c',
         nodes: 3,
       },
@@ -53,11 +53,11 @@ test(`should list zones`, async t => {
   await tools
     .tryTest(async assert => {
       const output = await tools.runAsync(
-        `${cmd} run --instance ${instanceName}`,
+        `${cmd} run --instance ${instanceId}`,
         cwd
       );
       assert(output.includes(`Instances:`));
-      assert(output.includes(instanceName));
+      assert(output.includes(instanceId));
     })
     .start();
 });
