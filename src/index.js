@@ -430,7 +430,7 @@ class Bigtable {
    *
    * @see [Creating a Cloud Bigtable Instance]{@link https://cloud.google.com/bigtable/docs/creating-instance}
    *
-   * @param {string} name The unique name of the instance.
+   * @param {string} id The unique id of the instance.
    * @param {object} [options] Instance creation options.
    * @param {object[]} [options.clusters] The clusters to be created within the
    *     instance.
@@ -499,7 +499,7 @@ class Bigtable {
    *   const apiResponse = data[2];
    * });
    */
-  createInstance(name, options, callback) {
+  createInstance(id, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -507,9 +507,9 @@ class Bigtable {
 
     const reqOpts = {
       parent: this.projectName,
-      instanceId: name,
+      instanceId: id,
       instance: {
-        displayName: options.displayName || name,
+        displayName: options.displayName || id,
         labels: options.labels,
       },
     };
@@ -539,7 +539,7 @@ class Bigtable {
         const err = args[0];
 
         if (!err) {
-          args.splice(1, 0, this.instance(name));
+          args.splice(1, 0, this.instance(id));
         }
 
         callback(...args);
@@ -612,7 +612,7 @@ class Bigtable {
   /**
    * Get a reference to a Cloud Bigtable instance.
    *
-   * @param {string} name The name of the instance.
+   * @param {string} id The id of the instance.
    * @returns {Instance}
    */
   instance(name) {
