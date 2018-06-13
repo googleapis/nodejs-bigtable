@@ -166,14 +166,9 @@ describe('Bigtable/Cluster', function() {
 
     it('should throw if cluster id in wrong format', function() {
       let id_ = `clusters/${CLUSTER_ID}`;
-      var err = new Error(`Cluster id '${id_}' is not formatted correctly.  
-Please use the format 'my-cluster' or '${
-        INSTANCE.name
-      }/clusters/${CLUSTER_ID}'.`);
-
       assert.throws(function() {
         new Cluster(INSTANCE, id_);
-      }, err);
+      }, Error);
     });
 
     it('should not require options', function(done) {
