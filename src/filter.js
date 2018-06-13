@@ -18,6 +18,7 @@ const arrify = require('arrify');
 const extend = require('extend');
 const escapeStringRegexp = require('escape-string-regexp');
 const is = require('is');
+const isUtf8 = require('is-utf8');
 
 const Mutation = require('./mutation');
 
@@ -115,7 +116,8 @@ class Filter {
     }
 
     if (Buffer.isBuffer(regex)) {
-      return escapeStringRegexp(regex.toString());
+      const regexToEscape = regex.toString(isUtf8(regex) ? 'utf8' : 'binary');
+      return escapeStringRegexp(regexToEscape);
     }
 
     throw new TypeError("Can't convert to RegExp String from unknown type.");
