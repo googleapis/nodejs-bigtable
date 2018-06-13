@@ -15,7 +15,6 @@
  */
 
 const common = require('@google-cloud/common');
-const format = require('string-format-obj');
 const is = require('is');
 
 /**
@@ -64,10 +63,7 @@ class Cluster {
       project = project.split('/').pop();
     }
 
-    return format('projects/{project}/locations/{location}', {
-      project,
-      location,
-    });
+    return `projects/${project}/locations/${location}`;
   }
 
   /**
@@ -206,7 +202,7 @@ class Cluster {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -245,15 +241,13 @@ class Cluster {
    * });
    */
   get(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err, metadata) {
-      callback(err, err ? null : self, metadata);
+    this.getMetadata(gaxOptions, (err, metadata) => {
+      callback(err, err ? null : this, metadata);
     });
   }
 
@@ -280,8 +274,6 @@ class Cluster {
    * });
    */
   getMetadata(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -296,9 +288,9 @@ class Cluster {
         },
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);

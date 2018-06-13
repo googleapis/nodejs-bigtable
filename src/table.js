@@ -24,11 +24,11 @@ const propAssign = require('prop-assign');
 const pumpify = require('pumpify');
 const through = require('through2');
 
-const Family = require('./family.js');
-const Filter = require('./filter.js');
-const Mutation = require('./mutation.js');
-const Row = require('./row.js');
-const ChunkTransformer = require('./chunktransformer.js');
+const Family = require('./family');
+const Filter = require('./filter');
+const Mutation = require('./mutation');
+const Row = require('./row');
+const ChunkTransformer = require('./chunktransformer');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -229,8 +229,6 @@ class Table {
    * };
    */
   createFamily(name, options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -261,13 +259,13 @@ class Table {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(err, resp) {
+      (err, resp) => {
         if (err) {
           callback(err, null, resp);
           return;
         }
 
-        const family = self.family(resp.name);
+        const family = this.family(resp.name);
         family.metadata = resp;
 
         callback(null, family, resp);
@@ -377,8 +375,6 @@ class Table {
    * });
    */
   createReadStream(options) {
-    const self = this;
-
     options = options || {};
     let maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
 
@@ -405,7 +401,7 @@ class Table {
     }
 
     if (options.prefixes) {
-      options.prefixes.forEach(function(prefix) {
+      options.prefixes.forEach(prefix => {
         ranges.push(Table.createPrefixRange_(prefix));
       });
     }
@@ -494,9 +490,9 @@ class Table {
         }
 
         if (ranges.length) {
-          reqOpts.rows.rowRanges = ranges.map(function(range) {
-            return Filter.createRange(range.start, range.end, 'Key');
-          });
+          reqOpts.rows.rowRanges = ranges.map(range =>
+            Filter.createRange(range.start, range.end, 'Key')
+          );
         }
       }
 
@@ -521,13 +517,13 @@ class Table {
       const rowStream = pumpify.obj([
         requestStream,
         chunkTransformer,
-        through.obj(function(rowData, enc, next) {
+        through.obj((rowData, enc, next) => {
           if (chunkTransformer._destroyed || userStream._writableState.ended) {
             return next();
           }
           numRequestsMade = 0;
           rowsRead++;
-          const row = self.row(rowData.key);
+          const row = this.row(rowData.key);
           row.data = rowData.data;
           next(null, row);
         }),
@@ -679,7 +675,7 @@ class Table {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -744,8 +740,6 @@ class Table {
    * });
    */
   get(options, callback) {
-    const self = this;
-
     if (is.fn(options)) {
       callback = options;
       options = {};
@@ -754,10 +748,10 @@ class Table {
     const autoCreate = !!options.autoCreate;
     const gaxOptions = options.gaxOptions;
 
-    this.getMetadata({gaxOptions}, function(err, metadata) {
+    this.getMetadata({gaxOptions}, (err, metadata) => {
       if (err) {
         if (err.code === 5 && autoCreate) {
-          self.create({gaxOptions}, callback);
+          this.create({gaxOptions}, callback);
           return;
         }
 
@@ -765,7 +759,7 @@ class Table {
         return;
       }
 
-      callback(null, self, metadata);
+      callback(null, this, metadata);
     });
   }
 
@@ -798,23 +792,19 @@ class Table {
    * });
    */
   getFamilies(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
-    this.getMetadata({gaxOptions}, function(err, metadata) {
+    this.getMetadata({gaxOptions}, (err, metadata) => {
       if (err) {
         callback(err);
         return;
       }
 
-      const families = Object.keys(metadata.columnFamilies).map(function(
-        familyId
-      ) {
-        const family = self.family(familyId);
+      const families = Object.keys(metadata.columnFamilies).map(familyId => {
+        const family = this.family(familyId);
         family.metadata = metadata.columnFamilies[familyId];
         return family;
       });
@@ -852,8 +842,6 @@ class Table {
    * });
    */
   getMetadata(options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -871,9 +859,9 @@ class Table {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);
@@ -924,7 +912,7 @@ class Table {
     this.createReadStream(options)
       .on('error', callback)
       .pipe(
-        concat(function(rows) {
+        concat(rows => {
           callback(null, rows);
         })
       );
@@ -1131,8 +1119,6 @@ class Table {
    * });
    */
   mutate(entries, options, callback) {
-    const self = this;
-
     options = options || {};
 
     if (is.fn(options)) {
@@ -1149,7 +1135,7 @@ class Table {
     const entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
     const mutationErrorsByEntryIndex = new Map();
 
-    function onBatchResponse(err) {
+    const onBatchResponse = err => {
       if (err) {
         // The error happened before a request was even made, don't retry.
         callback(err);
@@ -1168,16 +1154,16 @@ class Table {
       }
 
       callback(err);
-    }
+    };
 
-    function makeNextBatchRequest() {
+    const makeNextBatchRequest = () => {
       const entryBatch = entries.filter((entry, index) => {
         return pendingEntryIndices.has(index);
       });
 
       const reqOpts = {
-        tableName: self.name,
-        appProfileId: self.bigtable.appProfileId,
+        tableName: this.name,
+        appProfileId: this.bigtable.appProfileId,
         entries: options.rawMutation
           ? entryBatch
           : entryBatch.map(Mutation.parse),
@@ -1187,7 +1173,7 @@ class Table {
         currentRetryAttempt: numRequestsMade,
       };
 
-      self.bigtable
+      this.bigtable
         .request({
           client: 'BigtableClient',
           method: 'mutateRows',
@@ -1204,8 +1190,8 @@ class Table {
 
           onBatchResponse(err);
         })
-        .on('data', function(obj) {
-          obj.entries.forEach(function(entry) {
+        .on('data', obj => {
+          obj.entries.forEach(entry => {
             const originalEntry = entryBatch[entry.index];
             const originalEntriesIndex = entryToIndex.get(originalEntry);
 
@@ -1227,7 +1213,7 @@ class Table {
           });
         })
         .on('end', onBatchResponse);
-    }
+    };
 
     makeNextBatchRequest();
   }
@@ -1289,7 +1275,7 @@ class Table {
     this.sampleRowKeysStream(gaxOptions)
       .on('error', callback)
       .pipe(
-        concat(function(keys) {
+        concat(keys => {
           callback(null, keys);
         })
       );
@@ -1333,7 +1319,7 @@ class Table {
         reqOpts,
         gaxOpts: gaxOptions,
       }),
-      through.obj(function(key, enc, next) {
+      through.obj((key, enc, next) => {
         next(null, {
           key: key.rowKey,
           offset: key.offsetBytes,

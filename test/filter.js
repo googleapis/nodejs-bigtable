@@ -637,5 +637,11 @@ describe('Bigtable/Filter', function() {
 
       assert.strictEqual(err.message, 'Unknown filter: test.');
     });
+
+    it('should set the correct name', function() {
+      var err = new Filter.FilterError('test');
+
+      assert.strictEqual(err.name, 'FilterError');
+    });
   });
 });
