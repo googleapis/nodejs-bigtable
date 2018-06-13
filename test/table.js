@@ -270,10 +270,10 @@ describe('Bigtable/Table', function() {
   describe('createFamily', function() {
     var COLUMN_ID = 'my-column';
 
-    it('should throw if a name is not provided', function() {
+    it('should throw if a id is not provided', function() {
       assert.throws(function() {
         table.createFamily();
-      }, /A name is required to create a family\./);
+      }, /An id is required to create a family\./);
     });
 
     it('should provide the proper request options', function(done) {

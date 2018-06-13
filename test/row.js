@@ -447,7 +447,7 @@ describe('Bigtable/Row', function() {
 
     var families = [
       {
-        name: 'test-family',
+        id: 'test-family',
         columns: [
           {
             qualifier: 'test-column',

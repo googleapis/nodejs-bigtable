@@ -32,7 +32,7 @@ var fakeUtil = extend({}, util, {
 });
 
 describe('Bigtable/Family', function() {
-  var FAMILY_NAME = 'family-test';
+  var FAMILY_ID = 'family-test';
   var TABLE = {
     bigtable: {},
     id: 'my-table',
@@ -41,9 +41,9 @@ describe('Bigtable/Family', function() {
     createFamily: util.noop,
   };
 
-  var FAMILY_ID = format('{t}/columnFamilies/{f}', {
+  var FAMILY_NAME = format('{t}/columnFamilies/{f}', {
     t: TABLE.name,
-    f: FAMILY_NAME,
+    f: FAMILY_ID,
   });
 
   var Family;
@@ -83,21 +83,21 @@ describe('Bigtable/Family', function() {
 
     it('should extract the family name', function() {
       var family = new Family(TABLE, FAMILY_ID);
-      assert.strictEqual(family.familyName, FAMILY_NAME);
+      assert.strictEqual(family.name, FAMILY_NAME);
     });
   });
 
   describe('formatName_', function() {
     it('should format the column family name', function() {
-      var formatted = Family.formatName_(TABLE.name, FAMILY_NAME);
+      var formatted = Family.formatName_(TABLE.name, FAMILY_ID);
 
-      assert.strictEqual(formatted, FAMILY_ID);
+      assert.strictEqual(formatted, FAMILY_NAME);
     });
 
     it('should not re-format the name', function() {
       var formatted = Family.formatName_(TABLE.name, FAMILY_ID);
 
-      assert.strictEqual(formatted, FAMILY_ID);
+      assert.strictEqual(formatted, FAMILY_NAME);
     });
   });
 
@@ -214,8 +214,8 @@ describe('Bigtable/Family', function() {
     it('should call createFamily from table', function(done) {
       var options = {};
 
-      family.table.createFamily = function(name, options_, callback) {
-        assert.strictEqual(name, family.familyName);
+      family.table.createFamily = function(id, options_, callback) {
+        assert.strictEqual(id, family.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -243,7 +243,7 @@ describe('Bigtable/Family', function() {
           name: family.table.name,
           modifications: [
             {
-              id: family.familyName,
+              id: family.id,
               drop: true,
             },
           ],
@@ -528,7 +528,7 @@ describe('Bigtable/Family', function() {
         assert.strictEqual(config.reqOpts.name, TABLE.name);
         assert.deepEqual(config.reqOpts.modifications, [
           {
-            id: FAMILY_NAME,
+            id: FAMILY_ID,
             update: {},
           },
         ]);
@@ -564,7 +564,7 @@ describe('Bigtable/Family', function() {
           name: TABLE.name,
           modifications: [
             {
-              id: family.familyName,
+              id: family.id,
               update: {
                 gcRule: formattedRule,
               },

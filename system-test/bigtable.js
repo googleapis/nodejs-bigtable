@@ -375,11 +375,11 @@ describe('Bigtable', function() {
   });
 
   describe('column families', function() {
-    var FAMILY_NAME = 'presidents';
+    var FAMILY_ID = 'presidents';
     var FAMILY;
 
     before(function(done) {
-      FAMILY = TABLE.family(FAMILY_NAME);
+      FAMILY = TABLE.family(FAMILY_ID);
       FAMILY.create(done);
     });
 
@@ -388,18 +388,19 @@ describe('Bigtable', function() {
         assert.ifError(err);
         assert.strictEqual(families.length, 3);
         assert(families[0] instanceof Family);
-        assert.strictEqual(families[0].name, FAMILY.name);
+        assert.strictEqual(families[2].id, FAMILY.id);
         done();
       });
     });
 
     it('should get a family', function(done) {
-      var family = TABLE.family(FAMILY_NAME);
+      var family = TABLE.family(FAMILY_ID);
 
       family.get(function(err, family) {
         assert.ifError(err);
         assert(family instanceof Family);
         assert.strictEqual(family.name, FAMILY.name);
+        assert.strictEqual(family.id, FAMILY.id);
         done();
       });
     });
