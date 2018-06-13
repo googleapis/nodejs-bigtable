@@ -93,6 +93,14 @@ describe('Bigtable/Filter', function() {
       assert.strictEqual(str1, str2);
     });
 
+    it('should convert a non-utf8 buffer to a string', function() {
+      var str1 = 'æ';
+      var buffer = Buffer.from('æ', 'binary');
+      var str2 = Filter.convertToRegExpString(buffer);
+
+      assert.strictEqual(str1, str2);
+    });
+
     it('should throw an error for unknown types', function() {
       var errorReg = /Can't convert to RegExp String from unknown type\./;
 
