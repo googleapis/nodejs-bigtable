@@ -157,6 +157,25 @@ describe('Bigtable/Cluster', function() {
       cluster.create(options, done);
     });
 
+    it('should accept fully expanded name as clusterId', function() {
+      let id_ = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
+      var cluster2 = new Cluster(INSTANCE, id_);
+      assert.strictEqual(cluster2.name, id_);
+      assert.strictEqual(cluster2.id, CLUSTER_ID);
+    });
+
+    it('should throw if cluster id in wrong format', function() {
+      let id_ = `clusters/${CLUSTER_ID}`;
+      var err = new Error(`Cluster id '${id_}' is not formatted correctly.  
+Please use the format 'my-cluster' or '${
+        INSTANCE.name
+      }/clusters/${CLUSTER_ID}'.`);
+
+      assert.throws(function() {
+        new Cluster(INSTANCE, id_);
+      }, err);
+    });
+
     it('should not require options', function(done) {
       cluster.instance.createCluster = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
