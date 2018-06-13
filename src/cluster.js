@@ -15,7 +15,6 @@
  */
 
 const common = require('@google-cloud/common');
-const format = require('string-format-obj');
 const is = require('is');
 
 /**
@@ -23,7 +22,7 @@ const is = require('is');
  *
  * @class
  * @param {Instance} instance The parent instance of this cluster.
- * @param {string} name Name of the cluster.
+ * @param {string} id Id of the cluster.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -32,18 +31,26 @@ const is = require('is');
  * const cluster = instance.cluster('my-cluster');
  */
 class Cluster {
-  constructor(instance, name) {
+  constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    let id = name;
+    var name;
 
-    if (!id.includes('/')) {
-      id = `${instance.name}/clusters/${name}`;
+    if (id.includes('/')) {
+      if (id.includes(`${instance.name}/clusters/`)) {
+        name = id;
+      } else {
+        throw new Error(
+          `Cluster id '${id}' is not formatted correctly.  
+Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
+        );
+      }
+    } else {
+      name = `${instance.name}/clusters/${id}`;
     }
-
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.id = name.split('/').pop();
+    this.name = name;
   }
 
   /**
@@ -69,10 +76,7 @@ class Cluster {
       project = project.split('/').pop();
     }
 
-    return format('projects/{project}/locations/{location}', {
-      project,
-      location,
-    });
+    return `projects/${project}/locations/${location}`;
   }
 
   /**
@@ -143,7 +147,7 @@ class Cluster {
       options = {};
     }
 
-    this.instance.createCluster(this.name, options, callback);
+    this.instance.createCluster(this.id, options, callback);
   }
 
   /**
@@ -177,7 +181,7 @@ class Cluster {
         client: 'BigtableInstanceAdminClient',
         method: 'deleteCluster',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -211,7 +215,7 @@ class Cluster {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -250,15 +254,13 @@ class Cluster {
    * });
    */
   get(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err, metadata) {
-      callback(err, err ? null : self, metadata);
+    this.getMetadata(gaxOptions, (err, metadata) => {
+      callback(err, err ? null : this, metadata);
     });
   }
 
@@ -285,8 +287,6 @@ class Cluster {
    * });
    */
   getMetadata(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -297,13 +297,13 @@ class Cluster {
         client: 'BigtableInstanceAdminClient',
         method: 'getCluster',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);
@@ -365,7 +365,7 @@ class Cluster {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
     };
 
     if (metadata.location) {

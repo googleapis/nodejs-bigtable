@@ -18,7 +18,7 @@ const common = require('@google-cloud/common');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
 
-const Cluster = require('./cluster.js');
+const Cluster = require('./cluster');
 
 /**
  * Create an app profile object to interact with your app profile.
@@ -88,7 +88,7 @@ class AppProfile {
         appProfile.multiClusterRoutingUseAny = {};
       } else if (options.routing instanceof Cluster) {
         appProfile.singleClusterRouting = {
-          clusterId: options.routing.name,
+          clusterId: options.routing.id,
         };
         if (is.boolean(options.allowTransactionalWrites)) {
           appProfile.singleClusterRouting.allowTransactionalWrites =
@@ -214,7 +214,7 @@ class AppProfile {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -249,15 +249,13 @@ class AppProfile {
    * });
    */
   get(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err, metadata) {
-      callback(err, err ? null : self, metadata);
+    this.getMetadata(gaxOptions, (err, metadata) => {
+      callback(err, err ? null : this, metadata);
     });
   }
 
@@ -284,8 +282,6 @@ class AppProfile {
    * });
    */
   getMetadata(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -300,9 +296,9 @@ class AppProfile {
         },
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);

@@ -19,10 +19,10 @@ const extend = require('extend');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
 
-const AppProfile = require('./app-profile.js');
-const Cluster = require('./cluster.js');
-const Family = require('./family.js');
-const Table = require('./table.js');
+const AppProfile = require('./app-profile');
+const Cluster = require('./cluster');
+const Family = require('./family');
+const Table = require('./table');
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -189,8 +189,6 @@ class Instance {
    * });
    */
   createAppProfile(id, options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -218,9 +216,9 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          args.splice(1, 0, self.appProfile(id));
+          args.splice(1, 0, this.appProfile(id));
         }
 
         callback(...args);
@@ -231,7 +229,7 @@ class Instance {
   /**
    * Create a cluster.
    *
-   * @param {string} name The name to be used when referring to the new
+   * @param {string} id The id to be used when referring to the new
    *     cluster within its instance.
    * @param {object} [options] Cluster creation options.
    * @param {object} [options.gaxOptions]  Request configuration options, outlined
@@ -286,9 +284,7 @@ class Instance {
    *   const apiResponse = data[2];
    * });
    */
-  createCluster(name, options, callback) {
-    const self = this;
-
+  createCluster(id, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -296,7 +292,7 @@ class Instance {
 
     const reqOpts = {
       parent: this.name,
-      clusterId: name,
+      clusterId: id,
     };
 
     if (!is.empty(options)) {
@@ -326,9 +322,9 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          args.splice(1, 0, self.cluster(name));
+          args.splice(1, 0, this.cluster(id));
         }
 
         callback(...args);
@@ -419,8 +415,6 @@ class Instance {
    * });
    */
   createTable(id, options, callback) {
-    const self = this;
-
     if (!id) {
       throw new Error('An id is required to create a table.');
     }
@@ -443,18 +437,13 @@ class Instance {
     };
 
     if (options.splits) {
-      reqOpts.initialSplits = options.splits.map(function(key) {
-        return {
-          key,
-        };
-      });
+      reqOpts.initialSplits = options.splits.map(key => ({
+        key,
+      }));
     }
 
     if (options.families) {
-      const columnFamilies = options.families.reduce(function(
-        families,
-        family
-      ) {
+      const columnFamilies = options.families.reduce((families, family) => {
         if (is.string(family)) {
           family = {
             name: family,
@@ -468,8 +457,7 @@ class Instance {
         }
 
         return families;
-      },
-      {});
+      }, {});
 
       reqOpts.table.columnFamilies = columnFamilies;
     }
@@ -481,9 +469,9 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          const table = self.table(args[1].name.split('/').pop());
+          const table = this.table(args[1].name.split('/').pop());
           table.metadata = args[1];
           args.splice(1, 0, table);
         }
@@ -496,11 +484,11 @@ class Instance {
   /**
    * Get a reference to a Bigtable Cluster.
    *
-   * @param {string} name The name of the cluster.
+   * @param {string} id The id of the cluster.
    * @returns {Cluster}
    */
-  cluster(name) {
-    return new Cluster(this, name);
+  cluster(id) {
+    return new Cluster(this, id);
   }
 
   /**
@@ -576,7 +564,7 @@ class Instance {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -619,15 +607,13 @@ class Instance {
    * });
    */
   get(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err, metadata) {
-      callback(err, err ? null : self, metadata);
+    this.getMetadata(gaxOptions, (err, metadata) => {
+      callback(err, err ? null : this, metadata);
     });
   }
 
@@ -660,8 +646,6 @@ class Instance {
    * });
    */
   getAppProfiles(gaxOptions, callback) {
-    const self = this;
-
     if (is.function(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -678,14 +662,14 @@ class Instance {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      function(err, resp) {
+      (err, resp) => {
         if (err) {
           callback(err);
           return;
         }
 
-        const appProfiles = resp.map(function(appProfileObj) {
-          const appProfile = self.appProfile(appProfileObj.name);
+        const appProfiles = resp.map(appProfileObj => {
+          const appProfile = this.appProfile(appProfileObj.name);
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
@@ -725,8 +709,6 @@ class Instance {
    * });
    */
   getClusters(gaxOptions, callback) {
-    const self = this;
-
     if (is.function(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -743,14 +725,14 @@ class Instance {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      function(err, resp) {
+      (err, resp) => {
         if (err) {
           callback(err);
           return;
         }
 
-        const clusters = resp.clusters.map(function(clusterObj) {
-          const cluster = self.cluster(clusterObj.name);
+        const clusters = resp.clusters.map(clusterObj => {
+          const cluster = this.cluster(clusterObj.name.split('/').pop());
           cluster.metadata = clusterObj;
           return cluster;
         });
@@ -786,8 +768,6 @@ class Instance {
    * });
    */
   getMetadata(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -802,9 +782,9 @@ class Instance {
         },
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);
@@ -865,8 +845,6 @@ class Instance {
    * });
    */
   getTables(options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -886,10 +864,10 @@ class Instance {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          args[1] = args[1].map(function(tableObj) {
-            const table = self.table(tableObj.name.split('/').pop());
+          args[1] = args[1].map(tableObj => {
+            const table = this.table(tableObj.name.split('/').pop());
             table.metadata = tableObj;
             return table;
           });
@@ -933,8 +911,6 @@ class Instance {
    * });
    */
   setMetadata(metadata, gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -960,9 +936,9 @@ class Instance {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1];
+          this.metadata = args[1];
         }
 
         callback(...args);

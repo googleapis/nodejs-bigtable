@@ -151,10 +151,10 @@ class Mutation {
   static encodeSetCell(data) {
     const mutations = [];
 
-    Object.keys(data).forEach(function(familyName) {
+    Object.keys(data).forEach(familyName => {
       const family = data[familyName];
 
-      Object.keys(family).forEach(function(cellName) {
+      Object.keys(family).forEach(cellName => {
         let cell = family[cellName];
 
         if (!is.object(cell) || cell instanceof Buffer) {
@@ -243,7 +243,7 @@ class Mutation {
       ];
     }
 
-    return arrify(data).map(function(mutation) {
+    return arrify(data).map(mutation => {
       if (is.string(mutation)) {
         mutation = {
           column: mutation,

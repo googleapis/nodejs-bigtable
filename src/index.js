@@ -26,8 +26,8 @@ const streamEvents = require('stream-events');
 const through = require('through2');
 
 const AppProfile = require('./app-profile');
-const Cluster = require('./cluster.js');
-const Instance = require('./instance.js');
+const Cluster = require('./cluster');
+const Instance = require('./instance');
 
 const PKG = require('../package.json');
 const v2 = require('./v2');
@@ -121,7 +121,7 @@ const v2 = require('./v2');
  * instance.create({
  *   clusters: [
  *     {
- *       name: 'my-cluster',
+ *       id: 'my-cluster',
  *       location: 'us-central1-b',
  *       nodes: 3
  *     }
@@ -430,7 +430,7 @@ class Bigtable {
    *
    * @see [Creating a Cloud Bigtable Instance]{@link https://cloud.google.com/bigtable/docs/creating-instance}
    *
-   * @param {string} name The unique name of the instance.
+   * @param {string} id The unique id of the instance.
    * @param {object} [options] Instance creation options.
    * @param {object[]} [options.clusters] The clusters to be created within the
    *     instance.
@@ -480,7 +480,7 @@ class Bigtable {
    *   labels: {env: 'prod'},
    *   clusters: [
    *     {
-   *       name: 'my-sweet-cluster',
+   *       id: 'my-sweet-cluster',
    *       nodes: 3,
    *       location: 'us-central1-b',
    *       storage: 'ssd'
@@ -499,9 +499,7 @@ class Bigtable {
    *   const apiResponse = data[2];
    * });
    */
-  createInstance(name, options, callback) {
-    const self = this;
-
+  createInstance(id, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -509,9 +507,9 @@ class Bigtable {
 
     const reqOpts = {
       parent: this.projectName,
-      instanceId: name,
+      instanceId: id,
       instance: {
-        displayName: options.displayName || name,
+        displayName: options.displayName || id,
         labels: options.labels,
       },
     };
@@ -520,19 +518,15 @@ class Bigtable {
       reqOpts.instance.type = Instance.getTypeType_(options.type);
     }
 
-    reqOpts.clusters = arrify(options.clusters).reduce(function(
-      clusters,
-      cluster
-    ) {
-      clusters[cluster.name] = {
-        location: Cluster.getLocation_(self.projectId, cluster.location),
+    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
+      clusters[cluster.id] = {
+        location: Cluster.getLocation_(this.projectId, cluster.location),
         serveNodes: cluster.nodes,
         defaultStorageType: Cluster.getStorageType_(cluster.storage),
       };
 
       return clusters;
-    },
-    {});
+    }, {});
 
     this.request(
       {
@@ -541,11 +535,11 @@ class Bigtable {
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         const err = args[0];
 
         if (!err) {
-          args.splice(1, 0, self.instance(name));
+          args.splice(1, 0, this.instance(id));
         }
 
         callback(...args);
@@ -582,8 +576,6 @@ class Bigtable {
    * });
    */
   getInstances(gaxOptions, callback) {
-    const self = this;
-
     if (is.function(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -600,14 +592,14 @@ class Bigtable {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      function(err, resp) {
+      (err, resp) => {
         if (err) {
           callback(err);
           return;
         }
 
-        const instances = resp.instances.map(function(instanceData) {
-          const instance = self.instance(instanceData.name);
+        const instances = resp.instances.map(instanceData => {
+          const instance = this.instance(instanceData.name);
           instance.metadata = instanceData;
           return instance;
         });
@@ -620,7 +612,7 @@ class Bigtable {
   /**
    * Get a reference to a Cloud Bigtable instance.
    *
-   * @param {string} name The name of the instance.
+   * @param {string} id The id of the instance.
    * @returns {Instance}
    */
   instance(name) {
@@ -637,41 +629,24 @@ class Bigtable {
    * @param {function} [callback] Callback function.
    */
   request(config, callback) {
-    const self = this;
     const isStreamMode = !callback;
 
     let gaxStream;
     let stream;
 
-    if (isStreamMode) {
-      stream = streamEvents(through.obj());
-
-      stream.abort = function() {
-        if (gaxStream && gaxStream.cancel) {
-          gaxStream.cancel();
-        }
-      };
-
-      stream.once('reading', makeRequestStream);
-
-      return stream;
-    } else {
-      makeRequestCallback();
-    }
-
-    function prepareGaxRequest(callback) {
-      self.getProjectId_(function(err, projectId) {
+    const prepareGaxRequest = callback => {
+      this.getProjectId_((err, projectId) => {
         if (err) {
           callback(err);
           return;
         }
 
-        let gaxClient = self.api[config.client];
+        let gaxClient = this.api[config.client];
 
         if (!gaxClient) {
           // Lazily instantiate client.
-          gaxClient = new v2[config.client](self.options[config.client]);
-          self.api[config.client] = gaxClient;
+          gaxClient = new v2[config.client](this.options[config.client]);
+          this.api[config.client] = gaxClient;
         }
 
         let reqOpts = extend(true, {}, config.reqOpts);
@@ -688,10 +663,26 @@ class Bigtable {
 
         callback(null, requestFn);
       });
+    };
+
+    if (isStreamMode) {
+      stream = streamEvents(through.obj());
+
+      stream.abort = () => {
+        if (gaxStream && gaxStream.cancel) {
+          gaxStream.cancel();
+        }
+      };
+
+      stream.once('reading', makeRequestStream);
+
+      return stream;
+    } else {
+      makeRequestCallback();
     }
 
     function makeRequestCallback() {
-      prepareGaxRequest(function(err, requestFn) {
+      prepareGaxRequest((err, requestFn) => {
         if (err) {
           callback(err);
           return;
@@ -702,7 +693,7 @@ class Bigtable {
     }
 
     function makeRequestStream() {
-      prepareGaxRequest(function(err, requestFn) {
+      prepareGaxRequest((err, requestFn) => {
         if (err) {
           stream.destroy(err);
           return;
@@ -743,8 +734,6 @@ class Bigtable {
    * @param {string} callback.projectId The detected project ID.
    */
   getProjectId_(callback) {
-    const self = this;
-
     const projectIdRequired =
       this.projectId === '{{projectId}}' && !this.customEndpoint;
 
@@ -753,15 +742,15 @@ class Bigtable {
       return;
     }
 
-    this.auth.getProjectId(function(err, projectId) {
+    this.auth.getProjectId((err, projectId) => {
       if (err) {
         callback(err);
         return;
       }
 
-      self.projectId = projectId;
+      this.projectId = projectId;
 
-      callback(null, self.projectId);
+      callback(null, this.projectId);
     });
   }
 }
