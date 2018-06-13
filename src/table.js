@@ -166,7 +166,7 @@ class Table {
    *
    * @throws {error} If a name is not provided.
    *
-   * @param {string} name The name of column family.
+   * @param {string} id The unique identifier of column family.
    * @param {object} [options] Configuration object.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
@@ -228,18 +228,18 @@ class Table {
    *   },
    * };
    */
-  createFamily(name, options, callback) {
+  createFamily(id, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
     }
 
-    if (!name) {
-      throw new Error('A name is required to create a family.');
+    if (!id) {
+      throw new Error('An id is required to create a family.');
     }
 
     const mod = {
-      id: name,
+      id: id,
       create: {},
     };
 
@@ -695,18 +695,18 @@ class Table {
    *
    * @throws {error} If a name is not provided.
    *
-   * @param {string} name The family name.
+   * @param {string} id The family unique identifier.
    * @returns {Family}
    *
    * @example
    * const family = table.family('my-family');
    */
-  family(name) {
-    if (!name) {
-      throw new Error('A family name must be provided.');
+  family(id) {
+    if (!id) {
+      throw new Error('A family id must be provided.');
     }
 
-    return new Family(this, name);
+    return new Family(this, id);
   }
 
   /**
