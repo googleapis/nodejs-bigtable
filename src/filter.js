@@ -15,20 +15,23 @@
  */
 
 const arrify = require('arrify');
-const createErrorClass = require('create-error-class');
 const extend = require('extend');
 const escapeStringRegexp = require('escape-string-regexp');
 const is = require('is');
 const isUtf8 = require('is-utf8');
 
-const Mutation = require('./mutation.js');
+const Mutation = require('./mutation');
 
 /**
  * @private
  */
-const FilterError = createErrorClass('FilterError', function(filter) {
-  this.message = `Unknown filter: ${filter}.`;
-});
+class FilterError extends Error {
+  constructor(filter) {
+    super();
+    this.name = 'FilterError';
+    this.message = `Unknown filter: ${filter}.`;
+  }
+}
 
 /**
  * A filter takes a row as input and produces an alternate view of the row based
@@ -209,7 +212,7 @@ class Filter {
   static parse(filters) {
     const filter = new Filter();
 
-    arrify(filters).forEach(function(filterObj) {
+    arrify(filters).forEach(filterObj => {
       const key = Object.keys(filterObj)[0];
 
       if (!is.function(filter[key])) {
