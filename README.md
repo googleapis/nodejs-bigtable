@@ -57,74 +57,40 @@ Google APIs Client Libraries, in [Client Libraries Explained][explained].
 [auth]: https://cloud.google.com/docs/authentication/getting-started
 
 ### Installing the client library
-
-    npm install --save @google-cloud/bigtable
-
-### Using the client library
-
+[embedmd]:# (samples/quickstart.js javascript /const Bigtable/ /}\)\(\);/)
 ```javascript
-// Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-// Creates a client
-const bigtable = new Bigtable();
+// The name of the Cloud Bigtable instance
+const INSTANCE_NAME = 'my-bigtable-instance';
+// The name of the Cloud Bigtable table
+const TABLE_NAME = 'my-table';
 
-// The name for the new instance
-const instanceName = 'my-new-instance';
+(async () => {
+  try {
+    // Creates a Bigtable client
+    const bigtable = new Bigtable();
 
-// Creates the new instance
-bigtable
-  .createInstance(instanceName, {
-    clusters: [
-      {
-        name: 'my-cluster',
-        location: 'us-central1-c',
-        nodes: 3,
-      },
-    ],
-  })
-  .then(() => {
-    console.log(`Instance ${instanceName} created.`);
-  })
-  .catch(err => {
-    console.log('ERROR:', err);
-  });
+    // Connect to an existing instance:my-bigtable-instance
+    const instance = bigtable.instance(INSTANCE_NAME);
+
+    // Connect to an existing table:my-table
+    const table = instance.table(TABLE_NAME);
+
+    // Read a row from my-table using a row key
+    let [singleRow] = await table.row('r1').get();
+
+    // Print the row key and data (column value, labels, timestamp)
+    console.log(
+      `Row key: ${singleRow.id}\nData: ${JSON.stringify(
+        singleRow.data,
+        null,
+        4
+      )}`
+    );
+  } catch (err) {
+    // Handle error performing the read operation
+    console.error(`Error reading row r1:`, err);
+  }
+})();
 ```
-
-## Samples
-
-Samples are in the [`samples/`](https://github.com/googleapis/nodejs-bigtable/tree/master/samples) directory. The samples' `README.md`
-has instructions for running the samples.
-
-| Sample                      | Source Code                       | Try it |
-| --------------------------- | --------------------------------- | ------ |
-| Instances | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/instances.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md) |
-
-The [Cloud Bigtable Node.js Client API Reference][client-docs] documentation
-also contains samples.
-
-## Versioning
-
-This library follows [Semantic Versioning](http://semver.org/).
-
-This library is considered to be in **alpha**. This means it is still a
-work-in-progress and under active development. Any release is subject to
-backwards-incompatible changes at any time.
-
-More Information: [Google Cloud Platform Launch Stages][launch_stages]
-
-[launch_stages]: https://cloud.google.com/terms/launch-stages
-
-## Contributing
-
-Contributions welcome! See the [Contributing Guide](https://github.com/googleapis/nodejs-bigtable/blob/master/.github/CONTRIBUTING.md).
-
-## License
-
-Apache Version 2.0
-
-See [LICENSE](https://github.com/googleapis/nodejs-bigtable/blob/master/LICENSE)
-
-[client-docs]: https://cloud.google.com/nodejs/docs/reference/bigtable/latest/
-[product-docs]: https://cloud.google.com/bigtable/docs/
-[shell_img]: //gstatic.com/cloudssh/images/open-btn.png
