@@ -15,16 +15,19 @@
  */
 
 const common = require('@google-cloud/common');
-const createErrorClass = require('create-error-class');
 const is = require('is');
 
 /**
  * @private
  */
-const FamilyError = createErrorClass('FamilyError', function(name) {
-  this.message = `Column family not found: ${name}.`;
-  this.code = 404;
-});
+class FamilyError extends Error {
+  constructor(name) {
+    super();
+    this.name = 'FamilyError';
+    this.message = `Column family not found: ${name}.`;
+    this.code = 404;
+  }
+}
 
 /**
  * Create a Family object to interact with your table column families.
@@ -252,7 +255,7 @@ class Family {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err instanceof FamilyError) {
           callback(null, false);
@@ -298,8 +301,6 @@ class Family {
    * });
    */
   get(options, callback) {
-    const self = this;
-
     if (is.fn(options)) {
       callback = options;
       options = {};
@@ -308,10 +309,10 @@ class Family {
     const autoCreate = !!options.autoCreate;
     const gaxOptions = options.gaxOptions;
 
-    this.getMetadata(gaxOptions, function(err, metadata) {
+    this.getMetadata(gaxOptions, (err, metadata) => {
       if (err) {
         if (err instanceof FamilyError && autoCreate) {
-          self.create({gaxOptions, rule: options.rule}, callback);
+          this.create({gaxOptions, rule: options.rule}, callback);
           return;
         }
 
@@ -319,7 +320,7 @@ class Family {
         return;
       }
 
-      callback(null, self, metadata);
+      callback(null, this, metadata);
     });
   }
 
@@ -345,28 +346,26 @@ class Family {
    * });
    */
   getMetadata(gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
-    this.table.getFamilies(gaxOptions, function(err, families) {
+    this.table.getFamilies(gaxOptions, (err, families) => {
       if (err) {
         callback(err);
         return;
       }
 
       for (let i = 0, l = families.length; i < l; i++) {
-        if (families[i].name === self.name) {
-          self.metadata = families[i].metadata;
-          callback(null, self.metadata);
+        if (families[i].name === this.name) {
+          this.metadata = families[i].metadata;
+          callback(null, this.metadata);
           return;
         }
       }
 
-      const error = new FamilyError(self.id);
+      const error = new FamilyError(this.id);
       callback(error);
     });
   }
@@ -406,8 +405,6 @@ class Family {
    * });
    */
   setMetadata(metadata, gaxOptions, callback) {
-    const self = this;
-
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -434,10 +431,10 @@ class Family {
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      function(...args) {
+      (...args) => {
         if (args[1]) {
-          self.metadata = args[1].columnFamilies[self.id];
-          args.splice(1, 0, self.metadata);
+          this.metadata = args[1].columnFamilies[this.id];
+          args.splice(1, 0, this.metadata);
         }
 
         callback(...args);

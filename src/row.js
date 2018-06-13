@@ -16,22 +16,25 @@
 
 const arrify = require('arrify');
 const common = require('@google-cloud/common');
-const createErrorClass = require('create-error-class');
 const dotProp = require('dot-prop');
 const extend = require('extend');
 const flatten = require('lodash.flatten');
 const is = require('is');
 
-const Filter = require('./filter.js');
-const Mutation = require('./mutation.js');
+const Filter = require('./filter');
+const Mutation = require('./mutation');
 
 /**
  * @private
  */
-const RowError = createErrorClass('RowError', function(row) {
-  this.message = `Unknown row: ${row}.`;
-  this.code = 404;
-});
+class RowError extends Error {
+  constructor(row) {
+    super();
+    this.name = 'RowError';
+    this.message = `Unknown row: ${row}.`;
+    this.code = 404;
+  }
+}
 
 /**
  * Create a Row object to interact with your table rows.
@@ -92,7 +95,7 @@ class Row {
 
     options = options || {};
 
-    chunks.reduce(function(row, chunk) {
+    chunks.reduce((row, chunk) => {
       let family;
       let qualifier;
 
@@ -187,13 +190,13 @@ class Row {
 
     options = options || {};
 
-    families.forEach(function(family) {
+    families.forEach(family => {
       const familyData = (data[family.name] = {});
 
-      family.columns.forEach(function(column) {
+      family.columns.forEach(column => {
         const qualifier = Mutation.convertFromBytes(column.qualifier);
 
-        familyData[qualifier] = column.cells.map(function(cell) {
+        familyData[qualifier] = column.cells.map(cell => {
           let value = cell.value;
 
           if (options.decode !== false) {
@@ -253,8 +256,6 @@ class Row {
    * });
    */
   create(options, callback) {
-    const self = this;
-
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -266,13 +267,13 @@ class Row {
       method: Mutation.methods.INSERT,
     };
 
-    this.table.mutate(entry, options.gaxOptions, function(err, apiResponse) {
+    this.table.mutate(entry, options.gaxOptions, (err, apiResponse) => {
       if (err) {
         callback(err, null, apiResponse);
         return;
       }
 
-      callback(null, self, apiResponse);
+      callback(null, this, apiResponse);
     });
   }
 
@@ -342,7 +343,7 @@ class Row {
       throw new Error('At least one rule must be provided.');
     }
 
-    rules = arrify(rules).map(function(rule) {
+    rules = arrify(rules).map(rule => {
       const column = Mutation.parseColumnName(rule.column);
       const ruleData = {
         familyName: column.family,
@@ -496,7 +497,7 @@ class Row {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, function(err) {
+    this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err instanceof RowError) {
           callback(null, false);
@@ -606,7 +607,7 @@ class Row {
         reqOpts,
         gaxOpts: config.gaxOptions,
       },
-      function(err, apiResponse) {
+      (err, apiResponse) => {
         if (err) {
           callback(err, null, apiResponse);
           return;
@@ -617,9 +618,7 @@ class Row {
     );
 
     function createFlatMutationsList(entries) {
-      entries = arrify(entries).map(function(entry) {
-        return Mutation.parse(entry).mutations;
-      });
+      entries = arrify(entries).map(entry => Mutation.parse(entry).mutations);
 
       return flatten(entries);
     }
@@ -669,8 +668,6 @@ class Row {
    * });
    */
   get(columns, options, callback) {
-    const self = this;
-
     if (!is.array(columns)) {
       callback = options;
       options = columns;
@@ -717,7 +714,7 @@ class Row {
       filter,
     });
 
-    this.table.getRows(getRowsOptions, function(err, rows) {
+    this.table.getRows(getRowsOptions, (err, rows) => {
       if (err) {
         callback(err);
         return;
@@ -726,17 +723,17 @@ class Row {
       const row = rows[0];
 
       if (!row) {
-        err = new RowError(self.id);
+        err = new RowError(this.id);
         callback(err);
         return;
       }
 
-      extend(true, self.data, row.data);
+      extend(true, this.data, row.data);
 
       // If the user specifies column names, we'll return back the row data we
-      // received. Otherwise, we'll return the row itself in a typical
+      // received. Otherwise, we'll return the row itthis in a typical
       // GrpcServiceObject#get fashion.
-      callback(null, columns.length ? row.data : self);
+      callback(null, columns.length ? row.data : this);
     });
   }
 
@@ -770,7 +767,7 @@ class Row {
       options = {};
     }
 
-    this.get(options, function(err, row) {
+    this.get(options, (err, row) => {
       if (err) {
         callback(err);
         return;
@@ -847,7 +844,7 @@ class Row {
       increment: value,
     };
 
-    this.createRules(reqOpts, gaxOptions, function(err, resp) {
+    this.createRules(reqOpts, gaxOptions, (err, resp) => {
       if (err) {
         callback(err, null, resp);
         return;
