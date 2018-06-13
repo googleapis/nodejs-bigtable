@@ -188,7 +188,7 @@ class Row {
     options = options || {};
 
     families.forEach(function(family) {
-      const familyData = (data[family.id] = {});
+      const familyData = (data[family.name] = {});
 
       family.columns.forEach(function(column) {
         const qualifier = Mutation.convertFromBytes(column.qualifier);

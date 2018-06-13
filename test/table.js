@@ -1188,10 +1188,10 @@ describe('Bigtable/Table', function() {
   describe('family', function() {
     var FAMILY_ID = 'test-family';
 
-    it('should throw if a name is not provided', function() {
+    it('should throw if an id is not provided', function() {
       assert.throws(function() {
         table.family();
-      }, /A family name must be provided\./);
+      }, /A family id must be provided\./);
     });
 
     it('should create a family with the proper arguments', function() {

@@ -707,7 +707,7 @@ class Table {
    */
   family(id) {
     if (!id) {
-      throw new Error('A family name must be provided.');
+      throw new Error('A family id must be provided.');
     }
 
     return new Family(this, id);

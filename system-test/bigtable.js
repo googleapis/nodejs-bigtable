@@ -388,7 +388,14 @@ describe('Bigtable', function() {
         assert.ifError(err);
         assert.strictEqual(families.length, 3);
         assert(families[0] instanceof Family);
-        assert.strictEqual(families[2].id, FAMILY.id);
+        assert.notEqual(
+          -1,
+          families
+            .map(f => {
+              return f.id;
+            })
+            .indexOf(FAMILY.id)
+        );
         done();
       });
     });
