@@ -68,6 +68,7 @@
     "google-auto-auth": "^0.10.0",
     "google-gax": "^0.16.0",
     "is": "^3.0.1",
+    "is-utf8": "^0.2.1",
     "lodash.flatten": "^4.2.0",
     "lodash.merge": "^4.6.0",
     "lodash.snakecase": "^4.1.1",
