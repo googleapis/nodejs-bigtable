@@ -27,6 +27,7 @@ const Mutation = require('./mutation');
 class FilterError extends Error {
   constructor(filter) {
     super();
+    this.name = 'FilterError';
     this.message = `Unknown filter: ${filter}.`;
   }
 }
