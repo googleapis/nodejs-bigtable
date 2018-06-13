@@ -62,8 +62,9 @@ Google APIs Client Libraries, in [Client Libraries Explained][explained].
 
 ### Using the client library
 
-[embedmd]:# (samples/quickstart.js javascript /const Bigtable/ /}\)\(\);/)
+[embedmd]:# (samples/quickstart.js javascript /.*Imports/ /}\)\(\);/)
 ```javascript
+// Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
 // The name of the Cloud Bigtable instance
