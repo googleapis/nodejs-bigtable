@@ -37,7 +37,7 @@ var ROW_ID = 'my-row';
 var CONVERTED_ROW_ID = 'my-converted-row';
 var TABLE = {
   bigtable: {},
-  id: 'my-table',
+  name: '/projects/project/instances/my-instance/tables/my-table',
 };
 
 var FakeMutation = {
@@ -592,7 +592,7 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'readModifyWriteRow');
 
-        assert.strictEqual(config.reqOpts.tableName, TABLE.id);
+        assert.strictEqual(config.reqOpts.tableName, TABLE.name);
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
 
         assert.deepEqual(config.reqOpts.rules, [
@@ -798,8 +798,7 @@ describe('Bigtable/Row', function() {
       row.bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'checkAndMutateRow');
-
-        assert.strictEqual(config.reqOpts.tableName, TABLE.id);
+        assert.strictEqual(config.reqOpts.tableName, TABLE.name);
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
         assert.deepEqual(config.reqOpts.predicateFilter, fakeParsedFilter);
         assert.deepEqual(config.reqOpts.trueMutations, fakeMutations.mutations);

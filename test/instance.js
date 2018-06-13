@@ -63,16 +63,16 @@ var FakeFamily = createFake(Family);
 var FakeTable = createFake(Table);
 
 describe('Bigtable/Instance', function() {
-  var INSTANCE_NAME = 'my-instance';
+  var INSTANCE_ID = 'my-instance';
   var BIGTABLE = {projectName: 'projects/my-project'};
 
-  var INSTANCE_ID = format('{project}/instances/{instance}', {
+  var INSTANCE_NAME = format('{project}/instances/{instance}', {
     project: BIGTABLE.projectName,
-    instance: INSTANCE_NAME,
+    instance: INSTANCE_ID,
   });
 
-  var APP_PROFILE_NAME = 'my-app-profile';
-  var CLUSTER_NAME = 'my-cluster';
+  var APP_PROFILE_ID = 'my-app-profile';
+  var CLUSTER_ID = 'my-cluster';
 
   var Instance;
   var instance;
@@ -115,17 +115,17 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should create full ID from name', function() {
-      assert.strictEqual(instance.id, INSTANCE_ID);
+      assert.strictEqual(instance.name, INSTANCE_NAME);
     });
 
     it('should localize name', function() {
-      assert.strictEqual(instance.name, INSTANCE_NAME);
+      assert.strictEqual(instance.id, INSTANCE_ID);
     });
 
     it('should not alter full instance ids', function() {
-      var instance = new Instance(BIGTABLE, INSTANCE_ID);
-      assert.strictEqual(instance.id, INSTANCE_ID);
+      var instance = new Instance(BIGTABLE, INSTANCE_NAME);
       assert.strictEqual(instance.name, INSTANCE_NAME);
+      assert.strictEqual(instance.id, INSTANCE_ID);
     });
   });
 
@@ -159,8 +159,8 @@ describe('Bigtable/Instance', function() {
     it('should call createInstance from bigtable', function(done) {
       var options = {};
 
-      instance.bigtable.createInstance = function(name, options_, callback) {
-        assert.strictEqual(name, instance.name);
+      instance.bigtable.createInstance = function(id, options_, callback) {
+        assert.strictEqual(id, instance.id);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
@@ -169,7 +169,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should not require options', function(done) {
-      instance.bigtable.createInstance = function(name, options, callback) {
+      instance.bigtable.createInstance = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
@@ -184,8 +184,8 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createAppProfile');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
-        assert.strictEqual(config.reqOpts.appProfileId, APP_PROFILE_NAME);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
+        assert.strictEqual(config.reqOpts.appProfileId, APP_PROFILE_ID);
 
         assert.strictEqual(config.gaxOpts, undefined);
 
@@ -193,7 +193,7 @@ describe('Bigtable/Instance', function() {
       };
 
       instance.createAppProfile(
-        APP_PROFILE_NAME,
+        APP_PROFILE_ID,
         {routing: 'any'},
         assert.ifError
       );
@@ -201,7 +201,7 @@ describe('Bigtable/Instance', function() {
 
     it('should throw if the routing option is not provided', function() {
       assert.throws(
-        instance.createAppProfile.bind(null, APP_PROFILE_NAME, assert.ifError)
+        instance.createAppProfile.bind(null, APP_PROFILE_ID, assert.ifError)
       ),
         /An app profile must contain a routing policy\./;
     });
@@ -217,11 +217,11 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     describe('should respect the routing option with', function() {
-      const cluster = new FakeCluster({}, CLUSTER_NAME);
+      const cluster = new FakeCluster({}, CLUSTER_ID);
 
       it(`an 'any' value`, function(done) {
         var options = {
@@ -236,7 +236,7 @@ describe('Bigtable/Instance', function() {
           done();
         };
 
-        instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+        instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
       });
 
       it(`a cluster value`, function(done) {
@@ -245,17 +245,17 @@ describe('Bigtable/Instance', function() {
         instance.bigtable.request = function(config) {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.singleClusterRouting,
-            {clusterId: CLUSTER_NAME}
+            {clusterId: CLUSTER_ID}
           );
           done();
         };
 
-        instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+        instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
       });
     });
 
     it('should respect the allowTransactionalWrites option', function(done) {
-      var cluster = instance.cluster(CLUSTER_NAME);
+      var cluster = instance.cluster(CLUSTER_ID);
       var options = {
         routing: cluster,
         allowTransactionalWrites: true,
@@ -270,7 +270,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     it('should respect the description option', function(done) {
@@ -287,7 +287,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     it('should respect the ignoreWarnings option', function(done) {
@@ -301,7 +301,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, options, assert.ifError);
+      instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
     });
 
     it('should execute callback with arguments from GAPIC', function(done) {
@@ -313,12 +313,12 @@ describe('Bigtable/Instance', function() {
 
       var fakeAppProfile = {};
 
-      instance.appProfile = function(name) {
-        assert.strictEqual(name, APP_PROFILE_NAME);
+      instance.appProfile = function(id) {
+        assert.strictEqual(id, APP_PROFILE_ID);
         return fakeAppProfile;
       };
 
-      instance.createAppProfile(APP_PROFILE_NAME, {routing: 'any'}, function(
+      instance.createAppProfile(APP_PROFILE_ID, {routing: 'any'}, function(
         err,
         appProfile,
         apiResponse
@@ -337,15 +337,15 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createCluster');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
-        assert.strictEqual(config.reqOpts.clusterId, CLUSTER_NAME);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
+        assert.strictEqual(config.reqOpts.clusterId, CLUSTER_ID);
 
         assert.strictEqual(config.gaxOpts, undefined);
 
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, assert.ifError);
+      instance.createCluster(CLUSTER_ID, assert.ifError);
     });
 
     it('should accept gaxOptions', function(done) {
@@ -358,7 +358,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should respect the location option', function(done) {
@@ -379,7 +379,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should respect the nodes option', function(done) {
@@ -392,7 +392,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should respect the storage option', function(done) {
@@ -415,7 +415,7 @@ describe('Bigtable/Instance', function() {
         done();
       };
 
-      instance.createCluster(CLUSTER_NAME, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
     it('should execute callback with arguments from GAPIC', function(done) {
@@ -428,11 +428,11 @@ describe('Bigtable/Instance', function() {
       var fakeCluster = {};
 
       instance.cluster = function(name) {
-        assert.strictEqual(name, CLUSTER_NAME);
+        assert.strictEqual(name, CLUSTER_ID);
         return fakeCluster;
       };
 
-      instance.createCluster(CLUSTER_NAME, function(err, cluster, apiResponse) {
+      instance.createCluster(CLUSTER_ID, function(err, cluster, apiResponse) {
         assert.ifError(err);
         assert.strictEqual(arguments[1], fakeCluster);
         assert.strictEqual(apiResponse, response);
@@ -443,11 +443,13 @@ describe('Bigtable/Instance', function() {
 
   describe('createTable', function() {
     var TABLE_ID = 'my-table';
+    var TABLE_NAME =
+      'projects/my-project/instances/my-instance/tables/my-table';
 
-    it('should throw if a name is not provided', function() {
+    it('should throw if an id is not provided', function() {
       assert.throws(function() {
         instance.createTable();
-      }, /A name is required to create a table\./);
+      }, /An id is required to create a table\./);
     });
 
     it('should provide the proper request options', function(done) {
@@ -455,7 +457,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'createTable');
 
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.tableId, TABLE_ID);
         assert.deepStrictEqual(config.reqOpts.table, {granularity: 0});
 
@@ -545,13 +547,13 @@ describe('Bigtable/Instance', function() {
 
     it('should return a Table object', function(done) {
       var response = {
-        name: TABLE_ID,
+        name: TABLE_NAME,
       };
 
       var fakeTable = {};
 
-      instance.table = function(name) {
-        assert.strictEqual(name, response.name);
+      instance.table = function(id) {
+        assert.strictEqual(id, response.name.split('/').pop());
         return fakeTable;
       };
 
@@ -571,14 +573,14 @@ describe('Bigtable/Instance', function() {
 
   describe('cluster', function() {
     it('should return a Cluster object', function() {
-      var cluster = instance.cluster(CLUSTER_NAME);
+      var cluster = instance.cluster(CLUSTER_ID);
 
       assert(cluster instanceof FakeCluster);
 
       var args = cluster.calledWith_;
 
       assert.strictEqual(args[0], instance);
-      assert.strictEqual(args[1], CLUSTER_NAME);
+      assert.strictEqual(args[1], CLUSTER_ID);
     });
   });
 
@@ -589,7 +591,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.method, 'deleteInstance');
 
         assert.deepEqual(config.reqOpts, {
-          name: instance.id,
+          name: instance.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -731,7 +733,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listAppProfiles');
         assert.deepStrictEqual(config.reqOpts, {
-          parent: INSTANCE_ID,
+          parent: INSTANCE_NAME,
         });
         assert.deepEqual(config.gaxOpts, {});
         done();
@@ -773,9 +775,9 @@ describe('Bigtable/Instance', function() {
 
       instance.getAppProfiles(function(err, appProfiles, apiResponse) {
         assert.ifError(err);
-        assert.strictEqual(appProfiles[0].name, 'a');
+        assert.strictEqual(appProfiles[0].id, 'a');
         assert.deepStrictEqual(appProfiles[0].metadata, response[0]);
-        assert.strictEqual(appProfiles[1].name, 'b');
+        assert.strictEqual(appProfiles[1].id, 'b');
         assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
         assert.strictEqual(apiResponse, response);
         done();
@@ -789,7 +791,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listClusters');
         assert.deepStrictEqual(config.reqOpts, {
-          parent: INSTANCE_ID,
+          parent: INSTANCE_NAME,
         });
         assert.deepEqual(config.gaxOpts, {});
         done();
@@ -866,7 +868,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.method, 'getInstance');
 
         assert.deepEqual(config.reqOpts, {
-          name: instance.id,
+          name: instance.name,
         });
 
         assert.deepEqual(config.gaxOpts, {});
@@ -927,7 +929,7 @@ describe('Bigtable/Instance', function() {
       instance.bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'listTables');
-        assert.strictEqual(config.reqOpts.parent, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.view, views.unspecified);
         assert.strictEqual(config.gaxOpts, undefined);
         done();
@@ -967,10 +969,10 @@ describe('Bigtable/Instance', function() {
     it('should return an array of table objects', function(done) {
       var response = [
         {
-          name: 'a',
+          name: '/projects/my-project/instances/my-instance/tables/my-table-a',
         },
         {
-          name: 'b',
+          name: '/projects/my-project/instances/my-instance/tables/my-table-b',
         },
       ];
 
@@ -982,8 +984,8 @@ describe('Bigtable/Instance', function() {
 
       var tableCount = 0;
 
-      instance.table = function(name) {
-        assert.strictEqual(name, response[tableCount].name);
+      instance.table = function(id) {
+        assert.strictEqual(id, response[tableCount].name.split('/').pop());
         return fakeTables[tableCount++];
       };
 
@@ -1015,12 +1017,15 @@ describe('Bigtable/Instance', function() {
 
   describe('setMetadata', function() {
     it('should provide the proper request options', function(done) {
-      var metadata = {a: 'b'};
-      var expectedMetadata = extend({name: instance.id}, metadata);
+      var metadata = {displayName: 'updateDisplayName'};
+      var expectedMetadata = {
+        instance: {name: instance.name, displayName: 'updateDisplayName'},
+        updateMask: {paths: ['display_name']},
+      };
 
       instance.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
-        assert.strictEqual(config.method, 'updateInstance');
+        assert.strictEqual(config.method, 'partialUpdateInstance');
         assert.deepStrictEqual(config.reqOpts, expectedMetadata);
         callback(); // done()
       };

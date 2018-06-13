@@ -22,7 +22,7 @@ const is = require('is');
  *
  * @class
  * @param {Instance} instance The parent instance of this cluster.
- * @param {string} name Name of the cluster.
+ * @param {string} id Id of the cluster.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -31,18 +31,26 @@ const is = require('is');
  * const cluster = instance.cluster('my-cluster');
  */
 class Cluster {
-  constructor(instance, name) {
+  constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    let id = name;
+    var name;
 
-    if (!id.includes('/')) {
-      id = `${instance.id}/clusters/${name}`;
+    if (id.includes('/')) {
+      if (id.includes(`${instance.name}/clusters/`)) {
+        name = id;
+      } else {
+        throw new Error(
+          `Cluster id '${id}' is not formatted correctly.  
+Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
+        );
+      }
+    } else {
+      name = `${instance.name}/clusters/${id}`;
     }
-
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.id = name.split('/').pop();
+    this.name = name;
   }
 
   /**
@@ -139,7 +147,7 @@ class Cluster {
       options = {};
     }
 
-    this.instance.createCluster(this.name, options, callback);
+    this.instance.createCluster(this.id, options, callback);
   }
 
   /**
@@ -173,7 +181,7 @@ class Cluster {
         client: 'BigtableInstanceAdminClient',
         method: 'deleteCluster',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -289,7 +297,7 @@ class Cluster {
         client: 'BigtableInstanceAdminClient',
         method: 'getCluster',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -357,7 +365,7 @@ class Cluster {
     }
 
     const reqOpts = {
-      name: this.id,
+      name: this.name,
     };
 
     if (metadata.location) {

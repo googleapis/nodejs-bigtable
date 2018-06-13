@@ -17,6 +17,7 @@
 const common = require('@google-cloud/common');
 const extend = require('extend');
 const is = require('is');
+const snakeCase = require('lodash.snakecase');
 
 const AppProfile = require('./app-profile');
 const Cluster = require('./cluster');
@@ -24,30 +25,30 @@ const Family = require('./family');
 const Table = require('./table');
 
 /**
- * Create an Instance object to interact with a Compute instance.
+ * Create an Instance object to interact with a Cloud Bigtable instance.
  *
  * @class
  * @param {Bigtable} bigtable The parent {@link Bigtable} object of this
  *     instance.
- * @param {string} name Name of the instance.
+ * @param {string} id Id of the instance.
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  */
+
 class Instance {
-  constructor(bigtable, name) {
+  constructor(bigtable, id) {
     this.bigtable = bigtable;
 
-    let id = name;
-
-    if (!id.includes('/')) {
-      id = `${bigtable.projectName}/instances/${name}`;
+    let name = id;
+    if (!name.includes('/')) {
+      name = `${bigtable.projectName}/instances/${id}`;
     }
 
-    this.id = id;
-    this.name = id.split('/').pop();
+    this.id = name.split('/').pop();
+    this.name = name;
   }
 
   /**
@@ -133,13 +134,13 @@ class Instance {
       options = {};
     }
 
-    this.bigtable.createInstance(this.name, options, callback);
+    this.bigtable.createInstance(this.id, options, callback);
   }
 
   /**
    * Create an app profile.
    *
-   * @param {string} name The name to be used when referring to the new
+   * @param {string} id The name to be used when referring to the new
    *     app profile within its instance.
    * @param {object} options AppProfile creation options.
    * @param {'any'|Cluster} options.routing  The routing policy for all
@@ -187,12 +188,11 @@ class Instance {
    *   const apiResponse = data[1];
    * });
    */
-  createAppProfile(name, options, callback) {
+  createAppProfile(id, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
     }
-
     if (!options.routing) {
       throw new Error('An app profile must contain a routing policy.');
     }
@@ -200,8 +200,8 @@ class Instance {
     const appProfile = AppProfile.formatAppProfile_(options);
 
     const reqOpts = {
-      parent: this.id,
-      appProfileId: name,
+      parent: this.name,
+      appProfileId: id,
       appProfile,
     };
 
@@ -218,7 +218,7 @@ class Instance {
       },
       (...args) => {
         if (args[1]) {
-          args.splice(1, 0, this.appProfile(name));
+          args.splice(1, 0, this.appProfile(id));
         }
 
         callback(...args);
@@ -229,7 +229,7 @@ class Instance {
   /**
    * Create a cluster.
    *
-   * @param {string} name The name to be used when referring to the new
+   * @param {string} id The id to be used when referring to the new
    *     cluster within its instance.
    * @param {object} [options] Cluster creation options.
    * @param {object} [options.gaxOptions]  Request configuration options, outlined
@@ -284,15 +284,15 @@ class Instance {
    *   const apiResponse = data[2];
    * });
    */
-  createCluster(name, options, callback) {
+  createCluster(id, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
     }
 
     const reqOpts = {
-      parent: this.id,
-      clusterId: name,
+      parent: this.name,
+      clusterId: id,
     };
 
     if (!is.empty(options)) {
@@ -324,7 +324,7 @@ class Instance {
       },
       (...args) => {
         if (args[1]) {
-          args.splice(1, 0, this.cluster(name));
+          args.splice(1, 0, this.cluster(id));
         }
 
         callback(...args);
@@ -338,9 +338,9 @@ class Instance {
    * @see [Designing Your Schema]{@link https://cloud.google.com/bigtable/docs/schema-design}
    * @see [Splitting Keys]{@link https://cloud.google.com/bigtable/docs/managing-tables#splits}
    *
-   * @throws {error} If a name is not provided.
+   * @throws {error} If a id is not provided.
    *
-   * @param {string} name The name of the table.
+   * @param {string} id Unique identifier of the table.
    * @param {object} [options] Table creation options.
    * @param {object|string[]} [options.families] Column families to be created
    *     within the table.
@@ -414,9 +414,9 @@ class Instance {
    *   const apiResponse = data[1];
    * });
    */
-  createTable(name, options, callback) {
-    if (!name) {
-      throw new Error('A name is required to create a table.');
+  createTable(id, options, callback) {
+    if (!id) {
+      throw new Error('An id is required to create a table.');
     }
 
     options = options || {};
@@ -427,8 +427,8 @@ class Instance {
     }
 
     const reqOpts = {
-      parent: this.id,
-      tableId: name,
+      parent: this.name,
+      tableId: id,
       table: {
         // The granularity at which timestamps are stored in the table.
         // Currently only milliseconds is supported, so it's not configurable.
@@ -471,7 +471,7 @@ class Instance {
       },
       (...args) => {
         if (args[1]) {
-          const table = this.table(args[1].name);
+          const table = this.table(args[1].name.split('/').pop());
           table.metadata = args[1];
           args.splice(1, 0, table);
         }
@@ -484,11 +484,11 @@ class Instance {
   /**
    * Get a reference to a Bigtable Cluster.
    *
-   * @param {string} name The name of the cluster.
+   * @param {string} id The id of the cluster.
    * @returns {Cluster}
    */
-  cluster(name) {
-    return new Cluster(this, name);
+  cluster(id) {
+    return new Cluster(this, id);
   }
 
   /**
@@ -526,7 +526,7 @@ class Instance {
         client: 'BigtableInstanceAdminClient',
         method: 'deleteInstance',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -652,7 +652,7 @@ class Instance {
     }
 
     const reqOpts = {
-      parent: this.id,
+      parent: this.name,
     };
 
     this.bigtable.request(
@@ -715,7 +715,7 @@ class Instance {
     }
 
     const reqOpts = {
-      parent: this.id,
+      parent: this.name,
     };
 
     this.bigtable.request(
@@ -732,7 +732,7 @@ class Instance {
         }
 
         const clusters = resp.clusters.map(clusterObj => {
-          const cluster = this.cluster(clusterObj.name);
+          const cluster = this.cluster(clusterObj.name.split('/').pop());
           cluster.metadata = clusterObj;
           return cluster;
         });
@@ -778,7 +778,7 @@ class Instance {
         client: 'BigtableInstanceAdminClient',
         method: 'getInstance',
         reqOpts: {
-          name: this.id,
+          name: this.name,
         },
         gaxOpts: gaxOptions,
       },
@@ -793,7 +793,7 @@ class Instance {
   }
 
   /**
-   * Get Table objects for all the tables in your Compute instance.
+   * Get Table objects for all the tables in your Cloud Bigtable instance.
    *
    * @param {object} [options] Query object.
    * @param {boolean} [options.autoPaginate=true] Have pagination handled
@@ -851,7 +851,7 @@ class Instance {
     }
 
     const reqOpts = extend({}, options, {
-      parent: this.id,
+      parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     });
 
@@ -867,8 +867,7 @@ class Instance {
       (...args) => {
         if (args[1]) {
           args[1] = args[1].map(tableObj => {
-            const name = tableObj.name.split('/').pop();
-            const table = this.table(name);
+            const table = this.table(tableObj.name.split('/').pop());
             table.metadata = tableObj;
             return table;
           });
@@ -916,12 +915,25 @@ class Instance {
       callback = gaxOptions;
       gaxOptions = {};
     }
+    const reqOpts = {
+      instance: extend({name: this.name}, metadata),
+      updateMask: {
+        paths: [],
+      },
+    };
+    const fieldsForMask = ['displayName', 'type', 'labels'];
+
+    fieldsForMask.forEach(field => {
+      if (field in reqOpts.instance) {
+        reqOpts.updateMask.paths.push(snakeCase(field));
+      }
+    });
 
     this.bigtable.request(
       {
         client: 'BigtableInstanceAdminClient',
-        method: 'updateInstance',
-        reqOpts: extend({name: this.id}, metadata),
+        method: 'partialUpdateInstance',
+        reqOpts,
         gaxOpts: gaxOptions,
       },
       (...args) => {
@@ -937,7 +949,7 @@ class Instance {
   /**
    * Get a reference to a Bigtable table.
    *
-   * @param {string} name The name of the table.
+   * @param {string} id Unique identifier of the table.
    * @returns {Table}
    *
    * @example
@@ -946,13 +958,13 @@ class Instance {
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('presidents');
    */
-  table(name) {
-    return new Table(this, name);
+  table(id) {
+    return new Table(this, id);
   }
 }
 
 /**
- * Get {@link Table} objects for all the tables in your Compute
+ * Get {@link Table} objects for all the tables in your Cloud Bigtable
  * instance as a readable object stream.
  *
  * @param {object} [query] Configuration object. See

@@ -343,7 +343,7 @@ describe('Bigtable', function() {
   });
 
   describe('createInstance', function() {
-    var INSTANCE_NAME = 'my-instance';
+    var INSTANCE_ID = 'my-instance';
 
     it('should provide the proper request options', function(done) {
       bigtable.request = function(config) {
@@ -351,15 +351,15 @@ describe('Bigtable', function() {
         assert.strictEqual(config.method, 'createInstance');
 
         assert.strictEqual(config.reqOpts.parent, bigtable.projectName);
-        assert.strictEqual(config.reqOpts.instanceId, INSTANCE_NAME);
-        assert.strictEqual(config.reqOpts.instance.displayName, INSTANCE_NAME);
+        assert.strictEqual(config.reqOpts.instanceId, INSTANCE_ID);
+        assert.strictEqual(config.reqOpts.instance.displayName, INSTANCE_ID);
 
         assert.strictEqual(config.gaxOpts, undefined);
 
         done();
       };
 
-      bigtable.createInstance(INSTANCE_NAME, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, assert.ifError);
     });
 
     it('should accept gaxOptions', function(done) {
@@ -370,7 +370,7 @@ describe('Bigtable', function() {
         done();
       };
 
-      bigtable.createInstance(INSTANCE_NAME, {gaxOptions}, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, {gaxOptions}, assert.ifError);
     });
 
     it('should respect the displayName option', function(done) {
@@ -386,7 +386,7 @@ describe('Bigtable', function() {
         done();
       };
 
-      bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
     it('should respect the type option', function(done) {
@@ -403,7 +403,7 @@ describe('Bigtable', function() {
         done();
       };
 
-      bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
     it('should respect the labels option', function(done) {
@@ -418,12 +418,12 @@ describe('Bigtable', function() {
         done();
       };
 
-      bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
     it('should respect the clusters option', function(done) {
       var cluster = {
-        name: 'my-cluster',
+        id: 'my-cluster',
         location: 'us-central1-b',
         nodes: 3,
         storage: 'ssd',
@@ -458,7 +458,7 @@ describe('Bigtable', function() {
         done();
       };
 
-      bigtable.createInstance(INSTANCE_NAME, options, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
     it('should return an error to the callback', function(done) {
@@ -468,11 +468,7 @@ describe('Bigtable', function() {
         callback(error);
       };
 
-      bigtable.createInstance(INSTANCE_NAME, function(
-        err,
-        instance,
-        operation
-      ) {
+      bigtable.createInstance(INSTANCE_ID, function(err, instance, operation) {
         assert.strictEqual(err, error);
         assert.strictEqual(instance, undefined);
         assert.strictEqual(operation, undefined);
@@ -489,8 +485,8 @@ describe('Bigtable', function() {
       var responseArg3 = {};
 
       var fakeInstance = {};
-      bigtable.instance = function(name) {
-        assert.strictEqual(name, INSTANCE_NAME);
+      bigtable.instance = function(id) {
+        assert.strictEqual(id, INSTANCE_ID);
         return fakeInstance;
       };
 
@@ -498,7 +494,7 @@ describe('Bigtable', function() {
         callback(null, response, responseArg2, responseArg3);
       };
 
-      bigtable.createInstance(INSTANCE_NAME, function(err, instance) {
+      bigtable.createInstance(INSTANCE_ID, function(err, instance) {
         assert.ifError(err);
         assert.strictEqual(instance, fakeInstance);
         assert.strictEqual(arguments[2], response);
@@ -586,15 +582,15 @@ describe('Bigtable', function() {
   });
 
   describe('instance', function() {
-    var INSTANCE_NAME = 'my-instance';
+    var INSTANCE_ID = 'my-instance';
 
     it('should return an Instance object', function() {
-      var instance = bigtable.instance(INSTANCE_NAME);
+      var instance = bigtable.instance(INSTANCE_ID);
       var args = instance.calledWith_;
 
       assert(instance instanceof FakeInstance);
       assert.strictEqual(args[0], bigtable);
-      assert.strictEqual(args[1], INSTANCE_NAME);
+      assert.strictEqual(args[1], INSTANCE_ID);
     });
   });
 
@@ -834,12 +830,12 @@ describe('Bigtable', function() {
         var requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
 
+        GAX_STREAM.emit('error', error);
+
         requestStream.on('error', function(err) {
           assert.strictEqual(err, error);
           done();
         });
-
-        GAX_STREAM.emit('error', error);
       });
 
       it('should re-emit request event from retry-request', function(done) {

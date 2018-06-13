@@ -361,7 +361,7 @@ class Row {
     });
 
     const reqOpts = {
-      tableName: this.table.id,
+      tableName: this.table.name,
       appProfileId: this.bigtable.appProfileId,
       rowKey: Mutation.convertToBytes(this.id),
       rules,
@@ -591,7 +591,7 @@ class Row {
    */
   filter(filter, config, callback) {
     const reqOpts = {
-      tableName: this.table.id,
+      tableName: this.table.name,
       appProfileId: this.bigtable.appProfileId,
       rowKey: Mutation.convertToBytes(this.id),
       predicateFilter: Filter.parse(filter),
