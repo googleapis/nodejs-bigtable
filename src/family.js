@@ -34,7 +34,7 @@ class FamilyError extends Error {
  *
  * @class
  * @param {Table} table
- * @param {string} name
+ * @param {string} id
  *
  * @example
  * const Bigtable = require('@google-cloud/bigtable');
@@ -44,17 +44,14 @@ class FamilyError extends Error {
  * const family = table.family('follows');
  */
 class Family {
-  constructor(table, name) {
+  constructor(table, id) {
     this.bigtable = table.bigtable;
     this.table = table;
 
-    this.id = Family.formatName_(table.name, name);
+    const name = Family.formatName_(table.name, id);
 
-    /**
-     * @name Family#familyName
-     * @type {string}
-     */
-    this.familyName = name.split('/').pop();
+    this.id = name.split('/').pop();
+    this.name = name;
   }
 
   /**
@@ -63,7 +60,7 @@ class Family {
    * @private
    *
    * @param {string} tableName The full formatted table name.
-   * @param {string} name The column family name.
+   * @param {string} id The column family unique-identifier.
    * @returns {string}
    *
    * @example
@@ -73,12 +70,12 @@ class Family {
    * );
    * // 'projects/p/zones/z/clusters/c/tables/t/columnFamilies/my-family'
    */
-  static formatName_(tableName, name) {
-    if (name.includes('/')) {
-      return name;
+  static formatName_(tableName, id) {
+    if (id.includes('/')) {
+      return id;
     }
 
-    return `${tableName}/columnFamilies/${name}`;
+    return `${tableName}/columnFamilies/${id}`;
   }
 
   /**
@@ -184,7 +181,7 @@ class Family {
       options = {};
     }
 
-    this.table.createFamily(this.familyName, options, callback);
+    this.table.createFamily(this.id, options, callback);
   }
 
   /**
@@ -221,7 +218,7 @@ class Family {
           name: this.table.name,
           modifications: [
             {
-              id: this.familyName,
+              id: this.id,
               drop: true,
             },
           ],
@@ -361,7 +358,7 @@ class Family {
       }
 
       for (let i = 0, l = families.length; i < l; i++) {
-        if (families[i].id === this.id) {
+        if (families[i].name === this.name) {
           this.metadata = families[i].metadata;
           callback(null, this.metadata);
           return;
@@ -414,7 +411,7 @@ class Family {
     }
 
     const mod = {
-      id: this.familyName,
+      id: this.id,
       update: {},
     };
 
@@ -436,7 +433,7 @@ class Family {
       },
       (...args) => {
         if (args[1]) {
-          this.metadata = args[1].columnFamilies[this.familyName];
+          this.metadata = args[1].columnFamilies[this.id];
           args.splice(1, 0, this.metadata);
         }
 
