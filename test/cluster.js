@@ -158,16 +158,15 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should accept fully expanded name as clusterId', function() {
-      let id_ = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
-      var cluster2 = new Cluster(INSTANCE, id_);
-      assert.strictEqual(cluster2.name, id_);
+      var cluster2 = new Cluster(INSTANCE, CLUSTER_NAME);
+      assert.strictEqual(cluster2.name, CLUSTER_NAME);
       assert.strictEqual(cluster2.id, CLUSTER_ID);
     });
 
     it('should throw if cluster id in wrong format', function() {
-      let id_ = `clusters/${CLUSTER_ID}`;
+      var id = `clusters/${CLUSTER_ID}`;
       assert.throws(function() {
-        new Cluster(INSTANCE, id_);
+        new Cluster(INSTANCE, id);
       }, Error);
     });
 
