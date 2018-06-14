@@ -1421,11 +1421,16 @@ Table.prototype.waitForReplication = function(callback) {
 
     // method checks if retrial is required & init retrial with 5 sec delay
     const retryIfNecessary = (err, res) => {
-      if (err || res.consistent === true) {
+      if (err) {
         clearTimeout(timeoutAfterTenMinutes);
-        callback(err, true);
-        return;
+        return callback(err);
       }
+
+      if (res.consistent === true) {
+        clearTimeout(timeoutAfterTenMinutes);
+        return callback(null, true);
+      }
+
       setTimeout(launchCheck, 5000);
     };
 

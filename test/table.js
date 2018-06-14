@@ -1391,7 +1391,7 @@ describe('Bigtable/Table', function() {
     });
   });
 
-  describe('waitForReplication', function() {
+  describe('waitForReplication', () => {
     it('should return the error to the callback', function(done) {
       var error = new Error('err');
 
@@ -1429,7 +1429,7 @@ describe('Bigtable/Table', function() {
       let setTimeoutSpy;
       let clearTimeoutSpy;
       let checkConsistencySpy;
-      let responses;
+      let responses = [];
 
       beforeEach(() => {
         clock = sinon.useFakeTimers({
@@ -1438,22 +1438,22 @@ describe('Bigtable/Table', function() {
         setTimeoutSpy = sinon.spy(global, 'setTimeout');
         clearTimeoutSpy = sinon.spy(global, 'clearTimeout');
         checkConsistencySpy = sinon.spy(table, 'checkConsistency');
+
+        table.bigtable.request = function(config, callback) {
+          responses.shift()(config, callback);
+        };
       });
 
       afterEach(() => {
         clock.restore();
       });
 
-      it('should return true if token is consistent', function(done) {
+      it('should return true if token is consistent', done => {
         responses = [
           (config, callback) =>
-            callback(null, [{consistency_token: 'sample-token12345'}]),
+            callback(null, {consistency_token: 'sample-token12345'}),
           (config, callback) => callback(null, {consistent: true}),
         ];
-
-        table.bigtable.request = function(config, callback) {
-          responses.shift()(config, callback);
-        };
 
         table.waitForReplication(function(err, response) {
           // Checks that a 10 minute timer was set.
@@ -1476,14 +1476,10 @@ describe('Bigtable/Table', function() {
       it('should retry checkConsistency', done => {
         responses = [
           (config, callback) =>
-            callback(null, [{consistency_token: 'sample-token12345'}]),
+            callback(null, {consistency_token: 'sample-token12345'}),
           (config, callback) => callback(null, {consistent: false}),
           (config, callback) => callback(null, {consistent: true}),
         ];
-
-        table.bigtable.request = function(config, callback) {
-          responses.shift()(config, callback);
-        };
 
         table.waitForReplication(function(err, response) {
           // Checks that a 10 minute timer was set.
@@ -1510,9 +1506,10 @@ describe('Bigtable/Table', function() {
 
       it('should return false after 10 min if inconsistency repeats', done => {
         this.timeout(10 * 61 * 1000); // 10 minutes
+
         table.bigtable.request = function(config, callback) {
           if (config.method === 'generateConsistencyToken') {
-            return callback(null, [{consistency_token: 'sample-token12345'}]);
+            return callback(null, {consistency_token: 'sample-token12345'});
           }
           if (config.method === 'checkConsistency') {
             return callback(null, {consistent: false});
@@ -1520,9 +1517,34 @@ describe('Bigtable/Table', function() {
         };
 
         table.waitForReplication(function(err, response) {
-          // check checkConsistencySpy called twice after 5seconds
+          setTimeoutSpy.called;
           clock.tick(10 * 60 * 1000); // 10 minutes
           assert.strictEqual(response, false);
+          done();
+        });
+
+        clock.runAll();
+      });
+
+      it('should return error if checkonsistency returns error', done => {
+        this.timeout(10 * 61 * 1000); // 10 minutes
+
+        let error = new Error('consistency-check error');
+
+        table.bigtable.request = function(config, callback) {
+          if (config.method === 'generateConsistencyToken') {
+            return callback(null, {consistency_token: 'sample-token12345'});
+          }
+          if (config.method === 'checkConsistency') {
+            return callback(error);
+          }
+        };
+
+        table.waitForReplication((err, res) => {
+          clearTimeoutSpy.called;
+          clock.tick(10 * 60 * 1000); // 10 minutes
+          assert.strictEqual(err, error);
+          assert.strictEqual(res, undefined);
           done();
         });
 
@@ -1574,17 +1596,14 @@ describe('Bigtable/Table', function() {
     });
 
     describe('error', function() {
-      var cToken = 'consistency-token-123';
-      var error = new Error('err');
+      let error = new Error('err');
 
-      beforeEach(function() {
+      it('should return the error to the callback', function(done) {
         table.bigtable.request = function(config, callback) {
           callback(error);
         };
-      });
 
-      it('should return the error to the callback', function(done) {
-        table.checkConsistency(cToken, function(err) {
+        table.checkConsistency('cToken', function(err) {
           assert.strictEqual(err, error);
           done();
         });
@@ -1596,14 +1615,15 @@ describe('Bigtable/Table', function() {
         (config, callback) => callback(null, {consistent: true}),
         (config, callback) => callback(null, {consistent: false}),
       ];
-      beforeEach(function() {
+
+      beforeEach(() => {
         table.bigtable.request = function(config, callback) {
           responses.shift()(config, callback);
         };
       });
 
       it('should return true if consistent', function(done) {
-        table.checkConsistency({}, function(err, resp) {
+        table.checkConsistency('', function(err, resp) {
           assert.strictEqual(resp.consistent, true);
           done();
         });
