@@ -85,18 +85,18 @@ describe('Bigtable/Filter', function() {
       assert.strictEqual(str, '1');
     });
 
-    it('should convert a buffer to a string', function() {
+    it('should not do anything to a buffer', function() {
       var str1 = 'hello';
       var buffer = Buffer.from(str1);
       var str2 = Filter.convertToRegExpString(buffer);
 
-      assert.strictEqual(str1, str2);
+      assert.deepStrictEqual(buffer, str2);
     });
 
-    it('should convert a non-utf8 buffer to a string', function() {
+    it('should use a binary encoding on a non utf8 buffer', function() {
       var str1 = 'æ';
       var buffer = Buffer.from('æ', 'binary');
-      var str2 = Filter.convertToRegExpString(buffer);
+      var str2 = Filter.convertToRegExpString(buffer).toString('binary');
 
       assert.strictEqual(str1, str2);
     });
@@ -258,6 +258,21 @@ describe('Bigtable/Filter', function() {
         assert(spy.calledWithExactly(column.name));
         assert(FakeMutation.convertToBytes.calledWithExactly(column.name));
         spy.restore();
+        done();
+      };
+
+      filter.column(column);
+    });
+
+    it('should handle a binary encoded buffer regex filter', function(done) {
+      var column = {
+        name: Buffer.from('æ', 'binary'),
+      };
+
+      filter.set = function(filterName, value) {
+        assert.strictEqual(filterName, 'columnQualifierRegexFilter');
+        assert.deepStrictEqual(value, column.name);
+        assert(FakeMutation.convertToBytes.calledWithExactly(column.name));
         done();
       };
 
