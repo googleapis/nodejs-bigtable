@@ -78,13 +78,21 @@ describe('Bigtable/Cluster', function() {
       assert.strictEqual(cluster.name, CLUSTER_NAME);
     });
 
-    it('should leave full cluster names unaltered', function() {
-      var cluster = new Cluster(INSTANCE, CLUSTER_ID);
-      assert.strictEqual(cluster.name, CLUSTER_NAME);
+    it('should leave the cluster id unaltered', function() {
+      assert.strictEqual(cluster.id, CLUSTER_ID);
     });
 
-    it('should localize the id from the name', function() {
+    it('should leave full cluster names unaltered and localize the id from the name', function() {
+      var cluster = new Cluster(INSTANCE, CLUSTER_NAME);
+      assert.strictEqual(cluster.name, CLUSTER_NAME);
       assert.strictEqual(cluster.id, CLUSTER_ID);
+    });
+
+    it('should throw if cluster id in wrong format', function() {
+      var id = `clusters/${CLUSTER_ID}`;
+      assert.throws(function() {
+        new Cluster(INSTANCE, id);
+      }, Error);
     });
   });
 
@@ -155,19 +163,6 @@ describe('Bigtable/Cluster', function() {
       };
 
       cluster.create(options, done);
-    });
-
-    it('should accept fully expanded name as clusterId', function() {
-      var cluster2 = new Cluster(INSTANCE, CLUSTER_NAME);
-      assert.strictEqual(cluster2.name, CLUSTER_NAME);
-      assert.strictEqual(cluster2.id, CLUSTER_ID);
-    });
-
-    it('should throw if cluster id in wrong format', function() {
-      var id = `clusters/${CLUSTER_ID}`;
-      assert.throws(function() {
-        new Cluster(INSTANCE, id);
-      }, Error);
     });
 
     it('should not require options', function(done) {
