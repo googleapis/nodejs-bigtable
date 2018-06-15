@@ -93,7 +93,7 @@ describe('Bigtable/Filter', function() {
       assert.deepStrictEqual(buffer, str2);
     });
 
-    it('should not incorrectly convert a non-utf8 buffer to a utf8 buffer', function() {
+    it('should use a binary encoding on a non utf8 buffer', function() {
       var str1 = 'æ';
       var buffer = Buffer.from('æ', 'binary');
       var str2 = Filter.convertToRegExpString(buffer).toString('binary');
