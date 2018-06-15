@@ -38,7 +38,7 @@ class Cluster {
     var name;
 
     if (id.includes('/')) {
-      if (id.includes(`${instance.name}/clusters/`)) {
+      if (id.startsWith(`${instance.name}/clusters/`)) {
         name = id;
       } else {
         throw new Error(
