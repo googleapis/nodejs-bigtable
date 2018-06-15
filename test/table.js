@@ -1611,25 +1611,20 @@ describe('Bigtable/Table', function() {
     });
 
     describe('success', function() {
-      let responses = [
-        (config, callback) => callback(null, {consistent: true}),
-        (config, callback) => callback(null, {consistent: false}),
-      ];
-
-      beforeEach(() => {
-        table.bigtable.request = function(config, callback) {
-          responses.shift()(config, callback);
-        };
-      });
-
       it('should return true if consistent', function(done) {
+        table.bigtable.request = function(config, callback) {
+          callback(null, {consistent: true});
+        };
         table.checkConsistency('', function(err, resp) {
           assert.strictEqual(resp.consistent, true);
           done();
         });
       });
 
-      it('should return false if in-consistent', function(done) {
+      it('should return false if not consistent', function(done) {
+        table.bigtable.request = function(config, callback) {
+          callback(null, {consistent: false});
+        };
         table.checkConsistency('', function(err, resp) {
           assert.strictEqual(resp.consistent, false);
           done();
