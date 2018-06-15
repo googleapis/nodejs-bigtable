@@ -264,6 +264,21 @@ describe('Bigtable/Filter', function() {
       filter.column(column);
     });
 
+    it('should handle a binary encoded buffer regex filter', function(done) {
+      var column = {
+        name: Buffer.from('æ', 'binary'),
+      };
+
+      filter.set = function(filterName, value) {
+        assert.strictEqual(filterName, 'columnQualifierRegexFilter');
+        assert.deepStrictEqual(value, column.name);
+        assert(FakeMutation.convertToBytes.calledWithExactly(column.name));
+        done();
+      };
+
+      filter.column(column);
+    });
+
     it('should accept the short-hand version of column', function(done) {
       var column = 'fake-column';
 
