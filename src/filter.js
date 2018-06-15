@@ -116,8 +116,10 @@ class Filter {
     }
 
     if (Buffer.isBuffer(regex)) {
-      const regexToEscape = regex.toString(isUtf8(regex) ? 'utf8' : 'binary');
-      return escapeStringRegexp(regexToEscape);
+      const encodingToUse = isUtf8(regex) ? 'utf8' : 'binary';
+      const regexToEscape = regex.toString(encodingToUse);
+      const escapedString = escapeStringRegexp(regexToEscape);
+      return Buffer.from(escapedString, encodingToUse);
     }
 
     throw new TypeError("Can't convert to RegExp String from unknown type.");
