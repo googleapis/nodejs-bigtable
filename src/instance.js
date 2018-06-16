@@ -42,8 +42,19 @@ class Instance {
   constructor(bigtable, id) {
     this.bigtable = bigtable;
 
-    let name = id;
-    if (!name.includes('/')) {
+    var name;
+    if (id.includes('/')) {
+      if (id.startsWith(`${bigtable.projectName}/instances/`)) {
+        name = id;
+      } else {
+        throw new Error(
+          `Instance id '${id}' is not formatted correctly.  
+Please use the format 'my-instance' or '${
+            bigtable.projectName
+          }/instances/my-instance'.`
+        );
+      }
+    } else {
       name = `${bigtable.projectName}/instances/${id}`;
     }
 
