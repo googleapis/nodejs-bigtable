@@ -92,6 +92,19 @@ describe('Bigtable/AppProfile', function() {
     it('should localize the name from the ID', function() {
       assert.strictEqual(appProfile.id, APP_PROFILE_ID);
     });
+
+    it('should leave full app profile name unaltered and localize the id from the name', function() {
+      var appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
+    });
+
+    it('should throw if cluster id in wrong format', function() {
+      var id = `appProfiles/${APP_PROFILE_ID}`;
+      assert.throws(function() {
+        new AppProfile(INSTANCE, id);
+      }, Error);
+    });
   });
 
   describe('formatAppProfile_', function() {
