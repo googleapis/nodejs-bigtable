@@ -599,7 +599,7 @@ class Bigtable {
         }
 
         const instances = resp.instances.map(instanceData => {
-          const instance = this.instance(instanceData.name);
+          const instance = this.instance(instanceData.name.split('/').pop());
           instance.metadata = instanceData;
           return instance;
         });
