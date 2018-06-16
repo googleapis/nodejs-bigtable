@@ -38,12 +38,25 @@ class AppProfile {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    if (id.indexOf('/') === -1) {
-      id = `${instance.name}/appProfiles/${id}`;
+    var name;
+
+    if (id.includes('/')) {
+      if (id.startsWith(`${instance.name}/appProfiles/`)) {
+        name = id;
+      } else {
+        throw new Error(
+          `AppProfile id '${id}' is not formatted correctly.  
+Please use the format 'my-app-profile' or '${
+            instance.name
+          }/appProfiles/my-app-profile'.`
+        );
+      }
+    } else {
+      name = `${instance.name}/appProfiles/${id}`;
     }
 
-    this.id = id.split('/').pop();
-    this.name = id;
+    this.id = name.split('/').pop();
+    this.name = name;
   }
 
   /**
