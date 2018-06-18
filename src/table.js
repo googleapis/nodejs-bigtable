@@ -52,7 +52,20 @@ class Table {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    const name = Table.formatName_(instance.name, id);
+    var name;
+
+    if (id.includes('/')) {
+      if (id.startsWith(`${instance.name}/tables/`)) {
+        name = id;
+      } else {
+        throw new Error(
+          `Table id '${id}' is not formatted correctly.  
+Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
+        );
+      }
+    } else {
+      name = `${instance.name}/tables/${id}`;
+    }
 
     this.name = name;
     this.id = name.split('/').pop();
