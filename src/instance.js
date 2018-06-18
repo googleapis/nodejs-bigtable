@@ -680,7 +680,9 @@ Please use the format 'my-instance' or '${
         }
 
         const appProfiles = resp.map(appProfileObj => {
-          const appProfile = this.appProfile(appProfileObj.name);
+          const appProfile = this.appProfile(
+            appProfileObj.name.split('/').pop()
+          );
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
