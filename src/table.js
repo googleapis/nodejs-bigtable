@@ -1383,6 +1383,99 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       callback
     );
   }
+
+  /**
+   * Generates Consistency-Token and check consistency for generated token
+   * In-case consistency check returns false, retrial is done in interval
+   * of 5 seconds till 10 minutes, after that it returns false.
+   *
+   * @param {function(?error, ?boolean)} callback The callback function.
+   * @param {?Error} callback.err An error returned while making this request.
+   * @param {?Boolean} callback.resp Boolean value.
+   */
+  waitForReplication(callback) {
+    // handler for generated consistency-token
+    const tokenHandler = (err, resp) => {
+      if (err) {
+        return callback(err);
+      }
+
+      // set timeout for 10 minutes
+      const timeoutAfterTenMinutes = setTimeout(() => {
+        callback(null, false);
+      }, 10 * 60 * 1000);
+
+      // method checks if retrial is required & init retrial with 5 sec delay
+      const retryIfNecessary = (err, res) => {
+        if (err) {
+          clearTimeout(timeoutAfterTenMinutes);
+          return callback(err);
+        }
+
+        if (res.consistent === true) {
+          clearTimeout(timeoutAfterTenMinutes);
+          return callback(null, true);
+        }
+
+        setTimeout(launchCheck, 5000);
+      };
+
+      // method to launch token consistency check
+      const launchCheck = () => {
+        const token = resp.consistency_token;
+        this.checkConsistency(token, retryIfNecessary);
+      };
+
+      launchCheck();
+    };
+
+    // generate consistency-token
+    this.generateConsistencyToken(tokenHandler);
+  }
+
+  /**
+   * Generates Consistency-Token
+   * @param {function(?error, ?boolean)} callback The callback function.
+   * @param {?Error} callback.err An error returned while making this request.
+   * @param {?String} callback.resp.consistency_token The generated consistency token.
+   */
+  generateConsistencyToken(callback) {
+    const reqOpts = {
+      name: this.name,
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'generateConsistencyToken',
+        reqOpts: reqOpts,
+      },
+      callback
+    );
+  }
+
+  /**
+   * Checks consistency for given ConsistencyToken
+   * @param {string} token consistency token
+   * @param {function(?error, ?boolean)} callback The callback function.
+   * @param {?Error} callback.err An error returned while making this request.
+   * @param {?Boolean} callback.resp.consistent Boolean value.
+   */
+  checkConsistency(token, callback) {
+    const reqOpts = {
+      name: this.name,
+      consistencyToken: token,
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'checkConsistency',
+        reqOpts: reqOpts,
+      },
+      callback
+    );
+  }
 }
 
 /**
@@ -1396,99 +1489,6 @@ Table.VIEWS = {
   name: 1,
   schema: 2,
   full: 4,
-};
-
-/**
- * Generates Consistency-Token and check consistency for generated token
- * In-case consistency check returns false, retrial is done in interval
- * of 5 seconds till 10 minutes, after that it returns false.
- *
- * @param {function(?error, ?boolean)} callback The callback function.
- * @param {?Error} callback.err An error returned while making this request.
- * @param {?Boolean} callback.resp Boolean value.
- */
-Table.prototype.waitForReplication = function(callback) {
-  // handler for generated consistency-token
-  const tokenHandler = (err, resp) => {
-    if (err) {
-      return callback(err);
-    }
-
-    // set timeout for 10 minutes
-    const timeoutAfterTenMinutes = setTimeout(() => {
-      callback(null, false);
-    }, 10 * 60 * 1000);
-
-    // method checks if retrial is required & init retrial with 5 sec delay
-    const retryIfNecessary = (err, res) => {
-      if (err) {
-        clearTimeout(timeoutAfterTenMinutes);
-        return callback(err);
-      }
-
-      if (res.consistent === true) {
-        clearTimeout(timeoutAfterTenMinutes);
-        return callback(null, true);
-      }
-
-      setTimeout(launchCheck, 5000);
-    };
-
-    // method to launch token consistency check
-    const launchCheck = () => {
-      const token = resp.consistency_token;
-      this.checkConsistency(token, retryIfNecessary);
-    };
-
-    launchCheck();
-  };
-
-  // generate consistency-token
-  this.generateConsistencyToken(tokenHandler);
-};
-
-/**
- * Generates Consistency-Token
- * @param {function(?error, ?boolean)} callback The callback function.
- * @param {?Error} callback.err An error returned while making this request.
- * @param {?String} callback.resp.consistency_token The generated consistency token.
- */
-Table.prototype.generateConsistencyToken = function(callback) {
-  const reqOpts = {
-    name: this.id,
-  };
-
-  this.bigtable.request(
-    {
-      client: 'BigtableTableAdminClient',
-      method: 'generateConsistencyToken',
-      reqOpts: reqOpts,
-    },
-    callback
-  );
-};
-
-/**
- * Checks consistency for given ConsistencyToken
- * @param {string} token consistency token
- * @param {function(?error, ?boolean)} callback The callback function.
- * @param {?Error} callback.err An error returned while making this request.
- * @param {?Boolean} callback.resp.consistent Boolean value.
- */
-Table.prototype.checkConsistency = function(token, callback) {
-  const reqOpts = {
-    name: this.id,
-    consistencyToken: token,
-  };
-
-  this.bigtable.request(
-    {
-      client: 'BigtableTableAdminClient',
-      method: 'checkConsistency',
-      reqOpts: reqOpts,
-    },
-    callback
-  );
 };
 
 /*! Developer Documentation
