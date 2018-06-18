@@ -86,6 +86,19 @@ describe('Bigtable/Cluster', function() {
     it('should localize the id from the name', function() {
       assert.strictEqual(cluster.id, CLUSTER_ID);
     });
+
+    it('should leave full cluster names unaltered and localize the id from the name', function() {
+      var cluster = new Cluster(INSTANCE, CLUSTER_NAME);
+      assert.strictEqual(cluster.name, CLUSTER_NAME);
+      assert.strictEqual(cluster.id, CLUSTER_ID);
+    });
+
+    it('should throw if cluster id in wrong format', function() {
+      var id = `clusters/${CLUSTER_ID}`;
+      assert.throws(function() {
+        new Cluster(INSTANCE, id);
+      }, Error);
+    });
   });
 
   describe('getLocation_', function() {
