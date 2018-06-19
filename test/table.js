@@ -1406,17 +1406,15 @@ describe('Bigtable/Table', function() {
     });
 
     it('should call checkConsistency', done => {
-      var response = {
-        consistency_token: 'sample-token12345',
-      };
+      const consistencyToken = 'sample-token12345';
 
       table.generateConsistencyToken = function(callback) {
-        callback(null, response);
+        callback(null, consistencyToken);
       };
 
       table.checkConsistency = function(token, callback) {
-        assert.strictEqual(token, response.consistency_token);
-        callback(null, {consistent: true});
+        assert.strictEqual(token, consistencyToken);
+        callback(null, true);
       };
 
       table.waitForReplication(() => {
@@ -1451,11 +1449,11 @@ describe('Bigtable/Table', function() {
       it('should return true if token is consistent', done => {
         responses = [
           (config, callback) =>
-            callback(null, {consistency_token: 'sample-token12345'}),
+            callback(null, {consistencyToken: 'sample-token12345'}),
           (config, callback) => callback(null, {consistent: true}),
         ];
 
-        table.waitForReplication(function(err, response) {
+        table.waitForReplication(function(err, res) {
           // Checks that a 10 minute timer was set.
           setTimeoutSpy.calledWith(sinon.match.func, 10 * 60 * 1000);
 
@@ -1465,7 +1463,7 @@ describe('Bigtable/Table', function() {
           // Checks that clearInterval was called.
           assert.strictEqual(clearTimeoutSpy.callCount, 1);
 
-          assert.strictEqual(response, true);
+          assert.strictEqual(res, true);
           assert.ifError(err);
           done();
         });
@@ -1476,7 +1474,7 @@ describe('Bigtable/Table', function() {
       it('should retry checkConsistency', done => {
         responses = [
           (config, callback) =>
-            callback(null, {consistency_token: 'sample-token12345'}),
+            callback(null, {consistencyToken: 'sample-token12345'}),
           (config, callback) => callback(null, {consistent: false}),
           (config, callback) => callback(null, {consistent: true}),
         ];
@@ -1507,7 +1505,7 @@ describe('Bigtable/Table', function() {
       it('should return false after 10 min if inconsistency repeats', done => {
         table.bigtable.request = function(config, callback) {
           if (config.method === 'generateConsistencyToken') {
-            return callback(null, {consistency_token: 'sample-token12345'});
+            return callback(null, {consistencyToken: 'sample-token12345'});
           }
           if (config.method === 'checkConsistency') {
             return callback(null, {consistent: false});
@@ -1528,7 +1526,7 @@ describe('Bigtable/Table', function() {
 
         responses = [
           (config, callback) =>
-            callback(null, {consistency_token: 'sample-token12345'}),
+            callback(null, {consistencyToken: 'sample-token12345'}),
           (config, callback) => callback(error),
         ];
 
@@ -1555,16 +1553,17 @@ describe('Bigtable/Table', function() {
     });
 
     it('should return a consistencyToken', function(done) {
-      var response = {
-        consistencyToken: 'sample-token-123456',
+      const cToken = 'sample-token-123456';
+      const response = {
+        consistencyToken: cToken,
       };
 
       table.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
-      table.generateConsistencyToken(function(err, apiResponse) {
-        assert.strictEqual(apiResponse, response);
+      table.generateConsistencyToken(function(err, token) {
+        assert.strictEqual(token, cToken);
         done();
       });
     });
@@ -1572,7 +1571,7 @@ describe('Bigtable/Table', function() {
 
   describe('checkConsistency', function() {
     it('should provide the proper request options', function(done) {
-      var cToken = 'consistency-token-123';
+      const cToken = 'consistency-token-123';
 
       table.bigtable.request = function(config) {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
@@ -1605,8 +1604,9 @@ describe('Bigtable/Table', function() {
         table.bigtable.request = function(config, callback) {
           callback(null, {consistent: true});
         };
+
         table.checkConsistency('', function(err, resp) {
-          assert.strictEqual(resp.consistent, true);
+          assert.strictEqual(resp, true);
           done();
         });
       });
@@ -1616,7 +1616,7 @@ describe('Bigtable/Table', function() {
           callback(null, {consistent: false});
         };
         table.checkConsistency('', function(err, resp) {
-          assert.strictEqual(resp.consistent, false);
+          assert.strictEqual(resp, false);
           done();
         });
       });

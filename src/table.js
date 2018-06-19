@@ -1412,7 +1412,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
           return callback(err);
         }
 
-        if (res.consistent === true) {
+        if (res === true) {
           clearTimeout(timeoutAfterTenMinutes);
           return callback(null, true);
         }
@@ -1422,7 +1422,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
 
       // method to launch token consistency check
       const launchCheck = () => {
-        const token = resp.consistency_token;
+        const token = resp;
         this.checkConsistency(token, retryIfNecessary);
       };
 
@@ -1437,7 +1437,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * Generates Consistency-Token
    * @param {function(?error, ?boolean)} callback The callback function.
    * @param {?Error} callback.err An error returned while making this request.
-   * @param {?String} callback.resp.consistency_token The generated consistency token.
+   * @param {?String} callback.consistency_token The generated consistency token.
    */
   generateConsistencyToken(callback) {
     const reqOpts = {
@@ -1450,7 +1450,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         method: 'generateConsistencyToken',
         reqOpts: reqOpts,
       },
-      callback
+      (err, res) => {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, res.consistencyToken);
+        }
+      }
     );
   }
 
@@ -1459,7 +1465,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {string} token consistency token
    * @param {function(?error, ?boolean)} callback The callback function.
    * @param {?Error} callback.err An error returned while making this request.
-   * @param {?Boolean} callback.resp.consistent Boolean value.
+   * @param {?Boolean} callback.consistent Boolean value.
    */
   checkConsistency(token, callback) {
     const reqOpts = {
@@ -1473,7 +1479,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         method: 'checkConsistency',
         reqOpts: reqOpts,
       },
-      callback
+      (err, res) => {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, res.consistent);
+        }
+      }
     );
   }
 }

@@ -372,6 +372,40 @@ describe('Bigtable', function() {
         done
       );
     });
+
+    it('should generate consistency token', done => {
+      TABLE.generateConsistencyToken(function(err, token) {
+        assert.notStrictEqual(token, undefined);
+        assert.strictEqual(typeof token, 'string');
+        done();
+      });
+    });
+
+    it('should return error for checkConsistency of invalid token', done => {
+      TABLE.checkConsistency('dummy-token', function(err, res) {
+        assert.notStrictEqual(err, undefined);
+        assert.strictEqual(res, undefined);
+        done();
+      });
+    });
+
+    it('should return boolean for checkConsistency of token', done => {
+      TABLE.generateConsistencyToken(function(err, token) {
+        TABLE.checkConsistency(token, function(err, res) {
+          assert.strictEqual(err, null);
+          assert.strictEqual(typeof res, 'boolean');
+          done();
+        });
+      });
+    });
+
+    it('should return boolean for waitForReplication', done => {
+      TABLE.waitForReplication(function(err, res) {
+        assert.strictEqual(err, null);
+        assert.strictEqual(typeof res, 'boolean');
+        done();
+      });
+    });
   });
 
   describe('column families', function() {
