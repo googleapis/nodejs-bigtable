@@ -1395,7 +1395,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    */
   waitForReplication(callback) {
     // handler for generated consistency-token
-    const tokenHandler = (err, resp) => {
+    const tokenHandler = (err, token) => {
       if (err) {
         return callback(err);
       }
@@ -1422,7 +1422,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
 
       // method to launch token consistency check
       const launchCheck = () => {
-        const token = resp;
         this.checkConsistency(token, retryIfNecessary);
       };
 
@@ -1437,7 +1436,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * Generates Consistency-Token
    * @param {function(?error, ?boolean)} callback The callback function.
    * @param {?Error} callback.err An error returned while making this request.
-   * @param {?String} callback.consistency_token The generated consistency token.
+   * @param {?String} callback.token The generated consistency token.
    */
   generateConsistencyToken(callback) {
     const reqOpts = {
@@ -1453,9 +1452,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       (err, res) => {
         if (err) {
           callback(err);
-        } else {
-          callback(null, res.consistencyToken);
+          return;
         }
+
+        callback(null, res.consistencyToken);
       }
     );
   }
@@ -1482,9 +1482,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       (err, res) => {
         if (err) {
           callback(err);
-        } else {
-          callback(null, res.consistent);
+          return;
         }
+
+        callback(null, res.consistent);
       }
     );
   }

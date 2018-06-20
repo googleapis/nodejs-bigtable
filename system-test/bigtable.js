@@ -372,10 +372,12 @@ describe('Bigtable', function() {
         done
       );
     });
+  });
 
+  describe('consistency tokens', function() {
     it('should generate consistency token', done => {
       TABLE.generateConsistencyToken(function(err, token) {
-        assert.notStrictEqual(token, undefined);
+        assert.ifError(err);
         assert.strictEqual(typeof token, 'string');
         done();
       });
@@ -383,7 +385,7 @@ describe('Bigtable', function() {
 
     it('should return error for checkConsistency of invalid token', done => {
       TABLE.checkConsistency('dummy-token', function(err, res) {
-        assert.notStrictEqual(err, undefined);
+        assert.strictEqual(err.message, '3 INVALID_ARGUMENT: Invalid token');
         assert.strictEqual(res, undefined);
         done();
       });
@@ -392,7 +394,7 @@ describe('Bigtable', function() {
     it('should return boolean for checkConsistency of token', done => {
       TABLE.generateConsistencyToken(function(err, token) {
         TABLE.checkConsistency(token, function(err, res) {
-          assert.strictEqual(err, null);
+          assert.ifError(err);
           assert.strictEqual(typeof res, 'boolean');
           done();
         });
@@ -401,7 +403,7 @@ describe('Bigtable', function() {
 
     it('should return boolean for waitForReplication', done => {
       TABLE.waitForReplication(function(err, res) {
-        assert.strictEqual(err, null);
+        assert.ifError(err);
         assert.strictEqual(typeof res, 'boolean');
         done();
       });
