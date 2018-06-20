@@ -155,6 +155,18 @@ describe('Bigtable/Table', function() {
     it('should localize table name', function() {
       assert.strictEqual(table.name, TABLE_NAME);
     });
+    it('should leave full table name unaltered and localize the id from the name', function() {
+      var table = new Table(INSTANCE, TABLE_NAME);
+      assert.strictEqual(table.name, TABLE_NAME);
+      assert.strictEqual(table.id, TABLE_ID);
+    });
+
+    it('should throw if table id in wrong format', function() {
+      var id = `tables/${TABLE_ID}`;
+      assert.throws(function() {
+        new Table(INSTANCE, id);
+      }, Error);
+    });
   });
 
   describe('VIEWS', function() {

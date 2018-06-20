@@ -91,7 +91,7 @@ describe('Bigtable/Instance', function() {
   });
 
   beforeEach(function() {
-    instance = new Instance(BIGTABLE, INSTANCE_NAME);
+    instance = new Instance(BIGTABLE, INSTANCE_ID);
   });
 
   describe('instantiation', function() {
@@ -122,10 +122,17 @@ describe('Bigtable/Instance', function() {
       assert.strictEqual(instance.id, INSTANCE_ID);
     });
 
-    it('should not alter full instance ids', function() {
+    it('should leave full instance name unaltered and localize the id from the name', function() {
       var instance = new Instance(BIGTABLE, INSTANCE_NAME);
       assert.strictEqual(instance.name, INSTANCE_NAME);
       assert.strictEqual(instance.id, INSTANCE_ID);
+    });
+
+    it('should throw if instance id in wrong format', function() {
+      var id = `instances/${INSTANCE_ID}`;
+      assert.throws(function() {
+        new Instance(BIGTABLE, id);
+      }, Error);
     });
   });
 
