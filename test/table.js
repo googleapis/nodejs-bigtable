@@ -281,7 +281,8 @@ describe('Bigtable/Table', function() {
 
   describe('createFamily', function() {
     var COLUMN_ID = 'my-column';
-
+    var FAMILY_ID = 'test-family';
+		
     it('should throw if a id is not provided', function() {
       assert.throws(function() {
         table.createFamily();
@@ -373,11 +374,11 @@ describe('Bigtable/Table', function() {
       };
 
       table.family = function(name) {
-        assert.strictEqual(name, response.name);
+        assert.strictEqual(name, FAMILY_ID);
         return fakeFamily;
       };
 
-      table.createFamily(COLUMN_ID, function(err, family, apiResponse) {
+      table.createFamily(FAMILY_ID, function(err, family, apiResponse) {
         assert.ifError(err);
         assert.strictEqual(family, fakeFamily);
         assert.strictEqual(family.metadata, response);

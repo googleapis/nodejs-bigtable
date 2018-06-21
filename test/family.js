@@ -85,19 +85,18 @@ describe('Bigtable/Family', function() {
       var family = new Family(TABLE, FAMILY_ID);
       assert.strictEqual(family.name, FAMILY_NAME);
     });
-  });
 
-  describe('formatName_', function() {
-    it('should format the column family name', function() {
-      var formatted = Family.formatName_(TABLE.name, FAMILY_ID);
-
-      assert.strictEqual(formatted, FAMILY_NAME);
+    it('should leave full family names unaltered and localize the id from the name', function() {
+      var family = new Family(TABLE, FAMILY_NAME);
+      assert.strictEqual(family.name, FAMILY_NAME);
+      assert.strictEqual(family.id, FAMILY_ID);
     });
 
-    it('should not re-format the name', function() {
-      var formatted = Family.formatName_(TABLE.name, FAMILY_ID);
-
-      assert.strictEqual(formatted, FAMILY_NAME);
+    it('should throw if family id in wrong format', function() {
+      var id = `columnFamilies/${FAMILY_ID}`;
+      assert.throws(function() {
+        new Family(TABLE, id);
+      }, Error);
     });
   });
 
