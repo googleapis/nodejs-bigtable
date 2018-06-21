@@ -12,14 +12,25 @@
 
 const bigtable = require('@google-cloud/bigtable');
 
-const TABLE_NAME = 'Hello-Bigtable';
-const COLUMN_FAMILY_NAME = 'cf1';
-const COLUMN_NAME = 'greeting';
+const TABLE_ID = 'Hello-Bigtable';
+const COLUMN_FAMILY_ID = 'cf1';
+const COLUMN_QUALIFIER   = 'greeting';
 const INSTANCE_ID = process.env.INSTANCE_ID;
+const PROJECT_ID = process.env.PROJECT_ID;
 
 if (!INSTANCE_ID) {
   throw new Error('Environment variables for INSTANCE_ID must be set!');
 }
+
+if (!PROJECT_ID) {
+  throw new Error('Environment variables PROJECT_ID must be set!');
+}
+
+var options = {
+  projectId: PROJECT_ID
+}
+
+
 
 const getRowGreeting = row => {
   return row.data[COLUMN_FAMILY_NAME][COLUMN_NAME][0].value;
@@ -27,7 +38,7 @@ const getRowGreeting = row => {
 
 (async () => {
   try {
-    const bigtableClient = bigtable();
+    const bigtableClient = bigtable(bigtableOptions);
     const instance = bigtableClient.instance(INSTANCE_ID);
 
     const table = instance.table(TABLE_NAME);
@@ -37,7 +48,7 @@ const getRowGreeting = row => {
       const options = {
         families: [
           {
-            name: COLUMN_FAMILY_NAME,
+            id: COLUMN_FAMILY_NAME,
             rule: {
               versions: 1,
             },
@@ -74,11 +85,11 @@ const getRowGreeting = row => {
     ];
 
     console.log('Reading a single row by row key');
-    let [singeRow] = await table.row('greeting0').get({filter});
+    let [singeRow] = await table.row('greeting0').get({ filter });
     console.log(`\tRead: ${getRowGreeting(singeRow)}`);
 
     console.log('Reading the entire table');
-    const [allRows] = await table.getRows({filter});
+    const [allRows] = await table.getRows({ filter });
     for (const row of allRows) {
       console.log(`\tRead: ${getRowGreeting(row)}`);
     }

@@ -34,7 +34,7 @@ test.before(async () => {
   await instance.create({
     clusters: [
       {
-        id: clusterId,
+        id: clusterName,
         location: 'us-central1-c',
         nodes: 3,
       },

@@ -39,7 +39,7 @@ co(function*() {
       const options = {
         families: [
           {
-            name: COLUMN_FAMILY_NAME,
+            id: COLUMN_FAMILY_NAME,
             rule: {
               versions: 1,
             },
