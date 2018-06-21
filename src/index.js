@@ -17,9 +17,9 @@
 const arrify = require('arrify');
 const common = require('@google-cloud/common');
 const extend = require('extend');
+const {GrpcClient} = require('google-gax');
 const GrpcService = require('@google-cloud/common-grpc').Service;
 const googleAuth = require('google-auto-auth');
-const grpc = require('google-gax').grpc().grpc;
 const is = require('is');
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -31,6 +31,8 @@ const Instance = require('./instance');
 
 const PKG = require('../package.json');
 const v2 = require('./v2');
+
+const grpc = new GrpcClient().grpc;
 
 /**
  * @typedef {object} ClientConfig
