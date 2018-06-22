@@ -88,7 +88,9 @@ class ChunkTransformer extends Transform {
       }
     }
     if (data.lastScannedRowKey && data.lastScannedRowKey.length > 0) {
-      this.lastRowKey = Mutation.convertFromBytes(data.lastScannedRowKey);
+      this.lastRowKey = Mutation.convertFromBytes(data.lastScannedRowKey, {
+        userOptions: this.options,
+      });
     }
     next();
   }
@@ -229,11 +231,13 @@ class ChunkTransformer extends Transform {
   validateRowInProgress(chunk) {
     const row = this.row;
     if (chunk.rowKey && chunk.rowKey.length) {
-      const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+      const newRowKey = Mutation.convertFromBytes(chunk.rowKey, {
+        userOptions: this.options,
+      });
       if (
         newRowKey &&
         chunk.rowKey &&
-        newRowKey !== '' &&
+        newRowKey.length !== 0 &&
         newRowKey !== row.key
       ) {
         this.destroy(
@@ -294,14 +298,18 @@ class ChunkTransformer extends Transform {
    * @param {chunks} chunk chunk to process
    */
   processNewRow(chunk) {
-    const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+    const newRowKey = Mutation.convertFromBytes(chunk.rowKey, {
+      userOptions: this.options,
+    });
     this.validateNewRow(chunk, newRowKey);
     if (chunk.familyName && chunk.qualifier) {
       const row = this.row;
       row.key = newRowKey;
       row.data = {};
       this.family = row.data[chunk.familyName.value] = {};
-      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
+        userOptions: this.options,
+      });
       this.qualifiers = this.family[qualifierName] = [];
       this.qualifier = {
         value: Mutation.convertFromBytes(chunk.value, {
@@ -332,7 +340,9 @@ class ChunkTransformer extends Transform {
         row.data[chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
-      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
+        userOptions: this.options,
+      });
       this.qualifiers = this.family[qualifierName] =
         this.family[qualifierName] || [];
     }

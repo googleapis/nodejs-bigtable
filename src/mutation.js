@@ -51,6 +51,8 @@ class Mutation {
    * @param {boolean} [options.isPossibleNumber] Check if byte is number
    * @param {object} [options.userOptions]
    * @param {boolean} [options.userOptions.decode] Check if decode is required
+   * @param {boolean} [options.userOptions.encoding] The encoding to use when
+   *     converting the buffer to a string.
    * @returns {string|number|buffer}
    */
   static convertFromBytes(bytes, options) {
@@ -63,15 +65,13 @@ class Mutation {
       }
     }
 
-    if (
-      options &&
-      options.userOptions &&
-      options.userOptions.decode === false
-    ) {
+    const userOptions = (options && options.userOptions) || {};
+
+    if (userOptions.decode === false) {
       return buf;
     }
 
-    return buf.toString();
+    return buf.toString(userOptions.encoding);
   }
 
   /**

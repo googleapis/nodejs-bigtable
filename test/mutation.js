@@ -75,6 +75,16 @@ describe('Bigtable/Mutation', function() {
       assert.strictEqual(message, decoded);
     });
 
+    it('should allow using a custom encoding scheme', function() {
+      var message = 'æ';
+      var encoded = Buffer.from(message, 'binary').toString('base64');
+      var decoded = Mutation.convertFromBytes(encoded, {
+        userOptions: {encoding: 'binary'},
+      });
+
+      assert.strictEqual(message, decoded);
+    });
+
     it('should return a buffer if decode is set to false', function() {
       var message = 'Hello!';
       var encoded = Buffer.from(message).toString('base64');
