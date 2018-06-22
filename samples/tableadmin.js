@@ -17,9 +17,18 @@
 
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
+const PROJECT_ID = process.env.PROJECT_ID;
+
+if (!PROJECT_ID) {
+  throw new Error('Environment variables PROJECT_ID must be set!');
+}
+
+var options = {
+  projectId: PROJECT_ID
+}
 
 async function runTableOperations(instanceName, tableName) {
-  const bigtableClient = new Bigtable();
+  const bigtableClient = bigtable(bigtableOptions);
   const instance = bigtableClient.instance(instanceName);
   const table = instance.table(tableName);
 
@@ -55,7 +64,7 @@ async function runTableOperations(instanceName, tableName) {
   try {
     let [tables] = await instance.getTables();
     tables.forEach(table => {
-      console.log(table.name);
+      console.log(table.id);
     });
   } catch (err) {
     console.error(`Error listing tables in current project:`, err);
@@ -70,7 +79,7 @@ async function runTableOperations(instanceName, tableName) {
   // Supported views include name, schema or full
   // View defaults to schema if unspecified.
   const options = {
-    view: 'name',
+    view: 'id',
   };
   try {
     const [tableMetadata] = await table.getMetadata(options);

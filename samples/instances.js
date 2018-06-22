@@ -17,9 +17,18 @@
 
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
+const PROJECT_ID = process.env.PROJECT_ID;
+
+if (!PROJECT_ID) {
+  throw new Error('Environment variables PROJECT_ID must be set!');
+}
+
+var options = {
+  projectId: PROJECT_ID
+}
 
 async function runInstanceOperations(instanceName, clusterName) {
-  const bigtable = new Bigtable();
+  const bigtableClient = bigtable(bigtableOptions);
   const instance = bigtable.instance(instanceName);
 
   console.log(`Check Instance Exists`);
@@ -43,27 +52,27 @@ async function runInstanceOperations(instanceName, clusterName) {
     const instanceOptions = {
       clusters: [
         {
-          name: clusterName,
+          id: clusterName,
           nodes: 3,
           location: 'us-central1-f',
           storage: 'ssd',
         },
       ],
       type: 'PRODUCTION', // Optional as default type is PRODUCTION
-      labels: {'prod-label': 'prod-label'},
+      labels: { 'prod-label': 'prod-label' },
     };
 
     // Create production instance with given options
     try {
       const [prodInstance] = await instance.create(instanceOptions);
-      console.log(`Created Instance: ${prodInstance.name}`);
+      console.log(`Created Instance: ${prodInstance.id}`);
     } catch (err) {
       console.error('Error creating prod-instance:', err);
       return;
     }
     // [END bigtable_create_prod_instance]
   } else {
-    console.log(`Instance ${instance.name} exists`);
+    console.log(`Instance ${instance.id} exists`);
   }
 
   console.log(); //for just a new-line
@@ -72,7 +81,7 @@ async function runInstanceOperations(instanceName, clusterName) {
   try {
     const [instances] = await bigtable.getInstances();
     instances.forEach(instance => {
-      console.log(instance.name);
+      console.log(instance.id);
     });
   } catch (err) {
     console.error('Error listing instances:', err);
@@ -85,7 +94,7 @@ async function runInstanceOperations(instanceName, clusterName) {
   // [START bigtable_get_instance]
   try {
     const [instance] = await bigtable.instance(instanceName).get();
-    console.log(`Instance Name: ${instance.name}`);
+    console.log(`Instance Name: ${instance.id}`);
     console.log(`Instance Meta: ${JSON.stringify(instance.metadata)}`);
   } catch (err) {
     console.error('Error getting instance:', err);
@@ -122,19 +131,19 @@ async function createDevInstance(instanceName, clusterName) {
   const options = {
     clusters: [
       {
-        name: clusterName,
+        id: clusterName,
         location: 'us-central1-f',
         storage: 'hdd',
       },
     ],
     type: 'DEVELOPMENT',
-    labels: {'dev-label': 'dev-label'},
+    labels: { 'dev-label': 'dev-label' },
   };
 
   // Create development instance with given options
   try {
     let [instance] = await bigtable.createInstance(instanceName, options);
-    console.log(`Created development instance: ${instance.name}`);
+    console.log(`Created development instance: ${instance.id}`);
   } catch (err) {
     console.error('Error creating dev-instance:', err);
     return;
@@ -177,7 +186,7 @@ async function addCluster(instanceName, clusterName) {
     console.log(`Instance does not exists`);
   } else {
     console.log(); //for just a new-line
-    console.log(`Adding Cluster to Instance ${instance.name}`);
+    console.log(`Adding Cluster to Instance ${instance.id}`);
     // [START bigtable_create_cluster]
     const clusterOptions = {
       location: 'us-central1-c',
