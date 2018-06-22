@@ -69,7 +69,7 @@ describe('Bigtable/ChunkTransformer', function() {
       assert.deepEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepEqual(
         chunkTransformer.prevRowKey,
-        '',
+        null,
         'invalid initial state'
       );
       assert.deepEqual(chunkTransformer.family, {}, 'invalid initial state');
@@ -965,7 +965,7 @@ describe('Bigtable/ChunkTransformer', function() {
       assert.deepEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepEqual(
         chunkTransformer.prevRowKey,
-        '',
+        null,
         'invalid initial state'
       );
       assert.deepEqual(chunkTransformer.family, {}, 'invalid initial state');

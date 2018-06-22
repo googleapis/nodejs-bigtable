@@ -132,7 +132,7 @@ class ChunkTransformer extends Transform {
    * @private
    */
   reset() {
-    this.prevRowKey = '';
+    this.prevRowKey = null;
     this.family = {};
     this.qualifiers = [];
     this.qualifier = {};
@@ -173,10 +173,10 @@ class ChunkTransformer extends Transform {
    */
   validateResetRow(chunk) {
     const containsData =
-      (chunk.rowKey && chunk.rowKey.toString() !== '') ||
+      (chunk.rowKey && chunk.rowKey.length !== 0) ||
       chunk.familyName ||
       chunk.qualifier ||
-      (chunk.value && chunk.value.toString() !== '') ||
+      (chunk.value && chunk.value.length !== 0) ||
       chunk.timestampMicros > 0;
     if (chunk.resetRow && containsData) {
       this.destroy(
@@ -203,8 +203,8 @@ class ChunkTransformer extends Transform {
       errorMessage = 'A new row cannot have existing state';
     } else if (
       typeof chunk.rowKey === 'undefined' ||
-      chunk.rowKey === '' ||
-      newRowKey === ''
+      chunk.rowKey.length === 0 ||
+      newRowKey.length === 0
     ) {
       errorMessage = 'A row key must be set';
     } else if (chunk.resetRow) {
