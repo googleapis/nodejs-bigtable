@@ -59,7 +59,7 @@ async function runInstanceOperations(instanceID, clusterID) {
         },
       ],
       type: 'PRODUCTION', // Optional as default type is PRODUCTION
-      labels: { 'prod-label': 'prod-label' },
+      labels: {'prod-label': 'prod-label'},
     };
 
     // Create production instance with given options
@@ -137,7 +137,7 @@ async function createDevInstance(instanceID, clusterID) {
       },
     ],
     type: 'DEVELOPMENT',
-    labels: { 'dev-label': 'dev-label' },
+    labels: {'dev-label': 'dev-label'},
   };
 
   // Create development instance with given options

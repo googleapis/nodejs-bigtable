@@ -27,10 +27,10 @@ var options = {
   projectId: PROJECT_ID
 }
 
-async function runTableOperations(instanceName, tableName) {
+async function runTableOperations(instanceID, tableID) {
   const bigtableClient = bigtable(bigtableOptions);
-  const instance = bigtableClient.instance(instanceName);
-  const table = instance.table(tableName);
+  const instance = bigtableClient.instance(instanceID);
+  const table = instance.table(tableID);
 
   // Check if table exists
   console.log();
@@ -46,7 +46,7 @@ async function runTableOperations(instanceName, tableName) {
   if (!tableExists) {
     try {
       // Create table if does not exist
-      console.log(`Table does not exist. Creating table ${tableName}`);
+      console.log(`Table does not exist. Creating table ${tableID}`);
       // Creating table
       await table.create();
     } catch (err) {
@@ -76,7 +76,7 @@ async function runTableOperations(instanceName, tableName) {
   console.log('Printing table metadata...');
   // [START bigtable_get_table_metadata]
   // Get table metadata, and apply a view to the table fields
-  // Supported views include name, schema or full
+  // Supported views include ID, schema or full
   // View defaults to schema if unspecified.
   const options = {
     view: 'id',
@@ -297,16 +297,16 @@ async function runTableOperations(instanceName, tableName) {
   console.log(`${family.id} deleted successfully\n`);
   // [END bigtable_delete_family]
   console.log(
-    'Run node $0 delete --instance [instanceName] --table [tableName] to delete the table.\n'
+    'Run node $0 delete --instance [instanceID] --table [tableID] to delete the table.\n'
   );
 }
 
-async function deleteTable(instanceName, tableName) {
-  // const instanceName = "my-instance";
-  // const tableName = "my-bigtable-name";
+async function deleteTable(instanceID, tableID) {
+  // const instanceID = "my-instance";
+  // const tableID = "my-bigtable-ID";
   const bigtableClient = new Bigtable();
-  const instance = bigtableClient.instance(instanceName);
-  const table = instance.table(tableName);
+  const instance = bigtableClient.instance(instanceID);
+  const table = instance.table(tableID);
   // [START bigtable_delete_table]
   // Delete the entire table
   console.log('Delete the table.');
@@ -329,7 +329,7 @@ require('yargs')
     argv => runTableOperations(argv.instance, argv.table)
   )
   .example(
-    `node $0 run --instance [instanceName] --table [tableName]`,
+    `node $0 run --instance [instanceID] --table [tableID]`,
     `Create a table (if does not exist) and run basic table operations.`
   )
   .wrap(120)
@@ -337,14 +337,14 @@ require('yargs')
     deleteTable(argv.instance, argv.table)
   )
   .example(
-    `node $0 delete --instance [instanceName] --table [tableName]`,
+    `node $0 delete --instance [instanceID] --table [tableID]`,
     `Delete a table.`
   )
   .wrap(120)
   .nargs('instance', 1)
   .nargs('table', 1)
-  .describe('instance', 'Cloud Bigtable Instance name')
-  .describe('table', 'Cloud Bigtable Table name')
+  .describe('instance', 'Cloud Bigtable Instance ID')
+  .describe('table', 'Cloud Bigtable Table ID')
   .demandOption(['instance', 'table'])
   .recommendCommands()
   .epilogue(`For more information, see https://cloud.google.com/bigtable/docs`)

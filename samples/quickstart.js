@@ -19,9 +19,9 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-// The name of the Cloud Bigtable instance
-const INSTANCE_NAME = 'my-bigtable-instance';
-// The name of the Cloud Bigtable table
+// The ID of the Cloud Bigtable instance
+const INSTANCE_ID = 'my-bigtable-instance';
+// The ID of the Cloud Bigtable table
 const TABLE_ID = 'my-table';
 const PROJECT_ID = process.env.PROJECT_ID;
 
@@ -40,7 +40,7 @@ var options = {
     const bigtable = new Bigtable();
 
     // Connect to an existing instance:my-bigtable-instance
-    const instance = bigtable.instance(INSTANCE_NAME);
+    const instance = bigtable.instance(INSTANCE_ID);
 
     // Connect to an existing table:my-table
     const table = instance.table(TABLE_ID);
