@@ -282,7 +282,7 @@ describe('Bigtable/Table', function() {
   describe('createFamily', function() {
     var COLUMN_ID = 'my-column';
     var FAMILY_ID = 'test-family';
-		
+
     it('should throw if a id is not provided', function() {
       assert.throws(function() {
         table.createFamily();
