@@ -373,8 +373,8 @@ describe('Bigtable/Table', function() {
         callback(null, response);
       };
 
-      table.family = function(name) {
-        assert.strictEqual(name, FAMILY_ID);
+      table.family = function(id) {
+        assert.strictEqual(id, FAMILY_ID);
         return fakeFamily;
       };
 
