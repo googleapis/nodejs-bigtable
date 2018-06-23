@@ -467,7 +467,7 @@ class Row {
       data: arrify(columns),
       method: Mutation.methods.DELETE,
     };
-
+    delete this.data;
     this.table.mutate(mutation, gaxOptions, callback);
   }
 

@@ -692,6 +692,15 @@ describe('Bigtable/Row', function() {
 
       row.deleteCells(columns, gaxOptions, done);
     });
+
+    it('should remove existing data', function(done) {
+      row.table.mutate = function(mutation, gaxOptions, callback) {
+        callback(); // done()
+      };
+
+      row.deleteCells(columns, done);
+      assert.strictEqual(row.data, undefined);
+    });
   });
 
   describe('exists', function() {
