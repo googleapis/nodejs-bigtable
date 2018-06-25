@@ -663,6 +663,34 @@ describe('Bigtable', function() {
         done();
       });
 
+      it('should not call replace project ID token', function(done) {
+        replaceProjectIdTokenOverride = sinon.spy();
+
+        bigtable.api[CONFIG.client][CONFIG.method] = {
+          bind: function() {
+            assert(!replaceProjectIdTokenOverride.called);
+            setImmediate(done);
+
+            return common.util.noop;
+          },
+        };
+
+        bigtable.request(CONFIG, assert.ifError);
+      });
+    });
+
+    describe('replace projectID token', function() {
+      beforeEach(function() {
+        bigtable = new Bigtable();
+        bigtable.getProjectId_ = function(callback) {
+          callback(null, PROJECT_ID);
+        };
+
+        bigtable.api[CONFIG.client] = {
+          [CONFIG.method]: common.util.noop,
+        };
+      });
+
       it('should replace the project ID token', function(done) {
         var replacedReqOpts = {};
 
