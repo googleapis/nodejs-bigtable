@@ -101,7 +101,7 @@ Please use the format 'my-instance' or '${
   /**
    * Create an instance.
    *
-   * @param {object} [options] See {@link Bigtable#createInstance}.
+   * @param {object} options See {@link Bigtable#createInstance}.
    * @param {object} [options.gaxOptions]  Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
    * @param {function} callback The callback function.
@@ -242,14 +242,14 @@ Please use the format 'my-instance' or '${
    *
    * @param {string} id The id to be used when referring to the new
    *     cluster within its instance.
-   * @param {object} [options] Cluster creation options.
+   * @param {object} options Cluster creation options.
    * @param {object} [options.gaxOptions]  Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
-   * @param {string} [options.location] The location where this cluster's nodes
+   * @param {string} options.location The location where this cluster's nodes
    *     and storage reside. For best performance clients should be located as
    *     as close as possible to this cluster. Currently only zones are
    *     supported.
-   * @param {number} [options.nodes] The number of nodes allocated to this
+   * @param {number} options.nodes The number of nodes allocated to this
    *     cluster. More nodes enable higher throughput and more consistent
    *     performance.
    * @param {string} [options.storage] The type of storage used by this cluster
