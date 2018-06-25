@@ -48,34 +48,22 @@ class Family {
     this.bigtable = table.bigtable;
     this.table = table;
 
-    const name = Family.formatName_(table.name, id);
-
-    this.id = name.split('/').pop();
-    this.name = name;
-  }
-
-  /**
-   * Format the Column Family name into the expected proto format.
-   *
-   * @private
-   *
-   * @param {string} tableName The full formatted table name.
-   * @param {string} id The column family unique-identifier.
-   * @returns {string}
-   *
-   * @example
-   * Family.formatName_(
-   *   'projects/p/zones/z/clusters/c/tables/t',
-   *   'my-family'
-   * );
-   * // 'projects/p/zones/z/clusters/c/tables/t/columnFamilies/my-family'
-   */
-  static formatName_(tableName, id) {
+    var name;
     if (id.includes('/')) {
-      return id;
+      if (id.startsWith(`${table.name}/columnFamilies/`)) {
+        name = id;
+      } else {
+        throw new Error(
+          `Family id '${id}' is not formatted correctly.  
+Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
+        );
+      }
+    } else {
+      name = `${table.name}/columnFamilies/${id}`;
     }
 
-    return `${tableName}/columnFamilies/${id}`;
+    this.name = name;
+    this.id = name.split('/').pop();
   }
 
   /**
