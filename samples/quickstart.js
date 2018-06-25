@@ -29,15 +29,15 @@ if (!PROJECT_ID) {
   throw new Error('Environment variables PROJECT_ID must be set!');
 }
 
-var bigtableOptions = {
-  projectId: PROJECT_ID,
-}
-
 (async () => {
   try {
+    var bigtableOptions = {
+      projectId: PROJECT_ID,
+    }
+
     const bigtable = Bigtable(bigtableOptions);
     // Creates a Bigtable client
-    //const bigtable = new Bigtable();
+    //const bigtable = new Bigtable(bigtableOptions);
 
     // Connect to an existing instance:my-bigtable-instance
     const instance = bigtable.instance(INSTANCE_ID);
