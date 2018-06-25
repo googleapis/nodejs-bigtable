@@ -23,12 +23,12 @@ if (!PROJECT_ID) {
   throw new Error('Environment variables PROJECT_ID must be set!');
 }
 
-var options = {
-  projectId: PROJECT_ID
-}
+var bigtableOptions = {
+  projectId: PROJECT_ID,
+};
 
 async function runInstanceOperations(instanceID, clusterID) {
-  const bigtableClient = bigtable(bigtableOptions);
+  const bigtable = Bigtable(bigtableOptions);
   const instance = bigtable.instance(instanceID);
 
   console.log(`Check Instance Exists`);
@@ -195,10 +195,7 @@ async function addCluster(instanceID, clusterID) {
     };
 
     try {
-      const [cluster] = await instance.createCluster(
-        clusterID,
-        clusterOptions
-      );
+      const [cluster] = await instance.createCluster(clusterID, clusterOptions);
       console.log(`Cluster created: ${cluster.id}`);
     } catch (err) {
       console.error('Error creating cluster:', err);

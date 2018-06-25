@@ -26,9 +26,9 @@ if (!PROJECT_ID) {
   throw new Error('Environment variables PROJECT_ID must be set!');
 }
 
-var options = {
-  projectId: PROJECT_ID
-}
+var bigtableOptions = {
+  projectId: PROJECT_ID,
+};
 
 const getRowGreeting = row => {
   return row.data[COLUMN_FAMILY_ID][COLUMN_QUALIFIER][0].value;
@@ -49,7 +49,7 @@ const getRowGreeting = row => {
             id: COLUMN_FAMILY_ID,
             rule: {
               versions: 1,
-            } ,
+            },
           },
         ],
       };
@@ -62,7 +62,7 @@ const getRowGreeting = row => {
       key: `greeting${index}`,
       data: {
         [COLUMN_FAMILY_ID]: {
-          [COLUMN_NAME]: {
+          [COLUMN_QUALIFIER]: {
             // Setting the timestamp allows the client to perform retries. If
             // server-side time is used, retries may cause multiple cells to
             // be generated.

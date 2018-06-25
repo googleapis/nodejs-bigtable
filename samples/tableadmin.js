@@ -23,13 +23,13 @@ if (!PROJECT_ID) {
   throw new Error('Environment variables PROJECT_ID must be set!');
 }
 
-var options = {
-  projectId: PROJECT_ID
-}
+var bigtableOptions = {
+  projectId: PROJECT_ID,
+};
 
 async function runTableOperations(instanceID, tableID) {
-  const bigtableClient = bigtable(bigtableOptions);
-  const instance = bigtableClient.instance(instanceID);
+  const bigtable = Bigtable(bigtableOptions);
+  const instance = bigtable.instance(instanceID);
   const table = instance.table(tableID);
 
   // Check if table exists
