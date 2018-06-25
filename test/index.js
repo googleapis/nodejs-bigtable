@@ -690,6 +690,7 @@ describe('Bigtable', function() {
           [CONFIG.method]: common.util.noop,
         };
       });
+
       it('should replace the project ID token', function(done) {
         var replacedReqOpts = {};
 
@@ -700,6 +701,7 @@ describe('Bigtable', function() {
 
           return replacedReqOpts;
         };
+
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind: function(gaxClient, reqOpts) {
             assert.strictEqual(reqOpts, replacedReqOpts);
@@ -712,10 +714,12 @@ describe('Bigtable', function() {
 
         bigtable.request(CONFIG, assert.ifError);
       });
+
       it('should not replace token when project ID not detected', function(done) {
         replaceProjectIdTokenOverride = function() {
           throw new Error('Should not have tried to replace token.');
         };
+
         bigtable.getProjectId_ = function(callback) {
           callback(null, PROJECT_ID_TOKEN);
         };
