@@ -384,6 +384,60 @@ describe('Bigtable/Row', function() {
       assert.deepStrictEqual(args[1], {userOptions: formatOptions});
     });
 
+    it('should use the encoding scheme provided', function() {
+      var formatOptions = {
+        encoding: 'binary',
+      };
+
+      FakeMutation.convertFromBytes = sinon.spy(function(val, options) {
+        assert.deepStrictEqual(options, {userOptions: formatOptions});
+        return val.toString(formatOptions.encoding);
+      });
+
+      var chunks = [
+        {
+          rowKey: Buffer.from('ø', 'binary'),
+          familyName: {
+            value: 'familyName',
+          },
+          qualifier: {
+            value: 'qualifier',
+          },
+          value: 'value',
+          valueSize: 0,
+          labels: ['label'],
+          timestampMicros: 123,
+          commitRow: true,
+        },
+      ];
+
+      var rows = Row.formatChunks_(chunks, formatOptions);
+
+      assert.deepEqual(rows, [
+        {
+          key: 'ø',
+          data: {
+            familyName: {
+              qualifier: [
+                {
+                  value: 'value',
+                  size: 0,
+                  labels: ['label'],
+                  timestamp: 123,
+                },
+              ],
+            },
+          },
+        },
+      ]);
+
+      // 0 === row key
+      // 1 === qualifier
+      // 2 === value
+      var args = FakeMutation.convertFromBytes.getCall(2).args;
+      assert.deepStrictEqual(args[1], {userOptions: formatOptions});
+    });
+
     it('should discard old data when reset row is found', function() {
       var chunks = [
         {
