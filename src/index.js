@@ -431,10 +431,10 @@ class Bigtable {
    * @see [Creating a Cloud Bigtable Instance]{@link https://cloud.google.com/bigtable/docs/creating-instance}
    *
    * @param {string} id The unique id of the instance.
-   * @param {object} [options] Instance creation options.
-   * @param {object[]} [options.clusters] The clusters to be created within the
+   * @param {object} options Instance creation options.
+   * @param {object[]} options.clusters The clusters to be created within the
    *     instance.
-   * @param {string} [options.displayName] The descriptive name for this instance
+   * @param {string} options.displayName The descriptive name for this instance
    *     as it appears in UIs.
    * @param {Object.<string, string>} [options.labels] Labels are a flexible and
    *     lightweight mechanism for organizing cloud resources into groups that
