@@ -664,12 +664,10 @@ describe('Bigtable', function() {
       });
 
       it('should not call replace project ID token', function(done) {
-        var replacedReqOpts = {};
-
         replaceProjectIdTokenOverride = sinon.spy();
 
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind: function(gaxClient, reqOpts) {
+          bind: function() {
             assert(!replaceProjectIdTokenOverride.called);
             setImmediate(done);
 
