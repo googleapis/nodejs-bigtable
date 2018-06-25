@@ -278,7 +278,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
           return;
         }
 
-        const family = this.family(resp.name);
+        const family = this.family(id);
         family.metadata = resp;
 
         callback(null, family, resp);

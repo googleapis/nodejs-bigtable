@@ -423,6 +423,7 @@ class Bigtable {
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
+    this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
   }
 
   /**
@@ -651,7 +652,7 @@ class Bigtable {
 
         let reqOpts = extend(true, {}, config.reqOpts);
 
-        if (projectId !== '{{projectId}}') {
+        if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
           reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
         }
 
