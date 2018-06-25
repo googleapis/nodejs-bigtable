@@ -266,6 +266,7 @@ class Row {
       data: options.entry,
       method: Mutation.methods.INSERT,
     };
+    delete this.data;
 
     this.table.mutate(entry, options.gaxOptions, (err, apiResponse) => {
       if (err) {
@@ -367,7 +368,7 @@ class Row {
       rowKey: Mutation.convertToBytes(this.id),
       rules,
     };
-
+    delete this.data;
     this.bigtable.request(
       {
         client: 'BigtableClient',
@@ -409,7 +410,7 @@ class Row {
       key: this.id,
       method: Mutation.methods.DELETE,
     };
-
+    delete this.data;
     this.table.mutate(mutation, gaxOptions, callback);
   }
 
@@ -599,7 +600,7 @@ class Row {
       trueMutations: createFlatMutationsList(config.onMatch),
       falseMutations: createFlatMutationsList(config.onNoMatch),
     };
-
+    delete this.data;
     this.bigtable.request(
       {
         client: 'BigtableClient',
@@ -910,7 +911,7 @@ class Row {
       data: entry,
       method: Mutation.methods.INSERT,
     };
-
+    delete this.data;
     this.table.mutate(mutation, gaxOptions, callback);
   }
 }
