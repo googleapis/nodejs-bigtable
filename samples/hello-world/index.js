@@ -12,32 +12,41 @@
 
 const bigtable = require('@google-cloud/bigtable');
 
-const TABLE_NAME = 'Hello-Bigtable';
-const COLUMN_FAMILY_NAME = 'cf1';
-const COLUMN_NAME = 'greeting';
+const TABLE_ID = 'Hello-Bigtable';
+const COLUMN_FAMILY_ID = 'cf1';
+const COLUMN_QUALIFIER = 'greeting';
 const INSTANCE_ID = process.env.INSTANCE_ID;
+const PROJECT_ID = process.env.PROJECT_ID;
 
 if (!INSTANCE_ID) {
   throw new Error('Environment variables for INSTANCE_ID must be set!');
 }
 
+if (!PROJECT_ID) {
+  throw new Error('Environment variables PROJECT_ID must be set!');
+}
+
+var bigtableOptions = {
+  projectId: PROJECT_ID,
+};
+
 const getRowGreeting = row => {
-  return row.data[COLUMN_FAMILY_NAME][COLUMN_NAME][0].value;
+  return row.data[COLUMN_FAMILY_ID][COLUMN_QUALIFIER][0].value;
 };
 
 (async () => {
   try {
-    const bigtableClient = bigtable();
+    const bigtableClient = bigtable(bigtableOptions);
     const instance = bigtableClient.instance(INSTANCE_ID);
 
-    const table = instance.table(TABLE_NAME);
+    const table = instance.table(TABLE_ID);
     const [tableExists] = await table.exists();
     if (!tableExists) {
-      console.log(`Creating table ${TABLE_NAME}`);
+      console.log(`Creating table ${TABLE_ID}`);
       const options = {
         families: [
           {
-            name: COLUMN_FAMILY_NAME,
+            id: COLUMN_FAMILY_ID,
             rule: {
               versions: 1,
             },
@@ -52,8 +61,8 @@ const getRowGreeting = row => {
     const rowsToInsert = greetings.map((greeting, index) => ({
       key: `greeting${index}`,
       data: {
-        [COLUMN_FAMILY_NAME]: {
-          [COLUMN_NAME]: {
+        [COLUMN_FAMILY_ID]: {
+          [COLUMN_QUALIFIER]: {
             // Setting the timestamp allows the client to perform retries. If
             // server-side time is used, retries may cause multiple cells to
             // be generated.
