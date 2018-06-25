@@ -93,7 +93,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should throw if family id in wrong format', function() {
-      var id = `columnFamilies/${FAMILY_ID}`;
+      var id = `/project/bad-project/instances/bad-instance/columnFamiles/${FAMILY_ID}`;
       assert.throws(function() {
         new Family(TABLE, id);
       }, Error);
