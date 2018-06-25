@@ -33,7 +33,7 @@ if (!PROJECT_ID) {
   try {
     var bigtableOptions = {
       projectId: PROJECT_ID,
-    }
+    };
 
     const bigtable = Bigtable(bigtableOptions);
     // Creates a Bigtable client
