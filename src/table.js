@@ -293,6 +293,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {object} [options] Configuration object.
    * @param {boolean} [options.decode=true] If set to `false` it will not decode
    *     Buffer values returned from Bigtable.
+   * @param {boolean} [options.encoding] The encoding to use when converting
+   *     Buffer values to a string.
    * @param {string} [options.end] End value for key range.
    * @param {Filter} [options.filter] Row filters allow you to
    *     both make advanced queries and format how the data is returned.

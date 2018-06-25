@@ -88,7 +88,9 @@ class ChunkTransformer extends Transform {
       }
     }
     if (data.lastScannedRowKey && data.lastScannedRowKey.length > 0) {
-      this.lastRowKey = Mutation.convertFromBytes(data.lastScannedRowKey);
+      this.lastRowKey = Mutation.convertFromBytes(data.lastScannedRowKey, {
+        userOptions: this.options,
+      });
     }
     next();
   }
@@ -130,7 +132,7 @@ class ChunkTransformer extends Transform {
    * @private
    */
   reset() {
-    this.prevRowKey = '';
+    this.prevRowKey = null;
     this.family = {};
     this.qualifiers = [];
     this.qualifier = {};
@@ -171,10 +173,10 @@ class ChunkTransformer extends Transform {
    */
   validateResetRow(chunk) {
     const containsData =
-      (chunk.rowKey && chunk.rowKey.toString() !== '') ||
+      (chunk.rowKey && chunk.rowKey.length !== 0) ||
       chunk.familyName ||
       chunk.qualifier ||
-      (chunk.value && chunk.value.toString() !== '') ||
+      (chunk.value && chunk.value.length !== 0) ||
       chunk.timestampMicros > 0;
     if (chunk.resetRow && containsData) {
       this.destroy(
@@ -201,8 +203,8 @@ class ChunkTransformer extends Transform {
       errorMessage = 'A new row cannot have existing state';
     } else if (
       typeof chunk.rowKey === 'undefined' ||
-      chunk.rowKey === '' ||
-      newRowKey === ''
+      chunk.rowKey.length === 0 ||
+      newRowKey.length === 0
     ) {
       errorMessage = 'A row key must be set';
     } else if (chunk.resetRow) {
@@ -229,11 +231,13 @@ class ChunkTransformer extends Transform {
   validateRowInProgress(chunk) {
     const row = this.row;
     if (chunk.rowKey && chunk.rowKey.length) {
-      const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+      const newRowKey = Mutation.convertFromBytes(chunk.rowKey, {
+        userOptions: this.options,
+      });
       if (
         newRowKey &&
         chunk.rowKey &&
-        newRowKey !== '' &&
+        newRowKey.length !== 0 &&
         newRowKey !== row.key
       ) {
         this.destroy(
@@ -294,14 +298,18 @@ class ChunkTransformer extends Transform {
    * @param {chunks} chunk chunk to process
    */
   processNewRow(chunk) {
-    const newRowKey = Mutation.convertFromBytes(chunk.rowKey);
+    const newRowKey = Mutation.convertFromBytes(chunk.rowKey, {
+      userOptions: this.options,
+    });
     this.validateNewRow(chunk, newRowKey);
     if (chunk.familyName && chunk.qualifier) {
       const row = this.row;
       row.key = newRowKey;
       row.data = {};
       this.family = row.data[chunk.familyName.value] = {};
-      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
+        userOptions: this.options,
+      });
       this.qualifiers = this.family[qualifierName] = [];
       this.qualifier = {
         value: Mutation.convertFromBytes(chunk.value, {
@@ -332,7 +340,9 @@ class ChunkTransformer extends Transform {
         row.data[chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
-      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value);
+      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
+        userOptions: this.options,
+      });
       this.qualifiers = this.family[qualifierName] =
         this.family[qualifierName] || [];
     }
