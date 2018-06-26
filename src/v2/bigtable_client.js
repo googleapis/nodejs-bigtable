@@ -71,14 +71,14 @@ class BigtableClient {
     // Create a `gaxGrpc` object, with any grpc-specific options
     // sent to the client.
     opts.scopes = this.constructor.scopes;
-    var gaxGrpc = gax.grpc(opts);
+    var gaxGrpc = new gax.GrpcClient(opts);
 
     // Save the auth object to the client, for use by other methods.
     this.auth = gaxGrpc.auth;
 
     // Determine the client header string.
     var clientHeader = [
-      `gl-node/${process.version.node}`,
+      `gl-node/${process.version}`,
       `grpc/${gaxGrpc.grpcVersion}`,
       `gax/${gax.version}`,
       `gapic/${VERSION}`,
@@ -214,11 +214,6 @@ class BigtableClient {
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} [request.appProfileId]
-   *   This is a private alpha release of Cloud Bigtable replication. This feature
-   *   is not currently available to most Cloud Bigtable customers. This feature
-   *   might be changed in backward-incompatible ways and is not recommended for
-   *   production use. It is not subject to any SLA or deprecation policy.
-   *
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Object} [request.rows]
@@ -278,11 +273,6 @@ class BigtableClient {
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} [request.appProfileId]
-   *   This is a private alpha release of Cloud Bigtable replication. This feature
-   *   is not currently available to most Cloud Bigtable customers. This feature
-   *   might be changed in backward-incompatible ways and is not recommended for
-   *   production use. It is not subject to any SLA or deprecation policy.
-   *
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Object} [options]
@@ -336,11 +326,6 @@ class BigtableClient {
    *
    *   This object should have the same structure as [Mutation]{@link google.bigtable.v2.Mutation}
    * @param {string} [request.appProfileId]
-   *   This is a private alpha release of Cloud Bigtable replication. This feature
-   *   is not currently available to most Cloud Bigtable customers. This feature
-   *   might be changed in backward-incompatible ways and is not recommended for
-   *   production use. It is not subject to any SLA or deprecation policy.
-   *
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Object} [options]
@@ -414,11 +399,6 @@ class BigtableClient {
    *
    *   This object should have the same structure as [Entry]{@link google.bigtable.v2.Entry}
    * @param {string} [request.appProfileId]
-   *   This is a private alpha release of Cloud Bigtable replication. This feature
-   *   is not currently available to most Cloud Bigtable customers. This feature
-   *   might be changed in backward-incompatible ways and is not recommended for
-   *   production use. It is not subject to any SLA or deprecation policy.
-   *
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Object} [options]
@@ -471,11 +451,6 @@ class BigtableClient {
    * @param {string} request.rowKey
    *   The key of the row to which the conditional mutation should be applied.
    * @param {string} [request.appProfileId]
-   *   This is a private alpha release of Cloud Bigtable replication. This feature
-   *   is not currently available to most Cloud Bigtable customers. This feature
-   *   might be changed in backward-incompatible ways and is not recommended for
-   *   production use. It is not subject to any SLA or deprecation policy.
-   *
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Object} [request.predicateFilter]
@@ -575,11 +550,6 @@ class BigtableClient {
    *
    *   This object should have the same structure as [ReadModifyWriteRule]{@link google.bigtable.v2.ReadModifyWriteRule}
    * @param {string} [request.appProfileId]
-   *   This is a private alpha release of Cloud Bigtable replication. This feature
-   *   is not currently available to most Cloud Bigtable customers. This feature
-   *   might be changed in backward-incompatible ways and is not recommended for
-   *   production use. It is not subject to any SLA or deprecation policy.
-   *
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Object} [options]
