@@ -1618,6 +1618,7 @@ describe('Bigtable/Table', function() {
         };
 
         table.checkConsistency('', function(err, resp) {
+          assert.ifError(err);
           assert.strictEqual(resp, true);
           done();
         });
@@ -1628,6 +1629,7 @@ describe('Bigtable/Table', function() {
           callback(null, {consistent: false});
         };
         table.checkConsistency('', function(err, resp) {
+          assert.ifError(err);
           assert.strictEqual(resp, false);
           done();
         });
