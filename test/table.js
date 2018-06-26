@@ -1417,9 +1417,7 @@ describe('Bigtable/Table', function() {
         callback(null, true);
       };
 
-      table.waitForReplication(() => {
-        done();
-      });
+      table.waitForReplication(done);
     });
 
     describe('retries', () => {
@@ -1513,6 +1511,7 @@ describe('Bigtable/Table', function() {
         };
 
         table.waitForReplication(function(err, response) {
+          assert.ifError(err);
           setTimeoutSpy.called;
           assert.strictEqual(response, false);
           done();
@@ -1563,7 +1562,20 @@ describe('Bigtable/Table', function() {
       };
 
       table.generateConsistencyToken(function(err, token) {
+        assert.ifError(err);
         assert.strictEqual(token, cToken);
+        done();
+      });
+    });
+
+    it('should return error', function(done) {
+      let error = new Error('err');
+      table.bigtable.request = function(config, callback) {
+        callback(error);
+      };
+
+      table.generateConsistencyToken(function(err) {
+        assert.strictEqual(err, error);
         done();
       });
     });
@@ -1581,7 +1593,7 @@ describe('Bigtable/Table', function() {
         done();
       };
 
-      table.checkConsistency(cToken);
+      table.checkConsistency(cToken, assert.ifError);
     });
 
     describe('error', function() {

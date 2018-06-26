@@ -384,9 +384,8 @@ describe('Bigtable', function() {
     });
 
     it('should return error for checkConsistency of invalid token', done => {
-      TABLE.checkConsistency('dummy-token', function(err, res) {
-        assert.strictEqual(err.message, '3 INVALID_ARGUMENT: Invalid token');
-        assert.strictEqual(res, undefined);
+      TABLE.checkConsistency('dummy-token', function(err) {
+        assert.strictEqual(err.code, 3);
         done();
       });
     });
