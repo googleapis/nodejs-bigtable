@@ -374,6 +374,41 @@ describe('Bigtable', function() {
     });
   });
 
+  describe('consistency tokens', function() {
+    it('should generate consistency token', done => {
+      TABLE.generateConsistencyToken(function(err, token) {
+        assert.ifError(err);
+        assert.strictEqual(typeof token, 'string');
+        done();
+      });
+    });
+
+    it('should return error for checkConsistency of invalid token', done => {
+      TABLE.checkConsistency('dummy-token', function(err) {
+        assert.strictEqual(err.code, 3);
+        done();
+      });
+    });
+
+    it('should return boolean for checkConsistency of token', done => {
+      TABLE.generateConsistencyToken(function(err, token) {
+        TABLE.checkConsistency(token, function(err, res) {
+          assert.ifError(err);
+          assert.strictEqual(typeof res, 'boolean');
+          done();
+        });
+      });
+    });
+
+    it('should return boolean for waitForReplication', done => {
+      TABLE.waitForReplication(function(err, res) {
+        assert.ifError(err);
+        assert.strictEqual(typeof res, 'boolean');
+        done();
+      });
+    });
+  });
+
   describe('column families', function() {
     var FAMILY_ID = 'presidents';
     var FAMILY;
