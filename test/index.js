@@ -18,7 +18,6 @@
 
 var assert = require('assert');
 const common = require('@google-cloud/common-grpc');
-var commonGrpc = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var gax = require('google-gax');
 var grpc = new gax.GrpcClient().grpc;
@@ -801,7 +800,7 @@ describe('Bigtable', function() {
           assert.strictEqual(config.objectMode, true);
           assert.strictEqual(
             config.shouldRetryFn,
-            commonGrpc.Service.shouldRetryRequest_
+            common.Service.shouldRetryRequest_
           );
           done();
         };
