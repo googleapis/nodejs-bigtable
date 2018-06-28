@@ -18,7 +18,6 @@
 
 var assert = require('assert');
 var extend = require('extend');
-var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
 
 const common = require('@google-cloud/common-grpc');
@@ -41,11 +40,7 @@ describe('Bigtable/Cluster', function() {
     bigtable: {projectId: PROJECT_ID},
   };
 
-  var CLUSTER_NAME = format('{instance}/clusters/{cluster}', {
-    instance: INSTANCE.name,
-    cluster: CLUSTER_ID,
-  });
-
+  var CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
   var Cluster;
   var cluster;
 
@@ -105,31 +100,22 @@ describe('Bigtable/Cluster', function() {
     var LOCATION = 'us-centralb-1';
 
     it('should format the location name', function() {
-      var expected = format('projects/{project}/locations/{location}', {
-        project: PROJECT_ID,
-        location: LOCATION,
-      });
-
+      var expected = `projects/${PROJECT_ID}/locations/${LOCATION}`;
       var formatted = Cluster.getLocation_(PROJECT_ID, LOCATION);
       assert.strictEqual(formatted, expected);
     });
 
     it('should format the location name for project name with /', function() {
       var PROJECT_NAME = 'projects/grape-spaceship-123';
-      var expected = format('projects/{project}/locations/{location}', {
-        project: PROJECT_NAME.split('/').pop(),
-        location: LOCATION,
-      });
-
+      var expected = `projects/${PROJECT_NAME.split(
+        '/'
+      ).pop()}/locations/${LOCATION}`;
       var formatted = Cluster.getLocation_(PROJECT_NAME, LOCATION);
       assert.strictEqual(formatted, expected);
     });
 
     it('should not re-format a complete location', function() {
-      var complete = format('projects/p/locations/{location}', {
-        location: LOCATION,
-      });
-
+      var complete = `projects/p/locations/${LOCATION}`;
       var formatted = Cluster.getLocation_(PROJECT_ID, complete);
       assert.strictEqual(formatted, complete);
     });

@@ -19,7 +19,6 @@
 var assert = require('assert');
 const common = require('@google-cloud/common-grpc');
 var extend = require('extend');
-var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
 
 var AppProfile = require('../src/app-profile.js');
@@ -66,11 +65,7 @@ describe('Bigtable/Instance', function() {
   var INSTANCE_ID = 'my-instance';
   var BIGTABLE = {projectName: 'projects/my-project'};
 
-  var INSTANCE_NAME = format('{project}/instances/{instance}', {
-    project: BIGTABLE.projectName,
-    instance: INSTANCE_ID,
-  });
-
+  var INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   var APP_PROFILE_ID = 'my-app-profile';
   var CLUSTER_ID = 'my-cluster';
 
