@@ -21,7 +21,7 @@ var Buffer = require('buffer').Buffer;
 var extend = require('extend');
 var proxyquire = require('proxyquire');
 var pumpify = require('pumpify');
-var sinon = require('sinon').sandbox.create();
+var sinon = require('sinon').createSandbox();
 var Stream = require('stream').PassThrough;
 var through = require('through2');
 

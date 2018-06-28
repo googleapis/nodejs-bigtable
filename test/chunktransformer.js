@@ -18,7 +18,7 @@
 
 const assert = require('assert');
 const proxyquire = require('proxyquire');
-const sinon = require('sinon').sandbox.create();
+const sinon = require('sinon').createSandbox();
 const Mutation = require('../src/mutation.js');
 const Long = require('long');
 const ROW_ID = 'my-row';

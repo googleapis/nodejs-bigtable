@@ -22,7 +22,7 @@ var extend = require('extend');
 var gax = require('google-gax');
 var grpc = new gax.GrpcClient().grpc;
 var proxyquire = require('proxyquire');
-var sinon = require('sinon').sandbox.create();
+var sinon = require('sinon').createSandbox();
 var through = require('through2');
 
 var Cluster = require('../src/cluster.js');

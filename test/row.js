@@ -20,7 +20,7 @@ var assert = require('assert');
 const common = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var proxyquire = require('proxyquire');
-var sinon = require('sinon').sandbox.create();
+var sinon = require('sinon').createSandbox();
 
 var Mutation = require('../src/mutation.js');
 
