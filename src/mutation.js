@@ -15,7 +15,6 @@
  */
 
 const arrify = require('arrify');
-const Buffer = require('safe-buffer').Buffer;
 const Long = require('long');
 const is = require('is');
 
