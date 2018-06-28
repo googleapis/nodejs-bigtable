@@ -26,7 +26,6 @@ var Stream = require('stream').PassThrough;
 var through = require('through2');
 
 const common = require('@google-cloud/common-grpc');
-var commonGrpc = require('@google-cloud/common-grpc');
 var Family = require('../src/family.js');
 var Mutation = require('../src/mutation.js');
 var Row = require('../src/row.js');
@@ -53,7 +52,7 @@ function createFake(Class) {
   };
 }
 
-var FakeGrpcService = createFake(commonGrpc.Service);
+var FakeGrpcService = createFake(common.Service);
 var FakeFamily = createFake(Family);
 
 FakeFamily.formatRule_ = sinon.spy(function(rule) {
