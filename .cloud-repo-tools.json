@@ -4,7 +4,7 @@
   "product": "bigtable",
   "client_reference_url":
     "https://cloud.google.com/nodejs/docs/reference/bigtable/latest/",
-  "release_quality": "alpha",
+  "release_quality": "beta",
   "samples": [
     {
       "id": "instances",
