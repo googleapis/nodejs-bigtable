@@ -17,8 +17,7 @@
 'use strict';
 
 var assert = require('assert');
-var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
+const common = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var gax = require('google-gax');
 var grpc = new gax.GrpcClient().grpc;
@@ -89,7 +88,7 @@ describe('Bigtable', function() {
 
   before(function() {
     Bigtable = proxyquire('../', {
-      '@google-cloud/common': {
+      '@google-cloud/common-grpc': {
         util: fakeUtil,
       },
       'google-auto-auth': fakeGoogleAutoAuth,
@@ -801,7 +800,7 @@ describe('Bigtable', function() {
           assert.strictEqual(config.objectMode, true);
           assert.strictEqual(
             config.shouldRetryFn,
-            commonGrpc.Service.shouldRetryRequest_
+            common.Service.shouldRetryRequest_
           );
           done();
         };

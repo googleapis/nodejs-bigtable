@@ -20,7 +20,7 @@ var assert = require('assert');
 var extend = require('extend');
 var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
-var util = require('@google-cloud/common').util;
+const {util} = require('@google-cloud/common-grpc');
 
 var promisified = false;
 var fakeUtil = extend({}, util, {
@@ -52,7 +52,7 @@ describe('Bigtable/Family', function() {
 
   before(function() {
     Family = proxyquire('../src/family.js', {
-      '@google-cloud/common': {
+      '@google-cloud/common-grpc': {
         util: fakeUtil,
       },
     });

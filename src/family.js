@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 const is = require('is');
 
 /**
@@ -54,7 +54,7 @@ class Family {
         name = id;
       } else {
         throw new Error(
-          `Family id '${id}' is not formatted correctly.  
+          `Family id '${id}' is not formatted correctly.
 Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
         );
       }

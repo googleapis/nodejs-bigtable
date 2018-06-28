@@ -17,7 +17,7 @@
 'use strict';
 
 var assert = require('assert');
-var common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var proxyquire = require('proxyquire');
 var sinon = require('sinon').createSandbox();
@@ -73,7 +73,7 @@ describe('Bigtable/Row', function() {
 
   before(function() {
     Row = proxyquire('../src/row.js', {
-      '@google-cloud/common': {
+      '@google-cloud/common-grpc': {
         util: fakeUtil,
       },
       './mutation.js': FakeMutation,

@@ -21,7 +21,7 @@ var extend = require('extend');
 var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
 
-var common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 
 var promisified = false;
 var fakeUtil = extend({}, common.util, {
@@ -57,7 +57,7 @@ describe('Bigtable/AppProfile', function() {
   before(function() {
     AppProfile = proxyquire('../src/app-profile.js', {
       '../src/cluster.js': FakeCluster,
-      '@google-cloud/common': {
+      '@google-cloud/common-grpc': {
         util: fakeUtil,
       },
     });

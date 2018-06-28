@@ -15,7 +15,7 @@
  */
 
 const arrify = require('arrify');
-const common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 const extend = require('extend');
 const GrpcService = require('@google-cloud/common-grpc').Service;
 const googleAuth = require('google-auto-auth');

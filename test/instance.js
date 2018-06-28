@@ -17,7 +17,7 @@
 'use strict';
 
 var assert = require('assert');
-var common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
@@ -79,7 +79,7 @@ describe('Bigtable/Instance', function() {
 
   before(function() {
     Instance = proxyquire('../src/instance.js', {
-      '@google-cloud/common': {
+      '@google-cloud/common-grpc': {
         paginator: fakePaginator,
         util: fakeUtil,
       },
