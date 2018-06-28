@@ -17,7 +17,6 @@
 'use strict';
 
 var assert = require('assert');
-var Buffer = require('safe-buffer').Buffer;
 var Long = require('long');
 var Mutation = require('../src/mutation.js');
 var sinon = require('sinon').createSandbox();
