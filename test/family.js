@@ -16,13 +16,13 @@
 
 'use strict';
 
-var assert = require('assert');
-var extend = require('extend');
-var proxyquire = require('proxyquire');
+const assert = require('assert');
+const extend = require('extend');
+const proxyquire = require('proxyquire');
 const {util} = require('@google-cloud/common-grpc');
 
 var promisified = false;
-var fakeUtil = extend({}, util, {
+const fakeUtil = extend({}, util, {
   promisifyAll: function(Class) {
     if (Class.name === 'Family') {
       promisified = true;
@@ -31,8 +31,8 @@ var fakeUtil = extend({}, util, {
 });
 
 describe('Bigtable/Family', function() {
-  var FAMILY_ID = 'family-test';
-  var TABLE = {
+  const FAMILY_ID = 'family-test';
+  const TABLE = {
     bigtable: {},
     id: 'my-table',
     name: 'projects/my-project/instances/my-inststance/tables/my-table',
@@ -40,7 +40,7 @@ describe('Bigtable/Family', function() {
     createFamily: util.noop,
   };
 
-  var FAMILY_NAME = `${TABLE.name}/columnFamilies/${FAMILY_ID}`;
+  const FAMILY_NAME = `${TABLE.name}/columnFamilies/${FAMILY_ID}`;
   var Family;
   var family;
   var FamilyError;
@@ -77,18 +77,18 @@ describe('Bigtable/Family', function() {
     });
 
     it('should extract the family name', function() {
-      var family = new Family(TABLE, FAMILY_ID);
+      let family = new Family(TABLE, FAMILY_ID);
       assert.strictEqual(family.name, FAMILY_NAME);
     });
 
     it('should leave full family names unaltered and localize the id from the name', function() {
-      var family = new Family(TABLE, FAMILY_NAME);
+      let family = new Family(TABLE, FAMILY_NAME);
       assert.strictEqual(family.name, FAMILY_NAME);
       assert.strictEqual(family.id, FAMILY_ID);
     });
 
     it('should throw if family id in wrong format', function() {
-      var id = `/project/bad-project/instances/bad-instance/columnFamiles/${FAMILY_ID}`;
+      let id = `/project/bad-project/instances/bad-instance/columnFamiles/${FAMILY_ID}`;
       assert.throws(function() {
         new Family(TABLE, id);
       }, Error);
@@ -97,11 +97,11 @@ describe('Bigtable/Family', function() {
 
   describe('formatRule_', function() {
     it('should capture the max age option', function() {
-      var originalRule = {
+      let originalRule = {
         age: 10,
       };
 
-      var rule = Family.formatRule_(originalRule);
+      let rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
         maxAge: originalRule.age,
@@ -109,11 +109,11 @@ describe('Bigtable/Family', function() {
     });
 
     it('should capture the max number of versions option', function() {
-      var originalRule = {
+      let originalRule = {
         versions: 10,
       };
 
-      var rule = Family.formatRule_(originalRule);
+      let rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
         maxNumVersions: originalRule.versions,
@@ -121,13 +121,13 @@ describe('Bigtable/Family', function() {
     });
 
     it('should create a union rule', function() {
-      var originalRule = {
+      let originalRule = {
         age: 10,
         versions: 2,
         union: true,
       };
 
-      var rule = Family.formatRule_(originalRule);
+      let rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
         union: {
@@ -144,12 +144,12 @@ describe('Bigtable/Family', function() {
     });
 
     it('should create an intersecting rule', function() {
-      var originalRule = {
+      let originalRule = {
         age: 10,
         versions: 2,
       };
 
-      var rule = Family.formatRule_(originalRule);
+      let rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
         intersection: {
@@ -166,13 +166,13 @@ describe('Bigtable/Family', function() {
     });
 
     it('should allow nested rules', function() {
-      var originalRule = {
+      let originalRule = {
         age: 10,
         rule: {age: 30, versions: 2},
         union: true,
       };
 
-      var rule = Family.formatRule_(originalRule);
+      let rule = Family.formatRule_(originalRule);
 
       assert.deepEqual(rule, {
         union: {
@@ -206,7 +206,7 @@ describe('Bigtable/Family', function() {
 
   describe('create', function() {
     it('should call createFamily from table', function(done) {
-      var options = {};
+      let options = {};
 
       family.table.createFamily = function(id, options_, callback) {
         assert.strictEqual(id, family.id);
@@ -252,7 +252,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       family.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -274,7 +274,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should pass gaxOptions to getMetadata', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       family.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -285,7 +285,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should return false if FamilyError', function(done) {
-      var error = new FamilyError('Error.');
+      let error = new FamilyError('Error.');
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -299,7 +299,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should return error if not FamilyError', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -326,7 +326,7 @@ describe('Bigtable/Family', function() {
 
   describe('get', function() {
     it('should call getMetadata', function(done) {
-      var options = {
+      let options = {
         gaxOptions: {},
       };
 
@@ -348,9 +348,9 @@ describe('Bigtable/Family', function() {
     });
 
     it('should auto create with a FamilyError error', function(done) {
-      var error = new FamilyError(TABLE.id);
+      let error = new FamilyError(TABLE.id);
 
-      var options = {
+      let options = {
         autoCreate: true,
         gaxOptions: {},
       };
@@ -368,9 +368,9 @@ describe('Bigtable/Family', function() {
     });
 
     it('should pass the rules when auto creating', function(done) {
-      var error = new FamilyError(TABLE.id);
+      let error = new FamilyError(TABLE.id);
 
-      var options = {
+      let options = {
         autoCreate: true,
         rule: {
           versions: 1,
@@ -390,10 +390,10 @@ describe('Bigtable/Family', function() {
     });
 
     it('should not auto create without a FamilyError error', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
       error.code = 'NOT-5';
 
-      var options = {
+      let options = {
         autoCreate: true,
       };
 
@@ -412,7 +412,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should not auto create unless requested', function(done) {
-      var error = new FamilyError(TABLE.id);
+      let error = new FamilyError(TABLE.id);
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -429,7 +429,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should return an error from getMetadata', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -442,7 +442,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should return self and API response', function(done) {
-      var apiResponse = {};
+      let apiResponse = {};
 
       family.getMetadata = function(gaxOptions, callback) {
         callback(null, apiResponse);
@@ -459,7 +459,7 @@ describe('Bigtable/Family', function() {
 
   describe('getMetadata', function() {
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       family.table.getFamilies = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -470,8 +470,8 @@ describe('Bigtable/Family', function() {
     });
 
     it('should return an error to the callback', function(done) {
-      var err = new Error('err');
-      var response = {};
+      let err = new Error('err');
+      let response = {};
 
       family.table.getFamilies = function(gaxOptions, callback) {
         callback(err, null, response);
@@ -484,7 +484,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should update the metadata', function(done) {
-      var family = new Family(TABLE, FAMILY_NAME);
+      let family = new Family(TABLE, FAMILY_NAME);
       family.metadata = {
         a: 'a',
         b: 'b',
@@ -534,14 +534,14 @@ describe('Bigtable/Family', function() {
     });
 
     it('should respect the gc rule option', function(done) {
-      var formatRule = Family.formatRule_;
+      let formatRule = Family.formatRule_;
 
-      var formattedRule = {
+      let formattedRule = {
         a: 'a',
         b: 'b',
       };
 
-      var metadata = {
+      let metadata = {
         rule: {
           c: 'c',
           d: 'd',
@@ -573,7 +573,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should return an error to the callback', function(done) {
-      var error = new Error('err');
+      let error = new Error('err');
 
       family.bigtable.request = function(config, callback) {
         callback(error);
@@ -586,8 +586,8 @@ describe('Bigtable/Family', function() {
     });
 
     it('should update the metadata property', function(done) {
-      var fakeMetadata = {};
-      var response = {
+      let fakeMetadata = {};
+      let response = {
         columnFamilies: {
           'family-test': fakeMetadata,
         },
@@ -609,7 +609,7 @@ describe('Bigtable/Family', function() {
 
   describe('FamilyError', function() {
     it('should set the code and message', function() {
-      var err = new FamilyError(FAMILY_NAME);
+      let err = new FamilyError(FAMILY_NAME);
 
       assert.strictEqual(err.code, 404);
       assert.strictEqual(
