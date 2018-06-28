@@ -18,7 +18,6 @@
 
 var assert = require('assert');
 var extend = require('extend');
-var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
 const {util} = require('@google-cloud/common-grpc');
 
@@ -41,11 +40,7 @@ describe('Bigtable/Family', function() {
     createFamily: util.noop,
   };
 
-  var FAMILY_NAME = format('{t}/columnFamilies/{f}', {
-    t: TABLE.name,
-    f: FAMILY_ID,
-  });
-
+  var FAMILY_NAME = `${TABLE.name}/columnFamilies/${FAMILY_ID}`;
   var Family;
   var family;
   var FamilyError;
