@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
 
@@ -45,7 +45,7 @@ class AppProfile {
         name = id;
       } else {
         throw new Error(
-          `AppProfile id '${id}' is not formatted correctly.  
+          `AppProfile id '${id}' is not formatted correctly.
 Please use the format 'my-app-profile' or '${
             instance.name
           }/appProfiles/my-app-profile'.`

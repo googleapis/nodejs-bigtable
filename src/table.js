@@ -15,8 +15,7 @@
  */
 
 const arrify = require('arrify');
-const common = require('@google-cloud/common');
-const commonGrpc = require('@google-cloud/common-grpc');
+const common = require('@google-cloud/common-grpc');
 const concat = require('concat-stream');
 const flatten = require('lodash.flatten');
 const is = require('is');
@@ -59,7 +58,7 @@ class Table {
         name = id;
       } else {
         throw new Error(
-          `Table id '${id}' is not formatted correctly.  
+          `Table id '${id}' is not formatted correctly.
 Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         );
       }
@@ -1221,7 +1220,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
               pendingEntryIndices.delete(originalEntriesIndex);
             }
 
-            const status = commonGrpc.Service.decorateStatus_(entry.status);
+            const status = common.Service.decorateStatus_(entry.status);
             status.entry = originalEntry;
 
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
