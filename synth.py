@@ -13,14 +13,12 @@ v2_library = gapic.node_library(
 
 # Copy all files except for 'README.md' and 'package.json'
 s.copy(
-    v2_library, 
+    v2_library,
     excludes=['package.json', 'README.md', 'src/index.js', 'src/v2/index.js'])
 
 #
 # Node.js specific cleanup
 #
-subprocess.run(['npm', 'install'])
-
-# prettify and lint
+subprocess.run(['npm', 'ci'])
 subprocess.run(['npm', 'run', 'prettier'])
 subprocess.run(['npm', 'run', 'lint'])
