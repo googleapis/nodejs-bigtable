@@ -16,11 +16,11 @@
 
 'use strict';
 
-var assert = require('assert');
-var proxyquire = require('proxyquire');
-var sinon = require('sinon').createSandbox();
+const assert = require('assert');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon').createSandbox();
 
-var FakeMutation = {
+const FakeMutation = {
   convertToBytes: sinon.spy(function(value) {
     return value;
   }),
@@ -53,56 +53,56 @@ describe('Bigtable/Filter', function() {
 
   describe('convertToRegExpString', function() {
     it('should convert a RegExp to a string', function() {
-      var str = Filter.convertToRegExpString(/\d+/);
+      let str = Filter.convertToRegExpString(/\d+/);
 
       assert.strictEqual(str, '\\d+');
     });
 
     it('should convert an Array of strings to a single string', function() {
-      var things = ['a', 'b', 'c'];
-      var str = Filter.convertToRegExpString(things);
+      let things = ['a', 'b', 'c'];
+      let str = Filter.convertToRegExpString(things);
 
       assert.strictEqual(str, '(a|b|c)');
     });
 
     it('should convert an Array of buffers to a single string', function() {
-      var faces = [Buffer.from('.|.'), Buffer.from('=|=')];
-      var str = Filter.convertToRegExpString(faces);
+      let faces = [Buffer.from('.|.'), Buffer.from('=|=')];
+      let str = Filter.convertToRegExpString(faces);
 
       assert.strictEqual(str, '(\\.\\|\\.|=\\|=)');
     });
 
     it('should not do anything to a string', function() {
-      var str1 = 'hello';
-      var str2 = Filter.convertToRegExpString(str1);
+      let str1 = 'hello';
+      let str2 = Filter.convertToRegExpString(str1);
 
       assert.strictEqual(str1, str2);
     });
 
     it('should convert a number to a string', function() {
-      var str = Filter.convertToRegExpString(1);
+      let str = Filter.convertToRegExpString(1);
 
       assert.strictEqual(str, '1');
     });
 
     it('should not do anything to a buffer', function() {
-      var str1 = 'hello';
-      var buffer = Buffer.from(str1);
-      var str2 = Filter.convertToRegExpString(buffer);
+      let str1 = 'hello';
+      let buffer = Buffer.from(str1);
+      let str2 = Filter.convertToRegExpString(buffer);
 
       assert.deepStrictEqual(buffer, str2);
     });
 
     it('should use a binary encoding on a non utf8 buffer', function() {
-      var str1 = 'æ';
-      var buffer = Buffer.from('æ', 'binary');
-      var str2 = Filter.convertToRegExpString(buffer).toString('binary');
+      let str1 = 'æ';
+      let buffer = Buffer.from('æ', 'binary');
+      let str2 = Filter.convertToRegExpString(buffer).toString('binary');
 
       assert.strictEqual(str1, str2);
     });
 
     it('should throw an error for unknown types', function() {
-      var errorReg = /Can't convert to RegExp String from unknown type\./;
+      let errorReg = /Can't convert to RegExp String from unknown type\./;
 
       assert.throws(function() {
         Filter.convertToRegExpString(true);
@@ -112,11 +112,11 @@ describe('Bigtable/Filter', function() {
 
   describe('createRange', function() {
     it('should create a range object', function() {
-      var start = 'a';
-      var end = 'b';
-      var key = 'Key';
+      let start = 'a';
+      let end = 'b';
+      let key = 'Key';
 
-      var range = Filter.createRange(start, end, key);
+      let range = Filter.createRange(start, end, key);
 
       assert.deepEqual(range, {
         startKeyClosed: start,
@@ -125,10 +125,10 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should only create start bound', function() {
-      var start = 'a';
-      var key = 'Key';
+      let start = 'a';
+      let key = 'Key';
 
-      var range = Filter.createRange(start, null, key);
+      let range = Filter.createRange(start, null, key);
 
       assert(FakeMutation.convertToBytes.calledWithExactly(start));
       assert.deepEqual(range, {
@@ -137,10 +137,10 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should only create an end bound', function() {
-      var end = 'b';
-      var key = 'Key';
+      let end = 'b';
+      let key = 'Key';
 
-      var range = Filter.createRange(null, end, key);
+      let range = Filter.createRange(null, end, key);
 
       assert(FakeMutation.convertToBytes.calledWithExactly(end));
       assert.deepEqual(range, {
@@ -149,19 +149,19 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should optionally accept inclusive flags', function() {
-      var start = {
+      let start = {
         value: 'a',
         inclusive: false,
       };
 
-      var end = {
+      let end = {
         value: 'b',
         inclusive: false,
       };
 
-      var key = 'Key';
+      let key = 'Key';
 
-      var range = Filter.createRange(start, end, key);
+      let range = Filter.createRange(start, end, key);
 
       assert.deepEqual(range, {
         startKeyOpen: start.value,
@@ -175,7 +175,7 @@ describe('Bigtable/Filter', function() {
       sinon.spy(Filter.prototype, 'row');
       sinon.spy(Filter.prototype, 'value');
 
-      var fakeFilter = [
+      let fakeFilter = [
         {
           row: 'a',
         },
@@ -194,7 +194,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should throw an error for unknown filters', function() {
-      var fakeFilter = [
+      let fakeFilter = [
         {
           wat: 'a',
         },
@@ -204,16 +204,16 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should return the filter in JSON form', function() {
-      var fakeProto = {a: 'a'};
-      var fakeFilter = [
+      let fakeProto = {a: 'a'};
+      let fakeFilter = [
         {
           column: 'a',
         },
       ];
 
-      var stub = sinon.stub(Filter.prototype, 'toProto').returns(fakeProto);
+      let stub = sinon.stub(Filter.prototype, 'toProto').returns(fakeProto);
 
-      var parsedFilter = Filter.parse(fakeFilter);
+      let parsedFilter = Filter.parse(fakeFilter);
 
       assert.strictEqual(parsedFilter, fakeProto);
       assert.strictEqual(Filter.prototype.toProto.callCount, 1);
@@ -246,11 +246,11 @@ describe('Bigtable/Filter', function() {
 
   describe('column', function() {
     it('should set the column qualifier regex filter', function(done) {
-      var column = {
+      let column = {
         name: 'fake-column',
       };
 
-      var spy = sinon.stub(Filter, 'convertToRegExpString').returnsArg(0);
+      let spy = sinon.stub(Filter, 'convertToRegExpString').returnsArg(0);
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'columnQualifierRegexFilter');
@@ -265,7 +265,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should handle a binary encoded buffer regex filter', function(done) {
-      var column = {
+      let column = {
         name: Buffer.from('æ', 'binary'),
       };
 
@@ -280,7 +280,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should accept the short-hand version of column', function(done) {
-      var column = 'fake-column';
+      let column = 'fake-column';
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'columnQualifierRegexFilter');
@@ -292,7 +292,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should accept the cells per column limit filter', function(done) {
-      var column = {
+      let column = {
         cellLimit: 10,
       };
 
@@ -306,16 +306,16 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should accept the column range filter', function(done) {
-      var fakeRange = {
+      let fakeRange = {
         a: 'a',
         b: 'b',
       };
-      var column = {
+      let column = {
         start: 'a',
         end: 'b',
       };
 
-      var spy = sinon.stub(Filter, 'createRange').returns(fakeRange);
+      let spy = sinon.stub(Filter, 'createRange').returns(fakeRange);
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'columnRangeFilter');
@@ -331,13 +331,13 @@ describe('Bigtable/Filter', function() {
 
   describe('condition', function() {
     it('should create a condition filter', function(done) {
-      var condition = {
+      let condition = {
         test: {a: 'a'},
         pass: {b: 'b'},
         fail: {c: 'c'},
       };
 
-      var spy = sinon.stub(Filter, 'parse').returnsArg(0);
+      let spy = sinon.stub(Filter, 'parse').returnsArg(0);
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'condition');
@@ -362,9 +362,9 @@ describe('Bigtable/Filter', function() {
 
   describe('family', function() {
     it('should create a family name regex filter', function(done) {
-      var familyName = 'fake-family';
+      let familyName = 'fake-family';
 
-      var spy = sinon.stub(Filter, 'convertToRegExpString').returnsArg(0);
+      let spy = sinon.stub(Filter, 'convertToRegExpString').returnsArg(0);
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'familyNameRegexFilter');
@@ -380,9 +380,9 @@ describe('Bigtable/Filter', function() {
 
   describe('interleave', function() {
     it('should create an interleave filter', function(done) {
-      var fakeFilters = [{}, {}, {}];
+      let fakeFilters = [{}, {}, {}];
 
-      var spy = sinon.stub(Filter, 'parse').returnsArg(0);
+      let spy = sinon.stub(Filter, 'parse').returnsArg(0);
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'interleave');
@@ -402,7 +402,7 @@ describe('Bigtable/Filter', function() {
 
   describe('label', function() {
     it('should apply the label transformer', function(done) {
-      var label = 'label';
+      let label = 'label';
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'applyLabelTransformer');
@@ -416,12 +416,12 @@ describe('Bigtable/Filter', function() {
 
   describe('row', function() {
     it('should apply the row key regex filter', function(done) {
-      var row = {
+      let row = {
         key: 'gwashinton',
       };
-      var convertedKey = 'abcd';
+      let convertedKey = 'abcd';
 
-      var spy = sinon
+      let spy = sinon
         .stub(Filter, 'convertToRegExpString')
         .returns(convertedKey);
 
@@ -438,7 +438,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should accept the short-hand version of row key', function(done) {
-      var rowKey = 'gwashington';
+      let rowKey = 'gwashington';
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'rowKeyRegexFilter');
@@ -450,7 +450,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should set the row sample filter', function(done) {
-      var row = {
+      let row = {
         sample: 10,
       };
 
@@ -464,7 +464,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should set the cells per row offset filter', function(done) {
-      var row = {
+      let row = {
         cellOffset: 10,
       };
 
@@ -478,7 +478,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should set the cells per row limit filter', function(done) {
-      var row = {
+      let row = {
         cellLimit: 10,
       };
 
@@ -494,8 +494,8 @@ describe('Bigtable/Filter', function() {
 
   describe('set', function() {
     it('should create a filter object', function() {
-      var key = 'notARealFilter';
-      var value = {a: 'b'};
+      let key = 'notARealFilter';
+      let value = {a: 'b'};
 
       filter.set(key, value);
 
@@ -505,7 +505,7 @@ describe('Bigtable/Filter', function() {
 
   describe('sink', function() {
     it('should set the sink filter', function(done) {
-      var sink = true;
+      let sink = true;
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'sink');
@@ -519,12 +519,12 @@ describe('Bigtable/Filter', function() {
 
   describe('time', function() {
     it('should set the timestamp range filter', function(done) {
-      var fakeTimeRange = {
+      let fakeTimeRange = {
         start: 10,
         end: 10,
       };
 
-      var spy = FakeMutation.createTimeRange.returns(fakeTimeRange);
+      let spy = FakeMutation.createTimeRange.returns(fakeTimeRange);
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'timestampRangeFilter');
@@ -539,8 +539,8 @@ describe('Bigtable/Filter', function() {
 
   describe('toProto', function() {
     it('should return null when no filters are present', function() {
-      var filter = new Filter();
-      var filterProto = filter.toProto();
+      let filter = new Filter();
+      let filterProto = filter.toProto();
 
       assert.strictEqual(filterProto, null);
     });
@@ -548,7 +548,7 @@ describe('Bigtable/Filter', function() {
     it('should return a plain filter if there is only 1', function() {
       filter.filters_ = [{}];
 
-      var filterProto = filter.toProto();
+      let filterProto = filter.toProto();
 
       assert.strictEqual(filterProto, filter.filters_[0]);
     });
@@ -556,7 +556,7 @@ describe('Bigtable/Filter', function() {
     it('should create a chain filter if there are multiple', function() {
       filter.filters_ = [{}, {}];
 
-      var filterProto = filter.toProto();
+      let filterProto = filter.toProto();
 
       assert.strictEqual(filterProto.chain.filters, filter.filters_);
     });
@@ -564,17 +564,17 @@ describe('Bigtable/Filter', function() {
 
   describe('value', function() {
     it('should set the value regex filter', function(done) {
-      var value = {
+      let value = {
         value: 'fake-value',
       };
-      var fakeRegExValue = 'abcd';
-      var fakeConvertedValue = 'dcba';
+      let fakeRegExValue = 'abcd';
+      let fakeConvertedValue = 'dcba';
 
-      var regSpy = sinon
+      let regSpy = sinon
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      var bytesSpy = (FakeMutation.convertToBytes = sinon.spy(function() {
+      let bytesSpy = (FakeMutation.convertToBytes = sinon.spy(function() {
         return fakeConvertedValue;
       }));
 
@@ -591,16 +591,16 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should accept the short-hand version of value', function(done) {
-      var value = 'fake-value';
+      let value = 'fake-value';
 
-      var fakeRegExValue = 'abcd';
-      var fakeConvertedValue = 'dcba';
+      let fakeRegExValue = 'abcd';
+      let fakeConvertedValue = 'dcba';
 
-      var regSpy = sinon
+      let regSpy = sinon
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      var bytesSpy = (FakeMutation.convertToBytes = sinon.spy(function() {
+      let bytesSpy = (FakeMutation.convertToBytes = sinon.spy(function() {
         return fakeConvertedValue;
       }));
 
@@ -617,16 +617,16 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should accept the value range filter', function(done) {
-      var fakeRange = {
+      let fakeRange = {
         a: 'a',
         b: 'b',
       };
-      var value = {
+      let value = {
         start: 'a',
         end: 'b',
       };
 
-      var spy = sinon.stub(Filter, 'createRange').returns(fakeRange);
+      let spy = sinon.stub(Filter, 'createRange').returns(fakeRange);
 
       filter.set = function(filterName, val) {
         assert.strictEqual(filterName, 'valueRangeFilter');
@@ -640,7 +640,7 @@ describe('Bigtable/Filter', function() {
     });
 
     it('should apply the strip label transformer', function(done) {
-      var value = {
+      let value = {
         strip: true,
       };
 
@@ -656,13 +656,13 @@ describe('Bigtable/Filter', function() {
 
   describe('FilterError', function() {
     it('should set the correct message', function() {
-      var err = new Filter.FilterError('test');
+      let err = new Filter.FilterError('test');
 
       assert.strictEqual(err.message, 'Unknown filter: test.');
     });
 
     it('should set the correct name', function() {
-      var err = new Filter.FilterError('test');
+      let err = new Filter.FilterError('test');
 
       assert.strictEqual(err.name, 'FilterError');
     });

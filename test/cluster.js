@@ -16,14 +16,14 @@
 
 'use strict';
 
-var assert = require('assert');
-var extend = require('extend');
-var proxyquire = require('proxyquire');
+const assert = require('assert');
+const extend = require('extend');
+const proxyquire = require('proxyquire');
 
 const common = require('@google-cloud/common-grpc');
 
 var promisified = false;
-var fakeUtil = extend({}, common.util, {
+const fakeUtil = extend({}, common.util, {
   promisifyAll: function(Class) {
     if (Class.name === 'Cluster') {
       promisified = true;
@@ -32,15 +32,15 @@ var fakeUtil = extend({}, common.util, {
 });
 
 describe('Bigtable/Cluster', function() {
-  var CLUSTER_ID = 'my-cluster';
-  var PROJECT_ID = 'grape-spaceship-123';
+  const CLUSTER_ID = 'my-cluster';
+  const PROJECT_ID = 'grape-spaceship-123';
 
-  var INSTANCE = {
-    name: 'projects/p/instances/i',
+  const INSTANCE = {
+    name: `projects/${PROJECT_ID}/instances/i`,
     bigtable: {projectId: PROJECT_ID},
   };
 
-  var CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
+  const CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
   var Cluster;
   var cluster;
 
@@ -74,7 +74,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should leave full cluster names unaltered', function() {
-      var cluster = new Cluster(INSTANCE, CLUSTER_ID);
+      let cluster = new Cluster(INSTANCE, CLUSTER_ID);
       assert.strictEqual(cluster.name, CLUSTER_NAME);
     });
 
@@ -83,13 +83,13 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should leave full cluster names unaltered and localize the id from the name', function() {
-      var cluster = new Cluster(INSTANCE, CLUSTER_NAME);
+      let cluster = new Cluster(INSTANCE, CLUSTER_NAME);
       assert.strictEqual(cluster.name, CLUSTER_NAME);
       assert.strictEqual(cluster.id, CLUSTER_ID);
     });
 
     it('should throw if cluster id in wrong format', function() {
-      var id = `clusters/${CLUSTER_ID}`;
+      let id = `clusters/${CLUSTER_ID}`;
       assert.throws(function() {
         new Cluster(INSTANCE, id);
       }, Error);
@@ -97,32 +97,32 @@ describe('Bigtable/Cluster', function() {
   });
 
   describe('getLocation_', function() {
-    var LOCATION = 'us-centralb-1';
+    const LOCATION = 'us-central1-b';
 
     it('should format the location name', function() {
-      var expected = `projects/${PROJECT_ID}/locations/${LOCATION}`;
-      var formatted = Cluster.getLocation_(PROJECT_ID, LOCATION);
+      let expected = `projects/${PROJECT_ID}/locations/${LOCATION}`;
+      let formatted = Cluster.getLocation_(PROJECT_ID, LOCATION);
       assert.strictEqual(formatted, expected);
     });
 
     it('should format the location name for project name with /', function() {
-      var PROJECT_NAME = 'projects/grape-spaceship-123';
-      var expected = `projects/${PROJECT_NAME.split(
+      let PROJECT_NAME = 'projects/grape-spaceship-123';
+      let expected = `projects/${PROJECT_NAME.split(
         '/'
       ).pop()}/locations/${LOCATION}`;
-      var formatted = Cluster.getLocation_(PROJECT_NAME, LOCATION);
+      let formatted = Cluster.getLocation_(PROJECT_NAME, LOCATION);
       assert.strictEqual(formatted, expected);
     });
 
     it('should not re-format a complete location', function() {
-      var complete = `projects/p/locations/${LOCATION}`;
-      var formatted = Cluster.getLocation_(PROJECT_ID, complete);
+      let complete = `projects/p/locations/${LOCATION}`;
+      let formatted = Cluster.getLocation_(PROJECT_ID, complete);
       assert.strictEqual(formatted, complete);
     });
   });
 
   describe('getStorageType_', function() {
-    var types = {
+    let types = {
       unspecified: 0,
       ssd: 1,
       hdd: 2,
@@ -145,7 +145,7 @@ describe('Bigtable/Cluster', function() {
 
   describe('create', function() {
     it('should call createCluster from instance', function(done) {
-      var options = {};
+      let options = {};
 
       cluster.instance.createCluster = function(id, options_, callback) {
         assert.strictEqual(id, cluster.id);
@@ -185,7 +185,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       cluster.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -207,7 +207,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should pass gaxOptions to getMetadata', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       cluster.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -218,7 +218,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should return false if error code is 5', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
       error.code = 5;
 
       cluster.getMetadata = function(gaxOptions, callback) {
@@ -233,7 +233,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should return error if code is not 5', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
       error.code = 'NOT-5';
 
       cluster.getMetadata = function(gaxOptions, callback) {
@@ -261,7 +261,7 @@ describe('Bigtable/Cluster', function() {
 
   describe('get', function() {
     it('should call getMetadata', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       cluster.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -281,7 +281,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should return an error from getMetadata', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
 
       cluster.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -294,7 +294,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should return self and API response', function(done) {
-      var metadata = {};
+      let metadata = {};
 
       cluster.getMetadata = function(gaxOptions, callback) {
         callback(null, metadata);
@@ -328,7 +328,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       cluster.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -339,7 +339,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should update metadata', function(done) {
-      var metadata = {};
+      let metadata = {};
 
       cluster.bigtable.request = function(config, callback) {
         callback(null, metadata);
@@ -352,7 +352,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should execute callback with original arguments', function(done) {
-      var args = [{}, {}, {}];
+      let args = [{}, {}, {}];
 
       cluster.bigtable.request = function(config, callback) {
         callback.apply(null, args);
@@ -378,12 +378,12 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should respect the location option', function(done) {
-      var options = {
+      let options = {
         location: 'us-centralb-1',
       };
 
-      var getLocation = Cluster.getLocation_;
-      var fakeLocation = 'a/b/c/d';
+      let getLocation = Cluster.getLocation_;
+      let fakeLocation = 'a/b/c/d';
 
       Cluster.getLocation_ = function(project, location) {
         assert.strictEqual(project, PROJECT_ID);
@@ -401,7 +401,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should respect the nodes option', function(done) {
-      var options = {
+      let options = {
         nodes: 3,
       };
 
@@ -414,12 +414,12 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should respect the storage option', function(done) {
-      var options = {
+      let options = {
         storage: 'ssd',
       };
 
-      var getStorageType = Cluster.getStorageType_;
-      var fakeStorageType = 'a';
+      let getStorageType = Cluster.getStorageType_;
+      let fakeStorageType = 'a';
 
       Cluster.getStorageType_ = function(storage) {
         assert.strictEqual(storage, options.storage);
@@ -436,7 +436,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should execute callback with all arguments', function(done) {
-      var args = [{}, {}, {}];
+      let args = [{}, {}, {}];
 
       cluster.bigtable.request = function(config, callback) {
         callback.apply(null, args);

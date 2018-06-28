@@ -16,10 +16,10 @@
 
 'use strict';
 
-var assert = require('assert');
-var Long = require('long');
-var Mutation = require('../src/mutation.js');
-var sinon = require('sinon').createSandbox();
+const assert = require('assert');
+const Long = require('long');
+const Mutation = require('../src/mutation.js');
+const sinon = require('sinon').createSandbox();
 
 describe('Bigtable/Mutation', function() {
   afterEach(function() {
@@ -27,14 +27,14 @@ describe('Bigtable/Mutation', function() {
   });
 
   describe('instantiation', function() {
-    var fakeData = {
+    const fakeData = {
       key: 'a',
       method: 'b',
       data: 'c',
     };
 
     it('should localize all the mutation properties', function() {
-      var mutation = new Mutation(fakeData);
+      let mutation = new Mutation(fakeData);
 
       assert.strictEqual(mutation.key, fakeData.key);
       assert.strictEqual(mutation.method, fakeData.method);
@@ -45,39 +45,39 @@ describe('Bigtable/Mutation', function() {
   describe('convertFromBytes', function() {
     describe('isPossibleNumber', function() {
       it('should convert a base64 encoded number when true', function() {
-        var num = 10;
-        var encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
+        let num = 10;
+        let encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
           'base64'
         );
-        var decoded = Mutation.convertFromBytes(encoded, {
+        let decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
         });
 
         assert.strictEqual(num, decoded);
       });
       it('should not convert a base64 encoded number when false', function() {
-        var num = 10;
-        var encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
+        let num = 10;
+        let encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
           'base64'
         );
-        var decoded = Mutation.convertFromBytes(encoded);
+        let decoded = Mutation.convertFromBytes(encoded);
 
         assert.notEqual(num, decoded);
       });
     });
 
     it('should convert a base64 encoded string', function() {
-      var message = 'Hello!';
-      var encoded = Buffer.from(message).toString('base64');
-      var decoded = Mutation.convertFromBytes(encoded);
+      let message = 'Hello!';
+      let encoded = Buffer.from(message).toString('base64');
+      let decoded = Mutation.convertFromBytes(encoded);
 
       assert.strictEqual(message, decoded);
     });
 
     it('should allow using a custom encoding scheme', function() {
-      var message = 'æ';
-      var encoded = Buffer.from(message, 'binary').toString('base64');
-      var decoded = Mutation.convertFromBytes(encoded, {
+      let message = 'æ';
+      let encoded = Buffer.from(message, 'binary').toString('base64');
+      let decoded = Mutation.convertFromBytes(encoded, {
         userOptions: {encoding: 'binary'},
       });
 
@@ -85,10 +85,10 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should return a buffer if decode is set to false', function() {
-      var message = 'Hello!';
-      var encoded = Buffer.from(message).toString('base64');
+      let message = 'Hello!';
+      let encoded = Buffer.from(message).toString('base64');
       const userOptions = {decode: false};
-      var decoded = Mutation.convertFromBytes(encoded, {
+      let decoded = Mutation.convertFromBytes(encoded, {
         userOptions: userOptions,
       });
 
@@ -97,8 +97,8 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should not create a new Buffer needlessly', function() {
-      var message = 'Hello!';
-      var encoded = Buffer.from(message);
+      let message = 'Hello!';
+      let encoded = Buffer.from(message);
       const stub = sinon.stub(Buffer, 'from');
       const decoded = Mutation.convertFromBytes(encoded);
       assert.strictEqual(stub.called, false);
@@ -108,31 +108,31 @@ describe('Bigtable/Mutation', function() {
 
   describe('convertToBytes', function() {
     it('should not re-wrap buffers', function() {
-      var buf = Buffer.from('hello');
-      var encoded = Mutation.convertToBytes(buf);
+      let buf = Buffer.from('hello');
+      let encoded = Mutation.convertToBytes(buf);
 
       assert.strictEqual(buf, encoded);
     });
 
     it('should pack numbers into int64 values', function() {
-      var num = 10;
-      var encoded = Mutation.convertToBytes(num);
-      var decoded = Long.fromBytes(encoded).toNumber();
+      let num = 10;
+      let encoded = Mutation.convertToBytes(num);
+      let decoded = Long.fromBytes(encoded).toNumber();
 
       assert.strictEqual(num, decoded);
     });
 
     it('should wrap the value in a buffer', function() {
-      var message = 'Hello!';
-      var encoded = Mutation.convertToBytes(message);
+      let message = 'Hello!';
+      let encoded = Mutation.convertToBytes(message);
 
       assert(encoded instanceof Buffer);
       assert.strictEqual(encoded.toString(), message);
     });
 
     it('should simply return the value if it cannot wrap it', function() {
-      var message = true;
-      var notEncoded = Mutation.convertToBytes(message);
+      let message = true;
+      let notEncoded = Mutation.convertToBytes(message);
 
       assert(!(notEncoded instanceof Buffer));
       assert.strictEqual(message, notEncoded);
@@ -141,9 +141,9 @@ describe('Bigtable/Mutation', function() {
 
   describe('createTimeRange', function() {
     it('should create a time range', function() {
-      var timestamp = Date.now();
-      var dateObj = new Date(timestamp);
-      var range = Mutation.createTimeRange(dateObj, dateObj);
+      let timestamp = Date.now();
+      let dateObj = new Date(timestamp);
+      let range = Mutation.createTimeRange(dateObj, dateObj);
 
       assert.strictEqual(range.startTimestampMicros, timestamp * 1000);
       assert.strictEqual(range.endTimestampMicros, timestamp * 1000);
@@ -151,9 +151,9 @@ describe('Bigtable/Mutation', function() {
   });
 
   describe('encodeSetCell', function() {
-    var convertCalls;
-    var fakeTime = new Date('2018-1-1');
-    var realTimestamp = new Date();
+    let convertCalls;
+    let fakeTime = new Date('2018-1-1');
+    let realTimestamp = new Date();
 
     beforeEach(function() {
       sinon.stub(global, 'Date').returns(fakeTime);
@@ -165,14 +165,14 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should encode a setCell mutation', function() {
-      var fakeMutation = {
+      let fakeMutation = {
         follows: {
           gwashington: 1,
           alincoln: 1,
         },
       };
 
-      var cells = Mutation.encodeSetCell(fakeMutation);
+      let cells = Mutation.encodeSetCell(fakeMutation);
 
       assert.strictEqual(cells.length, 2);
 
@@ -200,7 +200,7 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should optionally accept a timestamp', function() {
-      var fakeMutation = {
+      let fakeMutation = {
         follows: {
           gwashington: {
             value: 1,
@@ -209,7 +209,7 @@ describe('Bigtable/Mutation', function() {
         },
       };
 
-      var cells = Mutation.encodeSetCell(fakeMutation);
+      let cells = Mutation.encodeSetCell(fakeMutation);
 
       assert.deepEqual(cells, [
         {
@@ -227,14 +227,14 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should accept buffers', function() {
-      var val = Buffer.from('hello');
-      var fakeMutation = {
+      let val = Buffer.from('hello');
+      let fakeMutation = {
         follows: {
           gwashington: val,
         },
       };
 
-      var cells = Mutation.encodeSetCell(fakeMutation);
+      let cells = Mutation.encodeSetCell(fakeMutation);
 
       assert.deepEqual(cells, [
         {
@@ -253,8 +253,8 @@ describe('Bigtable/Mutation', function() {
   });
 
   describe('encodeDelete', function() {
-    var convert;
-    var convertCalls = [];
+    let convert;
+    let convertCalls = [];
 
     before(function() {
       convert = Mutation.convertToBytes;
@@ -273,7 +273,7 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should create a delete row mutation', function() {
-      var mutation = Mutation.encodeDelete();
+      let mutation = Mutation.encodeDelete();
 
       assert.deepEqual(mutation, [
         {
@@ -283,8 +283,8 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should array-ify the input', function() {
-      var fakeKey = 'follows';
-      var mutation = Mutation.encodeDelete(fakeKey);
+      let fakeKey = 'follows';
+      let mutation = Mutation.encodeDelete(fakeKey);
 
       assert.deepEqual(mutation, [
         {
@@ -296,14 +296,14 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should create a delete family mutation', function() {
-      var fakeColumnName = {
+      let fakeColumnName = {
         family: 'followed',
         qualifier: null,
       };
 
       sinon.stub(Mutation, 'parseColumnName').returns(fakeColumnName);
 
-      var mutation = Mutation.encodeDelete(['follows']);
+      let mutation = Mutation.encodeDelete(['follows']);
 
       assert.deepEqual(mutation, [
         {
@@ -315,7 +315,7 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should create a delete column mutation', function() {
-      var mutation = Mutation.encodeDelete(['follows:gwashington']);
+      let mutation = Mutation.encodeDelete(['follows:gwashington']);
 
       assert.deepEqual(mutation, [
         {
@@ -332,11 +332,11 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should optionally accept a timerange for column requests', function() {
-      var createTimeRange = Mutation.createTimeRange;
-      var timeCalls = [];
-      var fakeTimeRange = {a: 'a'};
+      let createTimeRange = Mutation.createTimeRange;
+      let timeCalls = [];
+      let fakeTimeRange = {a: 'a'};
 
-      var fakeMutationData = {
+      let fakeMutationData = {
         column: 'follows:gwashington',
         time: {
           start: 1,
@@ -352,7 +352,7 @@ describe('Bigtable/Mutation', function() {
         return fakeTimeRange;
       };
 
-      var mutation = Mutation.encodeDelete(fakeMutationData);
+      let mutation = Mutation.encodeDelete(fakeMutationData);
 
       assert.deepEqual(mutation, [
         {
@@ -372,9 +372,9 @@ describe('Bigtable/Mutation', function() {
   });
 
   describe('parse', function() {
-    var toProto;
-    var toProtoCalled = false;
-    var fakeData = {a: 'a'};
+    let toProto;
+    let toProtoCalled = false;
+    let fakeData = {a: 'a'};
 
     before(function() {
       toProto = Mutation.prototype.toProto;
@@ -389,26 +389,26 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should create a new mutation object and parse it', function() {
-      var fakeMutationData = {
+      let fakeMutationData = {
         key: 'a',
         method: 'b',
         data: 'c',
       };
 
-      var mutation = Mutation.parse(fakeMutationData);
+      let mutation = Mutation.parse(fakeMutationData);
 
       assert.strictEqual(toProtoCalled, true);
       assert.strictEqual(mutation, fakeData);
     });
 
     it('should parse a pre-existing mutation object', function() {
-      var data = new Mutation({
+      let data = new Mutation({
         key: 'a',
         method: 'b',
         data: [],
       });
 
-      var mutation = Mutation.parse(data);
+      let mutation = Mutation.parse(data);
 
       assert.strictEqual(toProtoCalled, true);
       assert.strictEqual(mutation, fakeData);
@@ -417,14 +417,14 @@ describe('Bigtable/Mutation', function() {
 
   describe('parseColumnName', function() {
     it('should parse a column name', function() {
-      var parsed = Mutation.parseColumnName('a:b');
+      let parsed = Mutation.parseColumnName('a:b');
 
       assert.strictEqual(parsed.family, 'a');
       assert.strictEqual(parsed.qualifier, 'b');
     });
 
     it('should parse a family name', function() {
-      var parsed = Mutation.parseColumnName('a');
+      let parsed = Mutation.parseColumnName('a');
 
       assert.strictEqual(parsed.family, 'a');
       assert.strictEqual(parsed.qualifier, undefined);
@@ -432,8 +432,8 @@ describe('Bigtable/Mutation', function() {
   });
 
   describe('toProto', function() {
-    var convert;
-    var convertCalls = [];
+    let convert;
+    let convertCalls = [];
 
     before(function() {
       convert = Mutation.convertToBytes;
@@ -452,21 +452,21 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should encode set cell mutations when method is insert', function() {
-      var fakeEncoded = [{a: 'a'}];
-      var data = {
+      let fakeEncoded = [{a: 'a'}];
+      let data = {
         key: 'a',
         method: 'insert',
         data: [],
       };
 
-      var mutation = new Mutation(data);
+      let mutation = new Mutation(data);
 
       Mutation.encodeSetCell = function(_data) {
         assert.strictEqual(_data, data.data);
         return fakeEncoded;
       };
 
-      var mutationProto = mutation.toProto();
+      let mutationProto = mutation.toProto();
 
       assert.strictEqual(mutationProto.mutations, fakeEncoded);
       assert.strictEqual(mutationProto.rowKey, data.key);
@@ -474,8 +474,8 @@ describe('Bigtable/Mutation', function() {
     });
 
     it('should encode delete mutations when method is delete', function() {
-      var fakeEncoded = [{b: 'b'}];
-      var data = {
+      let fakeEncoded = [{b: 'b'}];
+      let data = {
         key: 'b',
         method: 'delete',
         data: [],
@@ -486,7 +486,7 @@ describe('Bigtable/Mutation', function() {
         return fakeEncoded;
       };
 
-      var mutation = new Mutation(data).toProto();
+      let mutation = new Mutation(data).toProto();
 
       assert.strictEqual(mutation.mutations, fakeEncoded);
       assert.strictEqual(mutation.rowKey, data.key);

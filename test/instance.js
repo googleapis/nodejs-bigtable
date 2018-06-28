@@ -16,18 +16,18 @@
 
 'use strict';
 
-var assert = require('assert');
+const assert = require('assert');
 const common = require('@google-cloud/common-grpc');
-var extend = require('extend');
-var proxyquire = require('proxyquire');
+const extend = require('extend');
+const proxyquire = require('proxyquire');
 
-var AppProfile = require('../src/app-profile.js');
-var Cluster = require('../src/cluster.js');
-var Family = require('../src/family.js');
-var Table = require('../src/table.js');
+const AppProfile = require('../src/app-profile.js');
+const Cluster = require('../src/cluster.js');
+const Family = require('../src/family.js');
+const Table = require('../src/table.js');
 
 var promisified = false;
-var fakeUtil = extend({}, common.util, {
+const fakeUtil = extend({}, common.util, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Instance') {
       return;
@@ -38,7 +38,7 @@ var fakeUtil = extend({}, common.util, {
   },
 });
 
-var fakePaginator = {
+const fakePaginator = {
   extend: function() {
     this.calledWith_ = arguments;
   },
@@ -56,18 +56,18 @@ function createFake(Class) {
   };
 }
 
-var FakeAppProfile = createFake(AppProfile);
-var FakeCluster = createFake(Cluster);
-var FakeFamily = createFake(Family);
-var FakeTable = createFake(Table);
+const FakeAppProfile = createFake(AppProfile);
+const FakeCluster = createFake(Cluster);
+const FakeFamily = createFake(Family);
+const FakeTable = createFake(Table);
 
 describe('Bigtable/Instance', function() {
-  var INSTANCE_ID = 'my-instance';
-  var BIGTABLE = {projectName: 'projects/my-project'};
+  const INSTANCE_ID = 'my-instance';
+  const BIGTABLE = {projectName: 'projects/my-project'};
 
-  var INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
-  var APP_PROFILE_ID = 'my-app-profile';
-  var CLUSTER_ID = 'my-cluster';
+  const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
+  const APP_PROFILE_ID = 'my-app-profile';
+  const CLUSTER_ID = 'my-cluster';
 
   var Instance;
   var instance;
@@ -91,7 +91,7 @@ describe('Bigtable/Instance', function() {
 
   describe('instantiation', function() {
     it('should extend the correct methods', function() {
-      var args = fakePaginator.calledWith_;
+      let args = fakePaginator.calledWith_;
 
       assert.strictEqual(args[0], Instance);
       assert.deepEqual(args[1], ['getTables']);
@@ -118,13 +118,13 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should leave full instance name unaltered and localize the id from the name', function() {
-      var instance = new Instance(BIGTABLE, INSTANCE_NAME);
+      let instance = new Instance(BIGTABLE, INSTANCE_NAME);
       assert.strictEqual(instance.name, INSTANCE_NAME);
       assert.strictEqual(instance.id, INSTANCE_ID);
     });
 
     it('should throw if instance id in wrong format', function() {
-      var id = `instances/${INSTANCE_ID}`;
+      let id = `instances/${INSTANCE_ID}`;
       assert.throws(function() {
         new Instance(BIGTABLE, id);
       }, Error);
@@ -132,7 +132,7 @@ describe('Bigtable/Instance', function() {
   });
 
   describe('getTypeType_', function() {
-    var types = {
+    let types = {
       unspecified: 0,
       production: 1,
       development: 2,
@@ -159,7 +159,7 @@ describe('Bigtable/Instance', function() {
 
   describe('create', function() {
     it('should call createInstance from bigtable', function(done) {
-      var options = {};
+      let options = {};
 
       instance.bigtable.createInstance = function(id, options_, callback) {
         assert.strictEqual(id, instance.id);
@@ -209,7 +209,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var options = {
+      let options = {
         routing: 'any',
         gaxOptions: {},
       };
@@ -226,7 +226,7 @@ describe('Bigtable/Instance', function() {
       const cluster = new FakeCluster({}, CLUSTER_ID);
 
       it(`an 'any' value`, function(done) {
-        var options = {
+        let options = {
           routing: 'any',
         };
 
@@ -242,7 +242,7 @@ describe('Bigtable/Instance', function() {
       });
 
       it(`a cluster value`, function(done) {
-        var options = {routing: cluster};
+        let options = {routing: cluster};
 
         instance.bigtable.request = function(config) {
           assert.deepStrictEqual(
@@ -257,8 +257,8 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should respect the allowTransactionalWrites option', function(done) {
-      var cluster = instance.cluster(CLUSTER_ID);
-      var options = {
+      let cluster = instance.cluster(CLUSTER_ID);
+      let options = {
         routing: cluster,
         allowTransactionalWrites: true,
       };
@@ -276,7 +276,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should respect the description option', function(done) {
-      var options = {
+      let options = {
         routing: 'any',
         description: 'My App Profile',
       };
@@ -293,7 +293,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should respect the ignoreWarnings option', function(done) {
-      var options = {
+      let options = {
         routing: 'any',
         ignoreWarnings: true,
       };
@@ -307,13 +307,13 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should execute callback with arguments from GAPIC', function(done) {
-      var response = {};
+      let response = {};
 
       instance.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
-      var fakeAppProfile = {};
+      let fakeAppProfile = {};
 
       instance.appProfile = function(id) {
         assert.strictEqual(id, APP_PROFILE_ID);
@@ -351,7 +351,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var options = {
+      let options = {
         gaxOptions: {},
       };
 
@@ -364,11 +364,11 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should respect the location option', function(done) {
-      var options = {
+      let options = {
         location: 'us-central1-b',
       };
 
-      var fakeLocation = 'a/b/c/d';
+      let fakeLocation = 'a/b/c/d';
 
       FakeCluster.getLocation_ = function(project, location) {
         assert.strictEqual(project, BIGTABLE.projectId);
@@ -385,7 +385,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should respect the nodes option', function(done) {
-      var options = {
+      let options = {
         nodes: 3,
       };
 
@@ -398,11 +398,11 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should respect the storage option', function(done) {
-      var options = {
+      let options = {
         storage: 'ssd',
       };
 
-      var fakeStorageType = 2;
+      let fakeStorageType = 2;
 
       FakeCluster.getStorageType_ = function(type) {
         assert.strictEqual(type, options.storage);
@@ -421,13 +421,13 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should execute callback with arguments from GAPIC', function(done) {
-      var response = {};
+      let response = {};
 
       instance.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
-      var fakeCluster = {};
+      let fakeCluster = {};
 
       instance.cluster = function(name) {
         assert.strictEqual(name, CLUSTER_ID);
@@ -444,8 +444,8 @@ describe('Bigtable/Instance', function() {
   });
 
   describe('createTable', function() {
-    var TABLE_ID = 'my-table';
-    var TABLE_NAME =
+    let TABLE_ID = 'my-table';
+    let TABLE_NAME =
       'projects/my-project/instances/my-instance/tables/my-table';
 
     it('should throw if an id is not provided', function() {
@@ -472,7 +472,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var options = {
+      let options = {
         gaxOptions: {},
       };
 
@@ -485,11 +485,11 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should set the initial split keys', function(done) {
-      var options = {
+      let options = {
         splits: ['a', 'b'],
       };
 
-      var expectedSplits = [{key: 'a'}, {key: 'b'}];
+      let expectedSplits = [{key: 'a'}, {key: 'b'}];
 
       instance.bigtable.request = function(config) {
         assert.deepEqual(config.reqOpts.initialSplits, expectedSplits);
@@ -501,7 +501,7 @@ describe('Bigtable/Instance', function() {
 
     describe('creating column families', function() {
       it('should accept a family name', function(done) {
-        var options = {
+        let options = {
           families: ['a', 'b'],
         };
 
@@ -518,7 +518,7 @@ describe('Bigtable/Instance', function() {
       });
 
       it('should accept a garbage collection object', function(done) {
-        var options = {
+        let options = {
           families: [
             {
               name: 'e',
@@ -527,7 +527,7 @@ describe('Bigtable/Instance', function() {
           ],
         };
 
-        var fakeRule = {a: 'b'};
+        let fakeRule = {a: 'b'};
 
         FakeFamily.formatRule_ = function(rule) {
           assert.strictEqual(rule, options.families[0].rule);
@@ -548,11 +548,11 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return a Table object', function(done) {
-      var response = {
+      let response = {
         name: TABLE_NAME,
       };
 
-      var fakeTable = {};
+      let fakeTable = {};
 
       instance.table = function(id) {
         assert.strictEqual(id, response.name.split('/').pop());
@@ -575,11 +575,11 @@ describe('Bigtable/Instance', function() {
 
   describe('cluster', function() {
     it('should return a Cluster object', function() {
-      var cluster = instance.cluster(CLUSTER_ID);
+      let cluster = instance.cluster(CLUSTER_ID);
 
       assert(cluster instanceof FakeCluster);
 
-      var args = cluster.calledWith_;
+      let args = cluster.calledWith_;
 
       assert.strictEqual(args[0], instance);
       assert.strictEqual(args[1], CLUSTER_ID);
@@ -605,7 +605,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       instance.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -627,7 +627,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should pass gaxOptions to getMetadata', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       instance.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -638,7 +638,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return false if error code is 5', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
       error.code = 5;
 
       instance.getMetadata = function(gaxOptions, callback) {
@@ -653,7 +653,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return error if code is not 5', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
       error.code = 'NOT-5';
 
       instance.getMetadata = function(gaxOptions, callback) {
@@ -681,7 +681,7 @@ describe('Bigtable/Instance', function() {
 
   describe('get', function() {
     it('should call getMetadata', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       instance.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -701,7 +701,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return an error from getMetadata', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
 
       instance.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -714,7 +714,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return self and API response', function(done) {
-      var metadata = {};
+      let metadata = {};
 
       instance.getMetadata = function(gaxOptions, callback) {
         callback(null, metadata);
@@ -745,7 +745,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       instance.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -756,7 +756,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return error from gapic', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
 
       instance.bigtable.request = function(config, callback) {
         callback(error);
@@ -769,7 +769,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return an array of AppProfile objects', function(done) {
-      var response = [{name: 'a'}, {name: 'b'}];
+      let response = [{name: 'a'}, {name: 'b'}];
 
       instance.bigtable.request = function(config, callback) {
         callback(null, response);
@@ -803,7 +803,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       instance.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -814,7 +814,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return error from gapic', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
 
       instance.bigtable.request = function(config, callback) {
         callback(error);
@@ -827,7 +827,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return an array of cluster objects', function(done) {
-      var response = {
+      let response = {
         clusters: [
           {
             name: 'a',
@@ -838,13 +838,13 @@ describe('Bigtable/Instance', function() {
         ],
       };
 
-      var fakeClusters = [{}, {}];
+      let fakeClusters = [{}, {}];
 
       instance.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
-      var clusterCount = 0;
+      let clusterCount = 0;
 
       instance.cluster = function(name) {
         assert.strictEqual(name, response.clusters[clusterCount].name);
@@ -882,7 +882,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       instance.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -893,7 +893,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should update metadata', function(done) {
-      var metadata = {};
+      let metadata = {};
 
       instance.bigtable.request = function(config, callback) {
         callback(null, metadata);
@@ -906,7 +906,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should execute callback with original arguments', function(done) {
-      var args = [{}, {}, {}];
+      let args = [{}, {}, {}];
 
       instance.bigtable.request = function(config, callback) {
         callback.apply(null, args);
@@ -920,7 +920,7 @@ describe('Bigtable/Instance', function() {
   });
 
   describe('getTables', function() {
-    var views = (FakeTable.VIEWS = {
+    let views = (FakeTable.VIEWS = {
       unspecified: 0,
       name: 1,
       schema: 2,
@@ -941,7 +941,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var options = {
+      let options = {
         gaxOptions: {},
       };
 
@@ -955,7 +955,7 @@ describe('Bigtable/Instance', function() {
 
     Object.keys(views).forEach(function(view) {
       it('should set the "' + view + '" view', function(done) {
-        var options = {
+        let options = {
           view: view,
         };
 
@@ -969,7 +969,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return an array of table objects', function(done) {
-      var response = [
+      let response = [
         {
           name: '/projects/my-project/instances/my-instance/tables/my-table-a',
         },
@@ -978,13 +978,13 @@ describe('Bigtable/Instance', function() {
         },
       ];
 
-      var fakeTables = [{}, {}];
+      let fakeTables = [{}, {}];
 
       instance.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
-      var tableCount = 0;
+      let tableCount = 0;
 
       instance.table = function(id) {
         assert.strictEqual(id, response[tableCount].name.split('/').pop());
@@ -1002,7 +1002,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return original GAPIC response arguments', function(done) {
-      var response = [{}, null, {}, {}];
+      let response = [{}, null, {}, {}];
 
       instance.bigtable.request = function(config, callback) {
         callback.apply(null, response);
@@ -1019,8 +1019,8 @@ describe('Bigtable/Instance', function() {
 
   describe('setMetadata', function() {
     it('should provide the proper request options', function(done) {
-      var metadata = {displayName: 'updateDisplayName'};
-      var expectedMetadata = {
+      let metadata = {displayName: 'updateDisplayName'};
+      let expectedMetadata = {
         instance: {name: instance.name, displayName: 'updateDisplayName'},
         updateMask: {paths: ['display_name']},
       };
@@ -1036,7 +1036,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should update metadata property with API response', function(done) {
-      var response = {};
+      let response = {};
 
       instance.bigtable.request = function(config, callback) {
         callback(null, response);
@@ -1050,7 +1050,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should execute callback with all arguments', function(done) {
-      var args = [{}, {}, {}];
+      let args = [{}, {}, {}];
 
       instance.bigtable.request = function(config, callback) {
         callback.apply(null, args);
@@ -1064,11 +1064,11 @@ describe('Bigtable/Instance', function() {
   });
 
   describe('table', function() {
-    var TABLE_ID = 'table-id';
+    const TABLE_ID = 'table-id';
 
     it('should return a table instance', function() {
-      var table = instance.table(TABLE_ID);
-      var args = table.calledWith_;
+      let table = instance.table(TABLE_ID);
+      let args = table.calledWith_;
 
       assert(table instanceof FakeTable);
       assert.strictEqual(args[0], instance);

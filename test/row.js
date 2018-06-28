@@ -16,16 +16,16 @@
 
 'use strict';
 
-var assert = require('assert');
+const assert = require('assert');
 const common = require('@google-cloud/common-grpc');
-var extend = require('extend');
-var proxyquire = require('proxyquire');
-var sinon = require('sinon').createSandbox();
+const extend = require('extend');
+const proxyquire = require('proxyquire');
+const sinon = require('sinon').createSandbox();
 
-var Mutation = require('../src/mutation.js');
+const Mutation = require('../src/mutation.js');
 
 var promisified = false;
-var fakeUtil = extend({}, common.util, {
+const fakeUtil = extend({}, common.util, {
   promisifyAll: function(Class) {
     if (Class.name === 'Row') {
       promisified = true;
@@ -33,14 +33,14 @@ var fakeUtil = extend({}, common.util, {
   },
 });
 
-var ROW_ID = 'my-row';
-var CONVERTED_ROW_ID = 'my-converted-row';
-var TABLE = {
+const ROW_ID = 'my-row';
+const CONVERTED_ROW_ID = 'my-converted-row';
+const TABLE = {
   bigtable: {},
   name: '/projects/project/instances/my-instance/tables/my-table',
 };
 
-var FakeMutation = {
+const FakeMutation = {
   methods: Mutation.methods,
   convertToBytes: sinon.spy(function(value) {
     if (value === ROW_ID) {
@@ -61,7 +61,7 @@ var FakeMutation = {
   }),
 };
 
-var FakeFilter = {
+const FakeFilter = {
   parse: sinon.spy(function(filter) {
     return filter;
   }),
@@ -116,7 +116,7 @@ describe('Bigtable/Row', function() {
   });
 
   describe('formatChunks_', function() {
-    var convert = FakeMutation.convertFromBytes;
+    let convert = FakeMutation.convertFromBytes;
 
     beforeEach(function() {
       convert = FakeMutation.convertFromBytes;
@@ -130,8 +130,8 @@ describe('Bigtable/Row', function() {
     });
 
     it('should format the chunks', function() {
-      var timestamp = Date.now();
-      var chunks = [
+      let timestamp = Date.now();
+      let chunks = [
         {
           rowKey: 'unconvertedKey',
           familyName: {
@@ -152,7 +152,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var rows = Row.formatChunks_(chunks);
+      let rows = Row.formatChunks_(chunks);
 
       assert.deepEqual(rows, [
         {
@@ -174,7 +174,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should inherit the row key', function() {
-      var chunks = [
+      let chunks = [
         {
           rowKey: 'unconvertedKey',
         },
@@ -197,7 +197,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var rows = Row.formatChunks_(chunks);
+      let rows = Row.formatChunks_(chunks);
 
       assert.deepEqual(rows, [
         {
@@ -216,7 +216,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should inherit the family name', function() {
-      var chunks = [
+      let chunks = [
         {
           rowKey: 'unconvertedKey',
           familyName: {
@@ -238,7 +238,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var rows = Row.formatChunks_(chunks);
+      let rows = Row.formatChunks_(chunks);
 
       assert.deepEqual(rows, [
         {
@@ -254,10 +254,10 @@ describe('Bigtable/Row', function() {
     });
 
     it('should inherit the qualifier', function() {
-      var timestamp1 = 123;
-      var timestamp2 = 345;
+      let timestamp1 = 123;
+      let timestamp2 = 345;
 
-      var chunks = [
+      let chunks = [
         {
           rowKey: 'unconvertedKey',
           familyName: {
@@ -284,7 +284,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var rows = Row.formatChunks_(chunks);
+      let rows = Row.formatChunks_(chunks);
 
       assert.deepEqual(rows, [
         {
@@ -312,7 +312,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should not decode values when applicable', function() {
-      var formatOptions = {
+      let formatOptions = {
         decode: false,
       };
 
@@ -321,10 +321,10 @@ describe('Bigtable/Row', function() {
         return val.replace('unconverted', 'converted');
       });
 
-      var timestamp1 = 123;
-      var timestamp2 = 345;
+      let timestamp1 = 123;
+      let timestamp2 = 345;
 
-      var chunks = [
+      let chunks = [
         {
           rowKey: 'unconvertedKey',
           familyName: {
@@ -351,7 +351,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var rows = Row.formatChunks_(chunks, formatOptions);
+      let rows = Row.formatChunks_(chunks, formatOptions);
 
       assert.deepEqual(rows, [
         {
@@ -380,12 +380,12 @@ describe('Bigtable/Row', function() {
       // 0 === row key
       // 1 === qualifier
       // 2 === value
-      var args = FakeMutation.convertFromBytes.getCall(2).args;
+      let args = FakeMutation.convertFromBytes.getCall(2).args;
       assert.deepStrictEqual(args[1], {userOptions: formatOptions});
     });
 
     it('should use the encoding scheme provided', function() {
-      var formatOptions = {
+      let formatOptions = {
         encoding: 'binary',
       };
 
@@ -394,7 +394,7 @@ describe('Bigtable/Row', function() {
         return val.toString(formatOptions.encoding);
       });
 
-      var chunks = [
+      let chunks = [
         {
           rowKey: Buffer.from('ø', 'binary'),
           familyName: {
@@ -411,7 +411,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var rows = Row.formatChunks_(chunks, formatOptions);
+      let rows = Row.formatChunks_(chunks, formatOptions);
 
       assert.deepEqual(rows, [
         {
@@ -434,12 +434,12 @@ describe('Bigtable/Row', function() {
       // 0 === row key
       // 1 === qualifier
       // 2 === value
-      var args = FakeMutation.convertFromBytes.getCall(2).args;
+      let args = FakeMutation.convertFromBytes.getCall(2).args;
       assert.deepStrictEqual(args[1], {userOptions: formatOptions});
     });
 
     it('should discard old data when reset row is found', function() {
-      var chunks = [
+      let chunks = [
         {
           rowKey: 'unconvertedKey',
           familyName: {
@@ -474,7 +474,7 @@ describe('Bigtable/Row', function() {
         },
       ];
 
-      var rows = Row.formatChunks_(chunks);
+      let rows = Row.formatChunks_(chunks);
 
       assert.deepEqual(rows, [
         {
@@ -497,9 +497,9 @@ describe('Bigtable/Row', function() {
   });
 
   describe('formatFamilies_', function() {
-    var timestamp = Date.now();
+    const timestamp = Date.now();
 
-    var families = [
+    const families = [
       {
         name: 'test-family',
         columns: [
@@ -517,7 +517,7 @@ describe('Bigtable/Row', function() {
       },
     ];
 
-    var formattedRowData = {
+    const formattedRowData = {
       'test-family': {
         'test-column': [
           {
@@ -530,23 +530,23 @@ describe('Bigtable/Row', function() {
     };
 
     it('should format the families into a user-friendly format', function() {
-      var formatted = Row.formatFamilies_(families);
+      let formatted = Row.formatFamilies_(families);
       assert.deepEqual(formatted, formattedRowData);
 
-      var convertStpy = FakeMutation.convertFromBytes;
+      let convertStpy = FakeMutation.convertFromBytes;
       assert.strictEqual(convertStpy.callCount, 2);
       assert.strictEqual(convertStpy.getCall(0).args[0], 'test-column');
       assert.strictEqual(convertStpy.getCall(1).args[0], 'test-value');
     });
 
     it('should optionally not decode the value', function() {
-      var formatted = Row.formatFamilies_(families, {
+      let formatted = Row.formatFamilies_(families, {
         decode: false,
       });
 
       assert.deepEqual(formatted, formattedRowData);
 
-      var convertStpy = FakeMutation.convertFromBytes;
+      let convertStpy = FakeMutation.convertFromBytes;
       assert.strictEqual(convertStpy.callCount, 1);
       assert.strictEqual(convertStpy.getCall(0).args[0], 'test-column');
     });
@@ -566,7 +566,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept data to populate the row', function(done) {
-      var options = {
+      let options = {
         entry: {
           a: 'a',
           b: 'b',
@@ -582,7 +582,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept options when inserting data', function(done) {
-      var options = {
+      let options = {
         gaxOptions: {},
       };
 
@@ -595,8 +595,8 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return an error to the callback', function(done) {
-      var err = new Error('err');
-      var response = {};
+      let err = new Error('err');
+      let response = {};
 
       row.table.mutate = function(entry, gaxOptions, callback) {
         callback(err, response);
@@ -611,7 +611,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return the Row instance', function(done) {
-      var response = {};
+      let response = {};
 
       row.table.mutate = function(entry, gaxOptions, callback) {
         callback(null, response);
@@ -627,7 +627,7 @@ describe('Bigtable/Row', function() {
   });
 
   describe('createRules', function() {
-    var rules = [
+    const rules = [
       {
         column: 'a:b',
         append: 'c',
@@ -658,7 +658,7 @@ describe('Bigtable/Row', function() {
           },
         ]);
 
-        var spy = FakeMutation.convertToBytes;
+        let spy = FakeMutation.convertToBytes;
 
         assert.strictEqual(spy.getCall(0).args[0], 'b');
         assert.strictEqual(spy.getCall(1).args[0], 'c');
@@ -671,7 +671,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should use an appProfileId', function(done) {
-      var bigtableInstance = row.bigtable;
+      let bigtableInstance = row.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
 
       bigtableInstance.request = function(config) {
@@ -686,7 +686,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       row.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -710,7 +710,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       row.table.mutate = function(mutation, gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -721,7 +721,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should remove existing data', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
       row.table.mutate = function(mutation, gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
@@ -733,7 +733,7 @@ describe('Bigtable/Row', function() {
   });
 
   describe('deleteCells', function() {
-    var columns = ['a:b', 'c'];
+    const columns = ['a:b', 'c'];
 
     it('should provide the proper request options', function(done) {
       row.table.mutate = function(mutation, gaxOptions, callback) {
@@ -748,7 +748,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       row.table.mutate = function(mutation, gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -779,7 +779,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should pass gaxOptions to getMetadata', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       row.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -790,7 +790,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return false if error is RowError', function(done) {
-      var error = new Row.RowError('Error.');
+      let error = new Row.RowError('Error.');
 
       row.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -804,7 +804,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return error if not RowError', function(done) {
-      var error = new Error('Error.');
+      let error = new Error('Error.');
 
       row.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -830,7 +830,7 @@ describe('Bigtable/Row', function() {
   });
 
   describe('filter', function() {
-    var mutations = [
+    const mutations = [
       {
         method: 'insert',
         data: {
@@ -839,7 +839,7 @@ describe('Bigtable/Row', function() {
       },
     ];
 
-    var fakeMutations = {
+    const fakeMutations = {
       mutations: [
         {
           a: 'b',
@@ -853,11 +853,11 @@ describe('Bigtable/Row', function() {
     });
 
     it('should provide the proper request options', function(done) {
-      var filter = {
+      let filter = {
         column: 'a',
       };
 
-      var fakeParsedFilter = {
+      let fakeParsedFilter = {
         column: 'b',
       };
 
@@ -904,10 +904,10 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var filter = {
+      let filter = {
         column: 'a',
       };
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       row.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -918,11 +918,11 @@ describe('Bigtable/Row', function() {
     });
 
     it('should use an appProfileId', function(done) {
-      var filter = {
+      let filter = {
         column: 'a',
       };
 
-      var bigtableInstance = row.bigtable;
+      let bigtableInstance = row.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
 
       bigtableInstance.request = function(config) {
@@ -937,8 +937,8 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return an error to the callback', function(done) {
-      var err = new Error('err');
-      var response = {};
+      let err = new Error('err');
+      let response = {};
 
       row.bigtable.request = function(config, callback) {
         callback(err, response);
@@ -953,7 +953,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return a matched flag', function(done) {
-      var response = {
+      let response = {
         predicateMatched: true,
       };
 
@@ -983,9 +983,9 @@ describe('Bigtable/Row', function() {
     });
 
     it('should create a filter for a single column', function(done) {
-      var keys = ['a:b'];
+      let keys = ['a:b'];
 
-      var expectedFilter = [
+      let expectedFilter = [
         {
           family: 'a',
         },
@@ -1005,9 +1005,9 @@ describe('Bigtable/Row', function() {
     });
 
     it('should create a filter for multiple columns', function(done) {
-      var keys = ['a:b', 'c:d'];
+      let keys = ['a:b', 'c:d'];
 
-      var expectedFilter = [
+      let expectedFilter = [
         {
           interleave: [
             [
@@ -1033,7 +1033,7 @@ describe('Bigtable/Row', function() {
       row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
 
-        var spy = FakeMutation.parseColumnName;
+        let spy = FakeMutation.parseColumnName;
 
         assert.strictEqual(spy.callCount, 2);
         assert.strictEqual(spy.getCall(0).args[0], keys[0]);
@@ -1045,9 +1045,9 @@ describe('Bigtable/Row', function() {
     });
 
     it('should respect supplying only family names', function(done) {
-      var keys = ['a'];
+      let keys = ['a'];
 
-      var expectedFilter = [
+      let expectedFilter = [
         {
           family: 'a',
         },
@@ -1064,9 +1064,9 @@ describe('Bigtable/Row', function() {
     });
 
     it('should respect the options object', function(done) {
-      var keys = ['a:b'];
+      let keys = ['a:b'];
 
-      var options = {
+      let options = {
         filter: [
           {
             column: {
@@ -1077,7 +1077,7 @@ describe('Bigtable/Row', function() {
         descode: false,
       };
 
-      var expectedFilter = [
+      let expectedFilter = [
         {
           family: 'a',
         },
@@ -1103,9 +1103,9 @@ describe('Bigtable/Row', function() {
     });
 
     it('should respect the options object with filter for multiple columns', function(done) {
-      var keys = ['a:b', 'c:d'];
+      let keys = ['a:b', 'c:d'];
 
-      var options = {
+      let options = {
         filter: [
           {
             column: {
@@ -1115,7 +1115,7 @@ describe('Bigtable/Row', function() {
         ],
       };
 
-      var expectedFilter = [
+      let expectedFilter = [
         {
           interleave: [
             [
@@ -1155,13 +1155,13 @@ describe('Bigtable/Row', function() {
     });
 
     it('should respect filter in options object', function(done) {
-      var keys = [];
+      let keys = [];
 
-      var options = {
+      let options = {
         decode: false,
         filter: [{column: 'abc'}],
       };
-      var expectedFilter = options.filter;
+      let expectedFilter = options.filter;
 
       row.table.getRows = function(reqOpts) {
         assert.deepEqual(reqOpts.filter, expectedFilter);
@@ -1172,7 +1172,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept options without keys', function(done) {
-      var options = {
+      let options = {
         decode: false,
       };
 
@@ -1186,7 +1186,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return an error to the callback', function(done) {
-      var error = new Error('err');
+      let error = new Error('err');
 
       row.table.getRows = function(r, callback) {
         callback(error);
@@ -1213,7 +1213,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should update the row data upon success', function(done) {
-      var fakeRow = new Row(TABLE, ROW_ID);
+      let fakeRow = new Row(TABLE, ROW_ID);
 
       fakeRow.data = {
         a: 'a',
@@ -1233,14 +1233,14 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return only data for the keys provided', function(done) {
-      var fakeRow = new Row(TABLE, ROW_ID);
+      let fakeRow = new Row(TABLE, ROW_ID);
 
       fakeRow.data = {
         a: 'a',
         b: 'b',
       };
 
-      var keys = ['a', 'b'];
+      let keys = ['a', 'b'];
 
       row.data = {
         c: 'c',
@@ -1260,7 +1260,7 @@ describe('Bigtable/Row', function() {
 
   describe('getMetadata', function() {
     it('should return an error to the callback', function(done) {
-      var error = new Error('err');
+      let error = new Error('err');
 
       row.get = function(options, callback) {
         callback(error);
@@ -1274,7 +1274,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return metadata to the callback', function(done) {
-      var fakeMetadata = {
+      let fakeMetadata = {
         a: 'a',
         b: 'b',
       };
@@ -1293,8 +1293,8 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept an options object', function(done) {
-      var fakeMetadata = {};
-      var fakeOptions = {
+      let fakeMetadata = {};
+      let fakeOptions = {
         decode: false,
       };
 
@@ -1314,7 +1314,7 @@ describe('Bigtable/Row', function() {
   });
 
   describe('increment', function() {
-    var COLUMN_NAME = 'a:b';
+    const COLUMN_NAME = 'a:b';
     var formatFamiliesSpy;
 
     beforeEach(function() {
@@ -1345,7 +1345,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should optionally accept an increment amount', function(done) {
-      var increment = 10;
+      let increment = 10;
 
       row.createRules = function(reqOpts) {
         assert.strictEqual(reqOpts.increment, increment);
@@ -1356,7 +1356,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       row.createRules = function(reqOpts, gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -1367,8 +1367,8 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept increment amount and gaxOptions', function(done) {
-      var increment = 10;
-      var gaxOptions = {};
+      let increment = 10;
+      let gaxOptions = {};
 
       row.createRules = function(reqOpts, gaxOptions_) {
         assert.strictEqual(reqOpts.increment, increment);
@@ -1380,8 +1380,8 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return an error to the callback', function(done) {
-      var error = new Error('err');
-      var response = {};
+      let error = new Error('err');
+      let response = {};
 
       row.createRules = function(r, gaxOptions, callback) {
         callback(error, response);
@@ -1396,8 +1396,8 @@ describe('Bigtable/Row', function() {
     });
 
     it('should pass back the updated value to the callback', function(done) {
-      var fakeValue = 10;
-      var response = {
+      let fakeValue = 10;
+      let response = {
         row: {
           families: [
             {
@@ -1435,7 +1435,7 @@ describe('Bigtable/Row', function() {
   });
 
   describe('save', function() {
-    var data = {
+    const data = {
       a: {
         b: 'c',
       },
@@ -1451,7 +1451,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
 
       row.table.mutate = function(entry, gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -1462,7 +1462,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should remove existing data', function(done) {
-      var gaxOptions = {};
+      let gaxOptions = {};
       row.table.mutate = function(entry, gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
@@ -1475,12 +1475,12 @@ describe('Bigtable/Row', function() {
 
   describe('RowError', function() {
     it('should supply the correct message', function() {
-      var error = new Row.RowError('test');
+      let error = new Row.RowError('test');
       assert.strictEqual(error.message, 'Unknown row: test.');
     });
 
     it('should supply a 404 error code', function() {
-      var error = new Row.RowError('test');
+      let error = new Row.RowError('test');
       assert.strictEqual(error.code, 404);
     });
   });
