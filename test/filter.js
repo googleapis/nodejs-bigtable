@@ -18,7 +18,7 @@
 
 var assert = require('assert');
 var proxyquire = require('proxyquire');
-var sinon = require('sinon').sandbox.create();
+var sinon = require('sinon').createSandbox();
 
 var FakeMutation = {
   convertToBytes: sinon.spy(function(value) {
