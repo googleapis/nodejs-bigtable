@@ -468,7 +468,7 @@ class Row {
       data: arrify(columns),
       method: Mutation.methods.DELETE,
     };
-    delete this.data;
+    this.data = {};
     this.table.mutate(mutation, gaxOptions, callback);
   }
 
@@ -600,7 +600,7 @@ class Row {
       trueMutations: createFlatMutationsList(config.onMatch),
       falseMutations: createFlatMutationsList(config.onNoMatch),
     };
-    delete this.data;
+    this.data = {};
     this.bigtable.request(
       {
         client: 'BigtableClient',
