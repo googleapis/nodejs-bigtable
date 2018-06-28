@@ -25,8 +25,7 @@ var sinon = require('sinon').createSandbox();
 var Stream = require('stream').PassThrough;
 var through = require('through2');
 
-var common = require('@google-cloud/common');
-var commonGrpc = require('@google-cloud/common-grpc');
+const common = require('@google-cloud/common-grpc');
 var Family = require('../src/family.js');
 var Mutation = require('../src/mutation.js');
 var Row = require('../src/row.js');
@@ -53,7 +52,7 @@ function createFake(Class) {
   };
 }
 
-var FakeGrpcService = createFake(commonGrpc.Service);
+var FakeGrpcService = createFake(common.Service);
 var FakeFamily = createFake(Family);
 
 FakeFamily.formatRule_ = sinon.spy(function(rule) {
@@ -101,11 +100,9 @@ describe('Bigtable/Table', function() {
 
   before(function() {
     Table = proxyquire('../src/table.js', {
-      '@google-cloud/common': {
-        util: fakeUtil,
-      },
       '@google-cloud/common-grpc': {
         Service: FakeGrpcService,
+        util: fakeUtil,
       },
       './family.js': FakeFamily,
       './mutation.js': FakeMutation,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 const is = require('is');
 
 /**
@@ -42,7 +42,7 @@ class Cluster {
         name = id;
       } else {
         throw new Error(
-          `Cluster id '${id}' is not formatted correctly.  
+          `Cluster id '${id}' is not formatted correctly.
 Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
         );
       }

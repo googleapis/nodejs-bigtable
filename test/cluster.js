@@ -21,7 +21,7 @@ var extend = require('extend');
 var format = require('string-format-obj');
 var proxyquire = require('proxyquire');
 
-var common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 
 var promisified = false;
 var fakeUtil = extend({}, common.util, {
@@ -51,7 +51,7 @@ describe('Bigtable/Cluster', function() {
 
   before(function() {
     Cluster = proxyquire('../src/cluster.js', {
-      '@google-cloud/common': {
+      '@google-cloud/common-grpc': {
         util: fakeUtil,
       },
     });
