@@ -55,9 +55,9 @@ var fakeUtil = extend({}, common.util, {
 });
 var originalFakeUtil = extend(true, {}, fakeUtil);
 
-var googleAutoAuthOverride;
-function fakeGoogleAutoAuth() {
-  return (googleAutoAuthOverride || common.util.noop).apply(null, arguments);
+var googleAuthOverride;
+function fakeGoogleAuth() {
+  return (googleAuthOverride || common.util.noop).apply(null, arguments);
 }
 
 var retryRequestOverride;
@@ -92,7 +92,9 @@ describe('Bigtable', function() {
       '@google-cloud/common': {
         util: fakeUtil,
       },
-      'google-auto-auth': fakeGoogleAutoAuth,
+      'google-auth-library': {
+        GoogleAuth: fakeGoogleAuth,
+      },
       'retry-request': fakeRetryRequest,
       './cluster.js': FakeCluster,
       './instance.js': FakeInstance,
@@ -107,7 +109,7 @@ describe('Bigtable', function() {
   beforeEach(function() {
     extend(fakeUtil, originalFakeUtil);
 
-    googleAutoAuthOverride = null;
+    googleAuthOverride = null;
     retryRequestOverride = null;
     replaceProjectIdTokenOverride = null;
 
@@ -154,14 +156,14 @@ describe('Bigtable', function() {
       assert.deepEqual(bigtable.api, {});
     });
 
-    it('should cache a local google-auto-auth instance', function() {
-      var fakeGoogleAutoAuthInstance = {};
+    it('should cache a local google-auth-library instance', function() {
+      var fakeGoogleAuthInstance = {};
       var options = {
         a: 'b',
         c: 'd',
       };
 
-      googleAutoAuthOverride = function(options_) {
+      googleAuthOverride = function(options_) {
         assert.deepEqual(
           options_,
           extend(
@@ -175,11 +177,11 @@ describe('Bigtable', function() {
             options
           )
         );
-        return fakeGoogleAutoAuthInstance;
+        return fakeGoogleAuthInstance;
       };
 
       var bigtable = new Bigtable(options);
-      assert.strictEqual(bigtable.auth, fakeGoogleAutoAuthInstance);
+      assert.strictEqual(bigtable.auth, fakeGoogleAuthInstance);
     });
 
     it('should localize the projectId', function() {

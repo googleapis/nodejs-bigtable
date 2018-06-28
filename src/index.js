@@ -18,7 +18,7 @@ const arrify = require('arrify');
 const common = require('@google-cloud/common');
 const extend = require('extend');
 const GrpcService = require('@google-cloud/common-grpc').Service;
-const googleAuth = require('google-auto-auth');
+const {GoogleAuth} = require('google-auth-library');
 const gax = require('google-gax');
 const grpc = new gax.GrpcClient().grpc;
 const is = require('is');
@@ -420,7 +420,7 @@ class Bigtable {
     };
 
     this.api = {};
-    this.auth = googleAuth(options);
+    this.auth = new GoogleAuth(options);
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
