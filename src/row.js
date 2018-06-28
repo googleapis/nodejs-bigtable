@@ -266,6 +266,7 @@ class Row {
       data: options.entry,
       method: Mutation.methods.INSERT,
     };
+    this.data = {};
 
     this.table.mutate(entry, options.gaxOptions, (err, apiResponse) => {
       if (err) {
@@ -367,7 +368,7 @@ class Row {
       rowKey: Mutation.convertToBytes(this.id),
       rules,
     };
-
+    this.data = {};
     this.bigtable.request(
       {
         client: 'BigtableClient',
@@ -409,7 +410,7 @@ class Row {
       key: this.id,
       method: Mutation.methods.DELETE,
     };
-
+    this.data = {};
     this.table.mutate(mutation, gaxOptions, callback);
   }
 
@@ -467,7 +468,7 @@ class Row {
       data: arrify(columns),
       method: Mutation.methods.DELETE,
     };
-
+    this.data = {};
     this.table.mutate(mutation, gaxOptions, callback);
   }
 
@@ -599,7 +600,7 @@ class Row {
       trueMutations: createFlatMutationsList(config.onMatch),
       falseMutations: createFlatMutationsList(config.onNoMatch),
     };
-
+    this.data = {};
     this.bigtable.request(
       {
         client: 'BigtableClient',
@@ -728,10 +729,10 @@ class Row {
         return;
       }
 
-      extend(true, this.data, row.data);
+      this.data = row.data;
 
       // If the user specifies column names, we'll return back the row data we
-      // received. Otherwise, we'll return the row itthis in a typical
+      // received. Otherwise, we'll return the row "this" in a typical
       // GrpcServiceObject#get fashion.
       callback(null, columns.length ? row.data : this);
     });
@@ -910,7 +911,7 @@ class Row {
       data: entry,
       method: Mutation.methods.INSERT,
     };
-
+    this.data = {};
     this.table.mutate(mutation, gaxOptions, callback);
   }
 }

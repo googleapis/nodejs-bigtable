@@ -719,6 +719,17 @@ describe('Bigtable/Row', function() {
 
       row.delete(gaxOptions, done);
     });
+
+    it('should remove existing data', function(done) {
+      var gaxOptions = {};
+      row.table.mutate = function(mutation, gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      row.delete(gaxOptions, done);
+      assert.strictEqual(row.data, undefined);
+    });
   });
 
   describe('deleteCells', function() {
@@ -745,6 +756,15 @@ describe('Bigtable/Row', function() {
       };
 
       row.deleteCells(columns, gaxOptions, done);
+    });
+
+    it('should remove existing data', function(done) {
+      row.table.mutate = function(mutation, gaxOptions, callback) {
+        callback(); // done()
+      };
+
+      row.deleteCells(columns, done);
+      assert.strictEqual(row.data, undefined);
     });
   });
 
@@ -1439,6 +1459,17 @@ describe('Bigtable/Row', function() {
       };
 
       row.save(data, gaxOptions, assert.ifError);
+    });
+
+    it('should remove existing data', function(done) {
+      var gaxOptions = {};
+      row.table.mutate = function(entry, gaxOptions_) {
+        assert.strictEqual(gaxOptions_, gaxOptions);
+        done();
+      };
+
+      row.save(data, gaxOptions, assert.ifError);
+      assert.strictEqual(row.data, undefined);
     });
   });
 
