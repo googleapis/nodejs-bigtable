@@ -17,7 +17,7 @@
 'use strict';
 
 var assert = require('assert');
-var common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 var commonGrpc = require('@google-cloud/common-grpc');
 var extend = require('extend');
 var gax = require('google-gax');
@@ -89,7 +89,7 @@ describe('Bigtable', function() {
 
   before(function() {
     Bigtable = proxyquire('../', {
-      '@google-cloud/common': {
+      '@google-cloud/common-grpc': {
         util: fakeUtil,
       },
       'google-auto-auth': fakeGoogleAutoAuth,

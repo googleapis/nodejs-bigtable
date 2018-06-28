@@ -15,7 +15,7 @@
  */
 
 const arrify = require('arrify');
-const common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 const dotProp = require('dot-prop');
 const extend = require('extend');
 const flatten = require('lodash.flatten');

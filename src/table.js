@@ -15,7 +15,7 @@
  */
 
 const arrify = require('arrify');
-const common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 const commonGrpc = require('@google-cloud/common-grpc');
 const concat = require('concat-stream');
 const flatten = require('lodash.flatten');
@@ -59,7 +59,7 @@ class Table {
         name = id;
       } else {
         throw new Error(
-          `Table id '${id}' is not formatted correctly.  
+          `Table id '${id}' is not formatted correctly.
 Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         );
       }

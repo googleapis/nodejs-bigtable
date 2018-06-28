@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common');
+const common = require('@google-cloud/common-grpc');
 const extend = require('extend');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
@@ -48,7 +48,7 @@ class Instance {
         name = id;
       } else {
         throw new Error(
-          `Instance id '${id}' is not formatted correctly.  
+          `Instance id '${id}' is not formatted correctly.
 Please use the format 'my-instance' or '${
             bigtable.projectName
           }/instances/my-instance'.`
