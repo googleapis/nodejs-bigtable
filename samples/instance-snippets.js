@@ -244,7 +244,11 @@ function getTables(instanceId) {
   instance
     .getTables(options)
     .then(result => {
-      console.log(`Tables: \n${result[0]}`);
+      console.log(`Tables:`);
+      let tables = result[0];
+      tables.forEach(t => {
+        console.log(t.name);
+      });
     })
     .catch(err => {
       console.error('Error geting Tables: ', err);
