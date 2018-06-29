@@ -16,18 +16,18 @@ const TABLE_ID = 'Hello-Bigtable';
 const COLUMN_FAMILY_ID = 'cf1';
 const COLUMN_QUALIFIER = 'greeting';
 const INSTANCE_ID = process.env.INSTANCE_ID;
-const PROJECT_ID = process.env.PROJECT_ID;
+const GCLOUD_PROJECT = process.env.GCLOUD_PROJECT;
 
 if (!INSTANCE_ID) {
   throw new Error('Environment variables for INSTANCE_ID must be set!');
 }
 
-if (!PROJECT_ID) {
-  throw new Error('Environment variables PROJECT_ID must be set!');
+if (!GCLOUD_PROJECT) {
+  throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
 var bigtableOptions = {
-  projectId: PROJECT_ID,
+  projectId: GCLOUD_PROJECT,
 };
 
 const getRowGreeting = row => {

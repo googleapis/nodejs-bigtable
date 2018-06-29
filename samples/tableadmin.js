@@ -17,14 +17,14 @@
 
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
-const PROJECT_ID = process.env.PROJECT_ID;
+const GCLOUD_PROJECT = process.env.GCLOUD_PROJECT;
 
-if (!PROJECT_ID) {
-  throw new Error('Environment variables PROJECT_ID must be set!');
+if (!GCLOUD_PROJECT) {
+  throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
 var bigtableOptions = {
-  projectId: PROJECT_ID,
+  projectId: GCLOUD_PROJECT,
 };
 
 async function runTableOperations(instanceID, tableID) {
