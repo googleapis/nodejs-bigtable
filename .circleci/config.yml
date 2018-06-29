@@ -118,7 +118,7 @@ jobs:
           command: |
             cd samples/
             npm link @google-cloud/bigtable
-            npm install
+            npm install -g
           environment:
             NPM_CONFIG_PREFIX: /home/node/.npm-global
       - run:
