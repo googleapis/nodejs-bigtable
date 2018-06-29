@@ -23,16 +23,16 @@ const Bigtable = require('@google-cloud/bigtable');
 const INSTANCE_ID = 'my-bigtable-instance';
 // The ID of the Cloud Bigtable table
 const TABLE_ID = 'my-table';
-const PROJECT_ID = process.env.PROJECT_ID;
+const GCLOUD_PROJECT = process.env.GCLOUD_PROJECT;
 
-if (!PROJECT_ID) {
-  throw new Error('Environment variables PROJECT_ID must be set!');
+if (!GCLOUD_PROJECT) {
+  throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
 (async () => {
   try {
     var bigtableOptions = {
-      projectId: PROJECT_ID,
+      projectId: GCLOUD_PROJECT,
     };
 
     const bigtable = Bigtable(bigtableOptions);
