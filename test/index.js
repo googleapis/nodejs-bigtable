@@ -137,6 +137,11 @@ describe('Bigtable', function() {
       assert(promisified);
     });
 
+    it('should work without new', function() {
+      const bigtable = Bigtable();
+      assert(bigtable instanceof Bigtable);
+    });
+
     it('should normalize the arguments', function() {
       let normalizeArgumentsCalled = false;
       let options = {};
