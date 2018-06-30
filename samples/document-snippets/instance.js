@@ -219,7 +219,7 @@ function getMetaData(instanceId) {
     .then(result => {
       const metaData = result[0];
       // const apiResponse = result[1];
-      console.log(`Instance Metadata: \n${metaData}`);
+      console.log('%s %O', 'Instance Metadata:\n', metaData);
     })
     .catch(err => {
       console.error('Error geting Metadata: ', err);

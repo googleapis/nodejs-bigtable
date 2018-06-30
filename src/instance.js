@@ -113,7 +113,7 @@ Please use the format 'my-instance' or '${
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_instance
    */
   create(options, callback) {
@@ -150,7 +150,7 @@ Please use the format 'my-instance' or '${
    * @param {?error} callback.err An error returned while making this request.
    * @param {Cluster} callback.appProfile The newly created app profile.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_appProfile
    */
   createAppProfile(id, options, callback) {
@@ -215,7 +215,7 @@ Please use the format 'my-instance' or '${
    * @param {Operation} callback.operation An operation object that can be used
    *     to check the status of the request.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_cluster
    */
   createCluster(id, options, callback) {
@@ -287,7 +287,7 @@ Please use the format 'my-instance' or '${
    * @param {Table} callback.table The newly created table.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_table
    */
   createTable(id, options, callback) {
@@ -377,7 +377,7 @@ Please use the format 'my-instance' or '${
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_del_instance
    */
   delete(gaxOptions, callback) {
@@ -409,7 +409,7 @@ Please use the format 'my-instance' or '${
    *     request.
    * @param {boolean} callback.exists Whether the instance exists or not.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_exists_instance
    */
   exists(gaxOptions, callback) {
@@ -443,7 +443,7 @@ Please use the format 'my-instance' or '${
    * @param {Instance} callback.instance The Instance object.
    * @param {object} callback.apiResponse The resource as it exists in the API.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_instance
    */
   get(gaxOptions, callback) {
@@ -467,7 +467,7 @@ Please use the format 'my-instance' or '${
    * @param {AppProfile[]} callback.appProfiles List of all AppProfiles.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_app_profiles
    */
   getAppProfiles(gaxOptions, callback) {
@@ -517,7 +517,7 @@ Please use the format 'my-instance' or '${
    *     Clusters.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_clusters
    */
   getClusters(gaxOptions, callback) {
@@ -564,7 +564,7 @@ Please use the format 'my-instance' or '${
    *     request.
    * @param {object} callback.metadata The metadata.
    *
-   * @example <caption>include:samples/instance-snippets.js</caption>
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_imeta
    */
   getMetadata(gaxOptions, callback) {
