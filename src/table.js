@@ -22,6 +22,7 @@ const is = require('is');
 const propAssign = require('prop-assign');
 const pumpify = require('pumpify');
 const through = require('through2');
+const extend = require('extend');
 
 const Family = require('./family');
 const Filter = require('./filter');
@@ -1133,6 +1134,59 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * });
    */
   mutate(entries, options, callback) {
+    if (entries.length > 1) {
+      this.mutateRows(entries, options, callback);
+    } else {
+      this.mutateRow(entries, options, callback);
+    }
+  }
+  mutateRow(entries, options, callback) {
+    options = options || {};
+
+    if (is.fn(options)) {
+      callback = options;
+      options = {};
+    }
+
+    entries = flatten(arrify(entries));
+
+    const mutationErrorsByEntryIndex = new Map();
+
+    const reqEntry = options.rawMutation
+      ? entries
+      : entries.map(Mutation.parse);
+    const reqOpts = extend(
+      {
+        tableName: this.name,
+        appProfileId: this.bigtable.appProfileId,
+      },
+      reqEntry[0]
+    );
+
+    this.bigtable.request(
+      {
+        client: 'BigtableClient',
+        method: 'mutateRow',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        if (args[0]) {
+          const status = common.Service.decorateStatus_(args[1].status);
+          status.entry = entries[0];
+          mutationErrorsByEntryIndex.set(0, status);
+          const mutationErrors = Array.from(
+            mutationErrorsByEntryIndex.values()
+          );
+          args[0] = new common.util.PartialFailureError({
+            errors: mutationErrors,
+          });
+        }
+        callback(...args);
+      }
+    );
+  }
+  mutateRows(entries, options, callback) {
     options = options || {};
 
     if (is.fn(options)) {
@@ -1231,7 +1285,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
 
     makeNextBatchRequest();
   }
-
   /**
    * Get a reference to a table row.
    *
