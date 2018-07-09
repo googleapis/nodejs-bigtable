@@ -2247,51 +2247,6 @@ describe('Bigtable/Table', function() {
         table.mutateRow(entries, done);
       });
     });
-
-    describe('retries', function() {
-      var fakeStatuses;
-      var entryRequests;
-
-      beforeEach(function() {
-        entryRequests = [];
-        fakeStatuses = [
-          [
-            {
-              index: 0,
-              status: {
-                code: 0,
-              },
-            },
-          ],
-          [
-            {
-              index: 0,
-              status: {
-                code: 0,
-              },
-            },
-          ],
-        ];
-        FakeGrpcService.decorateStatus_ = function() {
-          return {};
-        };
-        table.bigtable.request = function(config, callback) {
-          callback(null, {});
-        };
-      });
-
-      it('should succeed after a retry', function(done) {
-        table.maxRetries = 1;
-        table.mutateRow(entries, done);
-      });
-
-      it('should retry the same failed entry', function(done) {
-        table.maxRetries = 1;
-        table.mutateRow(entries, function() {
-          done();
-        });
-      });
-    });
   });
 
   describe('row', function() {
