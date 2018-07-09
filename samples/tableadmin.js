@@ -114,7 +114,7 @@ async function runTableOperations(instanceID, tableID) {
     console.error(`Error creating column family:`, err);
     return;
   }
-  // [START bigtable_create_family_gc_max_age]
+  // [END bigtable_create_family_gc_max_age]
 
   console.log();
   console.log('Creating column family cf2 with max versions GC rule...');
