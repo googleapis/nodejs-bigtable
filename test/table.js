@@ -2127,6 +2127,173 @@ describe('Bigtable/Table', function() {
     });
   });
 
+  describe('mutateRow', function() {
+    const entries = {};
+    const fakeEntries = [{}];
+    var parseSpy;
+
+    beforeEach(function() {
+      parseSpy = FakeMutation.parse = sinon.spy(function() {
+        return fakeEntries[0];
+      });
+    });
+
+    it('should provide the proper request options', function(done) {
+      table.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableClient');
+        assert.strictEqual(config.method, 'mutateRow');
+
+        assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
+        assert.strictEqual(config.reqOpts.appProfileId, undefined);
+
+        assert.strictEqual(parseSpy.callCount, 1);
+        assert.strictEqual(parseSpy.getCall(0).args[0], entries);
+
+        callback();
+      };
+
+      table.mutateRow(entries, done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      let gaxOptions = {};
+
+      table.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      table.mutateRow(entries, {gaxOptions}, assert.ifError);
+    });
+
+    it('should use an appProfileId', function(done) {
+      let bigtableInstance = table.bigtable;
+      bigtableInstance.appProfileId = 'app-profile-id-12345';
+
+      bigtableInstance.request = function(config) {
+        assert.strictEqual(
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
+        done();
+      };
+
+      table.mutateRow(done);
+    });
+
+    it('should parse the mutations', function(done) {
+      table.bigtable.request = function() {
+        assert.strictEqual(FakeMutation.parse.called, true);
+        done();
+      };
+
+      table.mutateRow(entries, done);
+    });
+
+    it('should allow raw mutations', function(done) {
+      table.bigtable.request = function() {
+        assert.strictEqual(FakeMutation.parse.called, false);
+        done();
+      };
+
+      table.mutateRow(entries, {rawMutation: true}, done);
+    });
+
+    describe('error', function() {
+      describe('pre-request errors', function() {
+        const error = new Error('Error.');
+
+        beforeEach(function() {
+          table.bigtable.request = function(config, callback) {
+            callback(error);
+          };
+        });
+
+        it('should return error', function(done) {
+          table.mutateRow(entries, function(err) {
+            assert.strictEqual(err, error);
+            done();
+          });
+        });
+      });
+
+      describe('API errors', function() {
+        let error = new Error('err');
+
+        beforeEach(function() {
+          table.bigtable.request = function(config, callback) {
+            callback(error);
+          };
+        });
+
+        it('should return the error to the callback', function(done) {
+          table.maxRetries = 0;
+          table.mutateRow(entries, function(err) {
+            assert.strictEqual(err, error);
+            done();
+          });
+        });
+      });
+    });
+
+    describe('success', function() {
+      beforeEach(function() {
+        table.bigtable.request = function(config, callback) {
+          callback(null, {});
+        };
+      });
+
+      it('should execute callback', function(done) {
+        table.maxRetries = 0;
+        table.mutateRow(entries, done);
+      });
+    });
+
+    describe('retries', function() {
+      var fakeStatuses;
+      var entryRequests;
+
+      beforeEach(function() {
+        entryRequests = [];
+        fakeStatuses = [
+          [
+            {
+              index: 0,
+              status: {
+                code: 0,
+              },
+            },
+          ],
+          [
+            {
+              index: 0,
+              status: {
+                code: 0,
+              },
+            },
+          ],
+        ];
+        FakeGrpcService.decorateStatus_ = function() {
+          return {};
+        };
+        table.bigtable.request = function(config, callback) {
+          callback(null, {});
+        };
+      });
+
+      it('should succeed after a retry', function(done) {
+        table.maxRetries = 1;
+        table.mutateRow(entries, done);
+      });
+
+      it('should retry the same failed entry', function(done) {
+        table.maxRetries = 1;
+        table.mutateRow(entries, function() {
+          done();
+        });
+      });
+    });
+  });
+
   describe('row', function() {
     const KEY = 'test-row';
 
