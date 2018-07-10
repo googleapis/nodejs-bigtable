@@ -151,7 +151,7 @@ Please use the format 'my-instance' or '${
    * @param {Cluster} callback.appProfile The newly created app profile.
    *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_create_appProfile
+   * region_tag:bigtable_create_app_profile
    */
   createAppProfile(id, options, callback) {
     if (is.function(options)) {
@@ -565,7 +565,7 @@ Please use the format 'my-instance' or '${
    * @param {object} callback.metadata The metadata.
    *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_imeta
+   * region_tag:bigtable_get_instance_metadata
    */
   getMetadata(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -611,38 +611,8 @@ Please use the format 'my-instance' or '${
    * @param {Table[]} callback.tables List of all Tables.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   *
-   * instance.getTables(function(err, tables) {
-   *   if (!err) {
-   *     // `tables` is an array of Table objects.
-   *   }
-   * });
-   *
-   * //-
-   * // To control how many API requests are made and page through the results
-   * // manually, set `autoPaginate` to false.
-   * //-
-   * const callback = function(err, tables, nextQuery, apiResponse) {
-   *   if (nextQuery) {
-   *     // More results exist.
-   *     instance.getTables(nextQuery, calback);
-   *   }
-   * };
-   *
-   * instance.getTables({
-   *   autoPaginate: false
-   * }, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * instance.getTables().then(function(data) {
-   *   const tables = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
+   * region_tag:bigtable_get_tables
    */
   getTables(options, callback) {
     if (is.function(options)) {
@@ -692,23 +662,8 @@ Please use the format 'my-instance' or '${
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   *
-   * var metadata = {
-   *   displayName: 'updated-name'
-   * };
-   *
-   * instance.setMetadata(metadata, function(err, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * instance.setMetadata(metadata).then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/instance.js</caption>
+   * region_tag:bigtable_set_meta_data
    */
   setMetadata(metadata, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {

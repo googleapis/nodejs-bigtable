@@ -16,7 +16,7 @@
 const Bigtable = require('@google-cloud/bigtable');
 const bigtableClient = new Bigtable();
 
-function newInstance(instanceId) {
+function createInstance(instanceId) {
   // [START bigtable_create_instance]
   const instance = bigtableClient.instance(instanceId);
 
@@ -53,7 +53,7 @@ function newInstance(instanceId) {
       // let operations = result[1];
       // let apiResponse = result[2];
 
-      console.log(`Created Instance: ${newInstance.name}`);
+      console.log(`Created Instance: ${newInstance.id}`);
     })
     .catch(err => {
       console.error('Error creating prod-instance:', err);
@@ -61,7 +61,7 @@ function newInstance(instanceId) {
   // [END bigtable_create_instance]
 }
 
-function newCluster(clusterId, instanceId) {
+function createCluster(instanceId, clusterId) {
   // [START bigtable_create_cluster]
   const instance = bigtableClient.instance(instanceId);
 
@@ -77,7 +77,7 @@ function newCluster(clusterId, instanceId) {
       const newCluster = result[0];
       // const operations = result[1];
       // const apiResponse = result[2];
-      console.log(`Cluster created: ${newCluster.name}`);
+      console.log(`Cluster created: ${newCluster.id}`);
     })
     .catch(err => {
       console.error('Error creating cluster: ', err);
@@ -85,8 +85,8 @@ function newCluster(clusterId, instanceId) {
   // [END bigtable_create_cluster]
 }
 
-function newAppProfile(appProfileId, clusterId, instanceId) {
-  // [START bigtable_create_appProfile]
+function createAppProfile(instanceId, clusterId, appProfileId) {
+  // [START bigtable_create_app_profile]
   const instance = bigtableClient.instance(instanceId);
   const cluster = instance.cluster(clusterId);
 
@@ -103,10 +103,10 @@ function newAppProfile(appProfileId, clusterId, instanceId) {
     }
     console.log(`App-Profile created: ${appProfile.name}`);
   });
-  // [END bigtable_create_appProfile]
+  // [END bigtable_create_app_profile]
 }
 
-function newTable(tableId, instanceId) {
+function createTable(instanceId, tableId) {
   // [START bigtable_create_table]
   const instance = bigtableClient.instance(instanceId);
 
@@ -213,7 +213,7 @@ function getAppProfiles(instanceId) {
 function getMetaData(instanceId) {
   const instance = bigtableClient.instance(instanceId);
 
-  // [START bigtable_get_imeta]
+  // [START bigtable_get_instance_metadata]
   instance
     .getMetadata()
     .then(result => {
@@ -224,7 +224,7 @@ function getMetaData(instanceId) {
     .catch(err => {
       console.error('Error geting Metadata: ', err);
     });
-  // [END bigtable_get_imeta]
+  // [END bigtable_get_instance_metadata]
 }
 
 function getTables(instanceId) {
@@ -247,7 +247,7 @@ function getTables(instanceId) {
       console.log(`Tables:`);
       let tables = result[0];
       tables.forEach(t => {
-        console.log(t.name);
+        console.log(t.id);
       });
     })
     .catch(err => {
@@ -256,10 +256,10 @@ function getTables(instanceId) {
   // [END bigtable_get_tables]
 }
 
-function setMetaData(instanceId) {
+function updateInstance(instanceId) {
   const instance = bigtableClient.instance(instanceId);
 
-  // [START bigtable_set_meta]
+  // [START bigtable_set_meta_data]
   let metadata = {
     displayName: 'updated-name',
   };
@@ -272,7 +272,7 @@ function setMetaData(instanceId) {
     .catch(err => {
       console.error('Error in Set MetaData: ', err);
     });
-  // [END bigtable_set_meta]
+  // [END bigtable_set_meta_data]
 }
 
 function delInstance(instanceId) {
@@ -295,19 +295,19 @@ require(`yargs`)
 
   // create Instance
   .command(`new-instance`, `Creates an Instance`, {}, argv =>
-    newInstance(argv.instance)
+    createInstance(argv.instance)
   )
   .example(`node $0 new-instance --instance [instanceid]`)
 
   // create Cluster
   .command(`new-cluster`, `Creates a Cluster`, {}, argv =>
-    newCluster(argv.cluster, argv.instance)
+    createCluster(argv.instance, argv.cluster)
   )
   .example(`node $0 new-cluster --cluster [clusterId] --instance [instanceid]`)
 
   // create App-Profile
   .command(`new-app-profile`, `Creates an AppProfile`, {}, argv =>
-    newAppProfile(argv.appProfile, argv.cluster, argv.instance)
+    createAppProfile(argv.instance, argv.cluster, argv.appProfile)
   )
   .example(
     `node $0 new-app-profile --appProfile [appProfileId]--cluster [clusterId] --instance [instanceId]`
@@ -315,7 +315,7 @@ require(`yargs`)
 
   // create Table
   .command(`new-table`, `Creates a Table`, {}, argv =>
-    newTable(argv.table, argv.instance)
+    createTable(argv.instance, argv.table)
   )
   .example(`node $0 new-table --table [tableId] --instance [instanceId]`)
 
@@ -356,10 +356,10 @@ require(`yargs`)
   .example(`node $0 get-tables --instance [instanceid]`)
 
   // set metaData for Instance
-  .command(`set-meta`, `Set Instance MetaData`, {}, argv =>
-    setMetaData(argv.instance)
+  .command(`update-instance`, `Set Instance MetaData`, {}, argv =>
+    updateInstance(argv.instance)
   )
-  .example(`node $0 set-meta --instance [instanceid]`)
+  .example(`node $0 update-instance --instance [instanceid]`)
 
   // delete Instance
   .command(`del-instance`, `Delete an Instance`, {}, argv =>
