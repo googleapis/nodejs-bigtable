@@ -34,7 +34,7 @@ function createTable(instanceId, tableId) {
 }
 
 function existsTable(instanceId, tableId) {
-  const instance = bigtableClient.instance(instanceId);
+  const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
   // [START bigtable_exists_table]
@@ -51,7 +51,7 @@ function existsTable(instanceId, tableId) {
 }
 
 function getTable(instanceId, tableId) {
-  const instance = bigtableClient.instance(instanceId);
+  const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
   // [START bigtable_get_table]
@@ -216,6 +216,7 @@ function createReadStream(instanceId, tableId) {
     .on('error', console.error)
     .on('data', function(row) {
       // `row` is a Row object.
+      console.log(row);
     })
     .on('end', function() {
       // All rows retrieved.
@@ -309,7 +310,7 @@ function sampleRowKeys(instanceId, tableId) {
   // [END bigtable_sample_row_keys]
 }
 
-function deleteRows(instanceId, tableId) {
+function delRows(instanceId, tableId) {
   const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
@@ -352,6 +353,18 @@ require(`yargs`)
   )
   .example(`node $0 create-table --instance [instanceId] --table [tableId]`)
 
+  // Exists Table
+  .command(`exists-table`, `Check Table Exists`, {}, argv =>
+    existsTable(argv.instance, argv.table)
+  )
+  .example(`node $0 exists-table --instance [instanceId] --table [tableId]`)
+
+  // Get Table
+  .command(`get-table`, `Get Table`, {}, argv =>
+    getTable(argv.instance, argv.table)
+  )
+  .example(`node $0 get-table --instance [instanceId] --table [tableId]`)
+
   // create Family
   .command(`create-family`, `Creates Table Family`, {}, argv =>
     createFamily(argv.instance, argv.table, argv.family)
@@ -359,6 +372,12 @@ require(`yargs`)
   .example(
     `node $0 create-family --instance [instanceId] --table [tableId] --family [familyId]`
   )
+
+  // Get Table Families
+  .command(`get-families`, `Get Table Families`, {}, argv =>
+    getFamilies(argv.instance, argv.table)
+  )
+  .example(`node $0 get-families --instance [instanceId] --table [tableId]`)
 
   // get Table Metadata
   .command(`table-meta`, `Get Table Metadata`, {}, argv =>
@@ -376,17 +395,35 @@ require(`yargs`)
   .command(`rows`, `get rows`, {}, argv => getRows(argv.instance, argv.table))
   .example(`node $0 rows --instance [instanceId] --table [tableId]`)
 
+  // Create Read Stream
+  .command(`read-stream`, `create read stream`, {}, argv =>
+    createReadStream(argv.instance, argv.table)
+  )
+  .example(`node $0 read-stream --instance [instanceId] --table [tableId]`)
+
   // mutate Rows
   .command(`mutate`, `mutate rows`, {}, argv =>
     mutate(argv.instance, argv.table)
   )
   .example(`node $0 mutate --instance [instanceId] --table [tableId]`)
 
-  // mutate Rows
+  // Sample Row Keys
   .command(`sample-keys`, `Get sample-row-keys`, {}, argv =>
     sampleRowKeys(argv.instance, argv.table)
   )
   .example(`node $0 sample-keys --instance [instanceId] --table [tableId]`)
+
+  // Delete Rows
+  .command(`del-rows`, `Delete Rows`, {}, argv =>
+    delRows(argv.instance, argv.table)
+  )
+  .example(`node $0 del-rows --instance [instanceId] --table [tableId]`)
+
+  // Delete Table
+  .command(`del-table`, `Delete Table`, {}, argv =>
+    delTable(argv.instance, argv.table)
+  )
+  .example(`node $0 del-table --instance [instanceId] --table [tableId]`)
 
   .wrap(120)
   .nargs('instance', 1)
