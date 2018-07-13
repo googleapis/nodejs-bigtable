@@ -54,7 +54,8 @@
     "lint": "eslint src/ samples/ system-test/ test/",
     "prettier": "prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
     "publish-module": "node ../../scripts/publish.js bigtable",
-    "system-test": "mocha system-test/*.js --timeout 600000"
+    "system-test": "mocha system-test/*.js --timeout 600000",
+    "snippet-test": "mocha samples/document-snippets/test.js --timeout 600000"
   },
   "dependencies": {
     "@google-cloud/common-grpc": "^0.7.1",
