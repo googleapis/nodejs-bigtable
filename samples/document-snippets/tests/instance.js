@@ -118,3 +118,120 @@ describe('Instance Snippets', function() {
     });
   });
 });
+
+describe('Table Snippets', function() {
+  before(async () => {
+    await instance.create({
+      clusters: [
+        {
+          name: CLUSTER_ID,
+          location: 'us-central1-f',
+          storage: 'hdd',
+        },
+      ],
+      type: 'DEVELOPMENT',
+    });
+  });
+
+  after(async () => {
+    await instance.delete();
+  });
+
+  it('should create a table', function(done) {
+    tableSnippets.createTable(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should check table exists', function(done) {
+    tableSnippets.existsTable(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should get the table', function(done) {
+    tableSnippets.getTable(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should run all table snipppets without error', function(done) {
+    tableSnippets.getMetaData(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should get table meta-data', function(done) {
+    tableSnippets.getMetaData(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should create family', function(done) {
+    tableSnippets.createFamily(INSTANCE_ID, TABLE_ID, 'follows', err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should get families', function(done) {
+    tableSnippets.getFamilies(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should insert row', function(done) {
+    tableSnippets.insertRows(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should get rows', function(done) {
+    tableSnippets.getRows(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should mutate table', function(done) {
+    tableSnippets.mutate(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should create a read-stream', function(done) {
+    tableSnippets.createReadStream(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  it('should create sample row-keys', function(done) {
+    tableSnippets.sampleRowKeys(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+
+  // it('should delete rows', function(done) {
+  //   tableSnippets.delRows(INSTANCE_ID, TABLE_ID, err => {
+  //     assert.ifError(err);
+  //     done();
+  //   });
+  // });
+
+  it('should delete table', function(done) {
+    tableSnippets.delTable(INSTANCE_ID, TABLE_ID, err => {
+      assert.ifError(err);
+      done();
+    });
+  });
+});
