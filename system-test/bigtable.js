@@ -554,8 +554,8 @@ describe('Bigtable', function() {
         assert.ifError(err);
         var maxAge = metadata.gcRule.maxAge;
 
-        assert.strictEqual(maxAge.seconds, rule.age.seconds);
-        assert.strictEqual(maxAge.nanas, rule.age.nanas);
+        assert.strictEqual(maxAge.seconds, rule.age.seconds.toString());
+        assert.strictEqual(maxAge.nanos, rule.age.nanos.toString());
         done();
       });
     });
