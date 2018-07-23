@@ -79,7 +79,7 @@ describe('BigtableClient', () => {
       });
       stream.on('error', err => {
         assert(err instanceof Error);
-        assert.equal(err.code, FAKE_STATUS_CODE);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
         done();
       });
 
@@ -144,7 +144,7 @@ describe('BigtableClient', () => {
       });
       stream.on('error', err => {
         assert(err instanceof Error);
-        assert.equal(err.code, FAKE_STATUS_CODE);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
         done();
       });
 
@@ -210,7 +210,7 @@ describe('BigtableClient', () => {
 
       client.mutateRow(request, (err, response) => {
         assert(err instanceof Error);
-        assert.equal(err.code, FAKE_STATUS_CODE);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
         assert(typeof response === 'undefined');
         done();
       });
@@ -273,7 +273,7 @@ describe('BigtableClient', () => {
       });
       stream.on('error', err => {
         assert(err instanceof Error);
-        assert.equal(err.code, FAKE_STATUS_CODE);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
         done();
       });
 
@@ -338,7 +338,7 @@ describe('BigtableClient', () => {
 
       client.checkAndMutateRow(request, (err, response) => {
         assert(err instanceof Error);
-        assert.equal(err.code, FAKE_STATUS_CODE);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
         assert(typeof response === 'undefined');
         done();
       });
@@ -403,7 +403,7 @@ describe('BigtableClient', () => {
 
       client.readModifyWriteRow(request, (err, response) => {
         assert(err instanceof Error);
-        assert.equal(err.code, FAKE_STATUS_CODE);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
         assert(typeof response === 'undefined');
         done();
       });
