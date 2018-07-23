@@ -103,7 +103,7 @@ describe('Bigtable/Family', function() {
 
       let rule = Family.formatRule_(originalRule);
 
-      assert.deepEqual(rule, {
+      assert.deepStrictEqual(rule, {
         maxAge: originalRule.age,
       });
     });
@@ -115,7 +115,7 @@ describe('Bigtable/Family', function() {
 
       let rule = Family.formatRule_(originalRule);
 
-      assert.deepEqual(rule, {
+      assert.deepStrictEqual(rule, {
         maxNumVersions: originalRule.versions,
       });
     });
@@ -129,7 +129,7 @@ describe('Bigtable/Family', function() {
 
       let rule = Family.formatRule_(originalRule);
 
-      assert.deepEqual(rule, {
+      assert.deepStrictEqual(rule, {
         union: {
           rules: [
             {
@@ -151,7 +151,7 @@ describe('Bigtable/Family', function() {
 
       let rule = Family.formatRule_(originalRule);
 
-      assert.deepEqual(rule, {
+      assert.deepStrictEqual(rule, {
         intersection: {
           rules: [
             {
@@ -174,7 +174,7 @@ describe('Bigtable/Family', function() {
 
       let rule = Family.formatRule_(originalRule);
 
-      assert.deepEqual(rule, {
+      assert.deepStrictEqual(rule, {
         union: {
           rules: [
             {maxAge: originalRule.age},
@@ -520,7 +520,7 @@ describe('Bigtable/Family', function() {
         assert.strictEqual(config.method, 'modifyColumnFamilies');
 
         assert.strictEqual(config.reqOpts.name, TABLE.name);
-        assert.deepEqual(config.reqOpts.modifications, [
+        assert.deepStrictEqual(config.reqOpts.modifications, [
           {
             id: FAMILY_ID,
             update: {},
@@ -554,7 +554,7 @@ describe('Bigtable/Family', function() {
       };
 
       family.bigtable.request = function(config) {
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: TABLE.name,
           modifications: [
             {

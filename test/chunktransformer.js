@@ -66,20 +66,20 @@ describe('Bigtable/ChunkTransformer', function() {
       this.qualifier = {};
       this.row = {};
       this.state = RowStateEnum.NEW_ROW;
-      assert.deepEqual(chunkTransformer.row, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.prevRowKey,
         null,
         'invalid initial state'
       );
-      assert.deepEqual(chunkTransformer.family, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.family, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.qualifiers,
         [],
         'invalid initial state'
       );
-      assert.deepEqual(chunkTransformer.qualifier, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.qualifier, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
         'invalid initial state'
@@ -204,7 +204,7 @@ describe('Bigtable/ChunkTransformer', function() {
           },
         },
       };
-      assert.deepEqual(rows[0], expectedRow);
+      assert.deepStrictEqual(rows[0], expectedRow);
     });
     it('partial row  ', function() {
       const chunk = {
@@ -235,7 +235,7 @@ describe('Bigtable/ChunkTransformer', function() {
           },
         },
       };
-      assert.deepEqual(chunkTransformer.row, partialRow);
+      assert.deepStrictEqual(chunkTransformer.row, partialRow);
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
@@ -271,7 +271,7 @@ describe('Bigtable/ChunkTransformer', function() {
           },
         },
       };
-      assert.deepEqual(chunkTransformer.row, partialRow);
+      assert.deepStrictEqual(chunkTransformer.row, partialRow);
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.CELL_IN_PROGRESS,
@@ -407,7 +407,7 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       const row = rows[0];
-      assert.deepEqual(row, expectedRow, 'row mismatch');
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
@@ -453,7 +453,7 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       const row = rows[0];
-      assert.deepEqual(row, expectedRow, 'row mismatch');
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
@@ -502,7 +502,7 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       const row = rows[0];
-      assert.deepEqual(row, expectedRow, 'row mismatch');
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
@@ -544,7 +544,7 @@ describe('Bigtable/ChunkTransformer', function() {
           },
         },
       };
-      assert.deepEqual(
+      assert.deepStrictEqual(
         chunkTransformer.row,
         expectedState,
         'row state mismatch'
@@ -596,7 +596,7 @@ describe('Bigtable/ChunkTransformer', function() {
           },
         },
       };
-      assert.deepEqual(chunkTransformer.row, expectedState, 'row mismatch');
+      assert.deepStrictEqual(chunkTransformer.row, expectedState, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
@@ -727,7 +727,7 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       const row = rows[0];
-      assert.deepEqual(row, expectedRow, 'row mismatch');
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
@@ -775,7 +775,7 @@ describe('Bigtable/ChunkTransformer', function() {
           },
         },
       };
-      assert.deepEqual(chunkTransformer.row, expectedState, 'row mismatch');
+      assert.deepStrictEqual(chunkTransformer.row, expectedState, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
@@ -834,7 +834,7 @@ describe('Bigtable/ChunkTransformer', function() {
           },
         },
       };
-      assert.deepEqual(chunkTransformer.row, expectedState, 'row mismatch');
+      assert.deepStrictEqual(chunkTransformer.row, expectedState, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.ROW_IN_PROGRESS,
@@ -938,7 +938,7 @@ describe('Bigtable/ChunkTransformer', function() {
         {},
         callback
       );
-      assert.deepEqual(chunkTransformer.lastRowKey, 'foo');
+      assert.deepStrictEqual(chunkTransformer.lastRowKey, 'foo');
     });
   });
   describe('reset', function() {
@@ -962,20 +962,20 @@ describe('Bigtable/ChunkTransformer', function() {
       };
       this.state = RowStateEnum.CELL_IN_PROGRESS;
       chunkTransformer.reset();
-      assert.deepEqual(chunkTransformer.row, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.prevRowKey,
         null,
         'invalid initial state'
       );
-      assert.deepEqual(chunkTransformer.family, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.family, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.qualifiers,
         [],
         'invalid initial state'
       );
-      assert.deepEqual(chunkTransformer.qualifier, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.qualifier, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
         'invalid initial state'
@@ -1008,20 +1008,20 @@ describe('Bigtable/ChunkTransformer', function() {
       this.state = RowStateEnum.CELL_IN_PROGRESS;
       chunkTransformer.commit();
       assert(resetSpy.called, 'did not call reset');
-      assert.deepEqual(chunkTransformer.row, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.prevRowKey,
         'key',
         'invalid initial state'
       );
-      assert.deepEqual(chunkTransformer.family, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.family, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.qualifiers,
         [],
         'invalid initial state'
       );
-      assert.deepEqual(chunkTransformer.qualifier, {}, 'invalid initial state');
-      assert.deepEqual(
+      assert.deepStrictEqual(chunkTransformer.qualifier, {}, 'invalid initial state');
+      assert.deepStrictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,
         'invalid initial state'
@@ -1072,7 +1072,7 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       const row = rows[0];
-      assert.deepEqual(row, expectedRow, 'row mismatch');
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
         chunkTransformer.state,
         RowStateEnum.NEW_ROW,

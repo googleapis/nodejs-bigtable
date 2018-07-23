@@ -39,7 +39,7 @@ const fakeUtil = extend({}, common.util, {
     }
 
     promisified = true;
-    assert.deepEqual(options.exclude, ['family', 'row']);
+    assert.deepStrictEqual(options.exclude, ['family', 'row']);
   },
 });
 
@@ -175,7 +175,7 @@ describe('Bigtable/Table', function() {
     };
 
     it('should export the table views', function() {
-      assert.deepEqual(views, Table.VIEWS);
+      assert.deepStrictEqual(views, Table.VIEWS);
     });
   });
 
@@ -216,7 +216,7 @@ describe('Bigtable/Table', function() {
 
   describe('createPrefixRange_', function() {
     it('should create a range from the prefix', function() {
-      assert.deepEqual(Table.createPrefixRange_('start'), {
+      assert.deepStrictEqual(Table.createPrefixRange_('start'), {
         start: 'start',
         end: {
           value: 'staru',
@@ -224,7 +224,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepEqual(Table.createPrefixRange_('X\xff'), {
+      assert.deepStrictEqual(Table.createPrefixRange_('X\xff'), {
         start: 'X\xff',
         end: {
           value: 'Y',
@@ -232,7 +232,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepEqual(Table.createPrefixRange_('xoo\xff'), {
+      assert.deepStrictEqual(Table.createPrefixRange_('xoo\xff'), {
         start: 'xoo\xff',
         end: {
           value: 'xop',
@@ -240,7 +240,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepEqual(Table.createPrefixRange_('a\xffb'), {
+      assert.deepStrictEqual(Table.createPrefixRange_('a\xffb'), {
         start: 'a\xffb',
         end: {
           value: 'a\xffc',
@@ -248,7 +248,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepEqual(Table.createPrefixRange_('com.google.'), {
+      assert.deepStrictEqual(Table.createPrefixRange_('com.google.'), {
         start: 'com.google.',
         end: {
           value: 'com.google/',
@@ -258,7 +258,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should create an inclusive bound when the prefix is empty', function() {
-      assert.deepEqual(Table.createPrefixRange_('\xff'), {
+      assert.deepStrictEqual(Table.createPrefixRange_('\xff'), {
         start: '\xff',
         end: {
           value: '',
@@ -266,7 +266,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepEqual(Table.createPrefixRange_(''), {
+      assert.deepStrictEqual(Table.createPrefixRange_(''), {
         start: '',
         end: {
           value: '',
@@ -292,7 +292,7 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.method, 'modifyColumnFamilies');
 
         assert.strictEqual(config.reqOpts.name, TABLE_NAME);
-        assert.deepEqual(config.reqOpts.modifications, [
+        assert.deepStrictEqual(config.reqOpts.modifications, [
           {
             id: COLUMN_ID,
             create: {},
@@ -442,9 +442,9 @@ describe('Bigtable/Table', function() {
         }));
 
         table.bigtable.request = function(config) {
-          assert.deepEqual(config.reqOpts.rows.rowRanges[0], fakeRange);
+          assert.deepStrictEqual(config.reqOpts.rows.rowRanges[0], fakeRange);
           assert.strictEqual(formatSpy.callCount, 1);
-          assert.deepEqual(formatSpy.getCall(0).args, [
+          assert.deepStrictEqual(formatSpy.getCall(0).args, [
             options.start,
             options.end,
             'Key',
@@ -469,7 +469,7 @@ describe('Bigtable/Table', function() {
         }));
 
         table.bigtable.request = function(config) {
-          assert.deepEqual(config.reqOpts.rows.rowKeys, convertedKeys);
+          assert.deepStrictEqual(config.reqOpts.rows.rowKeys, convertedKeys);
           assert.strictEqual(convertSpy.callCount, 2);
           assert.strictEqual(convertSpy.getCall(0).args[0], options.keys[0]);
           assert.strictEqual(convertSpy.getCall(1).args[0], options.keys[1]);
@@ -509,14 +509,14 @@ describe('Bigtable/Table', function() {
         }));
 
         table.bigtable.request = function(config) {
-          assert.deepEqual(config.reqOpts.rows.rowRanges, fakeRanges);
+          assert.deepStrictEqual(config.reqOpts.rows.rowRanges, fakeRanges);
           assert.strictEqual(formatSpy.callCount, 2);
-          assert.deepEqual(formatSpy.getCall(0).args, [
+          assert.deepStrictEqual(formatSpy.getCall(0).args, [
             options.ranges[0].start,
             options.ranges[0].end,
             'Key',
           ]);
-          assert.deepEqual(formatSpy.getCall(1).args, [
+          assert.deepStrictEqual(formatSpy.getCall(1).args, [
             options.ranges[1].start,
             options.ranges[1].end,
             'Key',
@@ -593,9 +593,9 @@ describe('Bigtable/Table', function() {
 
           table.bigtable.request = function(config) {
             assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
-            assert.deepEqual(config.reqOpts.rows.rowRanges, [fakeRange]);
+            assert.deepStrictEqual(config.reqOpts.rows.rowRanges, [fakeRange]);
 
-            assert.deepEqual(rangeSpy.getCall(0).args, [
+            assert.deepStrictEqual(rangeSpy.getCall(0).args, [
               fakePrefixRange.start,
               fakePrefixRange.end,
               'Key',
@@ -634,8 +634,8 @@ describe('Bigtable/Table', function() {
             prefixes.forEach(function(prefix, i) {
               let prefixRange = prefixRanges[i];
 
-              assert.deepEqual(prefixSpy.getCall(i).args, [prefix]);
-              assert.deepEqual(rangeSpy.getCall(i).args, [
+              assert.deepStrictEqual(prefixSpy.getCall(i).args, [prefix]);
+              assert.deepStrictEqual(rangeSpy.getCall(i).args, [
                 prefixRange.start,
                 prefixRange.end,
                 'Key',
@@ -1058,11 +1058,11 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'deleteTable');
 
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: table.name,
         });
 
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         callback(); // done()
       };
@@ -1745,7 +1745,7 @@ describe('Bigtable/Table', function() {
 
         table.getRows(options, function(err, rows) {
           assert.ifError(err);
-          assert.deepEqual(rows, fakeRows);
+          assert.deepStrictEqual(rows, fakeRows);
 
           let spy = table.createReadStream.getCall(0);
           assert.strictEqual(spy.args[0], options);
@@ -1756,7 +1756,7 @@ describe('Bigtable/Table', function() {
       it('should optionally accept options', function(done) {
         table.getRows(function(err, rows) {
           assert.ifError(err);
-          assert.deepEqual(rows, fakeRows);
+          assert.deepStrictEqual(rows, fakeRows);
           done();
         });
       });
@@ -1802,13 +1802,13 @@ describe('Bigtable/Table', function() {
       ];
 
       table.mutate = function(entries, options, callback) {
-        assert.deepEqual(entries[0], {
+        assert.deepStrictEqual(entries[0], {
           key: fakeEntries[0].key,
           data: fakeEntries[0].data,
           method: FakeMutation.methods.INSERT,
         });
 
-        assert.deepEqual(entries[1], {
+        assert.deepStrictEqual(entries[1], {
           key: fakeEntries[1].key,
           data: fakeEntries[1].data,
           method: FakeMutation.methods.INSERT,
@@ -1853,7 +1853,7 @@ describe('Bigtable/Table', function() {
 
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
         assert.strictEqual(config.reqOpts.appProfileId, undefined);
-        assert.deepEqual(config.reqOpts.entries, fakeEntries);
+        assert.deepStrictEqual(config.reqOpts.entries, fakeEntries);
 
         assert.strictEqual(parseSpy.callCount, 2);
         assert.strictEqual(parseSpy.getCall(0).args[0], entries[0]);
@@ -2005,7 +2005,7 @@ describe('Bigtable/Table', function() {
           table.mutate(entries, function(err) {
             assert.strictEqual(err.name, 'PartialFailureError');
 
-            assert.deepEqual(err.errors, [
+            assert.deepStrictEqual(err.errors, [
               extend(
                 {
                   entry: entries[0],
@@ -2190,7 +2190,7 @@ describe('Bigtable/Table', function() {
       it('should return the keys to the callback', function(done) {
         table.sampleRowKeys(function(err, keys) {
           assert.ifError(err);
-          assert.deepEqual(keys, fakeKeys);
+          assert.deepStrictEqual(keys, fakeKeys);
           done();
         });
       });

@@ -182,7 +182,7 @@ describe('Bigtable/AppProfile', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteAppProfile');
 
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: appProfile.name,
         });
 
@@ -290,7 +290,7 @@ describe('Bigtable/AppProfile', function() {
 
     it('should not require gaxOptions', function(done) {
       appProfile.getMetadata = function(gaxOptions) {
-        assert.deepEqual(gaxOptions, {});
+        assert.deepStrictEqual(gaxOptions, {});
         done();
       };
 
@@ -332,11 +332,11 @@ describe('Bigtable/AppProfile', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getAppProfile');
 
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: appProfile.name,
         });
 
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         done();
       };

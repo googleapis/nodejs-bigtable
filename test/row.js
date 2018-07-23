@@ -111,7 +111,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should create an empty data object', function() {
-      assert.deepEqual(row.data, {});
+      assert.deepStrictEqual(row.data, {});
     });
   });
 
@@ -154,7 +154,7 @@ describe('Bigtable/Row', function() {
 
       let rows = Row.formatChunks_(chunks);
 
-      assert.deepEqual(rows, [
+      assert.deepStrictEqual(rows, [
         {
           key: 'convertedKey',
           data: {
@@ -199,7 +199,7 @@ describe('Bigtable/Row', function() {
 
       let rows = Row.formatChunks_(chunks);
 
-      assert.deepEqual(rows, [
+      assert.deepStrictEqual(rows, [
         {
           key: 'convertedKey',
           data: {
@@ -240,7 +240,7 @@ describe('Bigtable/Row', function() {
 
       let rows = Row.formatChunks_(chunks);
 
-      assert.deepEqual(rows, [
+      assert.deepStrictEqual(rows, [
         {
           key: 'convertedKey',
           data: {
@@ -286,7 +286,7 @@ describe('Bigtable/Row', function() {
 
       let rows = Row.formatChunks_(chunks);
 
-      assert.deepEqual(rows, [
+      assert.deepStrictEqual(rows, [
         {
           key: 'convertedKey',
           data: {
@@ -353,7 +353,7 @@ describe('Bigtable/Row', function() {
 
       let rows = Row.formatChunks_(chunks, formatOptions);
 
-      assert.deepEqual(rows, [
+      assert.deepStrictEqual(rows, [
         {
           key: 'convertedKey',
           data: {
@@ -413,7 +413,7 @@ describe('Bigtable/Row', function() {
 
       let rows = Row.formatChunks_(chunks, formatOptions);
 
-      assert.deepEqual(rows, [
+      assert.deepStrictEqual(rows, [
         {
           key: 'ø',
           data: {
@@ -476,7 +476,7 @@ describe('Bigtable/Row', function() {
 
       let rows = Row.formatChunks_(chunks);
 
-      assert.deepEqual(rows, [
+      assert.deepStrictEqual(rows, [
         {
           key: 'convertedKey2',
           data: {
@@ -531,7 +531,7 @@ describe('Bigtable/Row', function() {
 
     it('should format the families into a user-friendly format', function() {
       let formatted = Row.formatFamilies_(families);
-      assert.deepEqual(formatted, formattedRowData);
+      assert.deepStrictEqual(formatted, formattedRowData);
 
       let convertStpy = FakeMutation.convertFromBytes;
       assert.strictEqual(convertStpy.callCount, 2);
@@ -544,7 +544,7 @@ describe('Bigtable/Row', function() {
         decode: false,
       });
 
-      assert.deepEqual(formatted, formattedRowData);
+      assert.deepStrictEqual(formatted, formattedRowData);
 
       let convertStpy = FakeMutation.convertFromBytes;
       assert.strictEqual(convertStpy.callCount, 1);
@@ -649,7 +649,7 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(config.reqOpts.tableName, TABLE.name);
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
 
-        assert.deepEqual(config.reqOpts.rules, [
+        assert.deepStrictEqual(config.reqOpts.rules, [
           {
             familyName: 'a',
             columnQualifier: 'b',
@@ -874,9 +874,9 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(config.method, 'checkAndMutateRow');
         assert.strictEqual(config.reqOpts.tableName, TABLE.name);
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
-        assert.deepEqual(config.reqOpts.predicateFilter, fakeParsedFilter);
-        assert.deepEqual(config.reqOpts.trueMutations, fakeMutations.mutations);
-        assert.deepEqual(
+        assert.deepStrictEqual(config.reqOpts.predicateFilter, fakeParsedFilter);
+        assert.deepStrictEqual(config.reqOpts.trueMutations, fakeMutations.mutations);
+        assert.deepStrictEqual(
           config.reqOpts.falseMutations,
           fakeMutations.mutations
         );
@@ -995,7 +995,7 @@ describe('Bigtable/Row', function() {
       ];
 
       row.table.getRows = function(reqOpts) {
-        assert.deepEqual(reqOpts.filter, expectedFilter);
+        assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
         done();
@@ -1031,7 +1031,7 @@ describe('Bigtable/Row', function() {
       ];
 
       row.table.getRows = function(reqOpts) {
-        assert.deepEqual(reqOpts.filter, expectedFilter);
+        assert.deepStrictEqual(reqOpts.filter, expectedFilter);
 
         let spy = FakeMutation.parseColumnName;
 
@@ -1054,7 +1054,7 @@ describe('Bigtable/Row', function() {
       ];
 
       row.table.getRows = function(reqOpts) {
-        assert.deepEqual(reqOpts.filter, expectedFilter);
+        assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
         done();
@@ -1092,7 +1092,7 @@ describe('Bigtable/Row', function() {
       ];
 
       row.table.getRows = function(reqOpts) {
-        assert.deepEqual(reqOpts.filter, expectedFilter);
+        assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
         assert.strictEqual(reqOpts.decode, options.decode);
@@ -1144,7 +1144,7 @@ describe('Bigtable/Row', function() {
       ];
 
       row.table.getRows = function(reqOpts) {
-        assert.deepEqual(reqOpts.filter, expectedFilter);
+        assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 2);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
         assert.strictEqual(reqOpts.decode, options.decode);
@@ -1164,7 +1164,7 @@ describe('Bigtable/Row', function() {
       let expectedFilter = options.filter;
 
       row.table.getRows = function(reqOpts) {
-        assert.deepEqual(reqOpts.filter, expectedFilter);
+        assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         done();
       };
 
@@ -1207,7 +1207,7 @@ describe('Bigtable/Row', function() {
       row.get(function(err, row_) {
         assert(err instanceof Row.RowError);
         assert.strictEqual(err.message, 'Unknown row: ' + row.id + '.');
-        assert.deepEqual(row_, undefined);
+        assert.deepStrictEqual(row_, undefined);
         done();
       });
     });
@@ -1227,7 +1227,7 @@ describe('Bigtable/Row', function() {
       row.get(function(err, row_) {
         assert.ifError(err);
         assert.strictEqual(row_, row);
-        assert.deepEqual(row.data, fakeRow.data);
+        assert.deepStrictEqual(row.data, fakeRow.data);
         done();
       });
     });
@@ -1252,7 +1252,7 @@ describe('Bigtable/Row', function() {
 
       row.get(keys, function(err, data) {
         assert.ifError(err);
-        assert.deepEqual(Object.keys(data), keys);
+        assert.deepStrictEqual(Object.keys(data), keys);
         done();
       });
     });
