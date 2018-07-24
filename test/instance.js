@@ -34,7 +34,7 @@ const fakeUtil = extend({}, common.util, {
     }
 
     promisified = true;
-    assert.deepEqual(options.exclude, ['appProfile', 'cluster', 'table']);
+    assert.deepStrictEqual(options.exclude, ['appProfile', 'cluster', 'table']);
   },
 });
 
@@ -94,7 +94,7 @@ describe('Bigtable/Instance', function() {
       let args = fakePaginator.calledWith_;
 
       assert.strictEqual(args[0], Instance);
-      assert.deepEqual(args[1], ['getTables']);
+      assert.deepStrictEqual(args[1], ['getTables']);
     });
 
     it('should streamify the correct methods', function() {
@@ -492,7 +492,7 @@ describe('Bigtable/Instance', function() {
       let expectedSplits = [{key: 'a'}, {key: 'b'}];
 
       instance.bigtable.request = function(config) {
-        assert.deepEqual(config.reqOpts.initialSplits, expectedSplits);
+        assert.deepStrictEqual(config.reqOpts.initialSplits, expectedSplits);
         done();
       };
 
@@ -506,7 +506,7 @@ describe('Bigtable/Instance', function() {
         };
 
         instance.bigtable.request = function(config) {
-          assert.deepEqual(config.reqOpts.table.columnFamilies, {
+          assert.deepStrictEqual(config.reqOpts.table.columnFamilies, {
             a: {},
             b: {},
           });
@@ -535,7 +535,7 @@ describe('Bigtable/Instance', function() {
         };
 
         instance.bigtable.request = function(config) {
-          assert.deepEqual(config.reqOpts.table.columnFamilies, {
+          assert.deepStrictEqual(config.reqOpts.table.columnFamilies, {
             e: {
               gcRule: fakeRule,
             },
@@ -592,11 +592,11 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteInstance');
 
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: instance.name,
         });
 
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         callback(); // done()
       };
@@ -693,7 +693,7 @@ describe('Bigtable/Instance', function() {
 
     it('should not require gaxOptions', function(done) {
       instance.getMetadata = function(gaxOptions) {
-        assert.deepEqual(gaxOptions, {});
+        assert.deepStrictEqual(gaxOptions, {});
         done();
       };
 
@@ -737,7 +737,7 @@ describe('Bigtable/Instance', function() {
         assert.deepStrictEqual(config.reqOpts, {
           parent: INSTANCE_NAME,
         });
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
         done();
       };
 
@@ -795,7 +795,7 @@ describe('Bigtable/Instance', function() {
         assert.deepStrictEqual(config.reqOpts, {
           parent: INSTANCE_NAME,
         });
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
         done();
       };
 
@@ -869,11 +869,11 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getInstance');
 
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: instance.name,
         });
 
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         done();
       };
