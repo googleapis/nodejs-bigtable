@@ -423,7 +423,7 @@ describe('Bigtable', function() {
         assert.ifError(err);
         assert.strictEqual(families.length, 3);
         assert(families[0] instanceof Family);
-        assert.notEqual(
+        assert.notStrictEqual(
           -1,
           families
             .map(f => {
@@ -554,7 +554,7 @@ describe('Bigtable', function() {
         assert.ifError(err);
         var maxAge = metadata.gcRule.maxAge;
 
-        assert.strictEqual(maxAge.seconds, rule.age.seconds);
+        assert.strictEqual(maxAge.seconds, rule.age.seconds.toString());
         assert.strictEqual(maxAge.nanas, rule.age.nanas);
         done();
       });
@@ -942,7 +942,7 @@ describe('Bigtable', function() {
               })
               .sort();
 
-            assert.deepEqual(keys, ['alincoln', 'jadams', 'tjefferson']);
+            assert.deepStrictEqual(keys, ['alincoln', 'jadams', 'tjefferson']);
 
             done();
           });
@@ -1002,7 +1002,7 @@ describe('Bigtable', function() {
             rows.forEach(function(row) {
               var keys = Object.keys(row.data.follows).sort();
 
-              assert.deepEqual(keys, ['gwashington', 'jadams']);
+              assert.deepStrictEqual(keys, ['gwashington', 'jadams']);
             });
 
             done();
@@ -1087,7 +1087,7 @@ describe('Bigtable', function() {
               assert(rows.length > 0);
 
               var families = Object.keys(rows[0].data);
-              assert.deepEqual(families, ['traits']);
+              assert.deepStrictEqual(families, ['traits']);
               done();
             });
           });
@@ -1121,7 +1121,7 @@ describe('Bigtable', function() {
               })
               .sort();
 
-            assert.deepEqual(ids, ['gwashington', 'tjefferson']);
+            assert.deepStrictEqual(ids, ['gwashington', 'tjefferson']);
 
             done();
           });
@@ -1140,7 +1140,7 @@ describe('Bigtable', function() {
 
               Object.keys(follows).forEach(function(column) {
                 follows[column].forEach(function(cell) {
-                  assert.deepEqual(cell.labels, [filter.label]);
+                  assert.deepStrictEqual(cell.labels, [filter.label]);
                 });
               });
             });
@@ -1163,7 +1163,7 @@ describe('Bigtable', function() {
               })
               .sort();
 
-            assert.deepEqual(keys, ['gwashington', 'tjefferson']);
+            assert.deepStrictEqual(keys, ['gwashington', 'tjefferson']);
 
             done();
           });
@@ -1204,7 +1204,11 @@ describe('Bigtable', function() {
 
             var columns = Object.keys(rows[0].data.follows).sort();
 
-            assert.deepEqual(columns, ['gwashington', 'jadams', 'tjefferson']);
+            assert.deepStrictEqual(columns, [
+              'gwashington',
+              'jadams',
+              'tjefferson',
+            ]);
 
             done();
           });

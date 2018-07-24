@@ -128,7 +128,7 @@ describe('Read Row Acceptance tests', function() {
       function verify() {
         assert.strictEqual(errors.length, errorCount, ' error count mismatch');
         assert.strictEqual(rows.length, results.length, 'row count mismatch');
-        assert.deepEqual(rows, tableRows, 'row mismatch');
+        assert.deepStrictEqual(rows, tableRows, 'row mismatch');
         done();
       }
     });
