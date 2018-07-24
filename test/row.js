@@ -874,8 +874,14 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(config.method, 'checkAndMutateRow');
         assert.strictEqual(config.reqOpts.tableName, TABLE.name);
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
-        assert.deepStrictEqual(config.reqOpts.predicateFilter, fakeParsedFilter);
-        assert.deepStrictEqual(config.reqOpts.trueMutations, fakeMutations.mutations);
+        assert.deepStrictEqual(
+          config.reqOpts.predicateFilter,
+          fakeParsedFilter
+        );
+        assert.deepStrictEqual(
+          config.reqOpts.trueMutations,
+          fakeMutations.mutations
+        );
         assert.deepStrictEqual(
           config.reqOpts.falseMutations,
           fakeMutations.mutations

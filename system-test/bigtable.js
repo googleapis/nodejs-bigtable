@@ -423,7 +423,7 @@ describe('Bigtable', function() {
         assert.ifError(err);
         assert.strictEqual(families.length, 3);
         assert(families[0] instanceof Family);
-        assert.notEqual(
+        assert.notStrictEqual(
           -1,
           families
             .map(f => {
@@ -1204,7 +1204,11 @@ describe('Bigtable', function() {
 
             var columns = Object.keys(rows[0].data.follows).sort();
 
-            assert.deepStrictEqual(columns, ['gwashington', 'jadams', 'tjefferson']);
+            assert.deepStrictEqual(columns, [
+              'gwashington',
+              'jadams',
+              'tjefferson',
+            ]);
 
             done();
           });

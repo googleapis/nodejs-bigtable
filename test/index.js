@@ -42,7 +42,11 @@ const fakeUtil = extend({}, common.util, {
     }
 
     promisified = true;
-    assert.deepStrictEqual(options.exclude, ['instance', 'operation', 'request']);
+    assert.deepStrictEqual(options.exclude, [
+      'instance',
+      'operation',
+      'request',
+    ]);
   },
   replaceProjectIdToken: function(reqOpts) {
     if (replaceProjectIdTokenOverride) {

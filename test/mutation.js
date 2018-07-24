@@ -62,7 +62,7 @@ describe('Bigtable/Mutation', function() {
         );
         let decoded = Mutation.convertFromBytes(encoded);
 
-        assert.notEqual(num, decoded);
+        assert.notStrictEqual(num, decoded);
       });
     });
 
