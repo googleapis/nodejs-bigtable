@@ -172,11 +172,11 @@ describe('Bigtable/Cluster', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteCluster');
 
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: cluster.name,
         });
 
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         callback(); // done()
       };
@@ -273,7 +273,7 @@ describe('Bigtable/Cluster', function() {
 
     it('should not require gaxOptions', function(done) {
       cluster.getMetadata = function(gaxOptions) {
-        assert.deepEqual(gaxOptions, {});
+        assert.deepStrictEqual(gaxOptions, {});
         done();
       };
 
@@ -315,11 +315,11 @@ describe('Bigtable/Cluster', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getCluster');
 
-        assert.deepEqual(config.reqOpts, {
+        assert.deepStrictEqual(config.reqOpts, {
           name: cluster.name,
         });
 
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         done();
       };

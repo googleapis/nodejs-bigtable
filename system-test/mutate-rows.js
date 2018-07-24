@@ -92,7 +92,7 @@ describe('Bigtable/Table', () => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.mutate(test.mutations_request, error => {
-          assert.deepEqual(
+          assert.deepStrictEqual(
             mutationBatchesInvoked,
             test.mutation_batches_invoked
           );
@@ -116,11 +116,11 @@ describe('Bigtable/Table', () => {
             const expectedIndices = test.errors.map(error => {
               return error.index_in_mutations_request;
             });
-            assert.deepEqual(error.name, 'PartialFailureError');
+            assert.deepStrictEqual(error.name, 'PartialFailureError');
             const actualIndices = error.errors.map(error => {
               return test.mutations_request.indexOf(error.entry);
             });
-            assert.deepEqual(expectedIndices, actualIndices);
+            assert.deepStrictEqual(expectedIndices, actualIndices);
           } else {
             assert.ifError(error);
           }

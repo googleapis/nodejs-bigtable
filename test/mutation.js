@@ -62,7 +62,7 @@ describe('Bigtable/Mutation', function() {
         );
         let decoded = Mutation.convertFromBytes(encoded);
 
-        assert.notEqual(num, decoded);
+        assert.notStrictEqual(num, decoded);
       });
     });
 
@@ -176,7 +176,7 @@ describe('Bigtable/Mutation', function() {
 
       assert.strictEqual(cells.length, 2);
 
-      assert.deepEqual(cells, [
+      assert.deepStrictEqual(cells, [
         {
           setCell: {
             familyName: 'follows',
@@ -196,7 +196,7 @@ describe('Bigtable/Mutation', function() {
       ]);
 
       assert.strictEqual(convertCalls.length, 4);
-      assert.deepEqual(convertCalls, ['gwashington', 1, 'alincoln', 1]);
+      assert.deepStrictEqual(convertCalls, ['gwashington', 1, 'alincoln', 1]);
     });
 
     it('should optionally accept a timestamp', function() {
@@ -211,7 +211,7 @@ describe('Bigtable/Mutation', function() {
 
       let cells = Mutation.encodeSetCell(fakeMutation);
 
-      assert.deepEqual(cells, [
+      assert.deepStrictEqual(cells, [
         {
           setCell: {
             familyName: 'follows',
@@ -223,7 +223,7 @@ describe('Bigtable/Mutation', function() {
       ]);
 
       assert.strictEqual(convertCalls.length, 2);
-      assert.deepEqual(convertCalls, ['gwashington', 1]);
+      assert.deepStrictEqual(convertCalls, ['gwashington', 1]);
     });
 
     it('should accept buffers', function() {
@@ -236,7 +236,7 @@ describe('Bigtable/Mutation', function() {
 
       let cells = Mutation.encodeSetCell(fakeMutation);
 
-      assert.deepEqual(cells, [
+      assert.deepStrictEqual(cells, [
         {
           setCell: {
             familyName: 'follows',
@@ -248,7 +248,7 @@ describe('Bigtable/Mutation', function() {
       ]);
 
       assert.strictEqual(convertCalls.length, 2);
-      assert.deepEqual(convertCalls, ['gwashington', val]);
+      assert.deepStrictEqual(convertCalls, ['gwashington', val]);
     });
   });
 
@@ -275,7 +275,7 @@ describe('Bigtable/Mutation', function() {
     it('should create a delete row mutation', function() {
       let mutation = Mutation.encodeDelete();
 
-      assert.deepEqual(mutation, [
+      assert.deepStrictEqual(mutation, [
         {
           deleteFromRow: {},
         },
@@ -286,7 +286,7 @@ describe('Bigtable/Mutation', function() {
       let fakeKey = 'follows';
       let mutation = Mutation.encodeDelete(fakeKey);
 
-      assert.deepEqual(mutation, [
+      assert.deepStrictEqual(mutation, [
         {
           deleteFromFamily: {
             familyName: fakeKey,
@@ -305,7 +305,7 @@ describe('Bigtable/Mutation', function() {
 
       let mutation = Mutation.encodeDelete(['follows']);
 
-      assert.deepEqual(mutation, [
+      assert.deepStrictEqual(mutation, [
         {
           deleteFromFamily: {
             familyName: fakeColumnName.family,
@@ -317,7 +317,7 @@ describe('Bigtable/Mutation', function() {
     it('should create a delete column mutation', function() {
       let mutation = Mutation.encodeDelete(['follows:gwashington']);
 
-      assert.deepEqual(mutation, [
+      assert.deepStrictEqual(mutation, [
         {
           deleteFromColumn: {
             familyName: 'follows',
@@ -354,7 +354,7 @@ describe('Bigtable/Mutation', function() {
 
       let mutation = Mutation.encodeDelete(fakeMutationData);
 
-      assert.deepEqual(mutation, [
+      assert.deepStrictEqual(mutation, [
         {
           deleteFromColumn: {
             familyName: 'follows',
@@ -365,7 +365,7 @@ describe('Bigtable/Mutation', function() {
       ]);
 
       assert.strictEqual(timeCalls.length, 1);
-      assert.deepEqual(timeCalls[0], fakeMutationData.time);
+      assert.deepStrictEqual(timeCalls[0], fakeMutationData.time);
 
       Mutation.createTimeRange = createTimeRange;
     });
