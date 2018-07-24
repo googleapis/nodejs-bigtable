@@ -42,7 +42,11 @@ const fakeUtil = extend({}, common.util, {
     }
 
     promisified = true;
-    assert.deepEqual(options.exclude, ['instance', 'operation', 'request']);
+    assert.deepStrictEqual(options.exclude, [
+      'instance',
+      'operation',
+      'request',
+    ]);
   },
   replaceProjectIdToken: function(reqOpts) {
     if (replaceProjectIdTokenOverride) {
@@ -157,7 +161,7 @@ describe('Bigtable', function() {
     });
 
     it('should initialize the API object', function() {
-      assert.deepEqual(bigtable.api, {});
+      assert.deepStrictEqual(bigtable.api, {});
     });
 
     it('should cache a local google-auth-library instance', function() {
@@ -168,7 +172,7 @@ describe('Bigtable', function() {
       };
 
       googleAuthOverride = function(options_) {
-        assert.deepEqual(
+        assert.deepStrictEqual(
           options_,
           extend(
             {
@@ -209,7 +213,7 @@ describe('Bigtable', function() {
         'grpc.max_receive_message_length': -1,
       };
 
-      assert.deepEqual(bigtable.options, {
+      assert.deepStrictEqual(bigtable.options, {
         BigtableClient: extend(
           {
             servicePath: 'bigtable.googleapis.com',
@@ -257,7 +261,7 @@ describe('Bigtable', function() {
         process.env.BIGTABLE_EMULATOR_HOST
       );
 
-      assert.deepEqual(bigtable.options, {
+      assert.deepStrictEqual(bigtable.options, {
         BigtableClient: extend(
           {
             servicePath: 'override',
@@ -301,7 +305,7 @@ describe('Bigtable', function() {
 
       assert.strictEqual(bigtable.customEndpoint, options.apiEndpoint);
 
-      assert.deepEqual(bigtable.options, {
+      assert.deepStrictEqual(bigtable.options, {
         BigtableClient: extend(
           {
             servicePath: 'customEndpoint',
@@ -406,7 +410,7 @@ describe('Bigtable', function() {
       };
 
       bigtable.request = function(config) {
-        assert.deepEqual(config.reqOpts.instance.type, fakeTypeType);
+        assert.deepStrictEqual(config.reqOpts.instance.type, fakeTypeType);
         done();
       };
 
@@ -421,7 +425,7 @@ describe('Bigtable', function() {
       };
 
       bigtable.request = function(config) {
-        assert.deepEqual(config.reqOpts.instance.labels, options.labels);
+        assert.deepStrictEqual(config.reqOpts.instance.labels, options.labels);
         done();
       };
 
@@ -454,7 +458,7 @@ describe('Bigtable', function() {
       };
 
       bigtable.request = function(config) {
-        assert.deepEqual(config.reqOpts.clusters, {
+        assert.deepStrictEqual(config.reqOpts.clusters, {
           'my-cluster': {
             location: fakeLocation,
             serveNodes: cluster.nodes,
@@ -520,7 +524,7 @@ describe('Bigtable', function() {
         assert.deepStrictEqual(config.reqOpts, {
           parent: bigtable.projectName,
         });
-        assert.deepEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, {});
         done();
       };
 
@@ -703,7 +707,7 @@ describe('Bigtable', function() {
 
         replaceProjectIdTokenOverride = function(reqOpts, projectId) {
           assert.notStrictEqual(reqOpts, CONFIG.reqOpts);
-          assert.deepEqual(reqOpts, CONFIG.reqOpts);
+          assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
           assert.strictEqual(projectId, PROJECT_ID);
 
           return replacedReqOpts;
@@ -750,7 +754,7 @@ describe('Bigtable', function() {
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind: function(gaxClient, reqOpts, gaxOpts) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
-            assert.deepEqual(reqOpts, CONFIG.reqOpts);
+            assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             assert.strictEqual(gaxOpts, CONFIG.gaxOpts);
 
             setImmediate(done);
@@ -828,7 +832,7 @@ describe('Bigtable', function() {
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind: function(gaxClient, reqOpts, gaxOpts) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
-            assert.deepEqual(reqOpts, CONFIG.reqOpts);
+            assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             assert.strictEqual(gaxOpts, CONFIG.gaxOpts);
 
             setImmediate(done);

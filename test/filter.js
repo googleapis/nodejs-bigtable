@@ -47,7 +47,7 @@ describe('Bigtable/Filter', function() {
 
   describe('instantiation', function() {
     it('should create an empty array of filters', function() {
-      assert.deepEqual(filter.filters_, []);
+      assert.deepStrictEqual(filter.filters_, []);
     });
   });
 
@@ -118,7 +118,7 @@ describe('Bigtable/Filter', function() {
 
       let range = Filter.createRange(start, end, key);
 
-      assert.deepEqual(range, {
+      assert.deepStrictEqual(range, {
         startKeyClosed: start,
         endKeyClosed: end,
       });
@@ -131,7 +131,7 @@ describe('Bigtable/Filter', function() {
       let range = Filter.createRange(start, null, key);
 
       assert(FakeMutation.convertToBytes.calledWithExactly(start));
-      assert.deepEqual(range, {
+      assert.deepStrictEqual(range, {
         startKeyClosed: start,
       });
     });
@@ -143,7 +143,7 @@ describe('Bigtable/Filter', function() {
       let range = Filter.createRange(null, end, key);
 
       assert(FakeMutation.convertToBytes.calledWithExactly(end));
-      assert.deepEqual(range, {
+      assert.deepStrictEqual(range, {
         endKeyClosed: end,
       });
     });
@@ -163,7 +163,7 @@ describe('Bigtable/Filter', function() {
 
       let range = Filter.createRange(start, end, key);
 
-      assert.deepEqual(range, {
+      assert.deepStrictEqual(range, {
         startKeyOpen: start.value,
         endKeyOpen: end.value,
       });
@@ -341,7 +341,7 @@ describe('Bigtable/Filter', function() {
 
       filter.set = function(filterName, value) {
         assert.strictEqual(filterName, 'condition');
-        assert.deepEqual(value, {
+        assert.deepStrictEqual(value, {
           predicateFilter: condition.test,
           trueFilter: condition.pass,
           falseFilter: condition.fail,
