@@ -5,5 +5,8 @@
   "dependencies": {
     "@google-cloud/bigtable": "^0.15.0",
     "co": "^4.6.0"
+  },
+  "engines": {
+    "node": ">=8.0.0"
   }
 }
