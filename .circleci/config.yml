@@ -76,11 +76,11 @@ jobs:
           command: |-
             mkdir -p /home/node/.npm-global
             npm install
-            npm link
           environment:
             NPM_CONFIG_PREFIX: /home/node/.npm-global
       - run: npm test
       - run: node_modules/.bin/codecov
+  
   node8:
     docker:
       - image: 'node:8'
@@ -93,7 +93,7 @@ jobs:
     steps: *unit_tests_steps
   lint:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
@@ -103,8 +103,8 @@ jobs:
           name: Link the module being tested to the samples.
           command: |
             cd samples/
-            npm link @google-cloud/bigtable
-            npm install -g
+            npm link ../
+            npm install
           environment:
             NPM_CONFIG_PREFIX: /home/node/.npm-global
       - run:
@@ -114,7 +114,8 @@ jobs:
             NPM_CONFIG_PREFIX: /home/node/.npm-global
   docs:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
+        user: node
     steps:
       - checkout
       - run: *remove_package_lock
@@ -124,7 +125,7 @@ jobs:
           command: npm run docs
   sample_tests:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
@@ -142,16 +143,16 @@ jobs:
           command: npm run samples-test
           environment:
             GCLOUD_PROJECT: long-door-651
-            GOOGLE_APPLICATION_CREDENTIALS: /home/node/bigtable-samples/.circleci/key.json
+            GOOGLE_APPLICATION_CREDENTIALS: /home/node/samples/.circleci/key.json
             NPM_CONFIG_PREFIX: /home/node/.npm-global
       - run:
           name: Remove unencrypted key.
           command: rm .circleci/key.json
           when: always
-    working_directory: /home/node/bigtable-samples/
+    working_directory: /home/node/samples/
   system_tests:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
@@ -174,9 +175,9 @@ jobs:
           when: always
   publish_npm:
     docker:
-      - image: 'node:10'
+      - image: 'node:8'
         user: node
     steps:
       - checkout
       - run: 'echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc'
-      - run: npm publish
+      - run: npm publish --access=public
