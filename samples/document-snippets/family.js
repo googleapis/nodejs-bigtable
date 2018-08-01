@@ -1,0 +1,128 @@
+/**
+ * Copyright 2018, Google, Inc.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+const Bigtable = require('@google-cloud/bigtable');
+const bigtable = new Bigtable();
+
+const snippets = {
+  createColmFamily: (instanceId, tableId, familyId, callback) => {
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+    const family = table.family(familyId);
+    // [START bigtable_create_family]
+    family
+      .create()
+      .then(result => {
+        const family = result[0];
+        // let apiResponse = result[1];
+        callback(null, family);
+      })
+      .catch(err => {
+        callback(err);
+      });
+    // [END bigtable_create_family]
+  },
+  existsFamily: (instanceId, tableId, familyId, callback) => {
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+    const family = table.family(familyId);
+
+    // [START bigtable_exists_family]
+    family
+      .exists()
+      .then(result => {
+        const exists = result[0];
+        callback(null, exists);
+      })
+      .catch(err => {
+        callback(err);
+      });
+    // [END bigtable_exists_family]
+  },
+  getFamily: (instanceId, tableId, familyId, callback) => {
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+    const family = table.family(familyId);
+    // [START bigtable_get_family]
+    family
+      .get()
+      .then(result => {
+        const family = result[0];
+        // const apiResponse = result[1];
+        callback(null, family);
+      })
+      .catch(err => {
+        callback(err);
+      });
+    // [END bigtable_get_family]
+  },
+  getMetaData: (instanceId, tableId, familyId, callback) => {
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+    const family = table.family(familyId);
+    // [START bigtable_get_family_meta]
+    family
+      .getMetadata()
+      .then(result => {
+        const metaData = result[0];
+        // const apiResponse = result[1];
+        callback(null, metaData);
+      })
+      .catch(err => {
+        callback(err);
+      });
+    // [END bigtable_get_family_meta]
+  },
+  setMetaData: (instanceId, tableId, familyId, callback) => {
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+    const family = table.family(familyId);
+    // [START bigtable_set_family_meta]
+    var metadata = {
+      rule: {
+        versions: 2,
+        union: true,
+      },
+    };
+    family
+      .setMetadata(metadata)
+      .then(result => {
+        const apiResponse = result[0];
+        callback(null, apiResponse);
+      })
+      .catch(err => {
+        callback(err);
+      });
+    // [END bigtable_set_family_meta]
+  },
+  delFamily: (instanceId, tableId, familyId, callback) => {
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+    const family = table.family(familyId);
+    // [START bigtable_del_family]
+    family
+      .delete()
+      .then(result => {
+        const apiResponse = result[0];
+        callback(null, apiResponse);
+      })
+      .catch(err => {
+        callback(err);
+      });
+    // [END bigtable_del_family]
+  },
+};
+
+module.exports = snippets;
