@@ -47,7 +47,7 @@ const snippets = {
     };
 
     // creates a new Instance
-    instance
+    await instance
       .create(options)
       .then(result => {
         const newInstance = result[0];
@@ -58,6 +58,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_instance]
+
+    callback(caughtError);
   },
 
   createCluster: (instanceId, clusterId) => {
@@ -87,9 +89,13 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_cluster]
+
+    callback(caughtError);
   },
 
-  createAppProfile: (instanceId, clusterId, appProfileId, callback) => {
+  createAppProfile: async (instanceId, clusterId, appProfileId, callback) => {
+    let caughtError = false;
+
     // [START bigtable_create_app_profile]
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
@@ -111,6 +117,8 @@ const snippets = {
       return callback(appProfile);
     });
     // [END bigtable_create_app_profile]
+
+    callback(caughtError);
   },
 
   createTable: (instanceId, tableId) => {
@@ -144,7 +152,7 @@ const snippets = {
     //   ]
     // };
 
-    instance
+    await instance
       .createTable(tableId, options)
       .then(result => {
         const newTable = result[0];
@@ -154,6 +162,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_table]
+
+    callback(caughtError);
   },
 
   existsInstance: instanceId => {
@@ -161,6 +171,7 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+    let caughtError = false;
 
     instance
       .exists()
@@ -171,6 +182,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_exists_instance]
+
+    callback(caughtError);
   },
 
   getInstance: instanceId => {
@@ -178,6 +191,7 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+    let caughtError = false;
 
     instance
       .get()
@@ -189,6 +203,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_instance]
+
+    callback(caughtError);
   },
 
   getClusters: instanceId => {
@@ -196,6 +212,7 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+    let caughtError = false;
 
     instance
       .getClusters()
@@ -206,6 +223,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_clusters]
+
+    callback(caughtError);
   },
 
   getAppProfiles: instanceId => {
@@ -213,6 +232,7 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+    let caughtError = false;
 
     instance
       .getAppProfiles()
@@ -223,6 +243,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_app_profiles]
+
+    callback(caughtError);
   },
 
   getMetadata: instanceId => {
@@ -230,6 +252,7 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+    let caughtError = false;
 
     instance
       .getMetadata()
@@ -240,6 +263,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_instance_metadata]
+
+    callback(caughtError);
   },
 
   getTables: instanceId => {
@@ -257,7 +282,7 @@ const snippets = {
     //   autoPaginate: true
     // };
 
-    instance
+    await instance
       .getTables(options)
       .then(result => {
         const tables = result[0];
@@ -266,6 +291,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_tables]
+
+    callback(caughtError);
   },
 
   updateInstance: instanceId => {
@@ -273,12 +300,13 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+    let caughtError = false;
 
     const metadata = {
       displayName: 'updated-name',
     };
 
-    instance
+    await instance
       .setMetadata(metadata)
       .then(result => {
         const apiResponse = result[0];
@@ -287,6 +315,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_set_meta_data]
+
+    callback(caughtError);
   },
 
   delInstance: instanceId => {
@@ -304,6 +334,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_del_instance]
+
+    callback(caughtError);
   },
 };
 

@@ -22,7 +22,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_create_table]
-    table
+    await table
       .create()
       .then(result => {
         const table = result[0];
@@ -32,14 +32,17 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_table]
+
+    callback(caughtError);
   },
 
   existsTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_exists_table]
-    table
+    await table
       .exists()
       .then(result => {
         const exists = result[0];
@@ -48,14 +51,17 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_exists_table]
+
+    callback(caughtError);
   },
 
   getTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_get_table]
-    table
+    await table
       .get()
       .then(result => {
         const table = result[0];
@@ -65,14 +71,17 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_table]
+
+    callback(caughtError);
   },
 
   getMetadata: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_get_table_meta]
-    table
+    await table
       .getMetadata()
       .then(result => {
         const metaData = result[0];
@@ -82,6 +91,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_table_meta]
+
+    callback(caughtError);
   },
 
   createFamily: (instanceId, tableId, familyId) => {
@@ -99,7 +110,7 @@ const snippets = {
     //   union: true
     // };
 
-    table
+    await table
       .createFamily(familyId, options)
       .then(result => {
         const family = result[0];
@@ -109,14 +120,17 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_table]
+
+    callback(caughtError);
   },
 
   getFamilies: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_get_families]
-    table
+    await table
       .getFamilies()
       .then(result => {
         const families = result[0];
@@ -125,11 +139,14 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_families]
+
+    callback(caughtError);
   },
 
   insertRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_insert_rows]
     const entries = [
@@ -143,7 +160,7 @@ const snippets = {
       },
     ];
 
-    table
+    await table
       .insert(entries)
       .then(result => {
         const apiResponse = result[0];
@@ -152,17 +169,20 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_insert_rows]
+
+    callback(caughtError);
   },
 
   getRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_get_rows]
     const options = {
       keys: ['alincoln', 'gwashington'],
     };
-    table
+    await table
       .getRows(options)
       .then(result => {
         const rows = result[0];
@@ -171,6 +191,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_rows]
+
+    callback(caughtError);
   },
 
   mutate: (instanceId, tableId) => {
@@ -184,7 +206,7 @@ const snippets = {
         key: 'alincoln',
       },
     ];
-    table
+    await table
       .mutate(entries)
       .then(() => {
         // handle success
@@ -193,14 +215,17 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_mutate_rows]
+
+    callback(caughtError);
   },
 
   createReadStream: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_table_readstream]
-    table
+    await table
       .createReadStream()
       .on('error', err => {
         // Handle the error.
@@ -278,14 +303,17 @@ const snippets = {
     // });
     //
     // [END bigtable_table_readstream]
+
+    callback(caughtError);
   },
 
   sampleRowKeys: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_sample_row_keys]
-    table
+    await table
       .sampleRowKeys()
       .then(result => {
         const sampleRKeys = result[0];
@@ -294,14 +322,17 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_sample_row_keys]
+
+    callback(caughtError);
   },
 
   delRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_del_rows]
-    table
+    await table
       .deleteRows('alincoln')
       .then(result => {
         const apiResponse = result[0];
@@ -310,14 +341,17 @@ const snippets = {
         // Handle the error.
       });
     // [START bigtable_del_rows]
+
+    callback(caughtError);
   },
 
   delTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
+    let caughtError = false;
 
     // [START bigtable_del_table]
-    table
+    await table
       .delete()
       .then(result => {
         const apiResponse = result[0];
@@ -326,6 +360,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_del_table]
+
+    callback(caughtError);
   },
 };
 
