@@ -33,13 +33,12 @@ const snippets = {
       });
     // [END bigtable_create_table]
 
-    callback(caughtError);
+    callback();
   },
 
   existsTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_exists_table]
     await table
@@ -52,13 +51,12 @@ const snippets = {
       });
     // [END bigtable_exists_table]
 
-    callback(caughtError);
+    callback();
   },
 
   getTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_get_table]
     await table
@@ -72,13 +70,12 @@ const snippets = {
       });
     // [END bigtable_get_table]
 
-    callback(caughtError);
+    callback();
   },
 
   getMetadata: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_get_table_meta]
     await table
@@ -92,7 +89,7 @@ const snippets = {
       });
     // [END bigtable_get_table_meta]
 
-    callback(caughtError);
+    callback();
   },
 
   createFamily: (instanceId, tableId, familyId) => {
@@ -121,13 +118,12 @@ const snippets = {
       });
     // [END bigtable_create_table]
 
-    callback(caughtError);
+    callback();
   },
 
   getFamilies: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_get_families]
     await table
@@ -140,13 +136,12 @@ const snippets = {
       });
     // [END bigtable_get_families]
 
-    callback(caughtError);
+    callback();
   },
 
   insertRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_insert_rows]
     const entries = [
@@ -170,13 +165,12 @@ const snippets = {
       });
     // [END bigtable_insert_rows]
 
-    callback(caughtError);
+    callback();
   },
 
   getRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_get_rows]
     const options = {
@@ -192,7 +186,7 @@ const snippets = {
       });
     // [END bigtable_get_rows]
 
-    callback(caughtError);
+    callback();
   },
 
   mutate: (instanceId, tableId) => {
@@ -216,13 +210,12 @@ const snippets = {
       });
     // [END bigtable_mutate_rows]
 
-    callback(caughtError);
+    callback();
   },
 
   createReadStream: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_table_readstream]
     await table
@@ -304,13 +297,12 @@ const snippets = {
     //
     // [END bigtable_table_readstream]
 
-    callback(caughtError);
+    callback();
   },
 
   sampleRowKeys: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_sample_row_keys]
     await table
@@ -323,13 +315,12 @@ const snippets = {
       });
     // [END bigtable_sample_row_keys]
 
-    callback(caughtError);
+    callback();
   },
 
   delRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_del_rows]
     await table
@@ -342,13 +333,12 @@ const snippets = {
       });
     // [START bigtable_del_rows]
 
-    callback(caughtError);
+    callback();
   },
 
   delTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
-    let caughtError = false;
 
     // [START bigtable_del_table]
     await table
@@ -361,7 +351,7 @@ const snippets = {
       });
     // [END bigtable_del_table]
 
-    callback(caughtError);
+    callback();
   },
 };
 
