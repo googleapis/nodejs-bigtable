@@ -30,7 +30,7 @@ const familySnippets = require('../family.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe('Family Snippets', function() {
+describe.only('Family Snippets', function() {
   before(async () => {
     await instance.create({
       clusters: [
@@ -50,44 +50,26 @@ describe('Family Snippets', function() {
   });
 
   it('should create a column family', function(done) {
-    familySnippets.createColmFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+    familySnippets.createColmFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
   it('should check family exists', function(done) {
-    familySnippets.existsFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+    familySnippets.existsFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
   it('should get the family', function(done) {
-    familySnippets.getFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+    familySnippets.getFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
   it('should get family meta-data', function(done) {
-    familySnippets.getMetaData(INSTANCE_ID, TABLE_ID, FAMILY_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+    familySnippets.getMetaData(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
   it('should set family meta-data', function(done) {
-    familySnippets.setMetaData(INSTANCE_ID, TABLE_ID, FAMILY_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+    familySnippets.setMetaData(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
   it('should delete family', function(done) {
-    familySnippets.delFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+    familySnippets.delFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 });

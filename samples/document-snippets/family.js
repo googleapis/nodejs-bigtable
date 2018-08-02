@@ -27,12 +27,12 @@ const snippets = {
       .then(result => {
         const family = result[0];
         // let apiResponse = result[1];
-        callback(null, family);
       })
       .catch(err => {
-        callback(err);
+        // handle error
       });
     // [END bigtable_create_family]
+    callback();
   },
   existsFamily: (instanceId, tableId, familyId, callback) => {
     const instance = bigtable.instance(instanceId);
@@ -44,12 +44,12 @@ const snippets = {
       .exists()
       .then(result => {
         const exists = result[0];
-        callback(null, exists);
       })
       .catch(err => {
-        callback(err);
+        // handle error
       });
     // [END bigtable_exists_family]
+    callback();
   },
   getFamily: (instanceId, tableId, familyId, callback) => {
     const instance = bigtable.instance(instanceId);
@@ -61,12 +61,12 @@ const snippets = {
       .then(result => {
         const family = result[0];
         // const apiResponse = result[1];
-        callback(null, family);
       })
       .catch(err => {
-        callback(err);
+        // handle error
       });
     // [END bigtable_get_family]
+    callback();
   },
   getMetaData: (instanceId, tableId, familyId, callback) => {
     const instance = bigtable.instance(instanceId);
@@ -78,12 +78,12 @@ const snippets = {
       .then(result => {
         const metaData = result[0];
         // const apiResponse = result[1];
-        callback(null, metaData);
       })
       .catch(err => {
-        callback(err);
+        // handle error
       });
     // [END bigtable_get_family_meta]
+    callback();
   },
   setMetaData: (instanceId, tableId, familyId, callback) => {
     const instance = bigtable.instance(instanceId);
@@ -100,12 +100,12 @@ const snippets = {
       .setMetadata(metadata)
       .then(result => {
         const apiResponse = result[0];
-        callback(null, apiResponse);
       })
       .catch(err => {
-        callback(err);
+        // handle error
       });
     // [END bigtable_set_family_meta]
+    callback();
   },
   delFamily: (instanceId, tableId, familyId, callback) => {
     const instance = bigtable.instance(instanceId);
@@ -116,12 +116,12 @@ const snippets = {
       .delete()
       .then(result => {
         const apiResponse = result[0];
-        callback(null, apiResponse);
       })
       .catch(err => {
-        callback(err);
+        // handle error
       });
     // [END bigtable_del_family]
+    callback();
   },
 };
 
