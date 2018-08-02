@@ -30,7 +30,7 @@ const familySnippets = require('../family.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe.only('Family Snippets', function() {
+describe('Family Snippets', function() {
   before(async () => {
     await instance.create({
       clusters: [
