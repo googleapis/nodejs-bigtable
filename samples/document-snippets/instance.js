@@ -117,8 +117,6 @@ const snippets = {
       return callback(appProfile);
     });
     // [END bigtable_create_app_profile]
-
-    callback();
   },
 
   createTable: (instanceId, tableId) => {
