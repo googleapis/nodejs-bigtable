@@ -93,7 +93,7 @@ const snippets = {
     callback();
   },
 
-  createAppProfile: async (instanceId, clusterId, appProfileId, callback) => {
+  createAppProfile: (instanceId, clusterId, appProfileId, callback) => {
     const instance = bigtable.instance(instanceId);
 
     // [START bigtable_create_app_profile]
@@ -117,8 +117,6 @@ const snippets = {
       return callback(appProfile);
     });
     // [END bigtable_create_app_profile]
-
-    callback();
   },
 
   createTable: (instanceId, tableId) => {
