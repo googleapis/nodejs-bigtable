@@ -21,10 +21,10 @@ const uuid = require(`uuid`);
 const Bigtable = require(`@google-cloud/bigtable`);
 const bigtable = new Bigtable();
 
-const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const FAMILY_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const INSTANCE_ID = `sample-instance-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const CLUSTER_ID = `sample-cluster-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const TABLE_ID = `sample-table-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const FAMILY_ID = `sample-family-${uuid.v4()}`.substr(0, 10); // Bigtable naming rules
 
 const familySnippets = require('../family.js');
 
