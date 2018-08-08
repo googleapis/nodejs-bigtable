@@ -32,11 +32,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var request = {
         tableName: formattedTableName,
       };
@@ -48,10 +44,7 @@ describe('BigtableClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.readRows = mockServerStreamingGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.readRows = mockServerStreamingGrpcMethod(request, expectedResponse);
 
       var stream = client.readRows(request);
       stream.on('data', response => {
@@ -72,21 +65,13 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var request = {
         tableName: formattedTableName,
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.readRows = mockServerStreamingGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.readRows = mockServerStreamingGrpcMethod(request, null, error);
 
       var stream = client.readRows(request);
       stream.on('data', () => {
@@ -110,11 +95,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var request = {
         tableName: formattedTableName,
       };
@@ -128,10 +109,7 @@ describe('BigtableClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.sampleRowKeys = mockServerStreamingGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.sampleRowKeys = mockServerStreamingGrpcMethod(request, expectedResponse);
 
       var stream = client.sampleRowKeys(request);
       stream.on('data', response => {
@@ -152,21 +130,13 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var request = {
         tableName: formattedTableName,
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.sampleRowKeys = mockServerStreamingGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.sampleRowKeys = mockServerStreamingGrpcMethod(request, null, error);
 
       var stream = client.sampleRowKeys(request);
       stream.on('data', () => {
@@ -190,11 +160,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var rowKey = '122';
       var mutations = [];
       var request = {
@@ -226,11 +192,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var rowKey = '122';
       var mutations = [];
       var request = {
@@ -263,11 +225,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var entries = [];
       var request = {
         tableName: formattedTableName,
@@ -278,10 +236,7 @@ describe('BigtableClient', () => {
       var expectedResponse = {};
 
       // Mock Grpc layer
-      client._innerApiCalls.mutateRows = mockServerStreamingGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.mutateRows = mockServerStreamingGrpcMethod(request, expectedResponse);
 
       var stream = client.mutateRows(request);
       stream.on('data', response => {
@@ -302,11 +257,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var entries = [];
       var request = {
         tableName: formattedTableName,
@@ -314,11 +265,7 @@ describe('BigtableClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.mutateRows = mockServerStreamingGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.mutateRows = mockServerStreamingGrpcMethod(request, null, error);
 
       var stream = client.mutateRows(request);
       stream.on('data', () => {
@@ -342,11 +289,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var rowKey = '122';
       var request = {
         tableName: formattedTableName,
@@ -379,11 +322,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var rowKey = '122';
       var request = {
         tableName: formattedTableName,
@@ -414,11 +353,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var rowKey = '122';
       var rules = [];
       var request = {
@@ -450,11 +385,7 @@ describe('BigtableClient', () => {
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       var rowKey = '122';
       var rules = [];
       var request = {
@@ -478,6 +409,7 @@ describe('BigtableClient', () => {
       });
     });
   });
+
 });
 
 function mockSimpleGrpcMethod(expectedRequest, response, error) {
@@ -499,7 +431,8 @@ function mockServerStreamingGrpcMethod(expectedRequest, response, error) {
     var mockStream = through2.obj((chunk, enc, callback) => {
       if (error) {
         callback(error);
-      } else {
+      }
+      else {
         callback(null, response);
       }
     });
