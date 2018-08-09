@@ -89,7 +89,7 @@ const FakeFilter = {
   }),
 };
 
-describe.only('Bigtable/Table', function() {
+describe('Bigtable/Table', function() {
   const TABLE_ID = 'my-table';
   const CLUSTER_ID = 'my-cluster';
   let INSTANCE;
