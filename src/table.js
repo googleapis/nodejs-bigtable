@@ -1494,6 +1494,91 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       }
     );
   }
+
+  /**
+   * Creates a new snapshot in the specified cluster from the specified
+   * source table. The cluster and the table must be in the same instance.
+   *
+   * @param {object} options options object.
+   * @param {string} options.cluster
+   *   The name of the cluster where the snapshot will be created in.
+   *   format: `projects/<project>/instances/<instance>/clusters/<cluster>`.
+   * @param {string} options.snapshotId
+   *   The ID for new snapshot should be referred to within the parent cluster.
+   *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
+   * @param {string} options.description
+   *   Description of the snapshot.
+   * @param {Object} [options.ttl]
+   *   Represented of count of seconds
+   *   The amount of time that the new snapshot can stay active after it is
+   *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
+   *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
+   *   specified, the default value of 24 hours will be used.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @example
+   * let options = {
+   *   cluster: cluster.name,
+   *   snapshotId: 'sample-snapshot-id',
+   *   description: 'sample description text for snapshot'
+   * };
+   *
+   * table
+   *  .snapshotTable(options)
+   *  .then(result => {
+   *    let operation = responses[0];
+   *    let initialApiResponse = responses[1];
+   *
+   *		// Adding a listener for the "complete" event starts polling for the
+   *    // completion of the operation.
+   *    operation.on('complete', (result, metadata, finalApiResponse) => {
+   *      console.log(`On Complete: ${result}`);
+   *    });
+   *
+   *    // Adding a listener for the "progress" event causes the callback to be
+   *    // called on any change in metadata when the operation is polled.
+   *    operation.on('progress', (metadata, apiResponse) => {
+   *      // doSomethingWith(metadata)
+   *    });
+   *
+   *    // Adding a listener for the "error" event handles any errors found during polling.
+   *    operation.on('error', err => {
+   *      // throw(err);
+   *    });
+   *	})
+   *	.catch(err => {
+   *    // handle error
+   *  });
+   */
+  snapshotTable(options, gaxOptions, callback) {
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+
+    const reqOpts = {
+      name: this.name,
+      cluster: options.cluster,
+      snapshotId: options.snapshotId,
+      description: options.description,
+    };
+
+    if (options.ttl) {
+      reqOpts.ttl = options.ttl;
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'snapshotTable',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
 }
 
 /**
