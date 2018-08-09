@@ -105,8 +105,14 @@ const snippets = {
     // [START bigtable_delete_particular_cells]
     const row = table.row('samplerow');
 
+    // Delete selective cell within a family.
+    // let cells = [
+    //   'follows:gwashington'
+    // ];
+
     // Delete all cells within a family.
     let cells = ['follows'];
+
     row
       .deleteCells(cells)
       .then(result => {
@@ -202,6 +208,23 @@ const snippets = {
       .catch(err => {
         // handle error
       });
+
+    //-
+    // Or pass in an array of column names to populate specific cells.
+    // Under the hood this will create an interleave filter.
+    //-
+    // row
+    //   .get([
+    //     'follows:gwashington',
+    //     'follows:alincoln'
+    //   ])
+    //   .then(result => {
+    //     let row = result[0];
+    //   })
+    //   .catch(err => {
+    //     // handle error
+    //   });
+
     // [END bigtable_get_row]
 
     callback();
@@ -236,10 +259,20 @@ const snippets = {
     const row = table.row('samplerow');
 
     // Specify a custom amount to increment the column by.
-    // row.increment('follows:gwashington', 2);
+    // row
+    //   .increment('follows:gwashington', 2)
+    //   .then(result => {
+    //     let value = result[0];
+    //     let apiResponse = result[1];
+    // });
 
     // To decrement a column, simply supply a negative value.
-    // row.increment('follows:gwashington', -1);
+    // row
+    //   .increment('follows:gwashington', -1)
+    //   .then(result => {
+    //     let value = result[0];
+    //     let apiResponse = result[1];
+    // });
     row
       .increment('follows:gwashington')
       .then(result => {
