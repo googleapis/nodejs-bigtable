@@ -2386,7 +2386,7 @@ describe.only('Bigtable/Table', function() {
     });
   });
 
-  describe.only('snapshotTable', () => {
+  describe('snapshotTable', () => {
     it('should provide the proper request options', done => {
       const snapshotId = 'my-table-snapshot';
       const description = 'snapshot description text';
