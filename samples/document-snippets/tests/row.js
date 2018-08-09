@@ -30,7 +30,7 @@ const rowSnippets = require('../row.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe.only('Row Snippets', function() {
+describe('Row Snippets', function() {
   before(async () => {
     await instance.create({
       clusters: [

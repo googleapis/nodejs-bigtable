@@ -43,12 +43,29 @@ const snippets = {
 
     // [START bigtable_create_rules]
     const row = table.row('samplerow');
+    // -
+    // Add an increment amount to an existing value, if the targeted cell is
+    // unset, it will be treated as containing a zero.
+    //
     var rules = [
       {
-        column: 'follows:alincoln',
-        append: ' Honest Abe!',
+        column: 'follows:gwashington',
+        increment: 1,
       },
     ];
+
+    // -
+    // You can also create a rule that will append data to an existing value.
+    // If the targeted cell is unset, it will be treated as a containing an
+    // empty string.
+    //
+    // var rules = [
+    //   {
+    //     column: 'follows:alincoln',
+    //     append: ' Honest Abe!',
+    //   },
+    // ];
+
     row
       .createRules(rules)
       .then(result => {
