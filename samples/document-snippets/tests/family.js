@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 Google Inc. All Rights Reserved.
+ * Copyright 2018 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ const uuid = require(`uuid`);
 const Bigtable = require(`@google-cloud/bigtable`);
 const bigtable = new Bigtable();
 
-const INSTANCE_ID = `sample-instance-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const CLUSTER_ID = `sample-cluster-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const TABLE_ID = `sample-table-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const FAMILY_ID = `sample-family-${uuid.v4()}`.substr(0, 10); // Bigtable naming rules
 
 const familySnippets = require('../family.js');
@@ -61,12 +61,12 @@ describe('Family Snippets', function() {
     familySnippets.getFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
-  it('should get family meta-data', function(done) {
-    familySnippets.getMetaData(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should get family metadata', function(done) {
+    familySnippets.getMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
-  it('should set family meta-data', function(done) {
-    familySnippets.setMetaData(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should set family metadata', function(done) {
+    familySnippets.setMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
   });
 
   it('should delete family', function(done) {

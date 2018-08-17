@@ -29,7 +29,7 @@ const snippets = {
         // let apiResponse = result[1];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_create_family]
     callback();
@@ -46,7 +46,7 @@ const snippets = {
         const exists = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_exists_family]
     callback();
@@ -63,12 +63,12 @@ const snippets = {
         // const apiResponse = result[1];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_get_family]
     callback();
   },
-  getMetaData: (instanceId, tableId, familyId, callback) => {
+  getMetadata: (instanceId, tableId, familyId, callback) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
@@ -80,17 +80,17 @@ const snippets = {
         // const apiResponse = result[1];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_get_family_meta]
     callback();
   },
-  setMetaData: (instanceId, tableId, familyId, callback) => {
+  setMetadata: (instanceId, tableId, familyId, callback) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
     // [START bigtable_set_family_meta]
-    var metadata = {
+    const metadata = {
       rule: {
         versions: 2,
         union: true,
@@ -102,7 +102,7 @@ const snippets = {
         const apiResponse = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_set_family_meta]
     callback();
@@ -118,7 +118,7 @@ const snippets = {
         const apiResponse = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_del_family]
     callback();
