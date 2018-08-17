@@ -717,6 +717,48 @@ Please use the format 'my-instance' or '${
   table(id) {
     return new Table(this, id);
   }
+
+  /**
+   * Lists all snapshots associated with the specified cluster.
+   *
+   * @param {string} cluster
+   *   The name of the cluster where the snapshot will be created in.
+   *   format: `projects/<project>/instances/<instance>/clusters/<cluster>`.
+   * @param {number} [options.pageSize]
+   *   The maximum number of resources in a page.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Snapshot[]} callback.snapshots List of all Snapshots.
+   * @param {object} callback.apiResponse The full API response.
+   */
+  listSnapshots(cluster, options, callback) {
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
+
+    const reqOpts = {
+      parent: cluster,
+    };
+
+    if (options.pageSize) {
+      reqOpts.pageSize = options.pageSize;
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'listSnapshots',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
 }
 
 /**

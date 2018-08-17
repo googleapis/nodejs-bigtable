@@ -1074,4 +1074,29 @@ describe('Bigtable/Instance', function() {
       assert.strictEqual(args[1], TABLE_ID);
     });
   });
+
+  describe('listSnapshot', () => {
+    const CLUSTER_NAME = INSTANCE_NAME + '/clusters/' + CLUSTER_ID;
+    const PAGE_SIZE = 5;
+    it('should provide the proper request options', done => {
+      instance.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'listSnapshots');
+        assert.strictEqual(config.reqOpts.parent, CLUSTER_NAME);
+        assert.strictEqual(config.reqOpts.pageSize, PAGE_SIZE);
+        assert.strictEqual(config.gaxOpts, undefined);
+        callback();
+      };
+
+      instance.listSnapshots(CLUSTER_NAME, {pageSize: PAGE_SIZE}, done);
+    });
+
+    it('should respect empty options', done => {
+      instance.bigtable.request = function(config, callback) {
+        callback();
+      };
+
+      instance.listSnapshots(CLUSTER_NAME, done);
+    });
+  });
 });

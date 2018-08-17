@@ -1590,51 +1590,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       }
     );
   }
-
-  /**
-   * Gets metadata information about the specified snapshot.
-   *
-   * @param {string} name
-   *   The unique name of the requested snapshot.
-   *   Values are of the form
-   *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   *
-   * @param {function(?Error, ?Object)} [callback]
-   *   The function which will be called with the result of the API call.
-   *   The second parameter to the callback is an object [Snapshot]
-   *   {@link google.bigtable.admin.v2.Snapshot}.
-   *
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [Snapshot]
-   *   {@link google.bigtable.admin.v2.Snapshot}.
-   *   The promise has a method named "cancel" which cancels the ongoing API call.
-   *
-   * @example
-   */
-  getSnapshot(name, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
-    const reqOpts = {
-      name: name,
-    };
-
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'getSnapshot',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      (...args) => {
-        callback(...args);
-      }
-    );
-  }
 }
 
 /**

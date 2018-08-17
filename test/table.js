@@ -2409,18 +2409,4 @@ describe('Bigtable/Table', function() {
       );
     });
   });
-  describe('getSnapshot', () => {
-    it('should provide the proper request options', done => {
-      const snapshotName = CLUSTER_NAME + '/snapshots/my-table-snapshot';
-      table.bigtable.request = function(config, callback) {
-        assert.strictEqual(config.client, 'BigtableTableAdminClient');
-        assert.strictEqual(config.method, 'getSnapshot');
-        assert.strictEqual(config.reqOpts.name, snapshotName);
-        assert.deepStrictEqual(config.gaxOpts, {});
-        callback();
-      };
-
-      table.getSnapshot(snapshotName, done);
-    });
-  });
 });

@@ -445,4 +445,44 @@ describe('Bigtable/Cluster', function() {
       });
     });
   });
+
+  describe('getSnapshot', () => {
+    it('should provide the proper request options', done => {
+      const SNAPSHOT_NAME = CLUSTER_NAME + '/snapshots/my-table-snapshot';
+
+      cluster.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'getSnapshot');
+        assert.strictEqual(config.reqOpts.name, SNAPSHOT_NAME);
+        assert.deepStrictEqual(config.gaxOpts, {});
+        callback();
+      };
+
+      cluster.getSnapshot(SNAPSHOT_NAME, done);
+    });
+  });
+
+  describe('listSnapshot', () => {
+    const PAGE_SIZE = 5;
+    it('should provide the proper request options', done => {
+      cluster.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'listSnapshots');
+        assert.strictEqual(config.reqOpts.parent, CLUSTER_NAME);
+        assert.strictEqual(config.reqOpts.pageSize, PAGE_SIZE);
+        assert.strictEqual(config.gaxOpts, undefined);
+        callback();
+      };
+
+      cluster.listSnapshots({pageSize: PAGE_SIZE}, done);
+    });
+
+    it('should respect empty options', done => {
+      cluster.bigtable.request = function(config, callback) {
+        callback();
+      };
+
+      cluster.listSnapshots(done);
+    });
+  });
 });

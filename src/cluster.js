@@ -393,6 +393,90 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
       callback
     );
   }
+
+  /**
+   * Gets metadata information about the specified snapshot.
+   *
+   * @param {string} name
+   *   The unique name of the requested snapshot.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *
+   * @param {function(?Error, ?Object)} [callback]
+   *   The function which will be called with the result of the API call.
+   *   The second parameter to the callback is an object [Snapshot]
+   *   {@link google.bigtable.admin.v2.Snapshot}.
+   *
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Snapshot]
+   *   {@link google.bigtable.admin.v2.Snapshot}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   *
+   * @example
+   */
+  getSnapshot(name, gaxOptions, callback) {
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+
+    const reqOpts = {
+      name: name,
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'getSnapshot',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
+
+  /**
+   * Lists all snapshots associated with the specified cluster.
+   *
+   * @param {number} [options.pageSize]
+   *   The maximum number of resources in a page.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Snapshot[]} callback.snapshots List of all Snapshots.
+   * @param {object} callback.apiResponse The full API response.
+   */
+  listSnapshots(options, callback) {
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
+
+    const reqOpts = {
+      parent: this.name,
+    };
+
+    if (options.pageSize) {
+      reqOpts.pageSize = options.pageSize;
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'listSnapshots',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
 }
 
 /*! Developer Documentation
