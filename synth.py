@@ -17,9 +17,10 @@ s.copy(
     v2_library,
     excludes=['package.json', 'README.md', 'src/index.js', 'src/v2/index.js'])
 
-templates = common_templates.node_library(package_name="@google-cloud/bigtable")
+templates = common_templates.node_library(
+    package_name="@google-cloud/bigtable",
+    repo_name="googleapis/nodejs-bigtable")
 s.copy(templates)
-
 
 #
 # Node.js specific cleanup
