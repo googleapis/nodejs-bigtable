@@ -30,7 +30,7 @@ const snippets = {
         let apiResponse = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_create_row]
 
@@ -72,7 +72,7 @@ const snippets = {
         let apiResponse = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_create_rules]
 
@@ -91,7 +91,7 @@ const snippets = {
         let apiResponse = data[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_delete_all_cells]
 
@@ -119,7 +119,7 @@ const snippets = {
         let apiResponse = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_delete_particular_cells]
 
@@ -139,7 +139,7 @@ const snippets = {
         let exists = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_row_exists]
 
@@ -186,7 +186,7 @@ const snippets = {
         var matched = data[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_row_filter]
 
@@ -206,7 +206,7 @@ const snippets = {
         let row = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
 
     //-
@@ -222,7 +222,7 @@ const snippets = {
     //     let row = result[0];
     //   })
     //   .catch(err => {
-    //     // handle error
+    //     // Handle the error.
     //   });
 
     // [END bigtable_get_row]
@@ -244,7 +244,7 @@ const snippets = {
         let apiResponse = result[1];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_get_row_meta]
 
@@ -280,7 +280,7 @@ const snippets = {
         let apiResponse = result[1];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_row_increment]
 
@@ -304,7 +304,7 @@ const snippets = {
         let apiResponse = result[0];
       })
       .catch(err => {
-        // handle error
+        // Handle the error.
       });
     // [END bigtable_row_save]
 
