@@ -8,7 +8,6 @@ logging.basicConfig(level=logging.DEBUG)
 gapic = gcp.GAPICGenerator()
 common_templates = gcp.CommonTemplates()
 
-# tasks has two product names, and a poorly named artman yaml
 v2_library = gapic.node_library(
     'bigtable', 'v2', config_path='/google/bigtable/artman_bigtable.yaml')
 
