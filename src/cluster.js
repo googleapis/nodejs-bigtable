@@ -415,6 +415,20 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const cluster = instance.cluster('my-cluster');
+   *
+   * cluster
+   *   .getSnapshot(name, options)
+   *   .then(data => {
+   *     const operation = data[0];
+   *     const apiResponse = data[1];
+   *   })
+   *   .catch(err => {
+   *     console.error(err);
+   *   });
    */
   getSnapshot(name, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -450,6 +464,25 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * @param {?error} callback.err An error returned while making this request.
    * @param {Snapshot[]} callback.snapshots List of all Snapshots.
    * @param {object} callback.apiResponse The full API response.
+   *
+   * @example
+   * const options = {
+   *   gaxOptions: {
+   *     autoPaginate: false
+   *   }
+   * };
+   *
+   * cluster
+   *   .listSnapshots(options)
+   *   .then(responses => {
+   *     var resources = responses[0];
+   *     for (let i = 0; i < resources.length; i += 1) {
+   *       // doThingsWith(resources[i])
+   *     }
+   *   })
+   *   .catch(err => {
+   *     console.error(err);
+   *   });
    */
   listSnapshots(options, callback) {
     if (is.function(options)) {

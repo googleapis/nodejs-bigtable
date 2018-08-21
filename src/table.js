@@ -1536,7 +1536,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *
    * table
    *  .snapshotTable(options)
-   *  .then(result => {
+   *  .then(responses => {
    *    let operation = responses[0];
    *    let initialApiResponse = responses[1];
    *
@@ -1558,7 +1558,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *    });
    *	})
    *	.catch(err => {
-   *    // handle error
+   *    // Handle the error
    *  });
    */
   snapshotTable(options, gaxOptions, callback) {

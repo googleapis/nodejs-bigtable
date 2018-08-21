@@ -732,6 +732,25 @@ Please use the format 'my-instance' or '${
    * @param {?error} callback.err An error returned while making this request.
    * @param {Snapshot[]} callback.snapshots List of all Snapshots.
    * @param {object} callback.apiResponse The full API response.
+   *
+   * @example
+   * const options = {
+   *   gaxOptions: {
+   *     autoPaginate: false
+   *   }
+   * };
+   *
+   * instance
+   *   .listSnapshots(cluster, options)
+   *   .then(responses => {
+   *     let resources = responses[0];
+   *     for (let i = 0; i < resources.length; i += 1) {
+   *       // doThingsWith(resources[i])
+   *     }
+   *   })
+   *   .catch(err => {
+   *     console.error(err);
+   *   });
    */
   listSnapshots(cluster, options, callback) {
     if (is.function(options)) {
