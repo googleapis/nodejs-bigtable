@@ -1365,7 +1365,7 @@ describe('Bigtable/Table', function() {
         callback(null, response);
       };
 
-      table.getReplicationStates(function(err, clusterStates, apiResponse) {
+      table.getReplicationStates(function(err, clusterStates) {
         assert.ifError(err);
 
         assert(clusterStates instanceof Map);

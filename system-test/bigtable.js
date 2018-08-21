@@ -418,7 +418,7 @@ describe('Bigtable', function() {
       });
     });
   });
-  
+
   describe('column families', function() {
     var FAMILY_ID = 'presidents';
     var FAMILY;
