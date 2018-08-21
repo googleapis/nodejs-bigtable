@@ -409,6 +409,16 @@ describe('Bigtable', function() {
     });
   });
 
+  describe('replication states', function() {
+    it('should get a map of clusterId and state', function(done) {
+      TABLE.getReplicationStates(function(err, clusterStates) {
+        assert(clusterStates instanceof Map);
+        assert(clusterStates.has(CLUSTER_ID));
+        done();
+      });
+    });
+  });
+  
   describe('column families', function() {
     var FAMILY_ID = 'presidents';
     var FAMILY;

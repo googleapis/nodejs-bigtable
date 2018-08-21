@@ -171,6 +171,7 @@ describe('Bigtable/Table', function() {
       unspecified: 0,
       name: 1,
       schema: 2,
+      replication: 3,
       full: 4,
     };
 
@@ -1321,6 +1322,57 @@ describe('Bigtable/Table', function() {
         assert.ifError(err);
         assert.strictEqual(table_, table);
         assert.strictEqual(apiResponse_, apiResponse);
+        done();
+      });
+    });
+  });
+
+  describe('getReplicationStates', function() {
+    it('should accept gaxOptions', function(done) {
+      let gaxOptions = {};
+
+      table.getMetadata = function(options) {
+        assert.strictEqual(options.gaxOptions, gaxOptions);
+        done();
+      };
+
+      table.getReplicationStates(gaxOptions, assert.ifError);
+    });
+
+    it('should return an error to the callback', function(done) {
+      let error = new Error('err');
+      let response = {};
+
+      table.getMetadata = function(options, callback) {
+        callback(error, response);
+      };
+
+      table.getReplicationStates(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return a map of cluster states', function(done) {
+      let response = {
+        clusterStates: {
+          cluster1: 'READY',
+          cluster2: 'INITIALIZING',
+        },
+      };
+
+      table.getMetadata = function(options, callback) {
+        callback(null, response);
+      };
+
+      table.getReplicationStates(function(err, clusterStates, apiResponse) {
+        assert.ifError(err);
+
+        assert(clusterStates instanceof Map);
+        assert.strictEqual(clusterStates.size, 2);
+        assert.strictEqual(clusterStates.get('cluster1'), 'READY');
+        assert.strictEqual(clusterStates.get('cluster2'), 'INITIALIZING');
+
         done();
       });
     });
