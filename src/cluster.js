@@ -15,6 +15,7 @@
  */
 
 const {promisifyAll} = require('@google-cloud/promisify');
+const Snapshot = require('./snapshot.js');
 const is = require('is');
 
 /**
@@ -395,6 +396,115 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
   }
 
   /**
+   * Get a reference to a Bigtable Snapshot.
+   *
+   * @param {string} id The id of the snapshot.
+   * @returns {Snapshot}
+   *
+   * @example
+   * const snapshot = cluster.snapshot('my-snapshot');
+   */
+  snapshot(id) {
+    return new Snapshot(this, id);
+  }
+
+  /**
+   * Creates a new snapshot in the specified cluster from the specified
+   * source table. The cluster and the table must be in the same instance.
+   *
+   * @param {object} options options object.
+   * @param {string} options.table
+   *   The name of the table for which snapshot will be created.
+   *   format: `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} options.snapshotId
+   *   The ID for new snapshot should be referred to within the parent cluster.
+   *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
+   * @param {string} options.description
+   *   Description of the snapshot.
+   * @param {Object} [options.ttl]
+   *   Represented of count of seconds
+   *   The amount of time that the new snapshot can stay active after it is
+   *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
+   *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
+   *   specified, the default value of 24 hours will be used.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *
+   * @param {function(?Error, ?Object)} [callback]
+   *   The function which will be called with the result of the API call.
+   *   The second parameter to the callback is a [gax.Operation]
+   *   {@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is a [gax.Operation]
+   *   {@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   *
+   * @example
+   * let options = {
+   *   table: table.name,
+   *   snapshotId: 'sample-snapshot-id',
+   *   description: 'sample description text for snapshot'
+   * };
+   *
+   * cluster
+   *  .createSnapshot(options)
+   *  .then(responses => {
+   *    let operation = responses[0];
+   *    let initialApiResponse = responses[1];
+   *
+   *		// Adding a listener for the "complete" event starts polling for the
+   *    // completion of the operation.
+   *    operation.on('complete', (result, metadata, finalApiResponse) => {
+   *      console.log(`On Complete: ${result}`);
+   *    });
+   *
+   *    // Adding a listener for the "progress" event causes the callback to be
+   *    // called on any change in metadata when the operation is polled.
+   *    operation.on('progress', (metadata, apiResponse) => {
+   *      // doSomethingWith(metadata)
+   *    });
+   *
+   *    // Adding a listener for the "error" event handles any errors found during polling.
+   *    operation.on('error', err => {
+   *      // throw(err);
+   *    });
+   *	})
+   *	.catch(err => {
+   *    // Handle the error
+   *  });
+   */
+  createSnapshot(options, gaxOptions, callback) {
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+
+    const reqOpts = {
+      name: options.table,
+      cluster: this.name,
+      snapshotId: options.snapshotId,
+      description: options.description,
+    };
+
+    if (options.ttl) {
+      reqOpts.ttl = options.ttl;
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'snapshotTable',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
+
+  /**
    * Gets metadata information about the specified snapshot.
    *
    * @param {string} name
@@ -454,7 +564,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
   }
 
   /**
-   * Lists all snapshots associated with the specified cluster.
+   * Lists all snapshots associated with the cluster.
    *
    * @param {number} [options.pageSize]
    *   The maximum number of resources in a page.
