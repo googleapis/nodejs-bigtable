@@ -475,12 +475,13 @@ describe('Bigtable/Cluster', function() {
         assert.strictEqual(config.reqOpts.snapshotId, snapshotId);
         assert.strictEqual(config.reqOpts.description, description);
         assert.strictEqual(config.reqOpts.ttl, ttl);
-        assert.deepStrictEqual(config.gaxOpts, {});
+        assert.deepStrictEqual(config.gaxOpts, undefined);
         callback();
       };
 
       cluster.createSnapshot(
-        {table: TABLE_NAME, snapshotId, description, ttl},
+        snapshotId,
+        {table: TABLE_NAME, description, ttl},
         done
       );
     });

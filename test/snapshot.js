@@ -32,15 +32,30 @@ const fakePromisify = extend({}, promisify, {
 
 
 describe('Bigtable/Snapshot', function() {
-  const SNAPSHOT_ID = 'snapshot-test';
-  const CLUSTER = {
+  const INSTANCE = {
     bigtable: {},
+    id: 'my-instance',
+    name: 'projects/my-project/instances/my-instance',
   };
 
+  const CLUSTER = {
+    bigtable: {},
+    id: 'my-cluster',
+    name: 'projects/my-project/instances/my-instance/clusters/my-cluster',
+    instance: INSTANCE,
+  };
+
+  const TABLE = {
+    bigtable: {},
+    id: 'my-table',
+    name: 'projects/my-project/instances/my-instance/tables/my-table',
+  };
+
+  const SNAPSHOT_ID = 'my-snapshot';
   const SNAPSHOT_NAME = `${CLUSTER.name}/snapshots/${SNAPSHOT_ID}`;
-  var Snapshot;
-  var snapshot;
-  var SnapshotError;
+  let Snapshot;
+  let snapshot;
+  let SnapshotError;
 
   before(function() {
     Snapshot = proxyquire('../src/snapshot.js', {
@@ -87,6 +102,85 @@ describe('Bigtable/Snapshot', function() {
       assert.throws(function() {
         new Snapshot(CLUSTER, id);
       }, Error);
+    });
+  });
+
+  describe('create', function() {
+    it('should call createSnapshot from cluster', function(done) {
+      let options = {
+        table: TABLE.name,
+        description: 'Sescription text for Snapshot',
+      };
+
+      snapshot.cluster.createSnapshot = function(id, options_, callback) {
+        assert.strictEqual(id, snapshot.id);
+        assert.strictEqual(options_, options);
+        callback(); // done()
+      };
+
+      snapshot.create(options, done);
+    });
+  });
+
+  describe('delete', function() {
+    it('should make the correct request', function(done) {
+      snapshot.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'deleteSnapshot');
+
+        assert.deepStrictEqual(config.reqOpts, {
+          name: snapshot.name,
+        });
+
+        assert.deepStrictEqual(config.gaxOpts, {});
+
+        callback(); // done()
+      };
+
+      snapshot.delete(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      let gaxOptions = {};
+
+      snapshot.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      snapshot.delete(gaxOptions, assert.ifError);
+    });
+  });
+
+  describe('createTable', function() {
+    it('should make the correct request', function(done) {
+      snapshot.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'createTableFromSnapshot');
+
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: snapshot.instance.name,
+          tableId: TABLE.id,
+          sourceSnapshot: snapshot.name,
+        });
+
+        assert.deepStrictEqual(config.gaxOpts, {});
+
+        callback(); // done()
+      };
+
+      snapshot.createTable(TABLE.id, done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      let gaxOptions = {};
+
+      snapshot.bigtable.request = function(config) {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      snapshot.createTable(TABLE.id, gaxOptions, assert.ifError);
     });
   });
 

@@ -412,13 +412,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * Creates a new snapshot in the specified cluster from the specified
    * source table. The cluster and the table must be in the same instance.
    *
+   * @param {string} id
+   *   The ID for new snapshot should be referred to within the parent cluster.
+   *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
    * @param {object} options options object.
    * @param {string} options.table
    *   The name of the table for which snapshot will be created.
    *   format: `projects/<project>/instances/<instance>/tables/<table>`.
-   * @param {string} options.snapshotId
-   *   The ID for new snapshot should be referred to within the parent cluster.
-   *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
    * @param {string} options.description
    *   Description of the snapshot.
    * @param {Object} [options.ttl]
@@ -427,7 +427,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
    *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
    *   specified, the default value of 24 hours will be used.
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   * @param {object} [options.gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    *
    * @param {function(?Error, ?Object)} [callback]
@@ -474,16 +474,11 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *    // Handle the error
    *  });
    */
-  createSnapshot(options, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  createSnapshot(id, options, callback) {
     const reqOpts = {
-      name: options.table,
+      snapshotId: id,
       cluster: this.name,
-      snapshotId: options.snapshotId,
+      name: options.table,
       description: options.description,
     };
 
@@ -496,7 +491,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
         client: 'BigtableTableAdminClient',
         method: 'snapshotTable',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: options.gaxOptions,
       },
       (...args) => {
         callback(...args);
