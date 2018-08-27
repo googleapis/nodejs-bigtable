@@ -47,7 +47,7 @@ const snippets = {
     };
 
     // creates a new Instance
-    await instance
+    instance
       .create(options)
       .then(result => {
         const newInstance = result[0];
@@ -150,7 +150,7 @@ const snippets = {
     //   ]
     // };
 
-    await instance
+    instance
       .createTable(tableId, options)
       .then(result => {
         const newTable = result[0];
@@ -279,7 +279,7 @@ const snippets = {
     //   autoPaginate: true
     // };
 
-    await instance
+    instance
       .getTables(options)
       .then(result => {
         const tables = result[0];
@@ -302,7 +302,7 @@ const snippets = {
       displayName: 'updated-name',
     };
 
-    await instance
+    instance
       .setMetadata(metadata)
       .then(result => {
         const apiResponse = result[0];
