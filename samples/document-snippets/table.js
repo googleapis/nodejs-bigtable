@@ -22,7 +22,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_create_table]
-    await table
+    table
       .create()
       .then(result => {
         const table = result[0];
@@ -41,7 +41,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_exists_table]
-    await table
+    table
       .exists()
       .then(result => {
         const exists = result[0];
@@ -59,7 +59,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_get_table]
-    await table
+    table
       .get()
       .then(result => {
         const table = result[0];
@@ -78,7 +78,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_get_table_meta]
-    await table
+    table
       .getMetadata()
       .then(result => {
         const metaData = result[0];
@@ -107,7 +107,7 @@ const snippets = {
     //   union: true
     // };
 
-    await table
+    table
       .createFamily(familyId, options)
       .then(result => {
         const family = result[0];
@@ -126,7 +126,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_get_families]
-    await table
+    table
       .getFamilies()
       .then(result => {
         const families = result[0];
@@ -155,7 +155,7 @@ const snippets = {
       },
     ];
 
-    await table
+    table
       .insert(entries)
       .then(result => {
         const apiResponse = result[0];
@@ -176,7 +176,7 @@ const snippets = {
     const options = {
       keys: ['alincoln', 'gwashington'],
     };
-    await table
+    table
       .getRows(options)
       .then(result => {
         const rows = result[0];
@@ -200,7 +200,7 @@ const snippets = {
         key: 'alincoln',
       },
     ];
-    await table
+    table
       .mutate(entries)
       .then(() => {
         // handle success
@@ -218,7 +218,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_table_readstream]
-    await table
+    table
       .createReadStream()
       .on('error', err => {
         // Handle the error.
@@ -305,7 +305,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_sample_row_keys]
-    await table
+    table
       .sampleRowKeys()
       .then(result => {
         const sampleRKeys = result[0];
@@ -323,7 +323,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_del_rows]
-    await table
+    table
       .deleteRows('alincoln')
       .then(result => {
         const apiResponse = result[0];
@@ -341,7 +341,7 @@ const snippets = {
     const table = instance.table(tableId);
 
     // [START bigtable_del_table]
-    await table
+    table
       .delete()
       .then(result => {
         const apiResponse = result[0];
