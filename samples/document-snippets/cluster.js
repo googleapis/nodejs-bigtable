@@ -17,7 +17,7 @@ const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const snippets = {
-  create: (instanceId, clusterId, callback) => {
+  create: (instanceId, clusterId) => {
     // [START bigtable_create_cluster]
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -33,11 +33,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_cluster]
-
-    callback();
   },
 
-  delete: (instanceId, clusterId, callback) => {
+  delete: (instanceId, clusterId) => {
     // [START bigtable_delete_cluster]
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -51,11 +49,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_delete_cluster]
-
-    callback();
   },
 
-  exists: (instanceId, clusterId, callback) => {
+  exists: (instanceId, clusterId) => {
     // [START bigtable_exists_cluster]
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -69,11 +65,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_exists_cluster]
-
-    callback();
   },
 
-  get: (instanceId, clusterId, callback) => {
+  get: (instanceId, clusterId) => {
     // [START bigtable_get_cluster]
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -88,11 +82,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_cluster]
-
-    callback();
   },
 
-  getMeta: (instanceId, clusterId, callback) => {
+  getMeta: (instanceId, clusterId) => {
     // [START bigtable_cluster_get_meta]
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -107,11 +99,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_cluster_get_meta]
-
-    callback();
   },
 
-  setMeta: (instanceId, clusterId, callback) => {
+  setMeta: (instanceId, clusterId) => {
     // [START bigtable_cluster_set_meta]
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -130,7 +120,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_cluster_set_meta]
-    callback();
   },
 };
 

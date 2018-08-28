@@ -27,7 +27,7 @@ const clusterSnippets = require('../cluster.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe.only('Cluster Snippets', function() {
+describe('Cluster Snippets', function() {
   before(() => {
     instance.create({
       clusters: [
@@ -50,27 +50,27 @@ describe.only('Cluster Snippets', function() {
     });
   });
 
-  it('should create a cluster', done => {
-    clusterSnippets.create(INSTANCE_ID, CLUSTER_ID, done);
+  it('should create a cluster', () => {
+    clusterSnippets.create(INSTANCE_ID, CLUSTER_ID);
   });
 
-  it('should check cluster exists', done => {
-    clusterSnippets.exists(INSTANCE_ID, CLUSTER_ID, done);
+  it('should check cluster exists', () => {
+    clusterSnippets.exists(INSTANCE_ID, CLUSTER_ID);
   });
 
-  it('should get the cluster', done => {
-    clusterSnippets.get(INSTANCE_ID, CLUSTER_ID, done);
+  it('should get the cluster', () => {
+    clusterSnippets.get(INSTANCE_ID, CLUSTER_ID);
   });
 
-  it('should get cluster metadata', done => {
-    clusterSnippets.getMeta(INSTANCE_ID, CLUSTER_ID, done);
+  it('should get cluster metadata', () => {
+    clusterSnippets.getMeta(INSTANCE_ID, CLUSTER_ID);
   });
 
-  it('should set cluster metadata', done => {
-    clusterSnippets.setMeta(INSTANCE_ID, CLUSTER_ID, done);
+  it('should set cluster metadata', () => {
+    clusterSnippets.setMeta(INSTANCE_ID, CLUSTER_ID);
   });
 
-  it('should delete a cluster', done => {
-    clusterSnippets.delete(INSTANCE_ID, CLUSTER_ID, done);
+  it('should delete a cluster', () => {
+    clusterSnippets.delete(INSTANCE_ID, CLUSTER_ID);
   });
 });
