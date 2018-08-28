@@ -22,14 +22,12 @@ const bigtable = new Bigtable();
 
 const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-// const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-// const FAMILY_ID = `sample-family-${uuid.v4()}`.substr(0, 10); // Bigtable naming rules
 
 const clusterSnippets = require('../cluster.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe.only('Row Snippets', function() {
+describe.only('Cluster Snippets', function() {
   before(() => {
     instance.create({
       clusters: [
