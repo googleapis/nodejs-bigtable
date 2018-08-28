@@ -32,8 +32,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_table]
-
-    callback();
   },
 
   existsTable: (instanceId, tableId) => {
@@ -50,8 +48,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_exists_table]
-
-    callback();
   },
 
   getTable: (instanceId, tableId) => {
@@ -69,8 +65,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_table]
-
-    callback();
   },
 
   getMetadata: (instanceId, tableId) => {
@@ -88,8 +82,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_table_meta]
-
-    callback();
   },
 
   createFamily: (instanceId, tableId, familyId) => {
@@ -117,8 +109,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_table]
-
-    callback();
   },
 
   getFamilies: (instanceId, tableId) => {
@@ -135,8 +125,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_families]
-
-    callback();
   },
 
   insertRows: (instanceId, tableId) => {
@@ -164,8 +152,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_insert_rows]
-
-    callback();
   },
 
   getRows: (instanceId, tableId) => {
@@ -185,8 +171,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_rows]
-
-    callback();
   },
 
   mutate: (instanceId, tableId) => {
@@ -209,8 +193,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_mutate_rows]
-
-    callback();
   },
 
   createReadStream: (instanceId, tableId) => {
@@ -296,8 +278,6 @@ const snippets = {
     // });
     //
     // [END bigtable_table_readstream]
-
-    callback();
   },
 
   sampleRowKeys: (instanceId, tableId) => {
@@ -314,8 +294,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_sample_row_keys]
-
-    callback();
   },
 
   delRows: (instanceId, tableId) => {
@@ -332,8 +310,6 @@ const snippets = {
         // Handle the error.
       });
     // [START bigtable_del_rows]
-
-    callback();
   },
 
   delTable: (instanceId, tableId) => {
@@ -350,8 +326,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_del_table]
-
-    callback();
   },
 };
 
