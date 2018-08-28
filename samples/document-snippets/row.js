@@ -17,7 +17,7 @@ const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const snippets = {
-  createRow: (instanceId, tableId, callback) => {
+  createRow: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -33,11 +33,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_row]
-
-    callback();
   },
 
-  createRules: (instanceId, tableId, callback) => {
+  createRules: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -75,11 +73,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_rules]
-
-    callback();
   },
 
-  deleteAllCells: (instanceId, tableId, callback) => {
+  deleteAllCells: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -94,11 +90,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_delete_all_cells]
-
-    callback();
   },
 
-  deleteCells: (instanceId, tableId, callback) => {
+  deleteCells: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -122,11 +116,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_delete_particular_cells]
-
-    callback();
   },
 
-  exists: (instanceId, tableId, callback) => {
+  exists: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -142,11 +134,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_row_exists]
-
-    callback();
   },
 
-  filter: (instanceId, tableId, callback) => {
+  filter: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -189,11 +179,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_row_filter]
-
-    callback();
   },
 
-  get: (instanceId, tableId, callback) => {
+  get: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -226,11 +214,9 @@ const snippets = {
     //   });
 
     // [END bigtable_get_row]
-
-    callback();
   },
 
-  getMetadata: (instanceId, tableId, callback) => {
+  getMetadata: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -247,11 +233,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_row_meta]
-
-    callback();
   },
 
-  increment: (instanceId, tableId, callback) => {
+  increment: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -283,11 +267,9 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_row_increment]
-
-    callback();
   },
 
-  save: (instanceId, tableId, callback) => {
+  save: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -307,8 +289,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_row_save]
-
-    callback();
   },
 };
 

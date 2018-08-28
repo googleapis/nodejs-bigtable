@@ -24,7 +24,6 @@ const bigtable = new Bigtable();
 const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-// const FAMILY_ID = `sample-family-${uuid.v4()}`.substr(0, 10); // Bigtable naming rules
 
 const rowSnippets = require('../row.js');
 
@@ -49,31 +48,31 @@ describe('Row Snippets', function() {
     await instance.delete();
   });
 
-  it('should create a row', done => {
-    rowSnippets.createRow(INSTANCE_ID, TABLE_ID, done);
+  it('should create a row', () => {
+    rowSnippets.createRow(INSTANCE_ID, TABLE_ID);
   });
-  it('should create a row rules', done => {
-    rowSnippets.createRules(INSTANCE_ID, TABLE_ID, done);
+  it('should create a row rules', () => {
+    rowSnippets.createRules(INSTANCE_ID, TABLE_ID);
   });
-  it('should delete all cells', done => {
-    rowSnippets.deleteAllCells(INSTANCE_ID, TABLE_ID, done);
+  it('should delete all cells', () => {
+    rowSnippets.deleteAllCells(INSTANCE_ID, TABLE_ID);
   });
-  it('should delete selected cells', done => {
-    rowSnippets.deleteCells(INSTANCE_ID, TABLE_ID, done);
+  it('should delete selected cells', () => {
+    rowSnippets.deleteCells(INSTANCE_ID, TABLE_ID);
   });
-  it('should check row exists', done => {
-    rowSnippets.exists(INSTANCE_ID, TABLE_ID, done);
+  it('should check row exists', () => {
+    rowSnippets.exists(INSTANCE_ID, TABLE_ID);
   });
-  it('should mutate row with matched filter', done => {
-    rowSnippets.filter(INSTANCE_ID, TABLE_ID, done);
+  it('should mutate row with matched filter', () => {
+    rowSnippets.filter(INSTANCE_ID, TABLE_ID);
   });
-  it('should get row meta-data', done => {
-    rowSnippets.getMetadata(INSTANCE_ID, TABLE_ID, done);
+  it('should get row meta-data', () => {
+    rowSnippets.getMetadata(INSTANCE_ID, TABLE_ID);
   });
-  it('should increment row', done => {
-    rowSnippets.increment(INSTANCE_ID, TABLE_ID, done);
+  it('should increment row', () => {
+    rowSnippets.increment(INSTANCE_ID, TABLE_ID);
   });
-  it('should save row', done => {
-    rowSnippets.save(INSTANCE_ID, TABLE_ID, done);
+  it('should save row', () => {
+    rowSnippets.save(INSTANCE_ID, TABLE_ID);
   });
 });
