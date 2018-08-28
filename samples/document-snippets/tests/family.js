@@ -49,27 +49,27 @@ describe('Family Snippets', function() {
     await instance.delete();
   });
 
-  it('should create a column family', function(done) {
-    familySnippets.createColmFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should create a column family', () => {
+    familySnippets.createColmFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
   });
 
-  it('should check family exists', function(done) {
-    familySnippets.existsFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should check family exists', () => {
+    familySnippets.existsFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
   });
 
-  it('should get the family', function(done) {
-    familySnippets.getFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should get the family', () => {
+    familySnippets.getFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
   });
 
-  it('should get family metadata', function(done) {
-    familySnippets.getMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should get family metadata', () => {
+    familySnippets.getMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID);
   });
 
-  it('should set family metadata', function(done) {
-    familySnippets.setMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should set family metadata', () => {
+    familySnippets.setMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID);
   });
 
-  it('should delete family', function(done) {
-    familySnippets.delFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID, done);
+  it('should delete family', () => {
+    familySnippets.delFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
   });
 });

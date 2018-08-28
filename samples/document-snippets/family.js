@@ -17,7 +17,7 @@ const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const snippets = {
-  createColmFamily: (instanceId, tableId, familyId, callback) => {
+  createColmFamily: (instanceId, tableId, familyId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
@@ -32,9 +32,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_family]
-    callback();
   },
-  existsFamily: (instanceId, tableId, familyId, callback) => {
+  existsFamily: (instanceId, tableId, familyId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
@@ -49,9 +48,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_exists_family]
-    callback();
   },
-  getFamily: (instanceId, tableId, familyId, callback) => {
+  getFamily: (instanceId, tableId, familyId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
@@ -66,9 +64,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_family]
-    callback();
   },
-  getMetadata: (instanceId, tableId, familyId, callback) => {
+  getMetadata: (instanceId, tableId, familyId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
@@ -83,9 +80,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_family_meta]
-    callback();
   },
-  setMetadata: (instanceId, tableId, familyId, callback) => {
+  setMetadata: (instanceId, tableId, familyId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
@@ -105,9 +101,8 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_set_family_meta]
-    callback();
   },
-  delFamily: (instanceId, tableId, familyId, callback) => {
+  delFamily: (instanceId, tableId, familyId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
@@ -121,7 +116,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_del_family]
-    callback();
   },
 };
 
