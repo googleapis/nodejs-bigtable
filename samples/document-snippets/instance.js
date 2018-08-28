@@ -58,8 +58,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_instance]
-
-    callback();
   },
 
   createCluster: (instanceId, clusterId) => {
@@ -89,8 +87,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_cluster]
-
-    callback();
   },
 
   createAppProfile: (instanceId, clusterId, appProfileId, callback) => {
@@ -160,8 +156,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_create_table]
-
-    callback();
   },
 
   existsInstance: instanceId => {
@@ -179,8 +173,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_exists_instance]
-
-    callback();
   },
 
   getInstance: instanceId => {
@@ -200,8 +192,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_instance]
-
-    callback();
   },
 
   getClusters: instanceId => {
@@ -220,8 +210,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_clusters]
-
-    callback();
   },
 
   getAppProfiles: instanceId => {
@@ -240,8 +228,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_app_profiles]
-
-    callback();
   },
 
   getMetadata: instanceId => {
@@ -260,8 +246,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_instance_metadata]
-
-    callback();
   },
 
   getTables: instanceId => {
@@ -288,8 +272,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_get_tables]
-
-    callback();
   },
 
   updateInstance: instanceId => {
@@ -311,8 +293,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_set_meta_data]
-
-    callback();
   },
 
   delInstance: instanceId => {
@@ -330,8 +310,6 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_del_instance]
-
-    callback();
   },
 };
 
