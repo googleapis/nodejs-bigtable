@@ -134,6 +134,66 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
   }
 
   /**
+   * Gets metadata information about the specified snapshot.
+   *
+   * @param {string} name
+   *   The unique name of the requested snapshot.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *
+   * @param {function(?Error, ?Object)} [callback]
+   *   The function which will be called with the result of the API call.
+   *   The second parameter to the callback is an object [Snapshot]
+   *   {@link google.bigtable.admin.v2.Snapshot}.
+   *
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Snapshot]
+   *   {@link google.bigtable.admin.v2.Snapshot}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   *
+   * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const cluster = instance.cluster('my-cluster');
+   * const snapshot = cluster.snapshot('my-snapshot');
+   *
+   * snapshot
+   *   .reload(name, gaxOptions)
+   *   .then(data => {
+   *     const operation = data[0];
+   *     const apiResponse = data[1];
+   *   })
+   *   .catch(err => {
+   *     console.error(err);
+   *   });
+   */
+  reload(gaxOptions, callback) {
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+
+    const reqOpts = {
+      name: this.name,
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'getSnapshot',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
+
+  /**
    * @param {object} [gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {function} [callback] The callback function.

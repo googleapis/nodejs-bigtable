@@ -106,7 +106,7 @@ describe('Bigtable/Snapshot', function() {
   });
 
   describe('create', function() {
-    it('should call createSnapshot from cluster', function(done) {
+    it('should call createSnapshot from snapshot', function(done) {
       let options = {
         table: TABLE.name,
         description: 'Sescription text for Snapshot',
@@ -119,6 +119,25 @@ describe('Bigtable/Snapshot', function() {
       };
 
       snapshot.create(options, done);
+    });
+  });
+
+  describe('reload', function() {
+    it('should make the correct request', function(done) {
+      snapshot.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'getSnapshot');
+
+        assert.deepStrictEqual(config.reqOpts, {
+          name: snapshot.name,
+        });
+
+        assert.deepStrictEqual(config.gaxOpts, {});
+
+        callback(); // done()
+      };
+
+      snapshot.reload(done);
     });
   });
 
