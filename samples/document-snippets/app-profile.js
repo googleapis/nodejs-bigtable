@@ -13,8 +13,7 @@
  * limitations under the License.
  */
 
-// const Bigtable = require('@google-cloud/bigtable');
-const Bigtable = require('../../src');
+const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const snippets = {
