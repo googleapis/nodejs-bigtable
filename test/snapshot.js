@@ -120,6 +120,19 @@ describe('Bigtable/Snapshot', function() {
 
       snapshot.create(options, done);
     });
+
+    it('should return error', function(done) {
+      let error = new Error('Error.');
+
+      snapshot.cluster.createSnapshot = function(config, callback) {
+        callback(error);
+      };
+
+      snapshot.create(function(err) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
   });
 
   describe('reload', function() {
@@ -138,6 +151,19 @@ describe('Bigtable/Snapshot', function() {
       };
 
       snapshot.reload(done);
+    });
+
+    it('should accept gaxOptions', function(done) {
+      let gaxOptions = {
+        timeout: 60000,
+      };
+
+      snapshot.bigtable.request = function(config) {
+        assert.deepStrictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      snapshot.reload(gaxOptions, assert.ifError);
     });
   });
 
