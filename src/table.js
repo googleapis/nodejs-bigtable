@@ -689,7 +689,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, err => {
+    const reqOpts = {
+      view: 'name',
+      gaxOptions: gaxOptions,
+    };
+
+    this.getMetadata(reqOpts, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);

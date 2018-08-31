@@ -1134,8 +1134,8 @@ describe('Bigtable/Table', function() {
 
   describe('exists', function() {
     it('should not require gaxOptions', function(done) {
-      table.getMetadata = function(gaxOptions) {
-        assert.deepStrictEqual(gaxOptions, {});
+      table.getMetadata = function(options_) {
+        assert.deepStrictEqual(options_.gaxOptions, {});
         done();
       };
 
@@ -1144,9 +1144,18 @@ describe('Bigtable/Table', function() {
 
     it('should pass gaxOptions to getMetadata', function(done) {
       let gaxOptions = {};
+      table.getMetadata = function(options_) {
+        assert.strictEqual(options_.gaxOptions, gaxOptions);
+        done();
+      };
 
-      table.getMetadata = function(gaxOptions_) {
-        assert.strictEqual(gaxOptions_, gaxOptions);
+      table.exists(gaxOptions, assert.ifError);
+    });
+
+    it('should pass view = name to getMetadata', function(done) {
+      let gaxOptions = {};
+      table.getMetadata = function(options_) {
+        assert.strictEqual(options_.view, 'name');
         done();
       };
 
