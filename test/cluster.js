@@ -479,11 +479,7 @@ describe('Bigtable/Cluster', function() {
         callback();
       };
 
-      cluster.createSnapshot(
-        snapshotId,
-        {table: TABLE_NAME, description, ttl},
-        done
-      );
+      cluster.createSnapshot(snapshotId, TABLE_NAME, {description, ttl}, done);
     });
   });
 

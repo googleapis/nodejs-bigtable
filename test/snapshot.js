@@ -106,19 +106,24 @@ describe('Bigtable/Snapshot', function() {
   });
 
   describe('create', function() {
-    it('should call createSnapshot from snapshot', function(done) {
+    it('should call createSnapshot from cluster', function(done) {
       let options = {
-        table: TABLE.name,
-        description: 'Sescription text for Snapshot',
+        description: 'Description text for Snapshot',
       };
 
-      snapshot.cluster.createSnapshot = function(id, options_, callback) {
+      snapshot.cluster.createSnapshot = function(
+        id,
+        table,
+        options_,
+        callback
+      ) {
         assert.strictEqual(id, snapshot.id);
+        assert.strictEqual(table, TABLE.name);
         assert.strictEqual(options_, options);
         callback(); // done()
       };
 
-      snapshot.create(options, done);
+      snapshot.create(TABLE.name, options, done);
     });
 
     it('should return error', function(done) {
@@ -136,34 +141,27 @@ describe('Bigtable/Snapshot', function() {
   });
 
   describe('reload', function() {
-    it('should make the correct request', function(done) {
-      snapshot.bigtable.request = function(config, callback) {
-        assert.strictEqual(config.client, 'BigtableTableAdminClient');
-        assert.strictEqual(config.method, 'getSnapshot');
-
-        assert.deepStrictEqual(config.reqOpts, {
-          name: snapshot.name,
-        });
-
-        assert.deepStrictEqual(config.gaxOpts, {});
-
+    it('should call createSnapshot from cluster', function(done) {
+      snapshot.cluster.getSnapshot = function(name, callback) {
+        assert.strictEqual(name, snapshot.name);
         callback(); // done()
       };
 
       snapshot.reload(done);
     });
 
-    it('should accept gaxOptions', function(done) {
-      let gaxOptions = {
+    it('should accept gaxOptions', function() {
+      const GAX_OPTS = {
         timeout: 60000,
       };
 
-      snapshot.bigtable.request = function(config) {
-        assert.deepStrictEqual(config.gaxOpts, gaxOptions);
-        done();
+      snapshot.cluster.getSnapshot = function(name, gaxOptions, callback) {
+        assert.strictEqual(name, snapshot.name);
+        assert.deepStrictEqual(gaxOptions, GAX_OPTS);
+        callback();
       };
 
-      snapshot.reload(gaxOptions, assert.ifError);
+      snapshot.reload(GAX_OPTS, assert.ifError);
     });
   });
 

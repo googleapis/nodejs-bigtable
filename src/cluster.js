@@ -415,14 +415,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * @param {string} id
    *   The ID for new snapshot should be referred to within the parent cluster.
    *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
-   * @param {object} options options object.
-   * @param {string} options.table
+   * @param {string} table
    *   The name of the table for which snapshot will be created.
    *   format: `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {object} options options object.
    * @param {string} options.description
    *   Description of the snapshot.
    * @param {Object} [options.ttl]
-   *   Represented of count of seconds
    *   The amount of time that the new snapshot can stay active after it is
    *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
    *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
@@ -441,14 +440,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
+   * const id = 'my-snapshot';
+   * const table = table.name;
    * let options = {
-   *   table: table.name,
-   *   snapshotId: 'sample-snapshot-id',
-   *   description: 'sample description text for snapshot'
+   *   description: 'sample description text for snapshot';
    * };
    *
    * cluster
-   *  .createSnapshot(options)
+   *  .createSnapshot(id, table, options)
    *  .then(responses => {
    *    let operation = responses[0];
    *    let initialApiResponse = responses[1];
@@ -474,11 +473,11 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *    // Handle the error
    *  });
    */
-  createSnapshot(id, options, callback) {
+  createSnapshot(id, table, options, callback) {
     const reqOpts = {
       snapshotId: id,
       cluster: this.name,
-      name: options.table,
+      name: table,
       description: options.description,
     };
 
@@ -528,7 +527,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * cluster
    *   .getSnapshot(name, options)
    *   .then(data => {
-   *     const operation = data[0];
+   *     const snapshot = data[0];
    *     const apiResponse = data[1];
    *   })
    *   .catch(err => {
@@ -580,7 +579,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * cluster
    *   .listSnapshots(options)
    *   .then(responses => {
-   *     var resources = responses[0];
+   *     var snapshots = responses[0];
    *     for (let i = 0; i < resources.length; i += 1) {
    *       // doThingsWith(resources[i])
    *     }

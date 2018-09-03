@@ -68,11 +68,10 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
 
   /**
    * Create a snapshot.
-   *
-   * @param {object} options options object.
-   * @param {string} options.table
+   * @param {string} table
    *   The name of the table for which snapshot will be created.
    *   format: `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {object} options options object.
    * @param {string} options.description
    *   Description of the snapshot.
    * @param {Object} [options.ttl]
@@ -100,12 +99,11 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
    * const table = instance.table('my-table');
    *
    * let options = {
-   *   table: table.name,
    *   description: 'Description text for snapshot',
    * }
    *
    * // Handle the operation using the promise pattern.
-   * snapshot.create(options)
+   * snapshot.create(table.name, options)
    *   .then(responses => {
    *     var operation = responses[0];
    *     var initialApiResponse = responses[1];
@@ -127,10 +125,8 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
    *     console.error(err);
    *   });
    */
-  create(options, callback) {
-    options.cluster = this.cluster.name;
-
-    this.cluster.createSnapshot(this.id, options, callback);
+  create(table, options, callback) {
+    this.cluster.createSnapshot(this.id, table, options, callback);
   }
 
   /**
@@ -171,26 +167,7 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
    *   });
    */
   reload(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
-    const reqOpts = {
-      name: this.name,
-    };
-
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'getSnapshot',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      (...args) => {
-        callback(...args);
-      }
-    );
+    this.cluster.getSnapshot(this.name, gaxOptions, callback);
   }
 
   /**

@@ -2403,10 +2403,7 @@ describe('Bigtable/Table', function() {
         callback();
       };
 
-      table.snapshotTable(
-        {cluster: CLUSTER_NAME, snapshotId, description, ttl},
-        done
-      );
+      table.snapshotTable(CLUSTER_NAME, snapshotId, {description, ttl}, done);
     });
   });
 });

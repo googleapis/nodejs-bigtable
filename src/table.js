@@ -1499,13 +1499,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * Creates a new snapshot in the specified cluster from the specified
    * source table. The cluster and the table must be in the same instance.
    *
-   * @param {object} options options object.
-   * @param {string} options.cluster
+   * @param {string} cluster
    *   The name of the cluster where the snapshot will be created in.
    *   format: `projects/<project>/instances/<instance>/clusters/<cluster>`.
-   * @param {string} options.snapshotId
+   * @param {string} snapshotId
    *   The ID for new snapshot should be referred to within the parent cluster.
    *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
+   * @param {object} options options object.
    * @param {string} options.description
    *   Description of the snapshot.
    * @param {Object} [options.ttl]
@@ -1528,14 +1528,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const cluster = instance.cluster('my-cluster');
+   * const snapshotId = 'sample-snapshot-id';
+   *
    * let options = {
-   *   cluster: cluster.name,
-   *   snapshotId: 'sample-snapshot-id',
    *   description: 'sample description text for snapshot'
    * };
    *
    * table
-   *  .snapshotTable(options)
+   *  .snapshotTable(cluster.name, snapshotId, options)
    *  .then(responses => {
    *    let operation = responses[0];
    *    let initialApiResponse = responses[1];
@@ -1561,7 +1565,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *    // Handle the error
    *  });
    */
-  snapshotTable(options, gaxOptions, callback) {
+  snapshotTable(cluster, snapshotId, options, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -1569,8 +1573,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
 
     const reqOpts = {
       name: this.name,
-      cluster: options.cluster,
-      snapshotId: options.snapshotId,
+      cluster,
+      snapshotId,
       description: options.description,
     };
 
