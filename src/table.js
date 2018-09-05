@@ -16,6 +16,7 @@
 
 const arrify = require('arrify');
 const common = require('@google-cloud/common-grpc');
+const {promisifyAll} = require('@google-cloud/promisify');
 const concat = require('concat-stream');
 const flatten = require('lodash.flatten');
 const is = require('is');
@@ -1513,7 +1514,7 @@ Table.VIEWS = {
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(Table, {
+promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
 

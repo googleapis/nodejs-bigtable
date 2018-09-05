@@ -23,7 +23,7 @@ const Mutation = require('../src/mutation.js');
 const Long = require('long');
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
-const RowStateEnum = require('../src/chunktransformer.js').RowStateEnum;
+const {RowStateEnum} = require('../src/chunktransformer.js');
 
 const FakeMutation = {
   methods: Mutation.methods,
