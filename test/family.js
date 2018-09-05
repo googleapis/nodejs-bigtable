@@ -19,10 +19,10 @@
 const assert = require('assert');
 const extend = require('extend');
 const proxyquire = require('proxyquire');
-const {util} = require('@google-cloud/common-grpc');
+const promisify = require('@google-cloud/promisify');
 
 var promisified = false;
-const fakeUtil = extend({}, util, {
+const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Family') {
       promisified = true;
@@ -36,8 +36,8 @@ describe('Bigtable/Family', function() {
     bigtable: {},
     id: 'my-table',
     name: 'projects/my-project/instances/my-inststance/tables/my-table',
-    getFamilies: util.noop,
-    createFamily: util.noop,
+    getFamilies: () => {},
+    createFamily: () => {},
   };
 
   const FAMILY_NAME = `${TABLE.name}/columnFamilies/${FAMILY_ID}`;
@@ -47,9 +47,7 @@ describe('Bigtable/Family', function() {
 
   before(function() {
     Family = proxyquire('../src/family.js', {
-      '@google-cloud/common-grpc': {
-        util: fakeUtil,
-      },
+      '@google-cloud/promisify': fakePromisify,
     });
 
     FamilyError = Family.FamilyError;

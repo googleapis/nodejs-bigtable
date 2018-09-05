@@ -17,7 +17,7 @@
 'use strict';
 
 const assert = require('assert');
-const common = require('@google-cloud/common-grpc');
+const promisify = require('@google-cloud/promisify');
 const extend = require('extend');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon').createSandbox();
@@ -25,7 +25,7 @@ const sinon = require('sinon').createSandbox();
 const Mutation = require('../src/mutation.js');
 
 var promisified = false;
-const fakeUtil = extend({}, common.util, {
+const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Row') {
       promisified = true;
@@ -73,9 +73,7 @@ describe('Bigtable/Row', function() {
 
   before(function() {
     Row = proxyquire('../src/row.js', {
-      '@google-cloud/common-grpc': {
-        util: fakeUtil,
-      },
+      '@google-cloud/promisify': fakePromisify,
       './mutation.js': FakeMutation,
       './filter.js': FakeFilter,
     });

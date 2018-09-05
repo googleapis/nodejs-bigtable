@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common-grpc');
+const {paginator} = require('@google-cloud/paginator');
+const {promisifyAll} = require('@google-cloud/promisify');
 const extend = require('extend');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
@@ -749,20 +750,20 @@ Please use the format 'my-instance' or '${
  *     this.end();
  *   });
  */
-Instance.prototype.getTablesStream = common.paginator.streamify('getTables');
+Instance.prototype.getTablesStream = paginator.streamify('getTables');
 
 /*! Developer Documentation
  *
  * These methods can be auto-paginated.
  */
-common.paginator.extend(Instance, ['getTables']);
+paginator.extend(Instance, ['getTables']);
 
 /*! Developer Documentation
  *
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(Instance, {
+promisifyAll(Instance, {
   exclude: ['appProfile', 'cluster', 'table'],
 });
 

@@ -53,15 +53,16 @@
     "generate-scaffolding": "repo-tools generate all && repo-tools generate lib_samples_readme -l samples/ --config ../.cloud-repo-tools.json",
     "lint": "eslint src/ samples/ system-test/ test/",
     "prettier": "prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
-    "publish-module": "node ../../scripts/publish.js bigtable",
     "system-test": "mocha system-test/*.js --timeout 600000",
     "snippet-test": "mocha samples/document-snippets/test.js --timeout 600000"
   },
   "dependencies": {
     "@google-cloud/common-grpc": "^0.7.1",
+    "@google-cloud/paginator": "^0.1.0",
+    "@google-cloud/projectify": "^0.3.0",
+    "@google-cloud/promisify": "^0.3.0",
     "arrify": "^1.0.0",
     "concat-stream": "^1.5.0",
-    "create-error-class": "^3.0.2",
     "dot-prop": "^4.2.0",
     "escape-string-regexp": "^1.0.5",
     "extend": "^3.0.0",
