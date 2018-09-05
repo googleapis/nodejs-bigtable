@@ -57,7 +57,7 @@
     "snippet-test": "mocha samples/document-snippets/test.js --timeout 600000"
   },
   "dependencies": {
-    "@google-cloud/common-grpc": "^0.7.1",
+    "@google-cloud/common-grpc": "^0.8.0",
     "@google-cloud/paginator": "^0.1.0",
     "@google-cloud/projectify": "^0.3.0",
     "@google-cloud/promisify": "^0.3.0",
