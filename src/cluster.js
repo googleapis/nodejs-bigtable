@@ -501,10 +501,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
   /**
    * Gets metadata information about the specified snapshot.
    *
-   * @param {string} name
-   *   The unique name of the requested snapshot.
-   *   Values are of the form
-   *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
+   * @param {string} id
+   *   The unique id of the requested snapshot.
    * @param {object} [gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    *
@@ -525,7 +523,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * const cluster = instance.cluster('my-cluster');
    *
    * cluster
-   *   .getSnapshot(name, options)
+   *   .getSnapshot('my-snapshot', options)
    *   .then(data => {
    *     const snapshot = data[0];
    *     const apiResponse = data[1];
@@ -534,14 +532,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *     console.error(err);
    *   });
    */
-  getSnapshot(name, gaxOptions, callback) {
+  getSnapshot(id, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
     }
 
     const reqOpts = {
-      name: name,
+      name: this.snapshot(id).name,
     };
 
     this.bigtable.request(
@@ -580,9 +578,10 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *   .listSnapshots(options)
    *   .then(responses => {
    *     var snapshots = responses[0];
-   *     for (let i = 0; i < resources.length; i += 1) {
-   *       // doThingsWith(resources[i])
-   *     }
+   *     snapshots.forEach(t => {
+   *       // doThingsWith(snapshot)
+   *       console.log(snapshots.id);
+   *     });
    *   })
    *   .catch(err => {
    *     console.error(err);
@@ -610,6 +609,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
         gaxOpts: options.gaxOptions,
       },
       (...args) => {
+        if (args[1]) {
+          args[1] = args[1].map(snapshotObj => {
+            const snapshot = this.snapshot(snapshotObj.name.split('/').pop());
+            snapshot.metadata = snapshotObj;
+            return snapshot;
+          });
+        }
+
         callback(...args);
       }
     );

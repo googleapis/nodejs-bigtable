@@ -485,17 +485,17 @@ describe('Bigtable/Cluster', function() {
 
   describe('getSnapshot', () => {
     it('should provide the proper request options', done => {
-      const SNAPSHOT_NAME = CLUSTER_NAME + '/snapshots/my-table-snapshot';
+      const snapshot = new Snapshot(cluster, 'my-snapshot');
 
       cluster.bigtable.request = function(config, callback) {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getSnapshot');
-        assert.strictEqual(config.reqOpts.name, SNAPSHOT_NAME);
+        assert.strictEqual(config.reqOpts.name, snapshot.name);
         assert.deepStrictEqual(config.gaxOpts, {});
         callback();
       };
 
-      cluster.getSnapshot(SNAPSHOT_NAME, done);
+      cluster.getSnapshot(snapshot.id, done);
     });
   });
 
@@ -520,6 +520,41 @@ describe('Bigtable/Cluster', function() {
       };
 
       cluster.listSnapshots(done);
+    });
+
+    it('should return an array of snapshot objects', function(done) {
+      let response = [
+        {
+          name:
+            '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-a',
+        },
+        {
+          name:
+            '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-b',
+        },
+      ];
+
+      let fakeSnapshots = [{}, {}];
+
+      cluster.bigtable.request = function(config, callback) {
+        callback(null, response);
+      };
+
+      let snapshotCount = 0;
+
+      cluster.snapshot = function(id) {
+        assert.strictEqual(id, response[snapshotCount].name.split('/').pop());
+        return fakeSnapshots[snapshotCount++];
+      };
+
+      cluster.listSnapshots(function(err, snapshots) {
+        assert.ifError(err);
+        assert.strictEqual(snapshots[0], fakeSnapshots[0]);
+        assert.strictEqual(snapshots[0].metadata, response[0]);
+        assert.strictEqual(snapshots[1], fakeSnapshots[1]);
+        assert.strictEqual(snapshots[1].metadata, response[1]);
+        done();
+      });
     });
   });
 

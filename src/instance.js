@@ -721,9 +721,8 @@ Please use the format 'my-instance' or '${
   /**
    * Lists all snapshots associated with the specified cluster.
    *
-   * @param {string} cluster
-   *   The name of the cluster where the snapshot will be created in.
-   *   format: `projects/<project>/instances/<instance>/clusters/<cluster>`.
+   * @param {string} clusterId
+   *   The unique id of cluster
    * @param {number} [options.pageSize]
    *   The maximum number of resources in a page.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
@@ -743,40 +742,25 @@ Please use the format 'my-instance' or '${
    * instance
    *   .listSnapshots(cluster, options)
    *   .then(responses => {
-   *     let resources = responses[0];
-   *     for (let i = 0; i < resources.length; i += 1) {
-   *       // doThingsWith(resources[i])
-   *     }
+   *     var snapshots = responses[0];
+   *     snapshots.forEach(t => {
+   *       // doThingsWith(snapshot)
+   *       console.log(snapshots.id);
+   *     });
    *   })
    *   .catch(err => {
    *     console.error(err);
    *   });
    */
-  listSnapshots(cluster, options, callback) {
+  listSnapshots(clusterId, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
     }
 
-    const reqOpts = {
-      parent: cluster,
-    };
+    const cluster = this.cluster(clusterId);
 
-    if (options.pageSize) {
-      reqOpts.pageSize = options.pageSize;
-    }
-
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'listSnapshots',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      (...args) => {
-        callback(...args);
-      }
-    );
+    cluster.listSnapshots(options, callback);
   }
 }
 

@@ -30,7 +30,6 @@ const fakePromisify = extend({}, promisify, {
   },
 });
 
-
 describe('Bigtable/Snapshot', function() {
   const INSTANCE = {
     bigtable: {},
