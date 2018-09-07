@@ -24,6 +24,8 @@ const grpc = new gax.GrpcClient().grpc;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon').createSandbox();
 const through = require('through2');
+const promisify = require('@google-cloud/promisify');
+const projectify = require('@google-cloud/projectify');
 
 const Cluster = require('../src/cluster.js');
 const Instance = require('../src/instance.js');
@@ -35,12 +37,11 @@ function fakeV2() {}
 
 var promisified = false;
 var replaceProjectIdTokenOverride;
-const fakeUtil = extend({}, common.util, {
+const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Bigtable') {
       return;
     }
-
     promisified = true;
     assert.deepStrictEqual(options.exclude, [
       'instance',
@@ -48,15 +49,15 @@ const fakeUtil = extend({}, common.util, {
       'request',
     ]);
   },
+});
+const fakeReplaceProjectIdToken = extend({}, projectify, {
   replaceProjectIdToken: function(reqOpts) {
     if (replaceProjectIdTokenOverride) {
       return replaceProjectIdTokenOverride.apply(null, arguments);
     }
-
     return reqOpts;
   },
 });
-const originalFakeUtil = extend(true, {}, fakeUtil);
 
 var googleAuthOverride;
 function fakeGoogleAuth() {
@@ -92,9 +93,8 @@ describe('Bigtable', function() {
 
   before(function() {
     Bigtable = proxyquire('../', {
-      '@google-cloud/common-grpc': {
-        util: fakeUtil,
-      },
+      '@google-cloud/promisify': fakePromisify,
+      '@google-cloud/projectify': fakeReplaceProjectIdToken,
       'google-auth-library': {
         GoogleAuth: fakeGoogleAuth,
       },
@@ -110,14 +110,10 @@ describe('Bigtable', function() {
   });
 
   beforeEach(function() {
-    extend(fakeUtil, originalFakeUtil);
-
     googleAuthOverride = null;
     retryRequestOverride = null;
     replaceProjectIdTokenOverride = null;
-
     delete process.env.BIGTABLE_EMULATOR_HOST;
-
     bigtable = new Bigtable({projectId: PROJECT_ID});
   });
 
@@ -144,20 +140,6 @@ describe('Bigtable', function() {
     it('should work without new', function() {
       const bigtable = Bigtable();
       assert(bigtable instanceof Bigtable);
-    });
-
-    it('should normalize the arguments', function() {
-      let normalizeArgumentsCalled = false;
-      let options = {};
-
-      fakeUtil.normalizeArguments = function(context, options_) {
-        normalizeArgumentsCalled = true;
-        assert.strictEqual(options_, options);
-        return options_;
-      };
-
-      new Bigtable(options);
-      assert.strictEqual(normalizeArgumentsCalled, true);
     });
 
     it('should initialize the API object', function() {

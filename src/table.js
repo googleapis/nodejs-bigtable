@@ -16,6 +16,7 @@
 
 const arrify = require('arrify');
 const common = require('@google-cloud/common-grpc');
+const {promisifyAll} = require('@google-cloud/promisify');
 const concat = require('concat-stream');
 const flatten = require('lodash.flatten');
 const is = require('is');
@@ -689,7 +690,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, err => {
+    const reqOpts = {
+      view: 'name',
+      gaxOptions: gaxOptions,
+    };
+
+    this.getMetadata(reqOpts, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -1559,7 +1565,7 @@ Table.VIEWS = {
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(Table, {
+promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
 

@@ -17,7 +17,6 @@
 'use strict';
 
 const assert = require('assert');
-const Buffer = require('buffer').Buffer;
 const extend = require('extend');
 const proxyquire = require('proxyquire');
 const pumpify = require('pumpify');
@@ -26,18 +25,18 @@ const Stream = require('stream').PassThrough;
 const through = require('through2');
 
 const common = require('@google-cloud/common-grpc');
+const promisify = require('@google-cloud/promisify');
 const Family = require('../src/family.js');
 const Mutation = require('../src/mutation.js');
 const Row = require('../src/row.js');
 const ChunkTransformer = require('../src/chunktransformer.js');
 
 var promisified = false;
-const fakeUtil = extend({}, common.util, {
+const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Table') {
       return;
     }
-
     promisified = true;
     assert.deepStrictEqual(options.exclude, ['family', 'row']);
   },
@@ -102,8 +101,8 @@ describe('Bigtable/Table', function() {
     Table = proxyquire('../src/table.js', {
       '@google-cloud/common-grpc': {
         Service: FakeGrpcService,
-        util: fakeUtil,
       },
+      '@google-cloud/promisify': fakePromisify,
       './family.js': FakeFamily,
       './mutation.js': FakeMutation,
       './filter.js': FakeFilter,
@@ -1135,8 +1134,8 @@ describe('Bigtable/Table', function() {
 
   describe('exists', function() {
     it('should not require gaxOptions', function(done) {
-      table.getMetadata = function(gaxOptions) {
-        assert.deepStrictEqual(gaxOptions, {});
+      table.getMetadata = function(options_) {
+        assert.deepStrictEqual(options_.gaxOptions, {});
         done();
       };
 
@@ -1145,9 +1144,18 @@ describe('Bigtable/Table', function() {
 
     it('should pass gaxOptions to getMetadata', function(done) {
       let gaxOptions = {};
+      table.getMetadata = function(options_) {
+        assert.strictEqual(options_.gaxOptions, gaxOptions);
+        done();
+      };
 
-      table.getMetadata = function(gaxOptions_) {
-        assert.strictEqual(gaxOptions_, gaxOptions);
+      table.exists(gaxOptions, assert.ifError);
+    });
+
+    it('should pass view = name to getMetadata', function(done) {
+      let gaxOptions = {};
+      table.getMetadata = function(options_) {
+        assert.strictEqual(options_.view, 'name');
         done();
       };
 

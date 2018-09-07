@@ -19,10 +19,10 @@
 const assert = require('assert');
 const extend = require('extend');
 const proxyquire = require('proxyquire');
-const common = require('@google-cloud/common-grpc');
+const promisify = require('@google-cloud/promisify');
 
 var promisified = false;
-var fakeUtil = extend({}, common.util, {
+var fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'AppProfile') {
       promisified = true;
@@ -51,9 +51,7 @@ describe('Bigtable/AppProfile', function() {
   before(function() {
     AppProfile = proxyquire('../src/app-profile.js', {
       '../src/cluster.js': FakeCluster,
-      '@google-cloud/common-grpc': {
-        util: fakeUtil,
-      },
+      '@google-cloud/promisify': fakePromisify,
     });
   });
 
