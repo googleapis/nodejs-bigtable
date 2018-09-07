@@ -718,6 +718,51 @@ Please use the format 'my-instance' or '${
   table(id) {
     return new Table(this, id);
   }
+
+  /**
+   * Lists all snapshots associated with the specified cluster.
+   *
+   * @param {string} clusterId
+   *   The unique id of cluster
+   * @param {number} [options.pageSize]
+   *   The maximum number of resources in a page.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Snapshot[]} callback.snapshots List of all Snapshots.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example
+   * const options = {
+   *   gaxOptions: {
+   *     autoPaginate: false
+   *   }
+   * };
+   *
+   * instance
+   *   .listSnapshots(cluster, options)
+   *   .then(responses => {
+   *     var snapshots = responses[0];
+   *     snapshots.forEach(t => {
+   *       // doThingsWith(snapshot)
+   *       console.log(snapshots.id);
+   *     });
+   *   })
+   *   .catch(err => {
+   *     console.error(err);
+   *   });
+   */
+  listSnapshots(clusterId, options, callback) {
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
+
+    const cluster = this.cluster(clusterId);
+
+    cluster.listSnapshots(options, callback);
+  }
 }
 
 /**
