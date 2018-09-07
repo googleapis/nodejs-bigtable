@@ -834,6 +834,56 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
   }
 
   /**
+   * Get replication states of the clusters for this table.
+   *
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Family[]} callback.clusterStates The map of clusterId and its replication state.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const table = instance.table('prezzy');
+   *
+   * table.getReplicationStates(function(err, clusterStates, apiResponse) {
+   *   // `clusterStates` is an map of clusterId and its replication state.
+   * });
+   *
+   * //-
+   * // If the callback is omitted, we'll return a Promise.
+   * //-
+   * table.getReplicationStates().then(function(data) {
+   *   var clusterStates = data[0];
+   *   var apiResponse = data[1];
+   * });
+   */
+  getReplicationStates(gaxOptions, callback) {
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+    const reqOpts = {
+      view: 'replication',
+      gaxOptions: gaxOptions,
+    };
+    this.getMetadata(reqOpts, (err, metadata) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+      const clusterStates = new Map();
+      Object.keys(metadata.clusterStates).map(clusterId =>
+        clusterStates.set(clusterId, metadata.clusterStates[clusterId])
+      );
+      callback(null, clusterStates, metadata);
+    });
+  }
+
+  /**
    * Get the table's metadata.
    *
    * @param {object} [options] Table request options.
@@ -1506,6 +1556,7 @@ Table.VIEWS = {
   unspecified: 0,
   name: 1,
   schema: 2,
+  replication: 3,
   full: 4,
 };
 
