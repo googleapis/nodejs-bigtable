@@ -17,7 +17,8 @@
 'use strict';
 
 const assert = require('assert');
-const common = require('@google-cloud/common-grpc');
+const promisify = require('@google-cloud/promisify');
+const paginator = require('@google-cloud/paginator');
 const extend = require('extend');
 const proxyquire = require('proxyquire');
 
@@ -27,25 +28,26 @@ const Family = require('../src/family.js');
 const Table = require('../src/table.js');
 
 var promisified = false;
-const fakeUtil = extend({}, common.util, {
+const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Instance') {
       return;
     }
-
     promisified = true;
     assert.deepStrictEqual(options.exclude, ['appProfile', 'cluster', 'table']);
   },
 });
 
-const fakePaginator = {
-  extend: function() {
-    this.calledWith_ = arguments;
+const fakePaginator = extend({}, paginator, {
+  paginator: {
+    extend: function() {
+      this.calledWith_ = arguments;
+    },
+    streamify: function(methodName) {
+      return methodName;
+    },
   },
-  streamify: function(methodName) {
-    return methodName;
-  },
-};
+});
 
 function createFake(Class) {
   return class Fake extends Class {
@@ -74,10 +76,8 @@ describe('Bigtable/Instance', function() {
 
   before(function() {
     Instance = proxyquire('../src/instance.js', {
-      '@google-cloud/common-grpc': {
-        paginator: fakePaginator,
-        util: fakeUtil,
-      },
+      '@google-cloud/paginator': fakePaginator,
+      '@google-cloud/promisify': fakePromisify,
       './app-profile.js': FakeAppProfile,
       './cluster.js': FakeCluster,
       './family.js': FakeFamily,
@@ -91,8 +91,7 @@ describe('Bigtable/Instance', function() {
 
   describe('instantiation', function() {
     it('should extend the correct methods', function() {
-      let args = fakePaginator.calledWith_;
-
+      let args = fakePaginator.paginator.calledWith_;
       assert.strictEqual(args[0], Instance);
       assert.deepStrictEqual(args[1], ['getTables']);
     });

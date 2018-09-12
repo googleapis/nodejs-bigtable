@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common-grpc');
+const {promisifyAll} = require('@google-cloud/promisify');
 const is = require('is');
 
 /**
@@ -436,7 +436,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(Family);
+promisifyAll(Family);
 
 module.exports = Family;
 module.exports.FamilyError = FamilyError;
