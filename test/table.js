@@ -91,11 +91,13 @@ const FakeFilter = {
 
 describe('Bigtable/Table', function() {
   const TABLE_ID = 'my-table';
-  var INSTANCE;
-  var TABLE_NAME;
+  const CLUSTER_ID = 'my-cluster';
+  let INSTANCE;
+  let TABLE_NAME;
+  let CLUSTER_NAME;
 
-  var Table;
-  var table;
+  let Table;
+  let table;
 
   before(function() {
     Table = proxyquire('../src/table.js', {
@@ -118,6 +120,7 @@ describe('Bigtable/Table', function() {
       name: 'a/b/c/d',
     };
     TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
+    CLUSTER_NAME = INSTANCE.name + '/clusters/' + CLUSTER_ID;
     table = new Table(INSTANCE, TABLE_ID);
   });
 
@@ -2432,6 +2435,27 @@ describe('Bigtable/Table', function() {
       };
 
       table.truncate(gaxOptions, assert.ifError);
+    });
+  });
+
+  describe('snapshotTable', () => {
+    it('should provide the proper request options', done => {
+      const snapshotId = 'my-table-snapshot';
+      const description = 'snapshot description text';
+      const ttl = 172800; // 48 hours in seconds
+      table.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'snapshotTable');
+        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
+        assert.strictEqual(config.reqOpts.cluster, CLUSTER_NAME);
+        assert.strictEqual(config.reqOpts.snapshotId, snapshotId);
+        assert.strictEqual(config.reqOpts.description, description);
+        assert.strictEqual(config.reqOpts.ttl, ttl);
+        assert.deepStrictEqual(config.gaxOpts, {});
+        callback();
+      };
+
+      table.snapshotTable(CLUSTER_NAME, snapshotId, {description, ttl}, done);
     });
   });
 });

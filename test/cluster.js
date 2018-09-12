@@ -21,6 +21,8 @@ const extend = require('extend');
 const proxyquire = require('proxyquire');
 const promisify = require('@google-cloud/promisify');
 
+const Snapshot = require('../src/snapshot.js');
+
 var promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
@@ -30,8 +32,20 @@ const fakePromisify = extend({}, promisify, {
   },
 });
 
+function createFake(Class) {
+  return class Fake extends Class {
+    constructor() {
+      super(...arguments);
+      this.calledWith_ = arguments;
+    }
+  };
+}
+
+const FakeSnapshot = createFake(Snapshot);
+
 describe('Bigtable/Cluster', function() {
   const CLUSTER_ID = 'my-cluster';
+  const TABLE_ID = 'my-table';
   const PROJECT_ID = 'grape-spaceship-123';
 
   const INSTANCE = {
@@ -39,6 +53,7 @@ describe('Bigtable/Cluster', function() {
     bigtable: {projectId: PROJECT_ID},
   };
 
+  const TABLE_NAME = `${INSTANCE.name}/tables/${TABLE_ID}`;
   const CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
   var Cluster;
   var cluster;
@@ -46,6 +61,7 @@ describe('Bigtable/Cluster', function() {
   before(function() {
     Cluster = proxyquire('../src/cluster.js', {
       '@google-cloud/promisify': fakePromisify,
+      './snapshot.js': FakeSnapshot,
     });
   });
 
@@ -443,6 +459,115 @@ describe('Bigtable/Cluster', function() {
         assert.deepStrictEqual([].slice.call(arguments), args);
         done();
       });
+    });
+  });
+
+  describe('createSnapshot', () => {
+    it('should provide the proper request options', done => {
+      const snapshotId = 'my-table-snapshot';
+      const description = 'snapshot description text';
+      const ttl = 172800; // 48 hours in seconds
+      cluster.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'snapshotTable');
+        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
+        assert.strictEqual(config.reqOpts.cluster, CLUSTER_NAME);
+        assert.strictEqual(config.reqOpts.snapshotId, snapshotId);
+        assert.strictEqual(config.reqOpts.description, description);
+        assert.strictEqual(config.reqOpts.ttl, ttl);
+        assert.deepStrictEqual(config.gaxOpts, undefined);
+        callback();
+      };
+
+      cluster.createSnapshot(snapshotId, TABLE_NAME, {description, ttl}, done);
+    });
+  });
+
+  describe('getSnapshot', () => {
+    it('should provide the proper request options', done => {
+      const snapshot = new Snapshot(cluster, 'my-snapshot');
+
+      cluster.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'getSnapshot');
+        assert.strictEqual(config.reqOpts.name, snapshot.name);
+        assert.deepStrictEqual(config.gaxOpts, {});
+        callback();
+      };
+
+      cluster.getSnapshot(snapshot.id, done);
+    });
+  });
+
+  describe('listSnapshot', () => {
+    const PAGE_SIZE = 5;
+    it('should provide the proper request options', done => {
+      cluster.bigtable.request = function(config, callback) {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'listSnapshots');
+        assert.strictEqual(config.reqOpts.parent, CLUSTER_NAME);
+        assert.strictEqual(config.reqOpts.pageSize, PAGE_SIZE);
+        assert.strictEqual(config.gaxOpts, undefined);
+        callback();
+      };
+
+      cluster.listSnapshots({pageSize: PAGE_SIZE}, done);
+    });
+
+    it('should respect empty options', done => {
+      cluster.bigtable.request = function(config, callback) {
+        callback();
+      };
+
+      cluster.listSnapshots(done);
+    });
+
+    it('should return an array of snapshot objects', function(done) {
+      let response = [
+        {
+          name:
+            '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-a',
+        },
+        {
+          name:
+            '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-b',
+        },
+      ];
+
+      let fakeSnapshots = [{}, {}];
+
+      cluster.bigtable.request = function(config, callback) {
+        callback(null, response);
+      };
+
+      let snapshotCount = 0;
+
+      cluster.snapshot = function(id) {
+        assert.strictEqual(id, response[snapshotCount].name.split('/').pop());
+        return fakeSnapshots[snapshotCount++];
+      };
+
+      cluster.listSnapshots(function(err, snapshots) {
+        assert.ifError(err);
+        assert.strictEqual(snapshots[0], fakeSnapshots[0]);
+        assert.strictEqual(snapshots[0].metadata, response[0]);
+        assert.strictEqual(snapshots[1], fakeSnapshots[1]);
+        assert.strictEqual(snapshots[1].metadata, response[1]);
+        done();
+      });
+    });
+  });
+
+  describe('snapshot', function() {
+    const SNAPSHOT_ID = 'my-snapshot';
+
+    it('should return a snapshot instance', function() {
+      let snapshot = cluster.snapshot(SNAPSHOT_ID);
+      let args = snapshot.calledWith_;
+
+      assert(snapshot instanceof FakeSnapshot);
+      assert.strictEqual(args[0], cluster);
+      assert.strictEqual(args[1], SNAPSHOT_ID);
     });
   });
 });

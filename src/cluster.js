@@ -15,6 +15,7 @@
  */
 
 const {promisifyAll} = require('@google-cloud/promisify');
+const Snapshot = require('./snapshot.js');
 const is = require('is');
 
 /**
@@ -391,6 +392,233 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
         gaxOpts: gaxOptions,
       },
       callback
+    );
+  }
+
+  /**
+   * Get a reference to a Bigtable Snapshot.
+   *
+   * @param {string} id The id of the snapshot.
+   * @returns {Snapshot}
+   *
+   * @example
+   * const snapshot = cluster.snapshot('my-snapshot');
+   */
+  snapshot(id) {
+    return new Snapshot(this, id);
+  }
+
+  /**
+   * Creates a new snapshot in the specified cluster from the specified
+   * source table. The cluster and the table must be in the same instance.
+   *
+   * @param {string} id
+   *   The ID for new snapshot should be referred to within the parent cluster.
+   *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
+   * @param {string} table
+   *   The name of the table for which snapshot will be created.
+   *   format: `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {object} options options object.
+   * @param {string} options.description
+   *   Description of the snapshot.
+   * @param {Object} [options.ttl]
+   *   The amount of time that the new snapshot can stay active after it is
+   *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
+   *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
+   *   specified, the default value of 24 hours will be used.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *
+   * @param {function(?Error, ?Object)} [callback]
+   *   The function which will be called with the result of the API call.
+   *   The second parameter to the callback is a [gax.Operation]
+   *   {@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is a [gax.Operation]
+   *   {@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   *
+   * @example
+   * const id = 'my-snapshot';
+   * const table = table.name;
+   * let options = {
+   *   description: 'sample description text for snapshot';
+   * };
+   *
+   * cluster
+   *  .createSnapshot(id, table, options)
+   *  .then(responses => {
+   *    let operation = responses[0];
+   *    let initialApiResponse = responses[1];
+   *
+   *		// Adding a listener for the "complete" event starts polling for the
+   *    // completion of the operation.
+   *    operation.on('complete', (result, metadata, finalApiResponse) => {
+   *      console.log(`On Complete: ${result}`);
+   *    });
+   *
+   *    // Adding a listener for the "progress" event causes the callback to be
+   *    // called on any change in metadata when the operation is polled.
+   *    operation.on('progress', (metadata, apiResponse) => {
+   *      // doSomethingWith(metadata)
+   *    });
+   *
+   *    // Adding a listener for the "error" event handles any errors found during polling.
+   *    operation.on('error', err => {
+   *      // throw(err);
+   *    });
+   *	})
+   *	.catch(err => {
+   *    // Handle the error
+   *  });
+   */
+  createSnapshot(id, table, options, callback) {
+    const reqOpts = {
+      snapshotId: id,
+      cluster: this.name,
+      name: table,
+      description: options.description,
+    };
+
+    if (options.ttl) {
+      reqOpts.ttl = options.ttl;
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'snapshotTable',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
+
+  /**
+   * Gets metadata information about the specified snapshot.
+   *
+   * @param {string} id
+   *   The unique id of the requested snapshot.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *
+   * @param {function(?Error, ?Object)} [callback]
+   *   The function which will be called with the result of the API call.
+   *   The second parameter to the callback is an object [Snapshot]
+   *   {@link google.bigtable.admin.v2.Snapshot}.
+   *
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Snapshot]
+   *   {@link google.bigtable.admin.v2.Snapshot}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   *
+   * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const cluster = instance.cluster('my-cluster');
+   *
+   * cluster
+   *   .getSnapshot('my-snapshot', options)
+   *   .then(data => {
+   *     const snapshot = data[0];
+   *     const apiResponse = data[1];
+   *   })
+   *   .catch(err => {
+   *     console.error(err);
+   *   });
+   */
+  getSnapshot(id, gaxOptions, callback) {
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+
+    const reqOpts = {
+      name: this.snapshot(id).name,
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'getSnapshot',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (...args) => {
+        callback(...args);
+      }
+    );
+  }
+
+  /**
+   * Lists all snapshots associated with the cluster.
+   *
+   * @param {number} [options.pageSize]
+   *   The maximum number of resources in a page.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Snapshot[]} callback.snapshots List of all Snapshots.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example
+   * const options = {
+   *   gaxOptions: {
+   *     autoPaginate: false
+   *   }
+   * };
+   *
+   * cluster
+   *   .listSnapshots(options)
+   *   .then(responses => {
+   *     var snapshots = responses[0];
+   *     snapshots.forEach(t => {
+   *       // doThingsWith(snapshot)
+   *       console.log(snapshots.id);
+   *     });
+   *   })
+   *   .catch(err => {
+   *     console.error(err);
+   *   });
+   */
+  listSnapshots(options, callback) {
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
+
+    const reqOpts = {
+      parent: this.name,
+    };
+
+    if (options.pageSize) {
+      reqOpts.pageSize = options.pageSize;
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'listSnapshots',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        if (args[1]) {
+          args[1] = args[1].map(snapshotObj => {
+            const snapshot = this.snapshot(snapshotObj.name.split('/').pop());
+            snapshot.metadata = snapshotObj;
+            return snapshot;
+          });
+        }
+
+        callback(...args);
+      }
     );
   }
 }
