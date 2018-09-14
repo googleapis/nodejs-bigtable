@@ -415,9 +415,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * @param {string} id
    *   The ID for new snapshot should be referred to within the parent cluster.
    *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
-   * @param {string} table
-   *   The name of the table for which snapshot will be created.
-   *   format: `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} tableId
+   *   The id of the table for which snapshot will be created.
    * @param {object} options options object.
    * @param {string} options.description
    *   Description of the snapshot.
@@ -441,13 +440,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *
    * @example
    * const id = 'my-snapshot';
-   * const table = table.name;
+   * const tableId = 'my-table';
    * let options = {
    *   description: 'sample description text for snapshot';
    * };
    *
    * cluster
-   *  .createSnapshot(id, table, options)
+   *  .createSnapshot(id, tableId, options)
    *  .then(responses => {
    *    let operation = responses[0];
    *    let initialApiResponse = responses[1];
@@ -473,11 +472,12 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *    // Handle the error
    *  });
    */
-  createSnapshot(id, table, options, callback) {
+  createSnapshot(id, tableId, options, callback) {
+    const table = this.instance.table(tableId);
     const reqOpts = {
       snapshotId: id,
       cluster: this.name,
-      name: table,
+      name: table.name,
       description: options.description,
     };
 
@@ -558,14 +558,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
   /**
    * Lists all snapshots associated with the cluster.
    *
-   * @param {number} [options.pageSize]
-   *   The maximum number of resources in a page.
-   * @param {object} [options.gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {Snapshot[]} callback.snapshots List of all Snapshots.
    * @param {object} callback.apiResponse The full API response.
+   * @param {number} [options.pageSize]
+   *   The maximum number of resources in a page.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
    *
    * @example
    * const options = {

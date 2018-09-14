@@ -30,6 +30,7 @@ const Family = require('../src/family.js');
 const Mutation = require('../src/mutation.js');
 const Row = require('../src/row.js');
 const ChunkTransformer = require('../src/chunktransformer.js');
+const Cluster = require('../src/cluster.js');
 
 let promisified = false;
 const fakePromisify = extend({}, promisify, {
@@ -94,7 +95,6 @@ describe('Bigtable/Table', function() {
   const CLUSTER_ID = 'my-cluster';
   let INSTANCE;
   let TABLE_NAME;
-  let CLUSTER_NAME;
 
   let Table;
   let table;
@@ -116,11 +116,17 @@ describe('Bigtable/Table', function() {
 
   beforeEach(function() {
     INSTANCE = {
-      bigtable: {},
+      bigtable: {
+        request: (args, callback) => {
+          return callback();
+        },
+      },
       name: 'a/b/c/d',
     };
+    INSTANCE.table = () => {
+      return new Table(INSTANCE, TABLE_ID);
+    };
     TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
-    CLUSTER_NAME = INSTANCE.name + '/clusters/' + CLUSTER_ID;
     table = new Table(INSTANCE, TABLE_ID);
   });
 
@@ -2525,23 +2531,17 @@ describe('Bigtable/Table', function() {
   });
 
   describe('snapshotTable', () => {
-    it('should provide the proper request options', done => {
-      const snapshotId = 'my-table-snapshot';
-      const description = 'snapshot description text';
-      const ttl = 172800; // 48 hours in seconds
-      table.bigtable.request = function(config, callback) {
-        assert.strictEqual(config.client, 'BigtableTableAdminClient');
-        assert.strictEqual(config.method, 'snapshotTable');
-        assert.strictEqual(config.reqOpts.name, TABLE_NAME);
-        assert.strictEqual(config.reqOpts.cluster, CLUSTER_NAME);
-        assert.strictEqual(config.reqOpts.snapshotId, snapshotId);
-        assert.strictEqual(config.reqOpts.description, description);
-        assert.strictEqual(config.reqOpts.ttl, ttl);
-        assert.deepStrictEqual(config.gaxOpts, {});
-        callback();
+    it('should call createSnapshot from cluster', function(done) {
+      const SNAPSHOT_ID = 'my-snapshot';
+      let cluster = new Cluster(INSTANCE, CLUSTER_ID);
+      cluster.createSnapshot = function(snapshotId, tableId, opts, callback) {
+        assert.strictEqual(snapshotId, SNAPSHOT_ID);
+        assert.strictEqual(tableId, TABLE_ID);
+        assert.strictEqual(opts, {});
+        callback(); // done()
       };
 
-      table.snapshotTable(CLUSTER_NAME, snapshotId, {description, ttl}, done);
+      table.snapshotTable(CLUSTER_ID, SNAPSHOT_ID, done);
     });
   });
 });

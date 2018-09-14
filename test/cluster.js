@@ -20,7 +20,7 @@ const assert = require('assert');
 const extend = require('extend');
 const proxyquire = require('proxyquire');
 const promisify = require('@google-cloud/promisify');
-
+const Table = require('../src/table.js');
 const Snapshot = require('../src/snapshot.js');
 
 var promisified = false;
@@ -51,6 +51,10 @@ describe('Bigtable/Cluster', function() {
   const INSTANCE = {
     name: `projects/${PROJECT_ID}/instances/i`,
     bigtable: {projectId: PROJECT_ID},
+  };
+
+  INSTANCE.table = () => {
+    return new Table(INSTANCE, TABLE_ID);
   };
 
   const TABLE_NAME = `${INSTANCE.name}/tables/${TABLE_ID}`;
@@ -479,7 +483,7 @@ describe('Bigtable/Cluster', function() {
         callback();
       };
 
-      cluster.createSnapshot(snapshotId, TABLE_NAME, {description, ttl}, done);
+      cluster.createSnapshot(snapshotId, TABLE_ID, {description, ttl}, done);
     });
   });
 

@@ -720,10 +720,8 @@ Please use the format 'my-instance' or '${
   }
 
   /**
-   * Lists all snapshots associated with the specified cluster.
+   * Lists all snapshots associated with all clusters in a instance.
    *
-   * @param {string} clusterId
-   *   The unique id of cluster
    * @param {number} [options.pageSize]
    *   The maximum number of resources in a page.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
@@ -741,7 +739,7 @@ Please use the format 'my-instance' or '${
    * };
    *
    * instance
-   *   .listSnapshots(cluster, options)
+   *   .listSnapshots(options)
    *   .then(responses => {
    *     var snapshots = responses[0];
    *     snapshots.forEach(t => {
@@ -753,15 +751,43 @@ Please use the format 'my-instance' or '${
    *     console.error(err);
    *   });
    */
-  listSnapshots(clusterId, options, callback) {
+  listSnapshots(options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
     }
 
-    const cluster = this.cluster(clusterId);
+    const reqOpts = {
+      // set parent as "projects/<project>/instances/<instance>/clusters/-"
+      // to list snapshots for all clusters in an instance,
+      parent: `${this.name}/clusters/-`,
+    };
 
-    cluster.listSnapshots(options, callback);
+    if (options.pageSize) {
+      reqOpts.pageSize = options.pageSize;
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'listSnapshots',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        if (args[1]) {
+          args[1] = args[1].map(snapshotObj => {
+            const snapshot = this.cluster.snapshot(
+              snapshotObj.name.split('/').pop()
+            );
+            snapshot.metadata = snapshotObj;
+            return snapshot;
+          });
+        }
+
+        callback(...args);
+      }
+    );
   }
 }
 

@@ -29,6 +29,7 @@ const Filter = require('./filter');
 const Mutation = require('./mutation');
 const Row = require('./row');
 const ChunkTransformer = require('./chunktransformer');
+const Cluster = require('./cluster');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -1187,9 +1188,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * Creates a new snapshot in the specified cluster from the specified
    * source table. The cluster and the table must be in the same instance.
    *
-   * @param {string} cluster
-   *   The name of the cluster where the snapshot will be created in.
-   *   format: `projects/<project>/instances/<instance>/clusters/<cluster>`.
+   * @param {string} clusterId
+   *   The ID of the cluster where the snapshot will be created.
    * @param {string} snapshotId
    *   The ID for new snapshot should be referred to within the parent cluster.
    *   e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
@@ -1202,8 +1202,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
    *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
    *   specified, the default value of 24 hours will be used.
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined here:
+   *   https://googleapis.github.io/gax-nodejs/CallSettings.html.
    *
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
@@ -1253,34 +1253,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *    // Handle the error
    *  });
    */
-  snapshotTable(cluster, snapshotId, options, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
+  snapshotTable(clusterId, snapshotId, options, callback) {
+    if (is.fn(options)) {
+      callback = options;
+      options = {};
     }
 
-    const reqOpts = {
-      name: this.name,
-      cluster,
-      snapshotId,
-      description: options.description,
-    };
-
-    if (options.ttl) {
-      reqOpts.ttl = options.ttl;
-    }
-
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'snapshotTable',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      (...args) => {
-        callback(...args);
-      }
-    );
+    const cluster = new Cluster(this.instance, clusterId);
+    cluster.createSnapshot(snapshotId, this.id, options, callback);
   }
 }
 

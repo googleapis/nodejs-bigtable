@@ -1083,14 +1083,14 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.method, 'listSnapshots');
         assert.strictEqual(
           config.reqOpts.parent,
-          instance.cluster(CLUSTER_ID).name
+          `${INSTANCE_NAME}/clusters/-`
         );
         assert.strictEqual(config.reqOpts.pageSize, PAGE_SIZE);
         assert.strictEqual(config.gaxOpts, undefined);
         callback();
       };
 
-      instance.listSnapshots(CLUSTER_ID, {pageSize: PAGE_SIZE}, done);
+      instance.listSnapshots({pageSize: PAGE_SIZE}, done);
     });
 
     it('should respect empty options', done => {
@@ -1098,7 +1098,42 @@ describe('Bigtable/Instance', function() {
         callback();
       };
 
-      instance.listSnapshots(CLUSTER_ID, done);
+      instance.listSnapshots(done);
+    });
+
+    it('should return an array of snapshot objects', function(done) {
+      let response = [
+        {
+          name:
+            '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-a',
+        },
+        {
+          name:
+            '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-b',
+        },
+      ];
+
+      let fakeSnapshots = [{}, {}];
+
+      instance.bigtable.request = function(config, callback) {
+        callback(null, response);
+      };
+
+      let snapshotCount = 0;
+
+      instance.cluster.snapshot = function(id) {
+        assert.strictEqual(id, response[snapshotCount].name.split('/').pop());
+        return fakeSnapshots[snapshotCount++];
+      };
+
+      instance.listSnapshots(function(err, snapshots) {
+        assert.ifError(err);
+        assert.strictEqual(snapshots[0], fakeSnapshots[0]);
+        assert.strictEqual(snapshots[0].metadata, response[0]);
+        assert.strictEqual(snapshots[1], fakeSnapshots[1]);
+        assert.strictEqual(snapshots[1].metadata, response[1]);
+        done();
+      });
     });
   });
 });

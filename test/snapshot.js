@@ -140,7 +140,7 @@ describe('Bigtable/Snapshot', function() {
   });
 
   describe('reload', function() {
-    it('should call createSnapshot from cluster', function(done) {
+    it('should call getSnapshot from cluster', function(done) {
       snapshot.cluster.getSnapshot = function(name, callback) {
         assert.strictEqual(name, snapshot.name);
         callback(); // done()
