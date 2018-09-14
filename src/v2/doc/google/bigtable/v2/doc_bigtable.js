@@ -46,7 +46,7 @@
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.ReadRowsRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var ReadRowsRequest = {
+const ReadRowsRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -69,7 +69,7 @@ var ReadRowsRequest = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.ReadRowsResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var ReadRowsResponse = {
+const ReadRowsResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -162,7 +162,7 @@ var ReadRowsResponse = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.SampleRowKeysRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var SampleRowKeysRequest = {
+const SampleRowKeysRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -188,7 +188,7 @@ var SampleRowKeysRequest = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.SampleRowKeysResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var SampleRowKeysResponse = {
+const SampleRowKeysResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -218,7 +218,7 @@ var SampleRowKeysResponse = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.MutateRowRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var MutateRowRequest = {
+const MutateRowRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -228,7 +228,7 @@ var MutateRowRequest = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.MutateRowResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var MutateRowResponse = {
+const MutateRowResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -255,7 +255,7 @@ var MutateRowResponse = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.MutateRowsRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var MutateRowsRequest = {
+const MutateRowsRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -291,7 +291,7 @@ var MutateRowsRequest = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.MutateRowsResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var MutateRowsResponse = {
+const MutateRowsResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -362,7 +362,7 @@ var MutateRowsResponse = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.CheckAndMutateRowRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var CheckAndMutateRowRequest = {
+const CheckAndMutateRowRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -377,7 +377,7 @@ var CheckAndMutateRowRequest = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.CheckAndMutateRowResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var CheckAndMutateRowResponse = {
+const CheckAndMutateRowResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -408,7 +408,7 @@ var CheckAndMutateRowResponse = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.ReadModifyWriteRowRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var ReadModifyWriteRowRequest = {
+const ReadModifyWriteRowRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -424,6 +424,6 @@ var ReadModifyWriteRowRequest = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.ReadModifyWriteRowResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/bigtable.proto}
  */
-var ReadModifyWriteRowResponse = {
+const ReadModifyWriteRowResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
