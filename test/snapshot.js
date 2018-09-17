@@ -139,14 +139,14 @@ describe('Bigtable/Snapshot', function() {
     });
   });
 
-  describe('reload', function() {
+  describe('get-metadata', function() {
     it('should call getSnapshot from cluster', function(done) {
       snapshot.cluster.getSnapshot = function(name, callback) {
         assert.strictEqual(name, snapshot.name);
         callback(); // done()
       };
 
-      snapshot.reload(done);
+      snapshot.getMetadata(done);
     });
 
     it('should accept gaxOptions', function() {
@@ -160,7 +160,7 @@ describe('Bigtable/Snapshot', function() {
         callback();
       };
 
-      snapshot.reload(GAX_OPTS, assert.ifError);
+      snapshot.getMetadata(GAX_OPTS, assert.ifError);
     });
   });
 

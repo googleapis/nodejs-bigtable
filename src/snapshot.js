@@ -153,7 +153,7 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
    * const snapshot = cluster.snapshot('my-snapshot');
    *
    * snapshot
-   *   .reload(name, gaxOptions)
+   *   .getMetadata(name, gaxOptions)
    *   .then(data => {
    *     const operation = data[0];
    *     const apiResponse = data[1];
@@ -162,7 +162,7 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
    *     console.error(err);
    *   });
    */
-  reload(gaxOptions, callback) {
+  getMetadata(gaxOptions, callback) {
     this.cluster.getSnapshot(this.name, gaxOptions, callback);
   }
 
