@@ -21,7 +21,7 @@ const extend = require('extend');
 const proxyquire = require('proxyquire');
 const promisify = require('@google-cloud/promisify');
 
-var promisified = false;
+let promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Family') {
@@ -41,9 +41,9 @@ describe('Bigtable/Family', function() {
   };
 
   const FAMILY_NAME = `${TABLE.name}/columnFamilies/${FAMILY_ID}`;
-  var Family;
-  var family;
-  var FamilyError;
+  let Family;
+  let family;
+  let FamilyError;
 
   before(function() {
     Family = proxyquire('../src/family.js', {

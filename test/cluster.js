@@ -21,7 +21,7 @@ const extend = require('extend');
 const proxyquire = require('proxyquire');
 const promisify = require('@google-cloud/promisify');
 
-var promisified = false;
+let promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Cluster') {
@@ -40,8 +40,8 @@ describe('Bigtable/Cluster', function() {
   };
 
   const CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
-  var Cluster;
-  var cluster;
+  let Cluster;
+  let cluster;
 
   before(function() {
     Cluster = proxyquire('../src/cluster.js', {

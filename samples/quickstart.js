@@ -31,7 +31,7 @@ if (!GCLOUD_PROJECT) {
 
 (async () => {
   try {
-    var bigtableOptions = {
+    let bigtableOptions = {
       projectId: GCLOUD_PROJECT,
     };
 

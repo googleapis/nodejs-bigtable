@@ -24,7 +24,7 @@ const sinon = require('sinon').createSandbox();
 
 const Mutation = require('../src/mutation.js');
 
-var promisified = false;
+let promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Row') {
@@ -68,8 +68,8 @@ const FakeFilter = {
 };
 
 describe('Bigtable/Row', function() {
-  var Row;
-  var row;
+  let Row;
+  let row;
 
   before(function() {
     Row = proxyquire('../src/row.js', {
@@ -1319,7 +1319,7 @@ describe('Bigtable/Row', function() {
 
   describe('increment', function() {
     const COLUMN_NAME = 'a:b';
-    var formatFamiliesSpy;
+    let formatFamiliesSpy;
 
     beforeEach(function() {
       formatFamiliesSpy = sinon.stub(Row, 'formatFamilies_').returns({

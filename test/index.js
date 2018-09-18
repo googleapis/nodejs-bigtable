@@ -35,8 +35,8 @@ const PKG = require('../package.json');
 
 function fakeV2() {}
 
-var promisified = false;
-var replaceProjectIdTokenOverride;
+let promisified = false;
+let replaceProjectIdTokenOverride;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Bigtable') {
@@ -59,12 +59,12 @@ const fakeReplaceProjectIdToken = extend({}, projectify, {
   },
 });
 
-var googleAuthOverride;
+let googleAuthOverride;
 function fakeGoogleAuth() {
   return (googleAuthOverride || common.util.noop).apply(null, arguments);
 }
 
-var retryRequestOverride;
+let retryRequestOverride;
 function fakeRetryRequest() {
   return (retryRequestOverride || require('retry-request')).apply(
     null,
@@ -88,8 +88,8 @@ describe('Bigtable', function() {
   const PROJECT_ID = 'test-project';
   const PROJECT_ID_TOKEN = '{{projectId}}';
 
-  var Bigtable;
-  var bigtable;
+  let Bigtable;
+  let bigtable;
 
   before(function() {
     Bigtable = proxyquire('../', {
@@ -773,7 +773,7 @@ describe('Bigtable', function() {
     });
 
     describe('makeRequestStream', function() {
-      var GAX_STREAM;
+      let GAX_STREAM;
 
       beforeEach(function() {
         GAX_STREAM = through();

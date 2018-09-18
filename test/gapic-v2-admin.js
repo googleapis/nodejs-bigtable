@@ -18,24 +18,24 @@ const assert = require('assert');
 
 const adminModule = require('../src');
 
-var FAKE_STATUS_CODE = 1;
-var error = new Error();
+let FAKE_STATUS_CODE = 1;
+let error = new Error();
 error.code = FAKE_STATUS_CODE;
 
 describe('BigtableInstanceAdminClient', () => {
   describe('createInstance', function() {
     it('invokes createInstance without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.projectPath('[PROJECT]');
-      var instanceId = 'instanceId-2101995259';
-      var instance = {};
-      var clusters = {};
-      var request = {
+      let formattedParent = client.projectPath('[PROJECT]');
+      let instanceId = 'instanceId-2101995259';
+      let instance = {};
+      let clusters = {};
+      let request = {
         parent: formattedParent,
         instanceId: instanceId,
         instance: instance,
@@ -43,9 +43,9 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock response
-      var name = 'name3373707';
-      var displayName = 'displayName1615086568';
-      var expectedResponse = {
+      let name = 'name3373707';
+      let displayName = 'displayName1615086568';
+      let expectedResponse = {
         name: name,
         displayName: displayName,
       };
@@ -59,7 +59,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .createInstance(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(responses => {
@@ -72,17 +72,17 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createInstance with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.projectPath('[PROJECT]');
-      var instanceId = 'instanceId-2101995259';
-      var instance = {};
-      var clusters = {};
-      var request = {
+      let formattedParent = client.projectPath('[PROJECT]');
+      let instanceId = 'instanceId-2101995259';
+      let instance = {};
+      let clusters = {};
+      let request = {
         parent: formattedParent,
         instanceId: instanceId,
         instance: instance,
@@ -99,7 +99,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .createInstance(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(() => {
@@ -113,7 +113,7 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('has longrunning decoder functions', () => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
@@ -130,21 +130,21 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('getInstance', () => {
     it('invokes getInstance without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         name: formattedName,
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var displayName = 'displayName1615086568';
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let displayName = 'displayName1615086568';
+      let expectedResponse = {
         name: name2,
         displayName: displayName,
       };
@@ -163,14 +163,14 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getInstance with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         name: formattedName,
       };
 
@@ -192,20 +192,20 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('listInstances', () => {
     it('invokes listInstances without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.projectPath('[PROJECT]');
-      var request = {
+      let formattedParent = client.projectPath('[PROJECT]');
+      let request = {
         parent: formattedParent,
       };
 
       // Mock response
-      var nextPageToken = 'nextPageToken-1530815211';
-      var expectedResponse = {
+      let nextPageToken = 'nextPageToken-1530815211';
+      let expectedResponse = {
         nextPageToken: nextPageToken,
       };
 
@@ -223,14 +223,14 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listInstances with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.projectPath('[PROJECT]');
-      var request = {
+      let formattedParent = client.projectPath('[PROJECT]');
+      let request = {
         parent: formattedParent,
       };
 
@@ -252,17 +252,17 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('updateInstance', () => {
     it('invokes updateInstance without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var displayName = 'displayName1615086568';
-      var type = 'TYPE_UNSPECIFIED';
-      var labels = {};
-      var request = {
+      let formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let displayName = 'displayName1615086568';
+      let type = 'TYPE_UNSPECIFIED';
+      let labels = {};
+      let request = {
         name: formattedName,
         displayName: displayName,
         type: type,
@@ -270,9 +270,9 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var displayName2 = 'displayName21615000987';
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let displayName2 = 'displayName21615000987';
+      let expectedResponse = {
         name: name2,
         displayName: displayName2,
       };
@@ -291,17 +291,17 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateInstance with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var displayName = 'displayName1615086568';
-      var type = 'TYPE_UNSPECIFIED';
-      var labels = {};
-      var request = {
+      let formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let displayName = 'displayName1615086568';
+      let type = 'TYPE_UNSPECIFIED';
+      let labels = {};
+      let request = {
         name: formattedName,
         displayName: displayName,
         type: type,
@@ -326,23 +326,23 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('partialUpdateInstance', function() {
     it('invokes partialUpdateInstance without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var instance = {};
-      var updateMask = {};
-      var request = {
+      let instance = {};
+      let updateMask = {};
+      let request = {
         instance: instance,
         updateMask: updateMask,
       };
 
       // Mock response
-      var name = 'name3373707';
-      var displayName = 'displayName1615086568';
-      var expectedResponse = {
+      let name = 'name3373707';
+      let displayName = 'displayName1615086568';
+      let expectedResponse = {
         name: name,
         displayName: displayName,
       };
@@ -356,7 +356,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .partialUpdateInstance(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(responses => {
@@ -369,15 +369,15 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes partialUpdateInstance with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var instance = {};
-      var updateMask = {};
-      var request = {
+      let instance = {};
+      let updateMask = {};
+      let request = {
         instance: instance,
         updateMask: updateMask,
       };
@@ -392,7 +392,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .partialUpdateInstance(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(() => {
@@ -406,7 +406,7 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('has longrunning decoder functions', () => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
@@ -423,14 +423,14 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('deleteInstance', () => {
     it('invokes deleteInstance without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         name: formattedName,
       };
 
@@ -444,14 +444,14 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteInstance with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         name: formattedName,
       };
 
@@ -472,26 +472,26 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('createCluster', function() {
     it('invokes createCluster without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var clusterId = 'clusterId240280960';
-      var cluster = {};
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let clusterId = 'clusterId240280960';
+      let cluster = {};
+      let request = {
         parent: formattedParent,
         clusterId: clusterId,
         cluster: cluster,
       };
 
       // Mock response
-      var name = 'name3373707';
-      var location = 'location1901043637';
-      var serveNodes = 1288838783;
-      var expectedResponse = {
+      let name = 'name3373707';
+      let location = 'location1901043637';
+      let serveNodes = 1288838783;
+      let expectedResponse = {
         name: name,
         location: location,
         serveNodes: serveNodes,
@@ -506,7 +506,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .createCluster(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(responses => {
@@ -519,16 +519,16 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createCluster with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var clusterId = 'clusterId240280960';
-      var cluster = {};
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let clusterId = 'clusterId240280960';
+      let cluster = {};
+      let request = {
         parent: formattedParent,
         clusterId: clusterId,
         cluster: cluster,
@@ -544,7 +544,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .createCluster(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(() => {
@@ -558,7 +558,7 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('has longrunning decoder functions', () => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
@@ -575,26 +575,26 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('getCluster', () => {
     it('invokes getCluster without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.clusterPath(
+      let formattedName = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var location = 'location1901043637';
-      var serveNodes = 1288838783;
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let location = 'location1901043637';
+      let serveNodes = 1288838783;
+      let expectedResponse = {
         name: name2,
         location: location,
         serveNodes: serveNodes,
@@ -614,18 +614,18 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getCluster with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.clusterPath(
+      let formattedName = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -647,20 +647,20 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('listClusters', () => {
     it('invokes listClusters without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         parent: formattedParent,
       };
 
       // Mock response
-      var nextPageToken = 'nextPageToken-1530815211';
-      var expectedResponse = {
+      let nextPageToken = 'nextPageToken-1530815211';
+      let expectedResponse = {
         nextPageToken: nextPageToken,
       };
 
@@ -678,14 +678,14 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listClusters with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         parent: formattedParent,
       };
 
@@ -707,30 +707,30 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('updateCluster', function() {
     it('invokes updateCluster without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.clusterPath(
+      let formattedName = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var location = 'location1901043637';
-      var serveNodes = 1288838783;
-      var request = {
+      let location = 'location1901043637';
+      let serveNodes = 1288838783;
+      let request = {
         name: formattedName,
         location: location,
         serveNodes: serveNodes,
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var location2 = 'location21541837352';
-      var serveNodes2 = 1623486220;
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let location2 = 'location21541837352';
+      let serveNodes2 = 1623486220;
+      let expectedResponse = {
         name: name2,
         location: location2,
         serveNodes: serveNodes2,
@@ -745,7 +745,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .updateCluster(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(responses => {
@@ -758,20 +758,20 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateCluster with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.clusterPath(
+      let formattedName = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var location = 'location1901043637';
-      var serveNodes = 1288838783;
-      var request = {
+      let location = 'location1901043637';
+      let serveNodes = 1288838783;
+      let request = {
         name: formattedName,
         location: location,
         serveNodes: serveNodes,
@@ -787,7 +787,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .updateCluster(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(() => {
@@ -801,7 +801,7 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('has longrunning decoder functions', () => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
@@ -818,18 +818,18 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('deleteCluster', () => {
     it('invokes deleteCluster without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.clusterPath(
+      let formattedName = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -843,18 +843,18 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteCluster with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.clusterPath(
+      let formattedName = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -875,26 +875,26 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('createAppProfile', () => {
     it('invokes createAppProfile without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var appProfileId = 'appProfileId1262094415';
-      var appProfile = {};
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let appProfileId = 'appProfileId1262094415';
+      let appProfile = {};
+      let request = {
         parent: formattedParent,
         appProfileId: appProfileId,
         appProfile: appProfile,
       };
 
       // Mock response
-      var name = 'name3373707';
-      var etag = 'etag3123477';
-      var description = 'description-1724546052';
-      var expectedResponse = {
+      let name = 'name3373707';
+      let etag = 'etag3123477';
+      let description = 'description-1724546052';
+      let expectedResponse = {
         name: name,
         etag: etag,
         description: description,
@@ -914,16 +914,16 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createAppProfile with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var appProfileId = 'appProfileId1262094415';
-      var appProfile = {};
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let appProfileId = 'appProfileId1262094415';
+      let appProfile = {};
+      let request = {
         parent: formattedParent,
         appProfileId: appProfileId,
         appProfile: appProfile,
@@ -947,26 +947,26 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('getAppProfile', () => {
     it('invokes getAppProfile without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.appProfilePath(
+      let formattedName = client.appProfilePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[APP_PROFILE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var etag = 'etag3123477';
-      var description = 'description-1724546052';
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let etag = 'etag3123477';
+      let description = 'description-1724546052';
+      let expectedResponse = {
         name: name2,
         etag: etag,
         description: description,
@@ -986,18 +986,18 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getAppProfile with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.appProfilePath(
+      let formattedName = client.appProfilePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[APP_PROFILE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -1019,22 +1019,22 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('listAppProfiles', () => {
     it('invokes listAppProfiles without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         parent: formattedParent,
       };
 
       // Mock response
-      var nextPageToken = '';
-      var appProfilesElement = {};
-      var appProfiles = [appProfilesElement];
-      var expectedResponse = {
+      let nextPageToken = '';
+      let appProfilesElement = {};
+      let appProfiles = [appProfilesElement];
+      let expectedResponse = {
         nextPageToken: nextPageToken,
         appProfiles: appProfiles,
       };
@@ -1057,14 +1057,14 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listAppProfiles with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         parent: formattedParent,
       };
 
@@ -1086,24 +1086,24 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('updateAppProfile', function() {
     it('invokes updateAppProfile without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var appProfile = {};
-      var updateMask = {};
-      var request = {
+      let appProfile = {};
+      let updateMask = {};
+      let request = {
         appProfile: appProfile,
         updateMask: updateMask,
       };
 
       // Mock response
-      var name = 'name3373707';
-      var etag = 'etag3123477';
-      var description = 'description-1724546052';
-      var expectedResponse = {
+      let name = 'name3373707';
+      let etag = 'etag3123477';
+      let description = 'description-1724546052';
+      let expectedResponse = {
         name: name,
         etag: etag,
         description: description,
@@ -1118,7 +1118,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .updateAppProfile(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(responses => {
@@ -1131,15 +1131,15 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateAppProfile with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var appProfile = {};
-      var updateMask = {};
-      var request = {
+      let appProfile = {};
+      let updateMask = {};
+      let request = {
         appProfile: appProfile,
         updateMask: updateMask,
       };
@@ -1154,7 +1154,7 @@ describe('BigtableInstanceAdminClient', () => {
       client
         .updateAppProfile(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(() => {
@@ -1168,7 +1168,7 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('has longrunning decoder functions', () => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
@@ -1185,19 +1185,19 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('deleteAppProfile', () => {
     it('invokes deleteAppProfile without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.appProfilePath(
+      let formattedName = client.appProfilePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[APP_PROFILE]'
       );
-      var ignoreWarnings = true;
-      var request = {
+      let ignoreWarnings = true;
+      let request = {
         name: formattedName,
         ignoreWarnings: ignoreWarnings,
       };
@@ -1212,19 +1212,19 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteAppProfile with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.appProfilePath(
+      let formattedName = client.appProfilePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[APP_PROFILE]'
       );
-      var ignoreWarnings = true;
-      var request = {
+      let ignoreWarnings = true;
+      let request = {
         name: formattedName,
         ignoreWarnings: ignoreWarnings,
       };
@@ -1246,21 +1246,21 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('getIamPolicy', () => {
     it('invokes getIamPolicy without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         resource: formattedResource,
       };
 
       // Mock response
-      var version = 351608024;
-      var etag = 'etag3123477';
-      var expectedResponse = {
+      let version = 351608024;
+      let etag = 'etag3123477';
+      let expectedResponse = {
         version: version,
         etag: etag,
       };
@@ -1279,14 +1279,14 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getIamPolicy with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         resource: formattedResource,
       };
 
@@ -1308,23 +1308,23 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('setIamPolicy', () => {
     it('invokes setIamPolicy without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var policy = {};
-      var request = {
+      let formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let policy = {};
+      let request = {
         resource: formattedResource,
         policy: policy,
       };
 
       // Mock response
-      var version = 351608024;
-      var etag = 'etag3123477';
-      var expectedResponse = {
+      let version = 351608024;
+      let etag = 'etag3123477';
+      let expectedResponse = {
         version: version,
         etag: etag,
       };
@@ -1343,15 +1343,15 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes setIamPolicy with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var policy = {};
-      var request = {
+      let formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let policy = {};
+      let request = {
         resource: formattedResource,
         policy: policy,
       };
@@ -1374,21 +1374,21 @@ describe('BigtableInstanceAdminClient', () => {
 
   describe('testIamPermissions', () => {
     it('invokes testIamPermissions without error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var permissions = [];
-      var request = {
+      let formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let permissions = [];
+      let request = {
         resource: formattedResource,
         permissions: permissions,
       };
 
       // Mock response
-      var expectedResponse = {};
+      let expectedResponse = {};
 
       // Mock Grpc layer
       client._innerApiCalls.testIamPermissions = mockSimpleGrpcMethod(
@@ -1404,15 +1404,15 @@ describe('BigtableInstanceAdminClient', () => {
     });
 
     it('invokes testIamPermissions with error', done => {
-      var client = new adminModule.v2.BigtableInstanceAdminClient({
+      let client = new adminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var permissions = [];
-      var request = {
+      let formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let permissions = [];
+      let request = {
         resource: formattedResource,
         permissions: permissions,
       };
@@ -1436,24 +1436,24 @@ describe('BigtableInstanceAdminClient', () => {
 describe('BigtableTableAdminClient', () => {
   describe('createTable', () => {
     it('invokes createTable without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var tableId = 'tableId-895419604';
-      var table = {};
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let tableId = 'tableId-895419604';
+      let table = {};
+      let request = {
         parent: formattedParent,
         tableId: tableId,
         table: table,
       };
 
       // Mock response
-      var name = 'name3373707';
-      var expectedResponse = {
+      let name = 'name3373707';
+      let expectedResponse = {
         name: name,
       };
 
@@ -1471,16 +1471,16 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes createTable with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var tableId = 'tableId-895419604';
-      var table = {};
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let tableId = 'tableId-895419604';
+      let table = {};
+      let request = {
         parent: formattedParent,
         tableId: tableId,
         table: table,
@@ -1504,24 +1504,24 @@ describe('BigtableTableAdminClient', () => {
 
   describe('createTableFromSnapshot', function() {
     it('invokes createTableFromSnapshot without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var tableId = 'tableId-895419604';
-      var sourceSnapshot = 'sourceSnapshot-947679896';
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let tableId = 'tableId-895419604';
+      let sourceSnapshot = 'sourceSnapshot-947679896';
+      let request = {
         parent: formattedParent,
         tableId: tableId,
         sourceSnapshot: sourceSnapshot,
       };
 
       // Mock response
-      var name = 'name3373707';
-      var expectedResponse = {
+      let name = 'name3373707';
+      let expectedResponse = {
         name: name,
       };
 
@@ -1534,7 +1534,7 @@ describe('BigtableTableAdminClient', () => {
       client
         .createTableFromSnapshot(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(responses => {
@@ -1547,16 +1547,16 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes createTableFromSnapshot with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var tableId = 'tableId-895419604';
-      var sourceSnapshot = 'sourceSnapshot-947679896';
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let tableId = 'tableId-895419604';
+      let sourceSnapshot = 'sourceSnapshot-947679896';
+      let request = {
         parent: formattedParent,
         tableId: tableId,
         sourceSnapshot: sourceSnapshot,
@@ -1572,7 +1572,7 @@ describe('BigtableTableAdminClient', () => {
       client
         .createTableFromSnapshot(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(() => {
@@ -1586,7 +1586,7 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('has longrunning decoder functions', () => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
@@ -1603,22 +1603,22 @@ describe('BigtableTableAdminClient', () => {
 
   describe('listTables', () => {
     it('invokes listTables without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         parent: formattedParent,
       };
 
       // Mock response
-      var nextPageToken = '';
-      var tablesElement = {};
-      var tables = [tablesElement];
-      var expectedResponse = {
+      let nextPageToken = '';
+      let tablesElement = {};
+      let tables = [tablesElement];
+      let expectedResponse = {
         nextPageToken: nextPageToken,
         tables: tables,
       };
@@ -1637,14 +1637,14 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes listTables with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-      var request = {
+      let formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+      let request = {
         parent: formattedParent,
       };
 
@@ -1666,24 +1666,24 @@ describe('BigtableTableAdminClient', () => {
 
   describe('getTable', () => {
     it('invokes getTable without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let expectedResponse = {
         name: name2,
       };
 
@@ -1701,18 +1701,18 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes getTable with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -1734,18 +1734,18 @@ describe('BigtableTableAdminClient', () => {
 
   describe('deleteTable', () => {
     it('invokes deleteTable without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -1759,18 +1759,18 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes deleteTable with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -1791,26 +1791,26 @@ describe('BigtableTableAdminClient', () => {
 
   describe('modifyColumnFamilies', () => {
     it('invokes modifyColumnFamilies without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var modifications = [];
-      var request = {
+      let modifications = [];
+      let request = {
         name: formattedName,
         modifications: modifications,
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let expectedResponse = {
         name: name2,
       };
 
@@ -1828,19 +1828,19 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes modifyColumnFamilies with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var modifications = [];
-      var request = {
+      let modifications = [];
+      let request = {
         name: formattedName,
         modifications: modifications,
       };
@@ -1863,18 +1863,18 @@ describe('BigtableTableAdminClient', () => {
 
   describe('dropRowRange', () => {
     it('invokes dropRowRange without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -1888,18 +1888,18 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes dropRowRange with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -1920,24 +1920,24 @@ describe('BigtableTableAdminClient', () => {
 
   describe('generateConsistencyToken', () => {
     it('invokes generateConsistencyToken without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
       // Mock response
-      var consistencyToken = 'consistencyToken-1090516718';
-      var expectedResponse = {
+      let consistencyToken = 'consistencyToken-1090516718';
+      let expectedResponse = {
         consistencyToken: consistencyToken,
       };
 
@@ -1955,18 +1955,18 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes generateConsistencyToken with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -1988,26 +1988,26 @@ describe('BigtableTableAdminClient', () => {
 
   describe('checkConsistency', () => {
     it('invokes checkConsistency without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var consistencyToken = 'consistencyToken-1090516718';
-      var request = {
+      let consistencyToken = 'consistencyToken-1090516718';
+      let request = {
         name: formattedName,
         consistencyToken: consistencyToken,
       };
 
       // Mock response
-      var consistent = true;
-      var expectedResponse = {
+      let consistent = true;
+      let expectedResponse = {
         consistent: consistent,
       };
 
@@ -2025,19 +2025,19 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes checkConsistency with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var consistencyToken = 'consistencyToken-1090516718';
-      var request = {
+      let consistencyToken = 'consistencyToken-1090516718';
+      let request = {
         name: formattedName,
         consistencyToken: consistencyToken,
       };
@@ -2060,21 +2060,21 @@ describe('BigtableTableAdminClient', () => {
 
   describe('snapshotTable', function() {
     it('invokes snapshotTable without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var cluster = 'cluster872092154';
-      var snapshotId = 'snapshotId-168585866';
-      var description = 'description-1724546052';
-      var request = {
+      let cluster = 'cluster872092154';
+      let snapshotId = 'snapshotId-168585866';
+      let description = 'description-1724546052';
+      let request = {
         name: formattedName,
         cluster: cluster,
         snapshotId: snapshotId,
@@ -2082,10 +2082,10 @@ describe('BigtableTableAdminClient', () => {
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var dataSizeBytes = 2110122398;
-      var description2 = 'description2568623279';
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let dataSizeBytes = 2110122398;
+      let description2 = 'description2568623279';
+      let expectedResponse = {
         name: name2,
         dataSizeBytes: dataSizeBytes,
         description: description2,
@@ -2100,7 +2100,7 @@ describe('BigtableTableAdminClient', () => {
       client
         .snapshotTable(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(responses => {
@@ -2113,21 +2113,21 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes snapshotTable with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.tablePath(
+      let formattedName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var cluster = 'cluster872092154';
-      var snapshotId = 'snapshotId-168585866';
-      var description = 'description-1724546052';
-      var request = {
+      let cluster = 'cluster872092154';
+      let snapshotId = 'snapshotId-168585866';
+      let description = 'description-1724546052';
+      let request = {
         name: formattedName,
         cluster: cluster,
         snapshotId: snapshotId,
@@ -2144,7 +2144,7 @@ describe('BigtableTableAdminClient', () => {
       client
         .snapshotTable(request)
         .then(responses => {
-          var operation = responses[0];
+          let operation = responses[0];
           return operation.promise();
         })
         .then(() => {
@@ -2158,7 +2158,7 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('has longrunning decoder functions', () => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
@@ -2175,27 +2175,27 @@ describe('BigtableTableAdminClient', () => {
 
   describe('getSnapshot', () => {
     it('invokes getSnapshot without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.snapshotPath(
+      let formattedName = client.snapshotPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]',
         '[SNAPSHOT]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
       // Mock response
-      var name2 = 'name2-1052831874';
-      var dataSizeBytes = 2110122398;
-      var description = 'description-1724546052';
-      var expectedResponse = {
+      let name2 = 'name2-1052831874';
+      let dataSizeBytes = 2110122398;
+      let description = 'description-1724546052';
+      let expectedResponse = {
         name: name2,
         dataSizeBytes: dataSizeBytes,
         description: description,
@@ -2215,19 +2215,19 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes getSnapshot with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.snapshotPath(
+      let formattedName = client.snapshotPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]',
         '[SNAPSHOT]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -2249,26 +2249,26 @@ describe('BigtableTableAdminClient', () => {
 
   describe('listSnapshots', () => {
     it('invokes listSnapshots without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.clusterPath(
+      let formattedParent = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var request = {
+      let request = {
         parent: formattedParent,
       };
 
       // Mock response
-      var nextPageToken = '';
-      var snapshotsElement = {};
-      var snapshots = [snapshotsElement];
-      var expectedResponse = {
+      let nextPageToken = '';
+      let snapshotsElement = {};
+      let snapshots = [snapshotsElement];
+      let expectedResponse = {
         nextPageToken: nextPageToken,
         snapshots: snapshots,
       };
@@ -2291,18 +2291,18 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes listSnapshots with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedParent = client.clusterPath(
+      let formattedParent = client.clusterPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]'
       );
-      var request = {
+      let request = {
         parent: formattedParent,
       };
 
@@ -2324,19 +2324,19 @@ describe('BigtableTableAdminClient', () => {
 
   describe('deleteSnapshot', () => {
     it('invokes deleteSnapshot without error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.snapshotPath(
+      let formattedName = client.snapshotPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]',
         '[SNAPSHOT]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -2350,19 +2350,19 @@ describe('BigtableTableAdminClient', () => {
     });
 
     it('invokes deleteSnapshot with error', done => {
-      var client = new adminModule.v2.BigtableTableAdminClient({
+      let client = new adminModule.v2.BigtableTableAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedName = client.snapshotPath(
+      let formattedName = client.snapshotPath(
         '[PROJECT]',
         '[INSTANCE]',
         '[CLUSTER]',
         '[SNAPSHOT]'
       );
-      var request = {
+      let request = {
         name: formattedName,
       };
 
@@ -2398,7 +2398,7 @@ function mockSimpleGrpcMethod(expectedRequest, response, error) {
 function mockLongRunningGrpcMethod(expectedRequest, response, error) {
   return request => {
     assert.deepStrictEqual(request, expectedRequest);
-    var mockOperation = {
+    let mockOperation = {
       promise: function() {
         return new Promise((resolve, reject) => {
           if (error) {

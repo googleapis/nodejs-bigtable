@@ -80,7 +80,7 @@ describe('Read Row Acceptance tests', function() {
 
       table.bigtable = {};
       table.bigtable.request = function() {
-        var stream = new Stream({
+        let stream = new Stream({
           objectMode: true,
         });
 
