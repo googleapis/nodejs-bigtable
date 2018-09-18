@@ -38,7 +38,7 @@ class AppProfile {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    var name;
+    let name;
 
     if (id.includes('/')) {
       if (id.startsWith(`${instance.name}/appProfiles/`)) {

@@ -43,7 +43,7 @@ class Instance {
   constructor(bigtable, id) {
     this.bigtable = bigtable;
 
-    var name;
+    let name;
     if (id.includes('/')) {
       if (id.startsWith(`${bigtable.projectName}/instances/`)) {
         name = id;

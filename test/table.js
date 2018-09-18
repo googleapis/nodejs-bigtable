@@ -31,7 +31,7 @@ const Mutation = require('../src/mutation.js');
 const Row = require('../src/row.js');
 const ChunkTransformer = require('../src/chunktransformer.js');
 
-var promisified = false;
+let promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Table') {
@@ -91,11 +91,11 @@ const FakeFilter = {
 
 describe('Bigtable/Table', function() {
   const TABLE_ID = 'my-table';
-  var INSTANCE;
-  var TABLE_NAME;
+  let INSTANCE;
+  let TABLE_NAME;
 
-  var Table;
-  var table;
+  let Table;
+  let table;
 
   before(function() {
     Table = proxyquire('../src/table.js', {
@@ -778,7 +778,7 @@ describe('Bigtable/Table', function() {
 
       it('should emit an error event', function(done) {
         table.bigtable.request = function() {
-          var stream = new Stream({
+          let stream = new Stream({
             objectMode: true,
           });
 
@@ -850,11 +850,11 @@ describe('Bigtable/Table', function() {
     });
 
     describe('retries', function() {
-      var callCreateReadStream;
-      var emitters; // = [function(stream) { stream.push([{ key: 'a' }]); stream.end(); }, ...];
-      var makeRetryableError;
-      var reqOptsCalls;
-      var setTimeoutSpy;
+      let callCreateReadStream;
+      let emitters; // = [function(stream) { stream.push([{ key: 'a' }]); stream.end(); }, ...];
+      let makeRetryableError;
+      let reqOptsCalls;
+      let setTimeoutSpy;
 
       beforeEach(function() {
         FakeChunkTransformer.prototype._transform = function(rows, enc, next) {
@@ -1895,7 +1895,7 @@ describe('Bigtable/Table', function() {
   describe('mutate', function() {
     const entries = [{}, {}];
     const fakeEntries = [{}, {}];
-    var parseSpy;
+    let parseSpy;
 
     beforeEach(function() {
       parseSpy = FakeMutation.parse = sinon.spy(function(value) {
@@ -2123,8 +2123,8 @@ describe('Bigtable/Table', function() {
     });
 
     describe('retries', function() {
-      var fakeStatuses;
-      var entryRequests;
+      let fakeStatuses;
+      let entryRequests;
 
       beforeEach(function() {
         entryRequests = [];

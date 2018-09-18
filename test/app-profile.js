@@ -21,8 +21,8 @@ const extend = require('extend');
 const proxyquire = require('proxyquire');
 const promisify = require('@google-cloud/promisify');
 
-var promisified = false;
-var fakePromisify = extend({}, promisify, {
+let promisified = false;
+let fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'AppProfile') {
       promisified = true;
@@ -40,8 +40,8 @@ describe('Bigtable/AppProfile', function() {
   };
 
   const APP_PROFILE_NAME = `${INSTANCE.name}/appProfiles/${APP_PROFILE_ID}`;
-  var AppProfile;
-  var appProfile;
+  let AppProfile;
+  let appProfile;
 
   function FakeCluster(instance, id) {
     this.instance = instance;

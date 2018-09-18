@@ -39,9 +39,9 @@ const FakeMutation = {
 };
 
 describe('Bigtable/ChunkTransformer', function() {
-  var ChunkTransformer;
-  var chunkTransformer;
-  var rows;
+  let ChunkTransformer;
+  let chunkTransformer;
+  let rows;
   before(function() {
     ChunkTransformer = proxyquire('../src/chunktransformer.js', {
       './mutation.js': FakeMutation,
@@ -95,10 +95,10 @@ describe('Bigtable/ChunkTransformer', function() {
     });
   });
   describe('processNewRow', function() {
-    var processNewRowSpy;
-    var resetSpy;
-    var commitSpy;
-    var destroySpy;
+    let processNewRowSpy;
+    let resetSpy;
+    let commitSpy;
+    let destroySpy;
     beforeEach(function() {
       processNewRowSpy = sinon.spy(chunkTransformer, 'processNewRow');
       resetSpy = sinon.spy(chunkTransformer, 'reset');
@@ -288,10 +288,10 @@ describe('Bigtable/ChunkTransformer', function() {
     });
   });
   describe('processRowInProgress', function() {
-    var processRowInProgressSpy;
-    var resetSpy;
-    var commitSpy;
-    var destroySpy;
+    let processRowInProgressSpy;
+    let resetSpy;
+    let commitSpy;
+    let destroySpy;
     beforeEach(function() {
       processRowInProgressSpy = sinon.spy(
         chunkTransformer,
@@ -617,10 +617,10 @@ describe('Bigtable/ChunkTransformer', function() {
     });
   });
   describe('processCellInProgress', function() {
-    var processCellInProgressSpy;
-    var resetSpy;
-    var commitSpy;
-    var destroySpy;
+    let processCellInProgressSpy;
+    let resetSpy;
+    let commitSpy;
+    let destroySpy;
     beforeEach(function() {
       processCellInProgressSpy = sinon.spy(
         chunkTransformer,
@@ -863,9 +863,9 @@ describe('Bigtable/ChunkTransformer', function() {
     });
   });
   describe('_flush', function() {
-    var _flushSpy;
-    var callback;
-    var destroySpy;
+    let _flushSpy;
+    let callback;
+    let destroySpy;
     beforeEach(function() {
       _flushSpy = sinon.spy(chunkTransformer, '_flush');
       callback = sinon.spy();
@@ -888,10 +888,10 @@ describe('Bigtable/ChunkTransformer', function() {
     });
   });
   describe('_transform', function() {
-    var callback;
-    var processNewRowSpy;
-    var processRowInProgressSpy;
-    var processCellInProgressSpy;
+    let callback;
+    let processNewRowSpy;
+    let processRowInProgressSpy;
+    let processCellInProgressSpy;
     beforeEach(function() {
       callback = sinon.spy();
       processNewRowSpy = sinon.spy(chunkTransformer, 'processNewRow');
@@ -1011,7 +1011,7 @@ describe('Bigtable/ChunkTransformer', function() {
     });
   });
   describe('commit', function() {
-    var resetSpy;
+    let resetSpy;
     beforeEach(function() {
       resetSpy = sinon.spy(chunkTransformer, 'reset');
     });
@@ -1065,7 +1065,7 @@ describe('Bigtable/ChunkTransformer', function() {
     });
   });
   describe('moveToNextState', function() {
-    var commitSpy;
+    let commitSpy;
     beforeEach(function() {
       commitSpy = sinon.spy(chunkTransformer, 'commit');
     });

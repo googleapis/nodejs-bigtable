@@ -27,7 +27,7 @@ const Cluster = require('../src/cluster.js');
 const Family = require('../src/family.js');
 const Table = require('../src/table.js');
 
-var promisified = false;
+let promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Instance') {
@@ -71,8 +71,8 @@ describe('Bigtable/Instance', function() {
   const APP_PROFILE_ID = 'my-app-profile';
   const CLUSTER_ID = 'my-cluster';
 
-  var Instance;
-  var instance;
+  let Instance;
+  let instance;
 
   before(function() {
     Instance = proxyquire('../src/instance.js', {

@@ -74,13 +74,13 @@ class BigtableInstanceAdminClient {
     // Create a `gaxGrpc` object, with any grpc-specific options
     // sent to the client.
     opts.scopes = this.constructor.scopes;
-    var gaxGrpc = new gax.GrpcClient(opts);
+    let gaxGrpc = new gax.GrpcClient(opts);
 
     // Save the auth object to the client, for use by other methods.
     this.auth = gaxGrpc.auth;
 
     // Determine the client header string.
-    var clientHeader = [
+    let clientHeader = [
       `gl-node/${process.version.node}`,
       `grpc/${gaxGrpc.grpcVersion}`,
       `gax/${gax.version}`,
@@ -91,7 +91,7 @@ class BigtableInstanceAdminClient {
     }
 
     // Load the applicable protos.
-    var protos = merge(
+    let protos = merge(
       {},
       gaxGrpc.loadProto(
         path.join(__dirname, '..', '..', 'protos'),
@@ -128,7 +128,7 @@ class BigtableInstanceAdminClient {
         'appProfiles'
       ),
     };
-    var protoFilesRoot = new gax.GoogleProtoFilesRoot();
+    let protoFilesRoot = new gax.GoogleProtoFilesRoot();
     protoFilesRoot = protobuf.loadSync(
       path.join(
         __dirname,
@@ -148,34 +148,34 @@ class BigtableInstanceAdminClient {
       grpc: gaxGrpc.grpc,
     }).operationsClient(opts);
 
-    var createInstanceResponse = protoFilesRoot.lookup(
+    let createInstanceResponse = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.Instance'
     );
-    var createInstanceMetadata = protoFilesRoot.lookup(
+    let createInstanceMetadata = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.CreateInstanceMetadata'
     );
-    var partialUpdateInstanceResponse = protoFilesRoot.lookup(
+    let partialUpdateInstanceResponse = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.Instance'
     );
-    var partialUpdateInstanceMetadata = protoFilesRoot.lookup(
+    let partialUpdateInstanceMetadata = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.UpdateInstanceMetadata'
     );
-    var createClusterResponse = protoFilesRoot.lookup(
+    let createClusterResponse = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.Cluster'
     );
-    var createClusterMetadata = protoFilesRoot.lookup(
+    let createClusterMetadata = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.CreateClusterMetadata'
     );
-    var updateClusterResponse = protoFilesRoot.lookup(
+    let updateClusterResponse = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.Cluster'
     );
-    var updateClusterMetadata = protoFilesRoot.lookup(
+    let updateClusterMetadata = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.UpdateClusterMetadata'
     );
-    var updateAppProfileResponse = protoFilesRoot.lookup(
+    let updateAppProfileResponse = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.AppProfile'
     );
-    var updateAppProfileMetadata = protoFilesRoot.lookup(
+    let updateAppProfileMetadata = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.UpdateAppProfileMetadata'
     );
 
@@ -210,7 +210,7 @@ class BigtableInstanceAdminClient {
     };
 
     // Put together the default options sent with requests.
-    var defaults = gaxGrpc.constructSettings(
+    let defaults = gaxGrpc.constructSettings(
       'google.bigtable.admin.v2.BigtableInstanceAdmin',
       gapicConfig,
       opts.clientConfig,
@@ -224,14 +224,14 @@ class BigtableInstanceAdminClient {
 
     // Put together the "service stub" for
     // google.bigtable.admin.v2.BigtableInstanceAdmin.
-    var bigtableInstanceAdminStub = gaxGrpc.createStub(
+    let bigtableInstanceAdminStub = gaxGrpc.createStub(
       protos.google.bigtable.admin.v2.BigtableInstanceAdmin,
       opts
     );
 
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
-    var bigtableInstanceAdminStubMethods = [
+    let bigtableInstanceAdminStubMethods = [
       'createInstance',
       'getInstance',
       'listInstances',
@@ -257,7 +257,7 @@ class BigtableInstanceAdminClient {
         bigtableInstanceAdminStub.then(
           stub =>
             function() {
-              var args = Array.prototype.slice.call(arguments, 0);
+              let args = Array.prototype.slice.call(arguments, 0);
               return stub[methodName].apply(stub, args);
             }
         ),

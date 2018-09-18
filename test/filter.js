@@ -28,8 +28,8 @@ const FakeMutation = {
 };
 
 describe('Bigtable/Filter', function() {
-  var Filter;
-  var filter;
+  let Filter;
+  let filter;
 
   before(function() {
     Filter = proxyquire('../src/filter', {

@@ -48,7 +48,7 @@ class Family {
     this.bigtable = table.bigtable;
     this.table = table;
 
-    var name;
+    let name;
     if (id.includes('/')) {
       if (id.startsWith(`${table.name}/columnFamilies/`)) {
         name = id;

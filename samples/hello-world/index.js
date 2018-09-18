@@ -26,7 +26,7 @@ if (!GCLOUD_PROJECT) {
   throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
-var bigtableOptions = {
+let bigtableOptions = {
   projectId: GCLOUD_PROJECT,
 };
 
