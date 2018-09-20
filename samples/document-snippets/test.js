@@ -30,7 +30,7 @@ const instanceSnippets = require('./instance.js');
 
 describe('Instance Snippets', function() {
   after(function(done) {
-    let instance = bigtable.instance(INSTANCE_ID);
+    const instance = bigtable.instance(INSTANCE_ID);
     instance.delete(done);
   });
 

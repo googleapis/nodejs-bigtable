@@ -50,7 +50,7 @@ const snippets = {
     instance
       .create(options)
       .then(result => {
-        let newInstance = result[0];
+        const newInstance = result[0];
         // let operations = result[1];
         // let apiResponse = result[2];
 
@@ -269,7 +269,7 @@ const snippets = {
       .getTables(options)
       .then(result => {
         console.log(`Tables:`);
-        let tables = result[0];
+        const tables = result[0];
         tables.forEach(t => {
           console.log(t.id);
         });
@@ -286,7 +286,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
 
     // [START bigtable_set_meta_data]
-    let metadata = {
+    const metadata = {
       displayName: 'updated-name',
     };
 

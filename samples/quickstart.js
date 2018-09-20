@@ -31,7 +31,7 @@ if (!GCLOUD_PROJECT) {
 
 (async () => {
   try {
-    let bigtableOptions = {
+    const bigtableOptions = {
       projectId: GCLOUD_PROJECT,
     };
 
@@ -46,7 +46,7 @@ if (!GCLOUD_PROJECT) {
     const table = instance.table(TABLE_ID);
 
     // Read a row from my-table using a row key
-    let [singleRow] = await table.row('r1').get();
+    const [singleRow] = await table.row('r1').get();
 
     // Print the row key and data (column value, labels, timestamp)
     console.log(
