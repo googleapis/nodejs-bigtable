@@ -23,7 +23,7 @@ if (!GCLOUD_PROJECT) {
   throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
-let bigtableOptions = {
+const bigtableOptions = {
   projectId: GCLOUD_PROJECT,
 };
 
@@ -142,7 +142,7 @@ async function createDevInstance(instanceID, clusterID) {
 
   // Create development instance with given options
   try {
-    let [instance] = await bigtable.createInstance(instanceID, options);
+    const [instance] = await bigtable.createInstance(instanceID, options);
     console.log(`Created development instance: ${instance.id}`);
   } catch (err) {
     console.error('Error creating dev-instance:', err);

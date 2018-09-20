@@ -28,7 +28,7 @@ if (!GCLOUD_PROJECT) {
   throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
-let bigtableOptions = {
+const bigtableOptions = {
   projectId: GCLOUD_PROJECT,
 };
 
@@ -87,7 +87,7 @@ co(function*() {
     ];
 
     console.log('Reading a single row by row key');
-    let [singeRow] = yield table.row('greeting0').get({filter});
+    const [singeRow] = yield table.row('greeting0').get({filter});
     console.log(`\tRead: ${getRowGreeting(singeRow)}`);
 
     console.log('Reading the entire table');
