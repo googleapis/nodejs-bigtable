@@ -342,14 +342,14 @@ class Bigtable {
 
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
-    let scopes = [];
-    let clientClasses = [
+    const scopes = [];
+    const clientClasses = [
       v2.BigtableClient,
       v2.BigtableInstanceAdminClient,
       v2.BigtableTableAdminClient,
     ];
-    for (let clientClass of clientClasses) {
-      for (let scope of clientClass.scopes) {
+    for (const clientClass of clientClasses) {
+      for (const scope of clientClass.scopes) {
         if (!scopes.includes(scope)) {
           scopes.push(scope);
         }

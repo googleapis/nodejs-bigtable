@@ -198,7 +198,7 @@ describe('Bigtable/ChunkTransformer', function() {
         chunk.rowKey,
         'wrong state prevrowkey'
       );
-      let expectedRow = {
+      const expectedRow = {
         key: chunk.rowKey,
         data: {
           family: {
@@ -229,7 +229,7 @@ describe('Bigtable/ChunkTransformer', function() {
       assert(!resetSpy.called, 'invalid call to reset');
       assert(!commitSpy.called, 'inavlid call to commit');
       assert.strictEqual(rows.length, 0, 'wrong call to push');
-      let partialRow = {
+      const partialRow = {
         key: chunk.rowKey,
         data: {
           family: {
@@ -265,7 +265,7 @@ describe('Bigtable/ChunkTransformer', function() {
       assert(!resetSpy.called, 'invalid call to reset');
       assert(!commitSpy.called, 'inavlid call to commit');
       assert.strictEqual(rows.length, 0, 'wrong call to push');
-      let partialRow = {
+      const partialRow = {
         key: chunk.rowKey,
         data: {
           family: {
