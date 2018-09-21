@@ -143,7 +143,7 @@ class BigtableClient {
       'checkAndMutateRow',
       'readModifyWriteRow',
     ];
-    for (const methodName of bigtableStubMethods) {
+    for (let methodName of bigtableStubMethods) {
       this._innerApiCalls[methodName] = gax.createApiCall(
         bigtableStub.then(
           stub =>
