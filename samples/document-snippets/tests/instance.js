@@ -26,7 +26,7 @@ const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigt
 // const APP_PROFILE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
-const instanceSnippets = require('./instance.js');
+const instanceSnippets = require('../instance.js');
 
 describe('Instance Snippets', function() {
   after(function(done) {
