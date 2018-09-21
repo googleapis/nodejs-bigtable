@@ -20,7 +20,6 @@ const snippets = {
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_create_instance]
     // options for a PRODUCTION Instance
     // const options = {
     //   clusters: [
@@ -66,7 +65,6 @@ const snippets = {
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_create_cluster]
     // const options = {
     //   location: 'us-central1-b',
     //   nodes: 3,
@@ -90,6 +88,9 @@ const snippets = {
   },
 
   createAppProfile: (instanceId, clusterId, appProfileId, callback) => {
+    // [START bigtable_create_app_profile]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
     // [START bigtable_create_app_profile]
@@ -121,7 +122,6 @@ const snippets = {
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_create_table]
     const options = {
       families: ['follows'],
     };
