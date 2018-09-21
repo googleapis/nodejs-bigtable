@@ -22,7 +22,7 @@ const proxyquire = require('proxyquire');
 const promisify = require('@google-cloud/promisify');
 
 let promisified = false;
-let fakePromisify = extend({}, promisify, {
+const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'AppProfile') {
       promisified = true;
@@ -77,7 +77,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should leave full app profile name unaltered', function() {
-      let appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
+      const appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
       assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
     });
 
@@ -86,13 +86,13 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should leave full app profile name unaltered and localize the id from the name', function() {
-      let appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
+      const appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
       assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
       assert.strictEqual(appProfile.id, APP_PROFILE_ID);
     });
 
     it('should throw if cluster id in wrong format', function() {
-      let id = `appProfiles/${APP_PROFILE_ID}`;
+      const id = `appProfiles/${APP_PROFILE_ID}`;
       assert.throws(function() {
         new AppProfile(INSTANCE, id);
       }, Error);
@@ -139,7 +139,7 @@ describe('Bigtable/AppProfile', function() {
       });
 
       it('should throw for an invalid routing policy', function() {
-        let errorReg = /An app profile routing policy can only contain "any" or a `Cluster`\./;
+        const errorReg = /An app profile routing policy can only contain "any" or a `Cluster`\./;
 
         assert.throws(
           AppProfile.formatAppProfile_.bind(null, {
@@ -153,7 +153,7 @@ describe('Bigtable/AppProfile', function() {
 
   describe('create', function() {
     it('should call createAppProfile from instance', function(done) {
-      let options = {};
+      const options = {};
 
       appProfile.instance.createAppProfile = function(id, options_, callback) {
         assert.strictEqual(id, appProfile.id);
@@ -191,7 +191,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      let gaxOptions = {};
+      const gaxOptions = {};
 
       appProfile.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -222,7 +222,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should pass gaxOptions to getMetadata', function(done) {
-      let gaxOptions = {};
+      const gaxOptions = {};
 
       appProfile.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -233,7 +233,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should return false if error code is 5', function(done) {
-      let error = new Error('Error.');
+      const error = new Error('Error.');
       error.code = 5;
 
       appProfile.getMetadata = function(gaxOptions, callback) {
@@ -248,7 +248,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should return error if code is not 5', function(done) {
-      let error = new Error('Error.');
+      const error = new Error('Error.');
       error.code = 'NOT-5';
 
       appProfile.getMetadata = function(gaxOptions, callback) {
@@ -276,7 +276,7 @@ describe('Bigtable/AppProfile', function() {
 
   describe('get', function() {
     it('should call getMetadata', function(done) {
-      let gaxOptions = {};
+      const gaxOptions = {};
 
       appProfile.getMetadata = function(gaxOptions_) {
         assert.strictEqual(gaxOptions_, gaxOptions);
@@ -296,7 +296,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should return an error from getMetadata', function(done) {
-      let error = new Error('Error.');
+      const error = new Error('Error.');
 
       appProfile.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -309,7 +309,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should return self and API response', function(done) {
-      let metadata = {};
+      const metadata = {};
 
       appProfile.getMetadata = function(gaxOptions, callback) {
         callback(null, metadata);
@@ -343,7 +343,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      let gaxOptions = {};
+      const gaxOptions = {};
 
       appProfile.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -354,7 +354,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should update metadata', function(done) {
-      let metadata = {};
+      const metadata = {};
 
       appProfile.bigtable.request = function(config, callback) {
         callback(null, metadata);
@@ -367,7 +367,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should execute callback with original arguments', function(done) {
-      let args = [{}, {}, {}];
+      const args = [{}, {}, {}];
 
       appProfile.bigtable.request = function(config, callback) {
         callback.apply(null, args);
@@ -393,7 +393,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should respect the description option', function(done) {
-      let options = {description: 'my-description'};
+      const options = {description: 'my-description'};
 
       appProfile.bigtable.request = function(config) {
         assert(
@@ -411,7 +411,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should respect the ignoreWarnings option', function(done) {
-      let options = {ignoreWarnings: true};
+      const options = {ignoreWarnings: true};
 
       appProfile.bigtable.request = function(config) {
         assert.strictEqual(config.reqOpts.ignoreWarnings, true);
@@ -426,7 +426,7 @@ describe('Bigtable/AppProfile', function() {
       const cluster = new FakeCluster(INSTANCE, clusterId);
 
       it(`has an 'any' value`, function(done) {
-        let options = {routing: 'any'};
+        const options = {routing: 'any'};
 
         appProfile.bigtable.request = function(config) {
           assert(
@@ -446,7 +446,7 @@ describe('Bigtable/AppProfile', function() {
       });
 
       it(`has a cluster value`, function(done) {
-        let options = {routing: cluster};
+        const options = {routing: cluster};
 
         appProfile.bigtable.request = function(config) {
           assert(
@@ -467,7 +467,7 @@ describe('Bigtable/AppProfile', function() {
     });
 
     it('should execute callback with all arguments', function(done) {
-      let args = [{}, {}, {}];
+      const args = [{}, {}, {}];
 
       appProfile.bigtable.request = function(config, callback) {
         callback.apply(null, args);

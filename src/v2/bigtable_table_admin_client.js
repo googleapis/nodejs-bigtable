@@ -76,13 +76,13 @@ class BigtableTableAdminClient {
     // Create a `gaxGrpc` object, with any grpc-specific options
     // sent to the client.
     opts.scopes = this.constructor.scopes;
-    let gaxGrpc = new gax.GrpcClient(opts);
+    const gaxGrpc = new gax.GrpcClient(opts);
 
     // Save the auth object to the client, for use by other methods.
     this.auth = gaxGrpc.auth;
 
     // Determine the client header string.
-    let clientHeader = [
+    const clientHeader = [
       `gl-node/${process.version.node}`,
       `grpc/${gaxGrpc.grpcVersion}`,
       `gax/${gax.version}`,
@@ -93,7 +93,7 @@ class BigtableTableAdminClient {
     }
 
     // Load the applicable protos.
-    let protos = merge(
+    const protos = merge(
       {},
       gaxGrpc.loadProto(
         path.join(__dirname, '..', '..', 'protos'),
@@ -154,16 +154,16 @@ class BigtableTableAdminClient {
       grpc: gaxGrpc.grpc,
     }).operationsClient(opts);
 
-    let createTableFromSnapshotResponse = protoFilesRoot.lookup(
+    const createTableFromSnapshotResponse = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.Table'
     );
-    let createTableFromSnapshotMetadata = protoFilesRoot.lookup(
+    const createTableFromSnapshotMetadata = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.CreateTableFromSnapshotMetadata'
     );
-    let snapshotTableResponse = protoFilesRoot.lookup(
+    const snapshotTableResponse = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.Snapshot'
     );
-    let snapshotTableMetadata = protoFilesRoot.lookup(
+    const snapshotTableMetadata = protoFilesRoot.lookup(
       'google.bigtable.admin.v2.SnapshotTableMetadata'
     );
 
@@ -185,7 +185,7 @@ class BigtableTableAdminClient {
     };
 
     // Put together the default options sent with requests.
-    let defaults = gaxGrpc.constructSettings(
+    const defaults = gaxGrpc.constructSettings(
       'google.bigtable.admin.v2.BigtableTableAdmin',
       gapicConfig,
       opts.clientConfig,
@@ -199,14 +199,14 @@ class BigtableTableAdminClient {
 
     // Put together the "service stub" for
     // google.bigtable.admin.v2.BigtableTableAdmin.
-    let bigtableTableAdminStub = gaxGrpc.createStub(
+    const bigtableTableAdminStub = gaxGrpc.createStub(
       protos.google.bigtable.admin.v2.BigtableTableAdmin,
       opts
     );
 
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
-    let bigtableTableAdminStubMethods = [
+    const bigtableTableAdminStubMethods = [
       'createTable',
       'createTableFromSnapshot',
       'listTables',
@@ -221,12 +221,12 @@ class BigtableTableAdminClient {
       'listSnapshots',
       'deleteSnapshot',
     ];
-    for (let methodName of bigtableTableAdminStubMethods) {
+    for (const methodName of bigtableTableAdminStubMethods) {
       this._innerApiCalls[methodName] = gax.createApiCall(
         bigtableTableAdminStub.then(
           stub =>
             function() {
-              let args = Array.prototype.slice.call(arguments, 0);
+              const args = Array.prototype.slice.call(arguments, 0);
               return stub[methodName].apply(stub, args);
             }
         ),

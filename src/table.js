@@ -391,10 +391,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    */
   createReadStream(options) {
     options = options || {};
-    let maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
+    const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
 
     let rowKeys;
-    let ranges = options.ranges || [];
+    const ranges = options.ranges || [];
     let filter;
     let rowsLimit;
     let rowsRead = 0;
@@ -433,7 +433,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
     let chunkTransformer;
 
     const makeNewRequest = () => {
-      let lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
+      const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       chunkTransformer = new ChunkTransformer({decode: options.decode});
 
       const reqOpts = {
