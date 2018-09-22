@@ -609,7 +609,8 @@ Please use the format 'my-instance' or '${
    *     are 'name', 'schema' or 'full'. Default: 'name'.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
-   * @param {Table[]} callback.tables List of all Tables.
+   * @param {Table[]} callback.tables List of all Table objects.These objects contains
+   *     only table name & id but is not a complete representation of a table.
    * @param {object} callback.apiResponse The full API response.
    *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
