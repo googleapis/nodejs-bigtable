@@ -2533,7 +2533,7 @@ describe('Bigtable/Table', function() {
   describe('snapshotTable', () => {
     it('should call createSnapshot from cluster', function(done) {
       const SNAPSHOT_ID = 'my-snapshot';
-      let cluster = new Cluster(INSTANCE, CLUSTER_ID);
+      const cluster = new Cluster(INSTANCE, CLUSTER_ID);
       cluster.createSnapshot = function(snapshotId, tableId, opts, callback) {
         assert.strictEqual(snapshotId, SNAPSHOT_ID);
         assert.strictEqual(tableId, TABLE_ID);

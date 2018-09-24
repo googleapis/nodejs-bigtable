@@ -21,7 +21,7 @@ const extend = require('extend');
 const proxyquire = require('proxyquire');
 const promisify = require('@google-cloud/promisify');
 
-var promisified = false;
+let promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Snapshot') {
@@ -86,18 +86,18 @@ describe('Bigtable/Snapshot', function() {
     });
 
     it('should extract the snapshot name', function() {
-      let snapshot = new Snapshot(CLUSTER, SNAPSHOT_ID);
+      const snapshot = new Snapshot(CLUSTER, SNAPSHOT_ID);
       assert.strictEqual(snapshot.name, SNAPSHOT_NAME);
     });
 
     it('should leave full snapshot name unaltered and localize the id from the name', function() {
-      let snapshot = new Snapshot(CLUSTER, SNAPSHOT_NAME);
+      const snapshot = new Snapshot(CLUSTER, SNAPSHOT_NAME);
       assert.strictEqual(snapshot.name, SNAPSHOT_NAME);
       assert.strictEqual(snapshot.id, SNAPSHOT_ID);
     });
 
     it('should throw if snapshot id in wrong format', function() {
-      let id = `/project/bad-project/instances/bad-instance/snapshots/${SNAPSHOT_ID}`;
+      const id = `/project/bad-project/instances/bad-instance/snapshots/${SNAPSHOT_ID}`;
       assert.throws(function() {
         new Snapshot(CLUSTER, id);
       }, Error);
@@ -106,7 +106,7 @@ describe('Bigtable/Snapshot', function() {
 
   describe('create', function() {
     it('should call createSnapshot from cluster', function(done) {
-      let options = {
+      const options = {
         description: 'Description text for Snapshot',
       };
 
@@ -126,7 +126,7 @@ describe('Bigtable/Snapshot', function() {
     });
 
     it('should return error', function(done) {
-      let error = new Error('Error.');
+      const error = new Error('Error.');
 
       snapshot.cluster.createSnapshot = function(config, callback) {
         callback(error);
@@ -183,7 +183,7 @@ describe('Bigtable/Snapshot', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      let gaxOptions = {};
+      const gaxOptions = {};
 
       snapshot.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -215,7 +215,7 @@ describe('Bigtable/Snapshot', function() {
     });
 
     it('should accept gaxOptions', function(done) {
-      let gaxOptions = {};
+      const gaxOptions = {};
 
       snapshot.bigtable.request = function(config) {
         assert.strictEqual(config.gaxOpts, gaxOptions);
@@ -228,7 +228,7 @@ describe('Bigtable/Snapshot', function() {
 
   describe('SnapshotError', function() {
     it('should set the code and message', function() {
-      let err = new SnapshotError(SNAPSHOT_NAME);
+      const err = new SnapshotError(SNAPSHOT_NAME);
 
       assert.strictEqual(err.code, 404);
       assert.strictEqual(

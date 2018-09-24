@@ -48,7 +48,7 @@ class Snapshot {
     this.instance = cluster.instance;
     this.cluster = cluster;
 
-    var name;
+    let name;
     if (id.includes('/')) {
       if (id.startsWith(`${cluster.name}/snapshots/`)) {
         name = id;

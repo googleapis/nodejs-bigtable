@@ -23,7 +23,7 @@ const promisify = require('@google-cloud/promisify');
 const Table = require('../src/table.js');
 const Snapshot = require('../src/snapshot.js');
 
-var promisified = false;
+let promisified = false;
 const fakePromisify = extend({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Cluster') {
@@ -527,7 +527,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should return an array of snapshot objects', function(done) {
-      let response = [
+      const response = [
         {
           name:
             '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-a',
@@ -538,7 +538,7 @@ describe('Bigtable/Cluster', function() {
         },
       ];
 
-      let fakeSnapshots = [{}, {}];
+      const fakeSnapshots = [{}, {}];
 
       cluster.bigtable.request = function(config, callback) {
         callback(null, response);
@@ -566,8 +566,8 @@ describe('Bigtable/Cluster', function() {
     const SNAPSHOT_ID = 'my-snapshot';
 
     it('should return a snapshot instance', function() {
-      let snapshot = cluster.snapshot(SNAPSHOT_ID);
-      let args = snapshot.calledWith_;
+      const snapshot = cluster.snapshot(SNAPSHOT_ID);
+      const args = snapshot.calledWith_;
 
       assert(snapshot instanceof FakeSnapshot);
       assert.strictEqual(args[0], cluster);

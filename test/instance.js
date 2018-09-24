@@ -1102,7 +1102,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return an array of snapshot objects', function(done) {
-      let response = [
+      const response = [
         {
           name:
             '/projects/my-project/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot-a',
@@ -1113,7 +1113,7 @@ describe('Bigtable/Instance', function() {
         },
       ];
 
-      let fakeSnapshots = [{}, {}];
+      const fakeSnapshots = [{}, {}];
 
       instance.bigtable.request = function(config, callback) {
         callback(null, response);
