@@ -401,9 +401,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
     let numRequestsMade = 0;
 
     if (options.start || options.end) {
-      if (options.prefix) {
-        throw new Error('prefix cannot be used with start or end key range');
-      }
       ranges.push({
         start: options.start,
         end: options.end,
