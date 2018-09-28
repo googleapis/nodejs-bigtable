@@ -23,6 +23,7 @@ const is = require('is');
 const propAssign = require('prop-assign');
 const pumpify = require('pumpify');
 const through = require('through2');
+const extend = require('extend');
 
 const Family = require('./family');
 const Filter = require('./filter');
@@ -1189,6 +1190,237 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * });
    */
   mutate(entries, options, callback) {
+    entries = flatten(arrify(entries));
+    if (entries.length > 1) {
+      this.mutateRows(entries, options, callback);
+    } else {
+      this.mutateRow(entries[0], options, callback);
+    }
+  }
+  /**
+   * Apply a set of changes to be atomically applied to the specified row.
+   * Mutations are applied in order, meaning that earlier mutations can be masked
+   * by later ones.
+   *
+   * @param {object} entry Entity to be inserted or
+   *     deleted.
+   * @param {object} [options] Configuration object.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {boolean} [options.rawMutation] If set to `true` will treat entries
+   *     as a raw Mutation object. See {@link Mutation#parse}.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {object[]} callback.err.errors If present, these represent partial
+   *     failures. It's possible for part of your request to be completed
+   *     successfully, while the other part was not.
+   *
+   * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const table = instance.table('prezzy');
+   *
+   * //-
+   * // Insert entities. See {@link Table#insert}.
+   * //-
+   * const callback = function(err) {
+   *   if (err) {
+   *     // An API error occurred.
+   *   }
+   * };
+   *
+   * const entry = {
+   *     method: 'insert',
+   *     key: 'gwashington',
+   *     data: {
+   *       follows: {
+   *         jadams: 1
+   *       }
+   *     }
+   *   };
+   *
+   * table.mutateRow(entry, callback);
+   *
+   * //-
+   * // Delete entities. See {@link Row#deleteCells}.
+   * //-
+   * const entry = {
+   *     method: 'delete',
+   *     key: 'gwashington'
+   *   };
+   *
+   * table.mutateRow(entry, callback);
+   * //-
+   * // If the callback is omitted, we'll return a Promise.
+   * //-
+   * table.mutateRow(entry).then(function() {
+   *   // All requested mutations have been processed.
+   * });
+   */
+
+  mutateRow(entry, options, callback) {
+    options = options || {};
+
+    if (is.fn(options)) {
+      callback = options;
+      options = {};
+    }
+
+    entry = flatten(arrify(entry));
+    let numRequestsMade = 0;
+
+    const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
+
+    const makeNextRequest = () => {
+      const reqEntry = options.rawMutation ? entry : entry.map(Mutation.parse);
+
+      const reqOpts = extend(
+        {
+          tableName: this.name,
+          appProfileId: this.bigtable.appProfileId,
+        },
+        reqEntry[0]
+      );
+      const retryOpts = {
+        currentRetryAttempt: numRequestsMade,
+      };
+
+      this.bigtable.request(
+        {
+          client: 'BigtableClient',
+          method: 'mutateRow',
+          reqOpts,
+          gaxOpts: options.gaxOptions,
+          retryOpts,
+        },
+        (...args) => {
+          numRequestsMade++;
+          if (args[0]) {
+            if (numRequestsMade <= maxRetries) {
+              makeNextRequest();
+              return;
+            }
+          }
+          callback(...args);
+        }
+      );
+    };
+    makeNextRequest();
+  }
+
+  /**
+   * Apply a set of changes to be atomically applied to the specified rows.
+   * Mutations are applied in order, meaning that earlier mutations can be masked
+   * by later ones.
+   *
+   * @param {object|object[]} entries List of entities to be inserted or
+   *     deleted.
+   * @param {object} [options] Configuration object.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {boolean} [options.rawMutation] If set to `true` will treat entries
+   *     as a raw Mutation object. See {@link Mutation#parse}.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {object[]} callback.err.errors If present, these represent partial
+   *     failures. It's possible for part of your request to be completed
+   *     successfully, while the other part was not.
+   *
+   * @example
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const table = instance.table('prezzy');
+   *
+   * //-
+   * // Insert entities. See {@link Table#insert}.
+   * //-
+   * const callback = function(err) {
+   *   if (err) {
+   *     // An API error or partial failure occurred.
+   *
+   *     if (err.name === 'PartialFailureError') {
+   *       // err.errors[].code = 'Response code'
+   *       // err.errors[].message = 'Error message'
+   *       // err.errors[].entry = The original entry
+   *     }
+   *   }
+   * };
+   *
+   * const entries = [
+   *   {
+   *     method: 'insert',
+   *     key: 'gwashington',
+   *     data: {
+   *       follows: {
+   *         jadams: 1
+   *       }
+   *     }
+   *   }
+   * ];
+   *
+   * table.mutateRows(entries, callback);
+   *
+   * //-
+   * // Delete entities. See {@link Row#deleteCells}.
+   * //-
+   * const entries = [
+   *   {
+   *     method: 'delete',
+   *     key: 'gwashington'
+   *   }
+   * ];
+   *
+   * table.mutateRows(entries, callback);
+   *
+   * //-
+   * // Delete specific columns within a row.
+   * //-
+   * const entries = [
+   *   {
+   *     method: 'delete',
+   *     key: 'gwashington',
+   *     data: [
+   *       'follows:jadams'
+   *     ]
+   *   }
+   * ];
+   *
+   * table.mutateRows(entries, callback);
+   *
+   * //-
+   * // Mix and match mutations. This must contain at least one entry and at
+   * // most 100,000.
+   * //-
+   * const entries = [
+   *   {
+   *     method: 'insert',
+   *     key: 'alincoln',
+   *     data: {
+   *       follows: {
+   *         gwashington: 1
+   *       }
+   *     }
+   *   }, {
+   *     method: 'delete',
+   *     key: 'jadams',
+   *     data: [
+   *       'follows:gwashington'
+   *     ]
+   *   }
+   * ];
+   *
+   * table.mutateRows(entries, callback);
+   *
+   * //-
+   * // If the callback is omitted, we'll return a Promise.
+   * //-
+   * table.mutateRows(entries).then(function() {
+   *   // All requested mutations have been processed.
+   * });
+   */
+  mutateRows(entries, options, callback) {
     options = options || {};
 
     if (is.fn(options)) {
@@ -1287,7 +1519,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
 
     makeNextBatchRequest();
   }
-
   /**
    * Get a reference to a table row.
    *
