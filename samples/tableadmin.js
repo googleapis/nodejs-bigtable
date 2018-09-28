@@ -23,7 +23,7 @@ if (!GCLOUD_PROJECT) {
   throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
-var bigtableOptions = {
+const bigtableOptions = {
   projectId: GCLOUD_PROJECT,
 };
 
@@ -62,7 +62,7 @@ async function runTableOperations(instanceID, tableID) {
   // [START bigtable_list_tables]
   // List tables in current project
   try {
-    let [tables] = await instance.getTables();
+    const [tables] = await instance.getTables();
     tables.forEach(table => {
       console.log(table.id);
     });

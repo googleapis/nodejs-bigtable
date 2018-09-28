@@ -16,27 +16,27 @@
 
 'use strict';
 
-var assert = require('assert');
-var async = require('async');
-var uuid = require('uuid');
+const assert = require('assert');
+const async = require('async');
+const uuid = require('uuid');
 
-var Bigtable = require('../');
-var AppProfile = require('../src/app-profile.js');
-var Cluster = require('../src/cluster.js');
-var Table = require('../src/table.js');
-var Family = require('../src/family.js');
-var Row = require('../src/row.js');
+const Bigtable = require('../');
+const AppProfile = require('../src/app-profile.js');
+const Cluster = require('../src/cluster.js');
+const Table = require('../src/table.js');
+const Family = require('../src/family.js');
+const Row = require('../src/row.js');
 
-var PREFIX = 'gcloud-tests-';
+const PREFIX = 'gcloud-tests-';
 
 describe('Bigtable', function() {
-  var bigtable = new Bigtable();
+  const bigtable = new Bigtable();
 
-  var INSTANCE = bigtable.instance(generateId('instance'));
-  var TABLE = INSTANCE.table(generateId('table'));
-  var APP_PROFILE_ID = generateId('appProfile');
-  var APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
-  var CLUSTER_ID = generateId('cluster');
+  const INSTANCE = bigtable.instance(generateId('instance'));
+  const TABLE = INSTANCE.table(generateId('table'));
+  const APP_PROFILE_ID = generateId('appProfile');
+  const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
+  const CLUSTER_ID = generateId('cluster');
 
   before(function(done) {
     INSTANCE.create(
@@ -87,7 +87,7 @@ describe('Bigtable', function() {
         return;
       }
 
-      var testInstances = instances.filter(function(instance) {
+      const testInstances = instances.filter(function(instance) {
         return instance.id.match(PREFIX);
       });
 
@@ -120,7 +120,7 @@ describe('Bigtable', function() {
     });
 
     it('should check if an instance does not exist', function(done) {
-      var instance = bigtable.instance('fake-instance');
+      const instance = bigtable.instance('fake-instance');
 
       instance.exists(function(err, exists) {
         assert.ifError(err);
@@ -134,7 +134,7 @@ describe('Bigtable', function() {
     });
 
     it('should update an instance', function(done) {
-      var metadata = {
+      const metadata = {
         displayName: 'metadata-test',
       };
 
@@ -168,7 +168,7 @@ describe('Bigtable', function() {
     });
 
     it('should check if an app profile does not exist', function(done) {
-      var appProfile = INSTANCE.appProfile('should-not-exist');
+      const appProfile = INSTANCE.appProfile('should-not-exist');
 
       appProfile.exists(function(err, exists) {
         assert.ifError(err);
@@ -182,7 +182,7 @@ describe('Bigtable', function() {
     });
 
     it('should delete an app profile', function(done) {
-      var appProfile = INSTANCE.appProfile(generateId('app-profile'));
+      const appProfile = INSTANCE.appProfile(generateId('app-profile'));
 
       async.series(
         [
@@ -207,8 +207,8 @@ describe('Bigtable', function() {
     });
 
     it('should update an app profile', function(done) {
-      var cluster = INSTANCE.cluster(CLUSTER_ID);
-      var options = {
+      const cluster = INSTANCE.cluster(CLUSTER_ID);
+      const options = {
         routing: cluster,
         allowTransactionalWrites: true,
         description: 'My Updated App Profile',
@@ -235,7 +235,7 @@ describe('Bigtable', function() {
   });
 
   describe('clusters', function() {
-    var CLUSTER;
+    let CLUSTER;
 
     beforeEach(function() {
       CLUSTER = INSTANCE.cluster(CLUSTER_ID);
@@ -258,7 +258,7 @@ describe('Bigtable', function() {
     });
 
     it('should check if a cluster does not exist', function(done) {
-      var cluster = INSTANCE.cluster('fake-cluster');
+      const cluster = INSTANCE.cluster('fake-cluster');
 
       cluster.exists(function(err, exists) {
         assert.ifError(err);
@@ -272,7 +272,7 @@ describe('Bigtable', function() {
     });
 
     it('should update a cluster', function(done) {
-      var metadata = {
+      const metadata = {
         nodes: 4,
       };
 
@@ -300,7 +300,7 @@ describe('Bigtable', function() {
     });
 
     it('should retrieve a list of tables in stream mode', function(done) {
-      var tables = [];
+      const tables = [];
 
       INSTANCE.getTablesStream()
         .on('error', done)
@@ -323,7 +323,7 @@ describe('Bigtable', function() {
     });
 
     it('should check if a table does not exist', function(done) {
-      var table = INSTANCE.table('should-not-exist');
+      const table = INSTANCE.table('should-not-exist');
 
       table.exists(function(err, exists) {
         assert.ifError(err);
@@ -337,7 +337,7 @@ describe('Bigtable', function() {
     });
 
     it('should delete a table', function(done) {
-      var table = INSTANCE.table(generateId('table'));
+      const table = INSTANCE.table(generateId('table'));
 
       async.series([table.create.bind(table), table.delete.bind(table)], done);
     });
@@ -353,8 +353,8 @@ describe('Bigtable', function() {
     });
 
     it('should create a table with column family data', function(done) {
-      var name = generateId('table');
-      var options = {
+      const name = generateId('table');
+      const options = {
         families: ['test'],
       };
 
@@ -366,7 +366,7 @@ describe('Bigtable', function() {
     });
 
     it('should create a table if autoCreate is true', function(done) {
-      var table = INSTANCE.table(generateId('table'));
+      const table = INSTANCE.table(generateId('table'));
       async.series(
         [table.get.bind(table, {autoCreate: true}), table.delete.bind(table)],
         done
@@ -409,9 +409,19 @@ describe('Bigtable', function() {
     });
   });
 
+  describe('replication states', function() {
+    it('should get a map of clusterId and state', function(done) {
+      TABLE.getReplicationStates(function(err, clusterStates) {
+        assert(clusterStates instanceof Map);
+        assert(clusterStates.has(CLUSTER_ID));
+        done();
+      });
+    });
+  });
+
   describe('column families', function() {
-    var FAMILY_ID = 'presidents';
-    var FAMILY;
+    const FAMILY_ID = 'presidents';
+    let FAMILY;
 
     before(function(done) {
       FAMILY = TABLE.family(FAMILY_ID);
@@ -436,7 +446,7 @@ describe('Bigtable', function() {
     });
 
     it('should get a family', function(done) {
-      var family = TABLE.family(FAMILY_ID);
+      const family = TABLE.family(FAMILY_ID);
 
       family.get(function(err, family) {
         assert.ifError(err);
@@ -456,7 +466,7 @@ describe('Bigtable', function() {
     });
 
     it('should check if a family does not exist', function(done) {
-      var family = TABLE.family('prezzies');
+      const family = TABLE.family('prezzies');
 
       family.exists(function(err, exists) {
         assert.ifError(err);
@@ -466,7 +476,7 @@ describe('Bigtable', function() {
     });
 
     it('should create a family if autoCreate is true', function(done) {
-      var family = TABLE.family('prezzies');
+      const family = TABLE.family('prezzies');
 
       async.series(
         [
@@ -478,8 +488,8 @@ describe('Bigtable', function() {
     });
 
     it('should create a family with nested gc rules', function(done) {
-      var family = TABLE.family('prezzies');
-      var options = {
+      const family = TABLE.family('prezzies');
+      const options = {
         rule: {
           union: true,
           versions: 10,
@@ -543,7 +553,7 @@ describe('Bigtable', function() {
     });
 
     it('should update a column family', function(done) {
-      var rule = {
+      const rule = {
         age: {
           seconds: 10000,
           nanos: 10000,
@@ -552,7 +562,7 @@ describe('Bigtable', function() {
 
       FAMILY.setMetadata({rule: rule}, function(err, metadata) {
         assert.ifError(err);
-        var maxAge = metadata.gcRule.maxAge;
+        const maxAge = metadata.gcRule.maxAge;
 
         assert.strictEqual(maxAge.seconds, rule.age.seconds.toString());
         assert.strictEqual(maxAge.nanas, rule.age.nanas);
@@ -567,10 +577,10 @@ describe('Bigtable', function() {
 
   describe('rows', function() {
     describe('.exists()', function() {
-      var row = TABLE.row('alincoln');
+      const row = TABLE.row('alincoln');
 
       beforeEach(function(done) {
-        var rowData = {
+        const rowData = {
           follows: {
             gwashington: 1,
             jadams: 1,
@@ -597,7 +607,7 @@ describe('Bigtable', function() {
       });
 
       it('should check if a row does not exist', function(done) {
-        var row = TABLE.row('gwashington');
+        const row = TABLE.row('gwashington');
 
         row.exists(function(err, exists) {
           assert.ifError(err);
@@ -609,7 +619,7 @@ describe('Bigtable', function() {
 
     describe('inserting data', function() {
       it('should insert rows', function(done) {
-        var rows = [
+        const rows = [
           {
             key: 'gwashington',
             data: {
@@ -653,8 +663,8 @@ describe('Bigtable', function() {
       });
 
       it('should create an individual row', function(done) {
-        var row = TABLE.row('alincoln');
-        var rowData = {
+        const row = TABLE.row('alincoln');
+        const rowData = {
           follows: {
             gwashington: 1,
             jadams: 1,
@@ -666,9 +676,9 @@ describe('Bigtable', function() {
       });
 
       it('should insert individual cells', function(done) {
-        var row = TABLE.row('gwashington');
+        const row = TABLE.row('gwashington');
 
-        var rowData = {
+        const rowData = {
           follows: {
             jadams: 1,
           },
@@ -678,9 +688,9 @@ describe('Bigtable', function() {
       });
 
       it('should allow for user specified timestamps', function(done) {
-        var row = TABLE.row('gwashington');
+        const row = TABLE.row('gwashington');
 
-        var rowData = {
+        const rowData = {
           follows: {
             jadams: {
               value: 1,
@@ -693,8 +703,8 @@ describe('Bigtable', function() {
       });
 
       it('should increment a column value', function(done) {
-        var row = TABLE.row('gwashington');
-        var increment = 5;
+        const row = TABLE.row('gwashington');
+        const increment = 5;
 
         row.increment('follows:increment', increment, function(err, value) {
           assert.ifError(err);
@@ -704,8 +714,8 @@ describe('Bigtable', function() {
       });
 
       it('should apply read/modify/write rules to a row', function(done) {
-        var row = TABLE.row('gwashington');
-        var rule = {
+        const row = TABLE.row('gwashington');
+        const rule = {
           column: 'traits:teeth',
           append: '-wood',
         };
@@ -733,13 +743,13 @@ describe('Bigtable', function() {
       });
 
       it('should check and mutate a row', function(done) {
-        var row = TABLE.row('gwashington');
-        var filter = {
+        const row = TABLE.row('gwashington');
+        const filter = {
           family: 'follows',
           value: 'alincoln',
         };
 
-        var mutations = [
+        const mutations = [
           {
             method: 'delete',
             data: ['follows:alincoln'],
@@ -765,7 +775,7 @@ describe('Bigtable', function() {
       });
 
       it('should get rows via stream', function(done) {
-        var rows = [];
+        const rows = [];
 
         TABLE.createReadStream()
           .on('error', done)
@@ -780,7 +790,7 @@ describe('Bigtable', function() {
       });
 
       it('should fetch an individual row', function(done) {
-        var row = TABLE.row('alincoln');
+        const row = TABLE.row('alincoln');
 
         row.get(function(err, row_) {
           assert.ifError(err);
@@ -790,7 +800,7 @@ describe('Bigtable', function() {
       });
 
       it('should limit the number of rows', function(done) {
-        var options = {
+        const options = {
           limit: 1,
         };
 
@@ -802,7 +812,7 @@ describe('Bigtable', function() {
       });
 
       it('should fetch a range of rows', function(done) {
-        var options = {
+        const options = {
           start: 'alincoln',
           end: 'jadams',
         };
@@ -815,7 +825,7 @@ describe('Bigtable', function() {
       });
 
       it('should fetch a range of rows via prefix', function(done) {
-        var options = {
+        const options = {
           prefix: 'g',
         };
 
@@ -828,7 +838,7 @@ describe('Bigtable', function() {
       });
 
       it('should fetch individual cells of a row', function(done) {
-        var row = TABLE.row('alincoln');
+        const row = TABLE.row('alincoln');
 
         row.get(['follows:gwashington'], function(err, data) {
           assert.ifError(err);
@@ -838,16 +848,16 @@ describe('Bigtable', function() {
       });
 
       it('should not decode the values', function(done) {
-        var row = TABLE.row('gwashington');
-        var options = {
+        const row = TABLE.row('gwashington');
+        const options = {
           decode: false,
         };
 
         row.get(options, function(err) {
           assert.ifError(err);
 
-          var teeth = row.data.traits.teeth;
-          var value = teeth[0].value;
+          const teeth = row.data.traits.teeth;
+          const value = teeth[0].value;
 
           assert(value instanceof Buffer);
           assert.strictEqual(value.toString(), 'shiny-wood');
@@ -865,7 +875,7 @@ describe('Bigtable', function() {
       });
 
       it('should get sample row keys via stream', function(done) {
-        var keys = [];
+        const keys = [];
 
         TABLE.sampleRowKeysStream()
           .on('error', done)
@@ -879,7 +889,7 @@ describe('Bigtable', function() {
       });
 
       it('should end stream early', function(done) {
-        var entries = [
+        const entries = [
           {
             key: 'gwashington',
             data: {
@@ -911,7 +921,7 @@ describe('Bigtable', function() {
         TABLE.insert(entries, function(err) {
           assert.ifError(err);
 
-          var rows = [];
+          const rows = [];
 
           TABLE.createReadStream()
             .on('error', done)
@@ -928,7 +938,7 @@ describe('Bigtable', function() {
 
       describe('filters', function() {
         it('should get rows via column data', function(done) {
-          var filter = {
+          const filter = {
             column: 'gwashington',
           };
 
@@ -936,7 +946,7 @@ describe('Bigtable', function() {
             assert.ifError(err);
             assert.strictEqual(rows.length, 3);
 
-            var keys = rows
+            const keys = rows
               .map(function(row) {
                 return row.id;
               })
@@ -949,7 +959,7 @@ describe('Bigtable', function() {
         });
 
         it('should get rows that satisfy the cell limit', function(done) {
-          var entry = {
+          const entry = {
             key: 'alincoln',
             data: {
               follows: {
@@ -958,7 +968,7 @@ describe('Bigtable', function() {
             },
           };
 
-          var filter = [
+          const filter = [
             {
               row: 'alincoln',
             },
@@ -975,7 +985,7 @@ describe('Bigtable', function() {
 
             TABLE.getRows({filter: filter}, function(err, rows) {
               assert.ifError(err);
-              var rowData = rows[0].data;
+              const rowData = rows[0].data;
               assert(rowData.follows.tjefferson.length, 1);
               done();
             });
@@ -983,7 +993,7 @@ describe('Bigtable', function() {
         });
 
         it('should get a range of columns', function(done) {
-          var filter = [
+          const filter = [
             {
               row: 'tjefferson',
             },
@@ -1000,7 +1010,7 @@ describe('Bigtable', function() {
             assert.ifError(err);
 
             rows.forEach(function(row) {
-              var keys = Object.keys(row.data.follows).sort();
+              const keys = Object.keys(row.data.follows).sort();
 
               assert.deepStrictEqual(keys, ['gwashington', 'jadams']);
             });
@@ -1010,7 +1020,7 @@ describe('Bigtable', function() {
         });
 
         it('should run a conditional filter', function(done) {
-          var filter = {
+          const filter = {
             condition: {
               test: [
                 {
@@ -1041,7 +1051,7 @@ describe('Bigtable', function() {
         });
 
         it('should run a conditional filter with pass only', function(done) {
-          var filter = {
+          const filter = {
             condition: {
               test: [
                 {
@@ -1064,7 +1074,7 @@ describe('Bigtable', function() {
         });
 
         it('should only get cells for a specific family', function(done) {
-          var entries = [
+          const entries = [
             {
               key: 'gwashington',
               data: {
@@ -1075,7 +1085,7 @@ describe('Bigtable', function() {
             },
           ];
 
-          var filter = {
+          const filter = {
             family: 'traits',
           };
 
@@ -1086,7 +1096,7 @@ describe('Bigtable', function() {
               assert.ifError(err);
               assert(rows.length > 0);
 
-              var families = Object.keys(rows[0].data);
+              const families = Object.keys(rows[0].data);
               assert.deepStrictEqual(families, ['traits']);
               done();
             });
@@ -1094,7 +1104,7 @@ describe('Bigtable', function() {
         });
 
         it('should interleave filters', function(done) {
-          var filter = [
+          const filter = [
             {
               interleave: [
                 [
@@ -1115,7 +1125,7 @@ describe('Bigtable', function() {
             assert.ifError(err);
             assert.strictEqual(rows.length, 2);
 
-            var ids = rows
+            const ids = rows
               .map(function(row) {
                 return row.id;
               })
@@ -1128,7 +1138,7 @@ describe('Bigtable', function() {
         });
 
         it('should apply labels to the results', function(done) {
-          var filter = {
+          const filter = {
             label: 'test-label',
           };
 
@@ -1136,7 +1146,7 @@ describe('Bigtable', function() {
             assert.ifError(err);
 
             rows.forEach(function(row) {
-              var follows = row.data.follows;
+              const follows = row.data.follows;
 
               Object.keys(follows).forEach(function(column) {
                 follows[column].forEach(function(cell) {
@@ -1150,14 +1160,14 @@ describe('Bigtable', function() {
         });
 
         it('should run a regex against the row id', function(done) {
-          var filter = {
+          const filter = {
             row: /[a-z]+on$/,
           };
 
           TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
 
-            var keys = rows
+            const keys = rows
               .map(function(row) {
                 return row.id;
               })
@@ -1170,7 +1180,7 @@ describe('Bigtable', function() {
         });
 
         it('should run a sink filter', function(done) {
-          var filter = [
+          const filter = [
             {
               row: 'alincoln',
             },
@@ -1202,7 +1212,7 @@ describe('Bigtable', function() {
           TABLE.getRows({filter: filter}, function(err, rows) {
             assert.ifError(err);
 
-            var columns = Object.keys(rows[0].data.follows).sort();
+            const columns = Object.keys(rows[0].data.follows).sort();
 
             assert.deepStrictEqual(columns, [
               'gwashington',
@@ -1215,7 +1225,7 @@ describe('Bigtable', function() {
         });
 
         it('should accept a date range', function(done) {
-          var filter = {
+          const filter = {
             time: {
               start: new Date('March 21, 1986'),
               end: new Date('March 23, 1986'),
@@ -1233,37 +1243,37 @@ describe('Bigtable', function() {
 
     describe('deleting rows', function() {
       it('should delete specific cells', function(done) {
-        var row = TABLE.row('alincoln');
+        const row = TABLE.row('alincoln');
 
         row.deleteCells(['follows:gwashington'], done);
       });
 
       it('should delete a family', function(done) {
-        var row = TABLE.row('gwashington');
+        const row = TABLE.row('gwashington');
 
         row.deleteCells(['traits'], done);
       });
 
       it('should delete all the cells', function(done) {
-        var row = TABLE.row('alincoln');
+        const row = TABLE.row('alincoln');
 
         row.delete(done);
       });
     });
 
     describe('.deleteRows()', function() {
-      var table = INSTANCE.table(generateId('table'));
+      const table = INSTANCE.table(generateId('table'));
 
       beforeEach(function(done) {
-        var tableOptions = {
+        const tableOptions = {
           families: ['cf1'],
         };
-        var data = {
+        const data = {
           cf1: {
             foo: 1,
           },
         };
-        var rows = [
+        const rows = [
           {
             key: 'aaa',
             data,
@@ -1304,13 +1314,13 @@ describe('Bigtable', function() {
     });
 
     describe('.truncate()', function() {
-      var table = INSTANCE.table(generateId('table'));
+      const table = INSTANCE.table(generateId('table'));
 
       beforeEach(function(done) {
-        var tableOptions = {
+        const tableOptions = {
           families: ['follows'],
         };
-        var rows = [
+        const rows = [
           {
             key: 'gwashington',
             data: {

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 const Mutation = require('./mutation');
-const stream = require('stream');
-const Transform = stream.Transform;
+const {Transform} = require('stream');
 
 class TransformError extends Error {
   constructor(props) {

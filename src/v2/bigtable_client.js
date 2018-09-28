@@ -71,13 +71,13 @@ class BigtableClient {
     // Create a `gaxGrpc` object, with any grpc-specific options
     // sent to the client.
     opts.scopes = this.constructor.scopes;
-    var gaxGrpc = new gax.GrpcClient(opts);
+    const gaxGrpc = new gax.GrpcClient(opts);
 
     // Save the auth object to the client, for use by other methods.
     this.auth = gaxGrpc.auth;
 
     // Determine the client header string.
-    var clientHeader = [
+    const clientHeader = [
       `gl-node/${process.version}`,
       `grpc/${gaxGrpc.grpcVersion}`,
       `gax/${gax.version}`,
@@ -88,7 +88,7 @@ class BigtableClient {
     }
 
     // Load the applicable protos.
-    var protos = merge(
+    const protos = merge(
       {},
       gaxGrpc.loadProto(
         path.join(__dirname, '..', '..', 'protos'),
@@ -114,7 +114,7 @@ class BigtableClient {
     };
 
     // Put together the default options sent with requests.
-    var defaults = gaxGrpc.constructSettings(
+    const defaults = gaxGrpc.constructSettings(
       'google.bigtable.v2.Bigtable',
       gapicConfig,
       opts.clientConfig,
@@ -128,14 +128,14 @@ class BigtableClient {
 
     // Put together the "service stub" for
     // google.bigtable.v2.Bigtable.
-    var bigtableStub = gaxGrpc.createStub(
+    const bigtableStub = gaxGrpc.createStub(
       protos.google.bigtable.v2.Bigtable,
       opts
     );
 
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
-    var bigtableStubMethods = [
+    const bigtableStubMethods = [
       'readRows',
       'sampleRowKeys',
       'mutateRow',
@@ -143,12 +143,12 @@ class BigtableClient {
       'checkAndMutateRow',
       'readModifyWriteRow',
     ];
-    for (let methodName of bigtableStubMethods) {
+    for (const methodName of bigtableStubMethods) {
       this._innerApiCalls[methodName] = gax.createApiCall(
         bigtableStub.then(
           stub =>
             function() {
-              var args = Array.prototype.slice.call(arguments, 0);
+              const args = Array.prototype.slice.call(arguments, 0);
               return stub[methodName].apply(stub, args);
             }
         ),
@@ -238,11 +238,11 @@ class BigtableClient {
    *
    * const bigtable = require('@google-cloud/bigtable');
    *
-   * var client = new bigtable.v2.BigtableClient({
+   * const client = new bigtable.v2.BigtableClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
+   * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
    * client.readRows({tableName: formattedTableName}).on('data', response => {
    *   // doThingsWith(response)
    * });
@@ -285,11 +285,11 @@ class BigtableClient {
    *
    * const bigtable = require('@google-cloud/bigtable');
    *
-   * var client = new bigtable.v2.BigtableClient({
+   * const client = new bigtable.v2.BigtableClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
+   * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
    * client.sampleRowKeys({tableName: formattedTableName}).on('data', response => {
    *   // doThingsWith(response)
    * });
@@ -343,21 +343,21 @@ class BigtableClient {
    *
    * const bigtable = require('@google-cloud/bigtable');
    *
-   * var client = new bigtable.v2.BigtableClient({
+   * const client = new bigtable.v2.BigtableClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
-   * var rowKey = '';
-   * var mutations = [];
-   * var request = {
+   * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
+   * const rowKey = '';
+   * const mutations = [];
+   * const request = {
    *   tableName: formattedTableName,
    *   rowKey: rowKey,
    *   mutations: mutations,
    * };
    * client.mutateRow(request)
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -411,13 +411,13 @@ class BigtableClient {
    *
    * const bigtable = require('@google-cloud/bigtable');
    *
-   * var client = new bigtable.v2.BigtableClient({
+   * const client = new bigtable.v2.BigtableClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
-   * var entries = [];
-   * var request = {
+   * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
+   * const entries = [];
+   * const request = {
    *   tableName: formattedTableName,
    *   entries: entries,
    * };
@@ -491,19 +491,19 @@ class BigtableClient {
    *
    * const bigtable = require('@google-cloud/bigtable');
    *
-   * var client = new bigtable.v2.BigtableClient({
+   * const client = new bigtable.v2.BigtableClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
-   * var rowKey = '';
-   * var request = {
+   * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
+   * const rowKey = '';
+   * const request = {
    *   tableName: formattedTableName,
    *   rowKey: rowKey,
    * };
    * client.checkAndMutateRow(request)
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -567,21 +567,21 @@ class BigtableClient {
    *
    * const bigtable = require('@google-cloud/bigtable');
    *
-   * var client = new bigtable.v2.BigtableClient({
+   * const client = new bigtable.v2.BigtableClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
-   * var rowKey = '';
-   * var rules = [];
-   * var request = {
+   * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
+   * const rowKey = '';
+   * const rules = [];
+   * const request = {
    *   tableName: formattedTableName,
    *   rowKey: rowKey,
    *   rules: rules,
    * };
    * client.readModifyWriteRow(request)
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {

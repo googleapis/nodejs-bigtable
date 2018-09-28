@@ -19,31 +19,31 @@ const through2 = require('through2');
 
 const bigtableModule = require('../src');
 
-var FAKE_STATUS_CODE = 1;
-var error = new Error();
+const FAKE_STATUS_CODE = 1;
+const error = new Error();
 error.code = FAKE_STATUS_CODE;
 
 describe('BigtableClient', () => {
   describe('readRows', () => {
     it('invokes readRows without error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      const request = {
         tableName: formattedTableName,
       };
 
       // Mock response
-      var lastScannedRowKey = '-126';
-      var expectedResponse = {
+      const lastScannedRowKey = '-126';
+      const expectedResponse = {
         lastScannedRowKey: lastScannedRowKey,
       };
 
@@ -53,7 +53,7 @@ describe('BigtableClient', () => {
         expectedResponse
       );
 
-      var stream = client.readRows(request);
+      const stream = client.readRows(request);
       stream.on('data', response => {
         assert.deepStrictEqual(response, expectedResponse);
         done();
@@ -66,18 +66,18 @@ describe('BigtableClient', () => {
     });
 
     it('invokes readRows with error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      const request = {
         tableName: formattedTableName,
       };
 
@@ -88,7 +88,7 @@ describe('BigtableClient', () => {
         error
       );
 
-      var stream = client.readRows(request);
+      const stream = client.readRows(request);
       stream.on('data', () => {
         assert.fail();
       });
@@ -104,25 +104,25 @@ describe('BigtableClient', () => {
 
   describe('sampleRowKeys', () => {
     it('invokes sampleRowKeys without error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      const request = {
         tableName: formattedTableName,
       };
 
       // Mock response
-      var rowKey = '122';
-      var offsetBytes = 889884095;
-      var expectedResponse = {
+      const rowKey = '122';
+      const offsetBytes = 889884095;
+      const expectedResponse = {
         rowKey: rowKey,
         offsetBytes: offsetBytes,
       };
@@ -133,7 +133,7 @@ describe('BigtableClient', () => {
         expectedResponse
       );
 
-      var stream = client.sampleRowKeys(request);
+      const stream = client.sampleRowKeys(request);
       stream.on('data', response => {
         assert.deepStrictEqual(response, expectedResponse);
         done();
@@ -146,18 +146,18 @@ describe('BigtableClient', () => {
     });
 
     it('invokes sampleRowKeys with error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var request = {
+      const request = {
         tableName: formattedTableName,
       };
 
@@ -168,7 +168,7 @@ describe('BigtableClient', () => {
         error
       );
 
-      var stream = client.sampleRowKeys(request);
+      const stream = client.sampleRowKeys(request);
       stream.on('data', () => {
         assert.fail();
       });
@@ -184,27 +184,27 @@ describe('BigtableClient', () => {
 
   describe('mutateRow', () => {
     it('invokes mutateRow without error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var rowKey = '122';
-      var mutations = [];
-      var request = {
+      const rowKey = '122';
+      const mutations = [];
+      const request = {
         tableName: formattedTableName,
         rowKey: rowKey,
         mutations: mutations,
       };
 
       // Mock response
-      var expectedResponse = {};
+      const expectedResponse = {};
 
       // Mock Grpc layer
       client._innerApiCalls.mutateRow = mockSimpleGrpcMethod(
@@ -220,20 +220,20 @@ describe('BigtableClient', () => {
     });
 
     it('invokes mutateRow with error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var rowKey = '122';
-      var mutations = [];
-      var request = {
+      const rowKey = '122';
+      const mutations = [];
+      const request = {
         tableName: formattedTableName,
         rowKey: rowKey,
         mutations: mutations,
@@ -257,25 +257,25 @@ describe('BigtableClient', () => {
 
   describe('mutateRows', () => {
     it('invokes mutateRows without error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var entries = [];
-      var request = {
+      const entries = [];
+      const request = {
         tableName: formattedTableName,
         entries: entries,
       };
 
       // Mock response
-      var expectedResponse = {};
+      const expectedResponse = {};
 
       // Mock Grpc layer
       client._innerApiCalls.mutateRows = mockServerStreamingGrpcMethod(
@@ -283,7 +283,7 @@ describe('BigtableClient', () => {
         expectedResponse
       );
 
-      var stream = client.mutateRows(request);
+      const stream = client.mutateRows(request);
       stream.on('data', response => {
         assert.deepStrictEqual(response, expectedResponse);
         done();
@@ -296,19 +296,19 @@ describe('BigtableClient', () => {
     });
 
     it('invokes mutateRows with error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var entries = [];
-      var request = {
+      const entries = [];
+      const request = {
         tableName: formattedTableName,
         entries: entries,
       };
@@ -320,7 +320,7 @@ describe('BigtableClient', () => {
         error
       );
 
-      var stream = client.mutateRows(request);
+      const stream = client.mutateRows(request);
       stream.on('data', () => {
         assert.fail();
       });
@@ -336,26 +336,26 @@ describe('BigtableClient', () => {
 
   describe('checkAndMutateRow', () => {
     it('invokes checkAndMutateRow without error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var rowKey = '122';
-      var request = {
+      const rowKey = '122';
+      const request = {
         tableName: formattedTableName,
         rowKey: rowKey,
       };
 
       // Mock response
-      var predicateMatched = true;
-      var expectedResponse = {
+      const predicateMatched = true;
+      const expectedResponse = {
         predicateMatched: predicateMatched,
       };
 
@@ -373,19 +373,19 @@ describe('BigtableClient', () => {
     });
 
     it('invokes checkAndMutateRow with error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var rowKey = '122';
-      var request = {
+      const rowKey = '122';
+      const request = {
         tableName: formattedTableName,
         rowKey: rowKey,
       };
@@ -408,27 +408,27 @@ describe('BigtableClient', () => {
 
   describe('readModifyWriteRow', () => {
     it('invokes readModifyWriteRow without error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var rowKey = '122';
-      var rules = [];
-      var request = {
+      const rowKey = '122';
+      const rules = [];
+      const request = {
         tableName: formattedTableName,
         rowKey: rowKey,
         rules: rules,
       };
 
       // Mock response
-      var expectedResponse = {};
+      const expectedResponse = {};
 
       // Mock Grpc layer
       client._innerApiCalls.readModifyWriteRow = mockSimpleGrpcMethod(
@@ -444,20 +444,20 @@ describe('BigtableClient', () => {
     });
 
     it('invokes readModifyWriteRow with error', done => {
-      var client = new bigtableModule.v2.BigtableClient({
+      const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
 
       // Mock request
-      var formattedTableName = client.tablePath(
+      const formattedTableName = client.tablePath(
         '[PROJECT]',
         '[INSTANCE]',
         '[TABLE]'
       );
-      var rowKey = '122';
-      var rules = [];
-      var request = {
+      const rowKey = '122';
+      const rules = [];
+      const request = {
         tableName: formattedTableName,
         rowKey: rowKey,
         rules: rules,
@@ -496,7 +496,7 @@ function mockSimpleGrpcMethod(expectedRequest, response, error) {
 function mockServerStreamingGrpcMethod(expectedRequest, response, error) {
   return actualRequest => {
     assert.deepStrictEqual(actualRequest, expectedRequest);
-    var mockStream = through2.obj((chunk, enc, callback) => {
+    const mockStream = through2.obj((chunk, enc, callback) => {
       if (error) {
         callback(error);
       } else {

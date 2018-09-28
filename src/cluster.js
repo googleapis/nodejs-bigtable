@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common-grpc');
+const {promisifyAll} = require('@google-cloud/promisify');
 const is = require('is');
 
 /**
@@ -35,7 +35,7 @@ class Cluster {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    var name;
+    let name;
 
     if (id.includes('/')) {
       if (id.startsWith(`${instance.name}/clusters/`)) {
@@ -400,7 +400,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(Cluster);
+promisifyAll(Cluster);
 
 /**
  * Reference to the {@link Cluster} class.

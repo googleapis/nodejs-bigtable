@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const common = require('@google-cloud/common-grpc');
+const {promisifyAll} = require('@google-cloud/promisify');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
 
@@ -38,7 +38,7 @@ class AppProfile {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    var name;
+    let name;
 
     if (id.includes('/')) {
       if (id.startsWith(`${instance.name}/appProfiles/`)) {
@@ -400,7 +400,7 @@ Please use the format 'my-app-profile' or '${
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(AppProfile);
+promisifyAll(AppProfile);
 
 /**
  * Reference to the {@link AppProfile} class.

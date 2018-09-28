@@ -15,9 +15,10 @@
  */
 
 const arrify = require('arrify');
-const common = require('@google-cloud/common-grpc');
+const {replaceProjectIdToken} = require('@google-cloud/projectify');
+const {promisifyAll} = require('@google-cloud/promisify');
 const extend = require('extend');
-const GrpcService = require('@google-cloud/common-grpc').Service;
+const {Service} = require('@google-cloud/common-grpc');
 const {GoogleAuth} = require('google-auth-library');
 const gax = require('google-gax');
 const grpc = new gax.GrpcClient().grpc;
@@ -337,18 +338,18 @@ const v2 = require('./v2');
  */
 class Bigtable {
   constructor(options) {
-    options = common.util.normalizeArguments(this, options);
+    options = options || {};
 
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
-    let scopes = [];
-    let clientClasses = [
+    const scopes = [];
+    const clientClasses = [
       v2.BigtableClient,
       v2.BigtableInstanceAdminClient,
       v2.BigtableTableAdminClient,
     ];
-    for (let clientClass of clientClasses) {
-      for (let scope of clientClass.scopes) {
+    for (const clientClass of clientClasses) {
+      for (const scope of clientClass.scopes) {
         if (!scopes.includes(scope)) {
           scopes.push(scope);
         }
@@ -654,7 +655,7 @@ class Bigtable {
         let reqOpts = extend(true, {}, config.reqOpts);
 
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
-          reqOpts = common.util.replaceProjectIdToken(reqOpts, projectId);
+          reqOpts = replaceProjectIdToken(reqOpts, projectId);
         }
 
         const requestFn = gaxClient[config.method].bind(
@@ -708,7 +709,7 @@ class Bigtable {
             currentRetryAttempt: 0,
             noResponseRetries: 0,
             objectMode: true,
-            shouldRetryFn: GrpcService.shouldRetryRequest_,
+            shouldRetryFn: Service.shouldRetryRequest_,
             request() {
               gaxStream = requestFn();
               return gaxStream;
@@ -762,7 +763,7 @@ class Bigtable {
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(Bigtable, {
+promisifyAll(Bigtable, {
   exclude: ['instance', 'operation', 'request'],
 });
 

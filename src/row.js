@@ -15,7 +15,7 @@
  */
 
 const arrify = require('arrify');
-const common = require('@google-cloud/common-grpc');
+const {promisifyAll} = require('@google-cloud/promisify');
 const dotProp = require('dot-prop');
 const extend = require('extend');
 const flatten = require('lodash.flatten');
@@ -921,7 +921,7 @@ class Row {
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-common.util.promisifyAll(Row);
+promisifyAll(Row);
 
 module.exports = Row;
 module.exports.RowError = RowError;

@@ -26,7 +26,7 @@ if (!GCLOUD_PROJECT) {
   throw new Error('Environment variables GCLOUD_PROJECT must be set!');
 }
 
-var bigtableOptions = {
+const bigtableOptions = {
   projectId: GCLOUD_PROJECT,
 };
 
@@ -83,7 +83,7 @@ const getRowGreeting = row => {
     ];
 
     console.log('Reading a single row by row key');
-    let [singeRow] = await table.row('greeting0').get({filter});
+    const [singeRow] = await table.row('greeting0').get({filter});
     console.log(`\tRead: ${getRowGreeting(singeRow)}`);
 
     console.log('Reading the entire table');

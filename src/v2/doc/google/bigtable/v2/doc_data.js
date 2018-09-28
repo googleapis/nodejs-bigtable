@@ -34,7 +34,7 @@
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.Row definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var Row = {
+const Row = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -59,7 +59,7 @@ var Row = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.Family definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var Family = {
+const Family = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -83,7 +83,7 @@ var Family = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.Column definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var Column = {
+const Column = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -110,7 +110,7 @@ var Column = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.Cell definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var Cell = {
+const Cell = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -133,7 +133,7 @@ var Cell = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.RowRange definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var RowRange = {
+const RowRange = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -152,7 +152,7 @@ var RowRange = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.RowSet definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var RowSet = {
+const RowSet = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -181,7 +181,7 @@ var RowSet = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.ColumnRange definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var ColumnRange = {
+const ColumnRange = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -198,7 +198,7 @@ var ColumnRange = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.TimestampRange definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var TimestampRange = {
+const TimestampRange = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -221,7 +221,7 @@ var TimestampRange = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.ValueRange definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var ValueRange = {
+const ValueRange = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -438,7 +438,7 @@ var ValueRange = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.RowFilter definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var RowFilter = {
+const RowFilter = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -564,7 +564,7 @@ var RowFilter = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.Mutation definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var Mutation = {
+const Mutation = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -675,6 +675,6 @@ var Mutation = {
  * @memberof google.bigtable.v2
  * @see [google.bigtable.v2.ReadModifyWriteRule definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/v2/data.proto}
  */
-var ReadModifyWriteRule = {
+const ReadModifyWriteRule = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };

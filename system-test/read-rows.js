@@ -11,7 +11,7 @@ const sinon = require('sinon');
 const through = require('through2');
 
 function dispatch(emitter, response) {
-  let emits = [{name: 'request'}];
+  const emits = [{name: 'request'}];
   if (response.row_keys) {
     emits.push.apply(emits, [
       {name: 'response', arg: 200},
@@ -90,7 +90,7 @@ describe('Bigtable/Table', () => {
       requestedOptions = [];
       stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
         const reqOpts = cfg.reqOpts;
-        let requestOptions = {};
+        const requestOptions = {};
         if (reqOpts.rows && reqOpts.rows.rowRanges) {
           requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
             const convertedRowRange = {};
