@@ -55,6 +55,29 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
   }
 
   /**
+   * Formats the cluster name.
+   *
+   * @private
+   *
+   * @param {string} instanceName The formatted instance name.
+   * @param {string} name The cluster id.
+   *
+   * @example
+   * Cluster.formatName_(
+   *   'projects/my-project/zones/my-zone/instances/my-instance',
+   *   'my-cluster'
+   * );
+   * // 'projects/my-project/zones/my-zone/instances/my-instance/clusters/my-cluster'
+   */
+  static formatName_(instanceName, id) {
+    if (id.includes('/')) {
+      return id;
+    }
+
+    return `${instanceName}/clusters/${id}`;
+  }
+
+  /**
    * Formats zone location.
    *
    * @private
@@ -539,7 +562,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
     }
 
     const reqOpts = {
-      name: this.snapshot(id).name,
+      name: Snapshot.formatName_(this.name, id),
     };
 
     this.bigtable.request(

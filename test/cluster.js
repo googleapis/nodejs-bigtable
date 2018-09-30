@@ -113,6 +113,18 @@ describe('Bigtable/Cluster', function() {
     });
   });
 
+  describe('formatName_', function() {
+    it('should format the cluster name', function() {
+      const clusterName = Cluster.formatName_(INSTANCE.name, CLUSTER_ID);
+      assert.strictEqual(clusterName, CLUSTER_NAME);
+    });
+
+    it('should not re-format the cluster name', function() {
+      const clusterName = Cluster.formatName_(INSTANCE.id, CLUSTER_NAME);
+      assert.strictEqual(clusterName, CLUSTER_NAME);
+    });
+  });
+
   describe('getLocation_', function() {
     const LOCATION = 'us-central1-b';
 

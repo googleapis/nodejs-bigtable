@@ -760,7 +760,7 @@ Please use the format 'my-instance' or '${
     const reqOpts = {
       // set parent as "projects/<project>/instances/<instance>/clusters/-"
       // to list snapshots for all clusters in an instance,
-      parent: `${this.name}/clusters/-`,
+      parent: Cluster.formatName_(this.name, '-'),
     };
 
     if (options.pageSize) {

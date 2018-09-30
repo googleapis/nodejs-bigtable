@@ -104,6 +104,18 @@ describe('Bigtable/Snapshot', function() {
     });
   });
 
+  describe('formatName_', function() {
+    it('should format the snapshot name', function() {
+      const snapshotName = Snapshot.formatName_(CLUSTER.name, SNAPSHOT_ID);
+      assert.strictEqual(snapshotName, SNAPSHOT_NAME);
+    });
+
+    it('should not re-format the snapshot name', function() {
+      const snapshotName = Snapshot.formatName_(CLUSTER.id, SNAPSHOT_NAME);
+      assert.strictEqual(snapshotName, SNAPSHOT_NAME);
+    });
+  });
+
   describe('create', function() {
     it('should call createSnapshot from cluster', function(done) {
       const options = {

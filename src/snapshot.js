@@ -67,6 +67,29 @@ Please use the format 'follows' or '${cluster.name}/snapshots/my-snapshot'.`
   }
 
   /**
+   * Formats the snapshot name to include the Bigtable cluster.
+   *
+   * @private
+   *
+   * @param {string} clusterName The formatted cluster name.
+   * @param {string} name The cluster name.
+   *
+   * @example
+   * Snapshot.formatName_(
+   *   'projects/my-project/zones/my-zone/instances/my-instance/clusters/my-cluster',
+   *   'my-snapshot'
+   * );
+   * // 'projects/my-project/zones/my-zone/instances/my-instance/clusters/my-cluster/snapshots/my-snapshot'
+   */
+  static formatName_(clusterName, id) {
+    if (id.includes('/')) {
+      return id;
+    }
+
+    return `${clusterName}/snapshots/${id}`;
+  }
+
+  /**
    * Create a snapshot.
    * @param {string} table
    *   The name of the table for which snapshot will be created.
