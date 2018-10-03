@@ -561,6 +561,92 @@ describe('Bigtable/Table', function() {
         table.createReadStream(options);
       });
 
+      it('should throw if ranges and start is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          start: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
+      });
+
+      it('should throw if ranges and end is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          end: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
+      });
+
+      it('should throw if ranges and prefix is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          prefix: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /prefix should be used exclusively to ranges\/start\/end\/prefixes\./);
+      });
+
+      it('should throw if ranges and prefixes is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          prefixes: [{prefix: 'a'}],
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /prefixes should be used exclusively to ranges\/start\/end\/prefix\./);
+      });
+
+      it('should throw if prefix and start is set together', function() {
+        const options = {
+          start: 'a',
+          prefix: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
+      });
+
       describe('prefixes', function() {
         beforeEach(function() {
           FakeFilter.createRange = common.util.noop;
