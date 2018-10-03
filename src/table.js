@@ -103,7 +103,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @returns {object} range
    *
    * @example
-   * Table.createPrefixRange_('start');
+   * const Bigtable = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const table = instance.table('prezzy');
+   * table.createPrefixRange('start');
    * // => {
    * //   start: 'start',
    * //   end: {
@@ -112,7 +116,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * //   }
    * // }
    */
-  static createPrefixRange_(start) {
+  createPrefixRange(start) {
     const prefix = start.replace(new RegExp('[\xff]+$'), '');
     let endKey = '';
 
@@ -422,7 +426,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
           'prefix should be used exclusively to ranges/start/end/prefixes.'
         );
       }
-      ranges.push(Table.createPrefixRange_(options.prefix));
+      ranges.push(this.createPrefixRange(options.prefix));
     }
 
     if (options.prefixes) {
@@ -432,7 +436,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         );
       }
       options.prefixes.forEach(prefix => {
-        ranges.push(Table.createPrefixRange_(prefix));
+        ranges.push(this.createPrefixRange(prefix));
       });
     }
 
