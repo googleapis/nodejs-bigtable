@@ -175,7 +175,6 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
-    const caughtError = false;
 
     instance
       .get()
@@ -194,7 +193,6 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
-    const caughtError = false;
 
     instance
       .getClusters()
@@ -212,7 +210,6 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
-    const caughtError = false;
 
     instance
       .getAppProfiles()
@@ -230,7 +227,6 @@ const snippets = {
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
-    const caughtError = false;
 
     instance
       .getMetadata()
