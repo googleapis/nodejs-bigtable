@@ -13,21 +13,20 @@
  * limitations under the License.
  */
 
-const Bigtable = require('@google-cloud/bigtable');
-const bigtable = new Bigtable();
-
 const snippets = {
   create: (instanceId, clusterId) => {
     // [START bigtable_create_cluster]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
 
     cluster
       .create()
-      .then(function(data) {
-        const cluster = data[0];
-        const operation = data[1];
-        const apiResponse = data[2];
+      .then(result => {
+        const cluster = result[0];
+        const operation = result[1];
+        const apiResponse = result[2];
       })
       .catch(err => {
         // Handle the error.
@@ -37,13 +36,15 @@ const snippets = {
 
   delete: (instanceId, clusterId) => {
     // [START bigtable_delete_cluster]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
 
     cluster
       .delete()
-      .then(function(data) {
-        let apiResponse = data[0];
+      .then(result => {
+        const apiResponse = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -53,13 +54,15 @@ const snippets = {
 
   exists: (instanceId, clusterId) => {
     // [START bigtable_exists_cluster]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
 
     cluster
       .exists()
-      .then(data => {
-        let exists = data[0];
+      .then(result => {
+        const exists = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -69,14 +72,16 @@ const snippets = {
 
   get: (instanceId, clusterId) => {
     // [START bigtable_get_cluster]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
 
     cluster
       .get()
-      .then(data => {
-        let cluster = data[0];
-        let apiResponse = data[1];
+      .then(result => {
+        const cluster = result[0];
+        const apiResponse = result[1];
       })
       .catch(err => {
         // Handle the error.
@@ -86,14 +91,16 @@ const snippets = {
 
   getMeta: (instanceId, clusterId) => {
     // [START bigtable_cluster_get_meta]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
 
     cluster
       .getMetadata()
-      .then(data => {
-        let metadata = data[0];
-        let apiResponse = data[1];
+      .then(result => {
+        const metadata = result[0];
+        const apiResponse = result[1];
       })
       .catch(err => {
         // Handle the error.
@@ -103,6 +110,8 @@ const snippets = {
 
   setMeta: (instanceId, clusterId) => {
     // [START bigtable_cluster_set_meta]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
 
@@ -112,9 +121,9 @@ const snippets = {
 
     cluster
       .setMetadata(metadata)
-      .then(data => {
-        const operation = data[0];
-        const apiResponse = data[1];
+      .then(result => {
+        const operation = result[0];
+        const apiResponse = result[1];
       })
       .catch(err => {
         // Handle the error.
