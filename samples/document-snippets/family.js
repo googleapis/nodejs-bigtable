@@ -15,12 +15,13 @@
 
 const snippets = {
   createColmFamily: (instanceId, tableId, familyId) => {
+    // [START bigtable_create_family]
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
-    // [START bigtable_create_family]
+
     family
       .create()
       .then(result => {
@@ -33,13 +34,13 @@ const snippets = {
     // [END bigtable_create_family]
   },
   existsFamily: (instanceId, tableId, familyId) => {
+    // [START bigtable_exists_family]
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
 
-    // [START bigtable_exists_family]
     family
       .exists()
       .then(result => {
@@ -51,12 +52,13 @@ const snippets = {
     // [END bigtable_exists_family]
   },
   getFamily: (instanceId, tableId, familyId) => {
+    // [START bigtable_get_family]
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
-    // [START bigtable_get_family]
+
     family
       .get()
       .then(result => {
@@ -69,12 +71,13 @@ const snippets = {
     // [END bigtable_get_family]
   },
   getMetadata: (instanceId, tableId, familyId) => {
+    // [START bigtable_get_family_meta]
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
-    // [START bigtable_get_family_meta]
+
     family
       .getMetadata()
       .then(result => {
@@ -87,18 +90,20 @@ const snippets = {
     // [END bigtable_get_family_meta]
   },
   setMetadata: (instanceId, tableId, familyId) => {
+    // [START bigtable_set_family_meta]
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
-    // [START bigtable_set_family_meta]
+
     const metadata = {
       rule: {
         versions: 2,
         union: true,
       },
     };
+
     family
       .setMetadata(metadata)
       .then(result => {
@@ -110,12 +115,13 @@ const snippets = {
     // [END bigtable_set_family_meta]
   },
   delFamily: (instanceId, tableId, familyId) => {
+    // [START bigtable_del_family]
     const Bigtable = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const family = table.family(familyId);
-    // [START bigtable_del_family]
+
     family
       .delete()
       .then(result => {
