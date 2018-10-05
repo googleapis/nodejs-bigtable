@@ -13,11 +13,10 @@
  * limitations under the License.
  */
 
-const Bigtable = require('@google-cloud/bigtable');
-const bigtable = new Bigtable();
-
 const snippets = {
   createRow: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -27,7 +26,7 @@ const snippets = {
     row
       .create()
       .then(result => {
-        let apiResponse = result[0];
+        const apiResponse = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -36,6 +35,8 @@ const snippets = {
   },
 
   createRules: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -45,7 +46,7 @@ const snippets = {
     // Add an increment amount to an existing value, if the targeted cell is
     // unset, it will be treated as containing a zero.
     //
-    var rules = [
+    const rules = [
       {
         column: 'follows:gwashington',
         increment: 1,
@@ -67,7 +68,7 @@ const snippets = {
     row
       .createRules(rules)
       .then(result => {
-        let apiResponse = result[0];
+        const apiResponse = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -76,6 +77,8 @@ const snippets = {
   },
 
   deleteAllCells: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -83,8 +86,8 @@ const snippets = {
     const row = table.row('samplerow');
     row
       .delete()
-      .then(function(data) {
-        let apiResponse = data[0];
+      .then(result => {
+        const apiResponse = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -93,6 +96,8 @@ const snippets = {
   },
 
   deleteCells: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -105,12 +110,12 @@ const snippets = {
     // ];
 
     // Delete all cells within a family.
-    let cells = ['follows'];
+    const cells = ['follows'];
 
     row
       .deleteCells(cells)
       .then(result => {
-        let apiResponse = result[0];
+        const apiResponse = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -119,6 +124,8 @@ const snippets = {
   },
 
   exists: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -128,7 +135,7 @@ const snippets = {
     row
       .exists()
       .then(result => {
-        let exists = result[0];
+        const exists = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -137,13 +144,15 @@ const snippets = {
   },
 
   filter: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
     // [START bigtable_row_filter]
     const row = table.row('samplerow');
 
-    let filter = [
+    const filter = [
       {
         family: 'follows',
       },
@@ -157,7 +166,7 @@ const snippets = {
 
     // Optionally, you can pass in an array of entries to be ran in the event
     // that a match is not made.
-    let config = {
+    const config = {
       onNoMatch: [
         {
           method: 'insert',
@@ -172,8 +181,8 @@ const snippets = {
 
     row
       .filter(filter, config)
-      .then(data => {
-        var matched = data[0];
+      .then(result => {
+        const matched = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -182,6 +191,8 @@ const snippets = {
   },
 
   get: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -191,7 +202,7 @@ const snippets = {
     row
       .get()
       .then(result => {
-        let row = result[0];
+        const row = result[0];
       })
       .catch(err => {
         // Handle the error.
@@ -217,6 +228,8 @@ const snippets = {
   },
 
   getMetadata: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -226,8 +239,8 @@ const snippets = {
     row
       .getMetadata()
       .then(result => {
-        let metaData = result[0];
-        let apiResponse = result[1];
+        const metaData = result[0];
+        const apiResponse = result[1];
       })
       .catch(err => {
         // Handle the error.
@@ -236,6 +249,8 @@ const snippets = {
   },
 
   increment: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
@@ -260,8 +275,8 @@ const snippets = {
     row
       .increment('follows:gwashington')
       .then(result => {
-        let value = result[0];
-        let apiResponse = result[1];
+        const value = result[0];
+        const apiResponse = result[1];
       })
       .catch(err => {
         // Handle the error.
@@ -270,12 +285,14 @@ const snippets = {
   },
 
   save: (instanceId, tableId) => {
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
     // [START bigtable_row_save]
     const row = table.row('samplerow');
-    let entry = {
+    const entry = {
       follows: {
         jadams: 1,
       },
@@ -283,7 +300,7 @@ const snippets = {
     row
       .save(entry)
       .then(result => {
-        let apiResponse = result[0];
+        const apiResponse = result[0];
       })
       .catch(err => {
         // Handle the error.
