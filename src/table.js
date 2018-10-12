@@ -147,20 +147,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {?error} callback.err An error returned while making this request.
    * @param {Table} callback.table The newly created table.
    * @param {object} callback.apiResponse The full API response.
-   * @example
-   * table.create(function(err, table, apiResponse) {
-   *   if (!err) {
-   *     // The table was created successfully.
-   *   }
-   * });
    *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.create().then(function(data) {
-   *   var table = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_create_table
    */
   create(options, callback) {
     if (is.fn(options)) {
@@ -201,49 +190,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {Family} callback.family The newly created Family.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * const callback = function(err, family, apiResponse) {
-   *   // `family` is a Family object
-   * };
-   *
-   * const options={};
-   *
-   * options.rule = {
-   *   age: {
-   *     seconds: 0,
-   *     nanos: 5000
-   *   },
-   *   versions: 3,
-   *   union: true
-   * };
-   *
-   * table.createFamily('follows', options, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.createFamily('follows').then(function(data) {
-   *   const family = data[0];
-   *   const apiResponse = data[1];
-   * });
-   *
-   * // Note that rules can have nested rules. For example The following rule
-   * // will delete cells that are either older than 10 versions OR if the cell
-   * // is is a month old and has at least 2 newer version.
-   * // Essentially: (version > 10 OR (age > 30 AND version > 2))
-   * const rule = {
-   *   union: true,
-   *   versions: 10,
-   *   rule: {
-   *     versions: 2,
-   *     age: { seconds: 60 * 60 * 24 * 30 }, // one month
-   *   },
-   * };
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_create_family
    */
   createFamily(id, options, callback) {
     if (is.function(options)) {
@@ -313,85 +261,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {string} [options.start] Start value for key range.
    * @returns {stream}
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * table.createReadStream()
-   *   .on('error', console.error)
-   *   .on('data', function(row) {
-   *     // `row` is a Row object.
-   *   })
-   *   .on('end', function() {
-   *     // All rows retrieved.
-   *   });
-   *
-   * //-
-   * // If you anticipate many results, you can end a stream early to prevent
-   * // unnecessary processing.
-   * //-
-   * table.createReadStream()
-   *   .on('data', function(row) {
-   *     this.end();
-   *   });
-   *
-   * //-
-   * // Specify arbitrary keys for a non-contiguous set of rows.
-   * // The total size of the keys must remain under 1MB, after encoding.
-   * //-
-   * table.createReadStream({
-   *   keys: [
-   *     'alincoln',
-   *     'gwashington'
-   *   ]
-   * });
-   *
-   * //-
-   * // Scan for row keys that contain a specific prefix.
-   * //-
-   * table.createReadStream({
-   *   prefix: 'gwash'
-   * });
-   *
-   * //-
-   * // Specify a contiguous range of rows to read by supplying `start` and `end`
-   * // keys.
-   * //
-   * // If the `start` key is omitted, it is interpreted as an empty string.
-   * // If the `end` key is omitted, it is interpreted as infinity.
-   * //-
-   * table.createReadStream({
-   *   start: 'alincoln',
-   *   end: 'gwashington'
-   * });
-   *
-   * //-
-   * // Specify multiple ranges.
-   * //-
-   * table.createReadStream({
-   *   ranges: [{
-   *     start: 'alincoln',
-   *     end: 'gwashington'
-   *   }, {
-   *     start: 'tjefferson',
-   *     end: 'jadams'
-   *   }]
-   * });
-   *
-   * //-
-   * // Apply a {@link Filter} to the contents of the specified rows.
-   * //-
-   * table.createReadStream({
-   *   filter: [
-   *     {
-   *       column: 'gwashington'
-   *     }, {
-   *       value: 1
-   *     }
-   *   ]
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_table_readstream
    */
   createReadStream(options) {
     options = options || {};
@@ -591,15 +462,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * table.delete(function(err, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.delete().then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_del_table
    */
   delete(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -633,29 +497,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {?error} callback.err An error returned while making this request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * //-
-   * // You can supply a prefix to delete all corresponding rows.
-   * //-
-   * const callback = function(err, apiResponse) {
-   *   if (!err) {
-   *     // Rows successfully deleted.
-   *   }
-   * };
-   *
-   * table.deleteRows('alincoln', callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.deleteRows('alincoln').then(function(data) {
-   *   const apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_del_rows
    */
   deleteRows(prefix, gaxOptions, callback) {
     if (is.function(gaxOptions)) {
@@ -693,15 +536,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *     request.
    * @param {boolean} callback.exists Whether the table exists or not.
    *
-   * @example
-   * table.exists(function(err, exists) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.exists().then(function(data) {
-   *   var exists = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_exists_table
    */
   exists(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -765,18 +601,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {Table} callback.table The Table object.
    * @param {object} callback.apiResponse The resource as it exists in the API.
    *
-   * @example
-   * table.get(function(err, table, apiResponse) {
-   *   // The `table` data has been populated.
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.get().then(function(data) {
-   *   var table = data[0];
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_get_table
    */
   get(options, callback) {
     if (is.fn(options)) {
@@ -812,23 +638,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {Family[]} callback.families The list of families.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * table.getFamilies(function(err, families, apiResponse) {
-   *   // `families` is an array of Family objects.
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.getFamilies().then(function(data) {
-   *   var families = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_get_families
    */
   getFamilies(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -914,21 +725,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *     request.
    * @param {object} callback.metadata The table's metadata.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * table.getMetadata(function(err, metadata) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.getMetadata().then(function(data) {
-   *   var metadata = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_get_table_meta
    */
   getMetadata(options, callback) {
     if (is.function(options)) {
@@ -973,24 +771,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {?error} callback.err An error returned while making this request.
    * @param {Row[]} callback.rows List of Row objects.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * table.getRows(function(err, rows) {
-   *   if (!err) {
-   *     // `rows` is an array of Row objects.
-   *   }
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.getRows().then(function(data) {
-   *   var rows = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_get_rows
    */
   getRows(options, callback) {
     if (is.function(options)) {
@@ -1022,66 +804,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *     failures. It's possible for part of your request to be completed
    *     successfully, while the other part was not.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * const callback = function(err) {
-   *   if (err) {
-   *     // An API error or partial failure occurred.
-   *
-   *     if (err.name === 'PartialFailureError') {
-   *       // err.errors[].code = 'Response code'
-   *       // err.errors[].message = 'Error message'
-   *       // err.errors[].entry = The original entry
-   *     }
-   *   }
-   * };
-   *
-   * const entries = [
-   *  {
-   *     key: 'alincoln',
-   *     data: {
-   *       follows: {
-   *         gwashington: 1
-   *       }
-   *     }
-   *   }
-   * ];
-   *
-   * table.insert(entries, callback);
-   *
-   * //-
-   * // By default whenever you insert new data, the server will capture a
-   * // timestamp of when your data was inserted. It's possible to provide a
-   * // date object to be used instead.
-   * //-
-   * const entries = [
-   *   {
-   *     key: 'gwashington',
-   *     data: {
-   *       follows: {
-   *         jadams: {
-   *           value: 1,
-   *           timestamp: new Date('March 22, 2016')
-   *         }
-   *       }
-   *     }
-   *   }
-   * ];
-   *
-   * table.insert(entries, callback);
-   *
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.insert(entries).then(function() {
-   *   // All requested inserts have been processed.
-   * });
-   * //-
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_insert_rows
    */
   insert(entries, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -1114,98 +838,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *     failures. It's possible for part of your request to be completed
    *     successfully, while the other part was not.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const table = instance.table('prezzy');
-   *
-   * //-
-   * // Insert entities. See {@link Table#insert}.
-   * //-
-   * const callback = function(err) {
-   *   if (err) {
-   *     // An API error or partial failure occurred.
-   *
-   *     if (err.name === 'PartialFailureError') {
-   *       // err.errors[].code = 'Response code'
-   *       // err.errors[].message = 'Error message'
-   *       // err.errors[].entry = The original entry
-   *     }
-   *   }
-   * };
-   *
-   * const entries = [
-   *   {
-   *     method: 'insert',
-   *     key: 'gwashington',
-   *     data: {
-   *       follows: {
-   *         jadams: 1
-   *       }
-   *     }
-   *   }
-   * ];
-   *
-   * table.mutate(entries, callback);
-   *
-   * //-
-   * // Delete entities. See {@link Row#deleteCells}.
-   * //-
-   * const entries = [
-   *   {
-   *     method: 'delete',
-   *     key: 'gwashington'
-   *   }
-   * ];
-   *
-   * table.mutate(entries, callback);
-   *
-   * //-
-   * // Delete specific columns within a row.
-   * //-
-   * const entries = [
-   *   {
-   *     method: 'delete',
-   *     key: 'gwashington',
-   *     data: [
-   *       'follows:jadams'
-   *     ]
-   *   }
-   * ];
-   *
-   * table.mutate(entries, callback);
-   *
-   * //-
-   * // Mix and match mutations. This must contain at least one entry and at
-   * // most 100,000.
-   * //-
-   * const entries = [
-   *   {
-   *     method: 'insert',
-   *     key: 'alincoln',
-   *     data: {
-   *       follows: {
-   *         gwashington: 1
-   *       }
-   *     }
-   *   }, {
-   *     method: 'delete',
-   *     key: 'jadams',
-   *     data: [
-   *       'follows:gwashington'
-   *     ]
-   *   }
-   * ];
-   *
-   * table.mutate(entries, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.mutate(entries).then(function() {
-   *   // All requested mutations have been processed.
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_mutate_rows
    */
   mutate(entries, options, callback) {
     options = options || {};
@@ -1337,23 +971,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {?error} callback.err An error returned while making this request.
    * @param {object[]} callback.keys The list of keys.
    *
-   * @example
-   * table.sampleRowKeys(function(err, keys) {
-   *   // keys = [
-   *   //   {
-   *   //     key: '',
-   *   //     offset: '805306368'
-   *   //   },
-   *   //   ...
-   *   // ]
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * table.sampleRowKeys().then(function(data) {
-   *   var keys = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_sample_row_keys
    */
   sampleRowKeys(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
