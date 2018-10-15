@@ -228,32 +228,8 @@ class Row {
    * @param {Row} callback.row The newly created row object.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * var callback = function(err, apiResponse) {
-   *   if (!err) {
-   *     // Row successfully created
-   *   }
-   * };
-   *
-   * row.create(callback);
-   *
-   * //-
-   * // Optionally, you can supply entry data.
-   * //-
-   * row.create({
-   *   entry: {
-   *     follows: {
-   *       alincoln: 1
-   *     }
-   *   }
-   * }, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.create().then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_create_row
    */
   create(options, callback) {
     if (is.function(options)) {
@@ -293,46 +269,8 @@ class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * //-
-   * // Add an increment amount to an existing value, if the targeted cell is
-   * // unset, it will be treated as containing a zero.
-   * //-
-   * var callback = function(err, apiResponse) {
-   *   if (!err) {
-   *     // The rules have successfully been applied.
-   *   }
-   * };
-   *
-   * var rules = [
-   *   {
-   *     column: 'follows:gwashington',
-   *     increment: 1
-   *   }
-   * ];
-   *
-   * row.createRules(rules, callback);
-   *
-   * //-
-   * // You can also create a rule that will append data to an existing value.
-   * // If the targeted cell is unset, it will be treated as a containing an
-   * // empty string.
-   * //-
-   * var rules = [
-   *   {
-   *     column: 'follows:alincoln',
-   *     append: ' Honest Abe!'
-   *   }
-   * ];
-   *
-   * row.createRules(rules, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.createRules(rules).then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_create_rules
    */
   createRules(rules, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -390,15 +328,8 @@ class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * row.delete(function(err, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.delete().then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_delete_all_cells
    */
   delete(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -425,37 +356,8 @@ class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * //-
-   * // Delete individual cells.
-   * //-
-   * var callback = function(err, apiResponse) {
-   *   if (!err) {
-   *     // Cells were successfully deleted.
-   *   }
-   * };
-   *
-   * var cells = [
-   *   'follows:gwashington'
-   * ];
-   *
-   * row.deleteCells(cells, callback);
-   *
-   * //-
-   * // Delete all cells within a family.
-   * //-
-   * var cells = [
-   *   'follows',
-   * ];
-   *
-   * row.deleteCells(cells, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.deleteCells(cells).then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_delete_particular_cells
    */
   deleteCells(columns, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -482,15 +384,8 @@ class Row {
    *     request.
    * @param {boolean} callback.exists Whether the row exists or not.
    *
-   * @example
-   * row.exists(function(err, exists) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.exists().then(function(data) {
-   *   var exists = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_row_exists
    */
   exists(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -531,65 +426,8 @@ class Row {
    *     request.
    * @param {boolean} callback.matched Whether a match was found or not.
    *
-   * @example
-   * var callback = function(err, matched) {
-   *   if (!err) {
-   *     // `matched` will let us know if a match was found or not.
-   *   }
-   * };
-   *
-   * var filter = [
-   *   {
-   *     family: 'follows'
-   *   },
-   *   {
-   *     column: 'alincoln',
-   *   },
-   *   {
-   *     value: 1
-   *   }
-   * ];
-   *
-   * var config = {
-   *   onMatch: [
-   *     {
-   *       method: 'insert',
-   *       data: {
-   *         follows: {
-   *           jadams: 1
-   *         }
-   *       }
-   *     }
-   *   ]
-   * };
-   *
-   * row.filter(filter, config, callback);
-   *
-   * //-
-   * // Optionally, you can pass in an array of entries to be ran in the event
-   * // that a match is not made.
-   * //-
-   * var config = {
-   *   onNoMatch: [
-   *     {
-   *       method: 'insert',
-   *       data: {
-   *         follows: {
-   *           jadams: 1
-   *         }
-   *       }
-   *     }
-   *   ]
-   * };
-   *
-   * row.filter(filter, config, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.filter(filter, config).then(function(data) {
-   *   var matched = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_row_filter
    */
   filter(filter, config, callback) {
     const reqOpts = {
@@ -639,34 +477,8 @@ class Row {
    *     request.
    * @param {Row} callback.row The updated Row object.
    *
-   * @example
-   * //-
-   * // Use this method to grab an entire row
-   * //-
-   * var callback = function(err, row, apiResponse) {
-   *   if (!err) {
-   *     // `row.cells` has been updated.
-   *   }
-   * };
-   *
-   * row.get(callback);
-   *
-   * //-
-   * // Or pass in an array of column names to populate specific cells.
-   * // Under the hood this will create an interleave filter.
-   * //-
-   * row.get([
-   *   'follows:gwashington',
-   *   'follows:alincoln'
-   * ], callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.get().then(function(data) {
-   *   var row = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_get_row
    */
   get(columns, options, callback) {
     if (!is.array(columns)) {
@@ -751,16 +563,8 @@ class Row {
    *     request.
    * @param {object} callback.metadata The row's metadata.
    *
-   * @example
-   * row.getMetadata(function(err, metadata, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.getMetadata().then(function(data) {
-   *   var metadata = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_get_row_meta
    */
   getMetadata(options, callback) {
     if (is.function(options)) {
@@ -792,32 +596,8 @@ class Row {
    * @param {number} callback.value The updated value of the column.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * var callback = function(err, value, apiResponse) {
-   *   if (!err) {
-   *     // `value` is the value of the updated column.
-   *   }
-   * };
-   *
-   * row.increment('follows:gwashington', callback);
-   *
-   * //-
-   * // Specify a custom amount to increment the column by.
-   * //-
-   * row.increment('follows:gwashington', 2, callback);
-   *
-   * //-
-   * // To decrement a column, simply supply a negative value.
-   * //-
-   * row.increment('follows:gwashington', -1, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.increment('follows:gwashington').then(function(data) {
-   *   var value = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_row_increment
    */
   increment(column, value, gaxOptions, callback) {
     // increment('column', callback)
@@ -870,35 +650,8 @@ class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * var entry = {
-   *   follows: {
-   *     jadams: 1
-   *   }
-   * };
-   *
-   * //-
-   * // Update a single cell.
-   * //-
-   * var callback = function(err, apiResponse) {
-   *   if (!err) {
-   *     // The row has been successfully updated.
-   *   }
-   * };
-   *
-   * row.save(entry, 1, callback);
-   *
-   * //-
-   * // Or update several cells at once.
-   * //-
-   * row.save(entry, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * row.save(entry).then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/row.js</caption>
+   * region_tag:bigtable_row_save
    */
   save(entry, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {

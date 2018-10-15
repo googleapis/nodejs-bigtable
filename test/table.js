@@ -214,9 +214,9 @@ describe('Bigtable/Table', function() {
     });
   });
 
-  describe('createPrefixRange_', function() {
+  describe('createPrefixRange', function() {
     it('should create a range from the prefix', function() {
-      assert.deepStrictEqual(Table.createPrefixRange_('start'), {
+      assert.deepStrictEqual(table.createPrefixRange('start'), {
         start: 'start',
         end: {
           value: 'staru',
@@ -224,7 +224,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(Table.createPrefixRange_('X\xff'), {
+      assert.deepStrictEqual(table.createPrefixRange('X\xff'), {
         start: 'X\xff',
         end: {
           value: 'Y',
@@ -232,7 +232,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(Table.createPrefixRange_('xoo\xff'), {
+      assert.deepStrictEqual(table.createPrefixRange('xoo\xff'), {
         start: 'xoo\xff',
         end: {
           value: 'xop',
@@ -240,7 +240,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(Table.createPrefixRange_('a\xffb'), {
+      assert.deepStrictEqual(table.createPrefixRange('a\xffb'), {
         start: 'a\xffb',
         end: {
           value: 'a\xffc',
@@ -248,7 +248,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(Table.createPrefixRange_('com.google.'), {
+      assert.deepStrictEqual(table.createPrefixRange('com.google.'), {
         start: 'com.google.',
         end: {
           value: 'com.google/',
@@ -258,7 +258,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should create an inclusive bound when the prefix is empty', function() {
-      assert.deepStrictEqual(Table.createPrefixRange_('\xff'), {
+      assert.deepStrictEqual(table.createPrefixRange('\xff'), {
         start: '\xff',
         end: {
           value: '',
@@ -266,7 +266,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(Table.createPrefixRange_(''), {
+      assert.deepStrictEqual(table.createPrefixRange(''), {
         start: '',
         end: {
           value: '',
@@ -561,13 +561,99 @@ describe('Bigtable/Table', function() {
         table.createReadStream(options);
       });
 
+      it('should throw if ranges and start is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          start: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
+      });
+
+      it('should throw if ranges and end is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          end: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
+      });
+
+      it('should throw if ranges and prefix is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          prefix: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /prefix should be used exclusively to ranges\/start\/end\/prefixes\./);
+      });
+
+      it('should throw if ranges and prefixes is set together', function() {
+        const options = {
+          ranges: [
+            {
+              start: 'a',
+              end: 'b',
+            },
+            {
+              start: 'c',
+              end: 'd',
+            },
+          ],
+          prefixes: [{prefix: 'a'}],
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /prefixes should be used exclusively to ranges\/start\/end\/prefix\./);
+      });
+
+      it('should throw if prefix and start is set together', function() {
+        const options = {
+          start: 'a',
+          prefix: 'a',
+        };
+        assert.throws(function() {
+          table.createReadStream(options, assert.ifError);
+        }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
+      });
+
       describe('prefixes', function() {
         beforeEach(function() {
           FakeFilter.createRange = common.util.noop;
         });
 
         afterEach(function() {
-          Table.createPrefixRange_.restore();
+          table.createPrefixRange.restore();
         });
 
         it('should transform the prefix into a range', function(done) {
@@ -580,7 +666,7 @@ describe('Bigtable/Table', function() {
           const fakePrefix = 'abc';
 
           const prefixSpy = sinon
-            .stub(Table, 'createPrefixRange_')
+            .stub(table, 'createPrefixRange')
             .callsFake(function() {
               return fakePrefixRange;
             });
@@ -614,7 +700,7 @@ describe('Bigtable/Table', function() {
             {start: 'def', end: 'deg'},
           ];
           const prefixSpy = sinon
-            .stub(Table, 'createPrefixRange_')
+            .stub(table, 'createPrefixRange')
             .callsFake(function() {
               const callIndex = prefixSpy.callCount - 1;
               return prefixRanges[callIndex];

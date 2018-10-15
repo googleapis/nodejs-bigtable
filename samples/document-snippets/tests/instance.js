@@ -31,90 +31,60 @@ const instanceSnippets = require('../instance.js');
 describe('Instance Snippets', function() {
   after(function(done) {
     const instance = bigtable.instance(INSTANCE_ID);
-    instance.delete(done);
-  });
-
-  it('should create an instance', function(done) {
-    instanceSnippets.createInstance(INSTANCE_ID, CLUSTER_ID, err => {
-      assert.ifError(err);
+    instance.exists().then(result => {
+      const exists = result[0];
+      if (exists) {
+        instance.delete();
+      }
       done();
     });
   });
 
-  // it('should create cluster', function(done) {
-  //   instanceSnippets.createCluster(INSTANCE_ID, CLUSTER_ID, function(err, instance) {
-  //     assert.ifError(err);
-  //     done();
-  //   });
+  it('should create an instance', () => {
+    instanceSnippets.createInstance(INSTANCE_ID, CLUSTER_ID);
+  });
+
+  // it('should create cluster', () => {
+  //   instanceSnippets.createCluster(INSTANCE_ID, CLUSTER_ID);
   // });
 
   // it('should create an app-profile', function(done) {
-  //   instanceSnippets.createAppProfile(INSTANCE_ID, APP_PROFILE_ID, function(err, appProfile) {
-  //     assert.ifError(err);
-  //     done();
-  //   });
+  //   instanceSnippets.createAppProfile(INSTANCE_ID, APP_PROFILE_ID, done);
   // });
 
-  it('should create table', function(done) {
-    instanceSnippets.createTable(INSTANCE_ID, TABLE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should create table', () => {
+    instanceSnippets.createTable(INSTANCE_ID, TABLE_ID);
   });
 
-  it('should check instance existance', function(done) {
-    instanceSnippets.existsInstance(INSTANCE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should check instance existance', () => {
+    instanceSnippets.existsInstance(INSTANCE_ID);
   });
 
-  it('should get instance', function(done) {
-    instanceSnippets.getInstance(INSTANCE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should get instance', () => {
+    instanceSnippets.getInstance(INSTANCE_ID);
   });
 
-  it('should get Clusters', function(done) {
-    instanceSnippets.getClusters(INSTANCE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should get Clusters', () => {
+    instanceSnippets.getClusters(INSTANCE_ID);
   });
 
-  // it('should get appProfiles', function(done) {
-  //   instanceSnippets.getAppProfiles(INSTANCE_ID, err => {
-  //     assert.ifError(err);
-  //     done();
-  //   });
+  // it('should get appProfiles', () => {
+  //   instanceSnippets.getAppProfiles(INSTANCE_ID);
   // });
 
-  it('should get MetaData', function(done) {
-    instanceSnippets.getMetaData(INSTANCE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should get metadata', () => {
+    instanceSnippets.getMetadata(INSTANCE_ID);
   });
 
-  it('should get tables', function(done) {
-    instanceSnippets.getTables(INSTANCE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should get tables', () => {
+    instanceSnippets.getTables(INSTANCE_ID);
   });
 
-  it('should update instance', function(done) {
-    instanceSnippets.updateInstance(INSTANCE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should update instance', () => {
+    instanceSnippets.updateInstance(INSTANCE_ID);
   });
 
-  it('should delete instance', function(done) {
-    instanceSnippets.delInstance(INSTANCE_ID, err => {
-      assert.ifError(err);
-      done();
-    });
+  it('should delete instance', () => {
+    instanceSnippets.delInstance(INSTANCE_ID);
   });
 });
