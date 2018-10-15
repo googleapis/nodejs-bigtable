@@ -116,7 +116,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * //   }
    * // }
    */
-  createPrefixRange(start) {
+  static createPrefixRange(start) {
     const prefix = start.replace(new RegExp('[\xff]+$'), '');
     let endKey = '';
 
@@ -297,7 +297,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
           'prefix should be used exclusively to ranges/start/end/prefixes.'
         );
       }
-      ranges.push(this.createPrefixRange(options.prefix));
+      ranges.push(Table.createPrefixRange(options.prefix));
     }
 
     if (options.prefixes) {
@@ -307,7 +307,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         );
       }
       options.prefixes.forEach(prefix => {
-        ranges.push(this.createPrefixRange(prefix));
+        ranges.push(Table.createPrefixRange(prefix));
       });
     }
 
