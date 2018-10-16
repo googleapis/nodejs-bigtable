@@ -14,6 +14,7 @@
 - Added Table.getReplicationStates ([#279](https://github.com/googleapis/nodejs-bigtable/pull/279))
 
 ### Dependencies
+- chore(deps): update dependency sinon to v7 ([#321](https://github.com/googleapis/nodejs-bigtable/pull/321))
 - chore(deps): update dependency eslint-plugin-prettier to v3 ([#317](https://github.com/googleapis/nodejs-bigtable/pull/317))
 - fix(deps): update dependency @google-cloud/common-grpc to ^0.9.0 ([#307](https://github.com/googleapis/nodejs-bigtable/pull/307))
 - fix(deps): update dependency google-gax to ^0.20.0 ([#302](https://github.com/googleapis/nodejs-bigtable/pull/302))
@@ -25,12 +26,15 @@
 - fix(deps): update dependency google-gax to ^0.18.0 ([#263](https://github.com/googleapis/nodejs-bigtable/pull/263))
 
 ### Documentation
+- Added @example tags to src/table.js ([#239](https://github.com/googleapis/nodejs-bigtable/pull/239))
 - Added example region-tags for row object ([#266](https://github.com/googleapis/nodejs-bigtable/pull/266))
 - documentation update for getTables ([#311](https://github.com/googleapis/nodejs-bigtable/pull/311))
 - move instance snippet tests to document-snippets/tests ([#308](https://github.com/googleapis/nodejs-bigtable/pull/308))
 - Added @example tags to src/instance.js ([#222](https://github.com/googleapis/nodejs-bigtable/pull/222)) ([#252](https://github.com/googleapis/nodejs-bigtable/pull/252))
 
 ### Internal / Testing Changes
+- build: fix codecov uploading on Kokoro ([#323](https://github.com/googleapis/nodejs-bigtable/pull/323))
+- test: System test fix ([#322](https://github.com/googleapis/nodejs-bigtable/pull/322))
 - Update kokoro config ([#318](https://github.com/googleapis/nodejs-bigtable/pull/318))
 - build: prevent system/sample-test from leaking credentials
 - Update the kokoro config ([#313](https://github.com/googleapis/nodejs-bigtable/pull/313))
