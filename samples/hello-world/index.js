@@ -10,7 +10,9 @@
 
 /*eslint node/no-unsupported-features: ["error", {version: 8}]*/
 
-const bigtable = require('@google-cloud/bigtable');
+// [START dependencies]
+const Bigtable = require('@google-cloud/bigtable');
+// [END dependencies]
 
 const TABLE_ID = 'Hello-Bigtable';
 const COLUMN_FAMILY_ID = 'cf1';
@@ -36,9 +38,13 @@ const getRowGreeting = row => {
 
 (async () => {
   try {
+    // [START connecting_to_bigtable]
+    const bigtable = new Bigtable();
     const bigtableClient = bigtable(bigtableOptions);
     const instance = bigtableClient.instance(INSTANCE_ID);
+    // [END connecting_to_bigtable]
 
+    // [START creating_a_table]
     const table = instance.table(TABLE_ID);
     const [tableExists] = await table.exists();
     if (!tableExists) {
@@ -55,10 +61,20 @@ const getRowGreeting = row => {
       };
       await table.create(options);
     }
+    // [END creating_a_table]
 
+    // [START writing_rows]
     console.log('Write some greetings to the table');
     const greetings = ['Hello World!', 'Hello Bigtable!', 'Hello Node!'];
     const rowsToInsert = greetings.map((greeting, index) => ({
+      // Note: This example uses sequential numeric IDs for simplicity, but this
+      // pattern can result in poor performance in a production application.
+      // Rows are stored in sorted order by key, so sequential keys can result
+      // in poor distribution of operations across nodes.
+      //
+      // For more information about how to design an effective schema for Cloud
+      // Bigtable, see the documentation:
+      // https://cloud.google.com/bigtable/docs/schema-design
       key: `greeting${index}`,
       data: {
         [COLUMN_FAMILY_ID]: {
@@ -73,7 +89,9 @@ const getRowGreeting = row => {
       },
     }));
     await table.insert(rowsToInsert);
+    // [END writing_rows]
 
+    // [START creating_a_filter]
     const filter = [
       {
         column: {
@@ -81,19 +99,29 @@ const getRowGreeting = row => {
         },
       },
     ];
+    // [END creating_a_filter]
 
+    // [START getting_a_row]
     console.log('Reading a single row by row key');
-    const [singeRow] = await table.row('greeting0').get({filter});
-    console.log(`\tRead: ${getRowGreeting(singeRow)}`);
+    const [singleRow] = await table.row('greeting0').get({filter});
+    console.log(`\tRead: ${getRowGreeting(singleRow)}`);
+    // [END getting_a_row]
 
+    // [START scanning_all_rows]
     console.log('Reading the entire table');
+    // Note: For improved performance in production applications, call
+    // `Table#readStream` to get a stream of rows. See the API documentation:
+    // https://cloud.google.com/nodejs/docs/reference/bigtable/latest/Table#createReadStream
     const [allRows] = await table.getRows({filter});
     for (const row of allRows) {
       console.log(`\tRead: ${getRowGreeting(row)}`);
     }
+    // [END scanning_all_rows]
 
+    // [START deleting_a_table]
     console.log('Delete the table');
     await table.delete();
+    // [END deleting_a_table]
   } catch (error) {
     console.error('Something went wrong:', error);
   }
