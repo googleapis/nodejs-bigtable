@@ -76,7 +76,6 @@ class FilterError extends Error {
  * | jadams      | 1                   |                | 1                  |
  *
  * @class
- * @private
  */
 class Filter {
   constructor() {
