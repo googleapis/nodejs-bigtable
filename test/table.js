@@ -216,7 +216,7 @@ describe('Bigtable/Table', function() {
 
   describe('createPrefixRange', function() {
     it('should create a range from the prefix', function() {
-      assert.deepStrictEqual(table.createPrefixRange('start'), {
+      assert.deepStrictEqual(Table.createPrefixRange('start'), {
         start: 'start',
         end: {
           value: 'staru',
@@ -224,7 +224,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(table.createPrefixRange('X\xff'), {
+      assert.deepStrictEqual(Table.createPrefixRange('X\xff'), {
         start: 'X\xff',
         end: {
           value: 'Y',
@@ -232,7 +232,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(table.createPrefixRange('xoo\xff'), {
+      assert.deepStrictEqual(Table.createPrefixRange('xoo\xff'), {
         start: 'xoo\xff',
         end: {
           value: 'xop',
@@ -240,7 +240,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(table.createPrefixRange('a\xffb'), {
+      assert.deepStrictEqual(Table.createPrefixRange('a\xffb'), {
         start: 'a\xffb',
         end: {
           value: 'a\xffc',
@@ -248,7 +248,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(table.createPrefixRange('com.google.'), {
+      assert.deepStrictEqual(Table.createPrefixRange('com.google.'), {
         start: 'com.google.',
         end: {
           value: 'com.google/',
@@ -258,7 +258,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should create an inclusive bound when the prefix is empty', function() {
-      assert.deepStrictEqual(table.createPrefixRange('\xff'), {
+      assert.deepStrictEqual(Table.createPrefixRange('\xff'), {
         start: '\xff',
         end: {
           value: '',
@@ -266,7 +266,7 @@ describe('Bigtable/Table', function() {
         },
       });
 
-      assert.deepStrictEqual(table.createPrefixRange(''), {
+      assert.deepStrictEqual(Table.createPrefixRange(''), {
         start: '',
         end: {
           value: '',
@@ -653,7 +653,7 @@ describe('Bigtable/Table', function() {
         });
 
         afterEach(function() {
-          table.createPrefixRange.restore();
+          Table.createPrefixRange.restore();
         });
 
         it('should transform the prefix into a range', function(done) {
@@ -666,7 +666,7 @@ describe('Bigtable/Table', function() {
           const fakePrefix = 'abc';
 
           const prefixSpy = sinon
-            .stub(table, 'createPrefixRange')
+            .stub(Table, 'createPrefixRange')
             .callsFake(function() {
               return fakePrefixRange;
             });
@@ -700,7 +700,7 @@ describe('Bigtable/Table', function() {
             {start: 'def', end: 'deg'},
           ];
           const prefixSpy = sinon
-            .stub(table, 'createPrefixRange')
+            .stub(Table, 'createPrefixRange')
             .callsFake(function() {
               const callIndex = prefixSpy.callCount - 1;
               return prefixRanges[callIndex];

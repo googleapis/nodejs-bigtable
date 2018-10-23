@@ -1,7 +1,7 @@
 {
   "name": "@google-cloud/bigtable",
   "description": "Cloud Bigtable Client Library for Node.js",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "license": "Apache-2.0",
   "author": "Google Inc.",
   "engines": {
@@ -101,7 +101,7 @@
     "power-assert": "^1.4.4",
     "prettier": "^1.7.4",
     "proxyquire": "^2.0.0",
-    "sinon": "^6.0.0",
+    "sinon": "^7.0.0",
     "uuid": "^3.0.1"
   }
 }
