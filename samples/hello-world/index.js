@@ -39,8 +39,7 @@ const getRowGreeting = row => {
 (async () => {
   try {
     // [START connecting_to_bigtable]
-    const bigtable = new Bigtable();
-    const bigtableClient = bigtable(bigtableOptions);
+    const bigtableClient = new Bigtable(bigtableOptions);
     const instance = bigtableClient.instance(INSTANCE_ID);
     // [END connecting_to_bigtable]
 
