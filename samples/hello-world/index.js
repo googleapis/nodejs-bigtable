@@ -51,7 +51,7 @@ const getRowGreeting = row => {
       const options = {
         families: [
           {
-            id: COLUMN_FAMILY_ID,
+            name: COLUMN_FAMILY_ID,
             rule: {
               versions: 1,
             },
