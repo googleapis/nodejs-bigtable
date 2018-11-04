@@ -369,15 +369,6 @@ describe('Bigtable/ChunkTransformer', function() {
         commitRow: true,
       });
     });
-    it('should destroy when familyName without qualifier ', function(done) {
-      chunkTransformer.on('error', function() {
-        assert(destroySpy.called);
-        done();
-      });
-      processRowInProgressSpy.call(chunkTransformer, {
-        familyName: 'family',
-      });
-    });
     it('should reset on resetRow ', function() {
       const chunk = {resetRow: true};
       chunkTransformer.processRowInProgress(chunk);

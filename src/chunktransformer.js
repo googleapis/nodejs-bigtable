@@ -248,15 +248,6 @@ class ChunkTransformer extends Transform {
         return;
       }
     }
-    if (chunk.familyName && !chunk.qualifier) {
-      this.destroy(
-        new TransformError({
-          message: 'A qualifier must be specified',
-          chunk,
-        })
-      );
-      return;
-    }
     this.validateResetRow(chunk);
     this.validateValueSizeAndCommitRow(chunk);
   }
