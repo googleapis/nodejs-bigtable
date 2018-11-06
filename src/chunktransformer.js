@@ -131,7 +131,6 @@ class ChunkTransformer extends Transform {
    * @private
    */
   reset() {
-    this.prevRowKey = null;
     this.family = {};
     this.qualifiers = [];
     this.qualifier = {};
@@ -140,13 +139,13 @@ class ChunkTransformer extends Transform {
   }
 
   /**
-   * sets prevRowkey and calls reset when row is committed.
+   * sets lastRowkey and calls reset when row is committed.
    * @private
    */
   commit() {
     const row = this.row;
     this.reset();
-    this.prevRowKey = row.key;
+    this.lastRowKey = row.key;
   }
 
   /**
@@ -195,7 +194,7 @@ class ChunkTransformer extends Transform {
    */
   validateNewRow(chunk, newRowKey) {
     const row = this.row;
-    const prevRowKey = this.prevRowKey;
+    const lastRowKey = this.lastRowKey;
     let errorMessage;
 
     if (typeof row.key !== 'undefined') {
@@ -208,7 +207,7 @@ class ChunkTransformer extends Transform {
       errorMessage = 'A row key must be set';
     } else if (chunk.resetRow) {
       errorMessage = 'A new row cannot be reset';
-    } else if (prevRowKey === newRowKey) {
+    } else if (lastRowKey === newRowKey) {
       errorMessage = 'A commit happened but the same key followed';
     } else if (!chunk.familyName) {
       errorMessage = 'A family must be set';
