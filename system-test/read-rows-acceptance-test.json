@@ -38,6 +38,19 @@
             "value": "",
             "ts": 0
         }]
+    }, {	
+        "chunks": ["row_key: \"RK\"\nfamily_name: <\n  value: \"A\"\n>\nqualifier: <\n  value: \"C\"\n>\ntimestamp_micros: 99\nvalue: \"value-VAL_1\"\ncommit_row: false\n", "family_name: <\n  value: \"B\"\n>\ntimestamp_micros: 98\nvalue: \"value-VAL_2\"\ncommit_row: true\n"],	
+        "name": "invalid - new col family must specify qualifier",	
+        "chunks_base64": ["CgJSSxIDCgFBGgMKAUMgYzILdmFsdWUtVkFMXzFIAA==", "EgMKAUIgYjILdmFsdWUtVkFMXzJIAQ=="],	
+        "results": [{	
+            "fm": "",	
+            "rk": "",	
+            "qual": "",	
+            "label": "",	
+            "error": true,	
+            "value": "",	
+            "ts": 0	
+        }]	
     }, {
         "chunks": ["row_key: \"RK\"\nfamily_name: <\n  value: \"A\"\n>\nqualifier: <\n  value: \"C\"\n>\ntimestamp_micros: 100\nvalue: \"value-VAL\"\ncommit_row: false\n", "commit_row: true\n"],
         "name": "bare commit implies ts=0",
