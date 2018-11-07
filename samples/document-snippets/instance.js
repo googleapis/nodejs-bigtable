@@ -13,12 +13,11 @@
  * limitations under the License.
  */
 
-const Bigtable = require('@google-cloud/bigtable');
-const bigtable = new Bigtable();
-
 const snippets = {
-  createInstance: (instanceId, clusterId, callback) => {
+  createInstance: (instanceId, clusterId) => {
     // [START bigtable_create_instance]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
     // options for a PRODUCTION Instance
@@ -53,19 +52,17 @@ const snippets = {
         const newInstance = result[0];
         // let operations = result[1];
         // let apiResponse = result[2];
-
-        console.log(`Created Instance: ${newInstance.id}`);
-        callback(null, newInstance);
       })
       .catch(err => {
-        console.error('Error creating prod-instance:', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_create_instance]
   },
 
-  createCluster: (instanceId, clusterId, callback) => {
+  createCluster: (instanceId, clusterId) => {
     // [START bigtable_create_cluster]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
     // const options = {
@@ -73,31 +70,29 @@ const snippets = {
     //   nodes: 3,
     //   storage: 'ssd',
     // };
-
     const options = {
       location: 'us-central1-b',
       storage: 'hdd',
     };
-
     instance
       .createCluster(clusterId, options)
       .then(result => {
         const newCluster = result[0];
         // const operations = result[1];
         // const apiResponse = result[2];
-        console.log(`Cluster created: ${newCluster.id}`);
-        callback(null, newCluster);
       })
       .catch(err => {
-        console.error('Error creating cluster: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_create_cluster]
   },
 
   createAppProfile: (instanceId, clusterId, appProfileId, callback) => {
     // [START bigtable_create_app_profile]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+
     const cluster = instance.cluster(clusterId);
 
     const options = {
@@ -108,18 +103,18 @@ const snippets = {
 
     instance.createAppProfile(appProfileId, options, (err, appProfile) => {
       if (err) {
-        console.error('Error creating appProfile: ', err);
-        callback(err);
-        return;
+        // Handle the error.
+        return callback(err);
       }
-      console.log(`App-Profile created: ${appProfile.name}`);
-      callback(appProfile);
+      return callback(appProfile);
     });
     // [END bigtable_create_app_profile]
   },
 
-  createTable: (instanceId, tableId, callback) => {
+  createTable: (instanceId, tableId) => {
     // [START bigtable_create_table]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
     const options = {
@@ -151,110 +146,104 @@ const snippets = {
       .then(result => {
         const newTable = result[0];
         // const apiResponse = result[1];
-        console.log(`Table created: ${newTable.name}`);
-        callback(null, newTable);
       })
       .catch(err => {
-        console.error('Error creating table: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_create_table]
   },
 
-  existsInstance: (instanceId, callback) => {
+  existsInstance: instanceId => {
+    // [START bigtable_exists_instance]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_exists_instance]
     instance
       .exists()
       .then(result => {
         const exists = result[0];
-        console.log(`Instance ${instanceId} Exists: ${exists}`);
-        callback(null, exists);
       })
       .catch(err => {
-        console.error('Error in checking Instance exists: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_exists_instance]
   },
 
-  getInstance: (instanceId, callback) => {
+  getInstance: instanceId => {
+    // [START bigtable_get_instance]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_get_instance]
     instance
       .get()
       .then(result => {
         const instance = result[0];
         // const apiResponse = result[1];
-        console.log(`Instance: \n${instance}`);
-        callback(null, instance);
       })
       .catch(err => {
-        console.error('Error geting Instance: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_get_instance]
   },
 
-  getClusters: (instanceId, callback) => {
+  getClusters: instanceId => {
+    // [START bigtable_get_clusters]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_get_clusters]
     instance
       .getClusters()
       .then(result => {
-        console.log(`Clusters: \n${result[0]}`);
-        callback(null, result);
+        const clusters = result[0];
       })
       .catch(err => {
-        console.error('Error geting Clusters: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_get_clusters]
   },
 
-  getAppProfiles: (instanceId, callback) => {
+  getAppProfiles: instanceId => {
+    // [START bigtable_get_app_profiles]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_get_app_profiles]
     instance
       .getAppProfiles()
       .then(result => {
-        console.log(`AppProfiles: \n${result[0]}`);
-        callback(null, result);
+        const appProfiles = result[0];
       })
       .catch(err => {
-        console.error('Error geting AppProfiles: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_get_app_profiles]
   },
 
-  getMetaData: (instanceId, callback) => {
+  getMetadata: instanceId => {
+    // [START bigtable_get_instance_metadata]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_get_instance_metadata]
     instance
       .getMetadata()
       .then(result => {
         const metaData = result[0];
-        // const apiResponse = result[1];
-        console.log('%s %O', 'Instance Metadata:\n', metaData);
-        callback(null, metaData);
       })
       .catch(err => {
-        console.error('Error geting Metadata: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_get_instance_metadata]
   },
 
-  getTables: (instanceId, callback) => {
-    const instance = bigtable.instance(instanceId);
-
+  getTables: instanceId => {
     // [START bigtable_get_tables]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
 
     // To control how many API requests are made and page through the results
     // manually, set `autoPaginate` to false.
@@ -268,24 +257,20 @@ const snippets = {
     instance
       .getTables(options)
       .then(result => {
-        console.log(`Tables:`);
         const tables = result[0];
-        tables.forEach(t => {
-          console.log(t.id);
-        });
-        callback(null, tables);
       })
       .catch(err => {
-        console.error('Error geting Tables: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_get_tables]
   },
 
-  updateInstance: (instanceId, callback) => {
+  updateInstance: instanceId => {
+    // [START bigtable_set_meta_data]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
-    // [START bigtable_set_meta_data]
     const metadata = {
       displayName: 'updated-name',
     };
@@ -293,29 +278,27 @@ const snippets = {
     instance
       .setMetadata(metadata)
       .then(result => {
-        console.log(`API Response: \n${result[0]}`);
-        callback(null, result);
+        const apiResponse = result[0];
       })
       .catch(err => {
-        console.error('Error in Set MetaData: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_set_meta_data]
   },
 
-  delInstance: (instanceId, callback) => {
+  delInstance: instanceId => {
     // [START bigtable_del_instance]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
+
     instance
       .delete()
       .then(result => {
         const apiResponse = result[0];
-        console.log(`Instance ${instanceId} deleted: ${apiResponse}`);
-        callback(null, apiResponse);
       })
       .catch(err => {
-        console.error('Error deleting instance: ', err);
-        callback(err);
+        // Handle the error.
       });
     // [END bigtable_del_instance]
   },

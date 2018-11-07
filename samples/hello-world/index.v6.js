@@ -11,7 +11,7 @@
 
 /*eslint node/no-unsupported-features: ["error", {version: 6}]*/
 
-const bigtable = require('@google-cloud/bigtable');
+const Bigtable = require('@google-cloud/bigtable');
 const co = require('co');
 
 const TABLE_ID = 'Hello-Bigtable';
@@ -38,7 +38,7 @@ const getRowGreeting = row => {
 
 co(function*() {
   try {
-    const bigtableClient = bigtable(bigtableOptions);
+    const bigtableClient = new Bigtable(bigtableOptions);
     const instance = bigtableClient.instance(INSTANCE_ID);
 
     const table = instance.table(TABLE_ID);
@@ -48,7 +48,7 @@ co(function*() {
       const options = {
         families: [
           {
-            id: COLUMN_FAMILY_ID,
+            name: COLUMN_FAMILY_ID,
             rule: {
               versions: 1,
             },
@@ -61,6 +61,14 @@ co(function*() {
     console.log('Write some greetings to the table');
     const greetings = ['Hello World!', 'Hello Bigtable!', 'Hello Node!'];
     const rowsToInsert = greetings.map(function(greeting, index) {
+      // Note: This example uses sequential numeric IDs for simplicity, but this
+      // pattern can result in poor performance in a production application.
+      // Rows are stored in sorted order by key, so sequential keys can result
+      // in poor distribution of operations across nodes.
+      //
+      // For more information about how to design an effective schema for Cloud
+      // Bigtable, see the documentation:
+      // https://cloud.google.com/bigtable/docs/schema-design
       return {
         key: `greeting${index}`,
         data: {
@@ -87,10 +95,13 @@ co(function*() {
     ];
 
     console.log('Reading a single row by row key');
-    const [singeRow] = yield table.row('greeting0').get({filter});
-    console.log(`\tRead: ${getRowGreeting(singeRow)}`);
+    const [singleRow] = yield table.row('greeting0').get({filter});
+    console.log(`\tRead: ${getRowGreeting(singleRow)}`);
 
     console.log('Reading the entire table');
+    // Note: For improved performance in production applications, call
+    // `Table#readStream` to get a stream of rows. See the API documentation:
+    // https://cloud.google.com/nodejs/docs/reference/bigtable/latest/Table#createReadStream
     const [allRows] = yield table.getRows({filter});
     for (const row of allRows) {
       console.log(`\tRead: ${getRowGreeting(row)}`);
