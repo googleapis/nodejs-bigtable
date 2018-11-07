@@ -56,29 +56,27 @@ describe('Read Row Acceptance tests', function() {
       const results = [];
       const rawResults = test.results || [];
       const errorCount = rawResults.filter(result => result.error).length;
-      rawResults
-        .filter(result => !result.error)
-        .forEach(result => {
-          const existingRow = results.find(filter => filter.key === result.rk);
-          const row = existingRow || {key: result.rk, data: {}};
-          const data = row.data;
-          if (typeof existingRow === 'undefined') {
-            results.push(row);
-          }
-          const family = data[result.fm] || {};
-          data[result.fm] = family;
-          const qualifier = family[result.qual] || [];
-          family[result.qual] = qualifier;
-          const resultLabels = [];
-          if (result.label !== '') {
-            resultLabels.push(result.label);
-          }
-          qualifier.push({
-            value: result.value,
-            timestamp: '' + result.ts,
-            labels: resultLabels,
-          });
+      rawResults.filter(result => !result.error).forEach(result => {
+        const existingRow = results.find(filter => filter.key === result.rk);
+        const row = existingRow || {key: result.rk, data: {}};
+        const data = row.data;
+        if (typeof existingRow === 'undefined') {
+          results.push(row);
+        }
+        const family = data[result.fm] || {};
+        data[result.fm] = family;
+        const qualifier = family[result.qual] || [];
+        family[result.qual] = qualifier;
+        const resultLabels = [];
+        if (result.label !== '') {
+          resultLabels.push(result.label);
+        }
+        qualifier.push({
+          value: result.value,
+          timestamp: '' + result.ts,
+          labels: resultLabels,
         });
+      });
 
       table.bigtable = {};
       table.bigtable.request = function() {
