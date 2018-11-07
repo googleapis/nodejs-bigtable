@@ -17,4 +17,4 @@ templates = common_templates.node_library()
 s.copy(templates)
 
 subprocess.run(['npm', 'install'])
-subprocess.run(['npm', 'run', 'prettier'])
+subprocess.run(['npm', 'run', 'fix'])
