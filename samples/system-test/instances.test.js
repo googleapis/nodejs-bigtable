@@ -45,7 +45,9 @@ test.before(async () => {
 test.after.always(async () => {
   try {
     await instance.delete();
-  } catch (err) {} // ignore error
+  } catch (err) {
+    // ignore error
+  }
 });
 
 test(`should list zones`, async t => {
