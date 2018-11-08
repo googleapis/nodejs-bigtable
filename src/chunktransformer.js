@@ -211,7 +211,7 @@ class ChunkTransformer extends Transform {
       errorMessage = 'A commit happened but the same key followed';
     } else if (!chunk.familyName) {
       errorMessage = 'A family must be set';
-    } else if (null === chunk.qualifier || undefined === chunk.qualifier)= {
+    } else if (chunk.qualifier === null || chunk.qualifier === undefined) {
       errorMessage = 'A column qualifier must be set';
     }
     if (errorMessage) {
@@ -249,7 +249,7 @@ class ChunkTransformer extends Transform {
     }
     if (
       chunk.familyName &&
-      (null === chunk.qualifier || undefined === chunk.qualifier)
+      (chunk.qualifier === null || chunk.qualifier === undefined)
     ) {
       this.destroy(
         new TransformError({
