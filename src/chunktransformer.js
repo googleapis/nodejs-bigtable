@@ -211,7 +211,7 @@ class ChunkTransformer extends Transform {
       errorMessage = 'A commit happened but the same key followed';
     } else if (!chunk.familyName) {
       errorMessage = 'A family must be set';
-    } else if (!chunk.qualifier) {
+    } else if (null === chunk.qualifier || undefined === chunk.qualifier)= {
       errorMessage = 'A column qualifier must be set';
     }
     if (errorMessage) {
