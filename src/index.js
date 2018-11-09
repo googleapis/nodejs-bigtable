@@ -356,7 +356,7 @@ class Bigtable {
       }
     }
 
-    options = extend(
+    options = Object.assign(
       {
         libName: 'gccl',
         libVersion: PKG.version,
@@ -384,7 +384,7 @@ class Bigtable {
     }
 
     this.options = {
-      BigtableClient: extend(
+      BigtableClient: Object.assign(
         {
           servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
           port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
@@ -394,7 +394,7 @@ class Bigtable {
         },
         options
       ),
-      BigtableInstanceAdminClient: extend(
+      BigtableInstanceAdminClient: Object.assign(
         {
           servicePath: customEndpoint
             ? customEndpointBaseUrl
@@ -406,7 +406,7 @@ class Bigtable {
         },
         options
       ),
-      BigtableTableAdminClient: extend(
+      BigtableTableAdminClient: Object.assign(
         {
           servicePath: customEndpoint
             ? customEndpointBaseUrl
@@ -704,7 +704,7 @@ class Bigtable {
 
         // @TODO: remove `retry-request` when gax supports retryable streams.
         // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
-        const retryOpts = extend(
+        const retryOpts = Object.assign(
           {
             currentRetryAttempt: 0,
             noResponseRetries: 0,
