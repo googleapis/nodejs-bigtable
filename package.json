@@ -28,22 +28,6 @@
     "google bigtable",
     "bigtable"
   ],
-  "contributors": [
-    "Alexander Fenster <github@fenster.name>",
-    "Dave Gramlich <callmehiphop@gmail.com>",
-    "Eric Uldall <ericuldall@gmail.com>",
-    "Jason Dobry <jdobry@google.com>",
-    "Jiren Patel <jirenpatel@gmail.com>",
-    "Jun Mukai <jun.mukai@gmail.com>",
-    "Luke Sneeringer <lukesneeringer@google.com>",
-    "Misha Brukman <mbrukman@users.noreply.github.com>",
-    "Moshe Kolodny <kolodny.github@gmail.com>",
-    "Simon Corsin <simoncorsin@gmail.com>",
-    "Stephen <stephenplusplus@users.noreply.github.com>",
-    "Stephen Sawchuk <sawchuk@gmail.com>",
-    "ajaaym <34161822+ajaaym@users.noreply.github.com>",
-    "greenkeeper[bot] <greenkeeper[bot]@users.noreply.github.com>"
-  ],
   "scripts": {
     "cover": "nyc --reporter=lcov mocha test/*.js && nyc report",
     "docs": "jsdoc -c .jsdoc.js",
@@ -51,11 +35,10 @@
     "test-no-cover": "mocha test/*.js",
     "test": "npm run cover",
     "generate-scaffolding": "repo-tools generate all && repo-tools generate lib_samples_readme -l samples/ --config ../.cloud-repo-tools.json",
-    "lint": "eslint src/ samples/ system-test/ test/",
-    "prettier": "prettier --write src/*.js src/*/*.js samples/*.js samples/*/*.js test/*.js test/*/*.js system-test/*.js system-test/*/*.js",
+    "lint": "eslint '**/*.js'",
     "system-test": "mocha system-test/*.js --timeout 600000",
     "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
-    "fix": "eslint --fix '**/*.js' && npm run prettier"
+    "fix": "eslint --fix '**/*.js'"
   },
   "dependencies": {
     "@google-cloud/common-grpc": "^0.9.0",
@@ -74,15 +57,12 @@
     "lodash.flatten": "^4.2.0",
     "lodash.merge": "^4.6.0",
     "lodash.snakecase": "^4.1.1",
-    "lodash.union": "^4.6.0",
     "long": "^4.0.0",
-    "prop-assign": "^1.0.0",
     "protobufjs": "^6.8.0",
     "pumpify": "^1.3.3",
     "retry-request": "^4.0.0",
     "stream-events": "^1.0.2",
-    "string-format-obj": "^1.0.0",
-    "through2": "^2.0.3"
+    "through2": "^3.0.0"
   },
   "devDependencies": {
     "@google-cloud/nodejs-repo-tools": "^2.2.3",
@@ -92,7 +72,6 @@
     "eslint-config-prettier": "^3.0.0",
     "eslint-plugin-node": "^8.0.0",
     "eslint-plugin-prettier": "^3.0.0",
-    "glob": "^7.1.2",
     "ink-docstrap": "^1.3.0",
     "intelli-espower-loader": "^1.0.1",
     "jsdoc": "^3.5.5",

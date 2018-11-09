@@ -60,7 +60,7 @@ describe('Bigtable/ChunkTransformer', function() {
   describe('instantiation', function() {
     it('should have initial state', function() {
       assert(chunkTransformer instanceof ChunkTransformer);
-      this.prevRowKey = '';
+      this.lastRowKey = '';
       this.family = {};
       this.qualifiers = [];
       this.qualifier = {};
@@ -68,8 +68,8 @@ describe('Bigtable/ChunkTransformer', function() {
       this.state = RowStateEnum.NEW_ROW;
       assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.prevRowKey,
-        null,
+        chunkTransformer.lastRowKey,
+        undefined,
         'invalid initial state'
       );
       assert.deepStrictEqual(
@@ -142,7 +142,7 @@ describe('Bigtable/ChunkTransformer', function() {
         assert(destroySpy.called);
         done();
       });
-      chunkTransformer.prevRowKey = 'key';
+      chunkTransformer.lastRowKey = 'key';
 
       processNewRowSpy.call(chunkTransformer, {
         rowKey: 'key',
@@ -194,9 +194,9 @@ describe('Bigtable/ChunkTransformer', function() {
       assert(resetSpy.called, 'reset state failed');
       assert(commitSpy.called, 'commit row failed');
       assert.strictEqual(
-        chunkTransformer.prevRowKey,
+        chunkTransformer.lastRowKey,
         chunk.rowKey,
-        'wrong state prevrowkey'
+        'wrong state lastRowKey'
       );
       const expectedRow = {
         key: chunk.rowKey,
@@ -351,7 +351,7 @@ describe('Bigtable/ChunkTransformer', function() {
         timestampMicros: 10,
       });
     });
-    it('should destroy when rowKey not equal to prevRowKey', function(done) {
+    it('should destroy when rowKey not equal to lastRowKey', function(done) {
       chunkTransformer.on('error', function() {
         assert(destroySpy.called);
         done();
@@ -458,6 +458,53 @@ describe('Bigtable/ChunkTransformer', function() {
               },
             ],
           },
+        },
+      };
+      const row = rows[0];
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
+      assert.strictEqual(
+        chunkTransformer.state,
+        RowStateEnum.NEW_ROW,
+        'state mismatch'
+      );
+    });
+    it('chunk with familyName and empty qualifier should produce row', function() {
+      chunkTransformer.qualifiers = [];
+      chunkTransformer.family = {
+        qualifier: chunkTransformer.qualifiers,
+      };
+      chunkTransformer.row = {
+        key: 'key',
+        data: {
+          family: chunkTransformer.family,
+        },
+      };
+      const chunk = {
+        commitRow: true,
+        familyName: {value: 'family2'},
+        qualifier: '',
+        value: 'value',
+        timestampMicros: 0,
+        labels: [],
+        valueSize: 0,
+      };
+      chunkTransformer.processRowInProgress(chunk);
+      assert(commitSpy.called, 'did not call commit');
+      assert(resetSpy.called, 'did not call reset');
+      assert.strictEqual(rows.length, 1, 'wrong call to push');
+      const expectedRow = {
+        key: 'key',
+        data: {
+          family: {
+            qualifier: [
+              {
+                value: 'value',
+                timestamp: 0,
+                labels: [],
+              },
+            ],
+          },
+          family2: {},
         },
       };
       const row = rows[0];
@@ -963,7 +1010,7 @@ describe('Bigtable/ChunkTransformer', function() {
   });
   describe('reset', function() {
     it('should reset initial state', function() {
-      chunkTransformer.prevRowKey = 'prevkey';
+      chunkTransformer.lastRowKey = 'prevkey';
       chunkTransformer.qualifier = {
         value: 'value',
         size: 0,
@@ -984,8 +1031,8 @@ describe('Bigtable/ChunkTransformer', function() {
       chunkTransformer.reset();
       assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.prevRowKey,
-        null,
+        chunkTransformer.lastRowKey,
+        'prevkey',
         'invalid initial state'
       );
       assert.deepStrictEqual(
@@ -1015,8 +1062,8 @@ describe('Bigtable/ChunkTransformer', function() {
     beforeEach(function() {
       resetSpy = sinon.spy(chunkTransformer, 'reset');
     });
-    it('should reset to initial state and set prevRowKey', function() {
-      chunkTransformer.prevRowKey = '';
+    it('should reset to initial state and set lastRowKey', function() {
+      chunkTransformer.lastRowKey = '';
       chunkTransformer.qualifier = {
         value: 'value',
         size: 0,
@@ -1038,7 +1085,7 @@ describe('Bigtable/ChunkTransformer', function() {
       assert(resetSpy.called, 'did not call reset');
       assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.prevRowKey,
+        chunkTransformer.lastRowKey,
         'key',
         'invalid initial state'
       );
