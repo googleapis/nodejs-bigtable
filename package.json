@@ -70,7 +70,6 @@
     "google-gax": "^0.20.0",
     "is": "^3.0.1",
     "is-utf8": "^0.2.1",
-    "lodash.flatten": "^4.2.0",
     "lodash.merge": "^4.6.0",
     "lodash.snakecase": "^4.1.1",
     "long": "^4.0.0",

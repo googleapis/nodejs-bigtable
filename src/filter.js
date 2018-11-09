@@ -15,7 +15,6 @@
  */
 
 const arrify = require('arrify');
-const extend = require('extend');
 const escapeStringRegexp = require('escape-string-regexp');
 const is = require('is');
 const isUtf8 = require('is-utf8');
@@ -161,11 +160,11 @@ class Filter {
     const range = {};
 
     if (start) {
-      extend(range, createBound('start', start, key));
+      Object.assign(range, createBound('start', start, key));
     }
 
     if (end) {
-      extend(range, createBound('end', end, key));
+      Object.assign(range, createBound('end', end, key));
     }
 
     return range;
