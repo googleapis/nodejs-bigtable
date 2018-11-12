@@ -17,8 +17,6 @@
 const arrify = require('arrify');
 const {promisifyAll} = require('@google-cloud/promisify');
 const dotProp = require('dot-prop');
-const extend = require('extend');
-const flatten = require('lodash.flatten');
 const is = require('is');
 
 const Filter = require('./filter');
@@ -458,8 +456,7 @@ class Row {
 
     function createFlatMutationsList(entries) {
       entries = arrify(entries).map(entry => Mutation.parse(entry).mutations);
-
-      return flatten(entries);
+      return entries.reduce((a, b) => a.concat(b), []);
     }
   }
 
@@ -522,7 +519,7 @@ class Row {
       filter = arrify(filter).concat(options.filter);
     }
 
-    const getRowsOptions = extend({}, options, {
+    const getRowsOptions = Object.assign({}, options, {
       keys: [this.id],
       filter,
     });
