@@ -16,7 +16,6 @@
 
 const {paginator} = require('@google-cloud/paginator');
 const {promisifyAll} = require('@google-cloud/promisify');
-const extend = require('extend');
 const is = require('is');
 const snakeCase = require('lodash.snakecase');
 
@@ -622,7 +621,7 @@ Please use the format 'my-instance' or '${
       options = {};
     }
 
-    const reqOpts = extend({}, options, {
+    const reqOpts = Object.assign({}, options, {
       parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     });
@@ -673,7 +672,7 @@ Please use the format 'my-instance' or '${
       gaxOptions = {};
     }
     const reqOpts = {
-      instance: extend({name: this.name}, metadata),
+      instance: Object.assign({name: this.name}, metadata),
       updateMask: {
         paths: [],
       },

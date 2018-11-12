@@ -18,7 +18,6 @@
 
 const assert = require('assert');
 const common = require('@google-cloud/common-grpc');
-const extend = require('extend');
 const gax = require('google-gax');
 const grpc = new gax.GrpcClient().grpc;
 const proxyquire = require('proxyquire');
@@ -37,7 +36,7 @@ function fakeV2() {}
 
 let promisified = false;
 let replaceProjectIdTokenOverride;
-const fakePromisify = extend({}, promisify, {
+const fakePromisify = Object.assign({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Bigtable') {
       return;
@@ -50,7 +49,7 @@ const fakePromisify = extend({}, promisify, {
     ]);
   },
 });
-const fakeReplaceProjectIdToken = extend({}, projectify, {
+const fakeReplaceProjectIdToken = Object.assign({}, projectify, {
   replaceProjectIdToken: function(reqOpts) {
     if (replaceProjectIdTokenOverride) {
       return replaceProjectIdTokenOverride.apply(null, arguments);
@@ -156,7 +155,7 @@ describe('Bigtable', function() {
       googleAuthOverride = function(options_) {
         assert.deepStrictEqual(
           options_,
-          extend(
+          Object.assign(
             {
               libName: 'gccl',
               libVersion: PKG.version,
@@ -196,7 +195,7 @@ describe('Bigtable', function() {
       };
 
       assert.deepStrictEqual(bigtable.options, {
-        BigtableClient: extend(
+        BigtableClient: Object.assign(
           {
             servicePath: 'bigtable.googleapis.com',
             port: 443,
@@ -204,7 +203,7 @@ describe('Bigtable', function() {
           },
           defaultOptions
         ),
-        BigtableInstanceAdminClient: extend(
+        BigtableInstanceAdminClient: Object.assign(
           {
             servicePath: 'bigtableadmin.googleapis.com',
             port: 443,
@@ -212,7 +211,7 @@ describe('Bigtable', function() {
           },
           defaultOptions
         ),
-        BigtableTableAdminClient: extend(
+        BigtableTableAdminClient: Object.assign(
           {
             servicePath: 'bigtableadmin.googleapis.com',
             port: 443,
@@ -244,7 +243,7 @@ describe('Bigtable', function() {
       );
 
       assert.deepStrictEqual(bigtable.options, {
-        BigtableClient: extend(
+        BigtableClient: Object.assign(
           {
             servicePath: 'override',
             port: 8080,
@@ -252,7 +251,7 @@ describe('Bigtable', function() {
           },
           options
         ),
-        BigtableInstanceAdminClient: extend(
+        BigtableInstanceAdminClient: Object.assign(
           {
             servicePath: 'override',
             port: 8080,
@@ -260,7 +259,7 @@ describe('Bigtable', function() {
           },
           options
         ),
-        BigtableTableAdminClient: extend(
+        BigtableTableAdminClient: Object.assign(
           {
             servicePath: 'override',
             port: 8080,
@@ -288,7 +287,7 @@ describe('Bigtable', function() {
       assert.strictEqual(bigtable.customEndpoint, options.apiEndpoint);
 
       assert.deepStrictEqual(bigtable.options, {
-        BigtableClient: extend(
+        BigtableClient: Object.assign(
           {
             servicePath: 'customEndpoint',
             port: 9090,
@@ -296,7 +295,7 @@ describe('Bigtable', function() {
           },
           options
         ),
-        BigtableInstanceAdminClient: extend(
+        BigtableInstanceAdminClient: Object.assign(
           {
             servicePath: 'customEndpoint',
             port: 9090,
@@ -304,7 +303,7 @@ describe('Bigtable', function() {
           },
           options
         ),
-        BigtableTableAdminClient: extend(
+        BigtableTableAdminClient: Object.assign(
           {
             servicePath: 'customEndpoint',
             port: 9090,

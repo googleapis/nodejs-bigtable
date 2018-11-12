@@ -150,18 +150,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
    * @param {Family} callback.family The metadata.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * family.create(function(err, family, apiResponse) {
-   *   // The column family was created successfully.
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * family.create().then(function(data) {
-   *   const family = data[0];
-   *   const apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/family.js</caption>
+   * region_tag:bigtable_create_family
    */
   create(options, callback) {
     if (is.fn(options)) {
@@ -182,15 +172,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * family.delete(function(err, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * family.delete().then(function(data) {
-   *   const apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/family.js</caption>
+   * region_tag:bigtable_del_family
    */
   delete(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -227,15 +210,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
    *     request.
    * @param {boolean} callback.exists Whether the family exists or not.
    *
-   * @example
-   * family.exists(function(err, exists) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * family.exists().then(function(data) {
-   *   const exists = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/family.js</caption>
+   * region_tag:bigtable_exists_family
    */
   exists(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -275,18 +251,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
    * @param {Family} callback.family The Family object.
    * @param {object} callback.apiResponse The resource as it exists in the API.
    *
-   * @example
-   * family.get(function(err, family, apiResponse) {
-   *   // `family.metadata` has been populated.
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * family.get().then(function(data) {
-   *   const family = data[0];
-   *   const apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/family.js</caption>
+   * region_tag:bigtable_get_family
    */
   get(options, callback) {
     if (is.fn(options)) {
@@ -322,16 +288,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
    *     request.
    * @param {object} callback.metadata The metadata.
    *
-   * @example
-   * family.getMetadata(function(err, metadata, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * family.getMetadata().then(function(data) {
-   *   var metadata = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/family.js</caption>
+   * region_tag:bigtable_get_family_meta
    */
   getMetadata(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -375,22 +333,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * var metadata = {
-   *   rule: {
-   *     versions: 2,
-   *     union: true
-   *   }
-   * };
-   *
-   * family.setMetadata(metadata, function(err, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * family.setMetadata(metadata).then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/family.js</caption>
+   * region_tag:bigtable_set_family_meta
    */
   setMetadata(metadata, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {

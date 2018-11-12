@@ -19,7 +19,6 @@
 const assert = require('assert');
 const promisify = require('@google-cloud/promisify');
 const paginator = require('@google-cloud/paginator');
-const extend = require('extend');
 const proxyquire = require('proxyquire');
 
 const AppProfile = require('../src/app-profile.js');
@@ -28,7 +27,7 @@ const Family = require('../src/family.js');
 const Table = require('../src/table.js');
 
 let promisified = false;
-const fakePromisify = extend({}, promisify, {
+const fakePromisify = Object.assign({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Instance') {
       return;
@@ -38,7 +37,7 @@ const fakePromisify = extend({}, promisify, {
   },
 });
 
-const fakePaginator = extend({}, paginator, {
+const fakePaginator = Object.assign({}, paginator, {
   paginator: {
     extend: function() {
       this.calledWith_ = arguments;

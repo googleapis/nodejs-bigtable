@@ -17,7 +17,6 @@
 'use strict';
 
 const assert = require('assert');
-const extend = require('extend');
 const proxyquire = require('proxyquire');
 const pumpify = require('pumpify');
 const sinon = require('sinon').createSandbox();
@@ -33,7 +32,7 @@ const ChunkTransformer = require('../src/chunktransformer.js');
 const Cluster = require('../src/cluster.js');
 
 let promisified = false;
-const fakePromisify = extend({}, promisify, {
+const fakePromisify = Object.assign({}, promisify, {
   promisifyAll: function(Class, options) {
     if (Class.name !== 'Table') {
       return;
@@ -2161,14 +2160,14 @@ describe('Bigtable/Table', function() {
             assert.strictEqual(err.name, 'PartialFailureError');
 
             assert.deepStrictEqual(err.errors, [
-              extend(
+              Object.assign(
                 {
                   entry: entries[0],
                 },
                 parsedStatuses[0]
               ),
 
-              extend(
+              Object.assign(
                 {
                   entry: entries[1],
                 },

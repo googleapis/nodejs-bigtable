@@ -18,14 +18,13 @@
 
 const assert = require('assert');
 const promisify = require('@google-cloud/promisify');
-const extend = require('extend');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon').createSandbox();
 
 const Mutation = require('../src/mutation.js');
 
 let promisified = false;
-const fakePromisify = extend({}, promisify, {
+const fakePromisify = Object.assign({}, promisify, {
   promisifyAll: function(Class) {
     if (Class.name === 'Row') {
       promisified = true;

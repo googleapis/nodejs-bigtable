@@ -18,9 +18,7 @@ const arrify = require('arrify');
 const common = require('@google-cloud/common-grpc');
 const {promisifyAll} = require('@google-cloud/promisify');
 const concat = require('concat-stream');
-const flatten = require('lodash.flatten');
 const is = require('is');
-const propAssign = require('prop-assign');
 const pumpify = require('pumpify');
 const through = require('through2');
 
@@ -814,9 +812,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       gaxOptions = {};
     }
 
-    entries = arrify(entries).map(
-      propAssign('method', Mutation.methods.INSERT)
-    );
+    entries = arrify(entries).map(entry => {
+      entry.method = Mutation.methods.INSERT;
+      return entry;
+    });
 
     return this.mutate(entries, {gaxOptions}, callback);
   }
@@ -850,7 +849,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       options = {};
     }
 
-    entries = flatten(arrify(entries));
+    entries = arrify(entries).reduce((a, b) => a.concat(b), []);
 
     let numRequestsMade = 0;
 

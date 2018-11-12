@@ -468,6 +468,53 @@ describe('Bigtable/ChunkTransformer', function() {
         'state mismatch'
       );
     });
+    it('chunk with familyName and empty qualifier should produce row', function() {
+      chunkTransformer.qualifiers = [];
+      chunkTransformer.family = {
+        qualifier: chunkTransformer.qualifiers,
+      };
+      chunkTransformer.row = {
+        key: 'key',
+        data: {
+          family: chunkTransformer.family,
+        },
+      };
+      const chunk = {
+        commitRow: true,
+        familyName: {value: 'family2'},
+        qualifier: '',
+        value: 'value',
+        timestampMicros: 0,
+        labels: [],
+        valueSize: 0,
+      };
+      chunkTransformer.processRowInProgress(chunk);
+      assert(commitSpy.called, 'did not call commit');
+      assert(resetSpy.called, 'did not call reset');
+      assert.strictEqual(rows.length, 1, 'wrong call to push');
+      const expectedRow = {
+        key: 'key',
+        data: {
+          family: {
+            qualifier: [
+              {
+                value: 'value',
+                timestamp: 0,
+                labels: [],
+              },
+            ],
+          },
+          family2: {},
+        },
+      };
+      const row = rows[0];
+      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
+      assert.strictEqual(
+        chunkTransformer.state,
+        RowStateEnum.NEW_ROW,
+        'state mismatch'
+      );
+    });
     it('chunk with new family and commitRow should produce row', function() {
       chunkTransformer.qualifiers = [];
       chunkTransformer.family = {

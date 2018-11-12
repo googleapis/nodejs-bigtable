@@ -138,32 +138,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const cluster = instance.cluster('my-cluster');
-   *
-   * cluster.create(function(err, cluster, operation, apiResponse) {
-   *   if (err) {
-   *     // Error handling omitted.
-   *   }
-   *
-   *   operation
-   *     .on('error', console.error)
-   *     .on('complete', function() {
-   *       // The cluster was created successfully.
-   *     });
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * cluster.create().then(function(data) {
-   *   const cluster = data[0];
-   *   const operation = data[1];
-   *   const apiResponse = data[2];
-   * });
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_create_cluster
    */
   create(options, callback) {
     if (is.fn(options)) {
@@ -184,15 +160,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * cluster.delete(function(err, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * cluster.delete().then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_delete_cluster
    */
   delete(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -223,15 +192,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *     request.
    * @param {boolean} callback.exists Whether the cluster exists or not.
    *
-   * @example
-   * cluster.exists(function(err, exists) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * cluster.exists().then(function(data) {
-   *   var exists = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_exists_cluster
    */
   exists(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -264,18 +226,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * cluster.get(function(err, cluster, apiResponse) {
-   *   // The `cluster` data has been populated.
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * cluster.get().then(function(data) {
-   *   var cluster = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_get_cluster
    */
   get(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -299,16 +251,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    * @param {object} callback.metadata The metadata.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * cluster.getMetadata(function(err, metadata, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * cluster.getMetadata().then(function(data) {
-   *   var metadata = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_get_meta
    */
   getMetadata(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -348,39 +292,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const cluster = instance.cluster('my-cluster');
-   *
-   * const callback = function(err, operation, apiResponse) {
-   *   if (err) {
-   *     // Error handling omitted.
-   *   }
-   *
-   *   operation
-   *     .on('error', console.error)
-   *     .on('complete', function() {
-   *       // The cluster was updated successfully.
-   *     });
-   * };
-   *
-   * const metadata = {
-   *   location: 'us-central1-b',
-   *   nodes: 3,
-   *   storage: 'ssd'
-   * };
-   *
-   * cluster.setMetadata(metadata, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * cluster.setMetadata(metadata).then(function(data) {
-   *   const operation = data[0];
-   *   const apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_set_meta
    */
   setMetadata(metadata, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
