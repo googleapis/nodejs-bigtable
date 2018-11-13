@@ -4,6 +4,39 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## v1.0.0
+
+11-13-2018 08:31 PST
+
+
+### Implementation Changes
+- Empty column qualifiers are no longer rejected ([#353](https://github.com/googleapis/nodejs-bigtable/pull/353))
+
+### Dependencies
+- fix(deps): update dependency google-gax to ^0.22.0 ([#366](https://github.com/googleapis/nodejs-bigtable/pull/366))
+- chore(deps): update dependency @google-cloud/nodejs-repo-tools to v3 ([#364](https://github.com/googleapis/nodejs-bigtable/pull/364))
+
+### Documentation
+- Added example region-tag for Family.js ([#262](https://github.com/googleapis/nodejs-bigtable/pull/262))
+- Added example region-tags for cluster object ([#284](https://github.com/googleapis/nodejs-bigtable/pull/284))
+- chore: drop contributors from multiple places ([#363](https://github.com/googleapis/nodejs-bigtable/pull/363))
+- fix(samples): Fixing the Hello world ([#339](https://github.com/googleapis/nodejs-bigtable/pull/339))
+
+### Internal / Testing Changes
+- chore: update eslintignore config ([#365](https://github.com/googleapis/nodejs-bigtable/pull/365))
+- refactor: use object.assign and drop lodash.flatten ([#362](https://github.com/googleapis/nodejs-bigtable/pull/362))
+- chore: remove a few unused dependencies ([#358](https://github.com/googleapis/nodejs-bigtable/pull/358))
+- chore: use latest npm on Windows ([#361](https://github.com/googleapis/nodejs-bigtable/pull/361))
+- chore: fix and run the linter ([#357](https://github.com/googleapis/nodejs-bigtable/pull/357))
+- fix(deps): update dependency through2 to v3 ([#359](https://github.com/googleapis/nodejs-bigtable/pull/359))
+- Cleanup of `ChunkTransformer` ([#355](https://github.com/googleapis/nodejs-bigtable/pull/355))
+- chore: update CircleCI config ([#352](https://github.com/googleapis/nodejs-bigtable/pull/352))
+- chore: include build in eslintignore ([#349](https://github.com/googleapis/nodejs-bigtable/pull/349))
+- chore(deps): update dependency eslint-plugin-node to v8 ([#345](https://github.com/googleapis/nodejs-bigtable/pull/345))
+- chore: update issue templates ([#344](https://github.com/googleapis/nodejs-bigtable/pull/344))
+- chore: remove old issue template ([#340](https://github.com/googleapis/nodejs-bigtable/pull/340))
+- build: run tests on node11 ([#338](https://github.com/googleapis/nodejs-bigtable/pull/338))
+
 ## v0.16.1
 
 ### Dependencies
