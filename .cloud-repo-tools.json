@@ -4,14 +4,28 @@
   "product": "bigtable",
   "client_reference_url":
     "https://cloud.google.com/nodejs/docs/reference/bigtable/latest/",
-  "release_quality": "beta",
+  "release_quality": "ga",
   "samples": [
+    {
+      "id": "quickstart",
+      "name": "Quickstart",
+      "file": "quickstart.js",
+      "docs_link": "https://cloud.google.com/nodejs/docs/reference/bigtable/latest/",
+      "usage": "node quickstart.js --help"
+    },
     {
       "id": "instances",
       "name": "Instances",
       "file": "instances.js",
-      "docs_link": "https://cloud.google.com/bigtable/docs/",
+      "docs_link": "https://cloud.google.com/nodejs/docs/reference/bigtable/latest/",
       "usage": "node instances.js --help"
+    },
+    {
+      "id": "tables",
+      "name": "Tables",
+      "file": "tableadmin.js",
+      "docs_link": "https://cloud.google.com/bigtable/docs/",
+      "usage": "node tableadmin.js --help"
     }
   ]
 }
