@@ -20,9 +20,13 @@ const snippets = {
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const appProfile = instance.appProfile(appProfileId);
+    // set routing policy, required for creating an app-profile
+    const options = {
+      routing: 'any',
+    };
 
     appProfile
-      .create()
+      .create(options)
       .then(result => {
         const appProfile = result[0];
         const apiResponse = result[1];
