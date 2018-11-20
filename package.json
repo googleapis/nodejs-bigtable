@@ -80,6 +80,7 @@
     "prettier": "^1.7.4",
     "proxyquire": "^2.0.0",
     "sinon": "^7.0.0",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "@types/sinon": "5.0.5"
   }
 }
