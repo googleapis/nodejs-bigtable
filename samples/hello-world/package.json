@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@google-cloud/bigtable": "^0.16.0",
+    "@google-cloud/bigtable": "^1.0.0",
     "co": "^4.6.0"
   },
   "engines": {
