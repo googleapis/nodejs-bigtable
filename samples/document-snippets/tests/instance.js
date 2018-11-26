@@ -29,15 +29,16 @@ const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtab
 const instanceSnippets = require('../instance.js');
 
 describe('Instance Snippets', function() {
-  after(function(done) {
-    const instance = bigtable.instance(INSTANCE_ID);
-    instance.exists().then(result => {
-      const exists = result[0];
+  after(async () => {
+    try {
+      const instance = await bigtable.instance(INSTANCE_ID);
+      const [exists] = await instance.exists();
       if (exists) {
         instance.delete();
       }
-      done();
-    });
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
   it('should create an instance', () => {
