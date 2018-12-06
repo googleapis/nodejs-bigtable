@@ -30,23 +30,31 @@ const familySnippets = require('../family.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe('Family Snippets', function() {
+describe('Family Snippets', () => {
   before(async () => {
-    await instance.create({
-      clusters: [
-        {
-          name: CLUSTER_ID,
-          location: 'us-central1-f',
-          storage: 'hdd',
-        },
-      ],
-      type: 'DEVELOPMENT',
-    });
-    await instance.createTable(TABLE_ID);
+    try {
+      await instance.create({
+        clusters: [
+          {
+            name: CLUSTER_ID,
+            location: 'us-central1-f',
+            storage: 'hdd',
+          },
+        ],
+        type: 'DEVELOPMENT',
+      });
+      await instance.createTable(TABLE_ID);
+    } catch (err) {
+      //
+    }
   });
 
   after(async () => {
-    await instance.delete();
+    try {
+      await instance.delete();
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
   it('should create a column family', () => {

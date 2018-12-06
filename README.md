@@ -4,8 +4,7 @@
 
 
 [![release level](https://img.shields.io/badge/release%20level-general%20availability%20%28GA%29-brightgreen.svg?style&#x3D;flat)](https://cloud.google.com/terms/launch-stages)
-[![CircleCI](https://img.shields.io/circleci/project/github/googleapis/nodejs-bigtable.svg?style=flat)](https://circleci.com/gh/googleapis/nodejs-bigtable)
-[![AppVeyor](https://ci.appveyor.com/api/projects/status/github/googleapis/nodejs-bigtable?branch=master&svg=true)](https://ci.appveyor.com/project/googleapis/nodejs-bigtable)
+[![npm version](https://img.shields.io/npm/v/@google-cloud/bigtable.svg)](https://www.npmjs.org/package/@google-cloud/bigtable)
 [![codecov](https://img.shields.io/codecov/c/github/googleapis/nodejs-bigtable/master.svg?style=flat)](https://codecov.io/gh/googleapis/nodejs-bigtable)
 
 > Node.js idiomatic client for [Cloud Bigtable][product-docs].
@@ -143,3 +142,4 @@ See [LICENSE](https://github.com/googleapis/nodejs-bigtable/blob/master/LICENSE)
 [client-docs]: https://cloud.google.com/nodejs/docs/reference/bigtable/latest/
 [product-docs]: https://cloud.google.com/bigtable/docs/
 [shell_img]: //gstatic.com/cloudssh/images/open-btn.png
+
