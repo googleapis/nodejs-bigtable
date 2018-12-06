@@ -14,6 +14,28 @@
  * limitations under the License.
  */
 
+/**
+ * @namespace google
+ */
+/**
+ * @namespace google.bigtable
+ */
+/**
+ * @namespace google.bigtable.v2
+ */
+/**
+ * @namespace google.bigtable.admin.v2
+ */
+/**
+ * @namespace google.iam.v1
+ */
+/**
+ * @namespace google.rpc
+ */
+/**
+ * @namespace google.protobuf
+ */
+
 const arrify = require('arrify');
 const {replaceProjectIdToken} = require('@google-cloud/projectify');
 const {promisifyAll} = require('@google-cloud/promisify');
