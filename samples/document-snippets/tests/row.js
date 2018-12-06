@@ -31,21 +31,29 @@ const instance = bigtable.instance(INSTANCE_ID);
 
 describe('Row Snippets', function() {
   before(async () => {
-    await instance.create({
-      clusters: [
-        {
-          name: CLUSTER_ID,
-          location: 'us-central1-f',
-          storage: 'hdd',
-        },
-      ],
-      type: 'DEVELOPMENT',
-    });
-    await instance.createTable(TABLE_ID);
+    try {
+      await instance.create({
+        clusters: [
+          {
+            name: CLUSTER_ID,
+            location: 'us-central1-f',
+            storage: 'hdd',
+          },
+        ],
+        type: 'DEVELOPMENT',
+      });
+      await instance.createTable(TABLE_ID);
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
   after(async () => {
-    await instance.delete();
+    try {
+      await instance.delete();
+    } catch (err) {
+      /// Handle the error.
+    }
   });
 
   it('should create a row', () => {

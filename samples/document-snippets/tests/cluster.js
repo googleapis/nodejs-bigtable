@@ -27,27 +27,33 @@ const clusterSnippets = require('../cluster.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe('Cluster Snippets', function() {
-  before(() => {
-    instance.create({
-      clusters: [
-        {
-          name: CLUSTER_ID,
-          location: 'us-central1-f',
-          storage: 'hdd',
-        },
-      ],
-      type: 'DEVELOPMENT',
-    });
+describe('Cluster Snippets', () => {
+  before(async () => {
+    try {
+      await instance.create({
+        clusters: [
+          {
+            name: CLUSTER_ID,
+            location: 'us-central1-f',
+            storage: 'hdd',
+          },
+        ],
+        type: 'DEVELOPMENT',
+      });
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
-  after(() => {
-    instance.exists().then(result => {
-      const exists = result[0];
+  after(async () => {
+    try {
+      const [exists] = await instance.exists();
       if (exists) {
-        instance.delete();
+        await instance.delete();
       }
-    });
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
   it('should create a cluster', () => {

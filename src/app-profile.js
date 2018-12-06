@@ -126,25 +126,8 @@ Please use the format 'my-app-profile' or '${
    *
    * @param {object} [options] See {@link Instance#createAppProfile}.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const appProfile = instance.appProfile('my-appProfile');
-   *
-   * appProfile.create(function(err, appProfile, apiResponse) {
-   *   if (!err) {
-   *     // The app profile was created successfully.
-   *   }
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * appProfile.create().then(function(data) {
-   *   const appProfile = data[0];
-   *   const apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * region_tag:bigtable_create_app_profile
    */
   create(options, callback) {
     if (is.fn(options)) {
@@ -153,6 +136,7 @@ Please use the format 'my-app-profile' or '${
     }
     this.instance.createAppProfile(this.id, options, callback);
   }
+
   /**
    * Delete the app profile.
    *
@@ -166,15 +150,8 @@ Please use the format 'my-app-profile' or '${
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * appProfile.delete(function(err, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * appProfile.delete().then(function(data) {
-   *   var apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * region_tag:bigtable_delete_app_profile
    */
   delete(options, callback) {
     if (is.fn(options)) {
@@ -211,15 +188,8 @@ Please use the format 'my-app-profile' or '${
    *     request.
    * @param {boolean} callback.exists Whether the app profile exists or not.
    *
-   * @example
-   * appProfile.exists(function(err, exists) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * appProfile.exists().then(function(data) {
-   *   var exists = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * region_tag:bigtable_exists_app_profile
    */
   exists(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -248,18 +218,8 @@ Please use the format 'my-app-profile' or '${
    * @param {object} [gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    *
-   * @example
-   * appProfile.get(function(err, appProfile, apiResponse) {
-   *   // The `appProfile` data has been populated.
-   * });
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * appProfile.get().then(function(data) {
-   *   var appProfile = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * region_tag:bigtable_get_app_profile
    */
   get(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -283,16 +243,8 @@ Please use the format 'my-app-profile' or '${
    * @param {object} callback.metadata The metadata.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * appProfile.getMetadata(function(err, metadata, apiResponse) {});
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * appProfile.getMetadata().then(function(data) {
-   *   var metadata = data[0];
-   *   var apiResponse = data[1];
-   * });
+   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * region_tag:bigtable_app_profile_get_meta
    */
   getMetadata(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
@@ -330,27 +282,8 @@ Please use the format 'my-app-profile' or '${
    * @param {?error} callback.err An error returned while making this request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example
-   * const Bigtable = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const cluster = instance.cluster('my-cluster');
-   * const appProfile = instance.appProfile('my-appProfile');
-   *
-   * const metadata = {
-   *   description: 'My Updated App Profile',
-   *   routing: cluster,
-   *   allowTransactionalWrites: true,
-   * };
-   *
-   * appProfile.setMetadata(metadata, callback);
-   *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
-   * appProfile.setMetadata(metadata).then(function(data) {
-   *   const apiResponse = data[0];
-   * });
+   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * region_tag:bigtable_app_profile_set_meta
    */
   setMetadata(metadata, gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
