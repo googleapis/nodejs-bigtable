@@ -17,9 +17,8 @@
 'use strict';
 
 const assert = require('assert');
-const async = require('async');
 const uuid = require('uuid');
-
+const Q = require('p-queue');
 const Bigtable = require('../');
 const AppProfile = require('../src/app-profile.js');
 const Cluster = require('../src/cluster.js');
@@ -29,465 +28,312 @@ const Row = require('../src/row.js');
 
 const PREFIX = 'gcloud-tests-';
 
-describe('Bigtable', function() {
+describe('Bigtable', () => {
   const bigtable = new Bigtable();
-
   const INSTANCE = bigtable.instance(generateId('instance'));
   const TABLE = INSTANCE.table(generateId('table'));
   const APP_PROFILE_ID = generateId('appProfile');
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
   const CLUSTER_ID = generateId('cluster');
 
-  before(function(done) {
-    INSTANCE.create(
-      {
-        clusters: [
-          {
-            id: CLUSTER_ID,
-            location: 'us-central1-c',
-            nodes: 3,
-          },
-        ],
-      },
-      function(err, instance, operation) {
-        if (err) {
-          done(err);
-          return;
-        }
+  before(async () => {
+    const [, operation] = await INSTANCE.create({
+      clusters: [
+        {
+          id: CLUSTER_ID,
+          location: 'us-central1-c',
+          nodes: 3,
+        },
+      ],
+    });
+    await operation.promise();
+    await TABLE.create({
+      families: ['follows', 'traits'],
+    });
+    await INSTANCE.createAppProfile(APP_PROFILE_ID, {
+      routing: 'any',
+      ignoreWarnings: true,
+    });
+  });
 
-        operation.on('error', done).on('complete', function() {
-          TABLE.create(
-            {
-              families: ['follows', 'traits'],
-            },
-            function(err) {
-              if (err) {
-                done(err);
-                return;
-              }
-              INSTANCE.createAppProfile(
-                APP_PROFILE_ID,
-                {
-                  routing: 'any',
-                  ignoreWarnings: true,
-                },
-                done
-              );
-            }
-          );
-        });
-      }
+  after(async () => {
+    const [instances] = await bigtable.getInstances();
+    const testInstances = instances.filter(i => i.id.match(PREFIX));
+    const q = new Q({concurrency: 5});
+    await Promise.all(
+      testInstances.map(instance => {
+        q.add(() => instance.delete());
+      })
     );
   });
 
-  after(function(done) {
-    bigtable.getInstances(function(err, instances) {
-      if (err) {
-        done(err);
-        return;
-      }
-
-      const testInstances = instances.filter(function(instance) {
-        return instance.id.match(PREFIX);
-      });
-
-      async.eachLimit(
-        testInstances,
-        5,
-        function(instance, next) {
-          instance.delete(next);
-        },
-        done
-      );
-    });
-  });
-
-  describe('instances', function() {
-    it('should get a list of instances', function(done) {
-      bigtable.getInstances(function(err, instances) {
-        assert.ifError(err);
-        assert(instances.length > 0);
-        done();
-      });
+  describe('instances', () => {
+    it('should get a list of instances', async () => {
+      const [instances] = await bigtable.getInstances();
+      assert(instances.length > 0);
     });
 
-    it('should check if an instance exists', function(done) {
-      INSTANCE.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, true);
-        done();
-      });
+    it('should check if an instance exists', async () => {
+      const [exists] = await INSTANCE.exists();
+      assert.strictEqual(exists, true);
     });
 
-    it('should check if an instance does not exist', function(done) {
+    it('should check if an instance does not exist', async () => {
       const instance = bigtable.instance('fake-instance');
-
-      instance.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, false);
-        done();
-      });
+      const [exists] = await instance.exists();
+      assert.strictEqual(exists, false);
     });
 
-    it('should get a single instance', function(done) {
-      INSTANCE.get(done);
+    it('should get a single instance', async () => {
+      await INSTANCE.get();
     });
 
-    it('should update an instance', function(done) {
+    it('should update an instance', async () => {
       const metadata = {
         displayName: 'metadata-test',
       };
-
-      INSTANCE.setMetadata(metadata, function(err) {
-        assert.ifError(err);
-
-        INSTANCE.getMetadata(function(err, metadata_) {
-          assert.ifError(err);
-          assert.strictEqual(metadata.displayName, metadata_.displayName);
-          done();
-        });
-      });
+      await INSTANCE.setMetadata(metadata);
+      const [metadata_] = await INSTANCE.getMetadata();
+      assert.strictEqual(metadata.displayName, metadata_.displayName);
     });
   });
 
-  describe('appProfiles', function() {
-    it('should retrieve a list of app profiles', function(done) {
-      INSTANCE.getAppProfiles(function(err, appProfiles) {
-        assert.ifError(err);
-        assert(appProfiles[0] instanceof AppProfile);
-        done();
-      });
+  describe('appProfiles', () => {
+    it('should retrieve a list of app profiles', async () => {
+      const [appProfiles] = await INSTANCE.getAppProfiles();
+      assert(appProfiles[0] instanceof AppProfile);
     });
 
-    it('should check if an app profile exists', function(done) {
-      APP_PROFILE.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, true);
-        done();
-      });
+    it('should check if an app profile exists', async () => {
+      const [exists] = await APP_PROFILE.exists();
+      assert.strictEqual(exists, true);
     });
 
-    it('should check if an app profile does not exist', function(done) {
+    it('should check if an app profile does not exist', async () => {
       const appProfile = INSTANCE.appProfile('should-not-exist');
-
-      appProfile.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, false);
-        done();
-      });
+      const [exists] = await appProfile.exists();
+      assert.strictEqual(exists, false);
     });
 
-    it('should get an app profile', function(done) {
-      APP_PROFILE.get(done);
+    it('should get an app profile', async () => {
+      await APP_PROFILE.get();
     });
 
-    it('should delete an app profile', function(done) {
+    it('should delete an app profile', async () => {
       const appProfile = INSTANCE.appProfile(generateId('app-profile'));
+      await appProfile.create({
+        routing: 'any',
+        ignoreWarnings: true,
+      });
+      await appProfile.delete({ignoreWarnings: true});
+    });
 
-      async.series(
-        [
-          appProfile.create.bind(appProfile, {
-            routing: 'any',
-            ignoreWarnings: true,
-          }),
-          appProfile.delete.bind(appProfile, {ignoreWarnings: true}),
-        ],
-        done
+    it('should get the app profiles metadata', async () => {
+      const [metadata] = await APP_PROFILE.getMetadata();
+      assert.strictEqual(
+        metadata.name,
+        APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId)
       );
     });
 
-    it('should get the app profiles metadata', function(done) {
-      APP_PROFILE.getMetadata(function(err, metadata) {
-        assert.strictEqual(
-          metadata.name,
-          APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId)
-        );
-        done();
-      });
-    });
-
-    it('should update an app profile', function(done) {
+    it('should update an app profile', async () => {
       const cluster = INSTANCE.cluster(CLUSTER_ID);
       const options = {
         routing: cluster,
         allowTransactionalWrites: true,
         description: 'My Updated App Profile',
       };
-      APP_PROFILE.setMetadata(options, function(err) {
-        assert.ifError(err);
-        APP_PROFILE.get(function(err, updatedAppProfile) {
-          assert.ifError(err);
-          assert.strictEqual(
-            updatedAppProfile.metadata.description,
-            options.description
-          );
-          assert.deepStrictEqual(
-            updatedAppProfile.metadata.singleClusterRouting,
-            {
-              clusterId: CLUSTER_ID,
-              allowTransactionalWrites: true,
-            }
-          );
-          done();
-        });
+      await APP_PROFILE.setMetadata(options);
+      const [updatedAppProfile] = await APP_PROFILE.get();
+      assert.strictEqual(
+        updatedAppProfile.metadata.description,
+        options.description
+      );
+      assert.deepStrictEqual(updatedAppProfile.metadata.singleClusterRouting, {
+        clusterId: CLUSTER_ID,
+        allowTransactionalWrites: true,
       });
     });
   });
 
-  describe('clusters', function() {
+  describe('clusters', () => {
     let CLUSTER;
 
-    beforeEach(function() {
+    beforeEach(() => {
       CLUSTER = INSTANCE.cluster(CLUSTER_ID);
     });
 
-    it('should retrieve a list of clusters', function(done) {
-      INSTANCE.getClusters(function(err, clusters) {
-        assert.ifError(err);
-        assert(clusters[0] instanceof Cluster);
-        done();
-      });
+    it('should retrieve a list of clusters', async () => {
+      const [clusters] = await INSTANCE.getClusters();
+      assert(clusters[0] instanceof Cluster);
     });
 
-    it('should check if a cluster exists', function(done) {
-      CLUSTER.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, true);
-        done();
-      });
+    it('should check if a cluster exists', async () => {
+      const [exists] = await CLUSTER.exists();
+      assert.strictEqual(exists, true);
     });
 
-    it('should check if a cluster does not exist', function(done) {
+    it('should check if a cluster does not exist', async () => {
       const cluster = INSTANCE.cluster('fake-cluster');
-
-      cluster.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, false);
-        done();
-      });
+      const [exists] = await cluster.exists();
+      assert.strictEqual(exists, false);
     });
 
-    it('should get a cluster', function(done) {
-      CLUSTER.get(done);
+    it('should get a cluster', async () => {
+      await CLUSTER.get();
     });
 
-    it('should update a cluster', function(done) {
+    it('should update a cluster', async () => {
       const metadata = {
         nodes: 4,
       };
-
-      CLUSTER.setMetadata(metadata, function(err, operation) {
-        assert.ifError(err);
-
-        operation.on('error', done).on('complete', function() {
-          CLUSTER.getMetadata(function(err, _metadata) {
-            assert.ifError(err);
-            assert.strictEqual(metadata.nodes, _metadata.serveNodes);
-            done();
-          });
-        });
-      });
+      const [operation] = await CLUSTER.setMetadata(metadata);
+      await operation.promise();
+      const [_metadata] = await CLUSTER.getMetadata();
+      assert.strictEqual(metadata.nodes, _metadata.serveNodes);
     });
   });
 
-  describe('tables', function() {
-    it('should retrieve a list of tables', function(done) {
-      INSTANCE.getTables(function(err, tables) {
-        assert.ifError(err);
-        assert(tables[0] instanceof Table);
-        done();
-      });
+  describe('tables', () => {
+    it('should retrieve a list of tables', async () => {
+      const [tables] = await INSTANCE.getTables();
+      assert(tables[0] instanceof Table);
     });
 
-    it('should retrieve a list of tables in stream mode', function(done) {
+    it('should retrieve a list of tables in stream mode', done => {
       const tables = [];
-
       INSTANCE.getTablesStream()
         .on('error', done)
-        .on('data', function(table) {
+        .on('data', table => {
           assert(table instanceof Table);
           tables.push(table);
         })
-        .on('end', function() {
+        .on('end', () => {
           assert(tables.length > 0);
           done();
         });
     });
 
-    it('should check if a table exists', function(done) {
-      TABLE.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, true);
-        done();
-      });
+    it('should check if a table exists', async () => {
+      const [exists] = await TABLE.exists();
+      assert.strictEqual(exists, true);
     });
 
-    it('should check if a table does not exist', function(done) {
+    it('should check if a table does not exist', async () => {
       const table = INSTANCE.table('should-not-exist');
-
-      table.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, false);
-        done();
-      });
+      const [exists] = await table.exists();
+      assert.strictEqual(exists, false);
     });
 
-    it('should get a table', function(done) {
-      TABLE.get(done);
+    it('should get a table', async () => {
+      await TABLE.get();
     });
 
-    it('should delete a table', function(done) {
+    it('should delete a table', async () => {
       const table = INSTANCE.table(generateId('table'));
-
-      async.series([table.create.bind(table), table.delete.bind(table)], done);
+      await table.create();
+      await table.delete();
     });
 
-    it('should get the tables metadata', function(done) {
-      TABLE.getMetadata(function(err, metadata) {
-        assert.strictEqual(
-          metadata.name,
-          TABLE.name.replace('{{projectId}}', bigtable.projectId)
-        );
-        done();
-      });
+    it('should get the tables metadata', async () => {
+      const [metadata] = await TABLE.getMetadata();
+      assert.strictEqual(
+        metadata.name,
+        TABLE.name.replace('{{projectId}}', bigtable.projectId)
+      );
     });
 
-    it('should create a table with column family data', function(done) {
+    it('should create a table with column family data', async () => {
       const name = generateId('table');
       const options = {
         families: ['test'],
       };
-
-      INSTANCE.createTable(name, options, function(err, table) {
-        assert.ifError(err);
-        assert(table.metadata.columnFamilies.test);
-        done();
-      });
+      const [table] = await INSTANCE.createTable(name, options);
+      assert(table.metadata.columnFamilies.test);
     });
 
-    it('should create a table if autoCreate is true', function(done) {
+    it('should create a table if autoCreate is true', async () => {
       const table = INSTANCE.table(generateId('table'));
-      async.series(
-        [table.get.bind(table, {autoCreate: true}), table.delete.bind(table)],
-        done
-      );
+      await table.get({autoCreate: true});
+      await table.delete();
     });
   });
 
-  describe('consistency tokens', function() {
-    it('should generate consistency token', done => {
-      TABLE.generateConsistencyToken(function(err, token) {
-        assert.ifError(err);
-        assert.strictEqual(typeof token, 'string');
-        done();
-      });
+  describe('consistency tokens', () => {
+    it('should generate consistency token', async () => {
+      const [token] = await TABLE.generateConsistencyToken();
+      assert.strictEqual(typeof token, 'string');
     });
 
     it('should return error for checkConsistency of invalid token', done => {
-      TABLE.checkConsistency('dummy-token', function(err) {
+      TABLE.checkConsistency('dummy-token', err => {
         assert.strictEqual(err.code, 3);
         done();
       });
     });
 
-    it('should return boolean for checkConsistency of token', done => {
-      TABLE.generateConsistencyToken(function(err, token) {
-        TABLE.checkConsistency(token, function(err, res) {
-          assert.ifError(err);
-          assert.strictEqual(typeof res, 'boolean');
-          done();
-        });
-      });
+    it('should return boolean for checkConsistency of token', async () => {
+      const [token] = await TABLE.generateConsistencyToken();
+      const [res] = await TABLE.checkConsistency(token);
+      assert.strictEqual(typeof res, 'boolean');
     });
 
-    it('should return boolean for waitForReplication', done => {
-      TABLE.waitForReplication(function(err, res) {
-        assert.ifError(err);
-        assert.strictEqual(typeof res, 'boolean');
-        done();
-      });
+    it('should return boolean for waitForReplication', async () => {
+      const [res] = await TABLE.waitForReplication();
+      assert.strictEqual(typeof res, 'boolean');
     });
   });
 
-  describe('replication states', function() {
-    it('should get a map of clusterId and state', function(done) {
-      TABLE.getReplicationStates(function(err, clusterStates) {
-        assert(clusterStates instanceof Map);
-        assert(clusterStates.has(CLUSTER_ID));
-        done();
-      });
+  describe('replication states', () => {
+    it('should get a map of clusterId and state', async () => {
+      const [clusterStates] = await TABLE.getReplicationStates();
+      assert(clusterStates instanceof Map);
+      assert(clusterStates.has(CLUSTER_ID));
     });
   });
 
-  describe('column families', function() {
+  describe('column families', () => {
     const FAMILY_ID = 'presidents';
     let FAMILY;
 
-    before(function(done) {
+    before(async () => {
       FAMILY = TABLE.family(FAMILY_ID);
-      FAMILY.create(done);
+      await FAMILY.create();
     });
 
-    it('should get a list of families', function(done) {
-      TABLE.getFamilies(function(err, families) {
-        assert.ifError(err);
-        assert.strictEqual(families.length, 3);
-        assert(families[0] instanceof Family);
-        assert.notStrictEqual(
-          -1,
-          families
-            .map(f => {
-              return f.id;
-            })
-            .indexOf(FAMILY.id)
-        );
-        done();
-      });
+    it('should get a list of families', async () => {
+      const [families] = await TABLE.getFamilies();
+      assert.strictEqual(families.length, 3);
+      assert(families[0] instanceof Family);
+      assert.notStrictEqual(-1, families.map(f => f.id).indexOf(FAMILY.id));
     });
 
-    it('should get a family', function(done) {
+    it('should get a family', async () => {
       const family = TABLE.family(FAMILY_ID);
-
-      family.get(function(err, family) {
-        assert.ifError(err);
-        assert(family instanceof Family);
-        assert.strictEqual(family.name, FAMILY.name);
-        assert.strictEqual(family.id, FAMILY.id);
-        done();
-      });
+      await family.get();
+      assert(family instanceof Family);
+      assert.strictEqual(family.name, FAMILY.name);
+      assert.strictEqual(family.id, FAMILY.id);
     });
 
-    it('should check if a family exists', function(done) {
-      FAMILY.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, true);
-        done();
-      });
+    it('should check if a family exists', async () => {
+      const [exists] = await FAMILY.exists();
+      assert.strictEqual(exists, true);
     });
 
-    it('should check if a family does not exist', function(done) {
+    it('should check if a family does not exist', async () => {
       const family = TABLE.family('prezzies');
-
-      family.exists(function(err, exists) {
-        assert.ifError(err);
-        assert.strictEqual(exists, false);
-        done();
-      });
+      const [exists] = await family.exists();
+      assert.strictEqual(exists, false);
     });
 
-    it('should create a family if autoCreate is true', function(done) {
+    it('should create a family if autoCreate is true', async () => {
       const family = TABLE.family('prezzies');
-
-      async.series(
-        [
-          family.get.bind(family, {autoCreate: true}),
-          family.delete.bind(family),
-        ],
-        done
-      );
+      await family.get({autoCreate: true});
+      await family.delete();
     });
 
-    it('should create a family with nested gc rules', function(done) {
+    it('should create a family with nested gc rules', async () => {
       const family = TABLE.family('prezzies');
       const options = {
         rule: {
@@ -499,126 +345,95 @@ describe('Bigtable', function() {
           },
         },
       };
-
-      async.series(
-        [
-          family.create.bind(family, options),
-          next => {
-            family.getMetadata((err, metadata) => {
-              if (err) return next(err);
-              assert.deepStrictEqual(metadata.gcRule, {
-                union: {
-                  rules: [
-                    {
-                      maxNumVersions: 10,
-                      rule: 'maxNumVersions',
+      await family.create(options);
+      const [metadata] = await family.getMetadata();
+      assert.deepStrictEqual(metadata.gcRule, {
+        union: {
+          rules: [
+            {
+              maxNumVersions: 10,
+              rule: 'maxNumVersions',
+            },
+            {
+              intersection: {
+                rules: [
+                  {
+                    maxAge: {
+                      seconds: '2592000',
+                      nanos: 0,
                     },
-                    {
-                      intersection: {
-                        rules: [
-                          {
-                            maxAge: {
-                              seconds: '2592000',
-                              nanos: 0,
-                            },
-                            rule: 'maxAge',
-                          },
-                          {
-                            maxNumVersions: 2,
-                            rule: 'maxNumVersions',
-                          },
-                        ],
-                      },
-                      rule: 'intersection',
-                    },
-                  ],
-                },
-                rule: 'union',
-              });
-              next();
-            });
-          },
-          family.delete.bind(family),
-        ],
-        done
-      );
-    });
-
-    it('should get the column family metadata', function(done) {
-      FAMILY.getMetadata(function(err, metadata) {
-        assert.ifError(err);
-        assert.strictEqual(FAMILY.metadata, metadata);
-        done();
+                    rule: 'maxAge',
+                  },
+                  {
+                    maxNumVersions: 2,
+                    rule: 'maxNumVersions',
+                  },
+                ],
+              },
+              rule: 'intersection',
+            },
+          ],
+        },
+        rule: 'union',
       });
+      await family.delete();
     });
 
-    it('should update a column family', function(done) {
+    it('should get the column family metadata', async () => {
+      const [metadata] = await FAMILY.getMetadata();
+      assert.strictEqual(FAMILY.metadata, metadata);
+    });
+
+    it('should update a column family', async () => {
       const rule = {
         age: {
           seconds: 10000,
           nanos: 10000,
         },
       };
-
-      FAMILY.setMetadata({rule: rule}, function(err, metadata) {
-        assert.ifError(err);
-        const maxAge = metadata.gcRule.maxAge;
-
-        assert.strictEqual(maxAge.seconds, rule.age.seconds.toString());
-        assert.strictEqual(maxAge.nanas, rule.age.nanas);
-        done();
-      });
+      const [metadata] = await FAMILY.setMetadata({rule: rule});
+      const maxAge = metadata.gcRule.maxAge;
+      assert.strictEqual(maxAge.seconds, rule.age.seconds.toString());
+      assert.strictEqual(maxAge.nanas, rule.age.nanas);
     });
 
-    it('should delete a column family', function(done) {
-      FAMILY.delete(done);
+    it('should delete a column family', async () => {
+      await FAMILY.delete();
     });
   });
 
-  describe('rows', function() {
-    describe('.exists()', function() {
+  describe('rows', () => {
+    describe('.exists()', () => {
       const row = TABLE.row('alincoln');
 
-      beforeEach(function(done) {
-        const rowData = {
-          follows: {
-            gwashington: 1,
-            jadams: 1,
-            tjefferson: 1,
+      beforeEach(async () => {
+        await row.create({
+          entry: {
+            follows: {
+              gwashington: 1,
+              jadams: 1,
+              tjefferson: 1,
+            },
           },
-        };
-
-        row.create(
-          {
-            entry: rowData,
-          },
-          done
-        );
-      });
-
-      afterEach(row.delete.bind(row));
-
-      it('should check if a row exists', function(done) {
-        row.exists(function(err, exists) {
-          assert.ifError(err);
-          assert.strictEqual(exists, true);
-          done();
         });
       });
 
-      it('should check if a row does not exist', function(done) {
+      afterEach(async () => row.delete());
+
+      it('should check if a row exists', async () => {
+        const [exists] = await row.exists();
+        assert.strictEqual(exists, true);
+      });
+
+      it('should check if a row does not exist', async () => {
         const row = TABLE.row('gwashington');
-
-        row.exists(function(err, exists) {
-          assert.ifError(err);
-          assert.strictEqual(exists, false);
-          done();
-        });
+        const [exists] = await row.exists();
+        assert.strictEqual(exists, false);
       });
     });
 
-    describe('inserting data', function() {
-      it('should insert rows', function(done) {
+    describe('inserting data', () => {
+      it('should insert rows', async () => {
         const rows = [
           {
             key: 'gwashington',
@@ -647,12 +462,11 @@ describe('Bigtable', function() {
             },
           },
         ];
-
-        TABLE.insert(rows, done);
+        await TABLE.insert(rows);
       });
 
-      it('should insert a large row', function() {
-        return TABLE.insert({
+      it('should insert a large row', async () => {
+        await TABLE.insert({
           key: 'gwashington',
           data: {
             follows: {
@@ -662,7 +476,7 @@ describe('Bigtable', function() {
         });
       });
 
-      it('should create an individual row', function(done) {
+      it('should create an individual row', async () => {
         const row = TABLE.row('alincoln');
         const rowData = {
           follows: {
@@ -671,25 +485,21 @@ describe('Bigtable', function() {
             tjefferson: 1,
           },
         };
-
-        row.create({entry: rowData}, done);
+        await row.create({entry: rowData});
       });
 
-      it('should insert individual cells', function(done) {
+      it('should insert individual cells', async () => {
         const row = TABLE.row('gwashington');
-
         const rowData = {
           follows: {
             jadams: 1,
           },
         };
-
-        row.save(rowData, done);
+        await row.save(rowData);
       });
 
-      it('should allow for user specified timestamps', function(done) {
+      it('should allow for user specified timestamps', async () => {
         const row = TABLE.row('gwashington');
-
         const rowData = {
           follows: {
             jadams: {
@@ -698,197 +508,138 @@ describe('Bigtable', function() {
             },
           },
         };
-
-        row.save(rowData, done);
+        await row.save(rowData);
       });
 
-      it('should increment a column value', function(done) {
+      it('should increment a column value', async () => {
         const row = TABLE.row('gwashington');
         const increment = 5;
-
-        row.increment('follows:increment', increment, function(err, value) {
-          assert.ifError(err);
-          assert.strictEqual(value, increment);
-          done();
-        });
+        const [value] = await row.increment('follows:increment', increment);
+        assert.strictEqual(value, increment);
       });
 
-      it('should apply read/modify/write rules to a row', function(done) {
+      it('should apply read/modify/write rules to a row', async () => {
         const row = TABLE.row('gwashington');
         const rule = {
           column: 'traits:teeth',
           append: '-wood',
         };
-
-        row.save(
-          {
-            traits: {
-              teeth: 'shiny',
-            },
+        await row.save({
+          traits: {
+            teeth: 'shiny',
           },
-          function(err) {
-            assert.ifError(err);
-
-            row.createRules(rule, function(err) {
-              assert.ifError(err);
-
-              row.get(['traits:teeth'], function(err, data) {
-                assert.ifError(err);
-                assert.strictEqual(data.traits.teeth[0].value, 'shiny-wood');
-                done();
-              });
-            });
-          }
-        );
+        });
+        await row.createRules(rule);
+        const [data] = await row.get(['traits:teeth']);
+        assert.strictEqual(data.traits.teeth[0].value, 'shiny-wood');
       });
 
-      it('should check and mutate a row', function(done) {
+      it('should check and mutate a row', async () => {
         const row = TABLE.row('gwashington');
         const filter = {
           family: 'follows',
           value: 'alincoln',
         };
-
         const mutations = [
           {
             method: 'delete',
             data: ['follows:alincoln'],
           },
         ];
-
-        row.filter(filter, {onMatch: mutations}, function(err, matched) {
-          assert.ifError(err);
-          assert(matched);
-          done();
-        });
+        const [matched] = await row.filter(filter, {onMatch: mutations});
+        assert(matched);
       });
     });
 
-    describe('fetching data', function() {
-      it('should get rows', function(done) {
-        TABLE.getRows(function(err, rows) {
-          assert.ifError(err);
-          assert.strictEqual(rows.length, 4);
-          assert(rows[0] instanceof Row);
-          done();
-        });
+    describe('fetching data', () => {
+      it('should get rows', async () => {
+        const [rows] = await TABLE.getRows();
+        assert.strictEqual(rows.length, 4);
+        assert(rows[0] instanceof Row);
       });
 
-      it('should get rows via stream', function(done) {
+      it('should get rows via stream', done => {
         const rows = [];
-
         TABLE.createReadStream()
           .on('error', done)
-          .on('data', function(row) {
+          .on('data', row => {
             assert(row instanceof Row);
             rows.push(row);
           })
-          .on('end', function() {
+          .on('end', () => {
             assert.strictEqual(rows.length, 4);
             done();
           });
       });
 
-      it('should fetch an individual row', function(done) {
+      it('should fetch an individual row', async () => {
         const row = TABLE.row('alincoln');
-
-        row.get(function(err, row_) {
-          assert.ifError(err);
-          assert.strictEqual(row, row_);
-          done();
-        });
+        const [row_] = await row.get();
+        assert.strictEqual(row, row_);
       });
 
-      it('should limit the number of rows', function(done) {
-        const options = {
+      it('should limit the number of rows', async () => {
+        const [rows] = await TABLE.getRows({
           limit: 1,
-        };
-
-        TABLE.getRows(options, function(err, rows) {
-          assert.ifError(err);
-          assert.strictEqual(rows.length, 1);
-          done();
         });
+        assert.strictEqual(rows.length, 1);
       });
 
-      it('should fetch a range of rows', function(done) {
+      it('should fetch a range of rows', async () => {
         const options = {
           start: 'alincoln',
           end: 'jadams',
         };
-
-        TABLE.getRows(options, function(err, rows) {
-          assert.ifError(err);
-          assert.strictEqual(rows.length, 3);
-          done();
-        });
+        const [rows] = await TABLE.getRows(options);
+        assert.strictEqual(rows.length, 3);
       });
 
-      it('should fetch a range of rows via prefix', function(done) {
+      it('should fetch a range of rows via prefix', async () => {
         const options = {
           prefix: 'g',
         };
-
-        TABLE.getRows(options, function(err, rows) {
-          assert.ifError(err);
-          assert.strictEqual(rows.length, 1);
-          assert.strictEqual(rows[0].id, 'gwashington');
-          done();
-        });
+        const [rows] = await TABLE.getRows(options);
+        assert.strictEqual(rows.length, 1);
+        assert.strictEqual(rows[0].id, 'gwashington');
       });
 
-      it('should fetch individual cells of a row', function(done) {
+      it('should fetch individual cells of a row', async () => {
         const row = TABLE.row('alincoln');
-
-        row.get(['follows:gwashington'], function(err, data) {
-          assert.ifError(err);
-          assert.strictEqual(data.follows.gwashington[0].value, 1);
-          done();
-        });
+        const [data] = await row.get(['follows:gwashington']);
+        assert.strictEqual(data.follows.gwashington[0].value, 1);
       });
 
-      it('should not decode the values', function(done) {
+      it('should not decode the values', async () => {
         const row = TABLE.row('gwashington');
         const options = {
           decode: false,
         };
-
-        row.get(options, function(err) {
-          assert.ifError(err);
-
-          const teeth = row.data.traits.teeth;
-          const value = teeth[0].value;
-
-          assert(value instanceof Buffer);
-          assert.strictEqual(value.toString(), 'shiny-wood');
-
-          done();
-        });
+        await row.get(options);
+        const teeth = row.data.traits.teeth;
+        const value = teeth[0].value;
+        assert(value instanceof Buffer);
+        assert.strictEqual(value.toString(), 'shiny-wood');
       });
 
-      it('should get sample row keys', function(done) {
-        TABLE.sampleRowKeys(function(err, keys) {
-          assert.ifError(err);
-          assert(keys.length > 0);
-          done();
-        });
+      it('should get sample row keys', async () => {
+        const [keys] = await TABLE.sampleRowKeys();
+        assert(keys.length > 0);
       });
 
-      it('should get sample row keys via stream', function(done) {
+      it('should get sample row keys via stream', done => {
         const keys = [];
-
         TABLE.sampleRowKeysStream()
           .on('error', done)
-          .on('data', function(rowKey) {
+          .on('data', rowKey => {
             keys.push(rowKey);
           })
-          .on('end', function() {
+          .on('end', () => {
             assert(keys.length > 0);
             done();
           });
       });
 
-      it('should end stream early', function(done) {
+      it('should end stream early', async () => {
         const entries = [
           {
             key: 'gwashington',
@@ -917,48 +668,34 @@ describe('Bigtable', function() {
             },
           },
         ];
-
-        TABLE.insert(entries, function(err) {
-          assert.ifError(err);
-
-          const rows = [];
-
-          TABLE.createReadStream()
-            .on('error', done)
-            .on('data', function(row) {
+        await TABLE.insert(entries);
+        const rows = [];
+        await new Promise((resolve, reject) => {
+          const stream = TABLE.createReadStream()
+            .on('error', reject)
+            .on('data', row => {
               rows.push(row);
-              this.end();
+              stream.end();
             })
-            .on('end', function() {
+            .on('end', () => {
               assert.strictEqual(rows.length, 1);
-              done();
+              resolve();
             });
         });
       });
 
-      describe('filters', function() {
-        it('should get rows via column data', function(done) {
+      describe('filters', () => {
+        it('should get rows via column data', async () => {
           const filter = {
             column: 'gwashington',
           };
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-            assert.strictEqual(rows.length, 3);
-
-            const keys = rows
-              .map(function(row) {
-                return row.id;
-              })
-              .sort();
-
-            assert.deepStrictEqual(keys, ['alincoln', 'jadams', 'tjefferson']);
-
-            done();
-          });
+          const [rows] = await TABLE.getRows({filter});
+          assert.strictEqual(rows.length, 3);
+          const keys = rows.map(row => row.id).sort();
+          assert.deepStrictEqual(keys, ['alincoln', 'jadams', 'tjefferson']);
         });
 
-        it('should get rows that satisfy the cell limit', function(done) {
+        it('should get rows that satisfy the cell limit', async () => {
           const entry = {
             key: 'alincoln',
             data: {
@@ -967,7 +704,6 @@ describe('Bigtable', function() {
               },
             },
           };
-
           const filter = [
             {
               row: 'alincoln',
@@ -979,20 +715,13 @@ describe('Bigtable', function() {
               },
             },
           ];
-
-          TABLE.insert(entry, function(err) {
-            assert.ifError(err);
-
-            TABLE.getRows({filter: filter}, function(err, rows) {
-              assert.ifError(err);
-              const rowData = rows[0].data;
-              assert(rowData.follows.tjefferson.length, 1);
-              done();
-            });
-          });
+          await TABLE.insert(entry);
+          const [rows] = await TABLE.getRows({filter});
+          const rowData = rows[0].data;
+          assert(rowData.follows.tjefferson.length, 1);
         });
 
-        it('should get a range of columns', function(done) {
+        it('should get a range of columns', async () => {
           const filter = [
             {
               row: 'tjefferson',
@@ -1006,20 +735,14 @@ describe('Bigtable', function() {
             },
           ];
 
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-
-            rows.forEach(function(row) {
-              const keys = Object.keys(row.data.follows).sort();
-
-              assert.deepStrictEqual(keys, ['gwashington', 'jadams']);
-            });
-
-            done();
+          const [rows] = await TABLE.getRows({filter});
+          rows.forEach(row => {
+            const keys = Object.keys(row.data.follows).sort();
+            assert.deepStrictEqual(keys, ['gwashington', 'jadams']);
           });
         });
 
-        it('should run a conditional filter', function(done) {
+        it('should run a conditional filter', async () => {
           const filter = {
             condition: {
               test: [
@@ -1041,16 +764,12 @@ describe('Bigtable', function() {
               },
             },
           };
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-            assert.strictEqual(rows.length, 1);
-            assert.strictEqual(rows[0].id, 'tjefferson');
-            done();
-          });
+          const [rows] = await TABLE.getRows({filter});
+          assert.strictEqual(rows.length, 1);
+          assert.strictEqual(rows[0].id, 'tjefferson');
         });
 
-        it('should run a conditional filter with pass only', function(done) {
+        it('should run a conditional filter with pass only', async () => {
           const filter = {
             condition: {
               test: [
@@ -1065,15 +784,11 @@ describe('Bigtable', function() {
               ],
             },
           };
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-            assert(rows.length > 0);
-            done();
-          });
+          const [rows] = await TABLE.getRows({filter});
+          assert(rows.length > 0);
         });
 
-        it('should only get cells for a specific family', function(done) {
+        it('should only get cells for a specific family', async () => {
           const entries = [
             {
               key: 'gwashington',
@@ -1084,26 +799,17 @@ describe('Bigtable', function() {
               },
             },
           ];
-
+          await TABLE.insert(entries);
           const filter = {
             family: 'traits',
           };
-
-          TABLE.insert(entries, function(err) {
-            assert.ifError(err);
-
-            TABLE.getRows({filter: filter}, function(err, rows) {
-              assert.ifError(err);
-              assert(rows.length > 0);
-
-              const families = Object.keys(rows[0].data);
-              assert.deepStrictEqual(families, ['traits']);
-              done();
-            });
-          });
+          const [rows] = await TABLE.getRows({filter});
+          assert(rows.length > 0);
+          const families = Object.keys(rows[0].data);
+          assert.deepStrictEqual(families, ['traits']);
         });
 
-        it('should interleave filters', function(done) {
+        it('should interleave filters', async () => {
           const filter = [
             {
               interleave: [
@@ -1120,66 +826,37 @@ describe('Bigtable', function() {
               ],
             },
           ];
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-            assert.strictEqual(rows.length, 2);
-
-            const ids = rows
-              .map(function(row) {
-                return row.id;
-              })
-              .sort();
-
-            assert.deepStrictEqual(ids, ['gwashington', 'tjefferson']);
-
-            done();
-          });
+          const [rows] = await TABLE.getRows({filter});
+          assert.strictEqual(rows.length, 2);
+          const ids = rows.map(row => row.id).sort();
+          assert.deepStrictEqual(ids, ['gwashington', 'tjefferson']);
         });
 
-        it('should apply labels to the results', function(done) {
+        it('should apply labels to the results', async () => {
           const filter = {
             label: 'test-label',
           };
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-
-            rows.forEach(function(row) {
-              const follows = row.data.follows;
-
-              Object.keys(follows).forEach(function(column) {
-                follows[column].forEach(function(cell) {
-                  assert.deepStrictEqual(cell.labels, [filter.label]);
-                });
+          const [rows] = await TABLE.getRows({filter});
+          rows.forEach(row => {
+            const follows = row.data.follows;
+            Object.keys(follows).forEach(column => {
+              follows[column].forEach(cell => {
+                assert.deepStrictEqual(cell.labels, [filter.label]);
               });
             });
-
-            done();
           });
         });
 
-        it('should run a regex against the row id', function(done) {
+        it('should run a regex against the row id', async () => {
           const filter = {
             row: /[a-z]+on$/,
           };
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-
-            const keys = rows
-              .map(function(row) {
-                return row.id;
-              })
-              .sort();
-
-            assert.deepStrictEqual(keys, ['gwashington', 'tjefferson']);
-
-            done();
-          });
+          const [rows] = await TABLE.getRows({filter});
+          const keys = rows.map(row => row.id).sort();
+          assert.deepStrictEqual(keys, ['gwashington', 'tjefferson']);
         });
 
-        it('should run a sink filter', function(done) {
+        it('should run a sink filter', async () => {
           const filter = [
             {
               row: 'alincoln',
@@ -1208,152 +885,114 @@ describe('Bigtable', function() {
               column: 'gwashington',
             },
           ];
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-
-            const columns = Object.keys(rows[0].data.follows).sort();
-
-            assert.deepStrictEqual(columns, [
-              'gwashington',
-              'jadams',
-              'tjefferson',
-            ]);
-
-            done();
-          });
-        });
-
-        it('should accept a date range', function(done) {
-          const filter = {
-            time: {
-              start: new Date('March 21, 1986'),
-              end: new Date('March 23, 1986'),
-            },
-          };
-
-          TABLE.getRows({filter: filter}, function(err, rows) {
-            assert.ifError(err);
-            assert(rows.length > 0);
-            done();
-          });
+          const [rows] = await TABLE.getRows({filter});
+          const columns = Object.keys(rows[0].data.follows).sort();
+          assert.deepStrictEqual(columns, [
+            'gwashington',
+            'jadams',
+            'tjefferson',
+          ]);
         });
       });
-    });
 
-    describe('deleting rows', function() {
-      it('should delete specific cells', function(done) {
-        const row = TABLE.row('alincoln');
-
-        row.deleteCells(['follows:gwashington'], done);
-      });
-
-      it('should delete a family', function(done) {
-        const row = TABLE.row('gwashington');
-
-        row.deleteCells(['traits'], done);
-      });
-
-      it('should delete all the cells', function(done) {
-        const row = TABLE.row('alincoln');
-
-        row.delete(done);
-      });
-    });
-
-    describe('.deleteRows()', function() {
-      const table = INSTANCE.table(generateId('table'));
-
-      beforeEach(function(done) {
-        const tableOptions = {
-          families: ['cf1'],
-        };
-        const data = {
-          cf1: {
-            foo: 1,
+      it('should accept a date range', async () => {
+        const filter = {
+          time: {
+            start: new Date('March 21, 1986'),
+            end: new Date('March 23, 1986'),
           },
         };
-        const rows = [
-          {
-            key: 'aaa',
-            data,
-          },
-          {
-            key: 'abc',
-            data,
-          },
-          {
-            key: 'def',
-            data,
-          },
-        ];
-
-        async.series(
-          [
-            table.create.bind(table, tableOptions),
-            table.insert.bind(table, rows),
-          ],
-          done
-        );
-      });
-
-      afterEach(table.delete.bind(table));
-
-      it('should delete the prefixes', function(done) {
-        async.series([
-          table.deleteRows.bind(table, 'a'),
-          function() {
-            table.getRows(function(err, rows) {
-              assert.ifError(err);
-              assert.strictEqual(rows.length, 1);
-              done();
-            });
-          },
-        ]);
+        const [rows] = await TABLE.getRows({filter});
+        assert(rows.length > 0);
       });
     });
+  });
 
-    describe('.truncate()', function() {
-      const table = INSTANCE.table(generateId('table'));
+  describe('deleting rows', () => {
+    it('should delete specific cells', async () => {
+      const row = TABLE.row('alincoln');
+      await row.deleteCells(['follows:gwashington']);
+    });
 
-      beforeEach(function(done) {
-        const tableOptions = {
-          families: ['follows'],
-        };
-        const rows = [
-          {
-            key: 'gwashington',
-            data: {
-              follows: {
-                jadams: 1,
-              },
+    it('should delete a family', async () => {
+      const row = TABLE.row('gwashington');
+      await row.deleteCells(['traits']);
+    });
+
+    it('should delete all the cells', async () => {
+      const row = TABLE.row('alincoln');
+      await row.delete();
+    });
+  });
+
+  describe('.deleteRows()', () => {
+    const table = INSTANCE.table(generateId('table'));
+    beforeEach(async () => {
+      const tableOptions = {
+        families: ['cf1'],
+      };
+      const data = {
+        cf1: {
+          foo: 1,
+        },
+      };
+      const rows = [
+        {
+          key: 'aaa',
+          data,
+        },
+        {
+          key: 'abc',
+          data,
+        },
+        {
+          key: 'def',
+          data,
+        },
+      ];
+      await table.create(tableOptions);
+      await table.insert(rows);
+    });
+
+    afterEach(async () => {
+      await table.delete();
+    });
+
+    it('should delete the prefixes', async () => {
+      await table.deleteRows('a');
+      const [rows] = await table.getRows();
+      assert.strictEqual(rows.length, 1);
+    });
+  });
+
+  describe('.truncate()', () => {
+    const table = INSTANCE.table(generateId('table'));
+    beforeEach(async () => {
+      const tableOptions = {
+        families: ['follows'],
+      };
+      const rows = [
+        {
+          key: 'gwashington',
+          data: {
+            follows: {
+              jadams: 1,
             },
           },
-        ];
+        },
+      ];
+      await table.create(tableOptions);
+      await table.insert(rows);
+    });
 
-        async.series(
-          [
-            table.create.bind(table, tableOptions),
-            table.insert.bind(table, rows),
-          ],
-          done
-        );
-      });
+    afterEach(async () => {
+      await table.delete();
+    });
 
-      afterEach(table.delete.bind(table));
-
-      it('should truncate a table', function(done) {
-        async.series([
-          table.truncate.bind(table),
-          function() {
-            table.getRows(function(err, rows) {
-              assert.ifError(err);
-              assert.strictEqual(rows.length, 0);
-              done();
-            });
-          },
-        ]);
-      });
+    it('should truncate a table', async () => {
+      await table.truncate();
+      const [rows] = await table.getRows();
+      assert.strictEqual(rows.length, 0);
     });
   });
 });
