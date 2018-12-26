@@ -22,12 +22,13 @@ const bigtable = new Bigtable();
 
 const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
-const clusterSnippets = require('../cluster.js');
+const rowSnippets = require('./row.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe('Cluster Snippets', () => {
+describe.skip('Row Snippets', function() {
   before(async () => {
     try {
       await instance.create({
@@ -40,6 +41,7 @@ describe('Cluster Snippets', () => {
         ],
         type: 'DEVELOPMENT',
       });
+      await instance.createTable(TABLE_ID);
     } catch (err) {
       // Handle the error.
     }
@@ -47,36 +49,37 @@ describe('Cluster Snippets', () => {
 
   after(async () => {
     try {
-      const [exists] = await instance.exists();
-      if (exists) {
-        await instance.delete();
-      }
+      await instance.delete();
     } catch (err) {
-      // Handle the error.
+      /// Handle the error.
     }
   });
 
-  it('should create a cluster', () => {
-    clusterSnippets.create(INSTANCE_ID, CLUSTER_ID);
+  it('should create a row', () => {
+    rowSnippets.createRow(INSTANCE_ID, TABLE_ID);
   });
-
-  it('should check cluster exists', () => {
-    clusterSnippets.exists(INSTANCE_ID, CLUSTER_ID);
+  it('should create a row rules', () => {
+    rowSnippets.createRules(INSTANCE_ID, TABLE_ID);
   });
-
-  it('should get the cluster', () => {
-    clusterSnippets.get(INSTANCE_ID, CLUSTER_ID);
+  it('should delete all cells', () => {
+    rowSnippets.deleteAllCells(INSTANCE_ID, TABLE_ID);
   });
-
-  it('should get cluster metadata', () => {
-    clusterSnippets.getMeta(INSTANCE_ID, CLUSTER_ID);
+  it('should delete selected cells', () => {
+    rowSnippets.deleteCells(INSTANCE_ID, TABLE_ID);
   });
-
-  it('should set cluster metadata', () => {
-    clusterSnippets.setMeta(INSTANCE_ID, CLUSTER_ID);
+  it('should check row exists', () => {
+    rowSnippets.exists(INSTANCE_ID, TABLE_ID);
   });
-
-  it('should delete a cluster', () => {
-    clusterSnippets.delete(INSTANCE_ID, CLUSTER_ID);
+  it('should mutate row with matched filter', () => {
+    rowSnippets.filter(INSTANCE_ID, TABLE_ID);
+  });
+  it('should get row meta-data', () => {
+    rowSnippets.getMetadata(INSTANCE_ID, TABLE_ID);
+  });
+  it('should increment row', () => {
+    rowSnippets.increment(INSTANCE_ID, TABLE_ID);
+  });
+  it('should save row', () => {
+    rowSnippets.save(INSTANCE_ID, TABLE_ID);
   });
 });

@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google Inc. All Rights Reserved.
+ * Copyright 2016 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 'use strict';
-const assert = require('assert');
+
 const uuid = require(`uuid`);
 
 const Bigtable = require(`@google-cloud/bigtable`);
@@ -24,13 +24,12 @@ const bigtable = new Bigtable();
 const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const FAMILY_ID = `sample-family-${uuid.v4()}`.substr(0, 10); // Bigtable naming rules
 
-const familySnippets = require('../family.js');
+const tableSnippets = require('./table.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe('Family Snippets', () => {
+describe.skip('Table Snippets', function() {
   before(async () => {
     try {
       await instance.create({
@@ -43,9 +42,8 @@ describe('Family Snippets', () => {
         ],
         type: 'DEVELOPMENT',
       });
-      await instance.createTable(TABLE_ID);
     } catch (err) {
-      //
+      // Handle the error.
     }
   });
 
@@ -57,27 +55,55 @@ describe('Family Snippets', () => {
     }
   });
 
-  it('should create a column family', () => {
-    familySnippets.createColmFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
+  it('should create a table', () => {
+    tableSnippets.createTable(INSTANCE_ID, TABLE_ID);
   });
 
-  it('should check family exists', () => {
-    familySnippets.existsFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
+  it('should check table exists', () => {
+    tableSnippets.existsTable(INSTANCE_ID, TABLE_ID);
   });
 
-  it('should get the family', () => {
-    familySnippets.getFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
+  it('should get the table', () => {
+    tableSnippets.getTable(INSTANCE_ID, TABLE_ID);
   });
 
-  it('should get family metadata', () => {
-    familySnippets.getMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID);
+  it('should get table metadata', () => {
+    tableSnippets.getMetadata(INSTANCE_ID, TABLE_ID);
   });
 
-  it('should set family metadata', () => {
-    familySnippets.setMetadata(INSTANCE_ID, TABLE_ID, FAMILY_ID);
+  it('should create family', () => {
+    tableSnippets.createFamily(INSTANCE_ID, TABLE_ID, 'follows');
   });
 
-  it('should delete family', () => {
-    familySnippets.delFamily(INSTANCE_ID, TABLE_ID, FAMILY_ID);
+  it('should get families', () => {
+    tableSnippets.getFamilies(INSTANCE_ID, TABLE_ID);
+  });
+
+  it('should insert row', () => {
+    tableSnippets.insertRows(INSTANCE_ID, TABLE_ID);
+  });
+
+  it('should get rows', () => {
+    tableSnippets.getRows(INSTANCE_ID, TABLE_ID);
+  });
+
+  it('should mutate table', () => {
+    tableSnippets.mutate(INSTANCE_ID, TABLE_ID);
+  });
+
+  it('should create a read-stream', () => {
+    tableSnippets.createReadStream(INSTANCE_ID, TABLE_ID);
+  });
+
+  it('should create sample row-keys', () => {
+    tableSnippets.sampleRowKeys(INSTANCE_ID, TABLE_ID);
+  });
+
+  // it('should delete rows', () => {
+  //   tableSnippets.delRows(INSTANCE_ID, TABLE_ID);
+  // });
+
+  it('should delete table', () => {
+    tableSnippets.delTable(INSTANCE_ID, TABLE_ID);
   });
 });
