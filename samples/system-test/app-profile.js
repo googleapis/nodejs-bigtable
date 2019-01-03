@@ -24,11 +24,11 @@ const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Big
 const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const APP_PROFILE_ID = `my-app-profile`;
 
-const appProfileSnippets = require('../app-profile.js');
+const appProfileSnippets = require('./app-profile.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe('App Profile Snippets', function() {
+describe.skip('App Profile Snippets', function() {
   before(() => {
     instance.create({
       clusters: [

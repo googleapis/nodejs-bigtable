@@ -15,7 +15,6 @@
  */
 
 'use strict';
-const assert = require('assert');
 const uuid = require(`uuid`);
 
 const Bigtable = require(`@google-cloud/bigtable`);
@@ -26,9 +25,9 @@ const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigt
 // const APP_PROFILE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
-const instanceSnippets = require('../instance.js');
+const instanceSnippets = require('./instance.js');
 
-describe('Instance Snippets', function() {
+describe.skip('Instance Snippets', function() {
   after(async () => {
     try {
       const instance = await bigtable.instance(INSTANCE_ID);

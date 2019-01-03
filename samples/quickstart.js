@@ -19,46 +19,26 @@
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
-// The ID of the Cloud Bigtable instance
-const INSTANCE_ID = 'my-bigtable-instance';
-// The ID of the Cloud Bigtable table
-const TABLE_ID = 'my-table';
-const GCLOUD_PROJECT = process.env.GCLOUD_PROJECT;
+async function quickstart(
+  INSTANCE_ID = 'my-instance', // ID of the Cloud Bigtable instance
+  TABLE_ID = 'my-table' // ID of the Cloud Bigtable table
+) {
+  const bigtable = Bigtable();
 
-if (!GCLOUD_PROJECT) {
-  throw new Error('Environment variables GCLOUD_PROJECT must be set!');
+  // Connect to an existing instance:my-bigtable-instance
+  const instance = bigtable.instance(INSTANCE_ID);
+
+  // Connect to an existing table:my-table
+  const table = instance.table(TABLE_ID);
+
+  // Read a row from my-table using a row key
+  const [singleRow] = await table.row('r1').get();
+
+  // Print the row key and data (column value, labels, timestamp)
+  const rowData = JSON.stringify(singleRow.data, null, 4);
+  console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
 }
-
-(async () => {
-  try {
-    const bigtableOptions = {
-      projectId: GCLOUD_PROJECT,
-    };
-
-    const bigtable = Bigtable(bigtableOptions);
-    // Creates a Bigtable client
-    //const bigtable = new Bigtable(bigtableOptions);
-
-    // Connect to an existing instance:my-bigtable-instance
-    const instance = bigtable.instance(INSTANCE_ID);
-
-    // Connect to an existing table:my-table
-    const table = instance.table(TABLE_ID);
-
-    // Read a row from my-table using a row key
-    const [singleRow] = await table.row('r1').get();
-
-    // Print the row key and data (column value, labels, timestamp)
-    console.log(
-      `Row key: ${singleRow.id}\nData: ${JSON.stringify(
-        singleRow.data,
-        null,
-        4
-      )}`
-    );
-  } catch (err) {
-    // Handle error performing the read operation
-    console.error(`Error reading row r1:`, err);
-  }
-})();
 // [END bigtable_quickstart]
+
+const args = process.argv.slice(2);
+quickstart(...args).catch(console.error);
