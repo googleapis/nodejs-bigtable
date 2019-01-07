@@ -30,7 +30,6 @@ const cwd = path.join(__dirname, '..');
 const cmd = 'node instances.js';
 
 before(async () => {
-  tools.checkCredentials();
   await instance.create({
     clusters: [
       {
