@@ -22,8 +22,8 @@ s.replace('**/doc/google/protobuf/doc_timestamp.js',
         r"https://\1)")
 
 s.replace('**/doc/google/protobuf/doc_timestamp.js',
-        'toISOString\]',
-        'toISOString)')
+        'https://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()',
+        'https://www.joda.org/joda-time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime--')
 # [END fix-dead-link]
 
 subprocess.run(['npm', 'install'])

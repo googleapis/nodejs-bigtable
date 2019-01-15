@@ -310,6 +310,7 @@ class Mutation {
    * //  family: 'follows',
    * //  qualifier: 'gwashington'
    * // }
+   * @private
    */
   static parseColumnName(column) {
     const parts = column.split(':');
