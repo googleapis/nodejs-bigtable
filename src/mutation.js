@@ -53,6 +53,7 @@ class Mutation {
    * @param {boolean} [options.userOptions.encoding] The encoding to use when
    *     converting the buffer to a string.
    * @returns {string|number|buffer}
+   * @private
    */
   static convertFromBytes(bytes, options) {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
@@ -78,6 +79,7 @@ class Mutation {
    *
    * @param {string} data - The data to be sent.
    * @returns {buffer}
+   * @private
    */
   static convertToBytes(data) {
     if (data instanceof Buffer) {
@@ -101,6 +103,7 @@ class Mutation {
    * @param {date} start - The start date.
    * @param {date} end - The end date.
    * @returns {object}
+   * @private
    */
   static createTimeRange(start, end) {
     const range = {};
@@ -146,6 +149,7 @@ class Mutation {
    * //     }
    * //   }
    * // ]
+   * @private
    */
   static encodeSetCell(data) {
     const mutations = [];
@@ -232,6 +236,7 @@ class Mutation {
    *     }
    *   }
    * ]);
+   * @private
    */
   static encodeDelete(data) {
     if (!data) {
@@ -283,6 +288,7 @@ class Mutation {
    *
    * @param {object} mutation - The entity data.
    * @returns {object}
+   * @private
    */
   static parse(mutation) {
     if (!(mutation instanceof Mutation)) {
@@ -318,6 +324,7 @@ class Mutation {
    * Converts the mutation object into proto friendly JSON.
    *
    * @returns {object}
+   * @private
    */
   toProto() {
     const mutation = {};
