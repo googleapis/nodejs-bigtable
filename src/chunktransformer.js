@@ -236,8 +236,7 @@ class ChunkTransformer extends Transform {
         newRowKey &&
         chunk.rowKey &&
         newRowKey.length !== 0 &&
-        newRowKey !== row.key &&
-        this.options.decode !== false
+        newRowKey.toString() !== row.key.toString()
       ) {
         this.destroy(
           new TransformError({
