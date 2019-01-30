@@ -232,10 +232,7 @@ class ChunkTransformer extends Transform {
       const newRowKey = Mutation.convertFromBytes(chunk.rowKey, {
         userOptions: this.options,
       });
-      let oldRowKey = row.key;
-      if (typeof row.key === 'undefined' || row.key === null) {
-        oldRowKey = '';
-      }
+      const oldRowKey = row.key || '';
       if (
         newRowKey &&
         chunk.rowKey &&
