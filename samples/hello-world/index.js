@@ -91,11 +91,11 @@ const getRowGreeting = row => {
     ];
     // [END bigtable_hw_create_filter]
 
-    // [START Bigtable_hw_get_with_filter]
+    // [START bigtable_hw_get_with_filter]
     console.log('Reading a single row by row key');
     const [singleRow] = await table.row('greeting0').get({filter});
     console.log(`\tRead: ${getRowGreeting(singleRow)}`);
-    // [END Bigtable_hw_get_with_filter]
+    // [END bigtable_hw_get_with_filter]
 
     // [START bigtable_hw_scan_with_filter]
     console.log('Reading the entire table');
