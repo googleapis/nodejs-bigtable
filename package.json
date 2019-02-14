@@ -39,7 +39,7 @@
     "system-test": "mocha system-test/*.js --timeout 600000",
     "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
     "fix": "eslint --fix '**/*.js'",
-    "docs-test": "blcl docs -r --exclude www.googleapis.com",
+    "docs-test": "linkinator docs -r --skip www.googleapis.com",
     "predocs-test": "npm run docs"
   },
   "dependencies": {
@@ -83,6 +83,6 @@
     "proxyquire": "^2.0.0",
     "sinon": "^7.0.0",
     "uuid": "^3.0.1",
-    "broken-link-checker-local": "^0.2.0"
+    "linkinator": "^1.1.2"
   }
 }
