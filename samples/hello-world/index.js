@@ -10,9 +10,9 @@
 
 /*eslint node/no-unsupported-features: ["error", {version: 8}]*/
 
-// [START dependencies]
+// [START bigtable_hw_imports]
 const Bigtable = require('@google-cloud/bigtable');
-// [END dependencies]
+// [END bigtable_hw_imports]
 
 const TABLE_ID = 'Hello-Bigtable';
 const COLUMN_FAMILY_ID = 'cf1';
@@ -29,12 +29,12 @@ const getRowGreeting = row => {
 
 (async () => {
   try {
-    // [START connecting_to_bigtable]
+    // [START bigtable_hw_connect]
     const bigtableClient = new Bigtable();
     const instance = bigtableClient.instance(INSTANCE_ID);
-    // [END connecting_to_bigtable]
+    // [END bigtable_hw_connect]
 
-    // [START creating_a_table]
+    // [START bigtable_hw_create_table]
     const table = instance.table(TABLE_ID);
     const [tableExists] = await table.exists();
     if (!tableExists) {
@@ -51,9 +51,9 @@ const getRowGreeting = row => {
       };
       await table.create(options);
     }
-    // [END creating_a_table]
+    // [END bigtable_hw_create_table]
 
-    // [START writing_rows]
+    // [START bigtable_hw_write_rows]
     console.log('Write some greetings to the table');
     const greetings = ['Hello World!', 'Hello Bigtable!', 'Hello Node!'];
     const rowsToInsert = greetings.map((greeting, index) => ({
@@ -79,9 +79,9 @@ const getRowGreeting = row => {
       },
     }));
     await table.insert(rowsToInsert);
-    // [END writing_rows]
+    // [END bigtable_hw_write_rows]
 
-    // [START creating_a_filter]
+    // [START bigtable_hw_create_filter]
     const filter = [
       {
         column: {
@@ -89,15 +89,15 @@ const getRowGreeting = row => {
         },
       },
     ];
-    // [END creating_a_filter]
+    // [END bigtable_hw_create_filter]
 
-    // [START getting_a_row]
+    // [START bigtable_hw_get_with_filter]
     console.log('Reading a single row by row key');
     const [singleRow] = await table.row('greeting0').get({filter});
     console.log(`\tRead: ${getRowGreeting(singleRow)}`);
-    // [END getting_a_row]
+    // [END bigtable_hw_get_with_filter]
 
-    // [START scanning_all_rows]
+    // [START bigtable_hw_scan_with_filter]
     console.log('Reading the entire table');
     // Note: For improved performance in production applications, call
     // `Table#readStream` to get a stream of rows. See the API documentation:
@@ -106,12 +106,12 @@ const getRowGreeting = row => {
     for (const row of allRows) {
       console.log(`\tRead: ${getRowGreeting(row)}`);
     }
-    // [END scanning_all_rows]
+    // [END bigtable_hw_scan_with_filter]
 
-    // [START deleting_a_table]
+    // [START bigtable_hw_delete_table]
     console.log('Delete the table');
     await table.delete();
-    // [END deleting_a_table]
+    // [END bigtable_hw_delete_table]
   } catch (error) {
     console.error('Something went wrong:', error);
   }
