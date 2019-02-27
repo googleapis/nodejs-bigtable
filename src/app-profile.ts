@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const {promisifyAll} = require('@google-cloud/promisify');
-const is = require('is');
+import {promisifyAll} from '@google-cloud/promisify';
+import * as is from 'is';
 const snakeCase = require('lodash.snakecase');
 
 const Cluster = require('./cluster');
@@ -34,6 +34,11 @@ const Cluster = require('./cluster');
  * const appProfile = instance.appProfile('my-app-profile');
  */
 class AppProfile {
+  bigtable;
+  instance;
+  name;
+  id;
+  metadata;
   constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
@@ -94,7 +99,7 @@ Please use the format 'my-app-profile' or '${
    * // }
    */
   static formatAppProfile_(options) {
-    const appProfile = {};
+    const appProfile: any = {};
 
     if (options.routing) {
       if (options.routing === 'any') {
@@ -159,7 +164,7 @@ Please use the format 'my-app-profile' or '${
       options = {};
     }
 
-    const reqOpts = {
+    const reqOpts: any = {
       name: this.name,
     };
 
@@ -291,7 +296,7 @@ Please use the format 'my-app-profile' or '${
       gaxOptions = {};
     }
 
-    const reqOpts = {
+    const reqOpts: any = {
       appProfile: AppProfile.formatAppProfile_(metadata),
       updateMask: {
         paths: [],

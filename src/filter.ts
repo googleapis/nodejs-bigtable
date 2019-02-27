@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const arrify = require('arrify');
+import * as arrify from 'arrify';
 const escapeStringRegexp = require('escape-string-regexp');
-const is = require('is');
+import * as is from 'is';
 const isUtf8 = require('is-utf8');
 
 const Mutation = require('./mutation');
@@ -77,6 +77,7 @@ class FilterError extends Error {
  * @class
  */
 class Filter {
+  filters_;
   constructor() {
     this.filters_ = [];
   }
@@ -392,7 +393,7 @@ class Filter {
     }
 
     if (column.start || column.end) {
-      const range = Filter.createRange(column.start, column.end, 'Qualifier');
+      const range: any = Filter.createRange(column.start, column.end, 'Qualifier');
 
       range.familyName = column.family;
       this.set('columnRangeFilter', range);

@@ -36,24 +36,25 @@
  * @namespace google.protobuf
  */
 
-const arrify = require('arrify');
-const {replaceProjectIdToken} = require('@google-cloud/projectify');
-const {promisifyAll} = require('@google-cloud/promisify');
-const extend = require('extend');
-const {Service} = require('@google-cloud/common-grpc');
-const {GoogleAuth} = require('google-auth-library');
-const gax = require('google-gax');
-const grpc = new gax.GrpcClient().grpc;
-const is = require('is');
+import * as arrify from 'arrify';
+import {replaceProjectIdToken} from '@google-cloud/projectify';
+import {promisifyAll} from '@google-cloud/promisify';
+import * as extend from 'extend';
+import {Service} from '@google-cloud/common-grpc';
+import {GoogleAuth} from 'google-auth-library';
+import * as gax from 'google-gax';
+import * as is from 'is';
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
-const through = require('through2');
+import * as through from 'through2';
+
+const {grpc} = new gax.GrpcClient();
 
 const AppProfile = require('./app-profile');
 const Cluster = require('./cluster');
 const Instance = require('./instance');
 
-const PKG = require('../package.json');
+const PKG = require('../../package.json');
 const v2 = require('./v2');
 
 /**
@@ -359,12 +360,23 @@ const v2 = require('./v2');
  * });
  */
 class Bigtable {
+  customEndpoint;
+  options;
+  api;
+  auth;
+  projectId;
+  appProfileId;
+  projectName;
+  shouldReplaceProjectIdToken;
+  static AppProfile;
+  static Instance;
+  static Cluster;
   constructor(options) {
     options = options || {};
 
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
-    const scopes = [];
+    const scopes: any[] = [];
     const clientClasses = [
       v2.BigtableClient,
       v2.BigtableInstanceAdminClient,
@@ -530,7 +542,7 @@ class Bigtable {
       options = {};
     }
 
-    const reqOpts = {
+    const reqOpts: any = {
       parent: this.projectName,
       instanceId: id,
       instance: {
@@ -731,7 +743,7 @@ class Bigtable {
             currentRetryAttempt: 0,
             noResponseRetries: 0,
             objectMode: true,
-            shouldRetryFn: Service.shouldRetryRequest_,
+            shouldRetryFn: (Service as any).shouldRetryRequest_,
             request() {
               gaxStream = requestFn();
               return gaxStream;
@@ -818,9 +830,9 @@ Bigtable.Instance = Instance;
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
 // eslint-disable-next-line no-class-assign
-Bigtable = new Proxy(Bigtable, {
+(Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
-    return new target(...argumentsList);
+    return new (target as any)(...argumentsList);
   },
 });
 

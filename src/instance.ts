@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const {paginator} = require('@google-cloud/paginator');
-const {promisifyAll} = require('@google-cloud/promisify');
-const is = require('is');
+import {paginator} from '@google-cloud/paginator';
+import {promisifyAll} from '@google-cloud/promisify';
+import * as is from 'is';
 const snakeCase = require('lodash.snakecase');
 
 const AppProfile = require('./app-profile');
@@ -39,6 +39,11 @@ const Table = require('./table');
  */
 
 class Instance {
+  bigtable;
+  id;
+  name;
+  metadata;
+  getTablesStream;
   constructor(bigtable, id) {
     this.bigtable = bigtable;
 
@@ -164,7 +169,7 @@ Please use the format 'my-instance' or '${
 
     const appProfile = AppProfile.formatAppProfile_(options);
 
-    const reqOpts = {
+    const reqOpts: any = {
       parent: this.name,
       appProfileId: id,
       appProfile,
@@ -224,7 +229,7 @@ Please use the format 'my-instance' or '${
       options = {};
     }
 
-    const reqOpts = {
+    const reqOpts: any = {
       parent: this.name,
       clusterId: id,
     };
@@ -302,7 +307,7 @@ Please use the format 'my-instance' or '${
       options = {};
     }
 
-    const reqOpts = {
+    const reqOpts: any = {
       parent: this.name,
       tableId: id,
       table: {
@@ -326,7 +331,7 @@ Please use the format 'my-instance' or '${
           };
         }
 
-        const columnFamily = (families[family.name] = {});
+        const columnFamily: any = (families[family.name] = {});
 
         if (family.rule) {
           columnFamily.gcRule = Family.formatRule_(family.rule);
@@ -671,7 +676,7 @@ Please use the format 'my-instance' or '${
       callback = gaxOptions;
       gaxOptions = {};
     }
-    const reqOpts = {
+    const reqOpts: any = {
       instance: Object.assign({name: this.name}, metadata),
       updateMask: {
         paths: [],

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const arrify = require('arrify');
-const common = require('@google-cloud/common-grpc');
-const {promisifyAll} = require('@google-cloud/promisify');
+import * as arrify from 'arrify';
+import * as common from '@google-cloud/common-grpc';
+import {promisifyAll} from '@google-cloud/promisify';
 const concat = require('concat-stream');
-const is = require('is');
+import * as is from 'is';
 const pumpify = require('pumpify');
-const through = require('through2');
+import * as through from 'through2';
 
 const Family = require('./family');
 const Filter = require('./filter');
@@ -46,6 +46,12 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  * const table = instance.table('prezzy');
  */
 class Table {
+  bigtable;
+  instance;
+  name;
+  id;
+  metadata;
+  maxRetries;
   constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
@@ -201,7 +207,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       throw new Error('An id is required to create a family.');
     }
 
-    const mod = {
+    const mod: any = {
       id: id,
       create: {},
     };
@@ -324,7 +330,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       chunkTransformer = new ChunkTransformer({decode: options.decode});
 
-      const reqOpts = {
+      const reqOpts: any = {
         tableName: this.name,
         appProfileId: this.bigtable.appProfileId,
       };
@@ -421,7 +427,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         requestStream,
         chunkTransformer,
         through.obj((rowData, enc, next) => {
-          if (chunkTransformer._destroyed || userStream._writableState.ended) {
+          if (chunkTransformer._destroyed || (userStream as any)._writableState.ended) {
             return next();
           }
           numRequestsMade = 0;
@@ -734,7 +740,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
 
     const reqOpts = {
       name: this.name,
-      view: Table.VIEWS[options.view || 'unspecified'],
+      view: (Table as any).VIEWS[options.view || 'unspecified'],
     };
 
     this.bigtable.request(
@@ -872,7 +878,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         err = new common.util.PartialFailureError({
           errors: mutationErrors,
-        });
+        } as any);
       }
 
       callback(err);
@@ -915,7 +921,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
         .on('data', obj => {
           obj.entries.forEach(entry => {
             const originalEntry = entryBatch[entry.index];
-            const originalEntriesIndex = entryToIndex.get(originalEntry);
+            const originalEntriesIndex = entryToIndex.get(originalEntry)!;
 
             // Mutation was successful.
             if (entry.status.code === 0) {
@@ -928,7 +934,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
               pendingEntryIndices.delete(originalEntriesIndex);
             }
 
-            const status = common.Service.decorateStatus_(entry.status);
+            const status = (common.Service as any).decorateStatus_(entry.status);
             status.entry = originalEntry;
 
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
@@ -1189,7 +1195,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
  *
  * @private
  */
-Table.VIEWS = {
+(Table as any).VIEWS = {
   unspecified: 0,
   name: 1,
   schema: 2,

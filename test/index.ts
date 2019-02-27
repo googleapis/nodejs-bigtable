@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-'use strict';
-
-const assert = require('assert');
-const common = require('@google-cloud/common-grpc');
-const gax = require('google-gax');
-const grpc = new gax.GrpcClient().grpc;
-const proxyquire = require('proxyquire');
+import * as assert from 'assert';
+import * as common from '@google-cloud/common-grpc';
+import * as gax from 'google-gax';
+import * as proxyquire from 'proxyquire';
 const sinon = require('sinon').createSandbox();
-const through = require('through2');
-const promisify = require('@google-cloud/promisify');
-const projectify = require('@google-cloud/projectify');
+import * as through from 'through2';
+import * as promisify from '@google-cloud/promisify';
+import * as projectify from '@google-cloud/projectify';
 
+const grpc = new gax.GrpcClient().grpc;
 const Cluster = require('../src/cluster.js');
 const Instance = require('../src/instance.js');
 const v2 = require('../src/v2');
-
-const PKG = require('../package.json');
+const PKG = require('../../package.json');
 
 function fakeV2() {}
 
@@ -91,7 +88,7 @@ describe('Bigtable', function() {
   let bigtable;
 
   before(function() {
-    Bigtable = proxyquire('../', {
+    Bigtable = proxyquire('../src', {
       '@google-cloud/promisify': fakePromisify,
       '@google-cloud/projectify': fakeReplaceProjectIdToken,
       'google-auth-library': {
@@ -117,7 +114,7 @@ describe('Bigtable', function() {
   });
 
   describe('instantiation', function() {
-    const EXPECTED_SCOPES = [];
+    const EXPECTED_SCOPES: any[] = [];
     const clientClasses = [
       v2.BigtableClient,
       v2.BigtableInstanceAdminClient,
@@ -751,7 +748,7 @@ describe('Bigtable', function() {
         const error = new Error('Error.');
 
         bigtable.api[CONFIG.client][CONFIG.method] = function() {
-          const callback = [].slice.call(arguments).pop();
+          const callback: Function = [].slice.call(arguments).pop()!;
           callback(error);
         };
 
@@ -763,7 +760,7 @@ describe('Bigtable', function() {
 
       it('should execute the request function', function() {
         bigtable.api[CONFIG.client][CONFIG.method] = function(done) {
-          const callback = [].slice.call(arguments).pop();
+          const callback: Function = [].slice.call(arguments).pop()!;
           callback(null, done); // so it ends the test
         };
 
@@ -792,7 +789,7 @@ describe('Bigtable', function() {
           assert.strictEqual(config.objectMode, true);
           assert.strictEqual(
             config.shouldRetryFn,
-            common.Service.shouldRetryRequest_
+            (common.Service as any).shouldRetryRequest_
           );
           done();
         };

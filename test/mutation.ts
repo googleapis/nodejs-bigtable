@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-'use strict';
-
-const assert = require('assert');
-const Long = require('long');
+import * as assert from 'assert';
+import * as Long from 'long';
 const Mutation = require('../src/mutation.js');
 const sinon = require('sinon').createSandbox();
 
@@ -152,8 +150,8 @@ describe('Bigtable/Mutation', function() {
 
   describe('encodeSetCell', function() {
     let convertCalls;
-    const fakeTime = new Date('2018-1-1');
-    const realTimestamp = new Date();
+    const fakeTime: any = new Date('2018-1-1');
+    const realTimestamp: any = new Date();
 
     beforeEach(function() {
       sinon.stub(global, 'Date').returns(fakeTime);
@@ -254,7 +252,7 @@ describe('Bigtable/Mutation', function() {
 
   describe('encodeDelete', function() {
     let convert;
-    let convertCalls = [];
+    let convertCalls: any[] = [];
 
     before(function() {
       convert = Mutation.convertToBytes;
@@ -333,7 +331,7 @@ describe('Bigtable/Mutation', function() {
 
     it('should optionally accept a timerange for column requests', function() {
       const createTimeRange = Mutation.createTimeRange;
-      const timeCalls = [];
+      const timeCalls: any[] = [];
       const fakeTimeRange = {a: 'a'};
 
       const fakeMutationData = {
@@ -433,7 +431,7 @@ describe('Bigtable/Mutation', function() {
 
   describe('toProto', function() {
     let convert;
-    let convertCalls = [];
+    let convertCalls: any[] = [];
 
     before(function() {
       convert = Mutation.convertToBytes;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 const Mutation = require('./mutation');
-const {Transform} = require('stream');
+import {Transform, TransformOptions} from 'stream';
 
 class TransformError extends Error {
   constructor(props) {
@@ -42,7 +42,15 @@ const RowStateEnum = Object.freeze({
  * Should use new instance for each request.
  */
 class ChunkTransformer extends Transform {
-  constructor(options = {}) {
+  options: TransformOptions;
+  _destroyed: boolean;
+  lastRowKey;
+  state;
+  row;
+  family;
+  qualifiers;
+  qualifier;
+  constructor(options: TransformOptions = {}) {
     options.objectMode = true; // forcing object mode
     super(options);
     this.options = options;

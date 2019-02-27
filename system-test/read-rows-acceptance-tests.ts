@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-'use strict';
-const assert = require('assert');
-const testcases = require('./read-rows-acceptance-test.json').tests;
+import * as assert from 'assert';
+const testcases = require('../../system-test/read-rows-acceptance-test.json').tests;
 const Stream = require('stream').PassThrough;
 const Table = require('../src/table.js');
 const Row = require('../src/row.js');
 const ProtoBuf = require('protobufjs');
-const path = require('path');
+import * as path from 'path';
+
 const protosRoot = path.resolve(__dirname, '../protos');
 function applyProtoRoot(filename, root) {
   filename.root = path.resolve(filename.root) + '/';
@@ -53,7 +53,7 @@ describe('Read Row Acceptance tests', function() {
   testcases.forEach(function(test) {
     it(test.name, done => {
       const table = new Table({id: 'xyz'}, 'my-table');
-      const results = [];
+      const results: any[] = [];
       const rawResults = test.results || [];
       const errorCount = rawResults.filter(result => result.error).length;
       rawResults
@@ -69,7 +69,7 @@ describe('Read Row Acceptance tests', function() {
           data[result.fm] = family;
           const qualifier = family[result.qual] || [];
           family[result.qual] = qualifier;
-          const resultLabels = [];
+          const resultLabels: any[] = [];
           if (result.label !== '') {
             resultLabels.push(result.label);
           }
@@ -112,8 +112,8 @@ describe('Read Row Acceptance tests', function() {
         return row;
       });
 
-      const errors = [];
-      const rows = [];
+      const errors: any[] = [];
+      const rows: any[] = [];
 
       table
         .createReadStream({})

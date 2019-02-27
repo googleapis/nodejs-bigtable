@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-'use strict';
+import * as assert from 'assert';
+import * as uuid from 'uuid';
+import * as Q from 'p-queue';
 
-const assert = require('assert');
-const uuid = require('uuid');
-const Q = require('p-queue');
-const Bigtable = require('../');
+const Bigtable = require('../src');
 const AppProfile = require('../src/app-profile.js');
 const Cluster = require('../src/cluster.js');
 const Table = require('../src/table.js');
@@ -201,7 +200,7 @@ describe('Bigtable', () => {
     });
 
     it('should retrieve a list of tables in stream mode', done => {
-      const tables = [];
+      const tables: any[] = [];
       INSTANCE.getTablesStream()
         .on('error', done)
         .on('data', table => {
@@ -385,7 +384,7 @@ describe('Bigtable', () => {
     });
 
     it('should update a column family', async () => {
-      const rule = {
+      const rule: any = {
         age: {
           seconds: 10000,
           nanos: 10000,
@@ -559,7 +558,7 @@ describe('Bigtable', () => {
       });
 
       it('should get rows via stream', done => {
-        const rows = [];
+        const rows: any = [];
         TABLE.createReadStream()
           .on('error', done)
           .on('data', row => {
@@ -627,7 +626,7 @@ describe('Bigtable', () => {
       });
 
       it('should get sample row keys via stream', done => {
-        const keys = [];
+        const keys: any = [];
         TABLE.sampleRowKeysStream()
           .on('error', done)
           .on('data', rowKey => {
@@ -669,7 +668,7 @@ describe('Bigtable', () => {
           },
         ];
         await TABLE.insert(entries);
-        const rows = [];
+        const rows: any = [];
         await new Promise((resolve, reject) => {
           const stream = TABLE.createReadStream()
             .on('error', reject)
@@ -718,7 +717,7 @@ describe('Bigtable', () => {
           await TABLE.insert(entry);
           const [rows] = await TABLE.getRows({filter});
           const rowData = rows[0].data;
-          assert(rowData.follows.tjefferson.length, 1);
+          assert.strictEqual(rowData.follows.tjefferson.length, 1);
         });
 
         it('should get a range of columns', async () => {
