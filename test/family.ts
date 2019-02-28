@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-'use strict';
-
-const assert = require('assert');
-const proxyquire = require('proxyquire');
-const promisify = require('@google-cloud/promisify');
+import * as assert from 'assert';
+import * as proxyquire from 'proxyquire';
+import * as promisify from '@google-cloud/promisify';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -387,7 +385,7 @@ describe('Bigtable/Family', function() {
     });
 
     it('should not auto create without a FamilyError error', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
       const options = {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const {promisifyAll} = require('@google-cloud/promisify');
-const is = require('is');
+import {promisifyAll} from '@google-cloud/promisify';
+import * as is from 'is';
 
 /**
  * Create a cluster object to interact with your cluster.
@@ -31,6 +31,11 @@ const is = require('is');
  * const cluster = instance.cluster('my-cluster');
  */
 class Cluster {
+  bigtable;
+  instance;
+  id;
+  name;
+  metadata;
   constructor(instance, id) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
@@ -277,7 +282,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
       gaxOptions = {};
     }
 
-    const reqOpts = {
+    const reqOpts: any = {
       name: this.name,
     };
 

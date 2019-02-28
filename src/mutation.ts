@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const arrify = require('arrify');
-const Long = require('long');
-const is = require('is');
+import * as arrify from 'arrify';
+import * as Long from 'long';
+import * as is from 'is';
 
 /**
  * Formats table mutations to be in the expected proto format.
@@ -36,6 +36,9 @@ const is = require('is');
  * });
  */
 class Mutation {
+  key;
+  method;
+  data;
   constructor(mutation) {
     this.key = mutation.key;
     this.method = mutation.method;
@@ -58,7 +61,7 @@ class Mutation {
   static convertFromBytes(bytes, options) {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
-      const num = Long.fromBytes(buf).toNumber();
+      const num = Long.fromBytes(buf as any).toNumber();
 
       if (Number.MIN_SAFE_INTEGER < num && num < Number.MAX_SAFE_INTEGER) {
         return num;
@@ -106,7 +109,7 @@ class Mutation {
    * @private
    */
   static createTimeRange(start, end) {
-    const range = {};
+    const range: any = {};
 
     if (is.date(start)) {
       range.startTimestampMicros = start.getTime() * 1000;
@@ -152,7 +155,7 @@ class Mutation {
    * @private
    */
   static encodeSetCell(data) {
-    const mutations = [];
+    const mutations: any[] = [];
 
     Object.keys(data).forEach(familyName => {
       const family = data[familyName];
@@ -328,7 +331,7 @@ class Mutation {
    * @private
    */
   toProto() {
-    const mutation = {};
+    const mutation: any = {};
 
     if (this.key) {
       mutation.rowKey = Mutation.convertToBytes(this.key);
@@ -350,7 +353,7 @@ class Mutation {
  * INSERT => setCell
  * DELETE => deleteFrom*
  */
-const methods = (Mutation.methods = {
+const methods = ((Mutation as any).methods = {
   INSERT: 'insert',
   DELETE: 'delete',
 });

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-'use strict';
-
-const assert = require('assert');
-const promisify = require('@google-cloud/promisify');
-const proxyquire = require('proxyquire');
+import * as assert from 'assert';
+import * as promisify from '@google-cloud/promisify';
+import * as proxyquire from 'proxyquire';
 const sinon = require('sinon').createSandbox();
 
 const Mutation = require('../src/mutation.js');
@@ -1069,7 +1067,7 @@ describe('Bigtable/Row', function() {
     it('should respect the options object', function(done) {
       const keys = ['a:b'];
 
-      const options = {
+      const options: any = {
         filter: [
           {
             column: {
@@ -1108,7 +1106,7 @@ describe('Bigtable/Row', function() {
     it('should respect the options object with filter for multiple columns', function(done) {
       const keys = ['a:b', 'c:d'];
 
-      const options = {
+      const options: any = {
         filter: [
           {
             column: {

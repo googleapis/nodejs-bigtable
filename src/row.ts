@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const arrify = require('arrify');
-const {promisifyAll} = require('@google-cloud/promisify');
+import * as arrify from 'arrify';
+import {promisifyAll} from '@google-cloud/promisify';
 const dotProp = require('dot-prop');
-const is = require('is');
+import * as is from 'is';
 
 const Filter = require('./filter');
 const Mutation = require('./mutation');
@@ -26,6 +26,7 @@ const Mutation = require('./mutation');
  * @private
  */
 class RowError extends Error {
+  code: number;
   constructor(row) {
     super();
     this.name = 'RowError';
@@ -49,6 +50,10 @@ class RowError extends Error {
  * const row = table.row('gwashington');
  */
 class Row {
+  bigtable;
+  table;
+  id;
+  data;
   constructor(table, key) {
     this.bigtable = table.bigtable;
     this.table = table;
@@ -87,7 +92,7 @@ class Row {
    * // }
    */
   static formatChunks_(chunks, options) {
-    const rows = [];
+    const rows: any[] = [];
     let familyName;
     let qualifierName;
 
@@ -183,7 +188,7 @@ class Row {
    * //   }
    * // }
    */
-  static formatFamilies_(families, options) {
+  static formatFamilies_(families, options?) {
     const data = {};
 
     options = options || {};
@@ -282,7 +287,7 @@ class Row {
 
     rules = arrify(rules).map(rule => {
       const column = Mutation.parseColumnName(rule.column);
-      const ruleData = {
+      const ruleData: any = {
         familyName: column.family,
         columnQualifier: Mutation.convertToBytes(column.qualifier),
       };
@@ -477,7 +482,7 @@ class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_get_row
    */
-  get(columns, options, callback) {
+  get(columns, options, callback?) {
     if (!is.array(columns)) {
       callback = options;
       options = columns;
@@ -495,7 +500,7 @@ class Row {
     // if there is column filter
     if (columns.length) {
       const filters = columns.map(Mutation.parseColumnName).map(column => {
-        const colmFilters = [{family: column.family}];
+        const colmFilters: any = [{family: column.family}];
         if (column.qualifier) {
           colmFilters.push({column: column.qualifier});
         }

@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-'use strict';
-
-const assert = require('assert');
+import * as assert from 'assert';
 
 const adminModule = require('../src');
 
 const FAKE_STATUS_CODE = 1;
-const error = new Error();
+const error: any = new Error();
 error.code = FAKE_STATUS_CODE;
 
 describe('BigtableInstanceAdminClient', () => {
@@ -2382,7 +2380,7 @@ describe('BigtableTableAdminClient', () => {
   });
 });
 
-function mockSimpleGrpcMethod(expectedRequest, response, error) {
+function mockSimpleGrpcMethod(expectedRequest, response?, error?) {
   return function(actualRequest, options, callback) {
     assert.deepStrictEqual(actualRequest, expectedRequest);
     if (error) {
@@ -2395,7 +2393,7 @@ function mockSimpleGrpcMethod(expectedRequest, response, error) {
   };
 }
 
-function mockLongRunningGrpcMethod(expectedRequest, response, error) {
+function mockLongRunningGrpcMethod(expectedRequest, response, error?) {
   return request => {
     assert.deepStrictEqual(request, expectedRequest);
     const mockOperation = {

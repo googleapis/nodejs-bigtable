@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-'use strict';
-
-const assert = require('assert');
-const proxyquire = require('proxyquire');
+import * as assert from 'assert';
+import * as proxyquire from 'proxyquire';
 const sinon = require('sinon').createSandbox();
 const Mutation = require('../src/mutation.js');
-const Long = require('long');
+import * as Long from 'long';
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
 const {RowStateEnum} = require('../src/chunktransformer.js');
@@ -855,7 +853,7 @@ describe('Bigtable/ChunkTransformer', function() {
       commitSpy = sinon.spy(chunkTransformer, 'commit');
       destroySpy = sinon.spy(chunkTransformer, 'destroy');
       chunkTransformer.qualifier = {
-        value: Buffer.from('value'.toString('base64'), 'base64'),
+        value: Buffer.from('value', 'base64'),
         size: 0,
         timestamp: 0,
         labels: [],
@@ -872,7 +870,7 @@ describe('Bigtable/ChunkTransformer', function() {
       };
       const chunk = {
         commitRow: false,
-        value: Buffer.from('value'.toString('base64'), 'base64'),
+        value: Buffer.from('value', 'base64'),
         valueSize: 0,
       };
       chunkTransformer.processCellInProgress(chunk);
@@ -886,8 +884,8 @@ describe('Bigtable/ChunkTransformer', function() {
             qualifier: [
               {
                 value: Buffer.concat([
-                  Buffer.from('value'.toString('base64'), 'base64'),
-                  Buffer.from('value'.toString('base64'), 'base64'),
+                  Buffer.from('value', 'base64'),
+                  Buffer.from('value', 'base64'),
                 ]),
                 size: 0,
                 timestamp: 0,

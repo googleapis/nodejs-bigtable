@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-'use strict';
+import * as assert from 'assert';
+import * as promisify from '@google-cloud/promisify';
+import * as paginator from '@google-cloud/paginator';
+import * as proxyquire from 'proxyquire';
 
-const assert = require('assert');
-const promisify = require('@google-cloud/promisify');
-const paginator = require('@google-cloud/paginator');
-const proxyquire = require('proxyquire');
-
-const AppProfile = require('../src/app-profile.js');
-const Cluster = require('../src/cluster.js');
-const Family = require('../src/family.js');
-const Table = require('../src/table.js');
+const AppProfile = require('../src/app-profile');
+const Cluster = require('../src/cluster');
+const Family = require('../src/family');
+const Table = require('../src/table');
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -40,7 +38,7 @@ const fakePromisify = Object.assign({}, promisify, {
 const fakePaginator = Object.assign({}, paginator, {
   paginator: {
     extend: function() {
-      this.calledWith_ = arguments;
+      (this as any).calledWith_ = arguments;
     },
     streamify: function(methodName) {
       return methodName;
@@ -48,28 +46,44 @@ const fakePaginator = Object.assign({}, paginator, {
   },
 });
 
-function createFake(Class) {
-  return class Fake extends Class {
-    constructor() {
-      super(...arguments);
-      this.calledWith_ = arguments;
-    }
-  };
+class FakeAppProfile extends AppProfile {
+  calledWith_;
+  constructor(...args) {
+    super(...args);
+    this.calledWith_ = args;
+  }
 }
 
-const FakeAppProfile = createFake(AppProfile);
-const FakeCluster = createFake(Cluster);
-const FakeFamily = createFake(Family);
-const FakeTable = createFake(Table);
+class FakeCluster extends Cluster {
+  calledWith_;
+  constructor(...args) {
+    super(...args);
+    this.calledWith_ = args;
+  }
+}
+
+class FakeFamily extends Family {
+  calledWith_;
+  constructor(...args) {
+    super(...args);
+    this.calledWith_ = args;
+  }
+}
+
+class FakeTable extends Table {
+  calledWith_;
+  constructor(...args) {
+    super(...args);
+    this.calledWith_ = args;
+  }
+}
 
 describe('Bigtable/Instance', function() {
   const INSTANCE_ID = 'my-instance';
-  const BIGTABLE = {projectName: 'projects/my-project'};
-
+  const BIGTABLE: any = {projectName: 'projects/my-project'};
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
   const CLUSTER_ID = 'my-cluster';
-
   let Instance;
   let instance;
 
@@ -90,7 +104,7 @@ describe('Bigtable/Instance', function() {
 
   describe('instantiation', function() {
     it('should extend the correct methods', function() {
-      const args = fakePaginator.paginator.calledWith_;
+      const args = (fakePaginator.paginator as any).calledWith_;
       assert.strictEqual(args[0], Instance);
       assert.deepStrictEqual(args[1], ['getTables']);
     });
@@ -368,7 +382,7 @@ describe('Bigtable/Instance', function() {
 
       const fakeLocation = 'a/b/c/d';
 
-      FakeCluster.getLocation_ = function(project, location) {
+      (FakeCluster as any).getLocation_ = function(project, location) {
         assert.strictEqual(project, BIGTABLE.projectId);
         assert.strictEqual(location, options.location);
         return fakeLocation;
@@ -402,7 +416,7 @@ describe('Bigtable/Instance', function() {
 
       const fakeStorageType = 2;
 
-      FakeCluster.getStorageType_ = function(type) {
+      (FakeCluster as any).getStorageType_ = function(type) {
         assert.strictEqual(type, options.storage);
         return fakeStorageType;
       };
@@ -527,7 +541,7 @@ describe('Bigtable/Instance', function() {
 
         const fakeRule = {a: 'b'};
 
-        FakeFamily.formatRule_ = function(rule) {
+        (FakeFamily as any).formatRule_ = function(rule) {
           assert.strictEqual(rule, options.families[0].rule);
           return fakeRule;
         };
@@ -636,7 +650,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return false if error code is 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 5;
 
       instance.getMetadata = function(gaxOptions, callback) {
@@ -651,7 +665,7 @@ describe('Bigtable/Instance', function() {
     });
 
     it('should return error if code is not 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
       instance.getMetadata = function(gaxOptions, callback) {
@@ -918,7 +932,7 @@ describe('Bigtable/Instance', function() {
   });
 
   describe('getTables', function() {
-    const views = (FakeTable.VIEWS = {
+    const views = ((FakeTable as any).VIEWS = {
       unspecified: 0,
       name: 1,
       schema: 2,

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-const {promisifyAll} = require('@google-cloud/promisify');
-const is = require('is');
+import {promisifyAll} from '@google-cloud/promisify';
+import * as is from 'is';
 
 /**
  * @private
  */
 class FamilyError extends Error {
+  code;
   constructor(name) {
     super();
     this.name = 'FamilyError';
@@ -44,6 +45,11 @@ class FamilyError extends Error {
  * const family = table.family('follows');
  */
 class Family {
+  bigtable;
+  table;
+  name;
+  id;
+  metadata;
   constructor(table, id) {
     this.bigtable = table.bigtable;
     this.table = table;
@@ -99,7 +105,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
    * // }
    */
   static formatRule_(ruleObj) {
-    const rules = [];
+    const rules: any[] = [];
 
     if (ruleObj.age) {
       rules.push({
@@ -342,7 +348,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
       gaxOptions = {};
     }
 
-    const mod = {
+    const mod: any = {
       id: this.id,
       update: {},
     };

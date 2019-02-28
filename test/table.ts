@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-'use strict';
 
-const assert = require('assert');
-const proxyquire = require('proxyquire');
+import * as assert from 'assert';
+import * as proxyquire from 'proxyquire';
 const pumpify = require('pumpify');
 const sinon = require('sinon').createSandbox();
 const Stream = require('stream').PassThrough;
 const through = require('through2');
 
 const common = require('@google-cloud/common-grpc');
-const promisify = require('@google-cloud/promisify');
+import * as promisify from '@google-cloud/promisify';
 const Family = require('../src/family.js');
 const Mutation = require('../src/mutation.js');
 const Row = require('../src/row.js');
@@ -82,7 +81,7 @@ const FakeMutation = {
   }),
 };
 
-const FakeFilter = {
+const FakeFilter: any = {
   parse: sinon.spy(function(value) {
     return value;
   }),
@@ -787,7 +786,7 @@ describe('Bigtable/Table', function() {
       });
 
       it('should stream Row objects', function(done) {
-        const rows = [];
+        const rows: any[] = [];
 
         table
           .createReadStream()
@@ -812,14 +811,14 @@ describe('Bigtable/Table', function() {
       });
 
       it('should allow a stream to end early', function(done) {
-        const rows = [];
+        const rows: any[] = [];
 
-        table
+        const stream = table
           .createReadStream()
           .on('error', done)
           .on('data', function(row) {
             rows.push(row);
-            this.end();
+            stream.end();
           })
           .on('end', function() {
             assert.strictEqual(rows.length, 1);
@@ -962,13 +961,13 @@ describe('Bigtable/Table', function() {
         emitters = null; // This needs to be assigned in each test case.
 
         makeRetryableError = () => {
-          const error = new Error('retry me!');
+          const error: any = new Error('retry me!');
           error.code = 4;
           return error;
         };
 
         FakeFilter.createRange = function(start, end) {
-          const range = {};
+          const range: any = {};
           if (start) {
             range.start = start.value || start;
             range.startInclusive =
@@ -1248,7 +1247,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should return false if error code is 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 5;
 
       table.getMetadata = function(gaxOptions, callback) {
@@ -1263,7 +1262,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should return error if code is not 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
       table.getMetadata = function(gaxOptions, callback) {
@@ -1331,7 +1330,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should auto create with error code 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 5;
 
       const options = {
@@ -1352,7 +1351,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should not auto create without error code 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
       const options = {
@@ -1374,7 +1373,7 @@ describe('Bigtable/Table', function() {
     });
 
     it('should not auto create unless requested', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 5;
 
       table.getMetadata = function(gaxOptions, callback) {
@@ -1567,7 +1566,7 @@ describe('Bigtable/Table', function() {
       let setTimeoutSpy;
       let clearTimeoutSpy;
       let checkConsistencySpy;
-      let responses = [];
+      let responses: any[] = [];
 
       beforeEach(() => {
         clock = sinon.useFakeTimers({
@@ -2447,7 +2446,7 @@ describe('Bigtable/Table', function() {
       });
 
       it('should stream key objects', function(done) {
-        const keys = [];
+        const keys: any[] = [];
 
         table
           .sampleRowKeysStream()

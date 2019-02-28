@@ -1,16 +1,29 @@
-'use strict';
+/*!
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-const Bigtable = require('../');
+const Bigtable = require('../src');
+const {tests} = require('../../system-test/data/mutate-rows-retry-test.json');
 
-const tests = require('./data/mutate-rows-retry-test.json').tests;
-
-const assert = require('assert');
-const grpc = require('@google-cloud/common-grpc').grpc;
-const sinon = require('sinon');
-const through = require('through2');
+import * as assert from 'assert';
+import {grpc} from '@google-cloud/common-grpc';
+import * as sinon from 'sinon';
+import * as through from 'through2';
 
 function dispatch(emitter, response) {
-  const emits = [];
+  const emits: any[] = [];
   emits.push({name: 'response', arg: {code: response.code}});
   if (response.entry_codes) {
     emits.push({name: 'data', arg: entryResponses(response.entry_codes)});

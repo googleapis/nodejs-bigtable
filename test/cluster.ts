@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-'use strict';
-
-const assert = require('assert');
-const proxyquire = require('proxyquire');
-const promisify = require('@google-cloud/promisify');
+import * as assert from 'assert';
+import * as proxyquire from 'proxyquire';
+import * as promisify from '@google-cloud/promisify';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -214,7 +212,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should return false if error code is 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 5;
 
       cluster.getMetadata = function(gaxOptions, callback) {
@@ -229,7 +227,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should return error if code is not 5', function(done) {
-      const error = new Error('Error.');
+      const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
       cluster.getMetadata = function(gaxOptions, callback) {

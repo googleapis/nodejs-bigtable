@@ -1,17 +1,30 @@
-'use strict';
+/*!
+ * Copyright 2016 Google Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-const Bigtable = require('../');
+const Bigtable = require('../src');
 const mutation = require('../src/mutation.js');
+const {tests} = require('../../system-test/data/read-rows-retry-test.json');
 
-const tests = require('./data/read-rows-retry-test.json').tests;
-
-const assert = require('assert');
-const grpc = require('@google-cloud/common-grpc').grpc;
-const sinon = require('sinon');
-const through = require('through2');
+import * as assert from 'assert';
+import {grpc} from '@google-cloud/common-grpc';
+import * as sinon from 'sinon';
+import * as through from 'through2';
 
 function dispatch(emitter, response) {
-  const emits = [{name: 'request'}];
+  const emits: any[] = [{name: 'request'}];
   if (response.row_keys) {
     emits.push.apply(emits, [
       {name: 'response', arg: 200},
@@ -22,7 +35,7 @@ function dispatch(emitter, response) {
     ]);
   }
   if (response.end_with_error) {
-    const error = new Error();
+    const error: any = new Error();
     error.code = response.end_with_error;
     emits.push({name: 'error', arg: error});
   } else {
@@ -88,9 +101,9 @@ describe('Bigtable/Table', () => {
       responses = null;
       rowKeysRead = [];
       requestedOptions = [];
-      stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
-        const reqOpts = cfg.reqOpts;
-        const requestOptions = {};
+      stub = (sinon as any).stub(bigtable, 'request').callsFake(cfg => {
+        const reqOpts = (cfg as any).reqOpts;
+        const requestOptions: any = {};
         if (reqOpts.rows && reqOpts.rows.rowRanges) {
           requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
             const convertedRowRange = {};
