@@ -16,6 +16,9 @@ s.copy(
   excludes=['package.json', 'README.md', 'src/index.js', 'src/v2/index.js']
 )
 
+# Update path discovery due to build/ dir and TypeScript conversion.
+s.replace("src/v2/bigtable_client.js", "../../package.json", "../../../package.json")
+
 common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library(
   source_location='build/src'
