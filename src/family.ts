@@ -20,7 +20,7 @@ import * as is from 'is';
 /**
  * @private
  */
-class FamilyError extends Error {
+export class FamilyError extends Error {
   code;
   constructor(name) {
     super();
@@ -44,7 +44,7 @@ class FamilyError extends Error {
  * const table = instance.table('prezzy');
  * const family = table.family('follows');
  */
-class Family {
+export class Family {
   bigtable;
   table;
   name;
@@ -387,6 +387,3 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`
  * that a callback is omitted.
  */
 promisifyAll(Family);
-
-module.exports = Family;
-module.exports.FamilyError = FamilyError;

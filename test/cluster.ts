@@ -43,7 +43,7 @@ describe('Bigtable/Cluster', function() {
   before(function() {
     Cluster = proxyquire('../src/cluster.js', {
       '@google-cloud/promisify': fakePromisify,
-    });
+    }).Cluster;
   });
 
   beforeEach(function() {

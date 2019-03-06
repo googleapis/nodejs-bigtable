@@ -16,9 +16,10 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import * as is from 'is';
-const snakeCase = require('lodash.snakecase');
-
-const Cluster = require('./cluster');
+import snakeCase = require('lodash.snakecase');
+import {Cluster} from './cluster';
+import { Bigtable } from '.';
+import { Instance } from './instance';
 
 /**
  * Create an app profile object to interact with your app profile.
@@ -33,13 +34,13 @@ const Cluster = require('./cluster');
  * const instance = bigtable.instance('my-instance');
  * const appProfile = instance.appProfile('my-app-profile');
  */
-class AppProfile {
-  bigtable;
-  instance;
-  name;
-  id;
+export class AppProfile {
+  bigtable: Bigtable;
+  instance: Instance;
+  name: string;
+  id: string;
   metadata;
-  constructor(instance, id) {
+  constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
@@ -345,4 +346,3 @@ promisifyAll(AppProfile);
  * @name module:@google-cloud/bigtable.AppProfile
  * @see AppProfile
  */
-module.exports = AppProfile;

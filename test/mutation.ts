@@ -16,8 +16,10 @@
 
 import * as assert from 'assert';
 import * as Long from 'long';
-const Mutation = require('../src/mutation.js');
-const sinon = require('sinon').createSandbox();
+import * as sn from 'sinon';
+import {Mutation} from '../src/mutation.js';
+
+const sinon = sn.createSandbox();
 
 describe('Bigtable/Mutation', function() {
   afterEach(function() {
@@ -479,7 +481,7 @@ describe('Bigtable/Mutation', function() {
         data: [],
       };
 
-      Mutation.encodeDelete = function(_data) {
+      (Mutation as any).encodeDelete = function(_data) {
         assert.strictEqual(_data, data.data);
         return fakeEncoded;
       };

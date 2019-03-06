@@ -20,8 +20,8 @@ import * as promisify from '@google-cloud/promisify';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll: function(Class) {
-    if (Class.name === 'AppProfile') {
+  promisifyAll: function(klass) {
+    if (klass.name === 'AppProfile') {
       promisified = true;
     }
   },
@@ -51,9 +51,9 @@ describe('Bigtable/AppProfile', function() {
 
   before(function() {
     AppProfile = proxyquire('../src/app-profile.js', {
-      '../src/cluster.js': FakeCluster,
+      '../src/cluster.js': { Cluster: FakeCluster },
       '@google-cloud/promisify': fakePromisify,
-    });
+    }).AppProfile;
   });
 
   beforeEach(function() {

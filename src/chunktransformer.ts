@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const Mutation = require('./mutation');
+import {Mutation} from './mutation';
 import {Transform, TransformOptions} from 'stream';
 
 class TransformError extends Error {
@@ -30,7 +30,7 @@ class TransformError extends Error {
  * ROW_IN_PROGRESS: state after first valid chunk without commitRow or resetRow
  * CELL_IN_PROGRESS: state when valueSize > 0(partial cell)
  */
-const RowStateEnum = Object.freeze({
+export const RowStateEnum = Object.freeze({
   NEW_ROW: 1,
   ROW_IN_PROGRESS: 2,
   CELL_IN_PROGRESS: 3,
@@ -41,7 +41,7 @@ const RowStateEnum = Object.freeze({
  * keeps all intermediate state until end of stream.
  * Should use new instance for each request.
  */
-class ChunkTransformer extends Transform {
+export class ChunkTransformer extends Transform {
   options: TransformOptions;
   _destroyed: boolean;
   lastRowKey;
@@ -244,7 +244,7 @@ class ChunkTransformer extends Transform {
       if (
         newRowKey &&
         chunk.rowKey &&
-        newRowKey.length !== 0 &&
+        (newRowKey as string).length !== 0 &&
         newRowKey.toString() !== oldRowKey.toString()
       ) {
         this.destroy(
@@ -320,7 +320,7 @@ class ChunkTransformer extends Transform {
       const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
         userOptions: this.options,
       });
-      this.qualifiers = this.family[qualifierName] = [];
+      this.qualifiers = this.family[qualifierName as {} as string] = [];
       this.qualifier = {
         value: Mutation.convertFromBytes(chunk.value, {
           userOptions: this.options,
@@ -352,7 +352,7 @@ class ChunkTransformer extends Transform {
     if (chunk.qualifier) {
       const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
         userOptions: this.options,
-      });
+      }) as string;
       this.qualifiers = this.family[qualifierName] =
         this.family[qualifierName] || [];
     }
@@ -396,6 +396,3 @@ class ChunkTransformer extends Transform {
     this.moveToNextState(chunk);
   }
 }
-
-module.exports = ChunkTransformer;
-module.exports.RowStateEnum = RowStateEnum;

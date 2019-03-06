@@ -17,9 +17,10 @@
 import * as assert from 'assert';
 import * as promisify from '@google-cloud/promisify';
 import * as proxyquire from 'proxyquire';
-const sinon = require('sinon').createSandbox();
+const sn = require('sinon');
+import {Mutation} from '../src/mutation.js';
 
-const Mutation = require('../src/mutation.js');
+const sinon = sn.createSandbox();
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -66,14 +67,17 @@ const FakeFilter = {
 
 describe('Bigtable/Row', function() {
   let Row;
+  let RowError;
   let row;
 
   before(function() {
-    Row = proxyquire('../src/row.js', {
+    const Fake = proxyquire('../src/row.js', {
       '@google-cloud/promisify': fakePromisify,
-      './mutation.js': FakeMutation,
-      './filter.js': FakeFilter,
+      './mutation.js': {Mutation: FakeMutation},
+      './filter.js': {Filter: FakeFilter},
     });
+    Row = Fake.Row;
+    RowError = Fake.RowError;
   });
 
   beforeEach(function() {
@@ -785,7 +789,7 @@ describe('Bigtable/Row', function() {
     });
 
     it('should return false if error is RowError', function(done) {
-      const error = new Row.RowError('Error.');
+      const error = new RowError('Error.');
 
       row.getMetadata = function(gaxOptions, callback) {
         callback(error);
@@ -1206,7 +1210,7 @@ describe('Bigtable/Row', function() {
       };
 
       row.get(function(err, row_) {
-        assert(err instanceof Row.RowError);
+        assert(err instanceof RowError);
         assert.strictEqual(err.message, 'Unknown row: ' + row.id + '.');
         assert.deepStrictEqual(row_, undefined);
         done();
@@ -1476,12 +1480,12 @@ describe('Bigtable/Row', function() {
 
   describe('RowError', function() {
     it('should supply the correct message', function() {
-      const error = new Row.RowError('test');
+      const error = new RowError('test');
       assert.strictEqual(error.message, 'Unknown row: test.');
     });
 
     it('should supply a 404 error code', function() {
-      const error = new Row.RowError('test');
+      const error = new RowError('test');
       assert.strictEqual(error.code, 404);
     });
   });

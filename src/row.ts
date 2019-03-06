@@ -18,14 +18,13 @@ import * as arrify from 'arrify';
 import {promisifyAll} from '@google-cloud/promisify';
 const dotProp = require('dot-prop');
 import * as is from 'is';
-
-const Filter = require('./filter');
-const Mutation = require('./mutation');
+import {Filter} from './filter';
+import {Mutation} from './mutation';
 
 /**
  * @private
  */
-class RowError extends Error {
+export class RowError extends Error {
   code: number;
   constructor(row) {
     super();
@@ -49,7 +48,7 @@ class RowError extends Error {
  * const table = instance.table('prezzy');
  * const row = table.row('gwashington');
  */
-class Row {
+export class Row {
   bigtable;
   table;
   id;
@@ -190,22 +189,16 @@ class Row {
    */
   static formatFamilies_(families, options?) {
     const data = {};
-
     options = options || {};
-
     families.forEach(family => {
       const familyData = (data[family.name] = {});
-
       family.columns.forEach(column => {
         const qualifier = Mutation.convertFromBytes(column.qualifier);
-
-        familyData[qualifier] = column.cells.map(cell => {
+        familyData[qualifier as any] = column.cells.map(cell => {
           let value = cell.value;
-
           if (options.decode !== false) {
             value = Mutation.convertFromBytes(value, {isPossibleNumber: true});
           }
-
           return {
             value,
             timestamp: cell.timestampMicros,
@@ -677,6 +670,3 @@ class Row {
  * that a callback is omitted.
  */
 promisifyAll(Row);
-
-module.exports = Row;
-module.exports.RowError = RowError;

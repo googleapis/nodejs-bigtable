@@ -15,16 +15,15 @@
  */
 
 import * as arrify from 'arrify';
-const escapeStringRegexp = require('escape-string-regexp');
+import * as escapeStringRegexp from 'escape-string-regexp';
 import * as is from 'is';
 const isUtf8 = require('is-utf8');
-
-const Mutation = require('./mutation');
+import {Mutation} from './mutation';
 
 /**
  * @private
  */
-class FilterError extends Error {
+export class FilterError extends Error {
   constructor(filter) {
     super();
     this.name = 'FilterError';
@@ -76,7 +75,7 @@ class FilterError extends Error {
  *
  * @class
  */
-class Filter {
+export class Filter {
   filters_;
   constructor() {
     this.filters_ = [];
@@ -916,6 +915,3 @@ class Filter {
     }
   }
 }
-
-module.exports = Filter;
-module.exports.FilterError = FilterError;
