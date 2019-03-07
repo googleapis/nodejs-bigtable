@@ -22,11 +22,11 @@ import * as is from 'is';
 const pumpify = require('pumpify');
 import * as through from 'through2';
 
-const Family = require('./family');
-const Filter = require('./filter');
-const Mutation = require('./mutation');
-const Row = require('./row');
-const ChunkTransformer = require('./chunktransformer');
+import {Family} from './family';
+import {Filter} from './filter';
+import {Mutation} from './mutation';
+import {Row} from './row';
+import {ChunkTransformer} from './chunktransformer';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -45,7 +45,7 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
  */
-class Table {
+export class Table {
   bigtable;
   instance;
   name;
@@ -120,18 +120,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * //   }
    * // }
    */
-  static createPrefixRange(start) {
+  static createPrefixRange(start): PrefixRange {
     const prefix = start.replace(new RegExp('[\xff]+$'), '');
     let endKey = '';
-
     if (prefix) {
       const position = prefix.length - 1;
       const charCode = prefix.charCodeAt(position);
       const nextChar = String.fromCharCode(charCode + 1);
-
       endKey = prefix.substring(0, position) + nextChar;
     }
-
     return {
       start,
       end: {
@@ -155,7 +152,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_create_table
    */
-  create(options, callback) {
+  create(options, callback?) {
     if (is.fn(options)) {
       callback = options;
       options = {};
@@ -197,7 +194,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_create_family
    */
-  createFamily(id, options, callback) {
+  createFamily(id, options, callback?) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -268,7 +265,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_table_readstream
    */
-  createReadStream(options) {
+  createReadStream(options?) {
     options = options || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
 
@@ -328,7 +325,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
-      chunkTransformer = new ChunkTransformer({decode: options.decode});
+      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
       const reqOpts: any = {
         tableName: this.name,
@@ -469,7 +466,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_del_table
    */
-  delete(gaxOptions, callback) {
+  delete(gaxOptions, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -504,7 +501,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_del_rows
    */
-  deleteRows(prefix, gaxOptions, callback) {
+  deleteRows(prefix, gaxOptions, callback?) {
     if (is.function(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -543,7 +540,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_exists_table
    */
-  exists(gaxOptions, callback) {
+  exists(gaxOptions, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -580,11 +577,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example
    * const family = table.family('my-family');
    */
-  family(id) {
+  family(id: string) {
     if (!id) {
       throw new Error('A family id must be provided.');
     }
-
     return new Family(this, id);
   }
 
@@ -608,7 +604,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_table
    */
-  get(options, callback) {
+  get(options, callback?) {
     if (is.fn(options)) {
       callback = options;
       options = {};
@@ -645,7 +641,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_families
    */
-  getFamilies(gaxOptions, callback) {
+  getFamilies(gaxOptions, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -695,7 +691,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *   var apiResponse = data[1];
    * });
    */
-  getReplicationStates(gaxOptions, callback) {
+  getReplicationStates(gaxOptions, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -732,7 +728,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_table_meta
    */
-  getMetadata(options, callback) {
+  getMetadata(options, callback?) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -778,7 +774,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_rows
    */
-  getRows(options, callback) {
+  getRows(options, callback?) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -811,7 +807,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_insert_rows
    */
-  insert(entries, gaxOptions, callback) {
+  insert(entries, gaxOptions, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -846,7 +842,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_mutate_rows
    */
-  mutate(entries, options, callback) {
+  mutate(entries, options?, callback?) {
     options = options || {};
 
     if (is.fn(options)) {
@@ -979,7 +975,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_sample_row_keys
    */
-  sampleRowKeys(gaxOptions, callback) {
+  sampleRowKeys(gaxOptions, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -1019,7 +1015,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *     this.end();
    *   });
    */
-  sampleRowKeysStream(gaxOptions) {
+  sampleRowKeysStream(gaxOptions?) {
     const reqOpts = {
       tableName: this.name,
       appProfileId: this.bigtable.appProfileId,
@@ -1060,7 +1056,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *   var apiResponse = data[0];
    * });
    */
-  truncate(gaxOptions, callback) {
+  truncate(gaxOptions, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -1187,21 +1183,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
       }
     );
   }
+  /**
+   * The view to be applied to the returned table's fields.
+   * Defaults to schema if unspecified.
+   *
+   * @private
+   */
+  static VIEWS = {
+    unspecified: 0,
+    name: 1,
+    schema: 2,
+    replication: 3,
+    full: 4,
+  };
 }
-
-/**
- * The view to be applied to the returned table's fields.
- * Defaults to schema if unspecified.
- *
- * @private
- */
-(Table as any).VIEWS = {
-  unspecified: 0,
-  name: 1,
-  schema: 2,
-  replication: 3,
-  full: 4,
-};
 
 /*! Developer Documentation
  *
@@ -1212,4 +1207,10 @@ promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
 
-module.exports = Table;
+export interface PrefixRange {
+  start: string;
+  end: {
+    value: string;
+    inclusive: boolean;
+  };
+}

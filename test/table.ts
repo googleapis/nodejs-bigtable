@@ -17,17 +17,19 @@
 
 import * as assert from 'assert';
 import * as proxyquire from 'proxyquire';
-const pumpify = require('pumpify');
-const sinon = require('sinon').createSandbox();
-const Stream = require('stream').PassThrough;
-const through = require('through2');
-
-const common = require('@google-cloud/common-grpc');
+import * as pumpify from 'pumpify';
+import * as sinon from 'sinon';
+import {PassThrough} from 'stream';
+import * as through from 'through2';
+import * as common from '@google-cloud/common-grpc';
 import * as promisify from '@google-cloud/promisify';
-const Family = require('../src/family.js');
-const Mutation = require('../src/mutation.js');
-const Row = require('../src/row.js');
-const ChunkTransformer = require('../src/chunktransformer.js');
+import {Family} from '../src/family.js';
+import {Mutation} from '../src/mutation.js';
+import {Row} from '../src/row.js';
+import {ChunkTransformer} from '../src/chunktransformer.js';
+import * as tblTypes from '../src/table';
+
+const sandbox = sinon.createSandbox();
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -51,10 +53,7 @@ function createFake(Class) {
 
 const FakeGrpcService = createFake(common.Service);
 const FakeFamily = createFake(Family);
-
-FakeFamily.formatRule_ = sinon.spy(function(rule) {
-  return rule;
-});
+FakeFamily.formatRule_ = sinon.spy(rule => rule);
 
 const FakeRow = createFake(Row);
 
@@ -81,10 +80,13 @@ const FakeMutation = {
   }),
 };
 
-const FakeFilter: any = {
+const FakeFilter = {
   parse: sinon.spy(function(value) {
     return value;
   }),
+  createRange: (...args) => {
+    return {}
+  }
 };
 
 describe('Bigtable/Table', function() {
@@ -92,8 +94,8 @@ describe('Bigtable/Table', function() {
   let INSTANCE;
   let TABLE_NAME;
 
-  let Table;
-  let table;
+  let Table: typeof tblTypes.Table;
+  let table: tblTypes.Table;
 
   before(function() {
     Table = proxyquire('../src/table.js', {
@@ -101,13 +103,13 @@ describe('Bigtable/Table', function() {
         Service: FakeGrpcService,
       },
       '@google-cloud/promisify': fakePromisify,
-      './family.js': FakeFamily,
-      './mutation.js': FakeMutation,
-      './filter.js': FakeFilter,
+      './family.js': {Family: FakeFamily},
+      './mutation.js': {Mutation: FakeMutation},
+      './filter.js': {Filter: FakeFilter},
       pumpify: pumpify,
-      './row.js': FakeRow,
-      './chunktransformer.js': FakeChunkTransformer,
-    });
+      './row.js': {Row: FakeRow},
+      './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    }).Table;
   });
 
   beforeEach(function() {
@@ -127,6 +129,7 @@ describe('Bigtable/Table', function() {
     });
 
     FakeFilter.parse.resetHistory();
+    sandbox.restore();
   });
 
   describe('instantiation', function() {
@@ -280,7 +283,8 @@ describe('Bigtable/Table', function() {
 
     it('should throw if a id is not provided', function() {
       assert.throws(function() {
-        table.createFamily();
+        // tslint:disable-next-line no-any
+        (table as any).createFamily();
       }, /An id is required to create a family\./);
     });
 
@@ -335,7 +339,7 @@ describe('Bigtable/Table', function() {
 
         assert.strictEqual(modification.create.gcRule, convertedRule);
         assert.strictEqual(spy.callCount, 1);
-        assert.strictEqual(spy.getCall(0).args[0], rule);
+        assert.strictEqual((spy as any).getCall(0).args[0], rule);
         done();
       };
 
@@ -362,16 +366,16 @@ describe('Bigtable/Table', function() {
       const response = {
         name: 'response-family-name',
       };
-      const fakeFamily = {};
+      const fakeFamily = {} as Family;
 
       table.bigtable.request = function(config, callback) {
         callback(null, response);
       };
 
-      table.family = function(id) {
+      sandbox.stub(table, 'family').callsFake(id => {
         assert.strictEqual(id, FAMILY_ID);
         return fakeFamily;
-      };
+      });
 
       table.createFamily(FAMILY_ID, function(err, family, apiResponse) {
         assert.ifError(err);
@@ -393,7 +397,6 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
-
       table.createReadStream();
     });
 
@@ -532,14 +535,14 @@ describe('Bigtable/Table', function() {
 
         const fakeFilter = {};
 
-        const parseSpy = (FakeFilter.parse = sinon.spy(function() {
+        const parseSpy = ((FakeFilter as any).parse = sinon.spy(function() {
           return fakeFilter;
         }));
 
         table.bigtable.request = function(config) {
           assert.strictEqual(config.reqOpts.filter, fakeFilter);
           assert.strictEqual(parseSpy.callCount, 1);
-          assert.strictEqual(parseSpy.getCall(0).args[0], options.filter);
+          assert.strictEqual((parseSpy as any).getCall(0).args[0], options.filter);
           done();
         };
 
@@ -574,7 +577,7 @@ describe('Bigtable/Table', function() {
           start: 'a',
         };
         assert.throws(function() {
-          table.createReadStream(options, assert.ifError);
+          (table as any).createReadStream(options, assert.ifError);
         }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
       });
 
@@ -593,7 +596,7 @@ describe('Bigtable/Table', function() {
           end: 'a',
         };
         assert.throws(function() {
-          table.createReadStream(options, assert.ifError);
+          (table as any).createReadStream(options, assert.ifError);
         }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
       });
 
@@ -612,7 +615,7 @@ describe('Bigtable/Table', function() {
           prefix: 'a',
         };
         assert.throws(function() {
-          table.createReadStream(options, assert.ifError);
+          (table as any).createReadStream(options, assert.ifError);
         }, /prefix should be used exclusively to ranges\/start\/end\/prefixes\./);
       });
 
@@ -631,7 +634,7 @@ describe('Bigtable/Table', function() {
           prefixes: [{prefix: 'a'}],
         };
         assert.throws(function() {
-          table.createReadStream(options, assert.ifError);
+          (table as any).createReadStream(options, assert.ifError);
         }, /prefixes should be used exclusively to ranges\/start\/end\/prefix\./);
       });
 
@@ -641,17 +644,17 @@ describe('Bigtable/Table', function() {
           prefix: 'a',
         };
         assert.throws(function() {
-          table.createReadStream(options, assert.ifError);
+          (table as any).createReadStream(options, assert.ifError);
         }, /start\/end should be used exclusively to ranges\/prefix\/prefixes\./);
       });
 
       describe('prefixes', function() {
         beforeEach(function() {
-          FakeFilter.createRange = common.util.noop;
+          (FakeFilter as any).createRange = common.util.noop;
         });
 
         afterEach(function() {
-          Table.createPrefixRange.restore();
+          (Table as any).createPrefixRange.restore();
         });
 
         it('should transform the prefix into a range', function(done) {
@@ -659,21 +662,17 @@ describe('Bigtable/Table', function() {
           const fakePrefixRange = {
             start: 'a',
             end: 'b',
-          };
+          } as {} as tblTypes.PrefixRange;
 
           const fakePrefix = 'abc';
 
-          const prefixSpy = sinon
+          const prefixSpy = sandbox
             .stub(Table, 'createPrefixRange')
-            .callsFake(function() {
-              return fakePrefixRange;
-            });
+            .returns(fakePrefixRange);
 
-          const rangeSpy = sinon
+          const rangeSpy = sandbox
             .stub(FakeFilter, 'createRange')
-            .callsFake(function() {
-              return fakeRange;
-            });
+            .returns(fakeRange);
 
           table.bigtable.request = function(config) {
             assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
@@ -696,8 +695,8 @@ describe('Bigtable/Table', function() {
           const prefixRanges = [
             {start: 'abc', end: 'abd'},
             {start: 'def', end: 'deg'},
-          ];
-          const prefixSpy = sinon
+          ] as {} as tblTypes.PrefixRange[];
+          const prefixSpy = sandbox
             .stub(Table, 'createPrefixRange')
             .callsFake(function() {
               const callIndex = prefixSpy.callCount - 1;
@@ -705,9 +704,9 @@ describe('Bigtable/Table', function() {
             });
 
           const ranges = [{}, {}];
-          const rangeSpy = sinon
+          const rangeSpy = sandbox
             .stub(FakeFilter, 'createRange')
-            .callsFake(function() {
+            .callsFake(() => {
               const callIndex = rangeSpy.callCount - 1;
               return ranges[callIndex];
             });
@@ -757,7 +756,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         sinon.stub(table, 'row').callsFake(function() {
-          return {};
+          return {} as Row;
         });
         FakeChunkTransformer.prototype._transform = function(
           chunks,
@@ -772,7 +771,7 @@ describe('Bigtable/Table', function() {
         };
 
         table.bigtable.request = function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -795,7 +794,7 @@ describe('Bigtable/Table', function() {
             rows.push(row);
           })
           .on('end', function() {
-            const rowSpy = table.row;
+            const rowSpy: any = table.row;
 
             assert.strictEqual(rows.length, formattedRows.length);
             assert.strictEqual(rowSpy.callCount, formattedRows.length);
@@ -848,7 +847,7 @@ describe('Bigtable/Table', function() {
 
       // beforeEach(function() {
       //   table.bigtable.request = function() {
-      //     let stream = new Stream({
+      //     let stream = new PassThrough({
       //       objectMode: true,
       //     });
 
@@ -862,7 +861,7 @@ describe('Bigtable/Table', function() {
 
       it('should emit an error event', function(done) {
         table.bigtable.request = function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -882,7 +881,7 @@ describe('Bigtable/Table', function() {
       });
       it('should emit an error event when chunk format returns error', function(done) {
         table.bigtable.request = function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -910,7 +909,7 @@ describe('Bigtable/Table', function() {
       });
       it('should emit an error event when chunktransformer returns error on flush end', function(done) {
         table.bigtable.request = function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -966,7 +965,7 @@ describe('Bigtable/Table', function() {
           return error;
         };
 
-        FakeFilter.createRange = function(start, end) {
+        sandbox.stub(FakeFilter, 'createRange').callsFake((start, end) => {
           const range: any = {};
           if (start) {
             range.start = start.value || start;
@@ -977,20 +976,20 @@ describe('Bigtable/Table', function() {
             range.end = end.value || end;
           }
           return range;
-        };
+        });
 
-        FakeMutation.convertToBytes = function(value) {
+        (FakeMutation as any).convertToBytes = function(value) {
           return Buffer.from(value);
         };
 
         reqOptsCalls = [];
 
-        setTimeoutSpy = sinon.stub(global, 'setTimeout').callsFake(fn => fn());
+        setTimeoutSpy = sandbox.stub(global, 'setTimeout').callsFake(fn => (fn as Function)());
 
         table.bigtable.request = function(config) {
           reqOptsCalls.push(config.reqOpts);
 
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -1004,7 +1003,9 @@ describe('Bigtable/Table', function() {
       });
 
       afterEach(function() {
-        setTimeoutSpy.restore();
+        if (setTimeoutSpy) {
+          setTimeoutSpy.restore();
+        }
       });
 
       it('should do a retry the stream is interrupted', function(done) {
@@ -1195,14 +1196,12 @@ describe('Bigtable/Table', function() {
     it('should respect the row key prefix option', function(done) {
       const fakePrefix = 'b';
 
-      const spy = (FakeMutation.convertToBytes = sinon.spy(function() {
-        return fakePrefix;
-      }));
+      const spy = ((FakeMutation as any).convertToBytes = sinon.spy(() => fakePrefix));
 
       table.bigtable.request = function(config) {
         assert.strictEqual(config.reqOpts.rowKeyPrefix, fakePrefix);
         assert.strictEqual(spy.callCount, 1);
-        assert.strictEqual(spy.getCall(0).args[0], prefix);
+        assert.strictEqual((spy as any).getCall(0).args[0], prefix);
         done();
       };
 
@@ -1211,7 +1210,7 @@ describe('Bigtable/Table', function() {
 
     it('should throw if prefix is not provided', function() {
       assert.throws(function() {
-        table.deleteRows(assert.ifError);
+        (table as any).deleteRows(assert.ifError);
       }, /A prefix is required for deleteRows\./);
     });
   });
@@ -1222,7 +1221,6 @@ describe('Bigtable/Table', function() {
         assert.deepStrictEqual(options_.gaxOptions, {});
         done();
       };
-
       table.exists(assert.ifError);
     });
 
@@ -1232,7 +1230,6 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(options_.gaxOptions, gaxOptions);
         done();
       };
-
       table.exists(gaxOptions, assert.ifError);
     });
 
@@ -1242,18 +1239,15 @@ describe('Bigtable/Table', function() {
         assert.strictEqual(options_.view, 'name');
         done();
       };
-
       table.exists(gaxOptions, assert.ifError);
     });
 
     it('should return false if error code is 5', function(done) {
       const error: any = new Error('Error.');
       error.code = 5;
-
       table.getMetadata = function(gaxOptions, callback) {
         callback(error);
       };
-
       table.exists(function(err, exists) {
         assert.ifError(err);
         assert.strictEqual(exists, false);
@@ -1264,11 +1258,9 @@ describe('Bigtable/Table', function() {
     it('should return error if code is not 5', function(done) {
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
-
       table.getMetadata = function(gaxOptions, callback) {
         callback(error);
       };
-
       table.exists(function(err) {
         assert.strictEqual(err, error);
         done();
@@ -1293,13 +1285,12 @@ describe('Bigtable/Table', function() {
 
     it('should throw if an id is not provided', function() {
       assert.throws(function() {
-        table.family();
+        (table as any).family();
       }, /A family id must be provided\./);
     });
 
     it('should create a family with the proper arguments', function() {
-      const family = table.family(FAMILY_ID);
-
+      const family: any = table.family(FAMILY_ID);
       assert(family instanceof FakeFamily);
       assert.strictEqual(family.calledWith_[0], table);
       assert.strictEqual(family.calledWith_[1], FAMILY_ID);
@@ -1325,7 +1316,6 @@ describe('Bigtable/Table', function() {
         assert.deepStrictEqual(options, {gaxOptions: undefined});
         done();
       };
-
       table.get(assert.ifError);
     });
 
@@ -1507,16 +1497,16 @@ describe('Bigtable/Table', function() {
         },
       };
 
-      const fakeFamily = {};
+      const fakeFamily = {} as Family;
 
       table.getMetadata = function(options, callback) {
         callback(null, response);
       };
 
-      table.family = function(id) {
+      sandbox.stub(table, 'family').callsFake(id => {
         assert.strictEqual(id, 'test');
         return fakeFamily;
-      };
+      });
 
       table.getFamilies(function(err, families, apiResponse) {
         assert.ifError(err);
@@ -1786,7 +1776,7 @@ describe('Bigtable/Table', function() {
       full: 4,
     };
     beforeEach(function() {
-      Table.VIEWS = views;
+      (Table as any).VIEWS = views;
     });
 
     it('should provide the proper request options', function(done) {
@@ -1868,7 +1858,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         table.createReadStream = sinon.spy(function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -1891,7 +1881,7 @@ describe('Bigtable/Table', function() {
           assert.ifError(err);
           assert.deepStrictEqual(rows, fakeRows);
 
-          const spy = table.createReadStream.getCall(0);
+          const spy = (table as any).createReadStream.getCall(0);
           assert.strictEqual(spy.args[0], options);
           done();
         });
@@ -1911,7 +1901,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         table.createReadStream = sinon.spy(function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -2060,7 +2050,7 @@ describe('Bigtable/Table', function() {
 
         beforeEach(function() {
           table.bigtable.request = function() {
-            const stream = new Stream({
+            const stream = new PassThrough({
               objectMode: true,
             });
 
@@ -2085,7 +2075,7 @@ describe('Bigtable/Table', function() {
 
         beforeEach(function() {
           table.bigtable.request = function() {
-            const stream = new Stream({
+            const stream = new PassThrough({
               objectMode: true,
             });
 
@@ -2187,7 +2177,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         table.bigtable.request = function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -2241,7 +2231,7 @@ describe('Bigtable/Table', function() {
         };
         table.bigtable.request = function(config) {
           entryRequests.push(config.reqOpts.entries);
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -2276,13 +2266,12 @@ describe('Bigtable/Table', function() {
 
     it('should throw if a key is not provided', function() {
       assert.throws(function() {
-        table.row();
+        (table as any).row();
       }, /A row key must be provided\./);
     });
 
     it('should return a Row object', function() {
-      const row = table.row(KEY);
-
+      const row: any = table.row(KEY);
       assert(row instanceof FakeRow);
       assert.strictEqual(row.calledWith_[0], table);
       assert.strictEqual(row.calledWith_[1], KEY);
@@ -2315,7 +2304,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         table.sampleRowKeysStream = sinon.spy(function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -2345,7 +2334,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         table.sampleRowKeysStream = sinon.spy(function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -2376,7 +2365,7 @@ describe('Bigtable/Table', function() {
 
         setImmediate(done);
 
-        return new Stream({
+        return new PassThrough({
           objectMode: true,
         });
       };
@@ -2407,7 +2396,7 @@ describe('Bigtable/Table', function() {
 
         setImmediate(done);
 
-        return new Stream({
+        return new PassThrough({
           objectMode: true,
         });
       };
@@ -2429,7 +2418,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         table.bigtable.request = function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 
@@ -2469,7 +2458,7 @@ describe('Bigtable/Table', function() {
 
       beforeEach(function() {
         table.bigtable.request = function() {
-          const stream = new Stream({
+          const stream = new PassThrough({
             objectMode: true,
           });
 

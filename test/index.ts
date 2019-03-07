@@ -18,16 +18,18 @@ import * as assert from 'assert';
 import * as common from '@google-cloud/common-grpc';
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
-const sinon = require('sinon').createSandbox();
+import * as sn from 'sinon';
 import * as through from 'through2';
 import * as promisify from '@google-cloud/promisify';
 import * as projectify from '@google-cloud/projectify';
+import {Cluster} from '../src/cluster.js';
+import {Instance} from '../src/instance.js';
 
-const grpc = new gax.GrpcClient().grpc;
-const Cluster = require('../src/cluster.js');
-const Instance = require('../src/instance.js');
 const v2 = require('../src/v2');
 const PKG = require('../../package.json');
+
+const sinon = sn.createSandbox();
+const {grpc} = new gax.GrpcClient();
 
 function fakeV2() {}
 
@@ -95,8 +97,8 @@ describe('Bigtable', function() {
         GoogleAuth: fakeGoogleAuth,
       },
       'retry-request': fakeRetryRequest,
-      './cluster.js': FakeCluster,
-      './instance.js': FakeInstance,
+      './cluster.js': {Cluster: FakeCluster},
+      './instance.js': {Instance: FakeInstance},
       './v2': fakeV2,
     });
   });

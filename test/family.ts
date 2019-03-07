@@ -43,11 +43,11 @@ describe('Bigtable/Family', function() {
   let FamilyError;
 
   before(function() {
-    Family = proxyquire('../src/family.js', {
+    const Fake = proxyquire('../src/family.js', {
       '@google-cloud/promisify': fakePromisify,
     });
-
-    FamilyError = Family.FamilyError;
+    Family = Fake.Family;
+    FamilyError = Fake.FamilyError;
   });
 
   beforeEach(function() {

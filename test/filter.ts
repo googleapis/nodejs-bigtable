@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-'use strict';
-
 import * as assert from 'assert';
 import * as proxyquire from 'proxyquire';
-const sinon = require('sinon').createSandbox();
+const sn = require('sinon');
+
+const sinon = sn.createSandbox();
 
 const FakeMutation = {
   convertToBytes: sinon.spy(function(value) {
@@ -29,12 +29,15 @@ const FakeMutation = {
 
 describe('Bigtable/Filter', function() {
   let Filter;
+  let FilterError;
   let filter;
 
   before(function() {
-    Filter = proxyquire('../src/filter', {
-      './mutation.js': FakeMutation,
+    const Fake = proxyquire('../src/filter', {
+      './mutation.js': {Mutation: FakeMutation},
     });
+    Filter = Fake.Filter;
+    FilterError = Fake.FilterError;
   });
 
   beforeEach(function() {
@@ -54,14 +57,12 @@ describe('Bigtable/Filter', function() {
   describe('convertToRegExpString', function() {
     it('should convert a RegExp to a string', function() {
       const str = Filter.convertToRegExpString(/\d+/);
-
       assert.strictEqual(str, '\\d+');
     });
 
     it('should convert an Array of strings to a single string', function() {
       const things = ['a', 'b', 'c'];
       const str = Filter.convertToRegExpString(things);
-
       assert.strictEqual(str, '(a|b|c)');
     });
 
@@ -200,7 +201,7 @@ describe('Bigtable/Filter', function() {
         },
       ];
 
-      assert.throws(Filter.parse.bind(null, fakeFilter), Filter.FilterError);
+      assert.throws(Filter.parse.bind(null, fakeFilter), FilterError);
     });
 
     it('should return the filter in JSON form', function() {
@@ -656,13 +657,12 @@ describe('Bigtable/Filter', function() {
 
   describe('FilterError', function() {
     it('should set the correct message', function() {
-      const err = new Filter.FilterError('test');
-
+      const err = new FilterError('test');
       assert.strictEqual(err.message, 'Unknown filter: test.');
     });
 
     it('should set the correct name', function() {
-      const err = new Filter.FilterError('test');
+      const err = new FilterError('test');
 
       assert.strictEqual(err.name, 'FilterError');
     });

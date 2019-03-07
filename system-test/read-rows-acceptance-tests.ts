@@ -16,10 +16,10 @@
 
 import * as assert from 'assert';
 const testcases = require('../../system-test/read-rows-acceptance-test.json').tests;
-const Stream = require('stream').PassThrough;
-const Table = require('../src/table.js');
-const Row = require('../src/row.js');
-const ProtoBuf = require('protobufjs');
+import {PassThrough} from 'stream';
+import {Table} from '../src/table.js';
+import {Row} from '../src/row.js';
+import * as ProtoBuf from 'protobufjs';
 import * as path from 'path';
 
 const protosRoot = path.resolve(__dirname, '../protos');
@@ -82,7 +82,7 @@ describe('Read Row Acceptance tests', function() {
 
       table.bigtable = {};
       table.bigtable.request = function() {
-        const stream = new Stream({
+        const stream = new PassThrough({
           objectMode: true,
         });
 
@@ -90,7 +90,7 @@ describe('Read Row Acceptance tests', function() {
           test.chunks_base64
             .map(chunk => {
               const cellChunk = CellChunk.decode(Buffer.from(chunk, 'base64')); //.decode64(chunk);
-              let readRowsResponse = {chunks: [cellChunk]};
+              let readRowsResponse: any = {chunks: [cellChunk]};
               readRowsResponse = ReadRowsResponse.create(readRowsResponse);
               readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {
                 defaults: true,

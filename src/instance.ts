@@ -17,12 +17,11 @@
 import {paginator} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
 import * as is from 'is';
-const snakeCase = require('lodash.snakecase');
-
-const AppProfile = require('./app-profile');
-const Cluster = require('./cluster');
-const Family = require('./family');
-const Table = require('./table');
+import snakeCase = require('lodash.snakecase');
+import {AppProfile} from './app-profile';
+import {Cluster} from './cluster';
+import {Family} from './family';
+import {Table} from './table';
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -38,7 +37,7 @@ const Table = require('./table');
  * const instance = bigtable.instance('my-instance');
  */
 
-class Instance {
+export class Instance {
   bigtable;
   id;
   name;
@@ -121,7 +120,7 @@ Please use the format 'my-instance' or '${
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_instance
    */
-  create(options, callback) {
+  create(options, callback?) {
     if (is.fn(options)) {
       callback = options;
       options = {};
@@ -417,7 +416,7 @@ Please use the format 'my-instance' or '${
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_exists_instance
    */
-  exists(gaxOptions, callback) {
+  exists(gaxOptions?, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -777,4 +776,3 @@ promisifyAll(Instance, {
  * @name module:@google-cloud/bigtable.Instance
  * @see Instance
  */
-module.exports = Instance;

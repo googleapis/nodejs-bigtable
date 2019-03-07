@@ -30,7 +30,7 @@ import * as is from 'is';
  * const instance = bigtable.instance('my-instance');
  * const cluster = instance.cluster('my-cluster');
  */
-class Cluster {
+export class Cluster {
   bigtable;
   instance;
   id;
@@ -325,4 +325,3 @@ promisifyAll(Cluster);
  * @name module:@google-cloud/bigtable.Cluster
  * @see Cluster
  */
-module.exports = Cluster;

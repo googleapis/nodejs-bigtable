@@ -19,10 +19,10 @@ import * as promisify from '@google-cloud/promisify';
 import * as paginator from '@google-cloud/paginator';
 import * as proxyquire from 'proxyquire';
 
-const AppProfile = require('../src/app-profile');
-const Cluster = require('../src/cluster');
-const Family = require('../src/family');
-const Table = require('../src/table');
+import {AppProfile} from '../src/app-profile';
+import {Cluster} from '../src/cluster';
+import {Family} from '../src/family';
+import {Table} from '../src/table';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -49,7 +49,7 @@ const fakePaginator = Object.assign({}, paginator, {
 class FakeAppProfile extends AppProfile {
   calledWith_;
   constructor(...args) {
-    super(...args);
+    super(args[0], args[1]);
     this.calledWith_ = args;
   }
 }
@@ -57,7 +57,7 @@ class FakeAppProfile extends AppProfile {
 class FakeCluster extends Cluster {
   calledWith_;
   constructor(...args) {
-    super(...args);
+    super(args[0], args[1]);
     this.calledWith_ = args;
   }
 }
@@ -65,7 +65,7 @@ class FakeCluster extends Cluster {
 class FakeFamily extends Family {
   calledWith_;
   constructor(...args) {
-    super(...args);
+    super(args[0], args[1]);
     this.calledWith_ = args;
   }
 }
@@ -73,7 +73,7 @@ class FakeFamily extends Family {
 class FakeTable extends Table {
   calledWith_;
   constructor(...args) {
-    super(...args);
+    super(args[0], args[1]);
     this.calledWith_ = args;
   }
 }
@@ -91,11 +91,11 @@ describe('Bigtable/Instance', function() {
     Instance = proxyquire('../src/instance.js', {
       '@google-cloud/paginator': fakePaginator,
       '@google-cloud/promisify': fakePromisify,
-      './app-profile.js': FakeAppProfile,
-      './cluster.js': FakeCluster,
-      './family.js': FakeFamily,
-      './table.js': FakeTable,
-    });
+      './app-profile.js': {AppProfile: FakeAppProfile},
+      './cluster.js': {Cluster: FakeCluster},
+      './family.js': {Family: FakeFamily},
+      './table.js': {Table: FakeTable},
+    }).Instance;
   });
 
   beforeEach(function() {

@@ -16,20 +16,20 @@
 
 import * as assert from 'assert';
 import * as uuid from 'uuid';
-import * as Q from 'p-queue';
+import Q from 'p-queue';
 
-const Bigtable = require('../src');
-const AppProfile = require('../src/app-profile.js');
-const Cluster = require('../src/cluster.js');
-const Table = require('../src/table.js');
-const Family = require('../src/family.js');
-const Row = require('../src/row.js');
+import {Bigtable} from '../src';
+import {AppProfile} from '../src/app-profile.js';
+import {Cluster} from '../src/cluster.js';
+import {Table} from '../src/table.js';
+import {Family} from '../src/family.js';
+import {Row} from '../src/row.js';
 
 const PREFIX = 'gcloud-tests-';
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
-  const INSTANCE = bigtable.instance(generateId('instance'));
+  const INSTANCE: any = bigtable.instance(generateId('instance'));
   const TABLE = INSTANCE.table(generateId('table'));
   const APP_PROFILE_ID = generateId('appProfile');
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
@@ -56,7 +56,7 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    const [instances] = await bigtable.getInstances();
+    const [instances] = await (bigtable as any).getInstances();
     const testInstances = instances.filter(i => i.id.match(PREFIX));
     const q = new Q({concurrency: 5});
     await Promise.all(
@@ -68,7 +68,7 @@ describe('Bigtable', () => {
 
   describe('instances', () => {
     it('should get a list of instances', async () => {
-      const [instances] = await bigtable.getInstances();
+      const [instances] = await (bigtable as any).getInstances();
       assert(instances.length > 0);
     });
 
@@ -79,7 +79,7 @@ describe('Bigtable', () => {
 
     it('should check if an instance does not exist', async () => {
       const instance = bigtable.instance('fake-instance');
-      const [exists] = await instance.exists();
+      const [exists] = await (instance as any).exists();
       assert.strictEqual(exists, false);
     });
 

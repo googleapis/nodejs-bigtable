@@ -16,12 +16,14 @@
 
 import * as assert from 'assert';
 import * as proxyquire from 'proxyquire';
-const sinon = require('sinon').createSandbox();
-const Mutation = require('../src/mutation.js');
+import * as sn from 'sinon';
+import {Mutation} from '../src/mutation.js';
 import * as Long from 'long';
+import {RowStateEnum} from '../src/chunktransformer.js';
+
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
-const {RowStateEnum} = require('../src/chunktransformer.js');
+const sinon = sn.createSandbox();
 
 const FakeMutation = {
   methods: Mutation.methods,
@@ -42,8 +44,8 @@ describe('Bigtable/ChunkTransformer', function() {
   let rows;
   before(function() {
     ChunkTransformer = proxyquire('../src/chunktransformer.js', {
-      './mutation.js': FakeMutation,
-    });
+      './mutation.js': { Mutation: FakeMutation },
+    }).ChunkTransformer;
   });
   beforeEach(function() {
     chunkTransformer = new ChunkTransformer();
@@ -609,7 +611,7 @@ describe('Bigtable/ChunkTransformer', function() {
       );
     });
     it('should decode numbers', function() {
-      const RealChunkTransformer = require('../src/chunktransformer.js');
+      const RealChunkTransformer = require('../src/chunktransformer.js').ChunkTransformer;
       chunkTransformer = new RealChunkTransformer({decode: true});
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');

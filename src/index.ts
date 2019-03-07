@@ -44,18 +44,17 @@ import {Service} from '@google-cloud/common-grpc';
 import {GoogleAuth} from 'google-auth-library';
 import * as gax from 'google-gax';
 import * as is from 'is';
+import * as through from 'through2';
+import {AppProfile} from './app-profile';
+import {Cluster} from './cluster';
+import {Instance} from './instance';
+
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
-import * as through from 'through2';
-
-const {grpc} = new gax.GrpcClient();
-
-const AppProfile = require('./app-profile');
-const Cluster = require('./cluster');
-const Instance = require('./instance');
 
 const PKG = require('../../package.json');
 const v2 = require('./v2');
+const {grpc} = new gax.GrpcClient();
 
 /**
  * @typedef {object} ClientConfig
@@ -359,7 +358,7 @@ const v2 = require('./v2');
  *   }
  * });
  */
-class Bigtable {
+export class Bigtable {
   customEndpoint;
   options;
   api;
@@ -368,15 +367,13 @@ class Bigtable {
   appProfileId;
   projectName;
   shouldReplaceProjectIdToken;
-  static AppProfile;
-  static Instance;
-  static Cluster;
-  constructor(options) {
-    options = options || {};
-
+  static AppProfile: AppProfile;
+  static Instance: Instance;
+  static Cluster: Cluster;
+  constructor(options: any = {}) {
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
-    const scopes: any[] = [];
+    const scopes: string[] = [];
     const clientClasses = [
       v2.BigtableClient,
       v2.BigtableInstanceAdminClient,
@@ -612,7 +609,7 @@ class Bigtable {
    *   const instances = data[0];
    * });
    */
-  getInstances(gaxOptions, callback) {
+  getInstances(gaxOptions?, callback?) {
     if (is.function(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
@@ -808,7 +805,6 @@ promisifyAll(Bigtable, {
  * @see AppProfile
  * @type {Constructor}
  */
-Bigtable.AppProfile = AppProfile;
 
 /**
  * {@link Cluster} class.
@@ -817,7 +813,6 @@ Bigtable.AppProfile = AppProfile;
  * @see Cluster
  * @type {Constructor}
  */
-Bigtable.Cluster = Cluster;
 
 /**
  * {@link Instance} class.
@@ -826,7 +821,6 @@ Bigtable.Cluster = Cluster;
  * @see Instance
  * @type {Constructor}
  */
-Bigtable.Instance = Instance;
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
 // eslint-disable-next-line no-class-assign
@@ -868,3 +862,4 @@ Bigtable.Instance = Instance;
 
 module.exports = Bigtable;
 module.exports.v2 = v2;
+module.exports.Bigtable = Bigtable;

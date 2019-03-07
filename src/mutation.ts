@@ -35,7 +35,7 @@ import * as is from 'is';
  *   }
  * });
  */
-class Mutation {
+export class Mutation {
   key;
   method;
   data;
@@ -58,7 +58,7 @@ class Mutation {
    * @returns {string|number|buffer}
    * @private
    */
-  static convertFromBytes(bytes, options) {
+  static convertFromBytes(bytes, options?) {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
       const num = Long.fromBytes(buf as any).toNumber();
@@ -241,7 +241,7 @@ class Mutation {
    * ]);
    * @private
    */
-  static encodeDelete(data) {
+  static encodeDelete(data?) {
     if (!data) {
       return [
         {
@@ -337,25 +337,25 @@ class Mutation {
       mutation.rowKey = Mutation.convertToBytes(this.key);
     }
 
-    if (this.method === methods.INSERT) {
+    if (this.method === Mutation.methods.INSERT) {
       mutation.mutations = Mutation.encodeSetCell(this.data);
-    } else if (this.method === methods.DELETE) {
+    } else if (this.method === Mutation.methods.DELETE) {
       mutation.mutations = Mutation.encodeDelete(this.data);
     }
 
     return mutation;
   }
+
+  /**
+   * Mutation methods
+   *
+   * @private
+   *
+   * INSERT => setCell
+   * DELETE => deleteFrom*
+   */
+  static methods = {
+    INSERT: 'insert',
+    DELETE: 'delete',
+  };
 }
-
-/**
- * Mutation methods
- *
- * INSERT => setCell
- * DELETE => deleteFrom*
- */
-const methods = ((Mutation as any).methods = {
-  INSERT: 'insert',
-  DELETE: 'delete',
-});
-
-module.exports = Mutation;

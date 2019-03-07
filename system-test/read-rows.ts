@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const Bigtable = require('../src');
-const mutation = require('../src/mutation.js');
+import {Bigtable} from '../src';
+import {Mutation} from '../src/mutation.js';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json');
 
 import * as assert from 'assert';
@@ -56,7 +56,7 @@ function dispatch(emitter, response) {
 
 function rowResponse(rowKey) {
   return {
-    rowKey: mutation.convertToBytes(rowKey),
+    rowKey: Mutation.convertToBytes(rowKey),
     familyName: {value: 'family'},
     qualifier: {value: 'qualifier'},
     valueSize: 0,
@@ -69,7 +69,7 @@ function rowResponse(rowKey) {
 
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
-  bigtable.grpcCredentials = grpc.credentials.createInsecure();
+  (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
