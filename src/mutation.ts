@@ -349,6 +349,8 @@ export class Mutation {
   /**
    * Mutation methods
    *
+   * @private
+   *
    * INSERT => setCell
    * DELETE => deleteFrom*
    */
