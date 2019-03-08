@@ -60,7 +60,6 @@ describe('Bigtable', () => {
 
   after(async () => {
     const [instances] = await (bigtable as any).getInstances();
-    const [instances] = await bigtable.getInstances();
     const testInstances = instances
       .filter(i => i.id.match(PREFIX))
       .filter(i => {
