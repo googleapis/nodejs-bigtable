@@ -44,6 +44,9 @@ describe('Bigtable', () => {
           nodes: 3,
         },
       ],
+      labels: {
+        time_created: Date.now(),
+      },
     });
     await operation.promise();
     await TABLE.create({
@@ -57,7 +60,14 @@ describe('Bigtable', () => {
 
   after(async () => {
     const [instances] = await (bigtable as any).getInstances();
-    const testInstances = instances.filter(i => i.id.match(PREFIX));
+    const testInstances = instances
+      .filter(i => i.id.match(PREFIX))
+      .filter(i => {
+        const timeCreated = i.metadata.labels.time_created;
+        // Only delete stale resources.
+        const oneHourAgo = new Date(Date.now() - 3600000);
+        return !timeCreated || timeCreated <= oneHourAgo;
+      });
     const q = new Q({concurrency: 5});
     await Promise.all(
       testInstances.map(instance => {
