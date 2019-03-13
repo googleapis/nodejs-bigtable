@@ -38,16 +38,19 @@
 
 import * as arrify from 'arrify';
 import {replaceProjectIdToken} from '@google-cloud/projectify';
+import {Operation as GaxOperation} from 'google-gax/build/src/longrunning';
 import {promisifyAll} from '@google-cloud/promisify';
+import {ChannelCredentials, CallOptions} from 'grpc';
 import * as extend from 'extend';
 import {Service} from '@google-cloud/common-grpc';
 import {GoogleAuth} from 'google-auth-library';
 import * as gax from 'google-gax';
-import * as is from 'is';
+import {Constructor} from 'protobufjs';
 import * as through from 'through2';
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Instance} from './instance';
+import {google as btInstanceAdminClient} from '../proto/bigtable_instance_admin';
 
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -86,6 +89,85 @@ const {grpc} = new gax.GrpcClient();
  * @property {Constructor} [promise] Custom promise module to use instead of
  *     native Promises.
  */
+export interface Client {
+  //tslint: disable-next-line: no-any
+  [k: string]: any;
+  servicePath?: string;
+  sslCreds?: ChannelCredentials;
+  port?: number;
+}
+export interface ClientConfig {
+  [k: string]: string|{}|Function|Client|undefined;
+  apiEndpoint?: string;
+  projectId?: string;
+  appProfileId?: string;
+  email?: string;
+  keyFilename?: string;
+  credentials?: {
+    client_email: string;
+    private_key: string;
+  };
+  autoRetry?: boolean;
+  maxRetries?: number;
+  promise?: Constructor<{}>;
+}
+export interface CreateInstanceCallback {
+  (instance?: Instance, operation?: GaxOperation, apiResponse?: CreateInstanceResponse): void;
+}
+export interface CreateInstanceOptions {
+  clusters?: CreateInstanceCluster[];
+  displayName?: string;
+  labels?: string|{[k: string]: string};
+  type?: string;
+  gaxOptions?: CallOptions;
+}
+export interface CreateInstanceCluster {
+  id: string;
+  location: string;
+  nodes: number;
+  storage: string;
+}
+export interface CreateInstanceClusters {
+  [k: string]: {
+    location: string;
+    serveNodes: number;
+    defaultStorageType: btInstanceAdminClient.bigtable.admin.v2.ICluster;
+  };
+}
+export interface CreateInstanceRequest {
+  parent?: string|null;
+  instanceId?: string|null;
+  clusters?: ({ [k: string]: btInstanceAdminClient.bigtable.admin.v2.ICluster }|null);
+  instance?: ProtoInstance|null;
+}
+export type CreateInstanceResponse = [Instance, GaxOperation, btInstanceAdminClient.bigtable.admin.v2.IInstance];
+export type GetInstanceResponse = [ProtoInstance[], ListInstancesResponse];
+export interface GetInstanceCallback {
+  (err?: Error|null, instances?: Instance[], apiResponse?: ListInstancesResponse): void;
+}
+export interface GetProjectIdCallback {
+  (err: Error|null, projectId?: string|null): void;
+}
+export type ListInstancesResponse = btInstanceAdminClient.bigtable.admin.v2.IListInstancesResponse;
+export interface ProtoInstance {
+  name?: string|null;
+  displayName?: string|null;
+  state?: btInstanceAdminClient.bigtable.admin.v2.Instance.State|null;
+  type?: btInstanceAdminClient.bigtable.admin.v2.Instance.Type|null;
+  labels?: {[k: string]: string}|null|string;
+}
+export interface RequestConfig {
+  gaxOpts: CallOptions;
+  method: string;
+  reqOpts: {};
+  client: string;
+  retryOpts?: {};
+}
+export interface Options extends ClientConfig {
+  BigtableClient?: Client;
+  BigtableInstanceAdminClient?: Client;
+  BigtableTableAdminClient?: Client;
+}
 
 /**
  * @see [Creating a Cloud Bigtable Cluster]{@link https://cloud.google.com/bigtable/docs/creating-instance}
@@ -359,18 +441,18 @@ const {grpc} = new gax.GrpcClient();
  * });
  */
 export class Bigtable {
-  customEndpoint;
-  options;
-  api;
-  auth;
-  projectId;
-  appProfileId;
-  projectName;
-  shouldReplaceProjectIdToken;
+  customEndpoint?: string;
+  options: Options;
+  api: Client;
+  auth: GoogleAuth;
+  projectId?: string|null;
+  appProfileId?: string;
+  projectName: string;
+  shouldReplaceProjectIdToken: boolean;
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
-  constructor(options: any = {}) {
+  constructor(options: ClientConfig = {}) {
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
     const scopes: string[] = [];
@@ -405,14 +487,9 @@ export class Bigtable {
       options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
     this.customEndpoint = customEndpoint;
 
-    let customEndpointBaseUrl;
-    let customEndpointPort;
-
-    if (customEndpoint) {
-      const customEndpointParts = customEndpoint.split(':');
-      customEndpointBaseUrl = customEndpointParts[0];
-      customEndpointPort = customEndpointParts[1];
-    }
+    const customEndpointParts = customEndpoint ? customEndpoint!.split(':') : customEndpoint;
+    const customEndpointBaseUrl = customEndpoint ? customEndpointParts![0] : '';
+    const customEndpointPort = customEndpoint ? customEndpointParts![1] : '';
 
     this.options = {
       BigtableClient: Object.assign(
@@ -533,13 +610,13 @@ export class Bigtable {
    *   const apiResponse = data[2];
    * });
    */
-  createInstance(id, options, callback) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+  createInstance(id: string, callback: CreateInstanceCallback): void;
+  createInstance(id: string, options: CreateInstanceOptions): Promise<CreateInstanceResponse>;
+  createInstance(id: string, optionsOrCallback?: CreateInstanceOptions|CreateInstanceCallback, cb?: CreateInstanceCallback): void| Promise<CreateInstanceResponse> {
+    const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options = typeof optionsOrCallback === 'object' && optionsOrCallback ? optionsOrCallback : {};
 
-    const reqOpts: any = {
+    const reqOpts: CreateInstanceRequest = {
       parent: this.projectName,
       instanceId: id,
       instance: {
@@ -549,10 +626,10 @@ export class Bigtable {
     };
 
     if (options.type) {
-      reqOpts.instance.type = Instance.getTypeType_(options.type);
+      reqOpts.instance!.type = Instance.getTypeType_(options.type);
     }
 
-    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
+    reqOpts.clusters = arrify(options.clusters).reduce((clusters: CreateInstanceClusters, cluster: CreateInstanceCluster) => {
       clusters[cluster.id] = {
         location: Cluster.getLocation_(this.projectId, cluster.location),
         serveNodes: cluster.nodes,
@@ -567,9 +644,9 @@ export class Bigtable {
         client: 'BigtableInstanceAdminClient',
         method: 'createInstance',
         reqOpts,
-        gaxOpts: options.gaxOptions,
+        gaxOpts: options.gaxOptions as CallOptions,
       },
-      (...args) => {
+      (...args: Instance[]) => {
         const err = args[0];
 
         if (!err) {
@@ -609,11 +686,12 @@ export class Bigtable {
    *   const instances = data[0];
    * });
    */
-  getInstances(gaxOptions?, callback?) {
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  getInstances(): Promise<GetInstanceResponse>;
+  getInstances(callback: GetInstanceCallback): void;
+  getInstances(gaxOptions: CallOptions): Promise<GetInstanceResponse>;
+  getInstances(gaxOptionsOrCallback?: CallOptions|GetInstanceCallback, cb?: GetInstanceCallback): void|Promise<GetInstanceResponse> {
+    const callback = typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    const gaxOptions = typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ? gaxOptionsOrCallback : {};
 
     const reqOpts = {
       parent: this.projectName,
@@ -624,16 +702,16 @@ export class Bigtable {
         client: 'BigtableInstanceAdminClient',
         method: 'listInstances',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: gaxOptions as CallOptions,
       },
-      (err, resp) => {
+      (err: Error, resp: ListInstancesResponse) => {
         if (err) {
-          callback(err);
+          callback!(err);
           return;
         }
 
-        const instances = resp.instances.map(instanceData => {
-          const instance = this.instance(instanceData.name.split('/').pop());
+        const instances = resp.instances!.map(instanceData => {
+          const instance = this.instance(instanceData.name!.split('/').pop()!);
           instance.metadata = instanceData;
           return instance;
         });
@@ -649,7 +727,7 @@ export class Bigtable {
    * @param {string} id The id of the instance.
    * @returns {Instance}
    */
-  instance(name) {
+  instance(name: string) {
     return new Instance(this, name);
   }
 
@@ -662,13 +740,15 @@ export class Bigtable {
    * @param {object} config.reqOpts Request options.
    * @param {function} [callback] Callback function.
    */
-  request(config, callback) {
+  request(config: RequestConfig, callback: Function) {
     const isStreamMode = !callback;
 
-    let gaxStream;
-    let stream;
+    //tslint:disable-next-line: no-any
+    let gaxStream: any; // type 'Stream' or variations of streams incompatible
+    //tslint:disable-next-line: no-any
+    let stream: any; // type 'Stream' or variations of streams incompatible
 
-    const prepareGaxRequest = callback => {
+    const prepareGaxRequest = (callback: Function) => {
       this.getProjectId_((err, projectId) => {
         if (err) {
           callback(err);
@@ -686,7 +766,7 @@ export class Bigtable {
         let reqOpts = extend(true, {}, config.reqOpts);
 
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
-          reqOpts = replaceProjectIdToken(reqOpts, projectId);
+          reqOpts = replaceProjectIdToken(reqOpts, projectId!);
         }
 
         const requestFn = gaxClient[config.method].bind(
@@ -716,18 +796,18 @@ export class Bigtable {
     }
 
     function makeRequestCallback() {
-      prepareGaxRequest((err, requestFn) => {
+      prepareGaxRequest((err?: Error|null, requestFn?: Function|null) => {
         if (err) {
           callback(err);
           return;
         }
 
-        requestFn(callback);
+        requestFn!(callback);
       });
     }
 
     function makeRequestStream() {
-      prepareGaxRequest((err, requestFn) => {
+      prepareGaxRequest((err?: Error|null, requestFn?: Function|null) => {
         if (err) {
           stream.destroy(err);
           return;
@@ -740,9 +820,10 @@ export class Bigtable {
             currentRetryAttempt: 0,
             noResponseRetries: 0,
             objectMode: true,
+            //tslint:disable-next-line no-any
             shouldRetryFn: (Service as any).shouldRetryRequest_,
             request() {
-              gaxStream = requestFn();
+              gaxStream = requestFn!();
               return gaxStream;
             },
           },
@@ -767,7 +848,7 @@ export class Bigtable {
    * @param {?error} callback.err An error returned from the auth client.
    * @param {string} callback.projectId The detected project ID.
    */
-  getProjectId_(callback) {
+  getProjectId_(callback: GetProjectIdCallback) {
     const projectIdRequired =
       this.projectId === '{{projectId}}' && !this.customEndpoint;
 
@@ -823,9 +904,10 @@ promisifyAll(Bigtable, {
  */
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
-// eslint-disable-next-line no-class-assign
+// eslint-disable-next-line no-any no-class-assign
 (Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
+    //tslint:disable-next-line: no-any
     return new (target as any)(...argumentsList);
   },
 });
