@@ -39,7 +39,6 @@
 import * as arrify from 'arrify';
 import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
-import * as extend from 'extend';
 import {Service} from '@google-cloud/common-grpc';
 import {GoogleAuth} from 'google-auth-library';
 import * as gax from 'google-gax';
@@ -683,7 +682,7 @@ export class Bigtable {
           this.api[config.client] = gaxClient;
         }
 
-        let reqOpts = extend(true, {}, config.reqOpts);
+        let reqOpts = Object.assign({}, config.reqOpts);
 
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
           reqOpts = replaceProjectIdToken(reqOpts, projectId);
