@@ -10,6 +10,7 @@
   "repository": "googleapis/nodejs-bigtable",
   "main": "build/src/index.js",
   "files": [
+    "build/proto",
     "build/protos",
     "build/proto",
     "build/src",
