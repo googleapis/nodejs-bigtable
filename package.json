@@ -45,7 +45,7 @@
     "compile": "tsc -p . && cp -r src/v2 build/src/ && cp -r proto* build/ && cp test/*.js build/test",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
-    "proto": "mkdir -p proto && pbjs -t static-module -w commonjs -p protos google/bigtable/v2/bigtable.proto | pbts -o proto/bigtable.d.ts - && pbjs -t static-module -w commonjs -p protos google/bigtable/admin/v2/bigtable_instance_admin.proto | pbts -o proto/bigtable_instance_admin.d.ts - && pbjs -t static-module -w commonjs -p protos google/bigtable/admin/v2/bigtable_table_admin.proto | pbts -o proto/bigtable_table_admin.d.ts -"
+    "proto": "mkdirp proto && pbjs -t static-module -w commonjs -p protos google/bigtable/v2/bigtable.proto google/bigtable/admin/v2/bigtable_instance_admin.proto google/bigtable/admin/v2/bigtable_table_admin.proto | pbts -o proto/bigtable.d.ts -"
   },
   "dependencies": {
     "@google-cloud/common-grpc": "^0.10.0",
@@ -93,6 +93,7 @@
     "jsdoc": "^3.5.5",
     "jsdoc-baseline": "git+https://github.com/hegemonic/jsdoc-baseline.git",
     "linkinator": "^1.1.2",
+    "mkdirp": "^0.5.1",
     "mocha": "^6.0.0",
     "nyc": "^13.0.0",
     "p-queue": "^4.0.0",
