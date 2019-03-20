@@ -38,10 +38,11 @@
 
 import * as arrify from 'arrify';
 import {replaceProjectIdToken} from '@google-cloud/projectify';
-import {Operation as GaxOperation} from 'google-gax/build/src/longrunning';
+import {Operation as GaxOperation} from 'google-gax';
 import {promisifyAll} from '@google-cloud/promisify';
 import {ChannelCredentials, CallOptions} from 'grpc';
 import * as extend from 'extend';
+import {ProtoOpts} from '@google-cloud/common-grpc/build/src/service';
 import {Service} from '@google-cloud/common-grpc';
 import {GoogleAuth} from 'google-auth-library';
 import * as gax from 'google-gax';
@@ -89,24 +90,15 @@ const {grpc} = new gax.GrpcClient();
  * @property {Constructor} [promise] Custom promise module to use instead of
  *     native Promises.
  */
-export interface Client {
-  //tslint: disable-next-line: no-any
-  [k: string]: any;
+export interface Client { // ! Index signature
   servicePath?: string;
   sslCreds?: ChannelCredentials;
   port?: number;
 }
-export interface ClientConfig {
-  [k: string]: string|{}|Function|Client|undefined;
+export interface ClientConfig extends gax.GoogleAuthOptions {
   apiEndpoint?: string;
-  projectId?: string;
   appProfileId?: string;
   email?: string;
-  keyFilename?: string;
-  credentials?: {
-    client_email: string;
-    private_key: string;
-  };
   autoRetry?: boolean;
   maxRetries?: number;
   promise?: Constructor<{}>;
@@ -170,12 +162,10 @@ export interface IInstance {
   type?: InstanceType|null;
   labels?: {[k: string]: string}|null|string;
 }
-export interface RequestConfig {
+export interface RequestConfig extends ProtoOpts {
   gaxOpts: CallOptions;
-  method: string;
   reqOpts: {};
   client: string;
-  retryOpts?: {};
 }
 
 /**
