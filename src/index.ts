@@ -545,7 +545,6 @@ export class Bigtable {
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
   }
 
-  // * GOOD
   createInstance(id: string): Promise<CreateInstanceResponse>;
   createInstance(id: string, callback: CreateInstanceCallback): void;
   createInstance(id: string, options: CreateInstanceOptions): Promise<CreateInstanceResponse>;
@@ -669,7 +668,6 @@ export class Bigtable {
     );
   }
 
-  // * GOOD
   getInstances(): Promise<GetInstanceResponse>;
   getInstances(callback: GetInstanceCallback): void;
   getInstances(gaxOptions: CallOptions): Promise<GetInstanceResponse>;
@@ -734,7 +732,6 @@ export class Bigtable {
     );
   }
 
-  // * GOOD
   /**
    * Get a reference to a Cloud Bigtable instance.
    *
