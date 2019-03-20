@@ -15,11 +15,12 @@
  */
 
 import * as assert from 'assert';
+import * as Long from 'long';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
-import {Mutation} from '../src/mutation.js';
-import * as Long from 'long';
+
 import {RowStateEnum} from '../src/chunktransformer.js';
+import {Mutation} from '../src/mutation.js';
 
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
@@ -44,8 +45,8 @@ describe('Bigtable/ChunkTransformer', function() {
   let rows;
   before(function() {
     ChunkTransformer = proxyquire('../src/chunktransformer.js', {
-      './mutation.js': { Mutation: FakeMutation },
-    }).ChunkTransformer;
+                         './mutation.js': {Mutation: FakeMutation},
+                       }).ChunkTransformer;
   });
   beforeEach(function() {
     chunkTransformer = new ChunkTransformer();
@@ -68,30 +69,16 @@ describe('Bigtable/ChunkTransformer', function() {
       this.state = RowStateEnum.NEW_ROW;
       assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.lastRowKey,
-        undefined,
-        'invalid initial state'
-      );
+          chunkTransformer.lastRowKey, undefined, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.family,
-        {},
-        'invalid initial state'
-      );
+          chunkTransformer.family, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.qualifiers,
-        [],
-        'invalid initial state'
-      );
+          chunkTransformer.qualifiers, [], 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.qualifier,
-        {},
-        'invalid initial state'
-      );
+          chunkTransformer.qualifier, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'invalid initial state'
-      );
+          chunkTransformer.state, RowStateEnum.NEW_ROW,
+          'invalid initial state');
     });
   });
   describe('processNewRow', function() {
@@ -137,18 +124,19 @@ describe('Bigtable/ChunkTransformer', function() {
       });
       processNewRowSpy.call(chunkTransformer, {resetRow: true});
     });
-    it('should destroy when row key is equal to previous row key ', function(done) {
-      chunkTransformer.on('error', function() {
-        assert(destroySpy.called);
-        done();
-      });
-      chunkTransformer.lastRowKey = 'key';
+    it('should destroy when row key is equal to previous row key ',
+       function(done) {
+         chunkTransformer.on('error', function() {
+           assert(destroySpy.called);
+           done();
+         });
+         chunkTransformer.lastRowKey = 'key';
 
-      processNewRowSpy.call(chunkTransformer, {
-        rowKey: 'key',
-        resetRow: false,
-      });
-    });
+         processNewRowSpy.call(chunkTransformer, {
+           rowKey: 'key',
+           resetRow: false,
+         });
+       });
     it('should destroy when family name is undefined ', function(done) {
       chunkTransformer.on('error', function() {
         assert(destroySpy.called);
@@ -194,10 +182,7 @@ describe('Bigtable/ChunkTransformer', function() {
       assert(resetSpy.called, 'reset state failed');
       assert(commitSpy.called, 'commit row failed');
       assert.strictEqual(
-        chunkTransformer.lastRowKey,
-        chunk.rowKey,
-        'wrong state lastRowKey'
-      );
+          chunkTransformer.lastRowKey, chunk.rowKey, 'wrong state lastRowKey');
       const expectedRow = {
         key: chunk.rowKey,
         data: {
@@ -245,10 +230,7 @@ describe('Bigtable/ChunkTransformer', function() {
       };
       assert.deepStrictEqual(chunkTransformer.row, partialRow);
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.ROW_IN_PROGRESS,
-        'wrong state'
-      );
+          chunkTransformer.state, RowStateEnum.ROW_IN_PROGRESS, 'wrong state');
     });
     it('partial cell  ', function() {
       const chunk = {
@@ -281,10 +263,7 @@ describe('Bigtable/ChunkTransformer', function() {
       };
       assert.deepStrictEqual(chunkTransformer.row, partialRow);
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.CELL_IN_PROGRESS,
-        'wrong state'
-      );
+          chunkTransformer.state, RowStateEnum.CELL_IN_PROGRESS, 'wrong state');
     });
   });
   describe('processRowInProgress', function() {
@@ -293,10 +272,8 @@ describe('Bigtable/ChunkTransformer', function() {
     let commitSpy;
     let destroySpy;
     beforeEach(function() {
-      processRowInProgressSpy = sinon.spy(
-        chunkTransformer,
-        'processRowInProgress'
-      );
+      processRowInProgressSpy =
+          sinon.spy(chunkTransformer, 'processRowInProgress');
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
       destroySpy = sinon.spy(chunkTransformer, 'destroy');
@@ -417,10 +394,7 @@ describe('Bigtable/ChunkTransformer', function() {
       const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'state mismatch'
-      );
+          chunkTransformer.state, RowStateEnum.NEW_ROW, 'state mismatch');
     });
     it('chunk with qualifier and commit should produce row ', function() {
       chunkTransformer.qualifiers = [];
@@ -463,58 +437,53 @@ describe('Bigtable/ChunkTransformer', function() {
       const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'state mismatch'
-      );
+          chunkTransformer.state, RowStateEnum.NEW_ROW, 'state mismatch');
     });
-    it('chunk with familyName and empty qualifier should produce row', function() {
-      chunkTransformer.qualifiers = [];
-      chunkTransformer.family = {
-        qualifier: chunkTransformer.qualifiers,
-      };
-      chunkTransformer.row = {
-        key: 'key',
-        data: {
-          family: chunkTransformer.family,
-        },
-      };
-      const chunk = {
-        commitRow: true,
-        familyName: {value: 'family2'},
-        qualifier: '',
-        value: 'value',
-        timestampMicros: 0,
-        labels: [],
-        valueSize: 0,
-      };
-      chunkTransformer.processRowInProgress(chunk);
-      assert(commitSpy.called, 'did not call commit');
-      assert(resetSpy.called, 'did not call reset');
-      assert.strictEqual(rows.length, 1, 'wrong call to push');
-      const expectedRow = {
-        key: 'key',
-        data: {
-          family: {
-            qualifier: [
-              {
-                value: 'value',
-                timestamp: 0,
-                labels: [],
-              },
-            ],
-          },
-          family2: {},
-        },
-      };
-      const row = rows[0];
-      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
-      assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'state mismatch'
-      );
-    });
+    it('chunk with familyName and empty qualifier should produce row',
+       function() {
+         chunkTransformer.qualifiers = [];
+         chunkTransformer.family = {
+           qualifier: chunkTransformer.qualifiers,
+         };
+         chunkTransformer.row = {
+           key: 'key',
+           data: {
+             family: chunkTransformer.family,
+           },
+         };
+         const chunk = {
+           commitRow: true,
+           familyName: {value: 'family2'},
+           qualifier: '',
+           value: 'value',
+           timestampMicros: 0,
+           labels: [],
+           valueSize: 0,
+         };
+         chunkTransformer.processRowInProgress(chunk);
+         assert(commitSpy.called, 'did not call commit');
+         assert(resetSpy.called, 'did not call reset');
+         assert.strictEqual(rows.length, 1, 'wrong call to push');
+         const expectedRow = {
+           key: 'key',
+           data: {
+             family: {
+               qualifier: [
+                 {
+                   value: 'value',
+                   timestamp: 0,
+                   labels: [],
+                 },
+               ],
+             },
+             family2: {},
+           },
+         };
+         const row = rows[0];
+         assert.deepStrictEqual(row, expectedRow, 'row mismatch');
+         assert.strictEqual(
+             chunkTransformer.state, RowStateEnum.NEW_ROW, 'state mismatch');
+       });
     it('chunk with new family and commitRow should produce row', function() {
       chunkTransformer.qualifiers = [];
       chunkTransformer.family = {
@@ -559,10 +528,7 @@ describe('Bigtable/ChunkTransformer', function() {
       const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'state mismatch'
-      );
+          chunkTransformer.state, RowStateEnum.NEW_ROW, 'state mismatch');
     });
     it('partial cell ', function() {
       chunkTransformer.qualifiers = [];
@@ -600,18 +566,14 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       assert.deepStrictEqual(
-        chunkTransformer.row,
-        expectedState,
-        'row state mismatch'
-      );
+          chunkTransformer.row, expectedState, 'row state mismatch');
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.CELL_IN_PROGRESS,
-        'state mismatch'
-      );
+          chunkTransformer.state, RowStateEnum.CELL_IN_PROGRESS,
+          'state mismatch');
     });
     it('should decode numbers', function() {
-      const RealChunkTransformer = require('../src/chunktransformer.js').ChunkTransformer;
+      const RealChunkTransformer =
+          require('../src/chunktransformer.js').ChunkTransformer;
       chunkTransformer = new RealChunkTransformer({decode: true});
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
@@ -652,15 +614,10 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       assert.deepStrictEqual(
-        chunkTransformer.row,
-        expectedState,
-        'row mismatch'
-      );
+          chunkTransformer.row, expectedState, 'row mismatch');
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.ROW_IN_PROGRESS,
-        'state mismatch'
-      );
+          chunkTransformer.state, RowStateEnum.ROW_IN_PROGRESS,
+          'state mismatch');
     });
   });
   describe('processCellInProgress', function() {
@@ -669,10 +626,8 @@ describe('Bigtable/ChunkTransformer', function() {
     let commitSpy;
     let destroySpy;
     beforeEach(function() {
-      processCellInProgressSpy = sinon.spy(
-        chunkTransformer,
-        'processCellInProgress'
-      );
+      processCellInProgressSpy =
+          sinon.spy(chunkTransformer, 'processCellInProgress');
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
       destroySpy = sinon.spy(chunkTransformer, 'destroy');
@@ -788,69 +743,60 @@ describe('Bigtable/ChunkTransformer', function() {
       const row = rows[0];
       assert.deepStrictEqual(row, expectedRow, 'row mismatch');
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'state mismatch'
-      );
+          chunkTransformer.state, RowStateEnum.NEW_ROW, 'state mismatch');
     });
-    it('without commitRow should change state to processRowInProgress', function() {
-      chunkTransformer.qualifier = {
-        value: 'value',
-        size: 0,
-        timestamp: 0,
-        labels: [],
-      };
-      chunkTransformer.qualifiers = [chunkTransformer.qualifier];
-      chunkTransformer.family = {
-        qualifier: chunkTransformer.qualifiers,
-      };
-      chunkTransformer.row = {
-        key: 'key',
-        data: {
-          family: chunkTransformer.family,
-        },
-      };
-      const chunk = {
-        commitRow: false,
-        value: '2',
-        valueSize: 0,
-      };
-      chunkTransformer.processCellInProgress(chunk);
-      assert(!resetSpy.called, 'invalid call to reset');
-      assert(!commitSpy.called, 'invalid call to commit');
-      assert.strictEqual(rows.length, 0, 'wrong call to push');
-      const expectedState = {
-        key: 'key',
-        data: {
-          family: {
-            qualifier: [
-              {
-                value: 'value2',
-                size: 0,
-                timestamp: 0,
-                labels: [],
-              },
-            ],
-          },
-        },
-      };
-      assert.deepStrictEqual(
-        chunkTransformer.row,
-        expectedState,
-        'row mismatch'
-      );
-      assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.ROW_IN_PROGRESS,
-        'state mismatch'
-      );
-    });
+    it('without commitRow should change state to processRowInProgress',
+       function() {
+         chunkTransformer.qualifier = {
+           value: 'value',
+           size: 0,
+           timestamp: 0,
+           labels: [],
+         };
+         chunkTransformer.qualifiers = [chunkTransformer.qualifier];
+         chunkTransformer.family = {
+           qualifier: chunkTransformer.qualifiers,
+         };
+         chunkTransformer.row = {
+           key: 'key',
+           data: {
+             family: chunkTransformer.family,
+           },
+         };
+         const chunk = {
+           commitRow: false,
+           value: '2',
+           valueSize: 0,
+         };
+         chunkTransformer.processCellInProgress(chunk);
+         assert(!resetSpy.called, 'invalid call to reset');
+         assert(!commitSpy.called, 'invalid call to commit');
+         assert.strictEqual(rows.length, 0, 'wrong call to push');
+         const expectedState = {
+           key: 'key',
+           data: {
+             family: {
+               qualifier: [
+                 {
+                   value: 'value2',
+                   size: 0,
+                   timestamp: 0,
+                   labels: [],
+                 },
+               ],
+             },
+           },
+         };
+         assert.deepStrictEqual(
+             chunkTransformer.row, expectedState, 'row mismatch');
+         assert.strictEqual(
+             chunkTransformer.state, RowStateEnum.ROW_IN_PROGRESS,
+             'state mismatch');
+       });
     it('should concat buffer when decode option is false', function() {
       chunkTransformer = new ChunkTransformer({decode: false});
-      processCellInProgressSpy = sinon.spy(
-        chunkTransformer,
-        'processCellInProgress'
-      );
+      processCellInProgressSpy =
+          sinon.spy(chunkTransformer, 'processCellInProgress');
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');
       destroySpy = sinon.spy(chunkTransformer, 'destroy');
@@ -898,15 +844,10 @@ describe('Bigtable/ChunkTransformer', function() {
         },
       };
       assert.deepStrictEqual(
-        chunkTransformer.row,
-        expectedState,
-        'row mismatch'
-      );
+          chunkTransformer.row, expectedState, 'row mismatch');
       assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.ROW_IN_PROGRESS,
-        'state mismatch'
-      );
+          chunkTransformer.state, RowStateEnum.ROW_IN_PROGRESS,
+          'state mismatch');
     });
   });
   describe('_flush', function() {
@@ -942,14 +883,10 @@ describe('Bigtable/ChunkTransformer', function() {
     beforeEach(function() {
       callback = sinon.spy();
       processNewRowSpy = sinon.spy(chunkTransformer, 'processNewRow');
-      processRowInProgressSpy = sinon.spy(
-        chunkTransformer,
-        'processRowInProgress'
-      );
-      processCellInProgressSpy = sinon.spy(
-        chunkTransformer,
-        'processCellInProgress'
-      );
+      processRowInProgressSpy =
+          sinon.spy(chunkTransformer, 'processRowInProgress');
+      processCellInProgressSpy =
+          sinon.spy(chunkTransformer, 'processCellInProgress');
     });
     it('when current state is NEW_ROW should call processNewRow', function() {
       const chunk = {
@@ -964,49 +901,47 @@ describe('Bigtable/ChunkTransformer', function() {
       };
       chunkTransformer.state = RowStateEnum.NEW_ROW;
       const chunks = [chunk];
-      chunkTransformer._transform({chunks: chunks}, {}, callback);
+      chunkTransformer._transform({chunks}, {}, callback);
       assert(processNewRowSpy.called, 'did not call processNewRow');
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
     });
-    it('when current state is ROW_IN_PROGRESS should call processRowInProgress', function() {
-      chunkTransformer.row = {key: 'key'};
-      chunkTransformer.state = RowStateEnum.ROW_IN_PROGRESS;
-      const chunks = [{key: 'key'}];
-      chunkTransformer._transform({chunks: chunks}, {}, callback);
-      assert(
-        processRowInProgressSpy.called,
-        'did not call processRowInProgress'
-      );
-      const err = callback.getCall(0).args[0];
-      assert(!err, 'did not expect error');
-    });
-    it('when current state is CELL_IN_PROGRESS should call processCellInProgress', function() {
-      chunkTransformer.row = {key: 'key'};
-      chunkTransformer.state = RowStateEnum.CELL_IN_PROGRESS;
-      const chunks = [{key: 'key'}];
-      chunkTransformer._transform({chunks: chunks}, {}, callback);
-      assert(
-        processCellInProgressSpy.called,
-        'did not call processCellInProgress'
-      );
-      const err = callback.getCall(0).args[0];
-      assert(!err, 'did not expect error');
-    });
+    it('when current state is ROW_IN_PROGRESS should call processRowInProgress',
+       function() {
+         chunkTransformer.row = {key: 'key'};
+         chunkTransformer.state = RowStateEnum.ROW_IN_PROGRESS;
+         const chunks = [{key: 'key'}];
+         chunkTransformer._transform({chunks}, {}, callback);
+         assert(
+             processRowInProgressSpy.called,
+             'did not call processRowInProgress');
+         const err = callback.getCall(0).args[0];
+         assert(!err, 'did not expect error');
+       });
+    it('when current state is CELL_IN_PROGRESS should call processCellInProgress',
+       function() {
+         chunkTransformer.row = {key: 'key'};
+         chunkTransformer.state = RowStateEnum.CELL_IN_PROGRESS;
+         const chunks = [{key: 'key'}];
+         chunkTransformer._transform({chunks}, {}, callback);
+         assert(
+             processCellInProgressSpy.called,
+             'did not call processCellInProgress');
+         const err = callback.getCall(0).args[0];
+         assert(!err, 'did not expect error');
+       });
     it('should return when stream is destroyed', function() {
       chunkTransformer._destroyed = true;
       const chunks = [{key: 'key'}];
-      chunkTransformer._transform({chunks: chunks}, {}, callback);
+      chunkTransformer._transform({chunks}, {}, callback);
       assert(!callback.called, 'unexpected call to  next');
     });
-    it('should change the `lastRowKey` value for `data.lastScannedRowKey`', function() {
-      chunkTransformer._transform(
-        {chunks: [], lastScannedRowKey: 'foo'},
-        {},
-        callback
-      );
-      assert.deepStrictEqual(chunkTransformer.lastRowKey, 'foo');
-    });
+    it('should change the `lastRowKey` value for `data.lastScannedRowKey`',
+       function() {
+         chunkTransformer._transform(
+             {chunks: [], lastScannedRowKey: 'foo'}, {}, callback);
+         assert.deepStrictEqual(chunkTransformer.lastRowKey, 'foo');
+       });
   });
   describe('reset', function() {
     it('should reset initial state', function() {
@@ -1031,30 +966,16 @@ describe('Bigtable/ChunkTransformer', function() {
       chunkTransformer.reset();
       assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.lastRowKey,
-        'prevkey',
-        'invalid initial state'
-      );
+          chunkTransformer.lastRowKey, 'prevkey', 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.family,
-        {},
-        'invalid initial state'
-      );
+          chunkTransformer.family, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.qualifiers,
-        [],
-        'invalid initial state'
-      );
+          chunkTransformer.qualifiers, [], 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.qualifier,
-        {},
-        'invalid initial state'
-      );
+          chunkTransformer.qualifier, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'invalid initial state'
-      );
+          chunkTransformer.state, RowStateEnum.NEW_ROW,
+          'invalid initial state');
     });
   });
   describe('commit', function() {
@@ -1085,30 +1006,16 @@ describe('Bigtable/ChunkTransformer', function() {
       assert(resetSpy.called, 'did not call reset');
       assert.deepStrictEqual(chunkTransformer.row, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.lastRowKey,
-        'key',
-        'invalid initial state'
-      );
+          chunkTransformer.lastRowKey, 'key', 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.family,
-        {},
-        'invalid initial state'
-      );
+          chunkTransformer.family, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.qualifiers,
-        [],
-        'invalid initial state'
-      );
+          chunkTransformer.qualifiers, [], 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.qualifier,
-        {},
-        'invalid initial state'
-      );
+          chunkTransformer.qualifier, {}, 'invalid initial state');
       assert.deepStrictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'invalid initial state'
-      );
+          chunkTransformer.state, RowStateEnum.NEW_ROW,
+          'invalid initial state');
     });
   });
   describe('moveToNextState', function() {
@@ -1116,82 +1023,78 @@ describe('Bigtable/ChunkTransformer', function() {
     beforeEach(function() {
       commitSpy = sinon.spy(chunkTransformer, 'commit');
     });
-    it('chunk with commit row should call callback with row and call commit state', function() {
-      chunkTransformer.qualifier = {
-        value: 'value',
-        size: 0,
-        timestamp: 0,
-        labels: [],
-      };
-      chunkTransformer.qualifiers = [chunkTransformer.qualifier];
-      chunkTransformer.family = {
-        qualifier: chunkTransformer.qualifiers,
-      };
-      chunkTransformer.row = {
-        key: 'key',
-        data: {
-          family: chunkTransformer.family,
-        },
-      };
-      const chunk = {
-        commitRow: true,
-      };
-      chunkTransformer.moveToNextState(chunk);
-      assert(commitSpy.called, 'did not call commit');
-      assert.strictEqual(rows.length, 1, 'did not call push');
-      const expectedRow = {
-        key: 'key',
-        data: {
-          family: {
-            qualifier: [
-              {
-                value: 'value',
-                size: 0,
-                timestamp: 0,
-                labels: [],
-              },
-            ],
-          },
-        },
-      };
-      const row = rows[0];
-      assert.deepStrictEqual(row, expectedRow, 'row mismatch');
-      assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.NEW_ROW,
-        'state mismatch'
-      );
-    });
-    it('chunk without commitRow and value size>0 should move to CELL_IN_PROGRESS', function() {
-      const chunk = {
-        commitRow: false,
-        valueSize: 10,
-      };
-      chunkTransformer.state = RowStateEnum.NEW_ROW;
-      chunkTransformer.moveToNextState(chunk);
-      assert(!commitSpy.called, 'did not call commit');
-      assert.strictEqual(rows.length, 0, 'unexpected call to push');
-      assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.CELL_IN_PROGRESS,
-        'wrong state'
-      );
-    });
-    it('chunk without commitRow and value size==0 should move to ROW_IN_PROGRESS', function() {
-      const chunk = {
-        commitRow: false,
-        valueSize: 0,
-      };
-      chunkTransformer.state = RowStateEnum.CELL_IN_PROGRESS;
-      chunkTransformer.moveToNextState(chunk);
-      assert(!commitSpy.called, 'did not call commit');
-      assert.strictEqual(rows.length, 0, 'unexpected call to push');
-      assert.strictEqual(
-        chunkTransformer.state,
-        RowStateEnum.ROW_IN_PROGRESS,
-        'wrong state'
-      );
-    });
+    it('chunk with commit row should call callback with row and call commit state',
+       function() {
+         chunkTransformer.qualifier = {
+           value: 'value',
+           size: 0,
+           timestamp: 0,
+           labels: [],
+         };
+         chunkTransformer.qualifiers = [chunkTransformer.qualifier];
+         chunkTransformer.family = {
+           qualifier: chunkTransformer.qualifiers,
+         };
+         chunkTransformer.row = {
+           key: 'key',
+           data: {
+             family: chunkTransformer.family,
+           },
+         };
+         const chunk = {
+           commitRow: true,
+         };
+         chunkTransformer.moveToNextState(chunk);
+         assert(commitSpy.called, 'did not call commit');
+         assert.strictEqual(rows.length, 1, 'did not call push');
+         const expectedRow = {
+           key: 'key',
+           data: {
+             family: {
+               qualifier: [
+                 {
+                   value: 'value',
+                   size: 0,
+                   timestamp: 0,
+                   labels: [],
+                 },
+               ],
+             },
+           },
+         };
+         const row = rows[0];
+         assert.deepStrictEqual(row, expectedRow, 'row mismatch');
+         assert.strictEqual(
+             chunkTransformer.state, RowStateEnum.NEW_ROW, 'state mismatch');
+       });
+    it('chunk without commitRow and value size>0 should move to CELL_IN_PROGRESS',
+       function() {
+         const chunk = {
+           commitRow: false,
+           valueSize: 10,
+         };
+         chunkTransformer.state = RowStateEnum.NEW_ROW;
+         chunkTransformer.moveToNextState(chunk);
+         assert(!commitSpy.called, 'did not call commit');
+         assert.strictEqual(rows.length, 0, 'unexpected call to push');
+         assert.strictEqual(
+             chunkTransformer.state, RowStateEnum.CELL_IN_PROGRESS,
+             'wrong state');
+       });
+    it('chunk without commitRow and value size==0 should move to ROW_IN_PROGRESS',
+       function() {
+         const chunk = {
+           commitRow: false,
+           valueSize: 0,
+         };
+         chunkTransformer.state = RowStateEnum.CELL_IN_PROGRESS;
+         chunkTransformer.moveToNextState(chunk);
+         assert(!commitSpy.called, 'did not call commit');
+         assert.strictEqual(rows.length, 0, 'unexpected call to push');
+         assert.strictEqual(
+             chunkTransformer.state, RowStateEnum.ROW_IN_PROGRESS,
+             'wrong state');
+       });
   });
   describe('destroy', function() {
     it('should emit error when destroy is called with error', function(done) {

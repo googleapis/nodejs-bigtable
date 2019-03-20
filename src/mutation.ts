@@ -15,8 +15,8 @@
  */
 
 import * as arrify from 'arrify';
-import * as Long from 'long';
 import * as is from 'is';
+import * as Long from 'long';
 
 /**
  * Formats table mutations to be in the expected proto format.
@@ -228,7 +228,8 @@ export class Mutation {
    * // }
    *
    * //-
-   * // It's also possible to specify a time range when deleting specific columns.
+   * // It's also possible to specify a time range when deleting specific
+   * columns.
    * //-
    * Mutation.encodeDelete([
    *   {
@@ -270,10 +271,8 @@ export class Mutation {
       let timeRange;
 
       if (mutation.time) {
-        timeRange = Mutation.createTimeRange(
-          mutation.time.start,
-          mutation.time.end
-        );
+        timeRange =
+            Mutation.createTimeRange(mutation.time.start, mutation.time.end);
       }
 
       return {

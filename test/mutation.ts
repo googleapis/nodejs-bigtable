@@ -46,9 +46,8 @@ describe('Bigtable/Mutation', function() {
     describe('isPossibleNumber', function() {
       it('should convert a base64 encoded number when true', function() {
         const num = 10;
-        const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
-        );
+        const encoded =
+            Buffer.from(Long.fromNumber(num).toBytesBE()).toString('base64');
         const decoded = Mutation.convertFromBytes(encoded, {
           isPossibleNumber: true,
         });
@@ -57,9 +56,8 @@ describe('Bigtable/Mutation', function() {
       });
       it('should not convert a base64 encoded number when false', function() {
         const num = 10;
-        const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
-          'base64'
-        );
+        const encoded =
+            Buffer.from(Long.fromNumber(num).toBytesBE()).toString('base64');
         const decoded = Mutation.convertFromBytes(encoded);
 
         assert.notStrictEqual(num, decoded);
@@ -89,7 +87,7 @@ describe('Bigtable/Mutation', function() {
       const encoded = Buffer.from(message).toString('base64');
       const userOptions = {decode: false};
       const decoded = Mutation.convertFromBytes(encoded, {
-        userOptions: userOptions,
+        userOptions,
       });
 
       assert(decoded instanceof Buffer);
@@ -181,7 +179,7 @@ describe('Bigtable/Mutation', function() {
           setCell: {
             familyName: 'follows',
             columnQualifier: 'gwashington',
-            timestampMicros: fakeTime * 1000, // Convert ms to μs
+            timestampMicros: fakeTime * 1000,  // Convert ms to μs
             value: 1,
           },
         },
@@ -189,7 +187,7 @@ describe('Bigtable/Mutation', function() {
           setCell: {
             familyName: 'follows',
             columnQualifier: 'alincoln',
-            timestampMicros: fakeTime * 1000, // Convert ms to μs
+            timestampMicros: fakeTime * 1000,  // Convert ms to μs
             value: 1,
           },
         },
@@ -216,7 +214,7 @@ describe('Bigtable/Mutation', function() {
           setCell: {
             familyName: 'follows',
             columnQualifier: 'gwashington',
-            timestampMicros: realTimestamp * 1000, // Convert ms to μs
+            timestampMicros: realTimestamp * 1000,  // Convert ms to μs
             value: 1,
           },
         },
@@ -241,7 +239,7 @@ describe('Bigtable/Mutation', function() {
           setCell: {
             familyName: 'follows',
             columnQualifier: 'gwashington',
-            timestampMicros: fakeTime * 1000, // Convert ms to μs
+            timestampMicros: fakeTime * 1000,  // Convert ms to μs
             value: val,
           },
         },
@@ -346,8 +344,8 @@ describe('Bigtable/Mutation', function() {
 
       Mutation.createTimeRange = function(start, end) {
         timeCalls.push({
-          start: start,
-          end: end,
+          start,
+          end,
         });
         return fakeTimeRange;
       };

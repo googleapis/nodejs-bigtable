@@ -38,14 +38,17 @@
     "presystem-test": "npm run compile",
     "system-test": "mocha build/system-test --timeout 600000",
     "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
-    "fix": "eslint --fix '**/*.js'",
+    "lintfix": "eslint --fix '**/*.js'",
+    "fix": "gts fix && npm run lintfix",
     "docs-test": "linkinator docs -r --skip www.googleapis.com",
     "predocs-test": "npm run docs",
     "clean": "gts clean",
     "compile": "tsc -p . && cp -r src/v2 build/src/ && cp -r proto* build/ && cp test/*.js build/test",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
-    "proto": "mkdirp proto && pbjs -t static-module -w commonjs -p protos google/bigtable/v2/bigtable.proto google/bigtable/admin/v2/bigtable_instance_admin.proto google/bigtable/admin/v2/bigtable_table_admin.proto | pbts -o proto/bigtable.d.ts -"
+    "proto": "mkdirp proto && pbjs -t static-module -w commonjs -p protos google/bigtable/v2/bigtable.proto google/bigtable/admin/v2/bigtable_instance_admin.proto google/bigtable/admin/v2/bigtable_table_admin.proto | pbts -o proto/bigtable.d.ts -",
+    "check": "gts check",
+    "posttest": "npm run check"
   },
   "dependencies": {
     "@google-cloud/common-grpc": "^0.10.0",

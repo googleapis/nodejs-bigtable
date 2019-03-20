@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
 import * as promisify from '@google-cloud/promisify';
+import * as assert from 'assert';
 import * as proxyquire from 'proxyquire';
+
 const sn = require('sinon');
 import {Mutation} from '../src/mutation.js';
 
@@ -24,7 +25,7 @@ const sinon = sn.createSandbox();
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll: function(Class) {
+  promisifyAll(Class) {
     if (Class.name === 'Row') {
       promisified = true;
     }
@@ -162,7 +163,7 @@ describe('Bigtable/Row', function() {
                 {
                   value: 'convertedValue',
                   labels: ['label'],
-                  timestamp: timestamp,
+                  timestamp,
                   size: 0,
                 },
               ],
@@ -521,7 +522,7 @@ describe('Bigtable/Row', function() {
         'test-column': [
           {
             value: 'test-value',
-            timestamp: timestamp,
+            timestamp,
             labels: [],
           },
         ],
@@ -663,7 +664,7 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(spy.getCall(1).args[0], 'c');
         assert.strictEqual(spy.getCall(2).args[0], ROW_ID);
 
-        callback(); // done()
+        callback();  // done()
       };
 
       row.createRules(rules, done);
@@ -675,9 +676,7 @@ describe('Bigtable/Row', function() {
 
       bigtableInstance.request = function(config) {
         assert.strictEqual(
-          config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
-        );
+            config.reqOpts.appProfileId, bigtableInstance.appProfileId);
         done();
       };
 
@@ -702,7 +701,7 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(mutation.key, ROW_ID);
         assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
         assert.deepStrictEqual(gaxOptions, {});
-        callback(); // done()
+        callback();  // done()
       };
 
       row.delete(done);
@@ -740,7 +739,7 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(mutation.data, columns);
         assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
         assert.deepStrictEqual(gaxOptions, {});
-        callback(); // done()
+        callback();  // done()
       };
 
       row.deleteCells(columns, done);
@@ -759,7 +758,7 @@ describe('Bigtable/Row', function() {
 
     it('should remove existing data', function(done) {
       row.table.mutate = function(mutation, gaxOptions, callback) {
-        callback(); // done()
+        callback();  // done()
       };
 
       row.deleteCells(columns, done);
@@ -874,17 +873,11 @@ describe('Bigtable/Row', function() {
         assert.strictEqual(config.reqOpts.tableName, TABLE.name);
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
         assert.deepStrictEqual(
-          config.reqOpts.predicateFilter,
-          fakeParsedFilter
-        );
+            config.reqOpts.predicateFilter, fakeParsedFilter);
         assert.deepStrictEqual(
-          config.reqOpts.trueMutations,
-          fakeMutations.mutations
-        );
+            config.reqOpts.trueMutations, fakeMutations.mutations);
         assert.deepStrictEqual(
-          config.reqOpts.falseMutations,
-          fakeMutations.mutations
-        );
+            config.reqOpts.falseMutations, fakeMutations.mutations);
 
         assert.strictEqual(config.gaxOpts, undefined);
 
@@ -899,13 +892,11 @@ describe('Bigtable/Row', function() {
       };
 
       row.filter(
-        filter,
-        {
-          onMatch: mutations,
-          onNoMatch: mutations,
-        },
-        assert.ifError
-      );
+          filter, {
+            onMatch: mutations,
+            onNoMatch: mutations,
+          },
+          assert.ifError);
     });
 
     it('should accept gaxOptions', function(done) {
@@ -932,9 +923,7 @@ describe('Bigtable/Row', function() {
 
       bigtableInstance.request = function(config) {
         assert.strictEqual(
-          config.reqOpts.appProfileId,
-          bigtableInstance.appProfileId
-        );
+            config.reqOpts.appProfileId, bigtableInstance.appProfileId);
         done();
       };
 
@@ -1107,57 +1096,58 @@ describe('Bigtable/Row', function() {
       row.get(keys, options, assert.ifError);
     });
 
-    it('should respect the options object with filter for multiple columns', function(done) {
-      const keys = ['a:b', 'c:d'];
+    it('should respect the options object with filter for multiple columns',
+       function(done) {
+         const keys = ['a:b', 'c:d'];
 
-      const options: any = {
-        filter: [
-          {
-            column: {
-              cellLimit: 1,
-            },
-          },
-        ],
-      };
+         const options: any = {
+           filter: [
+             {
+               column: {
+                 cellLimit: 1,
+               },
+             },
+           ],
+         };
 
-      const expectedFilter = [
-        {
-          interleave: [
-            [
-              {
-                family: 'a',
-              },
-              {
-                column: 'b',
-              },
-            ],
-            [
-              {
-                family: 'c',
-              },
-              {
-                column: 'd',
-              },
-            ],
-          ],
-        },
-        {
-          column: {
-            cellLimit: 1,
-          },
-        },
-      ];
+         const expectedFilter = [
+           {
+             interleave: [
+               [
+                 {
+                   family: 'a',
+                 },
+                 {
+                   column: 'b',
+                 },
+               ],
+               [
+                 {
+                   family: 'c',
+                 },
+                 {
+                   column: 'd',
+                 },
+               ],
+             ],
+           },
+           {
+             column: {
+               cellLimit: 1,
+             },
+           },
+         ];
 
-      row.table.getRows = function(reqOpts) {
-        assert.deepStrictEqual(reqOpts.filter, expectedFilter);
-        assert.strictEqual(FakeMutation.parseColumnName.callCount, 2);
-        assert(FakeMutation.parseColumnName.calledWith(keys[0]));
-        assert.strictEqual(reqOpts.decode, options.decode);
-        done();
-      };
+         row.table.getRows = function(reqOpts) {
+           assert.deepStrictEqual(reqOpts.filter, expectedFilter);
+           assert.strictEqual(FakeMutation.parseColumnName.callCount, 2);
+           assert(FakeMutation.parseColumnName.calledWith(keys[0]));
+           assert.strictEqual(reqOpts.decode, options.decode);
+           done();
+         };
 
-      row.get(keys, options, assert.ifError);
-    });
+         row.get(keys, options, assert.ifError);
+       });
 
     it('should respect filter in options object', function(done) {
       const keys = [];
@@ -1449,7 +1439,7 @@ describe('Bigtable/Row', function() {
     it('should insert an object', function(done) {
       row.table.mutate = function(entry, gaxOptions, callback) {
         assert.strictEqual(entry.data, data);
-        callback(); // done()
+        callback();  // done()
       };
 
       row.save(data, done);

@@ -46,10 +46,8 @@ export class Cluster {
       if (id.startsWith(`${instance.name}/clusters/`)) {
         name = id;
       } else {
-        throw new Error(
-          `Cluster id '${id}' is not formatted correctly.
-Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
-        );
+        throw new Error(`Cluster id '${id}' is not formatted correctly.
+Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       }
     } else {
       name = `${instance.name}/clusters/${id}`;
@@ -151,16 +149,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
     }
 
     this.bigtable.request(
-      {
-        client: 'BigtableInstanceAdminClient',
-        method: 'deleteCluster',
-        reqOpts: {
-          name: this.name,
+        {
+          client: 'BigtableInstanceAdminClient',
+          method: 'deleteCluster',
+          reqOpts: {
+            name: this.name,
+          },
+          gaxOpts: gaxOptions,
         },
-        gaxOpts: gaxOptions,
-      },
-      callback
-    );
+        callback);
   }
 
   /**
@@ -242,22 +239,21 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
     }
 
     this.bigtable.request(
-      {
-        client: 'BigtableInstanceAdminClient',
-        method: 'getCluster',
-        reqOpts: {
-          name: this.name,
+        {
+          client: 'BigtableInstanceAdminClient',
+          method: 'getCluster',
+          reqOpts: {
+            name: this.name,
+          },
+          gaxOpts: gaxOptions,
         },
-        gaxOpts: gaxOptions,
-      },
-      (...args) => {
-        if (args[1]) {
-          this.metadata = args[1];
-        }
+        (...args) => {
+          if (args[1]) {
+            this.metadata = args[1];
+          }
 
-        callback(...args);
-      }
-    );
+          callback(...args);
+        });
   }
 
   /**
@@ -287,10 +283,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
     };
 
     if (metadata.location) {
-      reqOpts.location = Cluster.getLocation_(
-        this.bigtable.projectId,
-        metadata.location
-      );
+      reqOpts.location =
+          Cluster.getLocation_(this.bigtable.projectId, metadata.location);
     }
 
     if (metadata.nodes) {
@@ -302,14 +296,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`
     }
 
     this.bigtable.request(
-      {
-        client: 'BigtableInstanceAdminClient',
-        method: 'updateCluster',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      callback
-    );
+        {
+          client: 'BigtableInstanceAdminClient',
+          method: 'updateCluster',
+          reqOpts,
+          gaxOpts: gaxOptions,
+        },
+        callback);
   }
 }
 

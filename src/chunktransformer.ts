@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Mutation} from './mutation';
 import {Transform, TransformOptions} from 'stream';
+
+import {Mutation} from './mutation';
 
 class TransformError extends Error {
   constructor(props) {
@@ -51,7 +52,7 @@ export class ChunkTransformer extends Transform {
   qualifiers;
   qualifier;
   constructor(options: TransformOptions = {}) {
-    options.objectMode = true; // forcing object mode
+    options.objectMode = true;  // forcing object mode
     super(options);
     this.options = options;
     this._destroyed = false;
@@ -60,7 +61,8 @@ export class ChunkTransformer extends Transform {
   }
 
   /**
-   * transform the readrowsresponse chunks into friendly format. Chunks contain 3 properties:
+   * transform the readrowsresponse chunks into friendly format. Chunks contain
+   * 3 properties:
    *
    * `rowContents` The row contents, this essentially is all data pertaining
    *     to a single family.
@@ -109,12 +111,10 @@ export class ChunkTransformer extends Transform {
    */
   _flush(cb) {
     if (typeof this.row.key !== 'undefined') {
-      this.destroy(
-        new TransformError({
-          message: 'Response ended with pending row without commit',
-          chunk: null,
-        })
-      );
+      this.destroy(new TransformError({
+        message: 'Response ended with pending row without commit',
+        chunk: null,
+      }));
       return;
     }
     cb();
@@ -163,12 +163,10 @@ export class ChunkTransformer extends Transform {
    */
   validateValueSizeAndCommitRow(chunk) {
     if (chunk.valueSize > 0 && chunk.commitRow) {
-      this.destroy(
-        new TransformError({
-          message: 'A row cannot be have a value size and be a commit row',
-          chunk,
-        })
-      );
+      this.destroy(new TransformError({
+        message: 'A row cannot be have a value size and be a commit row',
+        chunk,
+      }));
     }
   }
 
@@ -178,19 +176,14 @@ export class ChunkTransformer extends Transform {
    * @param {chunk} chunk chunk to validate for resetrow
    */
   validateResetRow(chunk) {
-    const containsData =
-      (chunk.rowKey && chunk.rowKey.length !== 0) ||
-      chunk.familyName ||
-      chunk.qualifier ||
-      (chunk.value && chunk.value.length !== 0) ||
-      chunk.timestampMicros > 0;
+    const containsData = (chunk.rowKey && chunk.rowKey.length !== 0) ||
+        chunk.familyName || chunk.qualifier ||
+        (chunk.value && chunk.value.length !== 0) || chunk.timestampMicros > 0;
     if (chunk.resetRow && containsData) {
-      this.destroy(
-        new TransformError({
-          message: 'A reset should have no data',
-          chunk,
-        })
-      );
+      this.destroy(new TransformError({
+        message: 'A reset should have no data',
+        chunk,
+      }));
     }
   }
 
@@ -208,10 +201,8 @@ export class ChunkTransformer extends Transform {
     if (typeof row.key !== 'undefined') {
       errorMessage = 'A new row cannot have existing state';
     } else if (
-      typeof chunk.rowKey === 'undefined' ||
-      chunk.rowKey.length === 0 ||
-      newRowKey.length === 0
-    ) {
+        typeof chunk.rowKey === 'undefined' || chunk.rowKey.length === 0 ||
+        newRowKey.length === 0) {
       errorMessage = 'A row key must be set';
     } else if (chunk.resetRow) {
       errorMessage = 'A new row cannot be reset';
@@ -241,31 +232,21 @@ export class ChunkTransformer extends Transform {
         userOptions: this.options,
       });
       const oldRowKey = row.key || '';
-      if (
-        newRowKey &&
-        chunk.rowKey &&
-        (newRowKey as string).length !== 0 &&
-        newRowKey.toString() !== oldRowKey.toString()
-      ) {
-        this.destroy(
-          new TransformError({
-            message: 'A commit is required between row keys',
-            chunk,
-          })
-        );
+      if (newRowKey && chunk.rowKey && (newRowKey as string).length !== 0 &&
+          newRowKey.toString() !== oldRowKey.toString()) {
+        this.destroy(new TransformError({
+          message: 'A commit is required between row keys',
+          chunk,
+        }));
         return;
       }
     }
-    if (
-      chunk.familyName &&
-      (chunk.qualifier === null || chunk.qualifier === undefined)
-    ) {
-      this.destroy(
-        new TransformError({
-          message: 'A qualifier must be specified',
-          chunk,
-        })
-      );
+    if (chunk.familyName &&
+        (chunk.qualifier === null || chunk.qualifier === undefined)) {
+      this.destroy(new TransformError({
+        message: 'A qualifier must be specified',
+        chunk,
+      }));
       return;
     }
     this.validateResetRow(chunk);
@@ -347,14 +328,14 @@ export class ChunkTransformer extends Transform {
     const row = this.row;
     if (chunk.familyName) {
       this.family = row.data[chunk.familyName.value] =
-        row.data[chunk.familyName.value] || {};
+          row.data[chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
       const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
         userOptions: this.options,
       }) as string;
       this.qualifiers = this.family[qualifierName] =
-        this.family[qualifierName] || [];
+          this.family[qualifierName] || [];
     }
     this.qualifier = {
       value: Mutation.convertFromBytes(chunk.value, {
@@ -382,10 +363,8 @@ export class ChunkTransformer extends Transform {
       userOptions: this.options,
     });
 
-    if (
-      chunkQualifierValue instanceof Buffer &&
-      this.qualifier.value instanceof Buffer
-    ) {
+    if (chunkQualifierValue instanceof Buffer &&
+        this.qualifier.value instanceof Buffer) {
       this.qualifier.value = Buffer.concat([
         this.qualifier.value,
         chunkQualifierValue,
