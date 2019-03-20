@@ -1,14 +1,22 @@
 {
   "name": "@google-cloud/bigtable",
-  "description": "Cloud Bigtable Client Library for Node.js",
   "version": "1.0.1",
+  "description": "Cloud Bigtable Client Library for Node.js",
+  "keywords": [
+    "bigtable",
+    "cloud",
+    "google",
+    "google api",
+    "google api client",
+    "google apis",
+    "google apis client",
+    "google bigtable",
+    "google cloud",
+    "google cloud platform"
+  ],
+  "repository": "googleapis/nodejs-bigtable",
   "license": "Apache-2.0",
   "author": "Google Inc.",
-  "engines": {
-    "node": ">=6.0.0"
-  },
-  "repository": "googleapis/nodejs-bigtable",
-  "main": "build/src/index.js",
   "files": [
     "build/proto",
     "build/protos",
@@ -17,37 +25,26 @@
     "!**/*.d.ts",
     "!**/*.map"
   ],
-  "keywords": [
-    "google apis client",
-    "google api client",
-    "google apis",
-    "google api",
-    "google",
-    "google cloud platform",
-    "google cloud",
-    "cloud",
-    "google bigtable",
-    "bigtable"
-  ],
+  "main": "build/src/index.js",
   "scripts": {
-    "docs": "jsdoc -c .jsdoc.js",
-    "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
-    "test": "nyc mocha build/test",
-    "generate-scaffolding": "repo-tools generate all && repo-tools generate lib_samples_readme -l samples/ --config ../.cloud-repo-tools.json",
-    "lint": "eslint '**/*.js'",
-    "presystem-test": "npm run compile",
-    "system-test": "mocha build/system-test --timeout 600000",
-    "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
-    "lintfix": "eslint --fix '**/*.js'",
-    "fix": "gts fix && npm run lintfix",
-    "docs-test": "linkinator docs -r --skip www.googleapis.com",
-    "predocs-test": "npm run docs",
+    "check": "gts check",
     "clean": "gts clean",
     "compile": "tsc -p . && cp -r src/v2 build/src/ && cp -r proto* build/ && cp test/*.js build/test",
+    "docs": "jsdoc -c .jsdoc.js",
+    "predocs-test": "npm run docs",
+    "docs-test": "linkinator docs -r --skip www.googleapis.com",
+    "fix": "gts fix && npm run lintfix",
+    "generate-scaffolding": "repo-tools generate all && repo-tools generate lib_samples_readme -l samples/ --config ../.cloud-repo-tools.json",
+    "lint": "eslint '**/*.js'",
+    "lintfix": "eslint --fix '**/*.js'",
     "prepare": "npm run compile",
-    "pretest": "npm run compile",
     "proto": "mkdirp proto && pbjs -t static-module -w commonjs -p protos google/bigtable/v2/bigtable.proto google/bigtable/admin/v2/bigtable_instance_admin.proto google/bigtable/admin/v2/bigtable_table_admin.proto | pbts -o proto/bigtable.d.ts -",
-    "check": "gts check",
+    "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
+    "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
+    "presystem-test": "npm run compile",
+    "system-test": "mocha build/system-test --timeout 600000",
+    "pretest": "npm run compile",
+    "test": "nyc mocha build/test",
     "posttest": "npm run check"
   },
   "dependencies": {
@@ -107,5 +104,8 @@
     "source-map-support": "^0.5.10",
     "typescript": "~3.3.0",
     "uuid": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   }
 }
