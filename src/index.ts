@@ -50,7 +50,7 @@ import * as through from 'through2';
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Instance} from './instance';
-import {google as btInstanceAdminClient} from '../proto/bigtable_instance_admin';
+import {google as btAdminClient} from '../proto/bigtable';
 
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -111,16 +111,31 @@ export interface ClientConfig {
   maxRetries?: number;
   promise?: Constructor<{}>;
 }
+export interface Options extends ClientConfig {
+  BigtableClient?: Client;
+  BigtableInstanceAdminClient?: Client;
+  BigtableTableAdminClient?: Client;
+}
+
+export type CreateInstanceResponse = [IInstance, GaxOperation, LongrunningIOperation];
+export type GetInstanceResponse = [IInstance[], ListInstancesResponse];
+
+export type ICluster = btAdminClient.bigtable.admin.v2.ICluster;
+export type LongrunningIOperation = btAdminClient.longrunning.IOperation;
+export type ListInstancesResponse = btAdminClient.bigtable.admin.v2.IListInstancesResponse;
+export type InstanceState = btAdminClient.bigtable.admin.v2.Instance.State;
+export type InstanceType = btAdminClient.bigtable.admin.v2.Instance.Type;
+
 export interface CreateInstanceCallback {
-  (instance?: Instance, operation?: GaxOperation, apiResponse?: CreateInstanceResponse): void;
+  (instance?: Instance, operation?: GaxOperation, apiResponse?: LongrunningIOperation): void;
 }
-export interface CreateInstanceOptions {
-  clusters?: CreateInstanceCluster[];
-  displayName?: string;
-  labels?: string|{[k: string]: string};
-  type?: string;
-  gaxOptions?: CallOptions;
+export interface GetInstanceCallback {
+  (err?: Error|null, instances?: Instance[], apiResponse?: ListInstancesResponse): void;
 }
+export interface GetProjectIdCallback {
+  (err: Error|null, projectId?: string|null): void;
+}
+
 export interface CreateInstanceCluster {
   id: string;
   location: string;
@@ -131,29 +146,28 @@ export interface CreateInstanceClusters {
   [k: string]: {
     location: string;
     serveNodes: number;
-    defaultStorageType: btInstanceAdminClient.bigtable.admin.v2.ICluster;
+    defaultStorageType: ICluster;
   };
+}
+export interface CreateInstanceOptions {
+  clusters?: CreateInstanceCluster[];
+  displayName?: string;
+  labels?: string|{[k: string]: string};
+  type?: string;
+  gaxOptions?: CallOptions;
 }
 export interface CreateInstanceRequest {
   parent?: string|null;
   instanceId?: string|null;
-  clusters?: ({ [k: string]: btInstanceAdminClient.bigtable.admin.v2.ICluster }|null);
-  instance?: ProtoInstance|null;
+  clusters?: ({[k: string]: ICluster}|null);
+  instance?: IInstance|null;
 }
-export type CreateInstanceResponse = [Instance, GaxOperation, btInstanceAdminClient.bigtable.admin.v2.IInstance];
-export type GetInstanceResponse = [ProtoInstance[], ListInstancesResponse];
-export interface GetInstanceCallback {
-  (err?: Error|null, instances?: Instance[], apiResponse?: ListInstancesResponse): void;
-}
-export interface GetProjectIdCallback {
-  (err: Error|null, projectId?: string|null): void;
-}
-export type ListInstancesResponse = btInstanceAdminClient.bigtable.admin.v2.IListInstancesResponse;
-export interface ProtoInstance {
+//tslint:disable-next-line interface-name
+export interface IInstance {
   name?: string|null;
   displayName?: string|null;
-  state?: btInstanceAdminClient.bigtable.admin.v2.Instance.State|null;
-  type?: btInstanceAdminClient.bigtable.admin.v2.Instance.Type|null;
+  state?: InstanceState|null;
+  type?: InstanceType|null;
   labels?: {[k: string]: string}|null|string;
 }
 export interface RequestConfig {
@@ -162,11 +176,6 @@ export interface RequestConfig {
   reqOpts: {};
   client: string;
   retryOpts?: {};
-}
-export interface Options extends ClientConfig {
-  BigtableClient?: Client;
-  BigtableInstanceAdminClient?: Client;
-  BigtableTableAdminClient?: Client;
 }
 
 /**
@@ -536,6 +545,10 @@ export class Bigtable {
     this.shouldReplaceProjectIdToken = this.projectId === '{{projectId}}';
   }
 
+  // * GOOD
+  createInstance(id: string): Promise<CreateInstanceResponse>;
+  createInstance(id: string, callback: CreateInstanceCallback): void;
+  createInstance(id: string, options: CreateInstanceOptions): Promise<CreateInstanceResponse>;
   /**
    * Create a Cloud Bigtable instance.
    *
@@ -610,8 +623,6 @@ export class Bigtable {
    *   const apiResponse = data[2];
    * });
    */
-  createInstance(id: string, callback: CreateInstanceCallback): void;
-  createInstance(id: string, options: CreateInstanceOptions): Promise<CreateInstanceResponse>;
   createInstance(id: string, optionsOrCallback?: CreateInstanceOptions|CreateInstanceCallback, cb?: CreateInstanceCallback): void| Promise<CreateInstanceResponse> {
     const callback = typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const options = typeof optionsOrCallback === 'object' && optionsOrCallback ? optionsOrCallback : {};
@@ -658,6 +669,11 @@ export class Bigtable {
     );
   }
 
+  // * GOOD
+  getInstances(): Promise<GetInstanceResponse>;
+  getInstances(callback: GetInstanceCallback): void;
+  getInstances(gaxOptions: CallOptions): Promise<GetInstanceResponse>;
+  getInstances(gaxOptions: CallOptions, callback: GetInstanceCallback): void;
   /**
    * Get Instance objects for all of your Cloud Bigtable instances.
    *
@@ -686,9 +702,6 @@ export class Bigtable {
    *   const instances = data[0];
    * });
    */
-  getInstances(): Promise<GetInstanceResponse>;
-  getInstances(callback: GetInstanceCallback): void;
-  getInstances(gaxOptions: CallOptions): Promise<GetInstanceResponse>;
   getInstances(gaxOptionsOrCallback?: CallOptions|GetInstanceCallback, cb?: GetInstanceCallback): void|Promise<GetInstanceResponse> {
     const callback = typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions = typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ? gaxOptionsOrCallback : {};
@@ -721,6 +734,7 @@ export class Bigtable {
     );
   }
 
+  // * GOOD
   /**
    * Get a reference to a Cloud Bigtable instance.
    *
@@ -731,6 +745,8 @@ export class Bigtable {
     return new Instance(this, name);
   }
 
+  request(config: RequestConfig): Promise<unknown>;
+  request(config: RequestConfig, callback: Function): void;
   /**
    * Funnel all API requests through this method, to be sure we have a project ID.
    *
@@ -740,7 +756,7 @@ export class Bigtable {
    * @param {object} config.reqOpts Request options.
    * @param {function} [callback] Callback function.
    */
-  request(config: RequestConfig, callback: Function) {
+  request(config: RequestConfig, callback?: Function): void|Promise<unknown> {
     const isStreamMode = !callback;
 
     //tslint:disable-next-line: no-any
@@ -798,7 +814,7 @@ export class Bigtable {
     function makeRequestCallback() {
       prepareGaxRequest((err?: Error|null, requestFn?: Function|null) => {
         if (err) {
-          callback(err);
+          callback!(err);
           return;
         }
 
