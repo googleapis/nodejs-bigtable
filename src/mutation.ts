@@ -21,6 +21,12 @@ import * as Long from 'long';
 
 import {google as btTypes} from '../proto/bigtable';
 
+export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
+
+export type EncodeSetCellResponse = {
+  setCell: ISetCell
+}|JsonObj;
+
 export interface ConvertFromBytesOptions {
   userOptions?: {decode?: boolean; encoding?: string;};
   isPossibleNumber?: boolean;
@@ -35,10 +41,6 @@ export interface EncodeDeleteDataResponse {
   deleteFromColumn?:
       {familyName?: string; columnQualifier?: Metadata; timeRange?: TimeRange;};
 }
-export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
-export type EncodeSetCellResponse = {
-  setCell: ISetCell
-}|JsonObj;
 export interface JsonObj {
   [k: string]: string;
 }
