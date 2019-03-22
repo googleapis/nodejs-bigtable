@@ -109,8 +109,8 @@ export interface Options extends ClientConfig {
   BigtableTableAdminClient?: Client;
 }
 
-export type CreateInstanceResponse = [IInstance, GaxOperation, LongrunningIOperation];
-export type GetInstanceResponse = [IInstance[], ListInstancesResponse];
+export type CreateInstanceResponse = [ManualIInstance, GaxOperation, LongrunningIOperation];
+export type GetInstanceResponse = [ManualIInstance[], ListInstancesResponse];
 
 export type ICluster = btTypes.bigtable.admin.v2.ICluster;
 export type LongrunningIOperation = btTypes.longrunning.IOperation;
@@ -152,10 +152,9 @@ export interface CreateInstanceRequest {
   parent?: string|null;
   instanceId?: string|null;
   clusters?: ({[k: string]: ICluster}|null);
-  instance?: IInstance|null;
+  instance?: ManualIInstance|null;
 }
-//tslint:disable-next-line interface-name
-export interface IInstance {
+export interface ManualIInstance {
   name?: string|null;
   displayName?: string|null;
   state?: InstanceState|null;
