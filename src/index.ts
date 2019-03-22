@@ -42,7 +42,6 @@ import {Operation as GaxOperation} from 'google-gax';
 import {promisifyAll} from '@google-cloud/promisify';
 import {ChannelCredentials, CallOptions} from 'grpc';
 import * as extend from 'extend';
-import {ProtoOpts} from '@google-cloud/common-grpc/build/src/service';
 import {Service} from '@google-cloud/common-grpc';
 import {GoogleAuth} from 'google-auth-library';
 import * as gax from 'google-gax';
@@ -51,7 +50,8 @@ import * as through from 'through2';
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Instance} from './instance';
-import {google as btAdminClient} from '../proto/bigtable';
+import {google as btTypes} from '../proto/bigtable';
+import {Duplex} from 'stream';
 
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -90,7 +90,7 @@ const {grpc} = new gax.GrpcClient();
  * @property {Constructor} [promise] Custom promise module to use instead of
  *     native Promises.
  */
-export interface Client { // ! Index signature
+export interface Client {
   servicePath?: string;
   sslCreds?: ChannelCredentials;
   port?: number;
@@ -112,11 +112,11 @@ export interface Options extends ClientConfig {
 export type CreateInstanceResponse = [IInstance, GaxOperation, LongrunningIOperation];
 export type GetInstanceResponse = [IInstance[], ListInstancesResponse];
 
-export type ICluster = btAdminClient.bigtable.admin.v2.ICluster;
-export type LongrunningIOperation = btAdminClient.longrunning.IOperation;
-export type ListInstancesResponse = btAdminClient.bigtable.admin.v2.IListInstancesResponse;
-export type InstanceState = btAdminClient.bigtable.admin.v2.Instance.State;
-export type InstanceType = btAdminClient.bigtable.admin.v2.Instance.Type;
+export type ICluster = btTypes.bigtable.admin.v2.ICluster;
+export type LongrunningIOperation = btTypes.longrunning.IOperation;
+export type ListInstancesResponse = btTypes.bigtable.admin.v2.IListInstancesResponse;
+export type InstanceState = btTypes.bigtable.admin.v2.Instance.State;
+export type InstanceType = btTypes.bigtable.admin.v2.Instance.Type;
 
 export interface CreateInstanceCallback {
   (instance?: Instance, operation?: GaxOperation, apiResponse?: LongrunningIOperation): void;
@@ -162,10 +162,15 @@ export interface IInstance {
   type?: InstanceType|null;
   labels?: {[k: string]: string}|null|string;
 }
-export interface RequestConfig extends ProtoOpts {
-  gaxOpts: CallOptions;
-  reqOpts: {};
+export interface RequestConfig {
   client: string;
+  method: string;
+  reqOpts: {};
+  gaxOpts: CallOptions;
+  service?: string;
+  timeout?: number;
+  retryOpts?: {};
+  stream?: Duplex;
 }
 
 /**
