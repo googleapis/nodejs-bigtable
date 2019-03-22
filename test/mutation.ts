@@ -391,7 +391,7 @@ describe('Bigtable/Mutation', function() {
         key: 'a',
         method: 'b',
         data: 'c',
-      };
+      } as Mutation;
 
       const mutation = Mutation.parse(fakeMutationData);
 
