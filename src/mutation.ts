@@ -26,6 +26,16 @@ export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
 export type EncodeSetCellResponse = {
   setCell: ISetCell
 }|JsonObj;
+export interface EncodeDeleteDataResponse {
+  deleteFromRow?: {};
+  deleteFromFamily?: {};
+  deleteFromColumn?:
+      {familyName?: string; columnQualifier?: Metadata; timeRange?: TimeRange;};
+}
+export interface ParseColumnNameResponse {
+  family: string|null;
+  qualifier: string|null;
+}
 
 export interface ConvertFromBytesOptions {
   userOptions?: {decode?: boolean; encoding?: string;};
@@ -35,12 +45,7 @@ export interface EncodeDeleteData {
   column: string;
   time: {start: Date; end: Date;};
 }
-export interface EncodeDeleteDataResponse {
-  deleteFromRow?: {};
-  deleteFromFamily?: {};
-  deleteFromColumn?:
-      {familyName?: string; columnQualifier?: Metadata; timeRange?: TimeRange;};
-}
+
 export interface JsonObj {
   [k: string]: string;
 }
@@ -54,10 +59,7 @@ export interface TimeRange {
   startTimestampMicros?: number;
   endTimestampMicros?: number;
 }
-export interface ParseColumnNameResponse {
-  family: string|null;
-  qualifier: string|null;
-}
+
 
 /**
  * Formats table mutations to be in the expected proto format.
@@ -199,7 +201,6 @@ export class Mutation {
    * @private
    */
   static encodeSetCell(data: Metadata): EncodeSetCellResponse[] {
-    // // tslint:disable-next-line no-any
     const mutations: EncodeSetCellResponse[] = [];
 
     Object.keys(data).forEach(familyName => {
@@ -274,7 +275,7 @@ export class Mutation {
    *
    * //-
    * // It's also possible to specify a time range when deleting specific
-   * columns.
+   * // columns.
    * //-
    * Mutation.encodeDelete([
    *   {
