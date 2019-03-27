@@ -15,15 +15,15 @@
  */
 
 import * as assert from 'assert';
-import * as uuid from 'uuid';
 import Q from 'p-queue';
+import * as uuid from 'uuid';
 
 import {Bigtable} from '../src';
 import {AppProfile} from '../src/app-profile.js';
 import {Cluster} from '../src/cluster.js';
-import {Table} from '../src/table.js';
 import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
+import {Table} from '../src/table.js';
 
 const PREFIX = 'gcloud-tests-';
 
@@ -60,20 +60,17 @@ describe('Bigtable', () => {
 
   after(async () => {
     const [instances] = await (bigtable as any).getInstances();
-    const testInstances = instances
-      .filter(i => i.id.match(PREFIX))
-      .filter(i => {
-        const timeCreated = i.metadata.labels.time_created;
-        // Only delete stale resources.
-        const oneHourAgo = new Date(Date.now() - 3600000);
-        return !timeCreated || timeCreated <= oneHourAgo;
-      });
+    const testInstances =
+        instances.filter(i => i.id.match(PREFIX)).filter(i => {
+          const timeCreated = i.metadata.labels.time_created;
+          // Only delete stale resources.
+          const oneHourAgo = new Date(Date.now() - 3600000);
+          return !timeCreated || timeCreated <= oneHourAgo;
+        });
     const q = new Q({concurrency: 5});
-    await Promise.all(
-      testInstances.map(instance => {
-        q.add(() => instance.delete());
-      })
-    );
+    await Promise.all(testInstances.map(instance => {
+      q.add(() => instance.delete());
+    }));
   });
 
   describe('instances', () => {
@@ -140,9 +137,8 @@ describe('Bigtable', () => {
     it('should get the app profiles metadata', async () => {
       const [metadata] = await APP_PROFILE.getMetadata();
       assert.strictEqual(
-        metadata.name,
-        APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId)
-      );
+          metadata.name,
+          APP_PROFILE.name.replace('{{projectId}}', bigtable.projectId));
     });
 
     it('should update an app profile', async () => {
@@ -155,9 +151,7 @@ describe('Bigtable', () => {
       await APP_PROFILE.setMetadata(options);
       const [updatedAppProfile] = await APP_PROFILE.get();
       assert.strictEqual(
-        updatedAppProfile.metadata.description,
-        options.description
-      );
+          updatedAppProfile.metadata.description, options.description);
       assert.deepStrictEqual(updatedAppProfile.metadata.singleClusterRouting, {
         clusterId: CLUSTER_ID,
         allowTransactionalWrites: true,
@@ -212,15 +206,16 @@ describe('Bigtable', () => {
     it('should retrieve a list of tables in stream mode', done => {
       const tables: any[] = [];
       INSTANCE.getTablesStream()
-        .on('error', done)
-        .on('data', table => {
-          assert(table instanceof Table);
-          tables.push(table);
-        })
-        .on('end', () => {
-          assert(tables.length > 0);
-          done();
-        });
+          .on('error', done)
+          .on('data',
+              table => {
+                assert(table instanceof Table);
+                tables.push(table);
+              })
+          .on('end', () => {
+            assert(tables.length > 0);
+            done();
+          });
     });
 
     it('should check if a table exists', async () => {
@@ -247,9 +242,8 @@ describe('Bigtable', () => {
     it('should get the tables metadata', async () => {
       const [metadata] = await TABLE.getMetadata();
       assert.strictEqual(
-        metadata.name,
-        TABLE.name.replace('{{projectId}}', bigtable.projectId)
-      );
+          metadata.name,
+          TABLE.name.replace('{{projectId}}', bigtable.projectId));
     });
 
     it('should create a table with column family data', async () => {
@@ -400,7 +394,7 @@ describe('Bigtable', () => {
           nanos: 10000,
         },
       };
-      const [metadata] = await FAMILY.setMetadata({rule: rule});
+      const [metadata] = await FAMILY.setMetadata({rule});
       const maxAge = metadata.gcRule.maxAge;
       assert.strictEqual(maxAge.seconds, rule.age.seconds.toString());
       assert.strictEqual(maxAge.nanas, rule.age.nanas);
@@ -570,15 +564,16 @@ describe('Bigtable', () => {
       it('should get rows via stream', done => {
         const rows: any = [];
         TABLE.createReadStream()
-          .on('error', done)
-          .on('data', row => {
-            assert(row instanceof Row);
-            rows.push(row);
-          })
-          .on('end', () => {
-            assert.strictEqual(rows.length, 4);
-            done();
-          });
+            .on('error', done)
+            .on('data',
+                row => {
+                  assert(row instanceof Row);
+                  rows.push(row);
+                })
+            .on('end', () => {
+              assert.strictEqual(rows.length, 4);
+              done();
+            });
       });
 
       it('should fetch an individual row', async () => {
@@ -638,14 +633,15 @@ describe('Bigtable', () => {
       it('should get sample row keys via stream', done => {
         const keys: any = [];
         TABLE.sampleRowKeysStream()
-          .on('error', done)
-          .on('data', rowKey => {
-            keys.push(rowKey);
-          })
-          .on('end', () => {
-            assert(keys.length > 0);
-            done();
-          });
+            .on('error', done)
+            .on('data',
+                rowKey => {
+                  keys.push(rowKey);
+                })
+            .on('end', () => {
+              assert(keys.length > 0);
+              done();
+            });
       });
 
       it('should end stream early', async () => {
@@ -681,15 +677,16 @@ describe('Bigtable', () => {
         const rows: any = [];
         await new Promise((resolve, reject) => {
           const stream = TABLE.createReadStream()
-            .on('error', reject)
-            .on('data', row => {
-              rows.push(row);
-              stream.end();
-            })
-            .on('end', () => {
-              assert.strictEqual(rows.length, 1);
-              resolve();
-            });
+                             .on('error', reject)
+                             .on('data',
+                                 row => {
+                                   rows.push(row);
+                                   stream.end();
+                                 })
+                             .on('end', () => {
+                               assert.strictEqual(rows.length, 1);
+                               resolve();
+                             });
         });
       });
 

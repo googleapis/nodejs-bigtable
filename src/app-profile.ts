@@ -18,8 +18,8 @@ import {promisifyAll} from '@google-cloud/promisify';
 import * as is from 'is';
 import snakeCase = require('lodash.snakecase');
 import {Cluster} from './cluster';
-import { Bigtable } from '.';
-import { Instance } from './instance';
+import {Bigtable} from '.';
+import {Instance} from './instance';
 
 /**
  * Create an app profile object to interact with your app profile.
@@ -50,12 +50,9 @@ export class AppProfile {
       if (id.startsWith(`${instance.name}/appProfiles/`)) {
         name = id;
       } else {
-        throw new Error(
-          `AppProfile id '${id}' is not formatted correctly.
+        throw new Error(`AppProfile id '${id}' is not formatted correctly.
 Please use the format 'my-app-profile' or '${
-            instance.name
-          }/appProfiles/my-app-profile'.`
-        );
+            instance.name}/appProfiles/my-app-profile'.`);
       }
     } else {
       name = `${instance.name}/appProfiles/${id}`;
@@ -111,12 +108,11 @@ Please use the format 'my-app-profile' or '${
         };
         if (is.boolean(options.allowTransactionalWrites)) {
           appProfile.singleClusterRouting.allowTransactionalWrites =
-            options.allowTransactionalWrites;
+              options.allowTransactionalWrites;
         }
       } else {
         throw new Error(
-          'An app profile routing policy can only contain "any" or a `Cluster`.'
-        );
+            'An app profile routing policy can only contain "any" or a `Cluster`.');
       }
     }
 
@@ -132,7 +128,8 @@ Please use the format 'my-app-profile' or '${
    *
    * @param {object} [options] See {@link Instance#createAppProfile}.
    *
-   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * @example
+   * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_create_app_profile
    */
   create(options, callback) {
@@ -156,7 +153,8 @@ Please use the format 'my-app-profile' or '${
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * @example
+   * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_delete_app_profile
    */
   delete(options, callback) {
@@ -174,14 +172,13 @@ Please use the format 'my-app-profile' or '${
     }
 
     this.bigtable.request(
-      {
-        client: 'BigtableInstanceAdminClient',
-        method: 'deleteAppProfile',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      callback
-    );
+        {
+          client: 'BigtableInstanceAdminClient',
+          method: 'deleteAppProfile',
+          reqOpts,
+          gaxOpts: options.gaxOptions,
+        },
+        callback);
   }
 
   /**
@@ -194,7 +191,8 @@ Please use the format 'my-app-profile' or '${
    *     request.
    * @param {boolean} callback.exists Whether the app profile exists or not.
    *
-   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * @example
+   * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_exists_app_profile
    */
   exists(gaxOptions, callback) {
@@ -224,7 +222,8 @@ Please use the format 'my-app-profile' or '${
    * @param {object} [gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    *
-   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * @example
+   * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_get_app_profile
    */
   get(gaxOptions, callback) {
@@ -249,7 +248,8 @@ Please use the format 'my-app-profile' or '${
    * @param {object} callback.metadata The metadata.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * @example
+   * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_app_profile_get_meta
    */
   getMetadata(gaxOptions, callback) {
@@ -259,22 +259,21 @@ Please use the format 'my-app-profile' or '${
     }
 
     this.bigtable.request(
-      {
-        client: 'BigtableInstanceAdminClient',
-        method: 'getAppProfile',
-        reqOpts: {
-          name: this.name,
+        {
+          client: 'BigtableInstanceAdminClient',
+          method: 'getAppProfile',
+          reqOpts: {
+            name: this.name,
+          },
+          gaxOpts: gaxOptions,
         },
-        gaxOpts: gaxOptions,
-      },
-      (...args) => {
-        if (args[1]) {
-          this.metadata = args[1];
-        }
+        (...args) => {
+          if (args[1]) {
+            this.metadata = args[1];
+          }
 
-        callback(...args);
-      }
-    );
+          callback(...args);
+        });
   }
 
   /**
@@ -288,7 +287,8 @@ Please use the format 'my-app-profile' or '${
    * @param {?error} callback.err An error returned while making this request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/app-profile.js</caption>
+   * @example
+   * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_app_profile_set_meta
    */
   setMetadata(metadata, gaxOptions, callback) {
@@ -323,14 +323,13 @@ Please use the format 'my-app-profile' or '${
     }
 
     this.bigtable.request(
-      {
-        client: 'BigtableInstanceAdminClient',
-        method: 'updateAppProfile',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      callback
-    );
+        {
+          client: 'BigtableInstanceAdminClient',
+          method: 'updateAppProfile',
+          reqOpts,
+          gaxOpts: gaxOptions,
+        },
+        callback);
   }
 }
 

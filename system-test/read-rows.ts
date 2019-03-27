@@ -108,15 +108,13 @@ describe('Bigtable/Table', () => {
           requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
             const convertedRowRange = {};
             Object.keys(range).forEach(
-              key => (convertedRowRange[key] = range[key].asciiSlice())
-            );
+                key => (convertedRowRange[key] = range[key].asciiSlice()));
             return convertedRowRange;
           });
         }
         if (reqOpts.rows && reqOpts.rows.rowKeys) {
-          requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys =>
-            rowKeys.asciiSlice()
-          );
+          requestOptions.rowKeys =
+              reqOpts.rows.rowKeys.map(rowKeys => rowKeys.asciiSlice());
         }
         if (reqOpts.rowsLimit) {
           requestOptions.rowsLimit = reqOpts.rowsLimit;
@@ -139,9 +137,9 @@ describe('Bigtable/Table', () => {
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.createReadStream(test.createReadStream_options)
-          .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
-          .on('end', () => (endCalled = true))
-          .on('error', err => (error = err));
+            .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
+            .on('end', () => (endCalled = true))
+            .on('error', err => (error = err));
         clock.runAll();
 
         if (test.error) {
@@ -153,10 +151,7 @@ describe('Bigtable/Table', () => {
         }
         assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
         assert.strictEqual(
-          responses.length,
-          0,
-          'not all the responses were used'
-        );
+            responses.length, 0, 'not all the responses were used');
         assert.deepStrictEqual(requestedOptions, test.request_options);
       });
     });

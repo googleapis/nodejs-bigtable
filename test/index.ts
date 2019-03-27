@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert';
 import * as common from '@google-cloud/common-grpc';
+import * as projectify from '@google-cloud/projectify';
+import * as promisify from '@google-cloud/promisify';
+import * as assert from 'assert';
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 import * as through from 'through2';
-import * as promisify from '@google-cloud/promisify';
-import * as projectify from '@google-cloud/projectify';
+
 import {Cluster} from '../src/cluster.js';
 import {Instance} from '../src/instance.js';
 
@@ -36,7 +37,7 @@ function fakeV2() {}
 let promisified = false;
 let replaceProjectIdTokenOverride;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll: function(Class, options) {
+  promisifyAll(Class, options) {
     if (Class.name !== 'Bigtable') {
       return;
     }
@@ -49,7 +50,7 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 const fakeReplaceProjectIdToken = Object.assign({}, projectify, {
-  replaceProjectIdToken: function(reqOpts) {
+  replaceProjectIdToken(reqOpts) {
     if (replaceProjectIdTokenOverride) {
       return replaceProjectIdTokenOverride.apply(null, arguments);
     }
@@ -64,10 +65,8 @@ function fakeGoogleAuth() {
 
 let retryRequestOverride;
 function fakeRetryRequest() {
-  return (retryRequestOverride || require('retry-request')).apply(
-    null,
-    arguments
-  );
+  return (retryRequestOverride || require('retry-request'))
+      .apply(null, arguments);
 }
 
 function createFake(Class) {
@@ -153,18 +152,16 @@ describe('Bigtable', function() {
 
       googleAuthOverride = function(options_) {
         assert.deepStrictEqual(
-          options_,
-          Object.assign(
-            {
-              libName: 'gccl',
-              libVersion: PKG.version,
-              scopes: EXPECTED_SCOPES,
-              'grpc.max_send_message_length': -1,
-              'grpc.max_receive_message_length': -1,
-            },
-            options
-          )
-        );
+            options_,
+            Object.assign(
+                {
+                  libName: 'gccl',
+                  libVersion: PKG.version,
+                  scopes: EXPECTED_SCOPES,
+                  'grpc.max_send_message_length': -1,
+                  'grpc.max_receive_message_length': -1,
+                },
+                options));
         return fakeGoogleAuthInstance;
       };
 
@@ -195,29 +192,26 @@ describe('Bigtable', function() {
 
       assert.deepStrictEqual(bigtable.options, {
         BigtableClient: Object.assign(
-          {
-            servicePath: 'bigtable.googleapis.com',
-            port: 443,
-            sslCreds: undefined,
-          },
-          defaultOptions
-        ),
+            {
+              servicePath: 'bigtable.googleapis.com',
+              port: 443,
+              sslCreds: undefined,
+            },
+            defaultOptions),
         BigtableInstanceAdminClient: Object.assign(
-          {
-            servicePath: 'bigtableadmin.googleapis.com',
-            port: 443,
-            sslCreds: undefined,
-          },
-          defaultOptions
-        ),
+            {
+              servicePath: 'bigtableadmin.googleapis.com',
+              port: 443,
+              sslCreds: undefined,
+            },
+            defaultOptions),
         BigtableTableAdminClient: Object.assign(
-          {
-            servicePath: 'bigtableadmin.googleapis.com',
-            port: 443,
-            sslCreds: undefined,
-          },
-          defaultOptions
-        ),
+            {
+              servicePath: 'bigtableadmin.googleapis.com',
+              port: 443,
+              sslCreds: undefined,
+            },
+            defaultOptions),
       });
     });
 
@@ -237,35 +231,30 @@ describe('Bigtable', function() {
       const bigtable = new Bigtable(options);
 
       assert.strictEqual(
-        bigtable.customEndpoint,
-        process.env.BIGTABLE_EMULATOR_HOST
-      );
+          bigtable.customEndpoint, process.env.BIGTABLE_EMULATOR_HOST);
 
       assert.deepStrictEqual(bigtable.options, {
         BigtableClient: Object.assign(
-          {
-            servicePath: 'override',
-            port: 8080,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+            {
+              servicePath: 'override',
+              port: 8080,
+              sslCreds: grpc.credentials.createInsecure(),
+            },
+            options),
         BigtableInstanceAdminClient: Object.assign(
-          {
-            servicePath: 'override',
-            port: 8080,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+            {
+              servicePath: 'override',
+              port: 8080,
+              sslCreds: grpc.credentials.createInsecure(),
+            },
+            options),
         BigtableTableAdminClient: Object.assign(
-          {
-            servicePath: 'override',
-            port: 8080,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+            {
+              servicePath: 'override',
+              port: 8080,
+              sslCreds: grpc.credentials.createInsecure(),
+            },
+            options),
       });
     });
 
@@ -287,29 +276,26 @@ describe('Bigtable', function() {
 
       assert.deepStrictEqual(bigtable.options, {
         BigtableClient: Object.assign(
-          {
-            servicePath: 'customEndpoint',
-            port: 9090,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+            {
+              servicePath: 'customEndpoint',
+              port: 9090,
+              sslCreds: grpc.credentials.createInsecure(),
+            },
+            options),
         BigtableInstanceAdminClient: Object.assign(
-          {
-            servicePath: 'customEndpoint',
-            port: 9090,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+            {
+              servicePath: 'customEndpoint',
+              port: 9090,
+              sslCreds: grpc.credentials.createInsecure(),
+            },
+            options),
         BigtableTableAdminClient: Object.assign(
-          {
-            servicePath: 'customEndpoint',
-            port: 9090,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+            {
+              servicePath: 'customEndpoint',
+              port: 9090,
+              sslCreds: grpc.credentials.createInsecure(),
+            },
+            options),
       });
     });
 
@@ -371,9 +357,7 @@ describe('Bigtable', function() {
 
       bigtable.request = function(config) {
         assert.strictEqual(
-          config.reqOpts.instance.displayName,
-          options.displayName
-        );
+            config.reqOpts.instance.displayName, options.displayName);
         done();
       };
 
@@ -658,7 +642,7 @@ describe('Bigtable', function() {
         replaceProjectIdTokenOverride = sinon.spy();
 
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind: function() {
+          bind() {
             assert(!replaceProjectIdTokenOverride.called);
             setImmediate(done);
 
@@ -694,7 +678,7 @@ describe('Bigtable', function() {
         };
 
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind: function(gaxClient, reqOpts) {
+          bind(gaxClient, reqOpts) {
             assert.strictEqual(reqOpts, replacedReqOpts);
 
             setImmediate(done);
@@ -706,33 +690,34 @@ describe('Bigtable', function() {
         bigtable.request(CONFIG, assert.ifError);
       });
 
-      it('should not replace token when project ID not detected', function(done) {
-        replaceProjectIdTokenOverride = function() {
-          throw new Error('Should not have tried to replace token.');
-        };
+      it('should not replace token when project ID not detected',
+         function(done) {
+           replaceProjectIdTokenOverride = function() {
+             throw new Error('Should not have tried to replace token.');
+           };
 
-        bigtable.getProjectId_ = function(callback) {
-          callback(null, PROJECT_ID_TOKEN);
-        };
+           bigtable.getProjectId_ = function(callback) {
+             callback(null, PROJECT_ID_TOKEN);
+           };
 
-        bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind: function(gaxClient, reqOpts) {
-            assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
+           bigtable.api[CONFIG.client][CONFIG.method] = {
+             bind(gaxClient, reqOpts) {
+               assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
 
-            setImmediate(done);
+               setImmediate(done);
 
-            return common.util.noop;
-          },
-        };
+               return common.util.noop;
+             },
+           };
 
-        bigtable.request(CONFIG, assert.ifError);
-      });
+           bigtable.request(CONFIG, assert.ifError);
+         });
     });
 
     describe('makeRequestCallback', function() {
       it('should prepare the request', function(done) {
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind: function(gaxClient, reqOpts, gaxOpts) {
+          bind(gaxClient, reqOpts, gaxOpts) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
             assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             assert.strictEqual(gaxOpts, CONFIG.gaxOpts);
@@ -763,7 +748,7 @@ describe('Bigtable', function() {
       it('should execute the request function', function() {
         bigtable.api[CONFIG.client][CONFIG.method] = function(done) {
           const callback: Function = [].slice.call(arguments).pop()!;
-          callback(null, done); // so it ends the test
+          callback(null, done);  // so it ends the test
         };
 
         bigtable.request(CONFIG, assert.ifError);
@@ -777,7 +762,7 @@ describe('Bigtable', function() {
         GAX_STREAM = through();
 
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind: function() {
+          bind() {
             return function() {
               return GAX_STREAM;
             };
@@ -790,9 +775,8 @@ describe('Bigtable', function() {
           assert.strictEqual(config.currentRetryAttempt, 0);
           assert.strictEqual(config.objectMode, true);
           assert.strictEqual(
-            config.shouldRetryFn,
-            (common.Service as any).shouldRetryRequest_
-          );
+              config.shouldRetryFn,
+              (common.Service as any).shouldRetryRequest_);
           done();
         };
 
@@ -810,7 +794,7 @@ describe('Bigtable', function() {
 
       it('should prepare the request once reading', function(done) {
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind: function(gaxClient, reqOpts, gaxOpts) {
+          bind(gaxClient, reqOpts, gaxOpts) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
             assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             assert.strictEqual(gaxOpts, CONFIG.gaxOpts);
@@ -876,7 +860,7 @@ describe('Bigtable', function() {
   describe('getProjectId_', function() {
     beforeEach(function() {
       bigtable.auth = {
-        getProjectId: function(callback) {
+        getProjectId(callback) {
           callback(null, PROJECT_ID);
         },
       };
