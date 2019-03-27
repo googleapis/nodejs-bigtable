@@ -284,7 +284,7 @@ export class Row {
         const column = Mutation.parseColumnName(rule.column);
         const ruleData: any = {
           familyName: column.family,
-          columnQualifier: Mutation.convertToBytes(column.qualifier),
+          columnQualifier: Mutation.convertToBytes(column.qualifier!),
         };
 
         if (rule.append) {

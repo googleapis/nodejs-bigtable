@@ -14,52 +14,53 @@
  * limitations under the License.
  */
 
-import {Metadata} from '@google-cloud/common';
 import * as arrify from 'arrify';
 import * as is from 'is';
 import * as Long from 'long';
 
 import {google as btTypes} from '../proto/bigtable';
 
+export type IMutation = btTypes.bigtable.v2.IMutation;
+export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
 export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
 
-export type EncodeSetCellResponse = {
-  setCell: ISetCell
-}|JsonObj;
-export interface EncodeDeleteDataResponse {
-  deleteFromRow?: {};
-  deleteFromFamily?: {};
-  deleteFromColumn?:
-      {familyName?: string; columnQualifier?: Metadata; timeRange?: TimeRange;};
-}
-export interface ParseColumnNameResponse {
+export type Bytes = string|Buffer;
+export type Data = Value|Value[]|MutationSettingsObj;
+export type JsonObj = {
+  [k: string]: string|JsonObj
+};
+export type Value = string|number|boolean;
+
+export interface ParsedColumn {
   family: string|null;
   qualifier: string|null;
 }
-
 export interface ConvertFromBytesOptions {
   userOptions?: {decode?: boolean; encoding?: string;};
   isPossibleNumber?: boolean;
 }
-export interface EncodeDeleteData {
-  column: string;
-  time: {start: Date; end: Date;};
-}
-
-export interface JsonObj {
-  [k: string]: string;
-}
 export interface MutationConstructorObj {
   key: string;
   method: string;
-  data: Metadata;
+  data: Data;
+}
+export interface MutationSettingsObj {
+  follows?: ValueObj;
+  column?: string;
+  time?: {start: Date|number; end: Date | number;};
 }
 export interface TimeRange {
   [k: string]: number|string|undefined;
   startTimestampMicros?: number;
   endTimestampMicros?: number;
 }
-
+export interface SetCellObj {
+  [k: string]: string|ISetCell|undefined;
+  setCell?: ISetCell;
+}
+export interface ValueObj {
+  [k: string]: Buffer|Value|ValueObj;
+}
 
 /**
  * Formats table mutations to be in the expected proto format.
@@ -81,7 +82,7 @@ export interface TimeRange {
 export class Mutation {
   key: string;
   method: string;
-  data: Metadata;
+  data: Data;
   constructor(mutation: MutationConstructorObj) {
     this.key = mutation.key;
     this.method = mutation.method;
@@ -101,9 +102,8 @@ export class Mutation {
    * @returns {string|number|buffer}
    * @private
    */
-  static convertFromBytes(
-      bytes: string|Buffer, options?: ConvertFromBytesOptions): string|number
-      |Buffer {
+  static convertFromBytes(bytes: Bytes, options?: ConvertFromBytesOptions):
+      Buffer|Value {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
       // tslint:disable-next-line no-any
@@ -130,17 +130,17 @@ export class Mutation {
    * @returns {buffer}
    * @private
    */
-  static convertToBytes(data: Metadata): Buffer|Metadata {
+  static convertToBytes(data: Buffer|Data): Buffer|Data {
     if (data instanceof Buffer) {
       return data;
     }
 
     if (is.number(data)) {
-      return Buffer.from(Long.fromNumber(data).toBytesBE());
+      return Buffer.from(Long.fromNumber(data as number).toBytesBE());
     }
 
     try {
-      return Buffer.from(data);
+      return Buffer.from(data as string);
     } catch (e) {
       return data;
     }
@@ -158,11 +158,11 @@ export class Mutation {
     const range: TimeRange = {};
 
     if (is.date(start)) {
-      range.startTimestampMicros = start.getTime() * 1000;
+      range.startTimestampMicros = (start as Date).getTime() * 1000;
     }
 
     if (is.date(end)) {
-      range.endTimestampMicros = end.getTime() * 1000;
+      range.endTimestampMicros = (end as Date).getTime() * 1000;
     }
 
     return range;
@@ -200,8 +200,8 @@ export class Mutation {
    * // ]
    * @private
    */
-  static encodeSetCell(data: Metadata): EncodeSetCellResponse[] {
-    const mutations: EncodeSetCellResponse[] = [];
+  static encodeSetCell(data: Data): SetCellObj[] {
+    const mutations: SetCellObj[] = [];
 
     Object.keys(data).forEach(familyName => {
       const family = data[familyName];
@@ -226,7 +226,7 @@ export class Mutation {
           columnQualifier: Mutation.convertToBytes(cellName),
           timestampMicros: timestamp,
           value: Mutation.convertToBytes(cell.value),
-        };
+        } as ISetCell;
 
         mutations.push({setCell});
       });
@@ -288,8 +288,7 @@ export class Mutation {
    * ]);
    * @private
    */
-  static encodeDelete(data?: Metadata): EncodeDeleteDataResponse
-      |EncodeDeleteDataResponse[] {
+  static encodeDelete(data?: Data|Data[]): IMutation[] {
     if (!data) {
       return [
         {
@@ -302,10 +301,11 @@ export class Mutation {
       if (is.string(mutation)) {
         mutation = {
           column: mutation,
-        };
+        } as MutationSettingsObj;
       }
 
-      const column = Mutation.parseColumnName(mutation.column);
+      const column =
+          Mutation.parseColumnName((mutation as MutationSettingsObj).column!);
 
       if (!column.qualifier) {
         return {
@@ -315,17 +315,19 @@ export class Mutation {
         };
       }
 
-      let timeRange;
+      let timeRange: TimeRange|undefined;
 
-      if (mutation.time) {
-        timeRange =
-            Mutation.createTimeRange(mutation.time.start, mutation.time.end);
+      if ((mutation as MutationSettingsObj).time) {
+        timeRange = Mutation.createTimeRange(
+            (mutation as MutationSettingsObj).time!.start as Date,
+            (mutation as MutationSettingsObj).time!.end as Date);
       }
 
       return {
         deleteFromColumn: {
           familyName: column.family!,
-          columnQualifier: Mutation.convertToBytes(column.qualifier),
+          columnQualifier: Mutation.convertToBytes(column.qualifier) as
+              Uint8Array,
           timeRange,
         },
       };
@@ -339,7 +341,7 @@ export class Mutation {
    * @returns {object}
    * @private
    */
-  static parse(mutation: Mutation): JsonObj {
+  static parse(mutation: Mutation): IMutateRowRequest {
     if (!(mutation instanceof Mutation)) {
       mutation = new Mutation(mutation);
     }
@@ -361,8 +363,8 @@ export class Mutation {
    * // }
    * @private
    */
-  static parseColumnName(column: string): ParseColumnNameResponse {
-    const parts = column.split(':');
+  static parseColumnName(columnName: string): ParsedColumn {
+    const parts = columnName.split(':');
 
     return {
       family: parts[0],
@@ -376,12 +378,11 @@ export class Mutation {
    * @returns {object}
    * @private
    */
-  toProto(): JsonObj {
-    // tslint:disable-next-line no-any
-    const mutation: any = {};
+  toProto(): IMutateRowRequest {
+    const mutation: IMutateRowRequest = {};
 
     if (this.key) {
-      mutation.rowKey = Mutation.convertToBytes(this.key);
+      mutation.rowKey = Mutation.convertToBytes(this.key) as Uint8Array;
     }
 
     if (this.method === Mutation.methods.INSERT) {

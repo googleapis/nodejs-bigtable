@@ -17,7 +17,8 @@
 import * as assert from 'assert';
 import * as Long from 'long';
 import * as sn from 'sinon';
-import {Mutation} from '../src/mutation.js';
+
+import {IMutateRowRequest, Mutation} from '../src/mutation.js';
 
 const sinon = sn.createSandbox();
 
@@ -115,7 +116,7 @@ describe('Bigtable/Mutation', function() {
     it('should pack numbers into int64 values', function() {
       const num = 10;
       const encoded = Mutation.convertToBytes(num);
-      const decoded = Long.fromBytes(encoded).toNumber();
+      const decoded = Long.fromBytes(encoded as any).toNumber();
 
       assert.strictEqual(num, decoded);
     });
@@ -372,7 +373,7 @@ describe('Bigtable/Mutation', function() {
   describe('parse', function() {
     let toProto;
     let toProtoCalled = false;
-    const fakeData = {a: 'a'};
+    const fakeData = {a: 'a'} as IMutateRowRequest;
 
     before(function() {
       toProto = Mutation.prototype.toProto;
