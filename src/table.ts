@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as arrify from 'arrify';
 import * as common from '@google-cloud/common-grpc';
 import {promisifyAll} from '@google-cloud/promisify';
+import * as arrify from 'arrify';
+
 const concat = require('concat-stream');
 import * as is from 'is';
 const pumpify = require('pumpify');
@@ -62,10 +63,8 @@ export class Table {
       if (id.startsWith(`${instance.name}/tables/`)) {
         name = id;
       } else {
-        throw new Error(
-          `Table id '${id}' is not formatted correctly.
-Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
-        );
+        throw new Error(`Table id '${id}' is not formatted correctly.
+Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
     } else {
       name = `${instance.name}/tables/${id}`;
@@ -88,7 +87,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *   'projects/my-project/zones/my-zone/instances/my-instance',
    *   'my-table'
    * );
-   * // 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
+   * //
+   * 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
    */
   static formatName_(instanceName, id) {
     if (id.includes('/')) {
@@ -164,10 +164,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
   /**
    * Create a column family.
    *
-   * Optionally you can send garbage collection rules and when creating a family.
-   * Garbage collection executes opportunistically in the background, so it's
-   * possible for reads to return a cell even if it matches the active expression
-   * for its family.
+   * Optionally you can send garbage collection rules and when creating a
+   * family. Garbage collection executes opportunistically in the background, so
+   * it's possible for reads to return a cell even if it matches the active
+   * expression for its family.
    *
    * @see [Garbage Collection Proto Docs]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/table/v1/bigtable_table_data.proto#L59}
    *
@@ -195,48 +195,48 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_create_family
    */
   createFamily(id, options, callback?) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
-
-    if (!id) {
-      throw new Error('An id is required to create a family.');
-    }
-
-    const mod: any = {
-      id: id,
-      create: {},
-    };
-
-    if (options.rule) {
-      mod.create.gcRule = Family.formatRule_(options.rule);
-    }
-
-    const reqOpts = {
-      name: this.name,
-      modifications: [mod],
-    };
-
-    this.bigtable.request(
+    if (is.function(options))
       {
-        client: 'BigtableTableAdminClient',
-        method: 'modifyColumnFamilies',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      (err, resp) => {
-        if (err) {
-          callback(err, null, resp);
-          return;
-        }
-
-        const family = this.family(id);
-        family.metadata = resp;
-
-        callback(null, family, resp);
+        callback = options;
+        options = {};
       }
-    );
+
+      if (!id) {
+        throw new Error('An id is required to create a family.');
+      }
+
+      const mod: any = {
+        id,
+        create: {},
+      };
+
+      if (options.rule) {
+        mod.create.gcRule = Family.formatRule_(options.rule);
+      }
+
+      const reqOpts = {
+        name: this.name,
+        modifications: [mod],
+      };
+
+      this.bigtable.request(
+          {
+            client: 'BigtableTableAdminClient',
+            method: 'modifyColumnFamilies',
+            reqOpts,
+            gaxOpts: options.gaxOptions,
+          },
+          (err, resp) => {
+            if (err) {
+              callback(err, null, resp);
+              return;
+            }
+
+            const family = this.family(id);
+            family.metadata = resp;
+
+            callback(null, family, resp);
+          });
   }
 
   /**
@@ -266,191 +266,189 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_table_readstream
    */
   createReadStream(options?) {
-    options = options || {};
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
+      options = options || {};
+      const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
 
-    let rowKeys;
-    const ranges = options.ranges || [];
-    let filter;
-    let rowsLimit;
-    let rowsRead = 0;
-    let numRequestsMade = 0;
+      let rowKeys;
+      const ranges = options.ranges || [];
+      let filter;
+      let rowsLimit;
+      let rowsRead = 0;
+      let numRequestsMade = 0;
 
-    if (options.start || options.end) {
-      if (options.ranges || options.prefix || options.prefixes) {
-        throw new Error(
-          'start/end should be used exclusively to ranges/prefix/prefixes.'
-        );
+      if (options.start || options.end) {
+        if (options.ranges || options.prefix || options.prefixes) {
+          throw new Error(
+              'start/end should be used exclusively to ranges/prefix/prefixes.');
+        }
+        ranges.push({
+          start: options.start,
+          end: options.end,
+        });
       }
-      ranges.push({
-        start: options.start,
-        end: options.end,
-      });
-    }
 
-    if (options.keys) {
-      rowKeys = options.keys;
-    }
-
-    if (options.prefix) {
-      if (options.ranges || options.start || options.end || options.prefixes) {
-        throw new Error(
-          'prefix should be used exclusively to ranges/start/end/prefixes.'
-        );
+      if (options.keys) {
+        rowKeys = options.keys;
       }
-      ranges.push(Table.createPrefixRange(options.prefix));
-    }
 
-    if (options.prefixes) {
-      if (options.ranges || options.start || options.end || options.prefix) {
-        throw new Error(
-          'prefixes should be used exclusively to ranges/start/end/prefix.'
-        );
+      if (options.prefix) {
+        if (options.ranges || options.start || options.end ||
+            options.prefixes) {
+          throw new Error(
+              'prefix should be used exclusively to ranges/start/end/prefixes.');
+        }
+        ranges.push(Table.createPrefixRange(options.prefix));
       }
-      options.prefixes.forEach(prefix => {
-        ranges.push(Table.createPrefixRange(prefix));
-      });
-    }
 
-    if (options.filter) {
-      filter = Filter.parse(options.filter);
-    }
+      if (options.prefixes) {
+        if (options.ranges || options.start || options.end || options.prefix) {
+          throw new Error(
+              'prefixes should be used exclusively to ranges/start/end/prefix.');
+        }
+        options.prefixes.forEach(prefix => {
+          ranges.push(Table.createPrefixRange(prefix));
+        });
+      }
 
-    if (options.limit) {
-      rowsLimit = options.limit;
-    }
+      if (options.filter) {
+        filter = Filter.parse(options.filter);
+      }
 
-    const userStream = through.obj();
-    let chunkTransformer;
+      if (options.limit) {
+        rowsLimit = options.limit;
+      }
 
-    const makeNewRequest = () => {
-      const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+      const userStream = through.obj();
+      let chunkTransformer;
 
-      const reqOpts: any = {
-        tableName: this.name,
-        appProfileId: this.bigtable.appProfileId,
-      };
+      const makeNewRequest = () => {
+        const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
+        chunkTransformer =
+            new ChunkTransformer({decode: options.decode} as any);
 
-      const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
-      };
-
-      if (lastRowKey) {
-        const lessThan = (lhs, rhs) => {
-          const lhsBytes = Mutation.convertToBytes(lhs);
-          const rhsBytes = Mutation.convertToBytes(rhs);
-          return lhsBytes.compare(rhsBytes) === -1;
+        const reqOpts: any = {
+          tableName: this.name,
+          appProfileId: this.bigtable.appProfileId,
         };
-        const greaterThan = (lhs, rhs) => lessThan(rhs, lhs);
-        const greaterThanOrEqualTo = (lhs, rhs) => !lessThan(rhs, lhs);
 
-        if (ranges.length === 0) {
-          ranges.push({
-            start: {
-              value: lastRowKey,
-              inclusive: false,
-            },
-          });
-        } else {
-          // Readjust and/or remove ranges based on previous valid row reads.
+        const retryOpts = {
+          currentRetryAttempt: numRequestsMade,
+        };
 
-          // Iterate backward since items may need to be removed.
-          for (let index = ranges.length - 1; index >= 0; index--) {
-            const range = ranges[index];
-            const startValue = is.object(range.start)
-              ? range.start.value
-              : range.start;
-            const endValue = is.object(range.end) ? range.end.value : range.end;
-            const isWithinStart =
-              !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
-            const isWithinEnd = !endValue || lessThan(lastRowKey, endValue);
-            if (isWithinStart) {
-              if (isWithinEnd) {
-                // The lastRowKey is within this range, adjust the start value.
-                range.start = {
-                  value: lastRowKey,
-                  inclusive: false,
-                };
-              } else {
-                // The lastRowKey is past this range, remove this range.
-                ranges.splice(index, 1);
+        if (lastRowKey) {
+          const lessThan = (lhs, rhs) => {
+            const lhsBytes = Mutation.convertToBytes(lhs);
+            const rhsBytes = Mutation.convertToBytes(rhs);
+            return lhsBytes.compare(rhsBytes) === -1;
+          };
+          const greaterThan = (lhs, rhs) => lessThan(rhs, lhs);
+          const greaterThanOrEqualTo = (lhs, rhs) => !lessThan(rhs, lhs);
+
+          if (ranges.length === 0) {
+            ranges.push({
+              start: {
+                value: lastRowKey,
+                inclusive: false,
+              },
+            });
+          } else {
+            // Readjust and/or remove ranges based on previous valid row reads.
+
+            // Iterate backward since items may need to be removed.
+            for (let index = ranges.length - 1; index >= 0; index--) {
+              const range = ranges[index];
+              const startValue = is.object(range.start) ? range.start.value :
+                                                          range.start;
+              const endValue = is.object(range.end) ? range.end.value :
+                                                      range.end;
+              const isWithinStart =
+                  !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
+              const isWithinEnd = !endValue || lessThan(lastRowKey, endValue);
+              if (isWithinStart) {
+                if (isWithinEnd) {
+                  // The lastRowKey is within this range, adjust the start
+                  // value.
+                  range.start = {
+                    value: lastRowKey,
+                    inclusive: false,
+                  };
+                } else {
+                  // The lastRowKey is past this range, remove this range.
+                  ranges.splice(index, 1);
+                }
               }
             }
           }
-        }
 
-        // Remove rowKeys already read.
-        if (rowKeys) {
-          rowKeys = rowKeys.filter(rowKey => greaterThan(rowKey, lastRowKey));
-          if (rowKeys.length === 0) {
-            rowKeys = null;
+          // Remove rowKeys already read.
+          if (rowKeys) {
+            rowKeys = rowKeys.filter(rowKey => greaterThan(rowKey, lastRowKey));
+            if (rowKeys.length === 0) {
+              rowKeys = null;
+            }
           }
         }
-      }
-      if (rowKeys || ranges.length) {
-        reqOpts.rows = {};
+        if (rowKeys || ranges.length) {
+          reqOpts.rows = {};
 
-        if (rowKeys) {
-          reqOpts.rows.rowKeys = rowKeys.map(Mutation.convertToBytes);
-        }
-
-        if (ranges.length) {
-          reqOpts.rows.rowRanges = ranges.map(range =>
-            Filter.createRange(range.start, range.end, 'Key')
-          );
-        }
-      }
-
-      if (filter) {
-        reqOpts.filter = filter;
-      }
-
-      if (rowsLimit) {
-        reqOpts.rowsLimit = rowsLimit - rowsRead;
-      }
-
-      const requestStream = this.bigtable.request({
-        client: 'BigtableClient',
-        method: 'readRows',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-        retryOpts,
-      });
-
-      requestStream.on('request', () => numRequestsMade++);
-
-      const rowStream = pumpify.obj([
-        requestStream,
-        chunkTransformer,
-        through.obj((rowData, enc, next) => {
-          if (chunkTransformer._destroyed || (userStream as any)._writableState.ended) {
-            return next();
+          if (rowKeys) {
+            reqOpts.rows.rowKeys = rowKeys.map(Mutation.convertToBytes);
           }
-          numRequestsMade = 0;
-          rowsRead++;
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
-        }),
-      ]);
 
-      rowStream.on('error', error => {
-        rowStream.unpipe(userStream);
-        if (
-          numRequestsMade <= maxRetries &&
-          RETRYABLE_STATUS_CODES.has(error.code)
-        ) {
-          makeNewRequest();
-        } else {
-          userStream.emit('error', error);
+          if (ranges.length) {
+            reqOpts.rows.rowRanges = ranges.map(
+                range => Filter.createRange(range.start, range.end, 'Key'));
+          }
         }
-      });
-      rowStream.pipe(userStream);
-    };
 
-    makeNewRequest();
-    return userStream;
+        if (filter) {
+          reqOpts.filter = filter;
+        }
+
+        if (rowsLimit) {
+          reqOpts.rowsLimit = rowsLimit - rowsRead;
+        }
+
+        const requestStream = this.bigtable.request({
+          client: 'BigtableClient',
+          method: 'readRows',
+          reqOpts,
+          gaxOpts: options.gaxOptions,
+          retryOpts,
+        });
+
+        requestStream.on('request', () => numRequestsMade++);
+
+        const rowStream = pumpify.obj([
+          requestStream,
+          chunkTransformer,
+          through.obj((rowData, enc, next) => {
+            if (chunkTransformer._destroyed ||
+                (userStream as any)._writableState.ended) {
+              return next();
+            }
+            numRequestsMade = 0;
+            rowsRead++;
+            const row = this.row(rowData.key);
+            row.data = rowData.data;
+            next(null, row);
+          }),
+        ]);
+
+        rowStream.on('error', error => {
+          rowStream.unpipe(userStream);
+          if (numRequestsMade <= maxRetries &&
+              RETRYABLE_STATUS_CODES.has(error.code)) {
+            makeNewRequest();
+          } else {
+            userStream.emit('error', error);
+          }
+        });
+        rowStream.pipe(userStream);
+      };
+
+      makeNewRequest();
+      return userStream;
   }
 
   /**
@@ -467,22 +465,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_del_table
    */
   delete(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+      if (is.fn(gaxOptions)) {
+        callback = gaxOptions;
+        gaxOptions = {};
+      }
 
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'deleteTable',
-        reqOpts: {
-          name: this.name,
-        },
-        gaxOpts: gaxOptions,
-      },
-      callback
-    );
+      this.bigtable.request(
+          {
+            client: 'BigtableTableAdminClient',
+            method: 'deleteTable',
+            reqOpts: {
+              name: this.name,
+            },
+            gaxOpts: gaxOptions,
+          },
+          callback);
   }
 
   /**
@@ -502,29 +499,29 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_del_rows
    */
   deleteRows(prefix, gaxOptions, callback?) {
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+    if (is.function(gaxOptions))
+        {
+          callback = gaxOptions;
+          gaxOptions = {};
+        }
 
-    if (!prefix || is.fn(prefix)) {
-      throw new Error('A prefix is required for deleteRows.');
-    }
+        if (!prefix || is.fn(prefix)) {
+          throw new Error('A prefix is required for deleteRows.');
+        }
 
-    const reqOpts = {
-      name: this.name,
-      rowKeyPrefix: Mutation.convertToBytes(prefix),
-    };
+        const reqOpts = {
+          name: this.name,
+          rowKeyPrefix: Mutation.convertToBytes(prefix),
+        };
 
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'dropRowRange',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      callback
-    );
+        this.bigtable.request(
+            {
+              client: 'BigtableTableAdminClient',
+              method: 'dropRowRange',
+              reqOpts,
+              gaxOpts: gaxOptions,
+            },
+            callback);
   }
 
   /**
@@ -541,29 +538,29 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_exists_table
    */
   exists(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
-    const reqOpts = {
-      view: 'name',
-      gaxOptions: gaxOptions,
-    };
-
-    this.getMetadata(reqOpts, err => {
-      if (err) {
-        if (err.code === 5) {
-          callback(null, false);
-          return;
+        if (is.fn(gaxOptions)) {
+          callback = gaxOptions;
+          gaxOptions = {};
         }
 
-        callback(err);
-        return;
-      }
+        const reqOpts = {
+          view: 'name',
+          gaxOptions,
+        };
 
-      callback(null, true);
-    });
+        this.getMetadata(reqOpts, err => {
+          if (err) {
+            if (err.code === 5) {
+              callback(null, false);
+              return;
+            }
+
+            callback(err);
+            return;
+          }
+
+          callback(null, true);
+        });
   }
 
   /**
@@ -578,10 +575,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * const family = table.family('my-family');
    */
   family(id: string) {
-    if (!id) {
-      throw new Error('A family id must be provided.');
-    }
-    return new Family(this, id);
+        if (!id) {
+          throw new Error('A family id must be provided.');
+        }
+        return new Family(this, id);
   }
 
   /**
@@ -605,27 +602,27 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_get_table
    */
   get(options, callback?) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
-
-    const autoCreate = !!options.autoCreate;
-    const gaxOptions = options.gaxOptions;
-
-    this.getMetadata({gaxOptions}, (err, metadata) => {
-      if (err) {
-        if (err.code === 5 && autoCreate) {
-          this.create({gaxOptions}, callback);
-          return;
+        if (is.fn(options)) {
+          callback = options;
+          options = {};
         }
 
-        callback(err);
-        return;
-      }
+        const autoCreate = !!options.autoCreate;
+        const gaxOptions = options.gaxOptions;
 
-      callback(null, this, metadata);
-    });
+        this.getMetadata({gaxOptions}, (err, metadata) => {
+          if (err) {
+            if (err.code === 5 && autoCreate) {
+              this.create({gaxOptions}, callback);
+              return;
+            }
+
+            callback(err);
+            return;
+          }
+
+          callback(null, this, metadata);
+        });
   }
 
   /**
@@ -642,25 +639,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_get_families
    */
   getFamilies(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+        if (is.fn(gaxOptions)) {
+          callback = gaxOptions;
+          gaxOptions = {};
+        }
 
-    this.getMetadata({gaxOptions}, (err, metadata) => {
-      if (err) {
-        callback(err);
-        return;
-      }
+        this.getMetadata({gaxOptions}, (err, metadata) => {
+          if (err) {
+            callback(err);
+            return;
+          }
 
-      const families = Object.keys(metadata.columnFamilies).map(familyId => {
-        const family = this.family(familyId);
-        family.metadata = metadata.columnFamilies[familyId];
-        return family;
-      });
+          const families =
+              Object.keys(metadata.columnFamilies).map(familyId => {
+                const family = this.family(familyId);
+                family.metadata = metadata.columnFamilies[familyId];
+                return family;
+              });
 
-      callback(null, families, metadata.columnFamilies);
-    });
+          callback(null, families, metadata.columnFamilies);
+        });
   }
 
   /**
@@ -692,25 +690,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * });
    */
   getReplicationStates(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-    const reqOpts = {
-      view: 'replication',
-      gaxOptions: gaxOptions,
-    };
-    this.getMetadata(reqOpts, (err, metadata) => {
-      if (err) {
-        callback(err);
-        return;
-      }
-      const clusterStates = new Map();
-      Object.keys(metadata.clusterStates).map(clusterId =>
-        clusterStates.set(clusterId, metadata.clusterStates[clusterId])
-      );
-      callback(null, clusterStates, metadata);
-    });
+        if (is.fn(gaxOptions)) {
+          callback = gaxOptions;
+          gaxOptions = {};
+        }
+        const reqOpts = {
+          view: 'replication',
+          gaxOptions,
+        };
+        this.getMetadata(reqOpts, (err, metadata) => {
+          if (err) {
+            callback(err);
+            return;
+          }
+          const clusterStates = new Map();
+          Object.keys(metadata.clusterStates)
+              .map(
+                  clusterId => clusterStates.set(
+                      clusterId, metadata.clusterStates[clusterId]));
+          callback(null, clusterStates, metadata);
+        });
   }
 
   /**
@@ -729,31 +728,31 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_get_table_meta
    */
   getMetadata(options, callback?) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+    if (is.function(options))
+          {
+            callback = options;
+            options = {};
+          }
 
-    const reqOpts = {
-      name: this.name,
-      view: (Table as any).VIEWS[options.view || 'unspecified'],
-    };
+          const reqOpts = {
+            name: this.name,
+            view: (Table as any).VIEWS[options.view || 'unspecified'],
+          };
 
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'getTable',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      (...args) => {
-        if (args[1]) {
-          this.metadata = args[1];
-        }
+          this.bigtable.request(
+              {
+                client: 'BigtableTableAdminClient',
+                method: 'getTable',
+                reqOpts,
+                gaxOpts: options.gaxOptions,
+              },
+              (...args) => {
+                if (args[1]) {
+                  this.metadata = args[1];
+                }
 
-        callback(...args);
-      }
-    );
+                callback(...args);
+              });
   }
 
   /**
@@ -775,18 +774,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_get_rows
    */
   getRows(options, callback?) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+    if (is.function(options))
+            {
+              callback = options;
+              options = {};
+            }
 
-    this.createReadStream(options)
-      .on('error', callback)
-      .pipe(
-        concat(rows => {
-          callback(null, rows);
-        })
-      );
+            this.createReadStream(options)
+                .on('error', callback)
+                .pipe(concat(rows => {
+                  callback(null, rows);
+                }));
   }
 
   /**
@@ -808,17 +806,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_insert_rows
    */
   insert(entries, gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+            if (is.fn(gaxOptions)) {
+              callback = gaxOptions;
+              gaxOptions = {};
+            }
 
-    entries = arrify(entries).map(entry => {
-      entry.method = Mutation.methods.INSERT;
-      return entry;
-    });
+            entries = arrify(entries).map(entry => {
+              entry.method = Mutation.methods.INSERT;
+              return entry;
+            });
 
-    return this.mutate(entries, {gaxOptions}, callback);
+            return this.mutate(entries, {gaxOptions}, callback);
   }
 
   /**
@@ -843,103 +841,114 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_mutate_rows
    */
   mutate(entries, options?, callback?) {
-    options = options || {};
+            options = options || {};
 
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
-
-    entries = arrify(entries).reduce((a, b) => a.concat(b), []);
-
-    let numRequestsMade = 0;
-
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
-    const pendingEntryIndices = new Set(entries.map((entry, index) => index));
-    const entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
-    const mutationErrorsByEntryIndex = new Map();
-
-    const onBatchResponse = err => {
-      if (err) {
-        // The error happened before a request was even made, don't retry.
-        callback(err);
-        return;
-      }
-      if (pendingEntryIndices.size !== 0 && numRequestsMade <= maxRetries) {
-        makeNextBatchRequest();
-        return;
-      }
-
-      if (mutationErrorsByEntryIndex.size !== 0) {
-        const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        err = new common.util.PartialFailureError({
-          errors: mutationErrors,
-        } as any);
-      }
-
-      callback(err);
-    };
-
-    const makeNextBatchRequest = () => {
-      const entryBatch = entries.filter((entry, index) => {
-        return pendingEntryIndices.has(index);
-      });
-
-      const reqOpts = {
-        tableName: this.name,
-        appProfileId: this.bigtable.appProfileId,
-        entries: options.rawMutation
-          ? entryBatch
-          : entryBatch.map(Mutation.parse),
-      };
-
-      const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
-      };
-
-      this.bigtable
-        .request({
-          client: 'BigtableClient',
-          method: 'mutateRows',
-          reqOpts,
-          gaxOpts: options.gaxOptions,
-          retryOpts,
-        })
-        .on('request', () => numRequestsMade++)
-        .on('error', err => {
-          if (numRequestsMade === 0) {
-            callback(err); // Likely a "projectId not detected" error.
-            return;
-          }
-
-          onBatchResponse(err);
-        })
-        .on('data', obj => {
-          obj.entries.forEach(entry => {
-            const originalEntry = entryBatch[entry.index];
-            const originalEntriesIndex = entryToIndex.get(originalEntry)!;
-
-            // Mutation was successful.
-            if (entry.status.code === 0) {
-              pendingEntryIndices.delete(originalEntriesIndex);
-              mutationErrorsByEntryIndex.delete(originalEntriesIndex);
-              return;
+            if (is.fn(options)) {
+              callback = options;
+              options = {};
             }
 
-            if (!RETRYABLE_STATUS_CODES.has(entry.status.code)) {
-              pendingEntryIndices.delete(originalEntriesIndex);
-            }
+            entries = arrify(entries).reduce((a, b) => a.concat(b), []);
 
-            const status = (common.Service as any).decorateStatus_(entry.status);
-            status.entry = originalEntry;
+            let numRequestsMade = 0;
 
-            mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
-          });
-        })
-        .on('end', onBatchResponse);
-    };
+            const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
+            const pendingEntryIndices =
+                new Set(entries.map((entry, index) => index));
+            const entryToIndex =
+                new Map(entries.map((entry, index) => [entry, index]));
+            const mutationErrorsByEntryIndex = new Map();
 
-    makeNextBatchRequest();
+            const onBatchResponse = err => {
+              if (err) {
+                // The error happened before a request was even made, don't
+                // retry.
+                callback(err);
+                return;
+              }
+              if (pendingEntryIndices.size !== 0 &&
+                  numRequestsMade <= maxRetries) {
+                makeNextBatchRequest();
+                return;
+              }
+
+              if (mutationErrorsByEntryIndex.size !== 0) {
+                const mutationErrors =
+                    Array.from(mutationErrorsByEntryIndex.values());
+                err = new common.util.PartialFailureError({
+                  errors: mutationErrors,
+                } as any);
+              }
+
+              callback(err);
+            };
+
+            const makeNextBatchRequest = () => {
+              const entryBatch = entries.filter((entry, index) => {
+                return pendingEntryIndices.has(index);
+              });
+
+              const reqOpts = {
+                tableName: this.name,
+                appProfileId: this.bigtable.appProfileId,
+                entries: options.rawMutation ? entryBatch :
+                                               entryBatch.map(Mutation.parse),
+              };
+
+              const retryOpts = {
+                currentRetryAttempt: numRequestsMade,
+              };
+
+              this.bigtable
+                  .request({
+                    client: 'BigtableClient',
+                    method: 'mutateRows',
+                    reqOpts,
+                    gaxOpts: options.gaxOptions,
+                    retryOpts,
+                  })
+                  .on('request', () => numRequestsMade++)
+                  .on('error',
+                      err => {
+                        if (numRequestsMade === 0) {
+                          callback(
+                              err);  // Likely a "projectId not detected" error.
+                          return;
+                        }
+
+                        onBatchResponse(err);
+                      })
+                  .on('data',
+                      obj => {
+                        obj.entries.forEach(entry => {
+                          const originalEntry = entryBatch[entry.index];
+                          const originalEntriesIndex =
+                              entryToIndex.get(originalEntry)!;
+
+                          // Mutation was successful.
+                          if (entry.status.code === 0) {
+                            pendingEntryIndices.delete(originalEntriesIndex);
+                            mutationErrorsByEntryIndex.delete(
+                                originalEntriesIndex);
+                            return;
+                          }
+
+                          if (!RETRYABLE_STATUS_CODES.has(entry.status.code)) {
+                            pendingEntryIndices.delete(originalEntriesIndex);
+                          }
+
+                          const status = (common.Service as any)
+                                             .decorateStatus_(entry.status);
+                          status.entry = originalEntry;
+
+                          mutationErrorsByEntryIndex.set(
+                              originalEntriesIndex, status);
+                        });
+                      })
+                  .on('end', onBatchResponse);
+            };
+
+            makeNextBatchRequest();
   }
 
   /**
@@ -954,11 +963,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * var row = table.row('lincoln');
    */
   row(key) {
-    if (!key) {
-      throw new Error('A row key must be provided.');
-    }
+            if (!key) {
+              throw new Error('A row key must be provided.');
+            }
 
-    return new Row(this, key);
+            return new Row(this, key);
   }
 
   /**
@@ -976,18 +985,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * region_tag:bigtable_sample_row_keys
    */
   sampleRowKeys(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+            if (is.fn(gaxOptions)) {
+              callback = gaxOptions;
+              gaxOptions = {};
+            }
 
-    this.sampleRowKeysStream(gaxOptions)
-      .on('error', callback)
-      .pipe(
-        concat(keys => {
-          callback(null, keys);
-        })
-      );
+            this.sampleRowKeysStream(gaxOptions)
+                .on('error', callback)
+                .pipe(concat(keys => {
+                  callback(null, keys);
+                }));
   }
 
   /**
@@ -1016,25 +1023,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    *   });
    */
   sampleRowKeysStream(gaxOptions?) {
-    const reqOpts = {
-      tableName: this.name,
-      appProfileId: this.bigtable.appProfileId,
-    };
+            const reqOpts = {
+              tableName: this.name,
+              appProfileId: this.bigtable.appProfileId,
+            };
 
-    return pumpify.obj([
-      this.bigtable.request({
-        client: 'BigtableClient',
-        method: 'sampleRowKeys',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      }),
-      through.obj((key, enc, next) => {
-        next(null, {
-          key: key.rowKey,
-          offset: key.offsetBytes,
-        });
-      }),
-    ]);
+            return pumpify.obj([
+              this.bigtable.request({
+                client: 'BigtableClient',
+                method: 'sampleRowKeys',
+                reqOpts,
+                gaxOpts: gaxOptions,
+              }),
+              through.obj((key, enc, next) => {
+                next(null, {
+                  key: key.rowKey,
+                  offset: key.offsetBytes,
+                });
+              }),
+            ]);
   }
 
   /**
@@ -1057,25 +1064,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * });
    */
   truncate(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+            if (is.fn(gaxOptions)) {
+              callback = gaxOptions;
+              gaxOptions = {};
+            }
 
-    const reqOpts = {
-      name: this.name,
-      deleteAllDataFromTable: true,
-    };
+            const reqOpts = {
+              name: this.name,
+              deleteAllDataFromTable: true,
+            };
 
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'dropRowRange',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      callback
-    );
+            this.bigtable.request(
+                {
+                  client: 'BigtableTableAdminClient',
+                  method: 'dropRowRange',
+                  reqOpts,
+                  gaxOpts: gaxOptions,
+                },
+                callback);
   }
 
   /**
@@ -1088,42 +1094,43 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {?Boolean} callback.resp Boolean value.
    */
   waitForReplication(callback) {
-    // handler for generated consistency-token
-    const tokenHandler = (err, token) => {
-      if (err) {
-        return callback(err);
-      }
+            // handler for generated consistency-token
+            const tokenHandler = (err, token) => {
+              if (err) {
+                return callback(err);
+              }
 
-      // set timeout for 10 minutes
-      const timeoutAfterTenMinutes = setTimeout(() => {
-        callback(null, false);
-      }, 10 * 60 * 1000);
+              // set timeout for 10 minutes
+              const timeoutAfterTenMinutes = setTimeout(() => {
+                callback(null, false);
+              }, 10 * 60 * 1000);
 
-      // method checks if retrial is required & init retrial with 5 sec delay
-      const retryIfNecessary = (err, res) => {
-        if (err) {
-          clearTimeout(timeoutAfterTenMinutes);
-          return callback(err);
-        }
+              // method checks if retrial is required & init retrial with 5 sec
+              // delay
+              const retryIfNecessary = (err, res) => {
+                if (err) {
+                  clearTimeout(timeoutAfterTenMinutes);
+                  return callback(err);
+                }
 
-        if (res === true) {
-          clearTimeout(timeoutAfterTenMinutes);
-          return callback(null, true);
-        }
+                if (res === true) {
+                  clearTimeout(timeoutAfterTenMinutes);
+                  return callback(null, true);
+                }
 
-        setTimeout(launchCheck, 5000);
-      };
+                setTimeout(launchCheck, 5000);
+              };
 
-      // method to launch token consistency check
-      const launchCheck = () => {
-        this.checkConsistency(token, retryIfNecessary);
-      };
+              // method to launch token consistency check
+              const launchCheck = () => {
+                this.checkConsistency(token, retryIfNecessary);
+              };
 
-      launchCheck();
-    };
+              launchCheck();
+            };
 
-    // generate consistency-token
-    this.generateConsistencyToken(tokenHandler);
+            // generate consistency-token
+            this.generateConsistencyToken(tokenHandler);
   }
 
   /**
@@ -1133,25 +1140,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {?String} callback.token The generated consistency token.
    */
   generateConsistencyToken(callback) {
-    const reqOpts = {
-      name: this.name,
-    };
+            const reqOpts = {
+              name: this.name,
+            };
 
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'generateConsistencyToken',
-        reqOpts: reqOpts,
-      },
-      (err, res) => {
-        if (err) {
-          callback(err);
-          return;
-        }
+            this.bigtable.request(
+                {
+                  client: 'BigtableTableAdminClient',
+                  method: 'generateConsistencyToken',
+                  reqOpts,
+                },
+                (err, res) => {
+                  if (err) {
+                    callback(err);
+                    return;
+                  }
 
-        callback(null, res.consistencyToken);
-      }
-    );
+                  callback(null, res.consistencyToken);
+                });
   }
 
   /**
@@ -1162,26 +1168,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`
    * @param {?Boolean} callback.consistent Boolean value.
    */
   checkConsistency(token, callback) {
-    const reqOpts = {
-      name: this.name,
-      consistencyToken: token,
-    };
+            const reqOpts = {
+              name: this.name,
+              consistencyToken: token,
+            };
 
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'checkConsistency',
-        reqOpts: reqOpts,
-      },
-      (err, res) => {
-        if (err) {
-          callback(err);
-          return;
-        }
+            this.bigtable.request(
+                {
+                  client: 'BigtableTableAdminClient',
+                  method: 'checkConsistency',
+                  reqOpts,
+                },
+                (err, res) => {
+                  if (err) {
+                    callback(err);
+                    return;
+                  }
 
-        callback(null, res.consistent);
-      }
-    );
+                  callback(null, res.consistent);
+                });
   }
   /**
    * The view to be applied to the returned table's fields.
@@ -1208,9 +1213,6 @@ promisifyAll(Table, {
 });
 
 export interface PrefixRange {
-  start: string;
-  end: {
-    value: string;
-    inclusive: boolean;
-  };
+          start: string;
+          end: {value: string; inclusive: boolean;};
 }
