@@ -16,7 +16,7 @@
 import {Transform, TransformOptions} from 'stream';
 import {Mutation} from './mutation';
 
-export type Next = () => {}|void;
+export type Next = () => void;
 
 export type ValueOrBuffer = Value|Buffer;
 export type Value = string|number|boolean|Uint8Array;
@@ -51,8 +51,6 @@ export interface TransformErrorProps {
   message: string;
   chunk: Chunk|null;
 }
-
-import {Mutation} from './mutation';
 
 class TransformError extends Error {
   constructor(props: TransformErrorProps) {
