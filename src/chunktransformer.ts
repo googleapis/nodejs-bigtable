@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import {Transform, TransformOptions} from 'stream';
+
+import {Family} from './family';
 import {Mutation} from './mutation';
 
-export type Next = () => void;
-
-export type ValueOrBuffer = Value|Buffer;
 export type Value = string|number|boolean|Uint8Array;
 
 export interface Chunk {
@@ -30,18 +29,18 @@ export interface Chunk {
   qualifier?: Qualifier|{value: Value};
   timestampMicros?: number|Long;
   labels?: string[];
-  value?: ValueOrBuffer;
+  value?: string|Buffer;
   valueSize?: number;
-}
-export interface Qualifier {
-  value?: ValueOrBuffer;
-  labels?: string[];
-  timestamp?: number|Long;
-  size?: number;
 }
 export interface Data {
   chunks: Chunk[];
   lastScannedRowKey?: Buffer;
+}
+export interface Qualifier {
+  value?: string|Buffer;
+  labels?: string[];
+  timestamp?: number|Long;
+  size?: number;
 }
 export interface Row {
   key?: Value;
@@ -83,7 +82,7 @@ export class ChunkTransformer extends Transform {
   lastRowKey?: Value;
   state?: number;
   row?: Row;
-  family?: {};
+  family?: Family;
   qualifiers?: Qualifier[];
   qualifier?: Qualifier;
   constructor(options: TransformOptions = {}) {
@@ -130,7 +129,7 @@ export class ChunkTransformer extends Transform {
    * @param {object} [enc] encoding options.
    * @param {callback} next callback will be called once data is processed, with error if any error in processing
    */
-  _transform(data: Data, enc: {}, next: Next): void {
+  _transform(data: Data, enc: string, next: Function): void {
     for (const chunk of data.chunks!) {
       switch (this.state) {
         case RowStateEnum.NEW_ROW:
@@ -160,7 +159,7 @@ export class ChunkTransformer extends Transform {
    * @public
    * @param {error} err error if any
    */
-  destroy(err: Error): void {
+  destroy(err?: Error): void {
     if (this._destroyed) return;
     this._destroyed = true;
     if (err) {
@@ -174,7 +173,7 @@ export class ChunkTransformer extends Transform {
    * @private
    */
   reset(): void {
-    this.family = {};
+    this.family = {} as Family;
     this.qualifiers = [];
     this.qualifier = {};
     this.row = {};
@@ -213,8 +212,7 @@ export class ChunkTransformer extends Transform {
   validateResetRow(chunk: Chunk): void {
     const containsData = (chunk.rowKey && chunk.rowKey.length !== 0) ||
         chunk.familyName || chunk.qualifier ||
-        (chunk.value && (chunk.value as Uint8Array).length !== 0) ||
-        chunk.timestampMicros! > 0;
+        (chunk.value && chunk.value.length !== 0) || chunk.timestampMicros! > 0;
     if (chunk.resetRow && containsData) {
       this.destroy(new TransformError({
         message: 'A reset should have no data',
@@ -334,17 +332,16 @@ export class ChunkTransformer extends Transform {
       const row = this.row;
       row!.key = newRowKey;
       row!.data = {} as Data;
-      this.family = row!.data![chunk.familyName.value] = {};
-      const qualifierName =
-          Mutation.convertFromBytes(chunk.qualifier.value as string | Buffer, {
-            userOptions: this.options,
-          });
+      this.family = row!.data![chunk.familyName.value] = {} as Family;
+      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
+        userOptions: this.options,
+      });
       this.qualifiers = this.family[qualifierName as {} as string] = [];
       this.qualifier = {
         value: Mutation.convertFromBytes(chunk.value!, {
           userOptions: this.options,
           isPossibleNumber: true,
-        }),
+        }) as string,
         labels: chunk.labels,
         timestamp: chunk.timestampMicros,
       };
@@ -369,10 +366,9 @@ export class ChunkTransformer extends Transform {
           row!.data![chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
-      const qualifierName =
-          Mutation.convertFromBytes(chunk.qualifier.value as string | Buffer, {
-            userOptions: this.options,
-          }) as string;
+      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
+        userOptions: this.options,
+      }) as string;
       this.qualifiers = this.family![qualifierName] =
           this.family![qualifierName] || [];
     }
@@ -380,7 +376,7 @@ export class ChunkTransformer extends Transform {
       value: Mutation.convertFromBytes(chunk.value!, {
         userOptions: this.options,
         isPossibleNumber: true,
-      }),
+      }) as string,
       labels: chunk.labels,
       timestamp: chunk.timestampMicros,
     };
@@ -409,8 +405,7 @@ export class ChunkTransformer extends Transform {
         chunkQualifierValue,
       ]);
     } else {
-      // tslint:disable-next-line no-any
-      this.qualifier!.value += chunkQualifierValue as any;
+      (this.qualifier!.value as string) += chunkQualifierValue;
     }
     this.moveToNextState(chunk);
   }
