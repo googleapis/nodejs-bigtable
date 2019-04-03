@@ -325,8 +325,7 @@ export class ChunkTransformer extends Transform {
   processNewRow(chunk: Chunk): void {
     const newRowKey = Mutation.convertFromBytes(chunk.rowKey!, {
       userOptions: this.options,
-    }) as string |
-        Buffer;
+    }) as string;
     this.validateNewRow(chunk, newRowKey);
     if (chunk.familyName && chunk.qualifier) {
       const row = this.row;
