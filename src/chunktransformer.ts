@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import {Transform, TransformOptions} from 'stream';
-
-import {Family} from './family';
 import {Mutation} from './mutation';
 
 export type Value = string|number|boolean|Uint8Array;
@@ -35,6 +33,9 @@ export interface Chunk {
 export interface Data {
   chunks: Chunk[];
   lastScannedRowKey?: Buffer;
+}
+interface Family {
+  [qualifier: string]: Qualifier[];
 }
 export interface Qualifier {
   value?: string|Buffer;
