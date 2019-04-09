@@ -142,10 +142,6 @@ export interface CreateInstanceCluster {
   nodes: number;
   storage: string;
 }
-export interface CreateInstanceClusters {
-  [k: string]:
-      {location: string; serveNodes: number; defaultStorageType: ICluster;};
-}
 export interface CreateInstanceOptions {
   clusters?: CreateInstanceCluster[];
   displayName?: string;
@@ -639,21 +635,15 @@ export class Bigtable {
       reqOpts.instance!.type = Instance.getTypeType_(options.type);
     }
 
-    reqOpts.clusters = arrify(options.clusters)
-                           .reduce(
-                               (clusters: CreateInstanceClusters,
-                                cluster: CreateInstanceCluster) => {
-                                 clusters[cluster.id] = {
-                                   location: Cluster.getLocation_(
-                                       this.projectId, cluster.location),
-                                   serveNodes: cluster.nodes,
-                                   defaultStorageType:
-                                       Cluster.getStorageType_(cluster.storage),
-                                 };
+    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
+      clusters[cluster.id] = {
+        location: Cluster.getLocation_(this.projectId, cluster.location),
+        serveNodes: cluster.nodes,
+        defaultStorageType: Cluster.getStorageType_(cluster.storage),
+      };
 
-                                 return clusters;
-                               },
-                               {});
+      return clusters;
+    }, {});
 
     this.request(
         {
