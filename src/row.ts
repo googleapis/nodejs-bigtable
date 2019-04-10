@@ -15,7 +15,7 @@
  */
 
 import {promisifyAll} from '@google-cloud/promisify';
-import * as arrify from 'arrify';
+import arrify = require('arrify');
 
 const dotProp = require('dot-prop');
 import * as is from 'is';

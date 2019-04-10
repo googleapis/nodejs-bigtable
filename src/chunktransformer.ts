@@ -17,8 +17,44 @@ import {Transform, TransformOptions} from 'stream';
 
 import {Bytes, Mutation} from './mutation';
 
+export type Value = string|number|boolean|Uint8Array;
+
+export interface Chunk {
+  rowContents: Value;
+  commitRow: boolean;
+  resetRow: boolean;
+  rowKey?: string|Uint8Array;
+  familyName?: {value: string};
+  qualifier?: Qualifier|{value: Value};
+  timestampMicros?: number|Long;
+  labels?: string[];
+  value?: string|Buffer;
+  valueSize?: number;
+}
+export interface Data {
+  chunks: Chunk[];
+  lastScannedRowKey?: Buffer;
+}
+interface Family {
+  [qualifier: string]: Qualifier[];
+}
+export interface Qualifier {
+  value?: string|Buffer;
+  labels?: string[];
+  timestamp?: number|Long;
+  size?: number;
+}
+export interface Row {
+  key?: Value;
+  data?: Data;
+}
+export interface TransformErrorProps {
+  message: string;
+  chunk: Chunk|null;
+}
+
 class TransformError extends Error {
-  constructor(props) {
+  constructor(props: TransformErrorProps) {
     super();
     this.name = 'TransformError';
     this.message = `${props.message}: ${JSON.stringify(props.chunk)}`;
@@ -45,12 +81,12 @@ export const RowStateEnum = Object.freeze({
 export class ChunkTransformer extends Transform {
   options: TransformOptions;
   _destroyed: boolean;
-  lastRowKey;
-  state;
-  row;
-  family;
-  qualifiers;
-  qualifier;
+  lastRowKey?: Value;
+  state?: number;
+  row?: Row;
+  family?: Family;
+  qualifiers?: Qualifier[];
+  qualifier?: Qualifier;
   constructor(options: TransformOptions = {}) {
     options.objectMode = true;  // forcing object mode
     super(options);
@@ -58,6 +94,22 @@ export class ChunkTransformer extends Transform {
     this._destroyed = false;
     this.lastRowKey = undefined;
     this.reset();
+  }
+
+  /**
+   * called at end of the stream.
+   * @public
+   * @param {callback} cb callback will be called with error if there is any uncommitted row
+   */
+  _flush(cb: Function): void {
+    if (typeof this.row!.key !== 'undefined') {
+      this.destroy(new TransformError({
+        message: 'Response ended with pending row without commit',
+        chunk: null,
+      }));
+      return;
+    }
+    cb();
   }
 
   /**
@@ -79,8 +131,8 @@ export class ChunkTransformer extends Transform {
    * @param {object} [enc] encoding options.
    * @param {callback} next callback will be called once data is processed, with error if any error in processing
    */
-  _transform(data, enc, next) {
-    for (const chunk of data.chunks) {
+  _transform(data: Data, enc: string, next: Function): void {
+    for (const chunk of data.chunks!) {
       switch (this.state) {
         case RowStateEnum.NEW_ROW:
           this.processNewRow(chunk);
@@ -106,27 +158,11 @@ export class ChunkTransformer extends Transform {
   }
 
   /**
-   * called at end of the stream.
-   * @public
-   * @param {callback} cb callback will be called with error if there is any uncommitted row
-   */
-  _flush(cb) {
-    if (typeof this.row.key !== 'undefined') {
-      this.destroy(new TransformError({
-        message: 'Response ended with pending row without commit',
-        chunk: null,
-      }));
-      return;
-    }
-    cb();
-  }
-
-  /**
    * called when stream is destroyed.
    * @public
    * @param {error} err error if any
    */
-  destroy(err) {
+  destroy(err?: Error): void {
     if (this._destroyed) return;
     this._destroyed = true;
     if (err) {
@@ -139,8 +175,8 @@ export class ChunkTransformer extends Transform {
    * Resets state of formatter
    * @private
    */
-  reset() {
-    this.family = {};
+  reset(): void {
+    this.family = {} as Family;
     this.qualifiers = [];
     this.qualifier = {};
     this.row = {};
@@ -151,10 +187,10 @@ export class ChunkTransformer extends Transform {
    * sets lastRowkey and calls reset when row is committed.
    * @private
    */
-  commit() {
+  commit(): void {
     const row = this.row;
     this.reset();
-    this.lastRowKey = row.key;
+    this.lastRowKey = row!.key;
   }
 
   /**
@@ -162,8 +198,8 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to validate for valuesize and commitRow
    */
-  validateValueSizeAndCommitRow(chunk) {
-    if (chunk.valueSize > 0 && chunk.commitRow) {
+  validateValueSizeAndCommitRow(chunk: Chunk): void {
+    if (chunk.valueSize! > 0 && chunk.commitRow) {
       this.destroy(new TransformError({
         message: 'A row cannot be have a value size and be a commit row',
         chunk,
@@ -176,10 +212,10 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to validate for resetrow
    */
-  validateResetRow(chunk) {
+  validateResetRow(chunk: Chunk): void {
     const containsData = (chunk.rowKey && chunk.rowKey.length !== 0) ||
         chunk.familyName || chunk.qualifier ||
-        (chunk.value && chunk.value.length !== 0) || chunk.timestampMicros > 0;
+        (chunk.value && chunk.value.length !== 0) || chunk.timestampMicros! > 0;
     if (chunk.resetRow && containsData) {
       this.destroy(new TransformError({
         message: 'A reset should have no data',
@@ -194,12 +230,12 @@ export class ChunkTransformer extends Transform {
    * @param {chunk} chunk chunk to validate
    * @param {newRowKey} newRowKey newRowKey of the new row
    */
-  validateNewRow(chunk, newRowKey) {
+  validateNewRow(chunk: Chunk, newRowKey: string|Buffer): void {
     const row = this.row;
     const lastRowKey = this.lastRowKey;
-    let errorMessage;
+    let errorMessage: string|undefined;
 
-    if (typeof row.key !== 'undefined') {
+    if (typeof row!.key !== 'undefined') {
       errorMessage = 'A new row cannot have existing state';
     } else if (
         typeof chunk.rowKey === 'undefined' || chunk.rowKey.length === 0 ||
@@ -226,13 +262,13 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to validate
    */
-  validateRowInProgress(chunk) {
+  validateRowInProgress(chunk: Chunk): void {
     const row = this.row;
     if (chunk.rowKey && chunk.rowKey.length) {
       const newRowKey = Mutation.convertFromBytes(chunk.rowKey as Bytes, {
         userOptions: this.options,
       });
-      const oldRowKey = row.key || '';
+      const oldRowKey = row!.key || '';
       if (newRowKey && chunk.rowKey && (newRowKey as string).length !== 0 &&
           newRowKey.toString() !== oldRowKey.toString()) {
         this.destroy(new TransformError({
@@ -259,7 +295,7 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to validate
    */
-  validateCellInProgress(chunk) {
+  validateCellInProgress(chunk: Chunk): void {
     this.validateResetRow(chunk);
     this.validateValueSizeAndCommitRow(chunk);
   }
@@ -269,14 +305,14 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk in process
    */
-  moveToNextState(chunk) {
+  moveToNextState(chunk: Chunk): void {
     const row = this.row;
     if (chunk.commitRow) {
       this.push(row);
       this.commit();
-      this.lastRowKey = row.key;
+      this.lastRowKey = row!.key;
     } else {
-      if (chunk.valueSize > 0) {
+      if (chunk.valueSize! > 0) {
         this.state = RowStateEnum.CELL_IN_PROGRESS;
       } else {
         this.state = RowStateEnum.ROW_IN_PROGRESS;
@@ -289,26 +325,26 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunks} chunk chunk to process
    */
-  processNewRow(chunk) {
-    const newRowKey = Mutation.convertFromBytes(chunk.rowKey as Bytes, {
+  processNewRow(chunk: Chunk): void {
+    const newRowKey = Mutation.convertFromBytes(chunk.rowKey! as Bytes, {
       userOptions: this.options,
-    });
+    }) as string;
     this.validateNewRow(chunk, newRowKey);
     if (chunk.familyName && chunk.qualifier) {
       const row = this.row;
-      row.key = newRowKey;
-      row.data = {};
-      this.family = row.data[chunk.familyName.value] = {};
+      row!.key = newRowKey;
+      row!.data = {} as Data;
+      this.family = row!.data![chunk.familyName.value] = {} as Family;
       const qualifierName =
           Mutation.convertFromBytes(chunk.qualifier.value as Bytes, {
             userOptions: this.options,
           });
       this.qualifiers = this.family[qualifierName as {} as string] = [];
       this.qualifier = {
-        value: Mutation.convertFromBytes(chunk.value as Bytes, {
+        value: Mutation.convertFromBytes(chunk.value! as Bytes, {
           userOptions: this.options,
           isPossibleNumber: true,
-        }),
+        }) as string,
         labels: chunk.labels,
         timestamp: chunk.timestampMicros,
       };
@@ -322,33 +358,33 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to process
    */
-  processRowInProgress(chunk) {
+  processRowInProgress(chunk: Chunk): void {
     this.validateRowInProgress(chunk);
     if (chunk.resetRow) {
       return this.reset();
     }
     const row = this.row;
     if (chunk.familyName) {
-      this.family = row.data[chunk.familyName.value] =
-          row.data[chunk.familyName.value] || {};
+      this.family = row!.data![chunk.familyName.value] =
+          row!.data![chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
       const qualifierName =
           Mutation.convertFromBytes(chunk.qualifier.value as Bytes, {
             userOptions: this.options,
           }) as string;
-      this.qualifiers = this.family[qualifierName] =
-          this.family[qualifierName] || [];
+      this.qualifiers = this.family![qualifierName] =
+          this.family![qualifierName] || [];
     }
     this.qualifier = {
-      value: Mutation.convertFromBytes(chunk.value as Bytes, {
+      value: Mutation.convertFromBytes(chunk.value! as Bytes, {
         userOptions: this.options,
         isPossibleNumber: true,
-      }),
+      }) as string,
       labels: chunk.labels,
       timestamp: chunk.timestampMicros,
     };
-    this.qualifiers.push(this.qualifier);
+    this.qualifiers!.push(this.qualifier);
     this.moveToNextState(chunk);
   }
 
@@ -357,24 +393,24 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to process
    */
-  processCellInProgress(chunk) {
+  processCellInProgress(chunk: Chunk): void {
     this.validateCellInProgress(chunk);
     if (chunk.resetRow) {
       return this.reset();
     }
     const chunkQualifierValue =
-        Mutation.convertFromBytes(chunk.value as Bytes, {
+        Mutation.convertFromBytes(chunk.value! as Bytes, {
           userOptions: this.options,
         });
 
     if (chunkQualifierValue instanceof Buffer &&
-        this.qualifier.value instanceof Buffer) {
-      this.qualifier.value = Buffer.concat([
-        this.qualifier.value,
+        this.qualifier!.value instanceof Buffer) {
+      this.qualifier!.value = Buffer.concat([
+        this.qualifier!.value,
         chunkQualifierValue,
       ]);
     } else {
-      this.qualifier.value += chunkQualifierValue;
+      (this.qualifier!.value as string) += chunkQualifierValue;
     }
     this.moveToNextState(chunk);
   }

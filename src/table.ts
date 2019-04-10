@@ -16,7 +16,7 @@
 
 import * as common from '@google-cloud/common-grpc';
 import {promisifyAll} from '@google-cloud/promisify';
-import * as arrify from 'arrify';
+import arrify = require('arrify');
 
 const concat = require('concat-stream');
 import * as is from 'is';
