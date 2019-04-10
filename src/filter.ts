@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as arrify from 'arrify';
+import arrify = require('arrify');
 import * as escapeStringRegexp from 'escape-string-regexp';
 import * as is from 'is';
 const isUtf8 = require('is-utf8');
