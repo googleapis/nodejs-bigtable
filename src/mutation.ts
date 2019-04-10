@@ -296,7 +296,7 @@ export class Mutation {
       ];
     }
 
-    return arrify(data).map(mutation => {
+    return (arrify(data) as Data[]).map(mutation => {
       if (is.string(mutation)) {
         mutation = {
           column: mutation,
