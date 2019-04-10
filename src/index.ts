@@ -643,7 +643,7 @@ export class Bigtable {
       };
 
       return clusters;
-    }, {});
+    }, {}) as any;
 
     this.request(
         {
