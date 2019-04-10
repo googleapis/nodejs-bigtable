@@ -17,7 +17,6 @@
 import * as arrify from 'arrify';
 import * as is from 'is';
 import * as Long from 'long';
-<<<<<<< HEAD
 
 import {google as btTypes} from '../proto/bigtable';
 
@@ -62,8 +61,6 @@ export interface SetCellObj {
 export interface ValueObj {
   [k: string]: Buffer|Value|ValueObj;
 }
-=======
->>>>>>> ecb47fc0233bcb2068509696c1f4a3fccb9dd222
 
 /**
  * Formats table mutations to be in the expected proto format.
@@ -276,14 +273,9 @@ export class Mutation {
    * //   deleteFromRow: {}
    * // }
    *
-   * //-
    * // It's also possible to specify a time range when deleting specific
-<<<<<<< HEAD
    * // columns.
-=======
-   * columns.
->>>>>>> ecb47fc0233bcb2068509696c1f4a3fccb9dd222
-   * //-
+   *
    * Mutation.encodeDelete([
    *   {
    *     column: 'follows:gwashington',
@@ -324,16 +316,10 @@ export class Mutation {
 
       let timeRange: TimeRange|undefined;
 
-<<<<<<< HEAD
       if ((mutation as MutationSettingsObj).time) {
         timeRange = Mutation.createTimeRange(
             (mutation as MutationSettingsObj).time!.start as Date,
             (mutation as MutationSettingsObj).time!.end as Date);
-=======
-      if (mutation.time) {
-        timeRange =
-            Mutation.createTimeRange(mutation.time.start, mutation.time.end);
->>>>>>> ecb47fc0233bcb2068509696c1f4a3fccb9dd222
       }
 
       return {

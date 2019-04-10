@@ -15,7 +15,7 @@
  */
 import {Transform, TransformOptions} from 'stream';
 
-import {Mutation} from './mutation';
+import {Bytes, Mutation} from './mutation';
 
 class TransformError extends Error {
   constructor(props) {
@@ -97,9 +97,10 @@ export class ChunkTransformer extends Transform {
       }
     }
     if (data.lastScannedRowKey && data.lastScannedRowKey.length > 0) {
-      this.lastRowKey = Mutation.convertFromBytes(data.lastScannedRowKey, {
-        userOptions: this.options,
-      });
+      this.lastRowKey =
+          Mutation.convertFromBytes(data.lastScannedRowKey as Bytes, {
+            userOptions: this.options,
+          });
     }
     next();
   }
@@ -228,7 +229,7 @@ export class ChunkTransformer extends Transform {
   validateRowInProgress(chunk) {
     const row = this.row;
     if (chunk.rowKey && chunk.rowKey.length) {
-      const newRowKey = Mutation.convertFromBytes(chunk.rowKey, {
+      const newRowKey = Mutation.convertFromBytes(chunk.rowKey as Bytes, {
         userOptions: this.options,
       });
       const oldRowKey = row.key || '';
@@ -289,7 +290,7 @@ export class ChunkTransformer extends Transform {
    * @param {chunks} chunk chunk to process
    */
   processNewRow(chunk) {
-    const newRowKey = Mutation.convertFromBytes(chunk.rowKey, {
+    const newRowKey = Mutation.convertFromBytes(chunk.rowKey as Bytes, {
       userOptions: this.options,
     });
     this.validateNewRow(chunk, newRowKey);
@@ -298,12 +299,13 @@ export class ChunkTransformer extends Transform {
       row.key = newRowKey;
       row.data = {};
       this.family = row.data[chunk.familyName.value] = {};
-      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
-        userOptions: this.options,
-      });
+      const qualifierName =
+          Mutation.convertFromBytes(chunk.qualifier.value as Bytes, {
+            userOptions: this.options,
+          });
       this.qualifiers = this.family[qualifierName as {} as string] = [];
       this.qualifier = {
-        value: Mutation.convertFromBytes(chunk.value, {
+        value: Mutation.convertFromBytes(chunk.value as Bytes, {
           userOptions: this.options,
           isPossibleNumber: true,
         }),
@@ -331,14 +333,15 @@ export class ChunkTransformer extends Transform {
           row.data[chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
-      const qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
-        userOptions: this.options,
-      }) as string;
+      const qualifierName =
+          Mutation.convertFromBytes(chunk.qualifier.value as Bytes, {
+            userOptions: this.options,
+          }) as string;
       this.qualifiers = this.family[qualifierName] =
           this.family[qualifierName] || [];
     }
     this.qualifier = {
-      value: Mutation.convertFromBytes(chunk.value, {
+      value: Mutation.convertFromBytes(chunk.value as Bytes, {
         userOptions: this.options,
         isPossibleNumber: true,
       }),
@@ -359,9 +362,10 @@ export class ChunkTransformer extends Transform {
     if (chunk.resetRow) {
       return this.reset();
     }
-    const chunkQualifierValue = Mutation.convertFromBytes(chunk.value, {
-      userOptions: this.options,
-    });
+    const chunkQualifierValue =
+        Mutation.convertFromBytes(chunk.value as Bytes, {
+          userOptions: this.options,
+        });
 
     if (chunkQualifierValue instanceof Buffer &&
         this.qualifier.value instanceof Buffer) {
