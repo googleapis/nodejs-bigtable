@@ -635,15 +635,18 @@ export class Bigtable {
       reqOpts.instance!.type = Instance.getTypeType_(options.type);
     }
 
-    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
-      clusters[cluster.id] = {
-        location: Cluster.getLocation_(this.projectId, cluster.location),
-        serveNodes: cluster.nodes,
-        defaultStorageType: Cluster.getStorageType_(cluster.storage),
-      };
+    reqOpts.clusters =
+        (arrify(options.clusters) as CreateInstanceCluster[])
+            .reduce((clusters, cluster: CreateInstanceCluster) => {
+              clusters[cluster.id] = {
+                location:
+                    Cluster.getLocation_(this.projectId, cluster.location),
+                serveNodes: cluster.nodes,
+                defaultStorageType: Cluster.getStorageType_(cluster.storage),
+              };
 
-      return clusters;
-    }, {}) as any;
+              return clusters;
+            }, {});
 
     this.request(
         {
