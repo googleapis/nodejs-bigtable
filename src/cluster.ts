@@ -15,7 +15,55 @@
  */
 
 import {promisifyAll} from '@google-cloud/promisify';
-import * as is from 'is';
+import {CallOptions, Operation as GaxOperation} from 'google-gax';
+import {ServiceError} from 'grpc';
+
+import {google as btTypes} from '../proto/bigtable';
+import {Bigtable} from '.';
+import {Instance} from './instance';
+
+export interface GenericCallback<T> {
+  (err?: ServiceError|null, apiResponse?: T|null): void;
+}
+export interface GenericClusterCallback<T> {
+  (err?: ServiceError|null, cluster?: Cluster|null, apiResponse?: T|null);
+}
+export interface GenericOperationCallback<T> {
+  (err?: ServiceError|null, operation?: GaxOperation|null,
+   apiResponse?: T|null): void;
+}
+
+export type IEmpty = btTypes.protobuf.IEmpty;
+export type ICluster = btTypes.bigtable.admin.v2.ICluster;
+export type IOperation = btTypes.longrunning.IOperation;
+
+export type ApiResponse = [IOperation];
+export type CreateClusterResponse = [ICluster, GaxOperation, IOperation];
+export type BooleanResponse = [boolean];
+export type GetClusterResponse = [ICluster, IOperation];
+export type MetadataResponse = [Metadata, IOperation];
+
+export type CreateClusterCallback = GenericCallback<IOperation>;
+export type DeleteClusterCallback = GenericCallback<IOperation>;
+export type ExistsClusterCallback = GenericCallback<boolean>;
+export type GetClusterCallback = GenericClusterCallback<ICluster>;
+export type SetClusterMetadataCallback = GenericOperationCallback<IOperation>;
+
+export interface CreateClusterOptions {
+  gaxOptions?: CallOptions;
+  location: string;
+  nodes: number;
+  storage?: string;
+}
+export interface GetClusterMetadataCallback {
+  // tslint:disable-next-line no-any
+  (...args: any[]): void;
+  (err: ServiceError|null, metadata?: ICluster|null,
+   apiResponse?: IOperation|null): void;
+}
+export interface Metadata extends CreateClusterOptions {
+  displayName?: string;
+}
 
 /**
  * Create a cluster object to interact with your cluster.
@@ -31,16 +79,16 @@ import * as is from 'is';
  * const cluster = instance.cluster('my-cluster');
  */
 export class Cluster {
-  bigtable;
-  instance;
-  id;
-  name;
-  metadata;
-  constructor(instance, id) {
+  bigtable: Bigtable;
+  instance: Instance;
+  id: string;
+  name: string;
+  metadata?: Metadata;
+  constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
-    let name;
+    let name: string;
 
     if (id.includes('/')) {
       if (id.startsWith(`${instance.name}/clusters/`)) {
@@ -52,7 +100,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     } else {
       name = `${instance.name}/clusters/${id}`;
     }
-    this.id = name.split('/').pop();
+    this.id = name.split('/').pop()!;
     this.name = name;
   }
 
@@ -69,14 +117,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * Cluster.getLocation_('my-project', 'us-central1-b');
    * // 'projects/my-project/locations/us-central1-b'
    */
-  static getLocation_(project, location) {
+  static getLocation_(project: string, location: string): string {
     if (location.includes('/')) {
       return location;
     }
 
     // in-case project has '/', split and pick last component
     if (project.includes('/')) {
-      project = project.split('/').pop();
+      project = project.split('/').pop()!;
     }
 
     return `projects/${project}/locations/${location}`;
@@ -94,20 +142,24 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * Cluster.getStorageType_('ssd');
    * // 1
    */
-  static getStorageType_(type) {
-    const storageTypes = {
+  static getStorageType_(type: string): number {
+    const storageTypes: {[k: string]: number} = {
       unspecified: 0,
       ssd: 1,
       hdd: 2,
     };
 
-    if (is.string(type)) {
+    if (typeof type === 'string') {
       type = type.toLowerCase();
     }
 
     return storageTypes[type] || storageTypes.unspecified;
   }
 
+  create(): Promise<CreateClusterResponse>;
+  create(options: CreateClusterOptions): Promise<CreateClusterResponse>;
+  create(callback: CreateClusterCallback): void;
+  create(options: CreateClusterOptions, callback: CreateClusterCallback): void;
   /**
    * Create a cluster.
    *
@@ -120,15 +172,22 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_create_cluster
    */
-  create(options, callback) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
+  create(
+      optionsOrCallback?: CreateClusterOptions|CreateClusterCallback,
+      cb?: CreateClusterCallback): void|Promise<CreateClusterResponse> {
+    const callback =
+        typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options = typeof optionsOrCallback === 'object' && optionsOrCallback ?
+        optionsOrCallback :
+        {} as CreateClusterOptions;
 
     this.instance.createCluster(this.id, options, callback);
   }
 
+  delete(): Promise<ApiResponse>;
+  delete(gaxOptions: CallOptions): Promise<ApiResponse>;
+  delete(callback: DeleteClusterCallback): void;
+  delete(gaxOptions: CallOptions, callback: DeleteClusterCallback): void;
   /**
    * Delete the cluster.
    *
@@ -142,11 +201,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_delete_cluster
    */
-  delete(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  delete(
+      gaxOptionsOrCallback?: CallOptions|DeleteClusterCallback,
+      cb?: DeleteClusterCallback): void|Promise<ApiResponse> {
+    const callback =
+        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    const gaxOptions =
+        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
+        gaxOptionsOrCallback :
+        {} as CallOptions;
 
     this.bigtable.request(
         {
@@ -160,6 +223,10 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         callback);
   }
 
+  exists(): Promise<BooleanResponse>;
+  exists(gaxOptions: CallOptions): Promise<BooleanResponse>;
+  exists(callback: ExistsClusterCallback): void;
+  exists(gaxOptions: CallOptions, callback: ExistsClusterCallback): void;
   /**
    * Check if a cluster exists.
    *
@@ -173,13 +240,17 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_exists_cluster
    */
-  exists(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  exists(
+      gaxOptionsOrCallback?: CallOptions|ExistsClusterCallback,
+      cb?: ExistsClusterCallback): void|Promise<BooleanResponse> {
+    const callback =
+        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    const gaxOptions =
+        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
+        gaxOptionsOrCallback :
+        {} as CallOptions;
 
-    this.getMetadata(gaxOptions, err => {
+    this.getMetadata(gaxOptions, (err?: ServiceError|null) => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -194,6 +265,10 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     });
   }
 
+  get(): Promise<GetClusterResponse>;
+  get(gaxOptions: CallOptions): Promise<GetClusterResponse>;
+  get(callback: GetClusterCallback): void;
+  get(gaxOptions: CallOptions, callback: GetClusterCallback): void;
   /**
    * Get a cluster if it exists.
    *
@@ -207,17 +282,26 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_get_cluster
    */
-  get(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  get(gaxOptionsOrCallback?: CallOptions|GetClusterCallback,
+      cb?: GetClusterCallback): void|Promise<GetClusterResponse> {
+    const callback =
+        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    const gaxOptions =
+        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
+        gaxOptionsOrCallback :
+        {} as CallOptions;
 
-    this.getMetadata(gaxOptions, (err, metadata) => {
-      callback(err, err ? null : this, metadata);
-    });
+    this.getMetadata(
+        gaxOptions, (err?: ServiceError|null, metadata?: ICluster|null) => {
+          callback(err, err ? null : this, metadata);
+        });
   }
 
+  getMetadata(): Promise<MetadataResponse>;
+  getMetadata(gaxOptions: CallOptions): Promise<MetadataResponse>;
+  getMetadata(callback: GetClusterMetadataCallback): void;
+  getMetadata(gaxOptions: CallOptions, callback: GetClusterMetadataCallback):
+      void;
   /**
    * Get the cluster metadata.
    *
@@ -232,11 +316,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_cluster_get_meta
    */
-  getMetadata(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  getMetadata(
+      gaxOptionsOrCallback?: CallOptions|GetClusterMetadataCallback,
+      cb?: GetClusterMetadataCallback): void|Promise<MetadataResponse> {
+    const callback =
+        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    const gaxOptions =
+        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
+        gaxOptionsOrCallback :
+        {} as CallOptions;
 
     this.bigtable.request(
         {
@@ -247,7 +335,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
           },
           gaxOpts: gaxOptions,
         },
-        (...args) => {
+        // tslint:disable-next-line no-any
+        (...args: any[]) => {
           if (args[1]) {
             this.metadata = args[1];
           }
@@ -256,6 +345,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         });
   }
 
+  setMetadata(metadata: CreateClusterOptions): Promise<MetadataResponse>;
+  setMetadata(metadata: CreateClusterOptions, gaxOptions: CallOptions):
+      Promise<MetadataResponse>;
+  setMetadata(
+      metadata: CreateClusterOptions,
+      callback: SetClusterMetadataCallback): void;
+  setMetadata(
+      metadata: CreateClusterOptions, gaxOptions: CallOptions,
+      callback: SetClusterMetadataCallback): void;
   /**
    * Set the cluster metadata.
    *
@@ -272,12 +370,18 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_cluster_set_meta
    */
-  setMetadata(metadata, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  setMetadata(
+      metadata: CreateClusterOptions,
+      gaxOptionsOrCallback?: CallOptions|SetClusterMetadataCallback,
+      cb?: SetClusterMetadataCallback): void|Promise<MetadataResponse> {
+    const callback =
+        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    const gaxOptions =
+        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
+        gaxOptionsOrCallback :
+        {} as CallOptions;
 
+    // tslint:disable-next-line no-any
     const reqOpts: any = {
       name: this.name,
     };
