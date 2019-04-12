@@ -18,6 +18,50 @@ import arrify = require('arrify');
 import * as is from 'is';
 import * as Long from 'long';
 
+import {google as btTypes} from '../proto/bigtable';
+
+export type IMutation = btTypes.bigtable.v2.IMutation;
+export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
+export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
+
+export type Bytes = string|Buffer;
+export type Data = Value|Value[]|MutationSettingsObj;
+export type JsonObj = {
+  [k: string]: string|JsonObj
+};
+export type Value = string|number|boolean;
+
+export interface ParsedColumn {
+  family: string|null;
+  qualifier: string|null;
+}
+export interface ConvertFromBytesOptions {
+  userOptions?: {decode?: boolean; encoding?: string;};
+  isPossibleNumber?: boolean;
+}
+export interface MutationConstructorObj {
+  key: string;
+  method: string;
+  data: Data;
+}
+export interface MutationSettingsObj {
+  follows?: ValueObj;
+  column?: string;
+  time?: {start: Date|number; end: Date | number;};
+}
+export interface TimeRange {
+  [k: string]: number|string|undefined;
+  startTimestampMicros?: number;
+  endTimestampMicros?: number;
+}
+export interface SetCellObj {
+  [k: string]: string|ISetCell|undefined;
+  setCell?: ISetCell;
+}
+export interface ValueObj {
+  [k: string]: Buffer|Value|ValueObj;
+}
+
 /**
  * Formats table mutations to be in the expected proto format.
  *
@@ -36,10 +80,10 @@ import * as Long from 'long';
  * });
  */
 export class Mutation {
-  key;
-  method;
-  data;
-  constructor(mutation) {
+  key: string;
+  method: string;
+  data: Data;
+  constructor(mutation: MutationConstructorObj) {
     this.key = mutation.key;
     this.method = mutation.method;
     this.data = mutation.data;
@@ -58,9 +102,11 @@ export class Mutation {
    * @returns {string|number|buffer}
    * @private
    */
-  static convertFromBytes(bytes, options?) {
+  static convertFromBytes(bytes: Bytes, options?: ConvertFromBytesOptions):
+      Buffer|Value {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
+      // tslint:disable-next-line no-any
       const num = Long.fromBytes(buf as any).toNumber();
 
       if (Number.MIN_SAFE_INTEGER < num && num < Number.MAX_SAFE_INTEGER) {
@@ -84,17 +130,17 @@ export class Mutation {
    * @returns {buffer}
    * @private
    */
-  static convertToBytes(data) {
+  static convertToBytes(data: Buffer|Data): Buffer|Data {
     if (data instanceof Buffer) {
       return data;
     }
 
     if (is.number(data)) {
-      return Buffer.from(Long.fromNumber(data).toBytesBE());
+      return Buffer.from(Long.fromNumber(data as number).toBytesBE());
     }
 
     try {
-      return Buffer.from(data);
+      return Buffer.from(data as string);
     } catch (e) {
       return data;
     }
@@ -108,15 +154,15 @@ export class Mutation {
    * @returns {object}
    * @private
    */
-  static createTimeRange(start, end) {
-    const range: any = {};
+  static createTimeRange(start: Date, end: Date): TimeRange {
+    const range: TimeRange = {};
 
     if (is.date(start)) {
-      range.startTimestampMicros = start.getTime() * 1000;
+      range.startTimestampMicros = (start as Date).getTime() * 1000;
     }
 
     if (is.date(end)) {
-      range.endTimestampMicros = end.getTime() * 1000;
+      range.endTimestampMicros = (end as Date).getTime() * 1000;
     }
 
     return range;
@@ -154,8 +200,8 @@ export class Mutation {
    * // ]
    * @private
    */
-  static encodeSetCell(data) {
-    const mutations: any[] = [];
+  static encodeSetCell(data: Data): SetCellObj[] {
+    const mutations: SetCellObj[] = [];
 
     Object.keys(data).forEach(familyName => {
       const family = data[familyName];
@@ -180,7 +226,7 @@ export class Mutation {
           columnQualifier: Mutation.convertToBytes(cellName),
           timestampMicros: timestamp,
           value: Mutation.convertToBytes(cell.value),
-        };
+        } as ISetCell;
 
         mutations.push({setCell});
       });
@@ -227,10 +273,9 @@ export class Mutation {
    * //   deleteFromRow: {}
    * // }
    *
-   * //-
    * // It's also possible to specify a time range when deleting specific
-   * columns.
-   * //-
+   * // columns.
+   *
    * Mutation.encodeDelete([
    *   {
    *     column: 'follows:gwashington',
@@ -242,7 +287,7 @@ export class Mutation {
    * ]);
    * @private
    */
-  static encodeDelete(data?) {
+  static encodeDelete(data?: Data|Data[]): IMutation[] {
     if (!data) {
       return [
         {
@@ -251,14 +296,15 @@ export class Mutation {
       ];
     }
 
-    return arrify(data).map(mutation => {
+    return (arrify(data) as Data[]).map(mutation => {
       if (is.string(mutation)) {
         mutation = {
           column: mutation,
-        };
+        } as MutationSettingsObj;
       }
 
-      const column = Mutation.parseColumnName(mutation.column);
+      const column =
+          Mutation.parseColumnName((mutation as MutationSettingsObj).column!);
 
       if (!column.qualifier) {
         return {
@@ -268,17 +314,19 @@ export class Mutation {
         };
       }
 
-      let timeRange;
+      let timeRange: TimeRange|undefined;
 
-      if (mutation.time) {
-        timeRange =
-            Mutation.createTimeRange(mutation.time.start, mutation.time.end);
+      if ((mutation as MutationSettingsObj).time) {
+        timeRange = Mutation.createTimeRange(
+            (mutation as MutationSettingsObj).time!.start as Date,
+            (mutation as MutationSettingsObj).time!.end as Date);
       }
 
       return {
         deleteFromColumn: {
-          familyName: column.family,
-          columnQualifier: Mutation.convertToBytes(column.qualifier),
+          familyName: column.family!,
+          columnQualifier: Mutation.convertToBytes(column.qualifier) as
+              Uint8Array,
           timeRange,
         },
       };
@@ -292,7 +340,7 @@ export class Mutation {
    * @returns {object}
    * @private
    */
-  static parse(mutation) {
+  static parse(mutation: Mutation): IMutateRowRequest {
     if (!(mutation instanceof Mutation)) {
       mutation = new Mutation(mutation);
     }
@@ -314,8 +362,8 @@ export class Mutation {
    * // }
    * @private
    */
-  static parseColumnName(column) {
-    const parts = column.split(':');
+  static parseColumnName(columnName: string): ParsedColumn {
+    const parts = columnName.split(':');
 
     return {
       family: parts[0],
@@ -329,11 +377,11 @@ export class Mutation {
    * @returns {object}
    * @private
    */
-  toProto() {
-    const mutation: any = {};
+  toProto(): IMutateRowRequest {
+    const mutation: IMutateRowRequest = {};
 
     if (this.key) {
-      mutation.rowKey = Mutation.convertToBytes(this.key);
+      mutation.rowKey = Mutation.convertToBytes(this.key) as Uint8Array;
     }
 
     if (this.method === Mutation.methods.INSERT) {

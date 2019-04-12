@@ -339,7 +339,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           const lessThan = (lhs, rhs) => {
             const lhsBytes = Mutation.convertToBytes(lhs);
             const rhsBytes = Mutation.convertToBytes(rhs);
-            return lhsBytes.compare(rhsBytes) === -1;
+            return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
           };
           const greaterThan = (lhs, rhs) => lessThan(rhs, lhs);
           const greaterThanOrEqualTo = (lhs, rhs) => !lessThan(rhs, lhs);
