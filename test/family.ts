@@ -76,16 +76,14 @@ describe('Bigtable/Family', function() {
       assert.strictEqual(family.name, FAMILY_NAME);
     });
 
-    it('should leave full family names unaltered and localize the id from the name',
-       function() {
-         const family = new Family(TABLE, FAMILY_NAME);
-         assert.strictEqual(family.name, FAMILY_NAME);
-         assert.strictEqual(family.id, FAMILY_ID);
-       });
+    it('should leave full family names unaltered and localize the id from the name', function() {
+      const family = new Family(TABLE, FAMILY_NAME);
+      assert.strictEqual(family.name, FAMILY_NAME);
+      assert.strictEqual(family.id, FAMILY_ID);
+    });
 
     it('should throw if family id in wrong format', function() {
-      const id = `/project/bad-project/instances/bad-instance/columnFamiles/${
-          FAMILY_ID}`;
+      const id = `/project/bad-project/instances/bad-instance/columnFamiles/${FAMILY_ID}`;
       assert.throws(function() {
         new Family(TABLE, id);
       }, Error);
@@ -208,7 +206,7 @@ describe('Bigtable/Family', function() {
       family.table.createFamily = function(id, options_, callback) {
         assert.strictEqual(id, family.id);
         assert.strictEqual(options_, options);
-        callback();  // done()
+        callback(); // done()
       };
 
       family.create(options, done);
@@ -217,7 +215,7 @@ describe('Bigtable/Family', function() {
     it('should not require options', function(done) {
       family.table.createFamily = function(name, options, callback) {
         assert.deepStrictEqual(options, {});
-        callback();  // done()
+        callback(); // done()
       };
 
       family.create(done);
@@ -242,7 +240,7 @@ describe('Bigtable/Family', function() {
 
         assert.deepStrictEqual(config.gaxOpts, {});
 
-        callback();  // done()
+        callback(); // done()
       };
 
       family.delete(done);
@@ -610,7 +608,9 @@ describe('Bigtable/Family', function() {
 
       assert.strictEqual(err.code, 404);
       assert.strictEqual(
-          err.message, 'Column family not found: ' + FAMILY_NAME + '.');
+        err.message,
+        'Column family not found: ' + FAMILY_NAME + '.'
+      );
     });
   });
 });

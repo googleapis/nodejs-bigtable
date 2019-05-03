@@ -124,7 +124,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     if (rules.length === 1) {
       if (ruleObj.union) {
         throw new Error(
-            'A union must have more than one garbage collection rule.');
+          'A union must have more than one garbage collection rule.'
+        );
       }
       return rules[0];
     }
@@ -185,21 +186,22 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     }
 
     this.bigtable.request(
-        {
-          client: 'BigtableTableAdminClient',
-          method: 'modifyColumnFamilies',
-          reqOpts: {
-            name: this.table.name,
-            modifications: [
-              {
-                id: this.id,
-                drop: true,
-              },
-            ],
-          },
-          gaxOpts: gaxOptions,
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'modifyColumnFamilies',
+        reqOpts: {
+          name: this.table.name,
+          modifications: [
+            {
+              id: this.id,
+              drop: true,
+            },
+          ],
         },
-        callback);
+        gaxOpts: gaxOptions,
+      },
+      callback
+    );
   }
 
   /**
@@ -359,20 +361,21 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     };
 
     this.bigtable.request(
-        {
-          client: 'BigtableTableAdminClient',
-          method: 'modifyColumnFamilies',
-          reqOpts,
-          gaxOpts: gaxOptions,
-        },
-        (...args) => {
-          if (args[1]) {
-            this.metadata = args[1].columnFamilies[this.id];
-            args.splice(1, 0, this.metadata);
-          }
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'modifyColumnFamilies',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (...args) => {
+        if (args[1]) {
+          this.metadata = args[1].columnFamilies[this.id];
+          args.splice(1, 0, this.metadata);
+        }
 
-          callback(...args);
-        });
+        callback(...args);
+      }
+    );
   }
 }
 

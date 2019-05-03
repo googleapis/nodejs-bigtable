@@ -229,27 +229,26 @@ export class Row {
    * region_tag:bigtable_create_row
    */
   create(options, callback) {
-    if (is.function(options))
-      {
-        callback = options;
-        options = {};
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
+
+    const entry = {
+      key: this.id,
+      data: options.entry,
+      method: Mutation.methods.INSERT,
+    };
+    this.data = {};
+
+    this.table.mutate(entry, options.gaxOptions, (err, apiResponse) => {
+      if (err) {
+        callback(err, null, apiResponse);
+        return;
       }
 
-      const entry = {
-        key: this.id,
-        data: options.entry,
-        method: Mutation.methods.INSERT,
-      };
-      this.data = {};
-
-      this.table.mutate(entry, options.gaxOptions, (err, apiResponse) => {
-        if (err) {
-          callback(err, null, apiResponse);
-          return;
-        }
-
-        callback(null, this, apiResponse);
-      });
+      callback(null, this, apiResponse);
+    });
   }
 
   /**
@@ -271,48 +270,49 @@ export class Row {
    * region_tag:bigtable_create_rules
    */
   createRules(rules, gaxOptions, callback) {
-      if (is.fn(gaxOptions)) {
-        callback = gaxOptions;
-        gaxOptions = {};
-      }
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
 
-      if (!rules || rules.length === 0) {
-        throw new Error('At least one rule must be provided.');
-      }
+    if (!rules || rules.length === 0) {
+      throw new Error('At least one rule must be provided.');
+    }
 
-      rules = arrify(rules).map(rule => {
-        const column = Mutation.parseColumnName(rule.column);
-        const ruleData: any = {
-          familyName: column.family,
-          columnQualifier: Mutation.convertToBytes(column.qualifier!),
-        };
-
-        if (rule.append) {
-          ruleData.appendValue = Mutation.convertToBytes(rule.append);
-        }
-
-        if (rule.increment) {
-          ruleData.incrementAmount = rule.increment;
-        }
-
-        return ruleData;
-      });
-
-      const reqOpts = {
-        tableName: this.table.name,
-        appProfileId: this.bigtable.appProfileId,
-        rowKey: Mutation.convertToBytes(this.id),
-        rules,
+    rules = arrify(rules).map(rule => {
+      const column = Mutation.parseColumnName(rule.column);
+      const ruleData: any = {
+        familyName: column.family,
+        columnQualifier: Mutation.convertToBytes(column.qualifier!),
       };
-      this.data = {};
-      this.bigtable.request(
-          {
-            client: 'BigtableClient',
-            method: 'readModifyWriteRow',
-            reqOpts,
-            gaxOpts: gaxOptions,
-          },
-          callback);
+
+      if (rule.append) {
+        ruleData.appendValue = Mutation.convertToBytes(rule.append);
+      }
+
+      if (rule.increment) {
+        ruleData.incrementAmount = rule.increment;
+      }
+
+      return ruleData;
+    });
+
+    const reqOpts = {
+      tableName: this.table.name,
+      appProfileId: this.bigtable.appProfileId,
+      rowKey: Mutation.convertToBytes(this.id),
+      rules,
+    };
+    this.data = {};
+    this.bigtable.request(
+      {
+        client: 'BigtableClient',
+        method: 'readModifyWriteRow',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      callback
+    );
   }
 
   /**
@@ -329,17 +329,17 @@ export class Row {
    * region_tag:bigtable_delete_all_cells
    */
   delete(gaxOptions, callback) {
-      if (is.fn(gaxOptions)) {
-        callback = gaxOptions;
-        gaxOptions = {};
-      }
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
 
-      const mutation = {
-        key: this.id,
-        method: Mutation.methods.DELETE,
-      };
-      this.data = {};
-      this.table.mutate(mutation, gaxOptions, callback);
+    const mutation = {
+      key: this.id,
+      method: Mutation.methods.DELETE,
+    };
+    this.data = {};
+    this.table.mutate(mutation, gaxOptions, callback);
   }
 
   /**
@@ -357,18 +357,18 @@ export class Row {
    * region_tag:bigtable_delete_particular_cells
    */
   deleteCells(columns, gaxOptions, callback) {
-      if (is.fn(gaxOptions)) {
-        callback = gaxOptions;
-        gaxOptions = {};
-      }
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
 
-      const mutation = {
-        key: this.id,
-        data: arrify(columns),
-        method: Mutation.methods.DELETE,
-      };
-      this.data = {};
-      this.table.mutate(mutation, gaxOptions, callback);
+    const mutation = {
+      key: this.id,
+      data: arrify(columns),
+      method: Mutation.methods.DELETE,
+    };
+    this.data = {};
+    this.table.mutate(mutation, gaxOptions, callback);
   }
 
   /**
@@ -385,24 +385,24 @@ export class Row {
    * region_tag:bigtable_row_exists
    */
   exists(gaxOptions, callback) {
-      if (is.fn(gaxOptions)) {
-        callback = gaxOptions;
-        gaxOptions = {};
-      }
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
 
-      this.getMetadata(gaxOptions, err => {
-        if (err) {
-          if (err instanceof RowError) {
-            callback(null, false);
-            return;
-          }
-
-          callback(err);
+    this.getMetadata(gaxOptions, err => {
+      if (err) {
+        if (err instanceof RowError) {
+          callback(null, false);
           return;
         }
 
-        callback(null, true);
-      });
+        callback(err);
+        return;
+      }
+
+      callback(null, true);
+    });
   }
 
   /**
@@ -427,35 +427,36 @@ export class Row {
    * region_tag:bigtable_row_filter
    */
   filter(filter, config, callback) {
-      const reqOpts = {
-        tableName: this.table.name,
-        appProfileId: this.bigtable.appProfileId,
-        rowKey: Mutation.convertToBytes(this.id),
-        predicateFilter: Filter.parse(filter),
-        trueMutations: createFlatMutationsList(config.onMatch),
-        falseMutations: createFlatMutationsList(config.onNoMatch),
-      };
-      this.data = {};
-      this.bigtable.request(
-          {
-            client: 'BigtableClient',
-            method: 'checkAndMutateRow',
-            reqOpts,
-            gaxOpts: config.gaxOptions,
-          },
-          (err, apiResponse) => {
-            if (err) {
-              callback(err, null, apiResponse);
-              return;
-            }
+    const reqOpts = {
+      tableName: this.table.name,
+      appProfileId: this.bigtable.appProfileId,
+      rowKey: Mutation.convertToBytes(this.id),
+      predicateFilter: Filter.parse(filter),
+      trueMutations: createFlatMutationsList(config.onMatch),
+      falseMutations: createFlatMutationsList(config.onNoMatch),
+    };
+    this.data = {};
+    this.bigtable.request(
+      {
+        client: 'BigtableClient',
+        method: 'checkAndMutateRow',
+        reqOpts,
+        gaxOpts: config.gaxOptions,
+      },
+      (err, apiResponse) => {
+        if (err) {
+          callback(err, null, apiResponse);
+          return;
+        }
 
-            callback(null, apiResponse.predicateMatched, apiResponse);
-          });
-
-      function createFlatMutationsList(entries) {
-        entries = arrify(entries).map(entry => Mutation.parse(entry).mutations);
-        return entries.reduce((a, b) => a.concat(b), []);
+        callback(null, apiResponse.predicateMatched, apiResponse);
       }
+    );
+
+    function createFlatMutationsList(entries) {
+      entries = arrify(entries).map(entry => Mutation.parse(entry).mutations);
+      return entries.reduce((a, b) => a.concat(b), []);
+    }
   }
 
   /**
@@ -476,74 +477,73 @@ export class Row {
    * region_tag:bigtable_get_row
    */
   get(columns, options, callback?) {
-      if (!is.array(columns)) {
-        callback = options;
-        options = columns;
-        columns = [];
+    if (!is.array(columns)) {
+      callback = options;
+      options = columns;
+      columns = [];
+    }
+
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
+
+    let filter;
+    columns = arrify(columns);
+
+    // if there is column filter
+    if (columns.length) {
+      const filters = columns.map(Mutation.parseColumnName).map(column => {
+        const colmFilters: any = [{family: column.family}];
+        if (column.qualifier) {
+          colmFilters.push({column: column.qualifier});
+        }
+        return colmFilters;
+      });
+
+      // if there is more then one filter, make it type inteleave filter
+      if (filters.length > 1) {
+        filter = [
+          {
+            interleave: filters,
+          },
+        ];
+      } else {
+        filter = filters[0];
+      }
+    }
+
+    // if there is also a second option.filter append to filter array
+    if (options.filter) {
+      filter = arrify(filter).concat(options.filter);
+    }
+
+    const getRowsOptions = Object.assign({}, options, {
+      keys: [this.id],
+      filter,
+    });
+
+    this.table.getRows(getRowsOptions, (err, rows) => {
+      if (err) {
+        callback(err);
+        return;
       }
 
-    if (is.function(options))
-        {
-          callback = options;
-          options = {};
-        }
+      const row = rows[0];
 
-        let filter;
-        columns = arrify(columns);
+      if (!row) {
+        err = new RowError(this.id);
+        callback(err);
+        return;
+      }
 
-        // if there is column filter
-        if (columns.length) {
-          const filters = columns.map(Mutation.parseColumnName).map(column => {
-            const colmFilters: any = [{family: column.family}];
-            if (column.qualifier) {
-              colmFilters.push({column: column.qualifier});
-            }
-            return colmFilters;
-          });
+      this.data = row.data;
 
-          // if there is more then one filter, make it type inteleave filter
-          if (filters.length > 1) {
-            filter = [
-              {
-                interleave: filters,
-              },
-            ];
-          } else {
-            filter = filters[0];
-          }
-        }
-
-        // if there is also a second option.filter append to filter array
-        if (options.filter) {
-          filter = arrify(filter).concat(options.filter);
-        }
-
-        const getRowsOptions = Object.assign({}, options, {
-          keys: [this.id],
-          filter,
-        });
-
-        this.table.getRows(getRowsOptions, (err, rows) => {
-          if (err) {
-            callback(err);
-            return;
-          }
-
-          const row = rows[0];
-
-          if (!row) {
-            err = new RowError(this.id);
-            callback(err);
-            return;
-          }
-
-          this.data = row.data;
-
-          // If the user specifies column names, we'll return back the row data
-          // we received. Otherwise, we'll return the row "this" in a typical
-          // GrpcServiceObject#get fashion.
-          callback(null, columns.length ? row.data : this);
-        });
+      // If the user specifies column names, we'll return back the row data
+      // we received. Otherwise, we'll return the row "this" in a typical
+      // GrpcServiceObject#get fashion.
+      callback(null, columns.length ? row.data : this);
+    });
   }
 
   /**
@@ -563,20 +563,19 @@ export class Row {
    * region_tag:bigtable_get_row_meta
    */
   getMetadata(options, callback) {
-    if (is.function(options))
-          {
-            callback = options;
-            options = {};
-          }
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
 
-          this.get(options, (err, row) => {
-            if (err) {
-              callback(err);
-              return;
-            }
+    this.get(options, (err, row) => {
+      if (err) {
+        callback(err);
+        return;
+      }
 
-            callback(null, row.metadata);
-          });
+      callback(null, row.metadata);
+    });
   }
 
   /**
@@ -597,45 +596,42 @@ export class Row {
    * region_tag:bigtable_row_increment
    */
   increment(column, value, gaxOptions, callback) {
-          // increment('column', callback)
-    if (is.function(value))
-            {
-              callback = value;
-              value = 1;
-              gaxOptions = {};
-            }
+    // increment('column', callback)
+    if (is.function(value)) {
+      callback = value;
+      value = 1;
+      gaxOptions = {};
+    }
 
-            // increment('column', value, callback)
-    if (is.function(gaxOptions))
-              {
-                callback = gaxOptions;
-                gaxOptions = {};
-              }
+    // increment('column', value, callback)
+    if (is.function(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
 
-              // increment('column', { gaxOptions }, callback)
-              if (is.object(value)) {
-                callback = gaxOptions;
-                gaxOptions = value;
-                value = 1;
-              }
+    // increment('column', { gaxOptions }, callback)
+    if (is.object(value)) {
+      callback = gaxOptions;
+      gaxOptions = value;
+      value = 1;
+    }
 
-              const reqOpts = {
-                column,
-                increment: value,
-              };
+    const reqOpts = {
+      column,
+      increment: value,
+    };
 
-              this.createRules(reqOpts, gaxOptions, (err, resp) => {
-                if (err) {
-                  callback(err, null, resp);
-                  return;
-                }
+    this.createRules(reqOpts, gaxOptions, (err, resp) => {
+      if (err) {
+        callback(err, null, resp);
+        return;
+      }
 
-                const data = Row.formatFamilies_(resp.row.families);
-                const value =
-                    dotProp.get(data, column.replace(':', '.'))[0].value;
+      const data = Row.formatFamilies_(resp.row.families);
+      const value = dotProp.get(data, column.replace(':', '.'))[0].value;
 
-                callback(null, value, resp);
-              });
+      callback(null, value, resp);
+    });
   }
 
   /**
@@ -654,18 +650,18 @@ export class Row {
    * region_tag:bigtable_row_save
    */
   save(entry, gaxOptions, callback) {
-              if (is.fn(gaxOptions)) {
-                callback = gaxOptions;
-                gaxOptions = {};
-              }
+    if (is.fn(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
 
-              const mutation = {
-                key: this.id,
-                data: entry,
-                method: Mutation.methods.INSERT,
-              };
-              this.data = {};
-              this.table.mutate(mutation, gaxOptions, callback);
+    const mutation = {
+      key: this.id,
+      data: entry,
+      method: Mutation.methods.INSERT,
+    };
+    this.data = {};
+    this.table.mutate(mutation, gaxOptions, callback);
   }
 }
 
