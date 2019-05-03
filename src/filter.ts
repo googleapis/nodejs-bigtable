@@ -120,7 +120,7 @@ export class Filter {
       return Buffer.from(escapedString, encodingToUse);
     }
 
-    throw new TypeError('Can\'t convert to RegExp String from unknown type.');
+    throw new TypeError("Can't convert to RegExp String from unknown type.");
   }
 
   /**
@@ -215,14 +215,14 @@ export class Filter {
     arrify(filters).forEach(filterObj => {
       const key = Object.keys(filterObj)[0];
 
-      if (!is.function(filter[key]))
-        { throw new FilterError(key); }
+      if (!is.function(filter[key])) {
+        throw new FilterError(key);
+      }
 
-        filter[key](filterObj[key]);
-    })
-        ;
+      filter[key](filterObj[key]);
+    });
 
-      return filter.toProto();
+    return filter.toProto();
   }
 
   /**
@@ -250,9 +250,9 @@ export class Filter {
    * };
    */
   all(pass) {
-      const filterName = pass ? 'passAllFilter' : 'blockAllFilter';
+    const filterName = pass ? 'passAllFilter' : 'blockAllFilter';
 
-      this.set(filterName, true);
+    this.set(filterName, true);
   }
 
   /**
@@ -374,30 +374,33 @@ export class Filter {
    * ];
    */
   column(column) {
-      if (!is.object(column)) {
-        column = {
-          name: column,
-        };
-      }
+    if (!is.object(column)) {
+      column = {
+        name: column,
+      };
+    }
 
-      if (column.name) {
-        let name = Filter.convertToRegExpString(column.name);
+    if (column.name) {
+      let name = Filter.convertToRegExpString(column.name);
 
-        name = Mutation.convertToBytes(name);
-        this.set('columnQualifierRegexFilter', name);
-      }
+      name = Mutation.convertToBytes(name);
+      this.set('columnQualifierRegexFilter', name);
+    }
 
-      if (is.number(column.cellLimit)) {
-        this.set('cellsPerColumnLimitFilter', column.cellLimit);
-      }
+    if (is.number(column.cellLimit)) {
+      this.set('cellsPerColumnLimitFilter', column.cellLimit);
+    }
 
-      if (column.start || column.end) {
-        const range: any =
-            Filter.createRange(column.start, column.end, 'Qualifier');
+    if (column.start || column.end) {
+      const range: any = Filter.createRange(
+        column.start,
+        column.end,
+        'Qualifier'
+      );
 
-        range.familyName = column.family;
-        this.set('columnRangeFilter', range);
-      }
+      range.familyName = column.family;
+      this.set('columnRangeFilter', range);
+    }
   }
 
   /**
@@ -453,11 +456,11 @@ export class Filter {
    * ];
    */
   condition(condition) {
-      this.set('condition', {
-        predicateFilter: Filter.parse(condition.test),
-        trueFilter: Filter.parse(condition.pass),
-        falseFilter: Filter.parse(condition.fail),
-      });
+    this.set('condition', {
+      predicateFilter: Filter.parse(condition.test),
+      trueFilter: Filter.parse(condition.pass),
+      falseFilter: Filter.parse(condition.fail),
+    });
   }
 
   /**
@@ -478,8 +481,8 @@ export class Filter {
    * ];
    */
   family(family) {
-      family = Filter.convertToRegExpString(family);
-      this.set('familyNameRegexFilter', family);
+    family = Filter.convertToRegExpString(family);
+    this.set('familyNameRegexFilter', family);
   }
 
   /**
@@ -521,9 +524,9 @@ export class Filter {
    * ];
    */
   interleave(filters) {
-      this.set('interleave', {
-        filters: filters.map(Filter.parse),
-      });
+    this.set('interleave', {
+      filters: filters.map(Filter.parse),
+    });
   }
 
   /**
@@ -548,7 +551,7 @@ export class Filter {
    * };
    */
   label(label) {
-      this.set('applyLabelTransformer', label);
+    this.set('applyLabelTransformer', label);
   }
 
   /**
@@ -657,30 +660,30 @@ export class Filter {
    * ];
    */
   row(row) {
-      if (!is.object(row)) {
-        row = {
-          key: row,
-        };
-      }
+    if (!is.object(row)) {
+      row = {
+        key: row,
+      };
+    }
 
-      if (row.key) {
-        let key = Filter.convertToRegExpString(row.key);
+    if (row.key) {
+      let key = Filter.convertToRegExpString(row.key);
 
-        key = Mutation.convertToBytes(key);
-        this.set('rowKeyRegexFilter', key);
-      }
+      key = Mutation.convertToBytes(key);
+      this.set('rowKeyRegexFilter', key);
+    }
 
-      if (row.sample) {
-        this.set('rowSampleFilter', row.sample);
-      }
+    if (row.sample) {
+      this.set('rowSampleFilter', row.sample);
+    }
 
-      if (is.number(row.cellOffset)) {
-        this.set('cellsPerRowOffsetFilter', row.cellOffset);
-      }
+    if (is.number(row.cellOffset)) {
+      this.set('cellsPerRowOffsetFilter', row.cellOffset);
+    }
 
-      if (is.number(row.cellLimit)) {
-        this.set('cellsPerRowLimitFilter', row.cellLimit);
-      }
+    if (is.number(row.cellLimit)) {
+      this.set('cellsPerRowLimitFilter', row.cellLimit);
+    }
   }
 
   /**
@@ -690,10 +693,10 @@ export class Filter {
    * @param {*} value Filter value.
    */
   set(key, value) {
-      const filter = {};
+    const filter = {};
 
-      filter[key] = value;
-      this.filters_.push(filter);
+    filter[key] = value;
+    this.filters_.push(filter);
   }
 
   /**
@@ -751,7 +754,7 @@ export class Filter {
    * //-
    */
   sink(sink) {
-      this.set('sink', sink);
+    this.set('sink', sink);
   }
 
   /**
@@ -770,8 +773,8 @@ export class Filter {
    * ];
    */
   time(time) {
-      const range = Mutation.createTimeRange(time.start, time.end);
-      this.set('timestampRangeFilter', range);
+    const range = Mutation.createTimeRange(time.start, time.end);
+    this.set('timestampRangeFilter', range);
   }
 
   /**
@@ -779,19 +782,19 @@ export class Filter {
    * execution of the filters will be the order in which they were specified.
    */
   toProto() {
-      if (!this.filters_.length) {
-        return null;
-      }
+    if (!this.filters_.length) {
+      return null;
+    }
 
-      if (this.filters_.length === 1) {
-        return this.filters_[0];
-      }
+    if (this.filters_.length === 1) {
+      return this.filters_[0];
+    }
 
-      return {
-        chain: {
-          filters: this.filters_,
-        },
-      };
+    return {
+      chain: {
+        filters: this.filters_,
+      },
+    };
   }
 
   /**
@@ -892,27 +895,27 @@ export class Filter {
    * ];
    */
   value(value) {
-      if (!is.object(value)) {
-        value = {
-          value,
-        };
-      }
+    if (!is.object(value)) {
+      value = {
+        value,
+      };
+    }
 
-      if (value.value) {
-        let valueReg = Filter.convertToRegExpString(value.value);
+    if (value.value) {
+      let valueReg = Filter.convertToRegExpString(value.value);
 
-        valueReg = Mutation.convertToBytes(valueReg);
-        this.set('valueRegexFilter', valueReg);
-      }
+      valueReg = Mutation.convertToBytes(valueReg);
+      this.set('valueRegexFilter', valueReg);
+    }
 
-      if (value.start || value.end) {
-        const range = Filter.createRange(value.start, value.end, 'Value');
+    if (value.start || value.end) {
+      const range = Filter.createRange(value.start, value.end, 'Value');
 
-        this.set('valueRangeFilter', range);
-      }
+      this.set('valueRangeFilter', range);
+    }
 
-      if (value.strip) {
-        this.set('stripValueTransformer', value.strip);
-      }
+    if (value.strip) {
+      this.set('stripValueTransformer', value.strip);
+    }
   }
-  }
+}

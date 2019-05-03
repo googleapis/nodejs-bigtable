@@ -392,20 +392,21 @@ export class Bigtable {
     }
 
     options = Object.assign(
-        {
-          libName: 'gccl',
-          libVersion: PKG.version,
-          scopes,
-          'grpc.max_send_message_length': -1,
-          'grpc.max_receive_message_length': -1,
-        },
-        options);
+      {
+        libName: 'gccl',
+        libVersion: PKG.version,
+        scopes,
+        'grpc.max_send_message_length': -1,
+        'grpc.max_receive_message_length': -1,
+      },
+      options
+    );
 
     const defaultBaseUrl = 'bigtable.googleapis.com';
     const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
 
     const customEndpoint =
-        options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
+      options.apiEndpoint || process.env.BIGTABLE_EMULATOR_HOST;
     this.customEndpoint = customEndpoint;
 
     let customEndpointBaseUrl;
@@ -419,32 +420,39 @@ export class Bigtable {
 
     this.options = {
       BigtableClient: Object.assign(
-          {
-            servicePath: customEndpoint ? customEndpointBaseUrl :
-                                          defaultBaseUrl,
-            port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
-            sslCreds: customEndpoint ? grpc.credentials.createInsecure() :
-                                       undefined,
-          },
-          options),
+        {
+          servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
+          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          sslCreds: customEndpoint
+            ? grpc.credentials.createInsecure()
+            : undefined,
+        },
+        options
+      ),
       BigtableInstanceAdminClient: Object.assign(
-          {
-            servicePath: customEndpoint ? customEndpointBaseUrl :
-                                          defaultAdminBaseUrl,
-            port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
-            sslCreds: customEndpoint ? grpc.credentials.createInsecure() :
-                                       undefined,
-          },
-          options),
+        {
+          servicePath: customEndpoint
+            ? customEndpointBaseUrl
+            : defaultAdminBaseUrl,
+          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          sslCreds: customEndpoint
+            ? grpc.credentials.createInsecure()
+            : undefined,
+        },
+        options
+      ),
       BigtableTableAdminClient: Object.assign(
-          {
-            servicePath: customEndpoint ? customEndpointBaseUrl :
-                                          defaultAdminBaseUrl,
-            port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
-            sslCreds: customEndpoint ? grpc.credentials.createInsecure() :
-                                       undefined,
-          },
-          options),
+        {
+          servicePath: customEndpoint
+            ? customEndpointBaseUrl
+            : defaultAdminBaseUrl,
+          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          sslCreds: customEndpoint
+            ? grpc.credentials.createInsecure()
+            : undefined,
+        },
+        options
+      ),
     };
 
     this.api = {};
@@ -530,52 +538,51 @@ export class Bigtable {
    * });
    */
   createInstance(id, options, callback) {
-    if (is.function(options))
-      {
-        callback = options;
-        options = {};
-      }
+    if (is.function(options)) {
+      callback = options;
+      options = {};
+    }
 
-      const reqOpts: any = {
-        parent: this.projectName,
-        instanceId: id,
-        instance: {
-          displayName: options.displayName || id,
-          labels: options.labels,
-        },
+    const reqOpts: any = {
+      parent: this.projectName,
+      instanceId: id,
+      instance: {
+        displayName: options.displayName || id,
+        labels: options.labels,
+      },
+    };
+
+    if (options.type) {
+      reqOpts.instance.type = Instance.getTypeType_(options.type);
+    }
+
+    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
+      clusters[cluster.id] = {
+        location: Cluster.getLocation_(this.projectId, cluster.location),
+        serveNodes: cluster.nodes,
+        defaultStorageType: Cluster.getStorageType_(cluster.storage),
       };
 
-      if (options.type) {
-        reqOpts.instance.type = Instance.getTypeType_(options.type);
+      return clusters;
+    }, {});
+
+    this.request(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'createInstance',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        const err = args[0];
+
+        if (!err) {
+          args.splice(1, 0, this.instance(id));
+        }
+
+        callback(...args);
       }
-
-      reqOpts.clusters =
-          arrify(options.clusters).reduce((clusters, cluster) => {
-            clusters[cluster.id] = {
-              location: Cluster.getLocation_(this.projectId, cluster.location),
-              serveNodes: cluster.nodes,
-              defaultStorageType: Cluster.getStorageType_(cluster.storage),
-            };
-
-            return clusters;
-          }, {});
-
-      this.request(
-          {
-            client: 'BigtableInstanceAdminClient',
-            method: 'createInstance',
-            reqOpts,
-            gaxOpts: options.gaxOptions,
-          },
-          (...args) => {
-            const err = args[0];
-
-            if (!err) {
-              args.splice(1, 0, this.instance(id));
-            }
-
-            callback(...args);
-          });
+    );
   }
 
   /**
@@ -607,38 +614,37 @@ export class Bigtable {
    * });
    */
   getInstances(gaxOptions?, callback?) {
-    if (is.function(gaxOptions))
-        {
-          callback = gaxOptions;
-          gaxOptions = {};
+    if (is.function(gaxOptions)) {
+      callback = gaxOptions;
+      gaxOptions = {};
+    }
+
+    const reqOpts = {
+      parent: this.projectName,
+    };
+
+    this.request(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'listInstances',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (err, resp) => {
+        if (err) {
+          callback(err);
+          return;
         }
 
-        const reqOpts = {
-          parent: this.projectName,
-        };
+        const instances = resp.instances.map(instanceData => {
+          const instance = this.instance(instanceData.name.split('/').pop());
+          instance.metadata = instanceData;
+          return instance;
+        });
 
-        this.request(
-            {
-              client: 'BigtableInstanceAdminClient',
-              method: 'listInstances',
-              reqOpts,
-              gaxOpts: gaxOptions,
-            },
-            (err, resp) => {
-              if (err) {
-                callback(err);
-                return;
-              }
-
-              const instances = resp.instances.map(instanceData => {
-                const instance =
-                    this.instance(instanceData.name.split('/').pop());
-                instance.metadata = instanceData;
-                return instance;
-              });
-
-              callback(null, instances, resp);
-            });
+        callback(null, instances, resp);
+      }
+    );
   }
 
   /**
@@ -648,7 +654,7 @@ export class Bigtable {
    * @returns {Instance}
    */
   instance(name) {
-        return new Instance(this, name);
+    return new Instance(this, name);
   }
 
   /**
@@ -661,96 +667,99 @@ export class Bigtable {
    * @param {function} [callback] Callback function.
    */
   request(config, callback) {
-        const isStreamMode = !callback;
+    const isStreamMode = !callback;
 
-        let gaxStream;
-        let stream;
+    let gaxStream;
+    let stream;
 
-        const prepareGaxRequest = callback => {
-          this.getProjectId_((err, projectId) => {
-            if (err) {
-              callback(err);
-              return;
-            }
-
-            let gaxClient = this.api[config.client];
-
-            if (!gaxClient) {
-              // Lazily instantiate client.
-              gaxClient = new v2[config.client](this.options[config.client]);
-              this.api[config.client] = gaxClient;
-            }
-
-            let reqOpts = extend(true, {}, config.reqOpts);
-
-            if (this.shouldReplaceProjectIdToken &&
-                projectId !== '{{projectId}}') {
-              reqOpts = replaceProjectIdToken(reqOpts, projectId);
-            }
-
-            const requestFn = gaxClient[config.method].bind(
-                gaxClient, reqOpts, config.gaxOpts);
-
-            callback(null, requestFn);
-          });
-        };
-
-        if (isStreamMode) {
-          stream = streamEvents(through.obj());
-
-          stream.abort = () => {
-            if (gaxStream && gaxStream.cancel) {
-              gaxStream.cancel();
-            }
-          };
-
-          stream.once('reading', makeRequestStream);
-
-          return stream;
-        } else {
-          makeRequestCallback();
+    const prepareGaxRequest = callback => {
+      this.getProjectId_((err, projectId) => {
+        if (err) {
+          callback(err);
+          return;
         }
 
-        function makeRequestCallback() {
-          prepareGaxRequest((err, requestFn) => {
-            if (err) {
-              callback(err);
-              return;
-            }
+        let gaxClient = this.api[config.client];
 
-            requestFn(callback);
-          });
+        if (!gaxClient) {
+          // Lazily instantiate client.
+          gaxClient = new v2[config.client](this.options[config.client]);
+          this.api[config.client] = gaxClient;
         }
 
-        function makeRequestStream() {
-          prepareGaxRequest((err, requestFn) => {
-            if (err) {
-              stream.destroy(err);
-              return;
-            }
+        let reqOpts = extend(true, {}, config.reqOpts);
 
-            // @TODO: remove `retry-request` when gax supports retryable
-            // streams.
-            // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
-            const retryOpts = Object.assign(
-                {
-                  currentRetryAttempt: 0,
-                  noResponseRetries: 0,
-                  objectMode: true,
-                  shouldRetryFn: (Service as any).shouldRetryRequest_,
-                  request() {
-                    gaxStream = requestFn();
-                    return gaxStream;
-                  },
-                },
-                config.retryOpts);
-
-            retryRequest(null, retryOpts)
-                .on('error', stream.destroy.bind(stream))
-                .on('request', stream.emit.bind(stream, 'request'))
-                .pipe(stream);
-          });
+        if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
+          reqOpts = replaceProjectIdToken(reqOpts, projectId);
         }
+
+        const requestFn = gaxClient[config.method].bind(
+          gaxClient,
+          reqOpts,
+          config.gaxOpts
+        );
+
+        callback(null, requestFn);
+      });
+    };
+
+    if (isStreamMode) {
+      stream = streamEvents(through.obj());
+
+      stream.abort = () => {
+        if (gaxStream && gaxStream.cancel) {
+          gaxStream.cancel();
+        }
+      };
+
+      stream.once('reading', makeRequestStream);
+
+      return stream;
+    } else {
+      makeRequestCallback();
+    }
+
+    function makeRequestCallback() {
+      prepareGaxRequest((err, requestFn) => {
+        if (err) {
+          callback(err);
+          return;
+        }
+
+        requestFn(callback);
+      });
+    }
+
+    function makeRequestStream() {
+      prepareGaxRequest((err, requestFn) => {
+        if (err) {
+          stream.destroy(err);
+          return;
+        }
+
+        // @TODO: remove `retry-request` when gax supports retryable
+        // streams.
+        // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
+        const retryOpts = Object.assign(
+          {
+            currentRetryAttempt: 0,
+            noResponseRetries: 0,
+            objectMode: true,
+            shouldRetryFn: (Service as any).shouldRetryRequest_,
+            request() {
+              gaxStream = requestFn();
+              return gaxStream;
+            },
+          },
+          config.retryOpts
+        );
+
+        retryRequest(null, retryOpts)
+          .on('error', stream.destroy.bind(stream))
+          .on('request', stream.emit.bind(stream, 'request'))
+          .pipe(stream);
+      });
+    }
   }
 
   /**
@@ -764,24 +773,24 @@ export class Bigtable {
    * @param {string} callback.projectId The detected project ID.
    */
   getProjectId_(callback) {
-        const projectIdRequired =
-            this.projectId === '{{projectId}}' && !this.customEndpoint;
+    const projectIdRequired =
+      this.projectId === '{{projectId}}' && !this.customEndpoint;
 
-        if (!projectIdRequired) {
-          setImmediate(callback, null, this.projectId);
-          return;
-        }
+    if (!projectIdRequired) {
+      setImmediate(callback, null, this.projectId);
+      return;
+    }
 
-        this.auth.getProjectId((err, projectId) => {
-          if (err) {
-            callback(err);
-            return;
-          }
+    this.auth.getProjectId((err, projectId) => {
+      if (err) {
+        callback(err);
+        return;
+      }
 
-          this.projectId = projectId;
+      this.projectId = projectId;
 
-          callback(null, this.projectId);
-        });
+      callback(null, this.projectId);
+    });
   }
 }
 
@@ -822,7 +831,7 @@ promisifyAll(Bigtable, {
 // eslint-disable-next-line no-class-assign
 (Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
-      return new (target as any)(...argumentsList);
+    return new (target as any)(...argumentsList);
   },
 });
 

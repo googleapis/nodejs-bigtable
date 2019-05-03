@@ -45,9 +45,9 @@ function dispatch(emitter, response) {
 function entryResponses(statusCodes) {
   return {
     entries: statusCodes.map((code, index) => ({
-                               index,
-                               status: {code},
-                             })),
+      index,
+      status: {code},
+    })),
   };
 }
 
@@ -86,7 +86,8 @@ describe('Bigtable/Table', () => {
       bigtable.api.BigtableClient = {
         mutateRows: reqOpts => {
           mutationBatchesInvoked.push(
-              reqOpts.entries.map(entry => entry.rowKey.asciiSlice()));
+            reqOpts.entries.map(entry => entry.rowKey.asciiSlice())
+          );
           mutationCallTimes.push(new Date().getTime());
           const emitter = through.obj();
           dispatch(emitter, responses.shift());
@@ -105,7 +106,9 @@ describe('Bigtable/Table', () => {
         TABLE.maxRetries = test.max_retries;
         TABLE.mutate(test.mutations_request, error => {
           assert.deepStrictEqual(
-              mutationBatchesInvoked, test.mutation_batches_invoked);
+            mutationBatchesInvoked,
+            test.mutation_batches_invoked
+          );
           getDeltas(mutationCallTimes).forEach((delta, index) => {
             if (index === 0) {
               const message = 'First request should happen Immediately';
@@ -116,8 +119,9 @@ describe('Bigtable/Table', () => {
 
             // Adjust for some flakiness with the fake timers.
             const maxBackoff = minBackoff + 1010;
-            const message = `Backoff for retry #${index} should be between ` +
-                `${minBackoff} and ${maxBackoff}, was ${delta}`;
+            const message =
+              `Backoff for retry #${index} should be between ` +
+              `${minBackoff} and ${maxBackoff}, was ${delta}`;
             assert(delta > minBackoff, message);
             assert(delta < maxBackoff, message);
           });

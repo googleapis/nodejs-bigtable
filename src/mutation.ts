@@ -24,19 +24,19 @@ export type IMutation = btTypes.bigtable.v2.IMutation;
 export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
 export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
 
-export type Bytes = string|Buffer;
-export type Data = Value|Value[]|MutationSettingsObj;
-export type JsonObj = {
-  [k: string]: string|JsonObj
-};
-export type Value = string|number|boolean;
+export type Bytes = string | Buffer;
+export type Data = Value | Value[] | MutationSettingsObj;
+export interface JsonObj {
+  [k: string]: string | JsonObj;
+}
+export type Value = string | number | boolean;
 
 export interface ParsedColumn {
-  family: string|null;
-  qualifier: string|null;
+  family: string | null;
+  qualifier: string | null;
 }
 export interface ConvertFromBytesOptions {
-  userOptions?: {decode?: boolean; encoding?: string;};
+  userOptions?: {decode?: boolean; encoding?: string};
   isPossibleNumber?: boolean;
 }
 export interface MutationConstructorObj {
@@ -47,19 +47,19 @@ export interface MutationConstructorObj {
 export interface MutationSettingsObj {
   follows?: ValueObj;
   column?: string;
-  time?: {start: Date|number; end: Date | number;};
+  time?: {start: Date | number; end: Date | number};
 }
 export interface TimeRange {
-  [k: string]: number|string|undefined;
+  [k: string]: number | string | undefined;
   startTimestampMicros?: number;
   endTimestampMicros?: number;
 }
 export interface SetCellObj {
-  [k: string]: string|ISetCell|undefined;
+  [k: string]: string | ISetCell | undefined;
   setCell?: ISetCell;
 }
 export interface ValueObj {
-  [k: string]: Buffer|Value|ValueObj;
+  [k: string]: Buffer | Value | ValueObj;
 }
 
 /**
@@ -102,8 +102,10 @@ export class Mutation {
    * @returns {string|number|buffer}
    * @private
    */
-  static convertFromBytes(bytes: Bytes, options?: ConvertFromBytesOptions):
-      Buffer|Value {
+  static convertFromBytes(
+    bytes: Bytes,
+    options?: ConvertFromBytesOptions
+  ): Buffer | Value {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
       // tslint:disable-next-line no-any
@@ -130,7 +132,7 @@ export class Mutation {
    * @returns {buffer}
    * @private
    */
-  static convertToBytes(data: Buffer|Data): Buffer|Data {
+  static convertToBytes(data: Buffer | Data): Buffer | Data {
     if (data instanceof Buffer) {
       return data;
     }
@@ -287,7 +289,7 @@ export class Mutation {
    * ]);
    * @private
    */
-  static encodeDelete(data?: Data|Data[]): IMutation[] {
+  static encodeDelete(data?: Data | Data[]): IMutation[] {
     if (!data) {
       return [
         {
@@ -303,8 +305,9 @@ export class Mutation {
         } as MutationSettingsObj;
       }
 
-      const column =
-          Mutation.parseColumnName((mutation as MutationSettingsObj).column!);
+      const column = Mutation.parseColumnName(
+        (mutation as MutationSettingsObj).column!
+      );
 
       if (!column.qualifier) {
         return {
@@ -314,19 +317,21 @@ export class Mutation {
         };
       }
 
-      let timeRange: TimeRange|undefined;
+      let timeRange: TimeRange | undefined;
 
       if ((mutation as MutationSettingsObj).time) {
         timeRange = Mutation.createTimeRange(
-            (mutation as MutationSettingsObj).time!.start as Date,
-            (mutation as MutationSettingsObj).time!.end as Date);
+          (mutation as MutationSettingsObj).time!.start as Date,
+          (mutation as MutationSettingsObj).time!.end as Date
+        );
       }
 
       return {
         deleteFromColumn: {
           familyName: column.family!,
-          columnQualifier: Mutation.convertToBytes(column.qualifier) as
-              Uint8Array,
+          columnQualifier: Mutation.convertToBytes(
+            column.qualifier
+          ) as Uint8Array,
           timeRange,
         },
       };

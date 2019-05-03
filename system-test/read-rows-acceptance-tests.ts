@@ -15,8 +15,8 @@
  */
 
 import * as assert from 'assert';
-const testcases =
-    require('../../system-test/read-rows-acceptance-test.json').tests;
+const testcases = require('../../system-test/read-rows-acceptance-test.json')
+  .tests;
 import {PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
@@ -28,22 +28,28 @@ function applyProtoRoot(filename, root) {
   filename.root = path.resolve(filename.root) + '/';
   root.resolvePath = function(originPath, importPath, alreadyNormalized) {
     return ProtoBuf.util.path.resolve(
-        filename.root, importPath, alreadyNormalized);
+      filename.root,
+      importPath,
+      alreadyNormalized
+    );
   };
   return filename.file;
 }
 const root = new ProtoBuf.Root();
 root.loadSync(
-    applyProtoRoot(
-        {
-          root: protosRoot,
-          file: 'google/bigtable/v2/bigtable.proto',
-        },
-        root),
-    {keepCase: false});
+  applyProtoRoot(
+    {
+      root: protosRoot,
+      file: 'google/bigtable/v2/bigtable.proto',
+    },
+    root
+  ),
+  {keepCase: false}
+);
 const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');
-const CellChunk =
-    root.lookupType('google.bigtable.v2.ReadRowsResponse.CellChunk');
+const CellChunk = root.lookupType(
+  'google.bigtable.v2.ReadRowsResponse.CellChunk'
+);
 describe('Read Row Acceptance tests', function() {
   testcases.forEach(function(test) {
     it(test.name, done => {
@@ -51,27 +57,29 @@ describe('Read Row Acceptance tests', function() {
       const results: any[] = [];
       const rawResults = test.results || [];
       const errorCount = rawResults.filter(result => result.error).length;
-      rawResults.filter(result => !result.error).forEach(result => {
-        const existingRow = results.find(filter => filter.key === result.rk);
-        const row = existingRow || {key: result.rk, data: {}};
-        const data = row.data;
-        if (typeof existingRow === 'undefined') {
-          results.push(row);
-        }
-        const family = data[result.fm] || {};
-        data[result.fm] = family;
-        const qualifier = family[result.qual] || [];
-        family[result.qual] = qualifier;
-        const resultLabels: any[] = [];
-        if (result.label !== '') {
-          resultLabels.push(result.label);
-        }
-        qualifier.push({
-          value: result.value,
-          timestamp: '' + result.ts,
-          labels: resultLabels,
+      rawResults
+        .filter(result => !result.error)
+        .forEach(result => {
+          const existingRow = results.find(filter => filter.key === result.rk);
+          const row = existingRow || {key: result.rk, data: {}};
+          const data = row.data;
+          if (typeof existingRow === 'undefined') {
+            results.push(row);
+          }
+          const family = data[result.fm] || {};
+          data[result.fm] = family;
+          const qualifier = family[result.qual] || [];
+          family[result.qual] = qualifier;
+          const resultLabels: any[] = [];
+          if (result.label !== '') {
+            resultLabels.push(result.label);
+          }
+          qualifier.push({
+            value: result.value,
+            timestamp: '' + result.ts,
+            labels: resultLabels,
+          });
         });
-      });
 
       table.bigtable = {};
       table.bigtable.request = function() {
@@ -81,19 +89,18 @@ describe('Read Row Acceptance tests', function() {
 
         setImmediate(function() {
           test.chunks_base64
-              .map(chunk => {
-                const cellChunk = CellChunk.decode(
-                    Buffer.from(chunk, 'base64'));  //.decode64(chunk);
-                let readRowsResponse: any = {chunks: [cellChunk]};
-                readRowsResponse = ReadRowsResponse.create(readRowsResponse);
-                readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {
-                  defaults: true,
-                  longs: String,
-                  oneofs: true,
-                });
-                return readRowsResponse;
-              })
-              .forEach(readRowsResponse => stream.push(readRowsResponse));
+            .map(chunk => {
+              const cellChunk = CellChunk.decode(Buffer.from(chunk, 'base64')); //.decode64(chunk);
+              let readRowsResponse: any = {chunks: [cellChunk]};
+              readRowsResponse = ReadRowsResponse.create(readRowsResponse);
+              readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {
+                defaults: true,
+                longs: String,
+                oneofs: true,
+              });
+              return readRowsResponse;
+            })
+            .forEach(readRowsResponse => stream.push(readRowsResponse));
           stream.push(null);
         });
 
@@ -109,19 +116,18 @@ describe('Read Row Acceptance tests', function() {
       const errors: any[] = [];
       const rows: any[] = [];
 
-      table.createReadStream({})
-          .on('error',
-              err => {
-                errors.push(err);
-                verify();
-              })
-          .on('data',
-              row => {
-                rows.push(row);
-              })
-          .on('end', () => {
-            verify();
-          });
+      table
+        .createReadStream({})
+        .on('error', err => {
+          errors.push(err);
+          verify();
+        })
+        .on('data', row => {
+          rows.push(row);
+        })
+        .on('end', () => {
+          verify();
+        });
       function verify() {
         assert.strictEqual(errors.length, errorCount, ' error count mismatch');
         assert.strictEqual(rows.length, results.length, 'row count mismatch');

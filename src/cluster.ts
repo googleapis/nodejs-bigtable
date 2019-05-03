@@ -23,14 +23,17 @@ import {Bigtable} from '.';
 import {Instance} from './instance';
 
 export interface GenericCallback<T> {
-  (err?: ServiceError|null, apiResponse?: T|null): void;
+  (err?: ServiceError | null, apiResponse?: T | null): void;
 }
 export interface GenericClusterCallback<T> {
-  (err?: ServiceError|null, cluster?: Cluster|null, apiResponse?: T|null);
+  (err?: ServiceError | null, cluster?: Cluster | null, apiResponse?: T | null);
 }
 export interface GenericOperationCallback<T> {
-  (err?: ServiceError|null, operation?: GaxOperation|null,
-   apiResponse?: T|null): void;
+  (
+    err?: ServiceError | null,
+    operation?: GaxOperation | null,
+    apiResponse?: T | null
+  ): void;
 }
 
 export type IEmpty = btTypes.protobuf.IEmpty;
@@ -58,8 +61,11 @@ export interface CreateClusterOptions {
 export interface GetClusterMetadataCallback {
   // tslint:disable-next-line no-any
   (...args: any[]): void;
-  (err: ServiceError|null, metadata?: ICluster|null,
-   apiResponse?: IOperation|null): void;
+  (
+    err: ServiceError | null,
+    metadata?: ICluster | null,
+    apiResponse?: IOperation | null
+  ): void;
 }
 export interface Metadata extends CreateClusterOptions {
   displayName?: string;
@@ -173,13 +179,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_create_cluster
    */
   create(
-      optionsOrCallback?: CreateClusterOptions|CreateClusterCallback,
-      cb?: CreateClusterCallback): void|Promise<CreateClusterResponse> {
+    optionsOrCallback?: CreateClusterOptions | CreateClusterCallback,
+    cb?: CreateClusterCallback
+  ): void | Promise<CreateClusterResponse> {
     const callback =
-        typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options = typeof optionsOrCallback === 'object' && optionsOrCallback ?
-        optionsOrCallback :
-        {} as CreateClusterOptions;
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' && optionsOrCallback
+        ? optionsOrCallback
+        : ({} as CreateClusterOptions);
 
     this.instance.createCluster(this.id, options, callback);
   }
@@ -202,25 +210,27 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_delete_cluster
    */
   delete(
-      gaxOptionsOrCallback?: CallOptions|DeleteClusterCallback,
-      cb?: DeleteClusterCallback): void|Promise<ApiResponse> {
+    gaxOptionsOrCallback?: CallOptions | DeleteClusterCallback,
+    cb?: DeleteClusterCallback
+  ): void | Promise<ApiResponse> {
     const callback =
-        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
-        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
-        gaxOptionsOrCallback :
-        {} as CallOptions;
+      typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback
+        ? gaxOptionsOrCallback
+        : ({} as CallOptions);
 
     this.bigtable.request(
-        {
-          client: 'BigtableInstanceAdminClient',
-          method: 'deleteCluster',
-          reqOpts: {
-            name: this.name,
-          },
-          gaxOpts: gaxOptions,
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'deleteCluster',
+        reqOpts: {
+          name: this.name,
         },
-        callback);
+        gaxOpts: gaxOptions,
+      },
+      callback
+    );
   }
 
   exists(): Promise<BooleanResponse>;
@@ -241,16 +251,17 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_exists_cluster
    */
   exists(
-      gaxOptionsOrCallback?: CallOptions|ExistsClusterCallback,
-      cb?: ExistsClusterCallback): void|Promise<BooleanResponse> {
+    gaxOptionsOrCallback?: CallOptions | ExistsClusterCallback,
+    cb?: ExistsClusterCallback
+  ): void | Promise<BooleanResponse> {
     const callback =
-        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
-        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
-        gaxOptionsOrCallback :
-        {} as CallOptions;
+      typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback
+        ? gaxOptionsOrCallback
+        : ({} as CallOptions);
 
-    this.getMetadata(gaxOptions, (err?: ServiceError|null) => {
+    this.getMetadata(gaxOptions, (err?: ServiceError | null) => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
@@ -282,26 +293,32 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_get_cluster
    */
-  get(gaxOptionsOrCallback?: CallOptions|GetClusterCallback,
-      cb?: GetClusterCallback): void|Promise<GetClusterResponse> {
+  get(
+    gaxOptionsOrCallback?: CallOptions | GetClusterCallback,
+    cb?: GetClusterCallback
+  ): void | Promise<GetClusterResponse> {
     const callback =
-        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
-        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
-        gaxOptionsOrCallback :
-        {} as CallOptions;
+      typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback
+        ? gaxOptionsOrCallback
+        : ({} as CallOptions);
 
     this.getMetadata(
-        gaxOptions, (err?: ServiceError|null, metadata?: ICluster|null) => {
-          callback(err, err ? null : this, metadata);
-        });
+      gaxOptions,
+      (err?: ServiceError | null, metadata?: ICluster | null) => {
+        callback(err, err ? null : this, metadata);
+      }
+    );
   }
 
   getMetadata(): Promise<MetadataResponse>;
   getMetadata(gaxOptions: CallOptions): Promise<MetadataResponse>;
   getMetadata(callback: GetClusterMetadataCallback): void;
-  getMetadata(gaxOptions: CallOptions, callback: GetClusterMetadataCallback):
-      void;
+  getMetadata(
+    gaxOptions: CallOptions,
+    callback: GetClusterMetadataCallback
+  ): void;
   /**
    * Get the cluster metadata.
    *
@@ -317,43 +334,50 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_cluster_get_meta
    */
   getMetadata(
-      gaxOptionsOrCallback?: CallOptions|GetClusterMetadataCallback,
-      cb?: GetClusterMetadataCallback): void|Promise<MetadataResponse> {
+    gaxOptionsOrCallback?: CallOptions | GetClusterMetadataCallback,
+    cb?: GetClusterMetadataCallback
+  ): void | Promise<MetadataResponse> {
     const callback =
-        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
-        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
-        gaxOptionsOrCallback :
-        {} as CallOptions;
+      typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback
+        ? gaxOptionsOrCallback
+        : ({} as CallOptions);
 
     this.bigtable.request(
-        {
-          client: 'BigtableInstanceAdminClient',
-          method: 'getCluster',
-          reqOpts: {
-            name: this.name,
-          },
-          gaxOpts: gaxOptions,
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'getCluster',
+        reqOpts: {
+          name: this.name,
         },
-        // tslint:disable-next-line no-any
-        (...args: any[]) => {
-          if (args[1]) {
-            this.metadata = args[1];
-          }
+        gaxOpts: gaxOptions,
+      },
+      // tslint:disable-next-line no-any
+      (...args: any[]) => {
+        if (args[1]) {
+          this.metadata = args[1];
+        }
 
-          callback(...args);
-        });
+        callback(...args);
+      }
+    );
   }
 
   setMetadata(metadata: CreateClusterOptions): Promise<MetadataResponse>;
-  setMetadata(metadata: CreateClusterOptions, gaxOptions: CallOptions):
-      Promise<MetadataResponse>;
   setMetadata(
-      metadata: CreateClusterOptions,
-      callback: SetClusterMetadataCallback): void;
+    metadata: CreateClusterOptions,
+    gaxOptions: CallOptions
+  ): Promise<MetadataResponse>;
   setMetadata(
-      metadata: CreateClusterOptions, gaxOptions: CallOptions,
-      callback: SetClusterMetadataCallback): void;
+    metadata: CreateClusterOptions,
+    callback: SetClusterMetadataCallback
+  ): void;
+  setMetadata(
+    metadata: CreateClusterOptions,
+    gaxOptions: CallOptions,
+    callback: SetClusterMetadataCallback
+  ): void;
   /**
    * Set the cluster metadata.
    *
@@ -371,15 +395,16 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_cluster_set_meta
    */
   setMetadata(
-      metadata: CreateClusterOptions,
-      gaxOptionsOrCallback?: CallOptions|SetClusterMetadataCallback,
-      cb?: SetClusterMetadataCallback): void|Promise<MetadataResponse> {
+    metadata: CreateClusterOptions,
+    gaxOptionsOrCallback?: CallOptions | SetClusterMetadataCallback,
+    cb?: SetClusterMetadataCallback
+  ): void | Promise<MetadataResponse> {
     const callback =
-        typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
-        typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback ?
-        gaxOptionsOrCallback :
-        {} as CallOptions;
+      typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback
+        ? gaxOptionsOrCallback
+        : ({} as CallOptions);
 
     // tslint:disable-next-line no-any
     const reqOpts: any = {
@@ -387,8 +412,10 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     };
 
     if (metadata.location) {
-      reqOpts.location =
-          Cluster.getLocation_(this.bigtable.projectId, metadata.location);
+      reqOpts.location = Cluster.getLocation_(
+        this.bigtable.projectId,
+        metadata.location
+      );
     }
 
     if (metadata.nodes) {
@@ -400,13 +427,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     }
 
     this.bigtable.request(
-        {
-          client: 'BigtableInstanceAdminClient',
-          method: 'updateCluster',
-          reqOpts,
-          gaxOpts: gaxOptions,
-        },
-        callback);
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'updateCluster',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      callback
+    );
   }
 }
 
