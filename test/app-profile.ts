@@ -51,9 +51,9 @@ describe('Bigtable/AppProfile', function() {
 
   before(function() {
     AppProfile = proxyquire('../src/app-profile.js', {
-                   '../src/cluster.js': {Cluster: FakeCluster},
-                   '@google-cloud/promisify': fakePromisify,
-                 }).AppProfile;
+      '../src/cluster.js': {Cluster: FakeCluster},
+      '@google-cloud/promisify': fakePromisify,
+    }).AppProfile;
   });
 
   beforeEach(function() {
@@ -86,12 +86,11 @@ describe('Bigtable/AppProfile', function() {
       assert.strictEqual(appProfile.id, APP_PROFILE_ID);
     });
 
-    it('should leave full app profile name unaltered and localize the id from the name',
-       function() {
-         const appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
-         assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
-         assert.strictEqual(appProfile.id, APP_PROFILE_ID);
-       });
+    it('should leave full app profile name unaltered and localize the id from the name', function() {
+      const appProfile = new AppProfile(INSTANCE, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.name, APP_PROFILE_NAME);
+      assert.strictEqual(appProfile.id, APP_PROFILE_ID);
+    });
 
     it('should throw if cluster id in wrong format', function() {
       const id = `appProfiles/${APP_PROFILE_ID}`;
@@ -141,14 +140,14 @@ describe('Bigtable/AppProfile', function() {
       });
 
       it('should throw for an invalid routing policy', function() {
-        const errorReg =
-            /An app profile routing policy can only contain "any" or a `Cluster`\./;
+        const errorReg = /An app profile routing policy can only contain "any" or a `Cluster`\./;
 
         assert.throws(
-            AppProfile.formatAppProfile_.bind(null, {
-              routing: 'not-any',
-            }),
-            errorReg);
+          AppProfile.formatAppProfile_.bind(null, {
+            routing: 'not-any',
+          }),
+          errorReg
+        );
       });
     });
   });
@@ -399,10 +398,13 @@ describe('Bigtable/AppProfile', function() {
 
       appProfile.bigtable.request = function(config) {
         assert(
-            config.reqOpts.updateMask.paths.indexOf('description') !== -1,
-            `updateMask does not should include 'description'`);
+          config.reqOpts.updateMask.paths.indexOf('description') !== -1,
+          `updateMask does not should include 'description'`
+        );
         assert.strictEqual(
-            config.reqOpts.appProfile.description, options.description);
+          config.reqOpts.appProfile.description,
+          options.description
+        );
         done();
       };
 
@@ -429,11 +431,15 @@ describe('Bigtable/AppProfile', function() {
 
         appProfile.bigtable.request = function(config) {
           assert(
-              config.reqOpts.updateMask.paths.indexOf(
-                  'multi_cluster_routing_use_any') !== -1,
-              `updateMask does not should include 'multi_cluster_routing_use_any'`);
+            config.reqOpts.updateMask.paths.indexOf(
+              'multi_cluster_routing_use_any'
+            ) !== -1,
+            `updateMask does not should include 'multi_cluster_routing_use_any'`
+          );
           assert.deepStrictEqual(
-              config.reqOpts.appProfile.multiClusterRoutingUseAny, {});
+            config.reqOpts.appProfile.multiClusterRoutingUseAny,
+            {}
+          );
           done();
         };
 
@@ -445,11 +451,15 @@ describe('Bigtable/AppProfile', function() {
 
         appProfile.bigtable.request = function(config) {
           assert(
-              config.reqOpts.updateMask.paths.indexOf(
-                  'single_cluster_routing') !== -1,
-              `updateMask does not should include 'single_cluster_routing'`);
+            config.reqOpts.updateMask.paths.indexOf(
+              'single_cluster_routing'
+            ) !== -1,
+            `updateMask does not should include 'single_cluster_routing'`
+          );
           assert.deepStrictEqual(
-              config.reqOpts.appProfile.singleClusterRouting, {clusterId});
+            config.reqOpts.appProfile.singleClusterRouting,
+            {clusterId}
+          );
           done();
         };
 

@@ -17,18 +17,18 @@ import {Transform, TransformOptions} from 'stream';
 
 import {Bytes, Mutation} from './mutation';
 
-export type Value = string|number|boolean|Uint8Array;
+export type Value = string | number | boolean | Uint8Array;
 
 export interface Chunk {
   rowContents: Value;
   commitRow: boolean;
   resetRow: boolean;
-  rowKey?: string|Uint8Array;
+  rowKey?: string | Uint8Array;
   familyName?: {value: string};
-  qualifier?: Qualifier|{value: Value};
-  timestampMicros?: number|Long;
+  qualifier?: Qualifier | {value: Value};
+  timestampMicros?: number | Long;
   labels?: string[];
-  value?: string|Buffer;
+  value?: string | Buffer;
   valueSize?: number;
 }
 export interface Data {
@@ -39,9 +39,9 @@ interface Family {
   [qualifier: string]: Qualifier[];
 }
 export interface Qualifier {
-  value?: string|Buffer;
+  value?: string | Buffer;
   labels?: string[];
-  timestamp?: number|Long;
+  timestamp?: number | Long;
   size?: number;
 }
 export interface Row {
@@ -50,7 +50,7 @@ export interface Row {
 }
 export interface TransformErrorProps {
   message: string;
-  chunk: Chunk|null;
+  chunk: Chunk | null;
 }
 
 class TransformError extends Error {
@@ -88,7 +88,7 @@ export class ChunkTransformer extends Transform {
   qualifiers?: Qualifier[];
   qualifier?: Qualifier;
   constructor(options: TransformOptions = {}) {
-    options.objectMode = true;  // forcing object mode
+    options.objectMode = true; // forcing object mode
     super(options);
     this.options = options;
     this._destroyed = false;
@@ -103,10 +103,12 @@ export class ChunkTransformer extends Transform {
    */
   _flush(cb: Function): void {
     if (typeof this.row!.key !== 'undefined') {
-      this.destroy(new TransformError({
-        message: 'Response ended with pending row without commit',
-        chunk: null,
-      }));
+      this.destroy(
+        new TransformError({
+          message: 'Response ended with pending row without commit',
+          chunk: null,
+        })
+      );
       return;
     }
     cb();
@@ -149,10 +151,12 @@ export class ChunkTransformer extends Transform {
       }
     }
     if (data.lastScannedRowKey && data.lastScannedRowKey.length > 0) {
-      this.lastRowKey =
-          Mutation.convertFromBytes(data.lastScannedRowKey as Bytes, {
-            userOptions: this.options,
-          });
+      this.lastRowKey = Mutation.convertFromBytes(
+        data.lastScannedRowKey as Bytes,
+        {
+          userOptions: this.options,
+        }
+      );
     }
     next();
   }
@@ -200,10 +204,12 @@ export class ChunkTransformer extends Transform {
    */
   validateValueSizeAndCommitRow(chunk: Chunk): void {
     if (chunk.valueSize! > 0 && chunk.commitRow) {
-      this.destroy(new TransformError({
-        message: 'A row cannot be have a value size and be a commit row',
-        chunk,
-      }));
+      this.destroy(
+        new TransformError({
+          message: 'A row cannot be have a value size and be a commit row',
+          chunk,
+        })
+      );
     }
   }
 
@@ -213,14 +219,19 @@ export class ChunkTransformer extends Transform {
    * @param {chunk} chunk chunk to validate for resetrow
    */
   validateResetRow(chunk: Chunk): void {
-    const containsData = (chunk.rowKey && chunk.rowKey.length !== 0) ||
-        chunk.familyName || chunk.qualifier ||
-        (chunk.value && chunk.value.length !== 0) || chunk.timestampMicros! > 0;
+    const containsData =
+      (chunk.rowKey && chunk.rowKey.length !== 0) ||
+      chunk.familyName ||
+      chunk.qualifier ||
+      (chunk.value && chunk.value.length !== 0) ||
+      chunk.timestampMicros! > 0;
     if (chunk.resetRow && containsData) {
-      this.destroy(new TransformError({
-        message: 'A reset should have no data',
-        chunk,
-      }));
+      this.destroy(
+        new TransformError({
+          message: 'A reset should have no data',
+          chunk,
+        })
+      );
     }
   }
 
@@ -230,16 +241,18 @@ export class ChunkTransformer extends Transform {
    * @param {chunk} chunk chunk to validate
    * @param {newRowKey} newRowKey newRowKey of the new row
    */
-  validateNewRow(chunk: Chunk, newRowKey: string|Buffer): void {
+  validateNewRow(chunk: Chunk, newRowKey: string | Buffer): void {
     const row = this.row;
     const lastRowKey = this.lastRowKey;
-    let errorMessage: string|undefined;
+    let errorMessage: string | undefined;
 
     if (typeof row!.key !== 'undefined') {
       errorMessage = 'A new row cannot have existing state';
     } else if (
-        typeof chunk.rowKey === 'undefined' || chunk.rowKey.length === 0 ||
-        newRowKey.length === 0) {
+      typeof chunk.rowKey === 'undefined' ||
+      chunk.rowKey.length === 0 ||
+      newRowKey.length === 0
+    ) {
       errorMessage = 'A row key must be set';
     } else if (chunk.resetRow) {
       errorMessage = 'A new row cannot be reset';
@@ -269,21 +282,31 @@ export class ChunkTransformer extends Transform {
         userOptions: this.options,
       });
       const oldRowKey = row!.key || '';
-      if (newRowKey && chunk.rowKey && (newRowKey as string).length !== 0 &&
-          newRowKey.toString() !== oldRowKey.toString()) {
-        this.destroy(new TransformError({
-          message: 'A commit is required between row keys',
-          chunk,
-        }));
+      if (
+        newRowKey &&
+        chunk.rowKey &&
+        (newRowKey as string).length !== 0 &&
+        newRowKey.toString() !== oldRowKey.toString()
+      ) {
+        this.destroy(
+          new TransformError({
+            message: 'A commit is required between row keys',
+            chunk,
+          })
+        );
         return;
       }
     }
-    if (chunk.familyName &&
-        (chunk.qualifier === null || chunk.qualifier === undefined)) {
-      this.destroy(new TransformError({
-        message: 'A qualifier must be specified',
-        chunk,
-      }));
+    if (
+      chunk.familyName &&
+      (chunk.qualifier === null || chunk.qualifier === undefined)
+    ) {
+      this.destroy(
+        new TransformError({
+          message: 'A qualifier must be specified',
+          chunk,
+        })
+      );
       return;
     }
     this.validateResetRow(chunk);
@@ -335,11 +358,13 @@ export class ChunkTransformer extends Transform {
       row!.key = newRowKey;
       row!.data = {} as Data;
       this.family = row!.data![chunk.familyName.value] = {} as Family;
-      const qualifierName =
-          Mutation.convertFromBytes(chunk.qualifier.value as Bytes, {
-            userOptions: this.options,
-          });
-      this.qualifiers = this.family[qualifierName as {} as string] = [];
+      const qualifierName = Mutation.convertFromBytes(
+        chunk.qualifier.value as Bytes,
+        {
+          userOptions: this.options,
+        }
+      );
+      this.qualifiers = this.family[(qualifierName as {}) as string] = [];
       this.qualifier = {
         value: Mutation.convertFromBytes(chunk.value! as Bytes, {
           userOptions: this.options,
@@ -366,15 +391,17 @@ export class ChunkTransformer extends Transform {
     const row = this.row;
     if (chunk.familyName) {
       this.family = row!.data![chunk.familyName.value] =
-          row!.data![chunk.familyName.value] || {};
+        row!.data![chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
-      const qualifierName =
-          Mutation.convertFromBytes(chunk.qualifier.value as Bytes, {
-            userOptions: this.options,
-          }) as string;
+      const qualifierName = Mutation.convertFromBytes(
+        chunk.qualifier.value as Bytes,
+        {
+          userOptions: this.options,
+        }
+      ) as string;
       this.qualifiers = this.family![qualifierName] =
-          this.family![qualifierName] || [];
+        this.family![qualifierName] || [];
     }
     this.qualifier = {
       value: Mutation.convertFromBytes(chunk.value! as Bytes, {
@@ -398,13 +425,17 @@ export class ChunkTransformer extends Transform {
     if (chunk.resetRow) {
       return this.reset();
     }
-    const chunkQualifierValue =
-        Mutation.convertFromBytes(chunk.value! as Bytes, {
-          userOptions: this.options,
-        });
+    const chunkQualifierValue = Mutation.convertFromBytes(
+      chunk.value! as Bytes,
+      {
+        userOptions: this.options,
+      }
+    );
 
-    if (chunkQualifierValue instanceof Buffer &&
-        this.qualifier!.value instanceof Buffer) {
+    if (
+      chunkQualifierValue instanceof Buffer &&
+      this.qualifier!.value instanceof Buffer
+    ) {
       this.qualifier!.value = Buffer.concat([
         this.qualifier!.value,
         chunkQualifierValue,

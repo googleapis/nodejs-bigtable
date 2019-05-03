@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import * as common from '@google-cloud/common-grpc';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
@@ -87,7 +86,7 @@ const FakeFilter = {
   }),
   createRange: (...args) => {
     return {};
-  }
+  },
 };
 
 describe('Bigtable/Table', function() {
@@ -100,17 +99,17 @@ describe('Bigtable/Table', function() {
 
   before(function() {
     Table = proxyquire('../src/table.js', {
-              '@google-cloud/common-grpc': {
-                Service: FakeGrpcService,
-              },
-              '@google-cloud/promisify': fakePromisify,
-              './family.js': {Family: FakeFamily},
-              './mutation.js': {Mutation: FakeMutation},
-              './filter.js': {Filter: FakeFilter},
-              pumpify,
-              './row.js': {Row: FakeRow},
-              './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
-            }).Table;
+      '@google-cloud/common-grpc': {
+        Service: FakeGrpcService,
+      },
+      '@google-cloud/promisify': fakePromisify,
+      './family.js': {Family: FakeFamily},
+      './mutation.js': {Mutation: FakeMutation},
+      './filter.js': {Filter: FakeFilter},
+      pumpify,
+      './row.js': {Row: FakeRow},
+      './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
+    }).Table;
   });
 
   beforeEach(function() {
@@ -153,12 +152,11 @@ describe('Bigtable/Table', function() {
     it('should localize table name', function() {
       assert.strictEqual(table.name, TABLE_NAME);
     });
-    it('should leave full table name unaltered and localize the id from the name',
-       function() {
-         const table = new Table(INSTANCE, TABLE_NAME);
-         assert.strictEqual(table.name, TABLE_NAME);
-         assert.strictEqual(table.id, TABLE_ID);
-       });
+    it('should leave full table name unaltered and localize the id from the name', function() {
+      const table = new Table(INSTANCE, TABLE_NAME);
+      assert.strictEqual(table.name, TABLE_NAME);
+      assert.strictEqual(table.id, TABLE_ID);
+    });
 
     it('should throw if table id in wrong format', function() {
       const id = `tables/${TABLE_ID}`;
@@ -201,7 +199,7 @@ describe('Bigtable/Table', function() {
       table.instance.createTable = function(id, options_, callback) {
         assert.strictEqual(id, table.id);
         assert.strictEqual(options_, options);
-        callback();  // done()
+        callback(); // done()
       };
 
       table.create(options, done);
@@ -210,7 +208,7 @@ describe('Bigtable/Table', function() {
     it('should not require options', function(done) {
       table.instance.createTable = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
-        callback();  // done()
+        callback(); // done()
       };
 
       table.create(done);
@@ -408,7 +406,9 @@ describe('Bigtable/Table', function() {
 
       bigtableInstance.request = function(config) {
         assert.strictEqual(
-            config.reqOpts.appProfileId, bigtableInstance.appProfileId);
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
         done();
       };
 
@@ -462,11 +462,12 @@ describe('Bigtable/Table', function() {
         };
         const convertedKeys = ['a', 'b'];
 
-        const convertSpy =
-            (FakeMutation.convertToBytes = sinon.spy(function(key) {
-              const keyIndex = options.keys.indexOf(key);
-              return convertedKeys[keyIndex];
-            }));
+        const convertSpy = (FakeMutation.convertToBytes = sinon.spy(function(
+          key
+        ) {
+          const keyIndex = options.keys.indexOf(key);
+          return convertedKeys[keyIndex];
+        }));
 
         table.bigtable.request = function(config) {
           assert.deepStrictEqual(config.reqOpts.rows.rowKeys, convertedKeys);
@@ -542,7 +543,9 @@ describe('Bigtable/Table', function() {
           assert.strictEqual(config.reqOpts.filter, fakeFilter);
           assert.strictEqual(parseSpy.callCount, 1);
           assert.strictEqual(
-              (parseSpy as any).getCall(0).args[0], options.filter);
+            (parseSpy as any).getCall(0).args[0],
+            options.filter
+          );
           done();
         };
 
@@ -659,18 +662,20 @@ describe('Bigtable/Table', function() {
 
         it('should transform the prefix into a range', function(done) {
           const fakeRange = {};
-          const fakePrefixRange = {
+          const fakePrefixRange = ({
             start: 'a',
             end: 'b',
-          } as {} as tblTypes.PrefixRange;
+          } as {}) as tblTypes.PrefixRange;
 
           const fakePrefix = 'abc';
 
-          const prefixSpy =
-              sandbox.stub(Table, 'createPrefixRange').returns(fakePrefixRange);
+          const prefixSpy = sandbox
+            .stub(Table, 'createPrefixRange')
+            .returns(fakePrefixRange);
 
-          const rangeSpy =
-              sandbox.stub(FakeFilter, 'createRange').returns(fakeRange);
+          const rangeSpy = sandbox
+            .stub(FakeFilter, 'createRange')
+            .returns(fakeRange);
 
           table.bigtable.request = function(config) {
             assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
@@ -690,22 +695,24 @@ describe('Bigtable/Table', function() {
 
         it('should accept multiple prefixes', function(done) {
           const prefixes = ['abc', 'def'];
-          const prefixRanges = [
+          const prefixRanges = ([
             {start: 'abc', end: 'abd'},
             {start: 'def', end: 'deg'},
-          ] as {} as tblTypes.PrefixRange[];
-          const prefixSpy =
-              sandbox.stub(Table, 'createPrefixRange').callsFake(function() {
-                const callIndex = prefixSpy.callCount - 1;
-                return prefixRanges[callIndex];
-              });
+          ] as {}) as tblTypes.PrefixRange[];
+          const prefixSpy = sandbox
+            .stub(Table, 'createPrefixRange')
+            .callsFake(function() {
+              const callIndex = prefixSpy.callCount - 1;
+              return prefixRanges[callIndex];
+            });
 
           const ranges = [{}, {}];
-          const rangeSpy =
-              sandbox.stub(FakeFilter, 'createRange').callsFake(() => {
-                const callIndex = rangeSpy.callCount - 1;
-                return ranges[callIndex];
-              });
+          const rangeSpy = sandbox
+            .stub(FakeFilter, 'createRange')
+            .callsFake(() => {
+              const callIndex = rangeSpy.callCount - 1;
+              return ranges[callIndex];
+            });
 
           table.bigtable.request = function(config) {
             assert.strictEqual(prefixSpy.callCount, 2);
@@ -755,7 +762,10 @@ describe('Bigtable/Table', function() {
           return {} as Row;
         });
         FakeChunkTransformer.prototype._transform = function(
-            chunks, enc, next) {
+          chunks,
+          enc,
+          next
+        ) {
           formattedRows.forEach(row => this.push(row));
           next();
         };
@@ -780,44 +790,42 @@ describe('Bigtable/Table', function() {
       it('should stream Row objects', function(done) {
         const rows: any[] = [];
 
-        table.createReadStream()
-            .on('error', done)
-            .on('data',
-                function(row) {
-                  rows.push(row);
-                })
-            .on('end', function() {
-              const rowSpy: any = table.row;
+        table
+          .createReadStream()
+          .on('error', done)
+          .on('data', function(row) {
+            rows.push(row);
+          })
+          .on('end', function() {
+            const rowSpy: any = table.row;
 
-              assert.strictEqual(rows.length, formattedRows.length);
-              assert.strictEqual(rowSpy.callCount, formattedRows.length);
+            assert.strictEqual(rows.length, formattedRows.length);
+            assert.strictEqual(rowSpy.callCount, formattedRows.length);
 
-              assert.strictEqual(
-                  rowSpy.getCall(0).args[0], formattedRows[0].key);
-              assert.strictEqual(rows[0].data, formattedRows[0].data);
+            assert.strictEqual(rowSpy.getCall(0).args[0], formattedRows[0].key);
+            assert.strictEqual(rows[0].data, formattedRows[0].data);
 
-              assert.strictEqual(
-                  rowSpy.getCall(1).args[0], formattedRows[1].key);
-              assert.strictEqual(rows[1].data, formattedRows[1].data);
+            assert.strictEqual(rowSpy.getCall(1).args[0], formattedRows[1].key);
+            assert.strictEqual(rows[1].data, formattedRows[1].data);
 
-              done();
-            });
+            done();
+          });
       });
 
       it('should allow a stream to end early', function(done) {
         const rows: any[] = [];
 
-        const stream = table.createReadStream()
-                           .on('error', done)
-                           .on('data',
-                               function(row) {
-                                 rows.push(row);
-                                 stream.end();
-                               })
-                           .on('end', function() {
-                             assert.strictEqual(rows.length, 1);
-                             done();
-                           });
+        const stream = table
+          .createReadStream()
+          .on('error', done)
+          .on('data', function(row) {
+            rows.push(row);
+            stream.end();
+          })
+          .on('end', function() {
+            assert.strictEqual(rows.length, 1);
+            done();
+          });
       });
     });
 
@@ -866,70 +874,71 @@ describe('Bigtable/Table', function() {
 
           return stream;
         };
-        table.createReadStream()
-            .on('error',
-                function(err) {
-                  assert.strictEqual(error, err);
-                  done();
-                })
-            .on('data', done);
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
       });
-      it('should emit an error event when chunk format returns error',
-         function(done) {
-           table.bigtable.request = function() {
-             const stream = new PassThrough({
-               objectMode: true,
-             });
+      it('should emit an error event when chunk format returns error', function(done) {
+        table.bigtable.request = function() {
+          const stream = new PassThrough({
+            objectMode: true,
+          });
 
-             setImmediate(function() {
-               stream.push(fakeChunks);
-               stream.push(null);
-             });
+          setImmediate(function() {
+            stream.push(fakeChunks);
+            stream.push(null);
+          });
 
-             return stream;
-           };
-           FakeChunkTransformer.prototype._transform = function(
-               chunks, enc, next) {
-             next(error);
-           };
-           table.createReadStream()
-               .on('error',
-                   function(err) {
-                     assert.strictEqual(error, err);
-                     done();
-                   })
-               .on('data', done);
-         });
-      it('should emit an error event when chunktransformer returns error on flush end',
-         function(done) {
-           table.bigtable.request = function() {
-             const stream = new PassThrough({
-               objectMode: true,
-             });
+          return stream;
+        };
+        FakeChunkTransformer.prototype._transform = function(
+          chunks,
+          enc,
+          next
+        ) {
+          next(error);
+        };
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
+      });
+      it('should emit an error event when chunktransformer returns error on flush end', function(done) {
+        table.bigtable.request = function() {
+          const stream = new PassThrough({
+            objectMode: true,
+          });
 
-             setImmediate(function() {
-               stream.push(null);
-             });
+          setImmediate(function() {
+            stream.push(null);
+          });
 
-             return stream;
-           };
-           FakeChunkTransformer.prototype._flush = function(next) {
-             next(error);
-           };
-           table.createReadStream()
-               .on('error',
-                   function(err) {
-                     assert.strictEqual(error, err);
-                     done();
-                   })
-               .on('data', done);
-         });
+          return stream;
+        };
+        FakeChunkTransformer.prototype._flush = function(next) {
+          next(error);
+        };
+        table
+          .createReadStream()
+          .on('error', function(err) {
+            assert.strictEqual(error, err);
+            done();
+          })
+          .on('data', done);
+      });
     });
 
     describe('retries', function() {
       let callCreateReadStream;
-      let emitters;  // = [function(stream) { stream.push([{ key: 'a' }]);
-                     // stream.end(); }, ...];
+      let emitters; // = [function(stream) { stream.push([{ key: 'a' }]);
+      // stream.end(); }, ...];
       let makeRetryableError;
       let reqOptsCalls;
       let setTimeoutSpy;
@@ -946,13 +955,14 @@ describe('Bigtable/Table', function() {
         };
 
         callCreateReadStream = (options, verify) => {
-          table.createReadStream(options)
-              .on('end', verify)
-              .resume();  // The stream starts paused unless it has a `.data()`
-                          // callback.
+          table
+            .createReadStream(options)
+            .on('end', verify)
+            .resume(); // The stream starts paused unless it has a `.data()`
+          // callback.
         };
 
-        emitters = null;  // This needs to be assigned in each test case.
+        emitters = null; // This needs to be assigned in each test case.
 
         makeRetryableError = () => {
           const error: any = new Error('retry me!');
@@ -965,7 +975,7 @@ describe('Bigtable/Table', function() {
           if (start) {
             range.start = start.value || start;
             range.startInclusive =
-                typeof start === 'object' ? start.inclusive : true;
+              typeof start === 'object' ? start.inclusive : true;
           }
           if (end) {
             range.end = end.value || end;
@@ -979,8 +989,9 @@ describe('Bigtable/Table', function() {
 
         reqOptsCalls = [];
 
-        setTimeoutSpy = sandbox.stub(global, 'setTimeout')
-                            .callsFake(fn => (fn as Function)());
+        setTimeoutSpy = sandbox
+          .stub(global, 'setTimeout')
+          .callsFake(fn => (fn as Function)());
 
         table.bigtable.request = function(config) {
           reqOptsCalls.push(config.reqOpts);
@@ -1020,49 +1031,47 @@ describe('Bigtable/Table', function() {
         });
       });
 
-      it('should have a range which starts after the last read key',
-         function(done) {
-           emitters = [
-             function(stream) {
-               stream.push([{key: 'a'}]);
-               stream.emit('error', makeRetryableError());
-             },
-             function(stream) {
-               stream.end();
-             },
-           ];
+      it('should have a range which starts after the last read key', function(done) {
+        emitters = [
+          function(stream) {
+            stream.push([{key: 'a'}]);
+            stream.emit('error', makeRetryableError());
+          },
+          function(stream) {
+            stream.end();
+          },
+        ];
 
-           callCreateReadStream(null, () => {
-             assert.strictEqual(reqOptsCalls[0].rows, undefined);
-             assert.deepStrictEqual(reqOptsCalls[1].rows, {
-               rowRanges: [{start: 'a', startInclusive: false}],
-             });
-             done();
-           });
-         });
+        callCreateReadStream(null, () => {
+          assert.strictEqual(reqOptsCalls[0].rows, undefined);
+          assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowRanges: [{start: 'a', startInclusive: false}],
+          });
+          done();
+        });
+      });
 
-      it('should move the active range start to after the last read key',
-         function(done) {
-           emitters = [
-             function(stream) {
-               stream.push([{key: 'a'}]);
-               stream.emit('error', makeRetryableError());
-             },
-             function(stream) {
-               stream.end();
-             },
-           ];
+      it('should move the active range start to after the last read key', function(done) {
+        emitters = [
+          function(stream) {
+            stream.push([{key: 'a'}]);
+            stream.emit('error', makeRetryableError());
+          },
+          function(stream) {
+            stream.end();
+          },
+        ];
 
-           callCreateReadStream({ranges: [{start: 'a'}]}, () => {
-             assert.deepStrictEqual(reqOptsCalls[0].rows, {
-               rowRanges: [{start: 'a', startInclusive: true}],
-             });
-             assert.deepStrictEqual(reqOptsCalls[1].rows, {
-               rowRanges: [{start: 'a', startInclusive: false}],
-             });
-             done();
-           });
-         });
+        callCreateReadStream({ranges: [{start: 'a'}]}, () => {
+          assert.deepStrictEqual(reqOptsCalls[0].rows, {
+            rowRanges: [{start: 'a', startInclusive: true}],
+          });
+          assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowRanges: [{start: 'a', startInclusive: false}],
+          });
+          done();
+        });
+      });
 
       it('should remove ranges which were already read', function(done) {
         emitters = [
@@ -1147,7 +1156,7 @@ describe('Bigtable/Table', function() {
 
         assert.deepStrictEqual(config.gaxOpts, {});
 
-        callback();  // done()
+        callback(); // done()
       };
 
       table.delete(done);
@@ -1194,8 +1203,9 @@ describe('Bigtable/Table', function() {
     it('should respect the row key prefix option', function(done) {
       const fakePrefix = 'b';
 
-      const spy =
-          ((FakeMutation as any).convertToBytes = sinon.spy(() => fakePrefix));
+      const spy = ((FakeMutation as any).convertToBytes = sinon.spy(
+        () => fakePrefix
+      ));
 
       table.bigtable.request = function(config) {
         assert.strictEqual(config.reqOpts.rowKeyPrefix, fakePrefix);
@@ -1333,7 +1343,7 @@ describe('Bigtable/Table', function() {
 
       table.create = function(options_, callback) {
         assert.strictEqual(options_.gaxOptions, options.gaxOptions);
-        callback();  // done()
+        callback(); // done()
       };
 
       table.get(options, done);
@@ -1577,7 +1587,7 @@ describe('Bigtable/Table', function() {
       it('should return true if token is consistent', done => {
         responses = [
           (config, callback) =>
-              callback(null, {consistencyToken: 'sample-token12345'}),
+            callback(null, {consistencyToken: 'sample-token12345'}),
           (config, callback) => callback(null, {consistent: true}),
         ];
 
@@ -1602,7 +1612,7 @@ describe('Bigtable/Table', function() {
       it('should retry checkConsistency', done => {
         responses = [
           (config, callback) =>
-              callback(null, {consistencyToken: 'sample-token12345'}),
+            callback(null, {consistencyToken: 'sample-token12345'}),
           (config, callback) => callback(null, {consistent: false}),
           (config, callback) => callback(null, {consistent: true}),
         ];
@@ -1655,7 +1665,7 @@ describe('Bigtable/Table', function() {
 
         responses = [
           (config, callback) =>
-              callback(null, {consistencyToken: 'sample-token12345'}),
+            callback(null, {consistencyToken: 'sample-token12345'}),
           (config, callback) => callback(error),
         ];
 
@@ -2016,7 +2026,9 @@ describe('Bigtable/Table', function() {
 
       bigtableInstance.request = function(config) {
         assert.strictEqual(
-            config.reqOpts.appProfileId, bigtableInstance.appProfileId);
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
         done();
       };
 
@@ -2138,16 +2150,18 @@ describe('Bigtable/Table', function() {
 
             assert.deepStrictEqual(err.errors, [
               Object.assign(
-                  {
-                    entry: entries[0],
-                  },
-                  parsedStatuses[0]),
+                {
+                  entry: entries[0],
+                },
+                parsedStatuses[0]
+              ),
 
               Object.assign(
-                  {
-                    entry: entries[1],
-                  },
-                  parsedStatuses[1]),
+                {
+                  entry: entries[1],
+                },
+                parsedStatuses[1]
+              ),
             ]);
 
             done();
@@ -2374,7 +2388,9 @@ describe('Bigtable/Table', function() {
 
       bigtableInstance.request = function(config) {
         assert.strictEqual(
-            config.reqOpts.appProfileId, bigtableInstance.appProfileId);
+          config.reqOpts.appProfileId,
+          bigtableInstance.appProfileId
+        );
         done();
       };
 
@@ -2430,19 +2446,19 @@ describe('Bigtable/Table', function() {
       it('should stream key objects', function(done) {
         const keys: any[] = [];
 
-        table.sampleRowKeysStream()
-            .on('error', done)
-            .on('data',
-                function(key) {
-                  keys.push(key);
-                })
-            .on('end', function() {
-              assert.strictEqual(keys[0].key, fakeKeys[0].rowKey);
-              assert.strictEqual(keys[0].offset, fakeKeys[0].offsetBytes);
-              assert.strictEqual(keys[1].key, fakeKeys[1].rowKey);
-              assert.strictEqual(keys[1].offset, fakeKeys[1].offsetBytes);
-              done();
-            });
+        table
+          .sampleRowKeysStream()
+          .on('error', done)
+          .on('data', function(key) {
+            keys.push(key);
+          })
+          .on('end', function() {
+            assert.strictEqual(keys[0].key, fakeKeys[0].rowKey);
+            assert.strictEqual(keys[0].offset, fakeKeys[0].offsetBytes);
+            assert.strictEqual(keys[1].key, fakeKeys[1].rowKey);
+            assert.strictEqual(keys[1].offset, fakeKeys[1].offsetBytes);
+            done();
+          });
       });
     });
 
@@ -2464,13 +2480,13 @@ describe('Bigtable/Table', function() {
       });
 
       it('should emit an error event', function(done) {
-        table.sampleRowKeysStream()
-            .on('error',
-                function(err) {
-                  assert.strictEqual(err, error);
-                  done();
-                })
-            .on('data', done);
+        table
+          .sampleRowKeysStream()
+          .on('error', function(err) {
+            assert.strictEqual(err, error);
+            done();
+          })
+          .on('data', done);
       });
     });
   });

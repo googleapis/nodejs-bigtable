@@ -89,13 +89,13 @@ describe('Bigtable/Instance', function() {
 
   before(function() {
     Instance = proxyquire('../src/instance.js', {
-                 '@google-cloud/paginator': fakePaginator,
-                 '@google-cloud/promisify': fakePromisify,
-                 './app-profile.js': {AppProfile: FakeAppProfile},
-                 './cluster.js': {Cluster: FakeCluster},
-                 './family.js': {Family: FakeFamily},
-                 './table.js': {Table: FakeTable},
-               }).Instance;
+      '@google-cloud/paginator': fakePaginator,
+      '@google-cloud/promisify': fakePromisify,
+      './app-profile.js': {AppProfile: FakeAppProfile},
+      './cluster.js': {Cluster: FakeCluster},
+      './family.js': {Family: FakeFamily},
+      './table.js': {Table: FakeTable},
+    }).Instance;
   });
 
   beforeEach(function() {
@@ -129,12 +129,11 @@ describe('Bigtable/Instance', function() {
       assert.strictEqual(instance.id, INSTANCE_ID);
     });
 
-    it('should leave full instance name unaltered and localize the id from the name',
-       function() {
-         const instance = new Instance(BIGTABLE, INSTANCE_NAME);
-         assert.strictEqual(instance.name, INSTANCE_NAME);
-         assert.strictEqual(instance.id, INSTANCE_ID);
-       });
+    it('should leave full instance name unaltered and localize the id from the name', function() {
+      const instance = new Instance(BIGTABLE, INSTANCE_NAME);
+      assert.strictEqual(instance.name, INSTANCE_NAME);
+      assert.strictEqual(instance.id, INSTANCE_ID);
+    });
 
     it('should throw if instance id in wrong format', function() {
       const id = `instances/${INSTANCE_ID}`;
@@ -154,7 +153,9 @@ describe('Bigtable/Instance', function() {
     it('should default to unspecified', function() {
       assert.strictEqual(Instance.getTypeType_(), types.unspecified);
       assert.strictEqual(
-          Instance.getTypeType_('not-real-type'), types.unspecified);
+        Instance.getTypeType_('not-real-type'),
+        types.unspecified
+      );
     });
 
     it('should lowercase a type', function() {
@@ -175,7 +176,7 @@ describe('Bigtable/Instance', function() {
       instance.bigtable.createInstance = function(id, options_, callback) {
         assert.strictEqual(id, instance.id);
         assert.strictEqual(options_, options);
-        callback();  // done()
+        callback(); // done()
       };
 
       instance.create(options, done);
@@ -184,7 +185,7 @@ describe('Bigtable/Instance', function() {
     it('should not require options', function(done) {
       instance.bigtable.createInstance = function(id, options, callback) {
         assert.deepStrictEqual(options, {});
-        callback();  // done()
+        callback(); // done()
       };
 
       instance.create(done);
@@ -206,13 +207,17 @@ describe('Bigtable/Instance', function() {
       };
 
       instance.createAppProfile(
-          APP_PROFILE_ID, {routing: 'any'}, assert.ifError);
+        APP_PROFILE_ID,
+        {routing: 'any'},
+        assert.ifError
+      );
     });
 
     it('should throw if the routing option is not provided', function() {
-      assert.throws(instance.createAppProfile.bind(
-                       null, APP_PROFILE_ID, assert.ifError)),
-                   /An app profile must contain a routing policy\./;
+      assert.throws(
+        instance.createAppProfile.bind(null, APP_PROFILE_ID, assert.ifError)
+      ),
+        /An app profile must contain a routing policy\./;
     });
 
     it('should accept gaxOptions', function(done) {
@@ -239,7 +244,9 @@ describe('Bigtable/Instance', function() {
 
         instance.bigtable.request = function(config) {
           assert.deepStrictEqual(
-              config.reqOpts.appProfile.multiClusterRoutingUseAny, {});
+            config.reqOpts.appProfile.multiClusterRoutingUseAny,
+            {}
+          );
           done();
         };
 
@@ -251,8 +258,9 @@ describe('Bigtable/Instance', function() {
 
         instance.bigtable.request = function(config) {
           assert.deepStrictEqual(
-              config.reqOpts.appProfile.singleClusterRouting,
-              {clusterId: CLUSTER_ID});
+            config.reqOpts.appProfile.singleClusterRouting,
+            {clusterId: CLUSTER_ID}
+          );
           done();
         };
 
@@ -269,9 +277,10 @@ describe('Bigtable/Instance', function() {
 
       instance.bigtable.request = function(config) {
         assert.deepStrictEqual(
-            config.reqOpts.appProfile.singleClusterRouting
-                .allowTransactionalWrites,
-            true);
+          config.reqOpts.appProfile.singleClusterRouting
+            .allowTransactionalWrites,
+          true
+        );
         done();
       };
 
@@ -286,7 +295,9 @@ describe('Bigtable/Instance', function() {
 
       instance.bigtable.request = function(config) {
         assert.deepStrictEqual(
-            config.reqOpts.appProfile.description, options.description);
+          config.reqOpts.appProfile.description,
+          options.description
+        );
         done();
       };
 
@@ -321,14 +332,16 @@ describe('Bigtable/Instance', function() {
         return fakeAppProfile;
       };
 
-      instance.createAppProfile(
-          APP_PROFILE_ID, {routing: 'any'},
-          function(err, appProfile, apiResponse) {
-            assert.ifError(err);
-            assert.strictEqual(arguments[1], fakeAppProfile);
-            assert.strictEqual(apiResponse, response);
-            done();
-          });
+      instance.createAppProfile(APP_PROFILE_ID, {routing: 'any'}, function(
+        err,
+        appProfile,
+        apiResponse
+      ) {
+        assert.ifError(err);
+        assert.strictEqual(arguments[1], fakeAppProfile);
+        assert.strictEqual(apiResponse, response);
+        done();
+      });
     });
   });
 
@@ -410,7 +423,9 @@ describe('Bigtable/Instance', function() {
 
       instance.bigtable.request = function(config) {
         assert.strictEqual(
-            config.reqOpts.cluster.defaultStorageType, fakeStorageType);
+          config.reqOpts.cluster.defaultStorageType,
+          fakeStorageType
+        );
         done();
       };
 
@@ -443,7 +458,7 @@ describe('Bigtable/Instance', function() {
   describe('createTable', function() {
     const TABLE_ID = 'my-table';
     const TABLE_NAME =
-        'projects/my-project/instances/my-instance/tables/my-table';
+      'projects/my-project/instances/my-instance/tables/my-table';
 
     it('should throw if an id is not provided', function() {
       assert.throws(function() {
@@ -595,7 +610,7 @@ describe('Bigtable/Instance', function() {
 
         assert.deepStrictEqual(config.gaxOpts, {});
 
-        callback();  // done()
+        callback(); // done()
       };
 
       instance.delete(done);
@@ -1026,7 +1041,7 @@ describe('Bigtable/Instance', function() {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'partialUpdateInstance');
         assert.deepStrictEqual(config.reqOpts, expectedMetadata);
-        callback();  // done()
+        callback(); // done()
       };
 
       instance.setMetadata(metadata, done);
