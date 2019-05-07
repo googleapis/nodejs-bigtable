@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@google-cloud/common-grpc": "^0.10.0",
-    "@google-cloud/paginator": "^0.2.0",
+    "@google-cloud/paginator": "^1.0.0",
     "@google-cloud/projectify": "^1.0.0",
     "@google-cloud/promisify": "^1.0.0",
     "arrify": "^2.0.0",
