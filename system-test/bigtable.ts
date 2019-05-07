@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert';
-import Q from 'p-queue';
+import Q = require('p-queue');
 import * as uuid from 'uuid';
 
 import {Bigtable} from '../src';
