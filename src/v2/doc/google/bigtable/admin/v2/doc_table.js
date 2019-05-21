@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,20 +23,15 @@
  *   (`OutputOnly`)
  *   The unique name of the table. Values are of the form
  *   `projects/<project>/instances/<instance>/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*`.
- *   Views: `NAME_ONLY`, `SCHEMA_VIEW`, `FULL`
+ *   Views: `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
  *
  * @property {Object.<string, Object>} clusterStates
- *   This is a private alpha release of Cloud Bigtable replication. This feature
- *   is not currently available to most Cloud Bigtable customers. This feature
- *   might be changed in backward-incompatible ways and is not recommended for
- *   production use. It is not subject to any SLA or deprecation policy.
- *
  *   (`OutputOnly`)
  *   Map from cluster ID to per-cluster table state.
  *   If it could not be determined whether or not the table has data in a
  *   particular cluster (for example, if its zone is unavailable), then
  *   there will be an entry for the cluster with UNKNOWN `replication_status`.
- *   Views: `FULL`
+ *   Views: `REPLICATION_VIEW`, `FULL`
  *
  * @property {Object.<string, Object>} columnFamilies
  *   (`CreationOnly`)
@@ -45,7 +40,7 @@
  *
  * @property {number} granularity
  *   (`CreationOnly`)
- *   The granularity (e.g. `MILLIS`, `MICROS`) at which timestamps are stored in
+ *   The granularity (i.e. `MILLIS`) at which timestamps are stored in
  *   this table. Timestamps not matching the granularity will be rejected.
  *   If unspecified at creation time, the value will be set to `MILLIS`.
  *   Views: `SCHEMA_VIEW`, `FULL`
@@ -56,15 +51,10 @@
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.Table definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/table.proto}
  */
-var Table = {
+const Table = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
-   * This is a private alpha release of Cloud Bigtable replication. This feature
-   * is not currently available to most Cloud Bigtable customers. This feature
-   * might be changed in backward-incompatible ways and is not recommended for
-   * production use. It is not subject to any SLA or deprecation policy.
-   *
    * The state of a table's data in a particular cluster.
    *
    * @property {number} replicationState
@@ -96,30 +86,26 @@ var Table = {
       /**
        * The cluster was recently created, and the table must finish copying
        * over pre-existing data from other clusters before it can begin
-       * receiving live replication updates and serving
-       * Data API requests.
+       * receiving live replication updates and serving Data API requests.
        */
       INITIALIZING: 1,
 
       /**
-       * The table is temporarily unable to serve
-       * Data API requests from this
+       * The table is temporarily unable to serve Data API requests from this
        * cluster due to planned internal maintenance.
        */
       PLANNED_MAINTENANCE: 2,
 
       /**
-       * The table is temporarily unable to serve
-       * Data API requests from this
+       * The table is temporarily unable to serve Data API requests from this
        * cluster due to unplanned or emergency maintenance.
        */
       UNPLANNED_MAINTENANCE: 3,
 
       /**
-       * The table can serve
-       * Data API requests from this
-       * cluster. Depending on replication delay, reads may not immediately
-       * reflect the state of the table in other clusters.
+       * The table can serve Data API requests from this cluster. Depending on
+       * replication delay, reads may not immediately reflect the state of the
+       * table in other clusters.
        */
       READY: 4
     }
@@ -170,12 +156,6 @@ var Table = {
     SCHEMA_VIEW: 2,
 
     /**
-     * This is a private alpha release of Cloud Bigtable replication. This
-     * feature is not currently available to most Cloud Bigtable customers. This
-     * feature might be changed in backward-incompatible ways and is not
-     * recommended for production use. It is not subject to any SLA or
-     * deprecation policy.
-     *
      * Only populates `name` and fields related to the table's
      * replication state.
      */
@@ -205,7 +185,7 @@ var Table = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ColumnFamily definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/table.proto}
  */
-var ColumnFamily = {
+const ColumnFamily = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -236,7 +216,7 @@ var ColumnFamily = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GcRule definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/table.proto}
  */
-var GcRule = {
+const GcRule = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -273,13 +253,13 @@ var GcRule = {
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * A snapshot of a table at a particular time. A snapshot can be used as a
  * checkpoint for data restoration or a data source for a new table.
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} name
  *   (`OutputOnly`)
@@ -327,7 +307,7 @@ var GcRule = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.Snapshot definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/table.proto}
  */
-var Snapshot = {
+const Snapshot = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**

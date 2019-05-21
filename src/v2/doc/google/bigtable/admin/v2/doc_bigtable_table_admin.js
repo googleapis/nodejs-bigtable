@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateTableRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var CreateTableRequest = {
+const CreateTableRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -75,13 +75,13 @@ var CreateTableRequest = {
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for
  * google.bigtable.admin.v2.BigtableTableAdmin.CreateTableFromSnapshot
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} parent
  *   The unique name of the instance in which to create the table.
@@ -101,7 +101,7 @@ var CreateTableRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateTableFromSnapshotRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var CreateTableFromSnapshotRequest = {
+const CreateTableFromSnapshotRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -125,7 +125,7 @@ var CreateTableFromSnapshotRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.DropRowRangeRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var DropRowRangeRequest = {
+const DropRowRangeRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -143,6 +143,10 @@ var DropRowRangeRequest = {
  *
  *   The number should be among the values of [View]{@link google.bigtable.admin.v2.View}
  *
+ * @property {number} pageSize
+ *   Maximum number of results per page.
+ *   CURRENTLY UNIMPLEMENTED AND IGNORED.
+ *
  * @property {string} pageToken
  *   The value of `next_page_token` returned by a previous call.
  *
@@ -150,7 +154,7 @@ var DropRowRangeRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListTablesRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var ListTablesRequest = {
+const ListTablesRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -172,7 +176,7 @@ var ListTablesRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListTablesResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var ListTablesResponse = {
+const ListTablesResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -195,7 +199,7 @@ var ListTablesResponse = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GetTableRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var GetTableRequest = {
+const GetTableRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -212,7 +216,7 @@ var GetTableRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.DeleteTableRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var DeleteTableRequest = {
+const DeleteTableRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -237,7 +241,7 @@ var DeleteTableRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ModifyColumnFamiliesRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var ModifyColumnFamiliesRequest = {
+const ModifyColumnFamiliesRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -272,11 +276,6 @@ var ModifyColumnFamiliesRequest = {
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for
  * google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
  *
@@ -289,16 +288,11 @@ var ModifyColumnFamiliesRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GenerateConsistencyTokenRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var GenerateConsistencyTokenRequest = {
+const GenerateConsistencyTokenRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Response message for
  * google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
  *
@@ -309,16 +303,11 @@ var GenerateConsistencyTokenRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GenerateConsistencyTokenResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var GenerateConsistencyTokenResponse = {
+const GenerateConsistencyTokenResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for
  * google.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency
  *
@@ -334,16 +323,11 @@ var GenerateConsistencyTokenResponse = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CheckConsistencyRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var CheckConsistencyRequest = {
+const CheckConsistencyRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Response message for
  * google.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency
  *
@@ -355,18 +339,18 @@ var CheckConsistencyRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CheckConsistencyResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var CheckConsistencyResponse = {
+const CheckConsistencyResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for
  * google.bigtable.admin.v2.BigtableTableAdmin.SnapshotTable
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} name
  *   The unique name of the table to have the snapshot taken.
@@ -399,18 +383,18 @@ var CheckConsistencyResponse = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.SnapshotTableRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var SnapshotTableRequest = {
+const SnapshotTableRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for
  * google.bigtable.admin.v2.BigtableTableAdmin.GetSnapshot
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} name
  *   The unique name of the requested snapshot.
@@ -421,18 +405,18 @@ var SnapshotTableRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GetSnapshotRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var GetSnapshotRequest = {
+const GetSnapshotRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for
  * google.bigtable.admin.v2.BigtableTableAdmin.ListSnapshots
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} parent
  *   The unique name of the cluster for which snapshots should be listed.
@@ -442,7 +426,8 @@ var GetSnapshotRequest = {
  *   e.g., `projects/<project>/instances/<instance>/clusters/-`.
  *
  * @property {number} pageSize
- *   The maximum number of snapshots to return.
+ *   The maximum number of snapshots to return per page.
+ *   CURRENTLY UNIMPLEMENTED AND IGNORED.
  *
  * @property {string} pageToken
  *   The value of `next_page_token` returned by a previous call.
@@ -451,18 +436,18 @@ var GetSnapshotRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListSnapshotsRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var ListSnapshotsRequest = {
+const ListSnapshotsRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Response message for
  * google.bigtable.admin.v2.BigtableTableAdmin.ListSnapshots
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {Object[]} snapshots
  *   The snapshots present in the requested cluster.
@@ -478,18 +463,18 @@ var ListSnapshotsRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListSnapshotsResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var ListSnapshotsResponse = {
+const ListSnapshotsResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for
  * google.bigtable.admin.v2.BigtableTableAdmin.DeleteSnapshot
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} name
  *   The unique name of the snapshot to be deleted.
@@ -500,17 +485,17 @@ var ListSnapshotsResponse = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.DeleteSnapshotRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var DeleteSnapshotRequest = {
+const DeleteSnapshotRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * The metadata for the Operation returned by SnapshotTable.
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {Object} originalRequest
  *   The request that prompted the initiation of this SnapshotTable operation.
@@ -531,17 +516,17 @@ var DeleteSnapshotRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.SnapshotTableMetadata definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var SnapshotTableMetadata = {
+const SnapshotTableMetadata = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable snapshots. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * The metadata for the Operation returned by CreateTableFromSnapshot.
+ *
+ * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+ * feature is not currently available to most Cloud Bigtable customers. This
+ * feature might be changed in backward-incompatible ways and is not recommended
+ * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {Object} originalRequest
  *   The request that prompted the initiation of this CreateTableFromSnapshot
@@ -563,6 +548,6 @@ var SnapshotTableMetadata = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateTableFromSnapshotMetadata definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_table_admin.proto}
  */
-var CreateTableFromSnapshotMetadata = {
+const CreateTableFromSnapshotMetadata = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };

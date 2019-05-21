@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
 
 'use strict';
 
-const gapicConfig = require('./bigtable_instance_admin_client_config');
+const gapicConfig = require('./bigtable_instance_admin_client_config.json');
 const gax = require('google-gax');
-const merge = require('lodash.merge');
 const path = require('path');
 const protobuf = require('protobufjs');
 
@@ -81,7 +80,7 @@ class BigtableInstanceAdminClient {
 
     // Determine the client header string.
     const clientHeader = [
-      `gl-node/${process.version.node}`,
+      `gl-node/${process.version}`,
       `grpc/${gaxGrpc.grpcVersion}`,
       `gax/${gax.version}`,
       `gapic/${VERSION}`,
@@ -91,31 +90,28 @@ class BigtableInstanceAdminClient {
     }
 
     // Load the applicable protos.
-    const protos = merge(
-      {},
-      gaxGrpc.loadProto(
-        path.join(__dirname, '..', '..', 'protos'),
-        'google/bigtable/admin/v2/bigtable_instance_admin.proto'
-      )
+    const protos = gaxGrpc.loadProto(
+      path.join(__dirname, '..', '..', 'protos'),
+      ['google/bigtable/admin/v2/bigtable_instance_admin.proto']
     );
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
     // Create useful helper objects for these.
     this._pathTemplates = {
-      projectPathTemplate: new gax.PathTemplate('projects/{project}'),
-      instancePathTemplate: new gax.PathTemplate(
-        'projects/{project}/instances/{instance}'
-      ),
       appProfilePathTemplate: new gax.PathTemplate(
         'projects/{project}/instances/{instance}/appProfiles/{app_profile}'
       ),
       clusterPathTemplate: new gax.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}'
       ),
+      instancePathTemplate: new gax.PathTemplate(
+        'projects/{project}/instances/{instance}'
+      ),
       locationPathTemplate: new gax.PathTemplate(
         'projects/{project}/locations/{location}'
       ),
+      projectPathTemplate: new gax.PathTemplate('projects/{project}'),
     };
 
     // Some of the methods on this service return "paged" results,
@@ -259,6 +255,10 @@ class BigtableInstanceAdminClient {
             function() {
               const args = Array.prototype.slice.call(arguments, 0);
               return stub[methodName].apply(stub, args);
+            },
+          err =>
+            function() {
+              throw err;
             }
         ),
         defaults[methodName],
@@ -335,31 +335,31 @@ class BigtableInstanceAdminClient {
    *   cluster ID, e.g., just `mycluster` rather than
    *   `projects/myproject/instances/myinstance/clusters/mycluster`.
    *   Fields marked `OutputOnly` must be left blank.
-   *   Currently exactly one cluster must be specified.
+   *   Currently, at most two clusters can be specified.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
-   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedParent = client.projectPath('[PROJECT]');
-   * var instanceId = '';
-   * var instance = {};
-   * var clusters = {};
-   * var request = {
+   * const formattedParent = client.projectPath('[PROJECT]');
+   * const instanceId = '';
+   * const instance = {};
+   * const clusters = {};
+   * const request = {
    *   parent: formattedParent,
    *   instanceId: instanceId,
    *   instance: instance,
@@ -369,31 +369,25 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the promise pattern.
    * client.createInstance(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Operation#promise starts polling for the completion of the LRO.
    *     return operation.promise();
    *   })
    *   .then(responses => {
-   *     // The final result of the operation.
-   *     var result = responses[0];
-   *
-   *     // The metadata value of the completed operation.
-   *     var metadata = responses[1];
-   *
-   *     // The response of the api call returning the complete operation.
-   *     var finalApiResponse = responses[2];
+   *     const result = responses[0];
+   *     const metadata = responses[1];
+   *     const finalApiResponse = responses[2];
    *   })
    *   .catch(err => {
    *     console.error(err);
    *   });
    *
-   * var formattedParent = client.projectPath('[PROJECT]');
-   * var instanceId = '';
-   * var instance = {};
-   * var clusters = {};
-   * var request = {
+   * const formattedParent = client.projectPath('[PROJECT]');
+   * const instanceId = '';
+   * const instance = {};
+   * const clusters = {};
+   * const request = {
    *   parent: formattedParent,
    *   instanceId: instanceId,
    *   instance: instance,
@@ -403,8 +397,7 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the event emitter pattern.
    * client.createInstance(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Adding a listener for the "complete" event starts polling for the
    *     // completion of the operation.
@@ -426,6 +419,22 @@ class BigtableInstanceAdminClient {
    *   .catch(err => {
    *     console.error(err);
    *   });
+   *
+   * const formattedParent = client.projectPath('[PROJECT]');
+   * const instanceId = '';
+   * const instance = {};
+   * const clusters = {};
+   * const request = {
+   *   parent: formattedParent,
+   *   instanceId: instanceId,
+   *   instance: instance,
+   *   clusters: clusters,
+   * };
+   *
+   * // Handle the operation using the await pattern.
+   * const [operation] = await client.createInstance(request);
+   *
+   * const [response] = await operation.promise();
    */
   createInstance(request, options, callback) {
     if (options instanceof Function && callback === undefined) {
@@ -454,7 +463,7 @@ class BigtableInstanceAdminClient {
    *   `projects/<project>/instances/<instance>`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -467,14 +476,14 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
    * client.getInstance({name: formattedName})
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -507,10 +516,10 @@ class BigtableInstanceAdminClient {
    *   The unique name of the project for which a list of instances is requested.
    *   Values are of the form `projects/<project>`.
    * @param {string} [request.pageToken]
-   *   The value of `next_page_token` returned by a previous call.
+   *   DEPRECATED: This field is unused and ignored.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -523,14 +532,14 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedParent = client.projectPath('[PROJECT]');
+   * const formattedParent = client.projectPath('[PROJECT]');
    * client.listInstances({parent: formattedParent})
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -590,7 +599,7 @@ class BigtableInstanceAdminClient {
    *   The number should be among the values of [State]{@link google.bigtable.admin.v2.State}
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -603,15 +612,15 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
-   * var displayName = '';
-   * var type = 'TYPE_UNSPECIFIED';
-   * var labels = {};
-   * var request = {
+   * const formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const displayName = '';
+   * const type = 'TYPE_UNSPECIFIED';
+   * const labels = {};
+   * const request = {
    *   name: formattedName,
    *   displayName: displayName,
    *   type: type,
@@ -619,7 +628,7 @@ class BigtableInstanceAdminClient {
    * };
    * client.updateInstance(request)
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -659,26 +668,26 @@ class BigtableInstanceAdminClient {
    *   This object should have the same structure as [FieldMask]{@link google.protobuf.FieldMask}
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
-   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var instance = {};
-   * var updateMask = {};
-   * var request = {
+   * const instance = {};
+   * const updateMask = {};
+   * const request = {
    *   instance: instance,
    *   updateMask: updateMask,
    * };
@@ -686,29 +695,23 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the promise pattern.
    * client.partialUpdateInstance(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Operation#promise starts polling for the completion of the LRO.
    *     return operation.promise();
    *   })
    *   .then(responses => {
-   *     // The final result of the operation.
-   *     var result = responses[0];
-   *
-   *     // The metadata value of the completed operation.
-   *     var metadata = responses[1];
-   *
-   *     // The response of the api call returning the complete operation.
-   *     var finalApiResponse = responses[2];
+   *     const result = responses[0];
+   *     const metadata = responses[1];
+   *     const finalApiResponse = responses[2];
    *   })
    *   .catch(err => {
    *     console.error(err);
    *   });
    *
-   * var instance = {};
-   * var updateMask = {};
-   * var request = {
+   * const instance = {};
+   * const updateMask = {};
+   * const request = {
    *   instance: instance,
    *   updateMask: updateMask,
    * };
@@ -716,8 +719,7 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the event emitter pattern.
    * client.partialUpdateInstance(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Adding a listener for the "complete" event starts polling for the
    *     // completion of the operation.
@@ -739,6 +741,18 @@ class BigtableInstanceAdminClient {
    *   .catch(err => {
    *     console.error(err);
    *   });
+   *
+   * const instance = {};
+   * const updateMask = {};
+   * const request = {
+   *   instance: instance,
+   *   updateMask: updateMask,
+   * };
+   *
+   * // Handle the operation using the await pattern.
+   * const [operation] = await client.partialUpdateInstance(request);
+   *
+   * const [response] = await operation.promise();
    */
   partialUpdateInstance(request, options, callback) {
     if (options instanceof Function && callback === undefined) {
@@ -771,7 +785,7 @@ class BigtableInstanceAdminClient {
    *   Values are of the form `projects/<project>/instances/<instance>`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error)} [callback]
    *   The function which will be called with the result of the API call.
    * @returns {Promise} - The promise which resolves when API call finishes.
@@ -781,11 +795,11 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const formattedName = client.instancePath('[PROJECT]', '[INSTANCE]');
    * client.deleteInstance({name: formattedName}).catch(err => {
    *   console.error(err);
    * });
@@ -827,27 +841,27 @@ class BigtableInstanceAdminClient {
    *   This object should have the same structure as [Cluster]{@link google.bigtable.admin.v2.Cluster}
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
-   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-   * var clusterId = '';
-   * var cluster = {};
-   * var request = {
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const clusterId = '';
+   * const cluster = {};
+   * const request = {
    *   parent: formattedParent,
    *   clusterId: clusterId,
    *   cluster: cluster,
@@ -856,30 +870,24 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the promise pattern.
    * client.createCluster(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Operation#promise starts polling for the completion of the LRO.
    *     return operation.promise();
    *   })
    *   .then(responses => {
-   *     // The final result of the operation.
-   *     var result = responses[0];
-   *
-   *     // The metadata value of the completed operation.
-   *     var metadata = responses[1];
-   *
-   *     // The response of the api call returning the complete operation.
-   *     var finalApiResponse = responses[2];
+   *     const result = responses[0];
+   *     const metadata = responses[1];
+   *     const finalApiResponse = responses[2];
    *   })
    *   .catch(err => {
    *     console.error(err);
    *   });
    *
-   * var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-   * var clusterId = '';
-   * var cluster = {};
-   * var request = {
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const clusterId = '';
+   * const cluster = {};
+   * const request = {
    *   parent: formattedParent,
    *   clusterId: clusterId,
    *   cluster: cluster,
@@ -888,8 +896,7 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the event emitter pattern.
    * client.createCluster(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Adding a listener for the "complete" event starts polling for the
    *     // completion of the operation.
@@ -911,6 +918,20 @@ class BigtableInstanceAdminClient {
    *   .catch(err => {
    *     console.error(err);
    *   });
+   *
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const clusterId = '';
+   * const cluster = {};
+   * const request = {
+   *   parent: formattedParent,
+   *   clusterId: clusterId,
+   *   cluster: cluster,
+   * };
+   *
+   * // Handle the operation using the await pattern.
+   * const [operation] = await client.createCluster(request);
+   *
+   * const [response] = await operation.promise();
    */
   createCluster(request, options, callback) {
     if (options instanceof Function && callback === undefined) {
@@ -939,7 +960,7 @@ class BigtableInstanceAdminClient {
    *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -952,14 +973,14 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
+   * const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
    * client.getCluster({name: formattedName})
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -994,10 +1015,10 @@ class BigtableInstanceAdminClient {
    *   Use `<instance> = '-'` to list Clusters for all Instances in a project,
    *   e.g., `projects/myproject/instances/-`.
    * @param {string} [request.pageToken]
-   *   The value of `next_page_token` returned by a previous call.
+   *   DEPRECATED: This field is unused and ignored.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -1010,14 +1031,14 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
    * client.listClusters({parent: formattedParent})
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -1050,15 +1071,15 @@ class BigtableInstanceAdminClient {
    *   (`OutputOnly`)
    *   The unique name of the cluster. Values are of the form
    *   `projects/<project>/instances/<instance>/clusters/[a-z][-a-z0-9]*`.
-   * @param {string} request.location
+   * @param {number} request.serveNodes
+   *   The number of nodes allocated to this cluster. More nodes enable higher
+   *   throughput and more consistent performance.
+   * @param {string} [request.location]
    *   (`CreationOnly`)
    *   The location where this cluster's nodes and storage reside. For best
    *   performance, clients should be located as close as possible to this
    *   cluster. Currently only zones are supported, so values should be of the
    *   form `projects/<project>/locations/<zone>`.
-   * @param {number} request.serveNodes
-   *   The number of nodes allocated to this cluster. More nodes enable higher
-   *   throughput and more consistent performance.
    * @param {number} [request.state]
    *   (`OutputOnly`)
    *   The current state of the cluster.
@@ -1072,69 +1093,58 @@ class BigtableInstanceAdminClient {
    *   The number should be among the values of [StorageType]{@link google.bigtable.admin.v2.StorageType}
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
-   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
-   * var location = '';
-   * var serveNodes = 0;
-   * var request = {
+   * const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
+   * const serveNodes = 0;
+   * const request = {
    *   name: formattedName,
-   *   location: location,
    *   serveNodes: serveNodes,
    * };
    *
    * // Handle the operation using the promise pattern.
    * client.updateCluster(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Operation#promise starts polling for the completion of the LRO.
    *     return operation.promise();
    *   })
    *   .then(responses => {
-   *     // The final result of the operation.
-   *     var result = responses[0];
-   *
-   *     // The metadata value of the completed operation.
-   *     var metadata = responses[1];
-   *
-   *     // The response of the api call returning the complete operation.
-   *     var finalApiResponse = responses[2];
+   *     const result = responses[0];
+   *     const metadata = responses[1];
+   *     const finalApiResponse = responses[2];
    *   })
    *   .catch(err => {
    *     console.error(err);
    *   });
    *
-   * var formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
-   * var location = '';
-   * var serveNodes = 0;
-   * var request = {
+   * const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
+   * const serveNodes = 0;
+   * const request = {
    *   name: formattedName,
-   *   location: location,
    *   serveNodes: serveNodes,
    * };
    *
    * // Handle the operation using the event emitter pattern.
    * client.updateCluster(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Adding a listener for the "complete" event starts polling for the
    *     // completion of the operation.
@@ -1156,6 +1166,18 @@ class BigtableInstanceAdminClient {
    *   .catch(err => {
    *     console.error(err);
    *   });
+   *
+   * const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
+   * const serveNodes = 0;
+   * const request = {
+   *   name: formattedName,
+   *   serveNodes: serveNodes,
+   * };
+   *
+   * // Handle the operation using the await pattern.
+   * const [operation] = await client.updateCluster(request);
+   *
+   * const [response] = await operation.promise();
    */
   updateCluster(request, options, callback) {
     if (options instanceof Function && callback === undefined) {
@@ -1184,7 +1206,7 @@ class BigtableInstanceAdminClient {
    *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error)} [callback]
    *   The function which will be called with the result of the API call.
    * @returns {Promise} - The promise which resolves when API call finishes.
@@ -1194,11 +1216,11 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
+   * const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
    * client.deleteCluster({name: formattedName}).catch(err => {
    *   console.error(err);
    * });
@@ -1221,11 +1243,6 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable replication. This feature
-   * is not currently available to most Cloud Bigtable customers. This feature
-   * might be changed in backward-incompatible ways and is not recommended for
-   * production use. It is not subject to any SLA or deprecation policy.
-   *
    * Creates an app profile within an instance.
    *
    * @param {Object} request
@@ -1247,7 +1264,7 @@ class BigtableInstanceAdminClient {
    *   If true, ignore safety checks when creating the app profile.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -1260,21 +1277,21 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
-   * var appProfileId = '';
-   * var appProfile = {};
-   * var request = {
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const appProfileId = '';
+   * const appProfile = {};
+   * const request = {
    *   parent: formattedParent,
    *   appProfileId: appProfileId,
    *   appProfile: appProfile,
    * };
    * client.createAppProfile(request)
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -1299,11 +1316,6 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable replication. This feature
-   * is not currently available to most Cloud Bigtable customers. This feature
-   * might be changed in backward-incompatible ways and is not recommended for
-   * production use. It is not subject to any SLA or deprecation policy.
-   *
    * Gets information about an app profile.
    *
    * @param {Object} request
@@ -1313,7 +1325,7 @@ class BigtableInstanceAdminClient {
    *   `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -1326,14 +1338,14 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
+   * const formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
    * client.getAppProfile({name: formattedName})
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -1358,11 +1370,6 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable replication. This feature
-   * is not currently available to most Cloud Bigtable customers. This feature
-   * might be changed in backward-incompatible ways and is not recommended for
-   * production use. It is not subject to any SLA or deprecation policy.
-   *
    * Lists information about app profiles in an instance.
    *
    * @param {Object} request
@@ -1371,9 +1378,14 @@ class BigtableInstanceAdminClient {
    *   The unique name of the instance for which a list of app profiles is
    *   requested. Values are of the form
    *   `projects/<project>/instances/<instance>`.
+   *   Use `<instance> = '-'` to list AppProfiles for all Instances in a project,
+   *   e.g., `projects/myproject/instances/-`.
+   * @param {number} [request.pageSize]
+   *   Maximum number of results per page.
+   *   CURRENTLY UNIMPLEMENTED AND IGNORED.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Array, ?Object, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -1398,18 +1410,18 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
    * // Iterate over all elements.
-   * var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
    *
    * client.listAppProfiles({parent: formattedParent})
    *   .then(responses => {
-   *     var resources = responses[0];
-   *     for (let i = 0; i < resources.length; i += 1) {
-   *       // doThingsWith(resources[i])
+   *     const resources = responses[0];
+   *     for (const resource of resources) {
+   *       // doThingsWith(resource)
    *     }
    *   })
    *   .catch(err => {
@@ -1417,19 +1429,19 @@ class BigtableInstanceAdminClient {
    *   });
    *
    * // Or obtain the paged response.
-   * var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
    *
    *
-   * var options = {autoPaginate: false};
-   * var callback = responses => {
+   * const options = {autoPaginate: false};
+   * const callback = responses => {
    *   // The actual resources in a response.
-   *   var resources = responses[0];
+   *   const resources = responses[0];
    *   // The next request if the response shows that there are more responses.
-   *   var nextRequest = responses[1];
+   *   const nextRequest = responses[1];
    *   // The actual response object, if necessary.
-   *   // var rawResponse = responses[2];
-   *   for (let i = 0; i < resources.length; i += 1) {
-   *     // doThingsWith(resources[i]);
+   *   // const rawResponse = responses[2];
+   *   for (const resource of resources) {
+   *     // doThingsWith(resource);
    *   }
    *   if (nextRequest) {
    *     // Fetch the next page.
@@ -1478,9 +1490,14 @@ class BigtableInstanceAdminClient {
    *   The unique name of the instance for which a list of app profiles is
    *   requested. Values are of the form
    *   `projects/<project>/instances/<instance>`.
+   *   Use `<instance> = '-'` to list AppProfiles for all Instances in a project,
+   *   e.g., `projects/myproject/instances/-`.
+   * @param {number} [request.pageSize]
+   *   Maximum number of results per page.
+   *   CURRENTLY UNIMPLEMENTED AND IGNORED.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @returns {Stream}
    *   An object stream which emits an object representing [AppProfile]{@link google.bigtable.admin.v2.AppProfile} on 'data' event.
    *
@@ -1488,11 +1505,11 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const formattedParent = client.instancePath('[PROJECT]', '[INSTANCE]');
    * client.listAppProfilesStream({parent: formattedParent})
    *   .on('data', element => {
    *     // doThingsWith(element)
@@ -1511,11 +1528,6 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable replication. This feature
-   * is not currently available to most Cloud Bigtable customers. This feature
-   * might be changed in backward-incompatible ways and is not recommended for
-   * production use. It is not subject to any SLA or deprecation policy.
-   *
    * Updates an app profile within an instance.
    *
    * @param {Object} request
@@ -1533,26 +1545,26 @@ class BigtableInstanceAdminClient {
    *   If true, ignore safety checks when updating the app profile.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
-   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The second parameter to the callback is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/Operation} object.
+   *   The first element of the array is a [gax.Operation]{@link https://googleapis.github.io/gax-nodejs/classes/Operation.html} object.
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    *
    * @example
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var appProfile = {};
-   * var updateMask = {};
-   * var request = {
+   * const appProfile = {};
+   * const updateMask = {};
+   * const request = {
    *   appProfile: appProfile,
    *   updateMask: updateMask,
    * };
@@ -1560,29 +1572,23 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the promise pattern.
    * client.updateAppProfile(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Operation#promise starts polling for the completion of the LRO.
    *     return operation.promise();
    *   })
    *   .then(responses => {
-   *     // The final result of the operation.
-   *     var result = responses[0];
-   *
-   *     // The metadata value of the completed operation.
-   *     var metadata = responses[1];
-   *
-   *     // The response of the api call returning the complete operation.
-   *     var finalApiResponse = responses[2];
+   *     const result = responses[0];
+   *     const metadata = responses[1];
+   *     const finalApiResponse = responses[2];
    *   })
    *   .catch(err => {
    *     console.error(err);
    *   });
    *
-   * var appProfile = {};
-   * var updateMask = {};
-   * var request = {
+   * const appProfile = {};
+   * const updateMask = {};
+   * const request = {
    *   appProfile: appProfile,
    *   updateMask: updateMask,
    * };
@@ -1590,8 +1596,7 @@ class BigtableInstanceAdminClient {
    * // Handle the operation using the event emitter pattern.
    * client.updateAppProfile(request)
    *   .then(responses => {
-   *     var operation = responses[0];
-   *     var initialApiResponse = responses[1];
+   *     const [operation, initialApiResponse] = responses;
    *
    *     // Adding a listener for the "complete" event starts polling for the
    *     // completion of the operation.
@@ -1613,6 +1618,18 @@ class BigtableInstanceAdminClient {
    *   .catch(err => {
    *     console.error(err);
    *   });
+   *
+   * const appProfile = {};
+   * const updateMask = {};
+   * const request = {
+   *   appProfile: appProfile,
+   *   updateMask: updateMask,
+   * };
+   *
+   * // Handle the operation using the await pattern.
+   * const [operation] = await client.updateAppProfile(request);
+   *
+   * const [response] = await operation.promise();
    */
   updateAppProfile(request, options, callback) {
     if (options instanceof Function && callback === undefined) {
@@ -1632,11 +1649,6 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable replication. This feature
-   * is not currently available to most Cloud Bigtable customers. This feature
-   * might be changed in backward-incompatible ways and is not recommended for
-   * production use. It is not subject to any SLA or deprecation policy.
-   *
    * Deletes an app profile from an instance.
    *
    * @param {Object} request
@@ -1648,7 +1660,7 @@ class BigtableInstanceAdminClient {
    *   If true, ignore safety checks when deleting the app profile.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error)} [callback]
    *   The function which will be called with the result of the API call.
    * @returns {Promise} - The promise which resolves when API call finishes.
@@ -1658,13 +1670,13 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
-   * var ignoreWarnings = false;
-   * var request = {
+   * const formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
+   * const ignoreWarnings = false;
+   * const request = {
    *   name: formattedName,
    *   ignoreWarnings: ignoreWarnings,
    * };
@@ -1690,12 +1702,6 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable instance level
-   * permissions. This feature is not currently available to most Cloud Bigtable
-   * customers. This feature might be changed in backward-incompatible ways and
-   * is not recommended for production use. It is not subject to any SLA or
-   * deprecation policy.
-   *
    * Gets the access control policy for an instance resource. Returns an empty
    * policy if an instance exists but does not have a policy set.
    *
@@ -1703,11 +1709,10 @@ class BigtableInstanceAdminClient {
    *   The request object that will be sent.
    * @param {string} request.resource
    *   REQUIRED: The resource for which the policy is being requested.
-   *   `resource` is usually specified as a path. For example, a Project
-   *   resource is specified as `projects/{project}`.
+   *   See the operation documentation for the appropriate value for this field.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -1720,14 +1725,14 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
    * client.getIamPolicy({resource: formattedResource})
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -1752,12 +1757,6 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable instance level
-   * permissions. This feature is not currently available to most Cloud Bigtable
-   * customers. This feature might be changed in backward-incompatible ways and
-   * is not recommended for production use. It is not subject to any SLA or
-   * deprecation policy.
-   *
    * Sets the access control policy on an instance resource. Replaces any
    * existing policy.
    *
@@ -1765,8 +1764,7 @@ class BigtableInstanceAdminClient {
    *   The request object that will be sent.
    * @param {string} request.resource
    *   REQUIRED: The resource for which the policy is being specified.
-   *   `resource` is usually specified as a path. For example, a Project
-   *   resource is specified as `projects/{project}`.
+   *   See the operation documentation for the appropriate value for this field.
    * @param {Object} request.policy
    *   REQUIRED: The complete policy to be applied to the `resource`. The size of
    *   the policy is limited to a few 10s of KB. An empty policy is a
@@ -1776,7 +1774,7 @@ class BigtableInstanceAdminClient {
    *   This object should have the same structure as [Policy]{@link google.iam.v1.Policy}
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -1789,19 +1787,19 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-   * var policy = {};
-   * var request = {
+   * const formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const policy = {};
+   * const request = {
    *   resource: formattedResource,
    *   policy: policy,
    * };
    * client.setIamPolicy(request)
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -1826,20 +1824,13 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * This is a private alpha release of Cloud Bigtable instance level
-   * permissions. This feature is not currently available to most Cloud Bigtable
-   * customers. This feature might be changed in backward-incompatible ways and
-   * is not recommended for production use. It is not subject to any SLA or
-   * deprecation policy.
-   *
    * Returns permissions that the caller has on the specified instance resource.
    *
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.resource
    *   REQUIRED: The resource for which the policy detail is being requested.
-   *   `resource` is usually specified as a path. For example, a Project
-   *   resource is specified as `projects/{project}`.
+   *   See the operation documentation for the appropriate value for this field.
    * @param {string[]} request.permissions
    *   The set of permissions to check for the `resource`. Permissions with
    *   wildcards (such as '*' or 'storage.*') are not allowed. For more
@@ -1847,7 +1838,7 @@ class BigtableInstanceAdminClient {
    *   [IAM Overview](https://cloud.google.com/iam/docs/overview#permissions).
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -1860,19 +1851,19 @@ class BigtableInstanceAdminClient {
    *
    * const admin = require('admin.v2');
    *
-   * var client = new admin.v2.BigtableInstanceAdminClient({
+   * const client = new admin.v2.BigtableInstanceAdminClient({
    *   // optional auth parameters.
    * });
    *
-   * var formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
-   * var permissions = [];
-   * var request = {
+   * const formattedResource = client.instancePath('[PROJECT]', '[INSTANCE]');
+   * const permissions = [];
+   * const request = {
    *   resource: formattedResource,
    *   permissions: permissions,
    * };
    * client.testIamPermissions(request)
    *   .then(responses => {
-   *     var response = responses[0];
+   *     const response = responses[0];
    *     // doThingsWith(response)
    *   })
    *   .catch(err => {
@@ -1899,32 +1890,6 @@ class BigtableInstanceAdminClient {
   // --------------------
   // -- Path templates --
   // --------------------
-
-  /**
-   * Return a fully-qualified project resource name string.
-   *
-   * @param {String} project
-   * @returns {String}
-   */
-  projectPath(project) {
-    return this._pathTemplates.projectPathTemplate.render({
-      project: project,
-    });
-  }
-
-  /**
-   * Return a fully-qualified instance resource name string.
-   *
-   * @param {String} project
-   * @param {String} instance
-   * @returns {String}
-   */
-  instancePath(project, instance) {
-    return this._pathTemplates.instancePathTemplate.render({
-      project: project,
-      instance: instance,
-    });
-  }
 
   /**
    * Return a fully-qualified app_profile resource name string.
@@ -1959,6 +1924,20 @@ class BigtableInstanceAdminClient {
   }
 
   /**
+   * Return a fully-qualified instance resource name string.
+   *
+   * @param {String} project
+   * @param {String} instance
+   * @returns {String}
+   */
+  instancePath(project, instance) {
+    return this._pathTemplates.instancePathTemplate.render({
+      project: project,
+      instance: instance,
+    });
+  }
+
+  /**
    * Return a fully-qualified location resource name string.
    *
    * @param {String} project
@@ -1973,37 +1952,15 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * Parse the projectName from a project resource.
+   * Return a fully-qualified project resource name string.
    *
-   * @param {String} projectName
-   *   A fully-qualified path representing a project resources.
-   * @returns {String} - A string representing the project.
+   * @param {String} project
+   * @returns {String}
    */
-  matchProjectFromProjectName(projectName) {
-    return this._pathTemplates.projectPathTemplate.match(projectName).project;
-  }
-
-  /**
-   * Parse the instanceName from a instance resource.
-   *
-   * @param {String} instanceName
-   *   A fully-qualified path representing a instance resources.
-   * @returns {String} - A string representing the project.
-   */
-  matchProjectFromInstanceName(instanceName) {
-    return this._pathTemplates.instancePathTemplate.match(instanceName).project;
-  }
-
-  /**
-   * Parse the instanceName from a instance resource.
-   *
-   * @param {String} instanceName
-   *   A fully-qualified path representing a instance resources.
-   * @returns {String} - A string representing the instance.
-   */
-  matchInstanceFromInstanceName(instanceName) {
-    return this._pathTemplates.instancePathTemplate.match(instanceName)
-      .instance;
+  projectPath(project) {
+    return this._pathTemplates.projectPathTemplate.render({
+      project: project,
+    });
   }
 
   /**
@@ -2076,6 +2033,29 @@ class BigtableInstanceAdminClient {
   }
 
   /**
+   * Parse the instanceName from a instance resource.
+   *
+   * @param {String} instanceName
+   *   A fully-qualified path representing a instance resources.
+   * @returns {String} - A string representing the project.
+   */
+  matchProjectFromInstanceName(instanceName) {
+    return this._pathTemplates.instancePathTemplate.match(instanceName).project;
+  }
+
+  /**
+   * Parse the instanceName from a instance resource.
+   *
+   * @param {String} instanceName
+   *   A fully-qualified path representing a instance resources.
+   * @returns {String} - A string representing the instance.
+   */
+  matchInstanceFromInstanceName(instanceName) {
+    return this._pathTemplates.instancePathTemplate.match(instanceName)
+      .instance;
+  }
+
+  /**
    * Parse the locationName from a location resource.
    *
    * @param {String} locationName
@@ -2096,6 +2076,17 @@ class BigtableInstanceAdminClient {
   matchLocationFromLocationName(locationName) {
     return this._pathTemplates.locationPathTemplate.match(locationName)
       .location;
+  }
+
+  /**
+   * Parse the projectName from a project resource.
+   *
+   * @param {String} projectName
+   *   A fully-qualified path representing a project resources.
+   * @returns {String} - A string representing the project.
+   */
+  matchProjectFromProjectName(projectName) {
+    return this._pathTemplates.projectPathTemplate.match(projectName).project;
   }
 }
 
