@@ -1,146 +1,80 @@
+[//]: # "This README.md file is auto-generated, all changes to this file will be lost."
+[//]: # "To regenerate it, use `python -m synthtool`."
 <img src="https://avatars2.githubusercontent.com/u/2810941?v=3&s=96" alt="Google Cloud Platform logo" title="Google Cloud Platform" align="right" height="96" width="96"/>
 
-# Cloud Bigtable: Node.js Samples
+# [Cloud Bigtable: Node.js Samples](https://github.com/googleapis/nodejs-bigtable)
 
 [![Open in Cloud Shell][shell_img]][shell_link]
 
-[Cloud Bigtable](https://cloud.google.com/bigtable/docs/) is Google&#x27;s NoSQL Big Data database service. It&#x27;s the same database that powers many core Google services, including Search, Analytics, Maps, and Gmail.
+
 
 ## Table of Contents
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-
-
-- [Before you begin](#before-you-begin)
-- [Samples](#samples)
-  - [Hello World](#hello-world)
-  - [Instances](#instances)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
+* [Before you begin](#before-you-begin)
+* [Samples](#samples)
+  * [Instances](#instances)
+  * [Quickstart](#quickstart)
+  * [Tableadmin](#tableadmin)
 
 ## Before you begin
 
-Before running the samples, make sure you've followed the steps in the
-[Before you begin section](../README.md#before-you-begin) of the client
-library's README.
+Before running the samples, make sure you've followed the steps outlined in
+[Using the client library](https://github.com/googleapis/nodejs-bigtable#using-the-client-library).
 
 ## Samples
 
-### Quickstart
-The [Quick start](quickstart.js) sample shows a basic usage of the Bigtable client library: reading rows from a table.
 
-Follow the [cbt tutorial](https://cloud.google.com/bigtable/docs/quickstart-cbt) to install the cbt command line tool.
-Here are the cbt commands to create a table, column family and add some data:
-```
-   cbt createtable my-table
-   cbt createfamily my-table cf1
-   cbt set my-table r1 cf1:c1=test-value
-```
-
-Run the quick start to read the row you just wrote using `cbt`:
-```
-   node quickstart.js
-```
-Expected output similar to:
-```
-    Row key: r1
-    Data: {
-        "cf1": {
-            "c1": [
-                {
-                    "value": "test-value",
-                    "labels": [],
-                    "timestamp": "1526104247827000"
-                }
-            ]
-        }
-    }
-```
-
-### Hello World
-
-View the [Hello World][hello_world_directory] sample to see a basic usage of
-the Bigtable client library.
 
 ### Instances
 
-View the [source code][instances_0_code].
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/instances.js).
 
 [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md)
 
-__Usage:__ `node instances.js --help`
+__Usage:__
 
-```
-instances.js <command>
 
-Commands:
-  instances.js run           Creates an Instance(type: PRODUCTION) and run basic instance-operations
-  instances.js dev-instance  Create Development Instance
-  instances.js del-instance  Delete the Instance
-  instances.js add-cluster   Add Cluster
-  instances.js del-cluster   Delete the Cluster
+`node instances.js`
 
-Options:
-  --version   Show version number                                                                              [boolean]
-  --instance  Cloud Bigtable Instance name
-  --cluster   Cloud Bigtable Cluster name
-  --help      Show help                                                                                        [boolean]
 
-Examples:
-  node instances.js run --instance [instanceName] --cluster     Run instance operations
-  [clusterName]
-  node instances.js dev-instance --instance [instanceName]      Create Development Instance
-  node instances.js del-instance --instance [instanceName]      Delete the Instance.
-  node instances.js add-cluster --instance [instanceName]       Add Cluster
-  --cluster [clusterName]
-  node instances.js del-cluster --instance [instanceName]       Delete the Cluster
-  --cluster [clusterName]
+-----
 
-For more information, see https://cloud.google.com/bigtable/docs
-```
 
-### Table / Column family management
 
-View the [source code](tableadmin.js).
-This sample showcases the basic table / column family operations:
-1. Create a table (if does not exist)
-1. List tables in the current project
-1. Retrieve table metadata
-1. Create column families with supported garbage collection(GC) rules
-1. List table column families and GC rules
-1. Update a column family GC rule
-1. Delete a column family
-1. Delete a table
 
-[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md)
+### Quickstart
 
-__Usage:__ `node tableadmin.js --help`
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/quickstart.js).
 
-```
-Commands:
-  tableadmin.js run     Create a table (if does not exist) and run basic table operations.
-  tableadmin.js delete  Delete table.
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/quickstart.js,samples/README.md)
 
-Options:
-  --version   Show version number                                                                              [boolean]
-  --instance  Cloud Bigtable Instance name                                                                    [required]
-  --table     Cloud Bigtable Table name                                                                       [required]
-  --help      Show help                                                                                        [boolean]
+__Usage:__
 
-Examples:
-  node tableadmin.js run --instance [instanceName] --table      Create a table (if does not exist) and run basic table
-  [tableName]                                                   operations.
-  node tableadmin.js delete --instance [instanceName] --table   Delete a table.
-  [tableName]
 
-For more information, see https://cloud.google.com/bigtable/docs
-```
-[instances_0_docs]: https://cloud.google.com/bigtable/docs/
-[instances_0_code]: instances.js
+`node quickstart.js`
 
-[hello_world_directory]: hello-world
 
-[shell_img]: //gstatic.com/cloudssh/images/open-btn.png
+-----
+
+
+
+
+### Tableadmin
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/tableadmin.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/tableadmin.js,samples/README.md)
+
+__Usage:__
+
+
+`node tableadmin.js`
+
+
+
+
+
+
+[shell_img]: https://gstatic.com/cloudssh/images/open-btn.png
 [shell_link]: https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/README.md
+[product-docs]: https://cloud.google.com/bigtable
