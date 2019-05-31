@@ -28,7 +28,7 @@ const TABLE_ID = 'mobile-time-series';
 
 describe('writes', async () => {
   const bigtable = Bigtable();
-  let table;
+  let instance, table;
 
   before(async () => {
     const options = {
@@ -43,7 +43,7 @@ describe('writes', async () => {
     };
 
     // Create development instance with given options
-    const [instance] = await bigtable.createInstance(INSTANCE_ID, options);
+    [instance] = await bigtable.createInstance(INSTANCE_ID, options);
     table = instance.table(TABLE_ID);
 
     await table.create().catch(console.error);
@@ -51,7 +51,7 @@ describe('writes', async () => {
   });
 
   after(async () => {
-    await table.delete().catch(console.error);
+    await instance.delete().catch(console.error);
   });
 
   it('should do a simple write', async () => {
