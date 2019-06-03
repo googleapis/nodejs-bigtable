@@ -15,35 +15,21 @@
 
 'use strict';
 
-const uuid = require(`uuid`);
 const {assert} = require('chai');
 const cp = require('child_process');
 const Bigtable = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const INSTANCE_ID = `nodejs-bigtable-samples-keepme`;
 const TABLE_ID = 'mobile-time-series';
 
 describe('writes', async () => {
   const bigtable = Bigtable();
-  let instance, table;
+  const instance = bigtable.instance(INSTANCE_ID);
+  let table;
 
   before(async () => {
-    const options = {
-      clusters: [
-        {
-          id: CLUSTER_ID,
-          location: 'us-central1-f',
-          storage: 'hdd',
-        },
-      ],
-      type: 'DEVELOPMENT',
-    };
-
-    // Create development instance with given options
-    [instance] = await bigtable.createInstance(INSTANCE_ID, options);
     table = instance.table(TABLE_ID);
 
     await table.create().catch(console.error);
@@ -51,7 +37,7 @@ describe('writes', async () => {
   });
 
   after(async () => {
-    await instance.delete().catch(console.error);
+    await table.delete().catch(console.error);
   });
 
   it('should do a simple write', async () => {
