@@ -16,7 +16,7 @@
 'use strict';
 
 function main(instanceId = 'YOUR_INSTANCE_ID') {
-  // [START bigtable_writes_conditoinal]
+  // [START bigtable_writes_conditional]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
@@ -30,6 +30,7 @@ function main(instanceId = 'YOUR_INSTANCE_ID') {
     const instance = bigtable.instance(instanceId);
     const table = instance.table('mobile-time-series');
 
+    const timestamp = new Date();
     const row = table.row('phone#4c410523#20190501');
     const filter = [
       {
@@ -48,6 +49,7 @@ function main(instanceId = 'YOUR_INSTANCE_ID') {
           data: {
             stats_summary: {
               os_name: 'android',
+              timestamp,
             },
           },
         },
@@ -60,7 +62,7 @@ function main(instanceId = 'YOUR_INSTANCE_ID') {
   }
 
   writeConditionally();
-  // [END bigtable_writes_conditoinal]
+  // [END bigtable_writes_conditional]
 }
 
 main(...process.argv.slice(2));
