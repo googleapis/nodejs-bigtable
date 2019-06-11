@@ -44,6 +44,7 @@ const fakePromisify = Object.assign({}, promisify, {
 
 function createFake(Class) {
   return class Fake extends Class {
+    calledWith_: IArguments;
     constructor() {
       super(...arguments);
       this.calledWith_ = arguments;
