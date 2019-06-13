@@ -91,6 +91,10 @@ has instructions for running the samples.
 | Instances | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/instances.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md) |
 | Quickstart | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/quickstart.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/quickstart.js,samples/README.md) |
 | Tableadmin | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/tableadmin.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/tableadmin.js,samples/README.md) |
+| Write Batch | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeBatch.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeBatch.js,samples/README.md) |
+| Write Conditionally | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeConditionally.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeConditionally.js,samples/README.md) |
+| Write Increment | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeIncrement.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeIncrement.js,samples/README.md) |
+| Write Simple | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeSimple.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeSimple.js,samples/README.md) |
 
 
 
@@ -126,7 +130,7 @@ Apache Version 2.0
 
 See [LICENSE](https://github.com/googleapis/nodejs-bigtable/blob/master/LICENSE)
 
-[client-docs]: https://cloud.google.com/nodejs/docs/reference/bigtable/latest/
+[client-docs]: https://googleapis.dev/nodejs/bigtable/latest
 [product-docs]: https://cloud.google.com/bigtable
 [shell_img]: https://gstatic.com/cloudssh/images/open-btn.png
 [projects]: https://console.cloud.google.com/project
