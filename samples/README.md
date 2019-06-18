@@ -15,6 +15,10 @@
   * [Instances](#instances)
   * [Quickstart](#quickstart)
   * [Tableadmin](#tableadmin)
+  * [Write Batch](#write-batch)
+  * [Write Conditionally](#write-conditionally)
+  * [Write Increment](#write-increment)
+  * [Write Simple](#write-simple)
 
 ## Before you begin
 
@@ -69,6 +73,74 @@ __Usage:__
 
 
 `node tableadmin.js`
+
+
+-----
+
+
+
+
+### Write Batch
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeBatch.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeBatch.js,samples/README.md)
+
+__Usage:__
+
+
+`node writeBatch.js`
+
+
+-----
+
+
+
+
+### Write Conditionally
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeConditionally.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeConditionally.js,samples/README.md)
+
+__Usage:__
+
+
+`node writeConditionally.js`
+
+
+-----
+
+
+
+
+### Write Increment
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeIncrement.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeIncrement.js,samples/README.md)
+
+__Usage:__
+
+
+`node writeIncrement.js`
+
+
+-----
+
+
+
+
+### Write Simple
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeSimple.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeSimple.js,samples/README.md)
+
+__Usage:__
+
+
+`node writeSimple.js`
 
 
 

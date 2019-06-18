@@ -51,7 +51,9 @@ export class AppProfile {
         name = id;
       } else {
         throw new Error(`AppProfile id '${id}' is not formatted correctly.
-Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-profile'.`);
+Please use the format 'my-app-profile' or '${
+          instance.name
+        }/appProfiles/my-app-profile'.`);
       }
     } else {
       name = `${instance.name}/appProfiles/${id}`;

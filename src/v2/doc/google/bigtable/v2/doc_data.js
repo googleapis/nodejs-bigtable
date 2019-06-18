@@ -19,7 +19,7 @@
  * Specifies the complete (requested) contents of a single row of a table.
  * Rows which exceed 256MiB in size cannot be read in full.
  *
- * @property {string} key
+ * @property {Buffer} key
  *   The unique key which identifies this row within its table. This is the same
  *   key that's used to identify the row in, for example, a MutateRowRequest.
  *   May contain any non-empty byte string up to 4KiB in length.
@@ -67,7 +67,7 @@ const Family = {
  * Specifies (some of) the contents of a single row/column intersection of a
  * table.
  *
- * @property {string} qualifier
+ * @property {Buffer} qualifier
  *   The unique key which identifies this column within its family. This is the
  *   same key that's used to identify the column in, for example, a RowFilter
  *   which sets its `column_qualifier_regex_filter` field.
@@ -98,7 +98,7 @@ const Column = {
  *   example, a table which specifies millisecond granularity will only allow
  *   values of `timestamp_micros` which are multiples of 1000.
  *
- * @property {string} value
+ * @property {Buffer} value
  *   The value stored in the cell.
  *   May contain any byte string, including the empty string, up to 100MiB in
  *   length.
@@ -117,16 +117,16 @@ const Cell = {
 /**
  * Specifies a contiguous range of rows.
  *
- * @property {string} startKeyClosed
+ * @property {Buffer} startKeyClosed
  *   Used when giving an inclusive lower bound for the range.
  *
- * @property {string} startKeyOpen
+ * @property {Buffer} startKeyOpen
  *   Used when giving an exclusive lower bound for the range.
  *
- * @property {string} endKeyOpen
+ * @property {Buffer} endKeyOpen
  *   Used when giving an exclusive upper bound for the range.
  *
- * @property {string} endKeyClosed
+ * @property {Buffer} endKeyClosed
  *   Used when giving an inclusive upper bound for the range.
  *
  * @typedef RowRange
@@ -140,7 +140,7 @@ const RowRange = {
 /**
  * Specifies a non-contiguous set of rows.
  *
- * @property {string[]} rowKeys
+ * @property {Buffer[]} rowKeys
  *   Single rows included in the set.
  *
  * @property {Object[]} rowRanges
@@ -165,16 +165,16 @@ const RowSet = {
  * @property {string} familyName
  *   The name of the column family within which this range falls.
  *
- * @property {string} startQualifierClosed
+ * @property {Buffer} startQualifierClosed
  *   Used when giving an inclusive lower bound for the range.
  *
- * @property {string} startQualifierOpen
+ * @property {Buffer} startQualifierOpen
  *   Used when giving an exclusive lower bound for the range.
  *
- * @property {string} endQualifierClosed
+ * @property {Buffer} endQualifierClosed
  *   Used when giving an inclusive upper bound for the range.
  *
- * @property {string} endQualifierOpen
+ * @property {Buffer} endQualifierOpen
  *   Used when giving an exclusive upper bound for the range.
  *
  * @typedef ColumnRange
@@ -205,16 +205,16 @@ const TimestampRange = {
 /**
  * Specifies a contiguous range of raw byte values.
  *
- * @property {string} startValueClosed
+ * @property {Buffer} startValueClosed
  *   Used when giving an inclusive lower bound for the range.
  *
- * @property {string} startValueOpen
+ * @property {Buffer} startValueOpen
  *   Used when giving an exclusive lower bound for the range.
  *
- * @property {string} endValueClosed
+ * @property {Buffer} endValueClosed
  *   Used when giving an inclusive upper bound for the range.
  *
- * @property {string} endValueOpen
+ * @property {Buffer} endValueOpen
  *   Used when giving an exclusive upper bound for the range.
  *
  * @typedef ValueRange
@@ -347,7 +347,7 @@ const ValueRange = {
  *   Does not match any cells, regardless of input. Useful for temporarily
  *   disabling just part of a filter.
  *
- * @property {string} rowKeyRegexFilter
+ * @property {Buffer} rowKeyRegexFilter
  *   Matches only cells from rows whose keys satisfy the given RE2 regex. In
  *   other words, passes through the entire row when the key matches, and
  *   otherwise produces an empty row.
@@ -368,7 +368,7 @@ const ValueRange = {
  *   `\n`, it is sufficient to use `.` as a full wildcard when matching
  *   column family names.
  *
- * @property {string} columnQualifierRegexFilter
+ * @property {Buffer} columnQualifierRegexFilter
  *   Matches only cells from columns whose qualifiers satisfy the given RE2
  *   regex.
  *   Note that, since column qualifiers can contain arbitrary bytes, the `\C`
@@ -386,7 +386,7 @@ const ValueRange = {
  *
  *   This object should have the same structure as [TimestampRange]{@link google.bigtable.v2.TimestampRange}
  *
- * @property {string} valueRegexFilter
+ * @property {Buffer} valueRegexFilter
  *   Matches only cells with values that satisfy the given regular expression.
  *   Note that, since cell values can contain arbitrary bytes, the `\C` escape
  *   sequence must be used if a true wildcard is desired. The `.` character
@@ -574,7 +574,7 @@ const Mutation = {
    *   The name of the family into which new data should be written.
    *   Must match `[-_.a-zA-Z0-9]+`
    *
-   * @property {string} columnQualifier
+   * @property {Buffer} columnQualifier
    *   The qualifier of the column into which new data should be written.
    *   Can be any byte string, including the empty string.
    *
@@ -585,7 +585,7 @@ const Mutation = {
    *   default value is a timestamp of zero if the field is left unspecified.
    *   Values must match the granularity of the table (e.g. micros, millis).
    *
-   * @property {string} value
+   * @property {Buffer} value
    *   The value to be written into the specified cell.
    *
    * @typedef SetCell
@@ -604,7 +604,7 @@ const Mutation = {
    *   The name of the family from which cells should be deleted.
    *   Must match `[-_.a-zA-Z0-9]+`
    *
-   * @property {string} columnQualifier
+   * @property {Buffer} columnQualifier
    *   The qualifier of the column from which cells should be deleted.
    *   Can be any byte string, including the empty string.
    *
@@ -655,12 +655,12 @@ const Mutation = {
  *   The name of the family to which the read/modify/write should be applied.
  *   Must match `[-_.a-zA-Z0-9]+`
  *
- * @property {string} columnQualifier
+ * @property {Buffer} columnQualifier
  *   The qualifier of the column to which the read/modify/write should be
  *   applied.
  *   Can be any byte string, including the empty string.
  *
- * @property {string} appendValue
+ * @property {Buffer} appendValue
  *   Rule specifying that `append_value` be appended to the existing value.
  *   If the targeted cell is unset, it will be treated as containing the
  *   empty string.
