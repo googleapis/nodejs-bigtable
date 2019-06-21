@@ -15,30 +15,37 @@
 
 'use strict';
 
-// [START bigtable_quickstart]
-// Imports the Google Cloud client library
-const Bigtable = require('@google-cloud/bigtable');
+// sample-metadata:
+//   title: Quickstart
+//   usage: node quickstart.js <instanceId> <tableId>
 
-async function quickstart(
+async function main(
   INSTANCE_ID = 'my-instance', // ID of the Cloud Bigtable instance
   TABLE_ID = 'my-table' // ID of the Cloud Bigtable table
 ) {
+  // [START bigtable_quickstart]
+  // Imports the Google Cloud client library
+  const Bigtable = require('@google-cloud/bigtable');
+
   const bigtable = Bigtable();
 
-  // Connect to an existing instance:my-bigtable-instance
-  const instance = bigtable.instance(INSTANCE_ID);
+  async function quickstart() {
+    // Connect to an existing instance:my-bigtable-instance
+    const instance = bigtable.instance(INSTANCE_ID);
 
-  // Connect to an existing table:my-table
-  const table = instance.table(TABLE_ID);
+    // Connect to an existing table:my-table
+    const table = instance.table(TABLE_ID);
 
-  // Read a row from my-table using a row key
-  const [singleRow] = await table.row('r1').get();
+    // Read a row from my-table using a row key
+    const [singleRow] = await table.row('r1').get();
 
-  // Print the row key and data (column value, labels, timestamp)
-  const rowData = JSON.stringify(singleRow.data, null, 4);
-  console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
+    // Print the row key and data (column value, labels, timestamp)
+    const rowData = JSON.stringify(singleRow.data, null, 4);
+    console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
+  }
+  quickstart();
+  // [END bigtable_quickstart]
 }
-// [END bigtable_quickstart]
 
 const args = process.argv.slice(2);
-quickstart(...args).catch(console.error);
+main(...args).catch(console.error);

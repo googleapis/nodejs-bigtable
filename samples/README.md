@@ -18,7 +18,7 @@
   * [Write Batch](#write-batch)
   * [Write Conditionally](#write-conditionally)
   * [Write Increment](#write-increment)
-  * [Write Simple](#write-simple)
+  * [Simple Insert](#simple-insert)
 
 ## Before you begin
 
@@ -55,7 +55,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node quickstart.js`
+`node quickstart.js <instanceId> <tableId>`
 
 
 -----
@@ -89,7 +89,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeBatch.js`
+`node writeBatch.js <instanceId>`
 
 
 -----
@@ -106,7 +106,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeConditionally.js`
+`node writeConditionally.js <instanceId>`
 
 
 -----
@@ -123,7 +123,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeIncrement.js`
+`node writeIncrement.js <instanceId>`
 
 
 -----
@@ -131,7 +131,9 @@ __Usage:__
 
 
 
-### Write Simple
+### Simple Insert
+
+Insert a row into a table.
 
 View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeSimple.js).
 
@@ -140,7 +142,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeSimple.js`
+`node writeSimple.js <instanceId>`
 
 
 

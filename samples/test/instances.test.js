@@ -15,42 +15,36 @@
 
 'use strict';
 
-const path = require('path');
-const assert = require('assert');
-const tools = require('@google-cloud/nodejs-repo-tools');
+const {assert} = require('chai');
 const uuid = require('uuid');
-
+const {execSync} = require('child_process');
 const Bigtable = require('@google-cloud/bigtable');
+
+const exec = cmd => execSync(cmd, {encoding: 'utf8'});
+
 const bigtable = new Bigtable();
 const clusterId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instanceId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instance = bigtable.instance(instanceId);
 
-const cwd = path.join(__dirname, '..');
-const cmd = 'node instances.js';
+describe('instances', () => {
+  before(async () => {
+    await instance.create({
+      clusters: [
+        {
+          id: clusterId,
+          location: 'us-central1-c',
+          nodes: 3,
+        },
+      ],
+    });
+  });
 
-before(async () => {
-  await instance.create({
-    clusters: [
-      {
-        id: clusterId,
-        location: 'us-central1-c',
-        nodes: 3,
-      },
-    ],
+  after(() => instance.delete());
+
+  it('should list zones', () => {
+    const output = exec(`node instances.js "${instanceId}"`);
+    assert.include(output, 'Instances:');
+    assert.include(output, instanceId);
   });
 });
-
-after(async () => await instance.delete());
-
-it('should list zones', async () =>
-  await tools
-    .tryTest(async () => {
-      const output = await tools.runAsync(
-        `${cmd} run --instance ${instanceId}`,
-        cwd
-      );
-      assert(output.includes('Instances:'));
-      assert(output.includes(instanceId));
-    })
-    .start());
