@@ -16,7 +16,6 @@
 
 const gapicConfig = require('./bigtable_client_config.json');
 const gax = require('google-gax');
-const merge = require('lodash.merge');
 const path = require('path');
 
 const VERSION = require('../../../package.json').version;
@@ -56,14 +55,18 @@ class BigtableClient {
    *     API remote host.
    */
   constructor(opts) {
+    opts = opts || {};
     this._descriptors = {};
+
+    const servicePath =
+      opts.servicePath || opts.apiEndpoint || this.constructor.servicePath;
 
     // Ensure that options include the service address and port.
     opts = Object.assign(
       {
         clientConfig: {},
         port: this.constructor.port,
-        servicePath: this.constructor.servicePath,
+        servicePath,
       },
       opts
     );
@@ -88,12 +91,9 @@ class BigtableClient {
     }
 
     // Load the applicable protos.
-    const protos = merge(
-      {},
-      gaxGrpc.loadProto(
-        path.join(__dirname, '..', '..', 'protos'),
-        'google/bigtable/v2/bigtable.proto'
-      )
+    const protos = gaxGrpc.loadProto(
+      path.join(__dirname, '..', '..', 'protos'),
+      ['google/bigtable/v2/bigtable.proto']
     );
 
     // This API contains "path templates"; forward-slash-separated
@@ -170,6 +170,14 @@ class BigtableClient {
   }
 
   /**
+   * The DNS address for this API service - same as servicePath(),
+   * exists for compatibility reasons.
+   */
+  static get apiEndpoint() {
+    return 'bigtable.googleapis.com';
+  }
+
+  /**
    * The port for this API service.
    */
   static get port() {
@@ -234,7 +242,7 @@ class BigtableClient {
    *   default (zero) is to return all results.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @returns {Stream}
    *   An object stream which emits [ReadRowsResponse]{@link google.bigtable.v2.ReadRowsResponse} on 'data' event.
    *
@@ -281,7 +289,7 @@ class BigtableClient {
    *   "default" application profile will be used.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @returns {Stream}
    *   An object stream which emits [SampleRowKeysResponse]{@link google.bigtable.v2.SampleRowKeysResponse} on 'data' event.
    *
@@ -321,7 +329,7 @@ class BigtableClient {
    *   The unique name of the table to which the mutation should be applied.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
-   * @param {string} request.rowKey
+   * @param {Buffer} request.rowKey
    *   The key of the row to which the mutation should be applied.
    * @param {Object[]} request.mutations
    *   Changes to be atomically applied to the specified row. Entries are applied
@@ -334,7 +342,7 @@ class BigtableClient {
    *   "default" application profile will be used.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -352,7 +360,7 @@ class BigtableClient {
    * });
    *
    * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
-   * const rowKey = '';
+   * const rowKey = Buffer.from('');
    * const mutations = [];
    * const request = {
    *   tableName: formattedTableName,
@@ -407,7 +415,7 @@ class BigtableClient {
    *   "default" application profile will be used.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @returns {Stream}
    *   An object stream which emits [MutateRowsResponse]{@link google.bigtable.v2.MutateRowsResponse} on 'data' event.
    *
@@ -452,7 +460,7 @@ class BigtableClient {
    *   applied.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
-   * @param {string} request.rowKey
+   * @param {Buffer} request.rowKey
    *   The key of the row to which the conditional mutation should be applied.
    * @param {string} [request.appProfileId]
    *   This value specifies routing for replication. If not specified, the
@@ -482,7 +490,7 @@ class BigtableClient {
    *   This object should have the same structure as [Mutation]{@link google.bigtable.v2.Mutation}
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -500,7 +508,7 @@ class BigtableClient {
    * });
    *
    * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
-   * const rowKey = '';
+   * const rowKey = Buffer.from('');
    * const request = {
    *   tableName: formattedTableName,
    *   rowKey: rowKey,
@@ -545,7 +553,7 @@ class BigtableClient {
    *   applied.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
-   * @param {string} request.rowKey
+   * @param {Buffer} request.rowKey
    *   The key of the row to which the read/modify/write rules should be applied.
    * @param {Object[]} request.rules
    *   Rules specifying how the specified row's contents are to be transformed
@@ -558,7 +566,7 @@ class BigtableClient {
    *   "default" application profile will be used.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
-   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/global.html#CallOptions} for the details.
+   *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
    * @param {function(?Error, ?Object)} [callback]
    *   The function which will be called with the result of the API call.
    *
@@ -576,7 +584,7 @@ class BigtableClient {
    * });
    *
    * const formattedTableName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
-   * const rowKey = '';
+   * const rowKey = Buffer.from('');
    * const rules = [];
    * const request = {
    *   tableName: formattedTableName,

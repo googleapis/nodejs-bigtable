@@ -24,6 +24,27 @@ const error = new Error();
 error.code = FAKE_STATUS_CODE;
 
 describe('BigtableClient', () => {
+  it('has servicePath', () => {
+    const servicePath = bigtableModule.v2.BigtableClient.servicePath;
+    assert(servicePath);
+  });
+
+  it('has apiEndpoint', () => {
+    const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
+    assert(apiEndpoint);
+  });
+
+  it('has port', () => {
+    const port = bigtableModule.v2.BigtableClient.port;
+    assert(port);
+    assert(typeof port === 'number');
+  });
+
+  it('should create a client with no options', () => {
+    const client = new bigtableModule.v2.BigtableClient();
+    assert(client);
+  });
+
   describe('readRows', () => {
     it('invokes readRows without error', done => {
       const client = new bigtableModule.v2.BigtableClient({

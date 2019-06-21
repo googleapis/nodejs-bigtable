@@ -36,7 +36,7 @@ const StringValue = {
  *
  * The JSON representation for `BytesValue` is JSON string.
  *
- * @property {string} value
+ * @property {Buffer} value
  *   The bytes value.
  *
  * @typedef BytesValue

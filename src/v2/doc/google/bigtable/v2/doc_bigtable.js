@@ -56,7 +56,7 @@ const ReadRowsRequest = {
  * @property {Object[]} chunks
  *   This object should have the same structure as [CellChunk]{@link google.bigtable.v2.CellChunk}
  *
- * @property {string} lastScannedRowKey
+ * @property {Buffer} lastScannedRowKey
  *   Optionally the server might return the row key of the last row it
  *   has scanned.  The client can use this to construct a more
  *   efficient retry request if needed: any row keys or portions of
@@ -76,7 +76,7 @@ const ReadRowsResponse = {
    * Specifies a piece of a row's contents returned as part of the read
    * response stream.
    *
-   * @property {string} rowKey
+   * @property {Buffer} rowKey
    *   The row key for this chunk of data.  If the row key is empty,
    *   this CellChunk is a continuation of the same row as the previous
    *   CellChunk in the response stream, even if that CellChunk was in a
@@ -116,7 +116,7 @@ const ReadRowsResponse = {
    *   RowFilter.  Labels are only set
    *   on the first CellChunk per cell.
    *
-   * @property {string} value
+   * @property {Buffer} value
    *   The value stored in the cell.  Cell values can be split across
    *   multiple CellChunks.  In that case only the value field will be
    *   set in CellChunks after the first: the timestamp and labels
@@ -169,7 +169,7 @@ const SampleRowKeysRequest = {
 /**
  * Response message for Bigtable.SampleRowKeys.
  *
- * @property {string} rowKey
+ * @property {Buffer} rowKey
  *   Sorted streamed sequence of sample row keys in the table. The table might
  *   have contents before the first row key in the list and after the last one,
  *   but a key containing the empty string indicates "end of table" and will be
@@ -204,7 +204,7 @@ const SampleRowKeysResponse = {
  *   This value specifies routing for replication. If not specified, the
  *   "default" application profile will be used.
  *
- * @property {string} rowKey
+ * @property {Buffer} rowKey
  *   The key of the row to which the mutation should be applied.
  *
  * @property {Object[]} mutations
@@ -259,7 +259,7 @@ const MutateRowsRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
-   * @property {string} rowKey
+   * @property {Buffer} rowKey
    *   The key of the row to which the `mutations` should be applied.
    *
    * @property {Object[]} mutations
@@ -329,7 +329,7 @@ const MutateRowsResponse = {
  *   This value specifies routing for replication. If not specified, the
  *   "default" application profile will be used.
  *
- * @property {string} rowKey
+ * @property {Buffer} rowKey
  *   The key of the row to which the conditional mutation should be applied.
  *
  * @property {Object} predicateFilter
@@ -394,7 +394,7 @@ const CheckAndMutateRowResponse = {
  *   This value specifies routing for replication. If not specified, the
  *   "default" application profile will be used.
  *
- * @property {string} rowKey
+ * @property {Buffer} rowKey
  *   The key of the row to which the read/modify/write rules should be applied.
  *
  * @property {Object[]} rules
