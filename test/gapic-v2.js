@@ -22,30 +22,28 @@ const FAKE_STATUS_CODE = 1;
 const error = new Error();
 error.code = FAKE_STATUS_CODE;
 
-describe('BigtableClient', () => {
+describe('BigtableInstanceAdminClient', () => {
   it('has servicePath', () => {
-    const servicePath = bigtableModule.v2.BigtableClient.servicePath;
+    const servicePath = adminModule.v2.BigtableInstanceAdminClient.servicePath;
     assert(servicePath);
   });
 
   it('has apiEndpoint', () => {
-    const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
+    const apiEndpoint = adminModule.v2.BigtableInstanceAdminClient.apiEndpoint;
     assert(apiEndpoint);
   });
 
   it('has port', () => {
-    const port = bigtableModule.v2.BigtableClient.port;
+    const port = adminModule.v2.BigtableInstanceAdminClient.port;
     assert(port);
     assert(typeof port === 'number');
   });
 
   it('should create a client with no options', () => {
-    const client = new bigtableModule.v2.BigtableClient();
+    const client = new adminModule.v2.BigtableInstanceAdminClient();
     assert(client);
   });
-});
 
-describe('BigtableInstanceAdminClient', () => {
   describe('createInstance', function() {
     it('invokes createInstance without error', done => {
       const client = new adminModule.v2.BigtableInstanceAdminClient({
@@ -1453,6 +1451,27 @@ describe('BigtableInstanceAdminClient', () => {
   });
 });
 describe('BigtableTableAdminClient', () => {
+  it('has servicePath', () => {
+    const servicePath = adminModule.v2.BigtableTableAdminClient.servicePath;
+    assert(servicePath);
+  });
+
+  it('has apiEndpoint', () => {
+    const apiEndpoint = adminModule.v2.BigtableTableAdminClient.apiEndpoint;
+    assert(apiEndpoint);
+  });
+
+  it('has port', () => {
+    const port = adminModule.v2.BigtableTableAdminClient.port;
+    assert(port);
+    assert(typeof port === 'number');
+  });
+
+  it('should create a client with no options', () => {
+    const client = new adminModule.v2.BigtableTableAdminClient();
+    assert(client);
+  });
+
   describe('createTable', () => {
     it('invokes createTable without error', done => {
       const client = new adminModule.v2.BigtableTableAdminClient({

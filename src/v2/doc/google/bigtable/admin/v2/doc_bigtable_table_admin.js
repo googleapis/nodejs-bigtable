@@ -62,7 +62,7 @@ const CreateTableRequest = {
   /**
    * An initial split point for a newly created table.
    *
-   * @property {string} key
+   * @property {Buffer} key
    *   Row key to use as an initial tablet boundary.
    *
    * @typedef Split
@@ -114,7 +114,7 @@ const CreateTableFromSnapshotRequest = {
  *   Values are of the form
  *   `projects/<project>/instances/<instance>/tables/<table>`.
  *
- * @property {string} rowKeyPrefix
+ * @property {Buffer} rowKeyPrefix
  *   Delete all rows that start with this row key prefix. Prefix cannot be
  *   zero length.
  *

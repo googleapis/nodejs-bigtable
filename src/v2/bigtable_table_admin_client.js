@@ -60,14 +60,18 @@ class BigtableTableAdminClient {
    *     API remote host.
    */
   constructor(opts) {
+    opts = opts || {};
     this._descriptors = {};
+
+    const servicePath =
+      opts.servicePath || opts.apiEndpoint || this.constructor.servicePath;
 
     // Ensure that options include the service address and port.
     opts = Object.assign(
       {
         clientConfig: {},
         port: this.constructor.port,
-        servicePath: this.constructor.servicePath,
+        servicePath,
       },
       opts
     );
@@ -241,6 +245,14 @@ class BigtableTableAdminClient {
    * The DNS address for this API service.
    */
   static get servicePath() {
+    return 'bigtableadmin.googleapis.com';
+  }
+
+  /**
+   * The DNS address for this API service - same as servicePath(),
+   * exists for compatibility reasons.
+   */
+  static get apiEndpoint() {
     return 'bigtableadmin.googleapis.com';
   }
 
@@ -859,7 +871,7 @@ class BigtableTableAdminClient {
    *   The unique name of the table on which to drop a range of rows.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
-   * @param {string} [request.rowKeyPrefix]
+   * @param {Buffer} [request.rowKeyPrefix]
    *   Delete all rows that start with this row key prefix. Prefix cannot be
    *   zero length.
    * @param {boolean} [request.deleteAllDataFromTable]
