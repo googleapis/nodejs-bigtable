@@ -34,6 +34,7 @@ s.replace("src/v2/bigtable_client.js", "../../package.json", "../../../package.j
 s.replace("src/v2/bigtable_instance_admin_client.js", "../../package.json", "../../../package.json")
 s.replace("src/v2/bigtable_table_admin_client.js", "../../package.json", "../../../package.json")
 
+
 common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library(
   source_location='build/src'

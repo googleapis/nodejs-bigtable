@@ -35,6 +35,12 @@
 /**
  * @namespace google.protobuf
  */
+/**
+ * @namespace google.type
+ */
+/**
+ * @namespace google.longrunning
+ */
 
 import {Service} from '@google-cloud/common-grpc';
 import {replaceProjectIdToken} from '@google-cloud/projectify';
