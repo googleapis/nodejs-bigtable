@@ -61,7 +61,6 @@
     "google-gax": "^1.0.0",
     "is": "^3.0.1",
     "is-utf8": "^0.2.1",
-    "lodash.merge": "^4.6.0",
     "lodash.snakecase": "^4.1.1",
     "long": "^4.0.0",
     "protobufjs": "^6.8.0",

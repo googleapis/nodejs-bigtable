@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,6 +92,6 @@
  * @memberof google.protobuf
  * @see [google.protobuf.Duration definition in proto format]{@link https://github.com/google/protobuf/blob/master/src/google/protobuf/duration.proto}
  */
-var Duration = {
+const Duration = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };

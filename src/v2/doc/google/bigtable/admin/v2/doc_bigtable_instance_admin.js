@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@
  *   cluster ID, e.g., just `mycluster` rather than
  *   `projects/myproject/instances/myinstance/clusters/mycluster`.
  *   Fields marked `OutputOnly` must be left blank.
- *   Currently exactly one cluster must be specified.
+ *   Currently, at most two clusters can be specified.
  *
  * @typedef CreateInstanceRequest
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateInstanceRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var CreateInstanceRequest = {
+const CreateInstanceRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -59,7 +59,7 @@ var CreateInstanceRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GetInstanceRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var GetInstanceRequest = {
+const GetInstanceRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -71,13 +71,13 @@ var GetInstanceRequest = {
  *   Values are of the form `projects/<project>`.
  *
  * @property {string} pageToken
- *   The value of `next_page_token` returned by a previous call.
+ *   DEPRECATED: This field is unused and ignored.
  *
  * @typedef ListInstancesRequest
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListInstancesRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var ListInstancesRequest = {
+const ListInstancesRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -95,17 +95,16 @@ var ListInstancesRequest = {
  *   Instances whose Clusters are all in one of the failed locations
  *   may be missing from `instances`, and Instances with at least one
  *   Cluster in a failed location may only have partial information returned.
+ *   Values are of the form `projects/<project>/locations/<zone_id>`
  *
  * @property {string} nextPageToken
- *   Set if not all instances could be returned in a single response.
- *   Pass this value to `page_token` in another request to get the next
- *   page of results.
+ *   DEPRECATED: This field is unused and ignored.
  *
  * @typedef ListInstancesResponse
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListInstancesResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var ListInstancesResponse = {
+const ListInstancesResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -127,7 +126,7 @@ var ListInstancesResponse = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.PartialUpdateInstanceRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var PartialUpdateInstanceRequest = {
+const PartialUpdateInstanceRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -142,7 +141,7 @@ var PartialUpdateInstanceRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.DeleteInstanceRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var DeleteInstanceRequest = {
+const DeleteInstanceRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -169,7 +168,7 @@ var DeleteInstanceRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateClusterRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var CreateClusterRequest = {
+const CreateClusterRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -184,7 +183,7 @@ var CreateClusterRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GetClusterRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var GetClusterRequest = {
+const GetClusterRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -198,13 +197,13 @@ var GetClusterRequest = {
  *   e.g., `projects/myproject/instances/-`.
  *
  * @property {string} pageToken
- *   The value of `next_page_token` returned by a previous call.
+ *   DEPRECATED: This field is unused and ignored.
  *
  * @typedef ListClustersRequest
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListClustersRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var ListClustersRequest = {
+const ListClustersRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -221,17 +220,16 @@ var ListClustersRequest = {
  *   due to an outage or some other transient condition.
  *   Clusters from these locations may be missing from `clusters`,
  *   or may only have partial information returned.
+ *   Values are of the form `projects/<project>/locations/<zone_id>`
  *
  * @property {string} nextPageToken
- *   Set if not all clusters could be returned in a single response.
- *   Pass this value to `page_token` in another request to get the next
- *   page of results.
+ *   DEPRECATED: This field is unused and ignored.
  *
  * @typedef ListClustersResponse
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListClustersResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var ListClustersResponse = {
+const ListClustersResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -246,7 +244,7 @@ var ListClustersResponse = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.DeleteClusterRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var DeleteClusterRequest = {
+const DeleteClusterRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -272,7 +270,7 @@ var DeleteClusterRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateInstanceMetadata definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var CreateInstanceMetadata = {
+const CreateInstanceMetadata = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -298,7 +296,7 @@ var CreateInstanceMetadata = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.UpdateInstanceMetadata definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var UpdateInstanceMetadata = {
+const UpdateInstanceMetadata = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -324,7 +322,7 @@ var UpdateInstanceMetadata = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateClusterMetadata definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var CreateClusterMetadata = {
+const CreateClusterMetadata = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
@@ -350,16 +348,11 @@ var CreateClusterMetadata = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.UpdateClusterMetadata definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var UpdateClusterMetadata = {
+const UpdateClusterMetadata = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for BigtableInstanceAdmin.CreateAppProfile.
  *
  * @property {string} parent
@@ -385,16 +378,11 @@ var UpdateClusterMetadata = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.CreateAppProfileRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var CreateAppProfileRequest = {
+const CreateAppProfileRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for BigtableInstanceAdmin.GetAppProfile.
  *
  * @property {string} name
@@ -405,22 +393,23 @@ var CreateAppProfileRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.GetAppProfileRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var GetAppProfileRequest = {
+const GetAppProfileRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for BigtableInstanceAdmin.ListAppProfiles.
  *
  * @property {string} parent
  *   The unique name of the instance for which a list of app profiles is
  *   requested. Values are of the form
  *   `projects/<project>/instances/<instance>`.
+ *   Use `<instance> = '-'` to list AppProfiles for all Instances in a project,
+ *   e.g., `projects/myproject/instances/-`.
+ *
+ * @property {number} pageSize
+ *   Maximum number of results per page.
+ *   CURRENTLY UNIMPLEMENTED AND IGNORED.
  *
  * @property {string} pageToken
  *   The value of `next_page_token` returned by a previous call.
@@ -429,16 +418,11 @@ var GetAppProfileRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListAppProfilesRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var ListAppProfilesRequest = {
+const ListAppProfilesRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Response message for BigtableInstanceAdmin.ListAppProfiles.
  *
  * @property {Object[]} appProfiles
@@ -451,20 +435,21 @@ var ListAppProfilesRequest = {
  *   Pass this value to `page_token` in another request to get the next
  *   page of results.
  *
+ * @property {string[]} failedLocations
+ *   Locations from which AppProfile information could not be retrieved,
+ *   due to an outage or some other transient condition.
+ *   AppProfiles from these locations may be missing from `app_profiles`.
+ *   Values are of the form `projects/<project>/locations/<zone_id>`
+ *
  * @typedef ListAppProfilesResponse
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.ListAppProfilesResponse definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var ListAppProfilesResponse = {
+const ListAppProfilesResponse = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for BigtableInstanceAdmin.UpdateAppProfile.
  *
  * @property {Object} appProfile
@@ -485,16 +470,11 @@ var ListAppProfilesResponse = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.UpdateAppProfileRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var UpdateAppProfileRequest = {
+const UpdateAppProfileRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * Request message for BigtableInstanceAdmin.DeleteAppProfile.
  *
  * @property {string} name
@@ -508,21 +488,16 @@ var UpdateAppProfileRequest = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.DeleteAppProfileRequest definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var DeleteAppProfileRequest = {
+const DeleteAppProfileRequest = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * The metadata for the Operation returned by UpdateAppProfile.
  * @typedef UpdateAppProfileMetadata
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.UpdateAppProfileMetadata definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/bigtable_instance_admin.proto}
  */
-var UpdateAppProfileMetadata = {
+const UpdateAppProfileMetadata = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 };

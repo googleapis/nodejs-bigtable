@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.Instance definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/instance.proto}
  */
-var Instance = {
+const Instance = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -160,7 +160,7 @@ var Instance = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.Cluster definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/instance.proto}
  */
-var Cluster = {
+const Cluster = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
@@ -206,11 +206,6 @@ var Cluster = {
 };
 
 /**
- * This is a private alpha release of Cloud Bigtable replication. This feature
- * is not currently available to most Cloud Bigtable customers. This feature
- * might be changed in backward-incompatible ways and is not recommended for
- * production use. It is not subject to any SLA or deprecation policy.
- *
  * A configuration object describing how Cloud Bigtable should treat traffic
  * from a particular end user application.
  *
@@ -246,7 +241,7 @@ var Cluster = {
  * @memberof google.bigtable.admin.v2
  * @see [google.bigtable.admin.v2.AppProfile definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/instance.proto}
  */
-var AppProfile = {
+const AppProfile = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
