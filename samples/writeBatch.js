@@ -15,6 +15,10 @@
 
 'use strict';
 
+// sample-metadata:
+//   title: Write Batch
+//   usage: node writeBatch.js <instanceId>
+
 function main(instanceId = 'YOUR_INSTANCE_ID') {
   // [START bigtable_writes_batch]
   /**

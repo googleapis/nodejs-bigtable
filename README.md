@@ -55,28 +55,26 @@ npm install @google-cloud/bigtable
 ### Using the client library
 
 ```javascript
-// Imports the Google Cloud client library
-const Bigtable = require('@google-cloud/bigtable');
+  // Imports the Google Cloud client library
+  const Bigtable = require('@google-cloud/bigtable');
 
-async function quickstart(
-  INSTANCE_ID = 'my-instance', // ID of the Cloud Bigtable instance
-  TABLE_ID = 'my-table' // ID of the Cloud Bigtable table
-) {
   const bigtable = Bigtable();
 
-  // Connect to an existing instance:my-bigtable-instance
-  const instance = bigtable.instance(INSTANCE_ID);
+  async function quickstart() {
+    // Connect to an existing instance:my-bigtable-instance
+    const instance = bigtable.instance(INSTANCE_ID);
 
-  // Connect to an existing table:my-table
-  const table = instance.table(TABLE_ID);
+    // Connect to an existing table:my-table
+    const table = instance.table(TABLE_ID);
 
-  // Read a row from my-table using a row key
-  const [singleRow] = await table.row('r1').get();
+    // Read a row from my-table using a row key
+    const [singleRow] = await table.row('r1').get();
 
-  // Print the row key and data (column value, labels, timestamp)
-  const rowData = JSON.stringify(singleRow.data, null, 4);
-  console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
-}
+    // Print the row key and data (column value, labels, timestamp)
+    const rowData = JSON.stringify(singleRow.data, null, 4);
+    console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
+  }
+  quickstart();
 
 ```
 
@@ -95,7 +93,7 @@ has instructions for running the samples.
 | Write Batch | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeBatch.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeBatch.js,samples/README.md) |
 | Write Conditionally | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeConditionally.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeConditionally.js,samples/README.md) |
 | Write Increment | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeIncrement.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeIncrement.js,samples/README.md) |
-| Write Simple | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeSimple.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeSimple.js,samples/README.md) |
+| Simple Insert | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/writeSimple.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/writeSimple.js,samples/README.md) |
 
 
 

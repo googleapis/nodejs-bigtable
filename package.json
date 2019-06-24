@@ -34,7 +34,6 @@
     "predocs-test": "npm run docs",
     "docs-test": "linkinator docs -r --skip www.googleapis.com",
     "fix": "gts fix && npm run lintfix",
-    "generate-scaffolding": "repo-tools generate all && repo-tools generate lib_samples_readme -l samples/ --config ../.cloud-repo-tools.json",
     "lint": "eslint '**/*.js'",
     "lintfix": "eslint --fix '**/*.js'",
     "prepare": "npm run compile",
@@ -70,7 +69,6 @@
     "through2": "^3.0.0"
   },
   "devDependencies": {
-    "@google-cloud/nodejs-repo-tools": "^3.0.0",
     "@types/escape-string-regexp": "^1.0.0",
     "@types/extend": "^3.0.1",
     "@types/is": "0.0.21",
