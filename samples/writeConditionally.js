@@ -15,6 +15,10 @@
 
 'use strict';
 
+// sample-metadata:
+//   title: Write Conditionally
+//   usage: node writeConditionally.js <instanceId>
+
 function main(instanceId = 'YOUR_INSTANCE_ID') {
   // [START bigtable_writes_conditional]
   /**

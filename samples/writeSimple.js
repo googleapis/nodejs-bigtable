@@ -15,18 +15,21 @@
 
 'use strict';
 
+// sample-metadata:
+//   title: Simple Insert
+//   description: Insert a row into a table.
+//   usage: node writeSimple.js <instanceId>
+
 function main(instanceId = 'YOUR_INSTANCE_ID') {
   // [START bigtable_writes_simple]
-  /**
-   * TODO(developer): Uncomment these variables before running the sample.
-   */
-  // const instanceId = 'YOUR_INSTANCE_ID';
-
   const Bigtable = require('@google-cloud/bigtable');
-
   const bigtable = Bigtable();
 
   async function writeSimple() {
+    /**
+     * TODO(developer): Uncomment these variables before running the sample.
+     */
+    // const instanceId = 'YOUR_INSTANCE_ID';
     const instance = bigtable.instance(instanceId);
     const table = instance.table('mobile-time-series');
 

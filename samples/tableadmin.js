@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "apiResponse" }]*/
-
 // Imports the Google Cloud client library
 const Bigtable = require('@google-cloud/bigtable');
 
