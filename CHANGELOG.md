@@ -4,6 +4,45 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [2.0.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v1.0.1...v2.0.0) (2019-06-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade engines field to >=8.10.0 (#463)
+
+### Bug Fixes
+
+* **deps:** update dependency @google-cloud/common-grpc to v1 ([#478](https://www.github.com/googleapis/nodejs-bigtable/issues/478)) ([40197e4](https://www.github.com/googleapis/nodejs-bigtable/commit/40197e4))
+* **deps:** update dependency @google-cloud/paginator to ^0.2.0 ([a25627c](https://www.github.com/googleapis/nodejs-bigtable/commit/a25627c)), closes [#8203](https://www.github.com/googleapis/nodejs-bigtable/issues/8203)
+* **deps:** update dependency @google-cloud/paginator to v1 ([#468](https://www.github.com/googleapis/nodejs-bigtable/issues/468)) ([ae06ec2](https://www.github.com/googleapis/nodejs-bigtable/commit/ae06ec2))
+* **deps:** update dependency @google-cloud/projectify to v1 ([#466](https://www.github.com/googleapis/nodejs-bigtable/issues/466)) ([6c6dd40](https://www.github.com/googleapis/nodejs-bigtable/commit/6c6dd40))
+* **deps:** update dependency @google-cloud/promisify to ^0.4.0 ([#420](https://www.github.com/googleapis/nodejs-bigtable/issues/420)) ([d5c2862](https://www.github.com/googleapis/nodejs-bigtable/commit/d5c2862))
+* **deps:** update dependency @google-cloud/promisify to v1 ([#467](https://www.github.com/googleapis/nodejs-bigtable/issues/467)) ([5473fb9](https://www.github.com/googleapis/nodejs-bigtable/commit/5473fb9))
+* **deps:** update dependency arrify to v2 ([e29f9aa](https://www.github.com/googleapis/nodejs-bigtable/commit/e29f9aa))
+* **deps:** update dependency dot-prop to v5 ([#455](https://www.github.com/googleapis/nodejs-bigtable/issues/455)) ([3949356](https://www.github.com/googleapis/nodejs-bigtable/commit/3949356))
+* **deps:** update dependency escape-string-regexp to v2 ([#457](https://www.github.com/googleapis/nodejs-bigtable/issues/457)) ([d923b58](https://www.github.com/googleapis/nodejs-bigtable/commit/d923b58))
+* **deps:** update dependency google-auth-library to v4 ([#475](https://www.github.com/googleapis/nodejs-bigtable/issues/475)) ([a58547c](https://www.github.com/googleapis/nodejs-bigtable/commit/a58547c))
+* **deps:** update dependency google-gax to ^0.26.0 ([#461](https://www.github.com/googleapis/nodejs-bigtable/issues/461)) ([4462869](https://www.github.com/googleapis/nodejs-bigtable/commit/4462869))
+* **deps:** update dependency google-gax to v1 ([#476](https://www.github.com/googleapis/nodejs-bigtable/issues/476)) ([adfeb9c](https://www.github.com/googleapis/nodejs-bigtable/commit/adfeb9c))
+* **deps:** update dependency yargs to v13 ([#417](https://www.github.com/googleapis/nodejs-bigtable/issues/417)) ([fac8d4e](https://www.github.com/googleapis/nodejs-bigtable/commit/fac8d4e))
+* "requires_billing " should be "requires_billing" ([#498](https://www.github.com/googleapis/nodejs-bigtable/issues/498)) ([c9f6f7e](https://www.github.com/googleapis/nodejs-bigtable/commit/c9f6f7e))
+* DEADLINE_EXCEEDED is no longer retried ([c1190d3](https://www.github.com/googleapis/nodejs-bigtable/commit/c1190d3))
+* DEADLINE_EXCEEDED retry code is idempotent ([#477](https://www.github.com/googleapis/nodejs-bigtable/issues/477)) ([2783944](https://www.github.com/googleapis/nodejs-bigtable/commit/2783944))
+* throw on invalid credentials ([#418](https://www.github.com/googleapis/nodejs-bigtable/issues/418)) ([5b836fd](https://www.github.com/googleapis/nodejs-bigtable/commit/5b836fd))
+* **docs:** move to new client docs URL ([#499](https://www.github.com/googleapis/nodejs-bigtable/issues/499)) ([acfe7c2](https://www.github.com/googleapis/nodejs-bigtable/commit/acfe7c2))
+
+
+### Build System
+
+* upgrade engines field to >=8.10.0 ([#463](https://www.github.com/googleapis/nodejs-bigtable/issues/463)) ([35cb71f](https://www.github.com/googleapis/nodejs-bigtable/commit/35cb71f))
+
+
+### Features
+
+* support apiEndpoint override ([#500](https://www.github.com/googleapis/nodejs-bigtable/issues/500)) ([89124f6](https://www.github.com/googleapis/nodejs-bigtable/commit/89124f6))
+* update the admin APIs ([#485](https://www.github.com/googleapis/nodejs-bigtable/issues/485)) ([c76fba9](https://www.github.com/googleapis/nodejs-bigtable/commit/c76fba9))
+
 ## v1.0.1
 
 01-29-2019 16:49 PST
@@ -131,4 +170,3 @@
 - chore(deps): lock file maintenance ([#261](https://github.com/googleapis/nodejs-bigtable/pull/261))
 - Use assert.deepStrictEqual instead of deepEqual. ([#253](https://github.com/googleapis/nodejs-bigtable/pull/253))
 - test: use strictEqual in tests ([#250](https://github.com/googleapis/nodejs-bigtable/pull/250))
-
