@@ -43,7 +43,7 @@ describe('instances', () => {
   after(() => instance.delete());
 
   it('should list zones', () => {
-    const output = exec(`node instances.js "${instanceId}"`);
+    const output = exec(`node instances.js run --instance ${instanceId}`);
     assert.include(output, 'Instances:');
     assert.include(output, instanceId);
   });
