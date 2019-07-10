@@ -32,6 +32,8 @@ import {ChunkTransformer} from './chunktransformer';
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
 const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
+// (1=CANCELLED)
+const IGNORED_STATUS_CODES = new Set([1]);
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
@@ -269,6 +271,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     options = options || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
 
+    let activeRequestStream;
+
     let rowKeys;
     const ranges = options.ranges || [];
     let filter;
@@ -321,6 +325,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     }
 
     const userStream = through.obj();
+    const end = userStream.end.bind(userStream);
+    userStream.end = () => {
+      if (activeRequestStream) {
+        activeRequestStream.abort();
+      }
+      end();
+    };
+
     let chunkTransformer;
 
     const makeNewRequest = () => {
@@ -419,6 +431,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         retryOpts,
       });
 
+      activeRequestStream = requestStream;
+
       requestStream.on('request', () => numRequestsMade++);
 
       const rowStream = pumpify.obj([
@@ -440,6 +454,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       ]);
 
       rowStream.on('error', error => {
+        if (IGNORED_STATUS_CODES.has(error.code)) {
+          // We ignore the `cancelled` "error", since we are the ones who cause
+          // it when the user calls `.abort()`.
+          userStream.end();
+          return;
+        }
         rowStream.unpipe(userStream);
         if (
           numRequestsMade <= maxRetries &&

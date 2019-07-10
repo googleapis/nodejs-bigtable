@@ -416,6 +416,23 @@ describe('Bigtable/Table', function() {
       table.createReadStream();
     });
 
+    it('should abort request on end', function(done) {
+      table.bigtable.request = function(config) {
+        const requestStream = new PassThrough({
+          objectMode: true,
+        });
+
+        /* tslint:disable-next-line */
+        (requestStream as any).abort = function() {
+          done();
+        };
+
+        return requestStream;
+      };
+
+      table.createReadStream().end();
+    });
+
     describe('options', function() {
       it('should accept gaxOptions', function(done) {
         const gaxOptions = {};
@@ -779,6 +796,9 @@ describe('Bigtable/Table', function() {
             objectMode: true,
           });
 
+          /* tslint:disable-next-line */
+          (stream as any).abort = function() {};
+
           setImmediate(function() {
             stream.push(fakeChunks);
             stream.push(null);
@@ -1001,6 +1021,9 @@ describe('Bigtable/Table', function() {
             objectMode: true,
           });
 
+          /* tslint:disable-next-line */
+          (stream as any).abort = function() {};
+
           setImmediate(function() {
             stream.emit('request');
             emitters.shift()(stream);
@@ -1028,6 +1051,21 @@ describe('Bigtable/Table', function() {
         ];
         callCreateReadStream(null, () => {
           assert.strictEqual(reqOptsCalls.length, 2);
+          done();
+        });
+      });
+
+      it('should not retry CANCELLED errors', function(done) {
+        emitters = [
+          function(stream) {
+            const cancelledError: any = new Error('do not retry me!');
+            cancelledError.code = 1;
+            stream.emit('error', cancelledError);
+            stream.end();
+          },
+        ];
+        callCreateReadStream(null, () => {
+          assert.strictEqual(reqOptsCalls.length, 1);
           done();
         });
       });
