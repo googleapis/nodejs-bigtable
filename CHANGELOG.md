@@ -4,6 +4,15 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [2.0.3](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.2...v2.0.3) (2019-07-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @google-cloud/paginator to v2 ([#513](https://www.github.com/googleapis/nodejs-bigtable/issues/513)) ([f4fdb7e](https://www.github.com/googleapis/nodejs-bigtable/commit/f4fdb7e))
+* **deps:** update dependency google-auth-library to v5 ([#514](https://www.github.com/googleapis/nodejs-bigtable/issues/514)) ([b3ef8f1](https://www.github.com/googleapis/nodejs-bigtable/commit/b3ef8f1))
+* **deps:** update dependency pumpify to v2 ([#515](https://www.github.com/googleapis/nodejs-bigtable/issues/515)) ([309e625](https://www.github.com/googleapis/nodejs-bigtable/commit/309e625))
+
 ### [2.0.2](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.1...v2.0.2) (2019-07-23)
 
 
