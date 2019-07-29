@@ -69,6 +69,7 @@
     "through2": "^3.0.0"
   },
   "devDependencies": {
+    "@google-cloud/common": "^2.0.4",
     "@types/escape-string-regexp": "^1.0.0",
     "@types/extend": "^3.0.1",
     "@types/is": "0.0.21",

@@ -19,8 +19,10 @@ import {Mutation} from '../src/mutation.js';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json');
 
 import * as assert from 'assert';
+import {AbortableDuplex} from '@google-cloud/common';
 import {grpc} from '@google-cloud/common-grpc';
 import * as sinon from 'sinon';
+import {Duplex} from 'stream';
 import * as through from 'through2';
 
 function dispatch(emitter, response) {
@@ -123,9 +125,8 @@ describe('Bigtable/Table', () => {
         }
         requestedOptions.push(requestOptions);
         rowKeysRead.push([]);
-        const requestStream = through.obj();
-        /* tslint:disable-next-line */
-        (requestStream as any).abort = () => {};
+        const requestStream = through.obj() as Duplex;
+        (requestStream as AbortableDuplex).abort = function() {};
         dispatch(requestStream, responses.shift());
         return requestStream;
       });

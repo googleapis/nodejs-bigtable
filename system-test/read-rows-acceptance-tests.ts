@@ -17,11 +17,12 @@
 import * as assert from 'assert';
 const testcases = require('../../system-test/read-rows-acceptance-test.json')
   .tests;
-import {PassThrough} from 'stream';
+import {Duplex, PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
 import * as ProtoBuf from 'protobufjs';
 import * as path from 'path';
+import {AbortableDuplex} from '@google-cloud/common';
 
 const protosRoot = path.resolve(__dirname, '../protos');
 function applyProtoRoot(filename, root) {
@@ -85,10 +86,9 @@ describe('Read Row Acceptance tests', function() {
       table.bigtable.request = function() {
         const stream = new PassThrough({
           objectMode: true,
-        });
+        }) as Duplex;
 
-        /* tslint:disable-next-line */
-        (stream as any).abort = function() {};
+        (stream as AbortableDuplex).abort = function() {};
 
         setImmediate(function() {
           test.chunks_base64
