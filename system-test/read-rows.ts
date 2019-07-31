@@ -123,9 +123,11 @@ describe('Bigtable/Table', () => {
         }
         requestedOptions.push(requestOptions);
         rowKeysRead.push([]);
-        const emitter = through.obj();
-        dispatch(emitter, responses.shift());
-        return emitter;
+        const requestStream = through.obj();
+        /* tslint:disable-next-line */
+        (requestStream as any).abort = () => {};
+        dispatch(requestStream, responses.shift());
+        return requestStream;
       });
     });
 

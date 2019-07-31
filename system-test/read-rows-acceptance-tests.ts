@@ -87,6 +87,9 @@ describe('Read Row Acceptance tests', function() {
           objectMode: true,
         });
 
+        /* tslint:disable-next-line */
+        (stream as any).abort = function() {};
+
         setImmediate(function() {
           test.chunks_base64
             .map(chunk => {

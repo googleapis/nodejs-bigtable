@@ -581,6 +581,20 @@ describe('Bigtable', () => {
           });
       });
 
+      it('should should cancel request if stream ended early', done => {
+        const rows: any = [];
+        const stream = TABLE.createReadStream()
+          .on('error', done)
+          .on('data', row => {
+            stream.end();
+            rows.push(row);
+          })
+          .on('end', () => {
+            assert.strictEqual(rows.length, 1);
+            done();
+          });
+      });
+
       it('should fetch an individual row', async () => {
         const row = TABLE.row('alincoln');
         const [row_] = await row.get();
