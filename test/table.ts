@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import {AbortableDuplex} from '@google-cloud/common';
 import * as common from '@google-cloud/common-grpc';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
-import {Duplex, PassThrough} from 'stream';
+import {PassThrough} from 'stream';
 import * as through from 'through2';
 
 import {ChunkTransformer} from '../src/chunktransformer.js';
@@ -421,9 +420,10 @@ describe('Bigtable/Table', function() {
       table.bigtable.request = function(config) {
         const requestStream = new PassThrough({
           objectMode: true,
-        }) as Duplex;
+        });
 
-        (requestStream as AbortableDuplex).abort = function() {
+        /* tslint:disable-next-line */
+        (requestStream as any).abort = function() {
           done();
         };
 
@@ -794,9 +794,10 @@ describe('Bigtable/Table', function() {
         table.bigtable.request = function() {
           const stream = new PassThrough({
             objectMode: true,
-          }) as Duplex;
+          });
 
-          (stream as AbortableDuplex).abort = function() {};
+          /* tslint:disable-next-line */
+          (stream as any).abort = function() {};
 
           setImmediate(function() {
             stream.push(fakeChunks);
@@ -1018,9 +1019,10 @@ describe('Bigtable/Table', function() {
 
           const stream = new PassThrough({
             objectMode: true,
-          }) as Duplex;
+          });
 
-          (stream as AbortableDuplex).abort = function() {};
+          /* tslint:disable-next-line */
+          (stream as any).abort = function() {};
 
           setImmediate(function() {
             stream.emit('request');
