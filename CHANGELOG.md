@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [2.0.4](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.3...v2.0.4) (2019-08-01)
+
+
+### Bug Fixes
+
+* cancel streaming grpc request when user ends stream ([#507](https://www.github.com/googleapis/nodejs-bigtable/issues/507)) ([2b4297c](https://www.github.com/googleapis/nodejs-bigtable/commit/2b4297c))
+
 ### [2.0.3](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.2...v2.0.3) (2019-07-29)
 
 
