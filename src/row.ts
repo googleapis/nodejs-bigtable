@@ -384,7 +384,7 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_row_exists
    */
-  exists(gaxOptions, callback) {
+  exists(gaxOptions?, callback?) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
