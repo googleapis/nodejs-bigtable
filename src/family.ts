@@ -217,7 +217,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @example <caption>include:samples/document-snippets/family.js</caption>
    * region_tag:bigtable_exists_family
    */
-  exists(gaxOptions?, callback?) {
+  exists(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};

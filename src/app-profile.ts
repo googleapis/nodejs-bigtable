@@ -196,7 +196,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_exists_app_profile
    */
-  exists(gaxOptions?, callback?) {
+  exists(gaxOptions, callback) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};
