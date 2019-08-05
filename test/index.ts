@@ -161,8 +161,6 @@ describe('Bigtable', function() {
               libName: 'gccl',
               libVersion: PKG.version,
               scopes: EXPECTED_SCOPES,
-              'grpc.max_send_message_length': -1,
-              'grpc.max_receive_message_length': -1,
             },
             options
           )
@@ -191,8 +189,6 @@ describe('Bigtable', function() {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes: EXPECTED_SCOPES,
-        'grpc.max_send_message_length': -1,
-        'grpc.max_receive_message_length': -1,
       };
 
       assert.deepStrictEqual(bigtable.options, {
@@ -232,8 +228,6 @@ describe('Bigtable', function() {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes: EXPECTED_SCOPES,
-        'grpc.max_send_message_length': -1,
-        'grpc.max_receive_message_length': -1,
       };
 
       const bigtable = new Bigtable(options);
@@ -279,8 +273,6 @@ describe('Bigtable', function() {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes: EXPECTED_SCOPES,
-        'grpc.max_send_message_length': -1,
-        'grpc.max_receive_message_length': -1,
       };
 
       const bigtable = new Bigtable(options);
