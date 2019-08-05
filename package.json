@@ -26,6 +26,7 @@
     "!**/*.map"
   ],
   "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
   "scripts": {
     "check": "gts check",
     "clean": "gts clean",
