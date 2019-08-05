@@ -402,8 +402,6 @@ export class Bigtable {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes,
-        'grpc.max_send_message_length': -1,
-        'grpc.max_receive_message_length': -1,
       },
       options
     );
