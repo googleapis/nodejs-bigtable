@@ -4,6 +4,15 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [2.0.5](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.4...v2.0.5) (2019-08-13)
+
+
+### Bug Fixes
+
+* allow calls with no request, add JSON proto ([fb6ced6](https://www.github.com/googleapis/nodejs-bigtable/commit/fb6ced6))
+* **deps:** use the latest extend ([#529](https://www.github.com/googleapis/nodejs-bigtable/issues/529)) ([7090c39](https://www.github.com/googleapis/nodejs-bigtable/commit/7090c39))
+* **types:** Include TypeScript types with module ([#527](https://www.github.com/googleapis/nodejs-bigtable/issues/527)) ([cd9e517](https://www.github.com/googleapis/nodejs-bigtable/commit/cd9e517))
+
 ### [2.0.4](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.3...v2.0.4) (2019-08-01)
 
 
