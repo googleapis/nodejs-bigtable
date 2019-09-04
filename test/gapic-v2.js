@@ -44,6 +44,13 @@ describe('BigtableInstanceAdminClient', () => {
     assert(client);
   });
 
+  it('should create a client with gRPC fallback', () => {
+    const client = new adminModule.v2.BigtableInstanceAdminClient({
+      fallback: true,
+    });
+    assert(client);
+  });
+
   describe('createInstance', function() {
     it('invokes createInstance without error', done => {
       const client = new adminModule.v2.BigtableInstanceAdminClient({
@@ -1472,6 +1479,13 @@ describe('BigtableTableAdminClient', () => {
     assert(client);
   });
 
+  it('should create a client with gRPC fallback', () => {
+    const client = new adminModule.v2.BigtableTableAdminClient({
+      fallback: true,
+    });
+    assert(client);
+  });
+
   describe('createTable', () => {
     it('invokes createTable without error', done => {
       const client = new adminModule.v2.BigtableTableAdminClient({
@@ -2088,6 +2102,219 @@ describe('BigtableTableAdminClient', () => {
       );
 
       client.checkConsistency(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('getIamPolicy', () => {
+    it('invokes getIamPolicy without error', done => {
+      const client = new adminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const formattedResource = client.tablePath(
+        '[PROJECT]',
+        '[INSTANCE]',
+        '[TABLE]'
+      );
+      const request = {
+        resource: formattedResource,
+      };
+
+      // Mock response
+      const version = 351608024;
+      const etag = 'etag3123477';
+      const expectedResponse = {
+        version: version,
+        etag: etag,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.getIamPolicy = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.getIamPolicy(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes getIamPolicy with error', done => {
+      const client = new adminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const formattedResource = client.tablePath(
+        '[PROJECT]',
+        '[INSTANCE]',
+        '[TABLE]'
+      );
+      const request = {
+        resource: formattedResource,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.getIamPolicy = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.getIamPolicy(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('setIamPolicy', () => {
+    it('invokes setIamPolicy without error', done => {
+      const client = new adminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const formattedResource = client.tablePath(
+        '[PROJECT]',
+        '[INSTANCE]',
+        '[TABLE]'
+      );
+      const policy = {};
+      const request = {
+        resource: formattedResource,
+        policy: policy,
+      };
+
+      // Mock response
+      const version = 351608024;
+      const etag = 'etag3123477';
+      const expectedResponse = {
+        version: version,
+        etag: etag,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.setIamPolicy = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.setIamPolicy(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes setIamPolicy with error', done => {
+      const client = new adminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const formattedResource = client.tablePath(
+        '[PROJECT]',
+        '[INSTANCE]',
+        '[TABLE]'
+      );
+      const policy = {};
+      const request = {
+        resource: formattedResource,
+        policy: policy,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.setIamPolicy = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.setIamPolicy(request, (err, response) => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+
+  describe('testIamPermissions', () => {
+    it('invokes testIamPermissions without error', done => {
+      const client = new adminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const formattedResource = client.tablePath(
+        '[PROJECT]',
+        '[INSTANCE]',
+        '[TABLE]'
+      );
+      const permissions = [];
+      const request = {
+        resource: formattedResource,
+        permissions: permissions,
+      };
+
+      // Mock response
+      const expectedResponse = {};
+
+      // Mock Grpc layer
+      client._innerApiCalls.testIamPermissions = mockSimpleGrpcMethod(
+        request,
+        expectedResponse
+      );
+
+      client.testIamPermissions(request, (err, response) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes testIamPermissions with error', done => {
+      const client = new adminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+
+      // Mock request
+      const formattedResource = client.tablePath(
+        '[PROJECT]',
+        '[INSTANCE]',
+        '[TABLE]'
+      );
+      const permissions = [];
+      const request = {
+        resource: formattedResource,
+        permissions: permissions,
+      };
+
+      // Mock Grpc layer
+      client._innerApiCalls.testIamPermissions = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+
+      client.testIamPermissions(request, (err, response) => {
         assert(err instanceof Error);
         assert.strictEqual(err.code, FAKE_STATUS_CODE);
         assert(typeof response === 'undefined');
