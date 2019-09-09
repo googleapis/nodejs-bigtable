@@ -849,6 +849,30 @@
                           "options": {
                             "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}"
                           }
+                        },
+                        "GetIamPolicy": {
+                          "requestType": "google.iam.v1.GetIamPolicyRequest",
+                          "responseType": "google.iam.v1.Policy",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
+                            "(google.api.http).body": "*"
+                          }
+                        },
+                        "SetIamPolicy": {
+                          "requestType": "google.iam.v1.SetIamPolicyRequest",
+                          "responseType": "google.iam.v1.Policy",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
+                            "(google.api.http).body": "*"
+                          }
+                        },
+                        "TestIamPermissions": {
+                          "requestType": "google.iam.v1.TestIamPermissionsRequest",
+                          "responseType": "google.iam.v1.TestIamPermissionsResponse",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
+                            "(google.api.http).body": "*"
+                          }
                         }
                       }
                     },
@@ -1160,6 +1184,766 @@
                   }
                 }
               }
+            },
+            "v2": {
+              "options": {
+                "csharp_namespace": "Google.Cloud.Bigtable.V2",
+                "go_package": "google.golang.org/genproto/googleapis/bigtable/v2;bigtable",
+                "java_multiple_files": true,
+                "java_outer_classname": "DataProto",
+                "java_package": "com.google.bigtable.v2",
+                "php_namespace": "Google\\Cloud\\Bigtable\\V2"
+              },
+              "nested": {
+                "Bigtable": {
+                  "methods": {
+                    "ReadRows": {
+                      "requestType": "ReadRowsRequest",
+                      "responseType": "ReadRowsResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
+                        "(google.api.http).body": "*"
+                      }
+                    },
+                    "SampleRowKeys": {
+                      "requestType": "SampleRowKeysRequest",
+                      "responseType": "SampleRowKeysResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys"
+                      }
+                    },
+                    "MutateRow": {
+                      "requestType": "MutateRowRequest",
+                      "responseType": "MutateRowResponse",
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
+                        "(google.api.http).body": "*"
+                      }
+                    },
+                    "MutateRows": {
+                      "requestType": "MutateRowsRequest",
+                      "responseType": "MutateRowsResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
+                        "(google.api.http).body": "*"
+                      }
+                    },
+                    "CheckAndMutateRow": {
+                      "requestType": "CheckAndMutateRowRequest",
+                      "responseType": "CheckAndMutateRowResponse",
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:checkAndMutateRow",
+                        "(google.api.http).body": "*"
+                      }
+                    },
+                    "ReadModifyWriteRow": {
+                      "requestType": "ReadModifyWriteRowRequest",
+                      "responseType": "ReadModifyWriteRowResponse",
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
+                        "(google.api.http).body": "*"
+                      }
+                    }
+                  }
+                },
+                "ReadRowsRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 5
+                    },
+                    "rows": {
+                      "type": "RowSet",
+                      "id": 2
+                    },
+                    "filter": {
+                      "type": "RowFilter",
+                      "id": 3
+                    },
+                    "rowsLimit": {
+                      "type": "int64",
+                      "id": 4
+                    }
+                  }
+                },
+                "ReadRowsResponse": {
+                  "fields": {
+                    "chunks": {
+                      "rule": "repeated",
+                      "type": "CellChunk",
+                      "id": 1
+                    },
+                    "lastScannedRowKey": {
+                      "type": "bytes",
+                      "id": 2
+                    }
+                  },
+                  "nested": {
+                    "CellChunk": {
+                      "oneofs": {
+                        "rowStatus": {
+                          "oneof": [
+                            "resetRow",
+                            "commitRow"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "rowKey": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "familyName": {
+                          "type": "google.protobuf.StringValue",
+                          "id": 2
+                        },
+                        "qualifier": {
+                          "type": "google.protobuf.BytesValue",
+                          "id": 3
+                        },
+                        "timestampMicros": {
+                          "type": "int64",
+                          "id": 4
+                        },
+                        "labels": {
+                          "rule": "repeated",
+                          "type": "string",
+                          "id": 5
+                        },
+                        "value": {
+                          "type": "bytes",
+                          "id": 6
+                        },
+                        "valueSize": {
+                          "type": "int32",
+                          "id": 7
+                        },
+                        "resetRow": {
+                          "type": "bool",
+                          "id": 8
+                        },
+                        "commitRow": {
+                          "type": "bool",
+                          "id": 9
+                        }
+                      }
+                    }
+                  }
+                },
+                "SampleRowKeysRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2
+                    }
+                  }
+                },
+                "SampleRowKeysResponse": {
+                  "fields": {
+                    "rowKey": {
+                      "type": "bytes",
+                      "id": 1
+                    },
+                    "offsetBytes": {
+                      "type": "int64",
+                      "id": 2
+                    }
+                  }
+                },
+                "MutateRowRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 4
+                    },
+                    "rowKey": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "mutations": {
+                      "rule": "repeated",
+                      "type": "Mutation",
+                      "id": 3
+                    }
+                  }
+                },
+                "MutateRowResponse": {
+                  "fields": {}
+                },
+                "MutateRowsRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 3
+                    },
+                    "entries": {
+                      "rule": "repeated",
+                      "type": "Entry",
+                      "id": 2
+                    }
+                  },
+                  "nested": {
+                    "Entry": {
+                      "fields": {
+                        "rowKey": {
+                          "type": "bytes",
+                          "id": 1
+                        },
+                        "mutations": {
+                          "rule": "repeated",
+                          "type": "Mutation",
+                          "id": 2
+                        }
+                      }
+                    }
+                  }
+                },
+                "MutateRowsResponse": {
+                  "fields": {
+                    "entries": {
+                      "rule": "repeated",
+                      "type": "Entry",
+                      "id": 1
+                    }
+                  },
+                  "nested": {
+                    "Entry": {
+                      "fields": {
+                        "index": {
+                          "type": "int64",
+                          "id": 1
+                        },
+                        "status": {
+                          "type": "google.rpc.Status",
+                          "id": 2
+                        }
+                      }
+                    }
+                  }
+                },
+                "CheckAndMutateRowRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 7
+                    },
+                    "rowKey": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "predicateFilter": {
+                      "type": "RowFilter",
+                      "id": 6
+                    },
+                    "trueMutations": {
+                      "rule": "repeated",
+                      "type": "Mutation",
+                      "id": 4
+                    },
+                    "falseMutations": {
+                      "rule": "repeated",
+                      "type": "Mutation",
+                      "id": 5
+                    }
+                  }
+                },
+                "CheckAndMutateRowResponse": {
+                  "fields": {
+                    "predicateMatched": {
+                      "type": "bool",
+                      "id": 1
+                    }
+                  }
+                },
+                "ReadModifyWriteRowRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 4
+                    },
+                    "rowKey": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "rules": {
+                      "rule": "repeated",
+                      "type": "ReadModifyWriteRule",
+                      "id": 3
+                    }
+                  }
+                },
+                "ReadModifyWriteRowResponse": {
+                  "fields": {
+                    "row": {
+                      "type": "Row",
+                      "id": 1
+                    }
+                  }
+                },
+                "Row": {
+                  "fields": {
+                    "key": {
+                      "type": "bytes",
+                      "id": 1
+                    },
+                    "families": {
+                      "rule": "repeated",
+                      "type": "Family",
+                      "id": 2
+                    }
+                  }
+                },
+                "Family": {
+                  "fields": {
+                    "name": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "columns": {
+                      "rule": "repeated",
+                      "type": "Column",
+                      "id": 2
+                    }
+                  }
+                },
+                "Column": {
+                  "fields": {
+                    "qualifier": {
+                      "type": "bytes",
+                      "id": 1
+                    },
+                    "cells": {
+                      "rule": "repeated",
+                      "type": "Cell",
+                      "id": 2
+                    }
+                  }
+                },
+                "Cell": {
+                  "fields": {
+                    "timestampMicros": {
+                      "type": "int64",
+                      "id": 1
+                    },
+                    "value": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "labels": {
+                      "rule": "repeated",
+                      "type": "string",
+                      "id": 3
+                    }
+                  }
+                },
+                "RowRange": {
+                  "oneofs": {
+                    "startKey": {
+                      "oneof": [
+                        "startKeyClosed",
+                        "startKeyOpen"
+                      ]
+                    },
+                    "endKey": {
+                      "oneof": [
+                        "endKeyOpen",
+                        "endKeyClosed"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "startKeyClosed": {
+                      "type": "bytes",
+                      "id": 1
+                    },
+                    "startKeyOpen": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "endKeyOpen": {
+                      "type": "bytes",
+                      "id": 3
+                    },
+                    "endKeyClosed": {
+                      "type": "bytes",
+                      "id": 4
+                    }
+                  }
+                },
+                "RowSet": {
+                  "fields": {
+                    "rowKeys": {
+                      "rule": "repeated",
+                      "type": "bytes",
+                      "id": 1
+                    },
+                    "rowRanges": {
+                      "rule": "repeated",
+                      "type": "RowRange",
+                      "id": 2
+                    }
+                  }
+                },
+                "ColumnRange": {
+                  "oneofs": {
+                    "startQualifier": {
+                      "oneof": [
+                        "startQualifierClosed",
+                        "startQualifierOpen"
+                      ]
+                    },
+                    "endQualifier": {
+                      "oneof": [
+                        "endQualifierClosed",
+                        "endQualifierOpen"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "familyName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "startQualifierClosed": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "startQualifierOpen": {
+                      "type": "bytes",
+                      "id": 3
+                    },
+                    "endQualifierClosed": {
+                      "type": "bytes",
+                      "id": 4
+                    },
+                    "endQualifierOpen": {
+                      "type": "bytes",
+                      "id": 5
+                    }
+                  }
+                },
+                "TimestampRange": {
+                  "fields": {
+                    "startTimestampMicros": {
+                      "type": "int64",
+                      "id": 1
+                    },
+                    "endTimestampMicros": {
+                      "type": "int64",
+                      "id": 2
+                    }
+                  }
+                },
+                "ValueRange": {
+                  "oneofs": {
+                    "startValue": {
+                      "oneof": [
+                        "startValueClosed",
+                        "startValueOpen"
+                      ]
+                    },
+                    "endValue": {
+                      "oneof": [
+                        "endValueClosed",
+                        "endValueOpen"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "startValueClosed": {
+                      "type": "bytes",
+                      "id": 1
+                    },
+                    "startValueOpen": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "endValueClosed": {
+                      "type": "bytes",
+                      "id": 3
+                    },
+                    "endValueOpen": {
+                      "type": "bytes",
+                      "id": 4
+                    }
+                  }
+                },
+                "RowFilter": {
+                  "oneofs": {
+                    "filter": {
+                      "oneof": [
+                        "chain",
+                        "interleave",
+                        "condition",
+                        "sink",
+                        "passAllFilter",
+                        "blockAllFilter",
+                        "rowKeyRegexFilter",
+                        "rowSampleFilter",
+                        "familyNameRegexFilter",
+                        "columnQualifierRegexFilter",
+                        "columnRangeFilter",
+                        "timestampRangeFilter",
+                        "valueRegexFilter",
+                        "valueRangeFilter",
+                        "cellsPerRowOffsetFilter",
+                        "cellsPerRowLimitFilter",
+                        "cellsPerColumnLimitFilter",
+                        "stripValueTransformer",
+                        "applyLabelTransformer"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "chain": {
+                      "type": "Chain",
+                      "id": 1
+                    },
+                    "interleave": {
+                      "type": "Interleave",
+                      "id": 2
+                    },
+                    "condition": {
+                      "type": "Condition",
+                      "id": 3
+                    },
+                    "sink": {
+                      "type": "bool",
+                      "id": 16
+                    },
+                    "passAllFilter": {
+                      "type": "bool",
+                      "id": 17
+                    },
+                    "blockAllFilter": {
+                      "type": "bool",
+                      "id": 18
+                    },
+                    "rowKeyRegexFilter": {
+                      "type": "bytes",
+                      "id": 4
+                    },
+                    "rowSampleFilter": {
+                      "type": "double",
+                      "id": 14
+                    },
+                    "familyNameRegexFilter": {
+                      "type": "string",
+                      "id": 5
+                    },
+                    "columnQualifierRegexFilter": {
+                      "type": "bytes",
+                      "id": 6
+                    },
+                    "columnRangeFilter": {
+                      "type": "ColumnRange",
+                      "id": 7
+                    },
+                    "timestampRangeFilter": {
+                      "type": "TimestampRange",
+                      "id": 8
+                    },
+                    "valueRegexFilter": {
+                      "type": "bytes",
+                      "id": 9
+                    },
+                    "valueRangeFilter": {
+                      "type": "ValueRange",
+                      "id": 15
+                    },
+                    "cellsPerRowOffsetFilter": {
+                      "type": "int32",
+                      "id": 10
+                    },
+                    "cellsPerRowLimitFilter": {
+                      "type": "int32",
+                      "id": 11
+                    },
+                    "cellsPerColumnLimitFilter": {
+                      "type": "int32",
+                      "id": 12
+                    },
+                    "stripValueTransformer": {
+                      "type": "bool",
+                      "id": 13
+                    },
+                    "applyLabelTransformer": {
+                      "type": "string",
+                      "id": 19
+                    }
+                  },
+                  "nested": {
+                    "Chain": {
+                      "fields": {
+                        "filters": {
+                          "rule": "repeated",
+                          "type": "RowFilter",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "Interleave": {
+                      "fields": {
+                        "filters": {
+                          "rule": "repeated",
+                          "type": "RowFilter",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "Condition": {
+                      "fields": {
+                        "predicateFilter": {
+                          "type": "RowFilter",
+                          "id": 1
+                        },
+                        "trueFilter": {
+                          "type": "RowFilter",
+                          "id": 2
+                        },
+                        "falseFilter": {
+                          "type": "RowFilter",
+                          "id": 3
+                        }
+                      }
+                    }
+                  }
+                },
+                "Mutation": {
+                  "oneofs": {
+                    "mutation": {
+                      "oneof": [
+                        "setCell",
+                        "deleteFromColumn",
+                        "deleteFromFamily",
+                        "deleteFromRow"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "setCell": {
+                      "type": "SetCell",
+                      "id": 1
+                    },
+                    "deleteFromColumn": {
+                      "type": "DeleteFromColumn",
+                      "id": 2
+                    },
+                    "deleteFromFamily": {
+                      "type": "DeleteFromFamily",
+                      "id": 3
+                    },
+                    "deleteFromRow": {
+                      "type": "DeleteFromRow",
+                      "id": 4
+                    }
+                  },
+                  "nested": {
+                    "SetCell": {
+                      "fields": {
+                        "familyName": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "columnQualifier": {
+                          "type": "bytes",
+                          "id": 2
+                        },
+                        "timestampMicros": {
+                          "type": "int64",
+                          "id": 3
+                        },
+                        "value": {
+                          "type": "bytes",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "DeleteFromColumn": {
+                      "fields": {
+                        "familyName": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "columnQualifier": {
+                          "type": "bytes",
+                          "id": 2
+                        },
+                        "timeRange": {
+                          "type": "TimestampRange",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "DeleteFromFamily": {
+                      "fields": {
+                        "familyName": {
+                          "type": "string",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "DeleteFromRow": {
+                      "fields": {}
+                    }
+                  }
+                },
+                "ReadModifyWriteRule": {
+                  "oneofs": {
+                    "rule": {
+                      "oneof": [
+                        "appendValue",
+                        "incrementAmount"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "familyName": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "columnQualifier": {
+                      "type": "bytes",
+                      "id": 2
+                    },
+                    "appendValue": {
+                      "type": "bytes",
+                      "id": 3
+                    },
+                    "incrementAmount": {
+                      "type": "int64",
+                      "id": 4
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -1167,7 +1951,7 @@
           "options": {
             "go_package": "google.golang.org/genproto/googleapis/api/annotations;annotations",
             "java_multiple_files": true,
-            "java_outer_classname": "ResourceProto",
+            "java_outer_classname": "ClientProto",
             "java_package": "com.google.api",
             "objc_class_prefix": "GAPI",
             "cc_enable_arenas": true
@@ -1260,57 +2044,21 @@
                 }
               }
             },
-            "resourceReference": {
-              "type": "google.api.ResourceReference",
-              "id": 1055,
-              "extend": "google.protobuf.FieldOptions"
+            "methodSignature": {
+              "rule": "repeated",
+              "type": "string",
+              "id": 1051,
+              "extend": "google.protobuf.MethodOptions"
             },
-            "resource": {
-              "type": "google.api.ResourceDescriptor",
-              "id": 1053,
-              "extend": "google.protobuf.MessageOptions"
+            "defaultHost": {
+              "type": "string",
+              "id": 1049,
+              "extend": "google.protobuf.ServiceOptions"
             },
-            "ResourceDescriptor": {
-              "fields": {
-                "type": {
-                  "type": "string",
-                  "id": 1
-                },
-                "pattern": {
-                  "rule": "repeated",
-                  "type": "string",
-                  "id": 2
-                },
-                "nameField": {
-                  "type": "string",
-                  "id": 3
-                },
-                "history": {
-                  "type": "History",
-                  "id": 4
-                }
-              },
-              "nested": {
-                "History": {
-                  "values": {
-                    "HISTORY_UNSPECIFIED": 0,
-                    "ORIGINALLY_SINGLE_PATTERN": 1,
-                    "FUTURE_MULTI_PATTERN": 2
-                  }
-                }
-              }
-            },
-            "ResourceReference": {
-              "fields": {
-                "type": {
-                  "type": "string",
-                  "id": 1
-                },
-                "childType": {
-                  "type": "string",
-                  "id": 2
-                }
-              }
+            "oauthScopes": {
+              "type": "string",
+              "id": 1050,
+              "extend": "google.protobuf.ServiceOptions"
             }
           }
         },
@@ -2252,6 +3000,78 @@
                   "id": 1
                 }
               }
+            },
+            "DoubleValue": {
+              "fields": {
+                "value": {
+                  "type": "double",
+                  "id": 1
+                }
+              }
+            },
+            "FloatValue": {
+              "fields": {
+                "value": {
+                  "type": "float",
+                  "id": 1
+                }
+              }
+            },
+            "Int64Value": {
+              "fields": {
+                "value": {
+                  "type": "int64",
+                  "id": 1
+                }
+              }
+            },
+            "UInt64Value": {
+              "fields": {
+                "value": {
+                  "type": "uint64",
+                  "id": 1
+                }
+              }
+            },
+            "Int32Value": {
+              "fields": {
+                "value": {
+                  "type": "int32",
+                  "id": 1
+                }
+              }
+            },
+            "UInt32Value": {
+              "fields": {
+                "value": {
+                  "type": "uint32",
+                  "id": 1
+                }
+              }
+            },
+            "BoolValue": {
+              "fields": {
+                "value": {
+                  "type": "bool",
+                  "id": 1
+                }
+              }
+            },
+            "StringValue": {
+              "fields": {
+                "value": {
+                  "type": "string",
+                  "id": 1
+                }
+              }
+            },
+            "BytesValue": {
+              "fields": {
+                "value": {
+                  "type": "bytes",
+                  "id": 1
+                }
+              }
             }
           }
         },
@@ -2269,6 +3089,9 @@
               },
               "nested": {
                 "IAMPolicy": {
+                  "options": {
+                    "(google.api.default_host)": "iam-meta-api.googleapis.com"
+                  },
                   "methods": {
                     "SetIamPolicy": {
                       "requestType": "SetIamPolicyRequest",
@@ -2313,6 +3136,10 @@
                     "resource": {
                       "type": "string",
                       "id": 1
+                    },
+                    "options": {
+                      "type": "google.iam.v1.GetPolicyOptions",
+                      "id": 2
                     }
                   }
                 },
@@ -2334,6 +3161,14 @@
                     "permissions": {
                       "rule": "repeated",
                       "type": "string",
+                      "id": 1
+                    }
+                  }
+                },
+                "GetPolicyOptions": {
+                  "fields": {
+                    "requestedPolicyVersion": {
+                      "type": "int32",
                       "id": 1
                     }
                   }

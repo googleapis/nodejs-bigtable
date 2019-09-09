@@ -2,6 +2,7 @@ import synthtool as s
 import synthtool.gcp as gcp
 import logging
 import subprocess
+import os
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -41,5 +42,10 @@ templates = common_templates.node_library(
 )
 s.copy(templates)
 
+# No webpack support for TypeScript libraries yet
+os.unlink("webpack.config.js")
+os.unlink("src/browser.js")
+
 subprocess.run(['npm', 'install'])
 subprocess.run(['npm', 'run', 'fix'])
+subprocess.run(['npx', 'compileProtos', 'src'])

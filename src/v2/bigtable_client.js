@@ -58,6 +58,16 @@ class BigtableClient {
     opts = opts || {};
     this._descriptors = {};
 
+    if (global.isBrowser) {
+      // If we're in browser, we use gRPC fallback.
+      opts.fallback = true;
+    }
+
+    // If we are in browser, we are already using fallback because of the
+    // "browser" field in package.json.
+    // But if we were explicitly requested to use fallback, let's do it now.
+    const gaxModule = !global.isBrowser && opts.fallback ? gax.fallback : gax;
+
     const servicePath =
       opts.servicePath || opts.apiEndpoint || this.constructor.servicePath;
 
@@ -74,33 +84,48 @@ class BigtableClient {
     // Create a `gaxGrpc` object, with any grpc-specific options
     // sent to the client.
     opts.scopes = this.constructor.scopes;
-    const gaxGrpc = new gax.GrpcClient(opts);
+    const gaxGrpc = new gaxModule.GrpcClient(opts);
 
     // Save the auth object to the client, for use by other methods.
     this.auth = gaxGrpc.auth;
 
     // Determine the client header string.
-    const clientHeader = [
-      `gl-node/${process.versions.node}`,
-      `grpc/${gaxGrpc.grpcVersion}`,
-      `gax/${gax.version}`,
-      `gapic/${VERSION}`,
-    ];
+    const clientHeader = [];
+
+    if (typeof process !== 'undefined' && 'versions' in process) {
+      clientHeader.push(`gl-node/${process.versions.node}`);
+    }
+    clientHeader.push(`gax/${gaxModule.version}`);
+    if (opts.fallback) {
+      clientHeader.push(`gl-web/${gaxModule.version}`);
+    } else {
+      clientHeader.push(`grpc/${gaxGrpc.grpcVersion}`);
+    }
+    clientHeader.push(`gapic/${VERSION}`);
     if (opts.libName && opts.libVersion) {
       clientHeader.push(`${opts.libName}/${opts.libVersion}`);
     }
 
     // Load the applicable protos.
+    // For Node.js, pass the path to JSON proto file.
+    // For browsers, pass the JSON content.
+
+    const nodejsProtoPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'protos',
+      'protos.json'
+    );
     const protos = gaxGrpc.loadProto(
-      path.join(__dirname, '..', '..', 'protos'),
-      ['google/bigtable/v2/bigtable.proto']
+      opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
     );
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
     // Create useful helper objects for these.
     this._pathTemplates = {
-      tablePathTemplate: new gax.PathTemplate(
+      tablePathTemplate: new gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/tables/{table}'
       ),
     };
@@ -108,9 +133,13 @@ class BigtableClient {
     // Some of the methods on this service provide streaming responses.
     // Provide descriptors for these.
     this._descriptors.stream = {
-      readRows: new gax.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
-      sampleRowKeys: new gax.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
-      mutateRows: new gax.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
+      readRows: new gaxModule.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
+      sampleRowKeys: new gaxModule.StreamDescriptor(
+        gax.StreamType.SERVER_STREAMING
+      ),
+      mutateRows: new gaxModule.StreamDescriptor(
+        gax.StreamType.SERVER_STREAMING
+      ),
     };
 
     // Put together the default options sent with requests.
@@ -129,7 +158,9 @@ class BigtableClient {
     // Put together the "service stub" for
     // google.bigtable.v2.Bigtable.
     const bigtableStub = gaxGrpc.createStub(
-      protos.google.bigtable.v2.Bigtable,
+      opts.fallback
+        ? protos.lookupService('google.bigtable.v2.Bigtable')
+        : protos.google.bigtable.v2.Bigtable,
       opts
     );
 
@@ -144,18 +175,16 @@ class BigtableClient {
       'readModifyWriteRow',
     ];
     for (const methodName of bigtableStubMethods) {
-      this._innerApiCalls[methodName] = gax.createApiCall(
-        bigtableStub.then(
-          stub =>
-            function() {
-              const args = Array.prototype.slice.call(arguments, 0);
-              return stub[methodName].apply(stub, args);
-            },
-          err =>
-            function() {
-              throw err;
-            }
-        ),
+      const innerCallPromise = bigtableStub.then(
+        stub => (...args) => {
+          return stub[methodName].apply(stub, args);
+        },
+        err => () => {
+          throw err;
+        }
+      );
+      this._innerApiCalls[methodName] = gaxModule.createApiCall(
+        innerCallPromise,
         defaults[methodName],
         this._descriptors.stream[methodName]
       );
