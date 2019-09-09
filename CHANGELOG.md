@@ -4,6 +4,19 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [2.1.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.5...v2.1.0) (2019-09-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency yargs to v14 ([e0478d7](https://www.github.com/googleapis/nodejs-bigtable/commit/e0478d7))
+* use correct version for x-goog-api-client ([#533](https://www.github.com/googleapis/nodejs-bigtable/issues/533)) ([1614e9e](https://www.github.com/googleapis/nodejs-bigtable/commit/1614e9e))
+
+
+### Features
+
+* load protos from JSON, grpc-fallback support, IAM protos ([#536](https://www.github.com/googleapis/nodejs-bigtable/issues/536)) ([04404a4](https://www.github.com/googleapis/nodejs-bigtable/commit/04404a4))
+
 ### [2.0.5](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.4...v2.0.5) (2019-08-13)
 
 
