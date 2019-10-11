@@ -18,8 +18,8 @@ import {Bigtable} from '../src';
 import {Mutation} from '../src/mutation.js';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json');
 
+import * as grpc from '@grpc/grpc-js';
 import * as assert from 'assert';
-import {grpc} from '@google-cloud/common-grpc';
 import * as sinon from 'sinon';
 import * as through from 'through2';
 

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import * as common from '@google-cloud/common-grpc';
+import * as common from '@google-cloud/common';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
+import {decorateStatus} from './decorateStatus';
 
 const concat = require('concat-stream');
 import * as is from 'is';
@@ -955,9 +956,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               pendingEntryIndices.delete(originalEntriesIndex);
             }
 
-            const status = (common.Service as any).decorateStatus_(
-              entry.status
-            );
+            const status = decorateStatus(entry.status);
             status.entry = originalEntry;
 
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
