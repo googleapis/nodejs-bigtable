@@ -4,6 +4,19 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [2.2.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.1.0...v2.2.0) (2019-10-09)
+
+
+### Bug Fixes
+
+* do not exclude d.ts files, and add install test ([#545](https://www.github.com/googleapis/nodejs-bigtable/issues/545)) ([60acdf8](https://www.github.com/googleapis/nodejs-bigtable/commit/60acdf8))
+* use compatible version of google-gax ([588509b](https://www.github.com/googleapis/nodejs-bigtable/commit/588509b))
+
+
+### Features
+
+* .d.ts for protos ([#542](https://www.github.com/googleapis/nodejs-bigtable/issues/542)) ([3acf841](https://www.github.com/googleapis/nodejs-bigtable/commit/3acf841))
+
 ## [2.1.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.0.5...v2.1.0) (2019-09-09)
 
 
