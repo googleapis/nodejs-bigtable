@@ -41,13 +41,11 @@
 /**
  * @namespace google.longrunning
  */
-
-import {Service} from '@google-cloud/common-grpc';
 import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
-import {GoogleAuth} from 'google-auth-library';
+import {GoogleAuth} from 'google-gax';
 import * as gax from 'google-gax';
 import * as is from 'is';
 import * as through from 'through2';
@@ -55,6 +53,7 @@ import * as through from 'through2';
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Instance} from './instance';
+import {shouldRetryRequest} from './decorateStatus';
 
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -749,7 +748,7 @@ export class Bigtable {
             currentRetryAttempt: 0,
             noResponseRetries: 0,
             objectMode: true,
-            shouldRetryFn: (Service as any).shouldRetryRequest_,
+            shouldRetryFn: shouldRetryRequest,
             request() {
               gaxStream = requestFn();
               return gaxStream;

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as common from '@google-cloud/common-grpc';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import * as proxyquire from 'proxyquire';
@@ -28,8 +27,10 @@ import {Family} from '../src/family.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 import * as tblTypes from '../src/table';
+import * as ds from '../src/decorateStatus.js';
 
 const sandbox = sinon.createSandbox();
+const noop = () => {};
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -52,7 +53,6 @@ function createFake(Class) {
   };
 }
 
-const FakeGrpcService = createFake(common.Service);
 const FakeFamily = createFake(Family);
 FakeFamily.formatRule_ = sinon.spy(rule => rule);
 
@@ -100,9 +100,6 @@ describe('Bigtable/Table', function() {
 
   before(function() {
     Table = proxyquire('../src/table.js', {
-      '@google-cloud/common-grpc': {
-        Service: FakeGrpcService,
-      },
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
@@ -671,7 +668,7 @@ describe('Bigtable/Table', function() {
 
       describe('prefixes', function() {
         beforeEach(function() {
-          (FakeFilter as any).createRange = common.util.noop;
+          (FakeFilter as any).createRange = noop;
         });
 
         afterEach(function() {
@@ -838,7 +835,7 @@ describe('Bigtable/Table', function() {
 
         const stream = table
           .createReadStream()
-          .on('error', done)
+          .on('error', noop)
           .on('data', function(row) {
             rows.push(row);
             stream.end();
@@ -2177,10 +2174,10 @@ describe('Bigtable/Table', function() {
           };
 
           let statusCount = 0;
-          FakeGrpcService.decorateStatus_ = function(status) {
+          sandbox.stub(ds, 'decorateStatus').callsFake(status => {
             assert.strictEqual(status, fakeStatuses[statusCount].status);
             return parsedStatuses[statusCount++];
-          };
+          });
         });
 
         it('should return a PartialFailureError', function(done) {
@@ -2274,9 +2271,7 @@ describe('Bigtable/Table', function() {
             },
           ],
         ];
-        FakeGrpcService.decorateStatus_ = function() {
-          return {};
-        };
+        sandbox.stub(ds, 'decorateStatus').returns({});
         table.bigtable.request = function(config) {
           entryRequests.push(config.reqOpts.entries);
           const stream = new PassThrough({

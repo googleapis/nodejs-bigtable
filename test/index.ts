@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as common from '@google-cloud/common-grpc';
 import * as projectify from '@google-cloud/projectify';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
@@ -31,6 +30,7 @@ const PKG = require('../../package.json');
 
 const sinon = sn.createSandbox();
 const {grpc} = new gax.GrpcClient();
+const noop = () => {};
 
 function fakeV2() {}
 
@@ -60,7 +60,7 @@ const fakeReplaceProjectIdToken = Object.assign({}, projectify, {
 
 let googleAuthOverride;
 function fakeGoogleAuth() {
-  return (googleAuthOverride || common.util.noop).apply(null, arguments);
+  return (googleAuthOverride || noop).apply(null, arguments);
 }
 
 let retryRequestOverride;
@@ -95,7 +95,7 @@ describe('Bigtable', function() {
     Bigtable = proxyquire('../src', {
       '@google-cloud/promisify': fakePromisify,
       '@google-cloud/projectify': fakeReplaceProjectIdToken,
-      'google-auth-library': {
+      'google-gax': {
         GoogleAuth: fakeGoogleAuth,
       },
       'retry-request': fakeRetryRequest,
@@ -596,7 +596,7 @@ describe('Bigtable', function() {
       };
 
       bigtable.api[CONFIG.client] = {
-        [CONFIG.method]: common.util.noop,
+        [CONFIG.method]: noop,
       };
     });
 
@@ -624,7 +624,7 @@ describe('Bigtable', function() {
 
       it('should initiate and cache the client', function() {
         const fakeClient = {
-          [CONFIG.method]: common.util.noop,
+          [CONFIG.method]: noop,
         };
 
         fakeV2[CONFIG.client] = function(options) {
@@ -656,7 +656,7 @@ describe('Bigtable', function() {
             assert(!replaceProjectIdTokenOverride.called);
             setImmediate(done);
 
-            return common.util.noop;
+            return noop;
           },
         };
 
@@ -672,7 +672,7 @@ describe('Bigtable', function() {
         };
 
         bigtable.api[CONFIG.client] = {
-          [CONFIG.method]: common.util.noop,
+          [CONFIG.method]: noop,
         };
       });
 
@@ -690,10 +690,8 @@ describe('Bigtable', function() {
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind(gaxClient, reqOpts) {
             assert.strictEqual(reqOpts, replacedReqOpts);
-
             setImmediate(done);
-
-            return common.util.noop;
+            return noop;
           },
         };
 
@@ -712,10 +710,8 @@ describe('Bigtable', function() {
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind(gaxClient, reqOpts) {
             assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
-
             setImmediate(done);
-
-            return common.util.noop;
+            return noop;
           },
         };
 
@@ -730,10 +726,8 @@ describe('Bigtable', function() {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
             assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             assert.strictEqual(gaxOpts, CONFIG.gaxOpts);
-
             setImmediate(done);
-
-            return common.util.noop;
+            return noop;
           },
         };
 
@@ -769,7 +763,6 @@ describe('Bigtable', function() {
 
       beforeEach(function() {
         GAX_STREAM = through();
-
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind() {
             return function() {
@@ -783,10 +776,6 @@ describe('Bigtable', function() {
         retryRequestOverride = function(_, config) {
           assert.strictEqual(config.currentRetryAttempt, 0);
           assert.strictEqual(config.objectMode, true);
-          assert.strictEqual(
-            config.shouldRetryFn,
-            (common.Service as any).shouldRetryRequest_
-          );
           done();
         };
 
