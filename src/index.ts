@@ -53,6 +53,7 @@ import * as through from 'through2';
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Instance} from './instance';
+import {shouldRetryRequest} from './decorateStatus';
 
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -747,7 +748,7 @@ export class Bigtable {
             currentRetryAttempt: 0,
             noResponseRetries: 0,
             objectMode: true,
-            shouldRetryFn: r => [429, 500, 502, 503].indexOf(r.code) > -1,
+            shouldRetryFn: shouldRetryRequest,
             request() {
               gaxStream = requestFn();
               return gaxStream;

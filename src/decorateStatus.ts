@@ -53,7 +53,6 @@ export function decorateStatus(response) {
   if (response && GRPC_ERROR_CODE_TO_HTTP[response.code]) {
     const defaultResponseDetails = GRPC_ERROR_CODE_TO_HTTP[response.code];
     let message = defaultResponseDetails.message;
-
     if (response.message) {
       // gRPC error messages can be either stringified JSON or strings.
       try {
@@ -62,12 +61,14 @@ export function decorateStatus(response) {
         message = response.message;
       }
     }
-
     return extend(true, obj, response, {
       code: defaultResponseDetails.code,
       message,
     });
   }
-
   return null;
+}
+
+export function shouldRetryRequest(r: {code: number}) {
+  return [429, 500, 502, 503].includes(r.code);
 }
