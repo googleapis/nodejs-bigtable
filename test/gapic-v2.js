@@ -45,9 +45,7 @@ describe('BigtableInstanceAdminClient', () => {
   });
 
   it('should create a client with gRPC fallback', () => {
-    const client = new adminModule.v2.BigtableInstanceAdminClient({
-      fallback: true,
-    });
+    const client = new adminModule.v2.BigtableInstanceAdminClient({fallback: true});
     assert(client);
   });
 
@@ -79,24 +77,17 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createInstance = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.createInstance = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .createInstance(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.createInstance(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes createInstance with error', done => {
@@ -118,26 +109,18 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createInstance = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.createInstance = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .createInstance(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.createInstance(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -145,14 +128,8 @@ describe('BigtableInstanceAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.createInstance
-          .responseDecoder instanceof Function
-      );
-      assert(
-        client._descriptors.longrunning.createInstance
-          .metadataDecoder instanceof Function
-      );
+      assert(client._descriptors.longrunning.createInstance.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.createInstance.metadataDecoder instanceof Function);
     });
   });
 
@@ -376,24 +353,17 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.partialUpdateInstance = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.partialUpdateInstance = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .partialUpdateInstance(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.partialUpdateInstance(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes partialUpdateInstance with error', done => {
@@ -411,26 +381,18 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.partialUpdateInstance = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.partialUpdateInstance = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .partialUpdateInstance(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.partialUpdateInstance(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -438,14 +400,8 @@ describe('BigtableInstanceAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.partialUpdateInstance
-          .responseDecoder instanceof Function
-      );
-      assert(
-        client._descriptors.longrunning.partialUpdateInstance
-          .metadataDecoder instanceof Function
-      );
+      assert(client._descriptors.longrunning.partialUpdateInstance.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.partialUpdateInstance.metadataDecoder instanceof Function);
     });
   });
 
@@ -526,24 +482,17 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createCluster = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.createCluster = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .createCluster(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.createCluster(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes createCluster with error', done => {
@@ -563,26 +512,18 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createCluster = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.createCluster = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .createCluster(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.createCluster(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -590,14 +531,8 @@ describe('BigtableInstanceAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.createCluster.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.createCluster.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.createCluster.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.createCluster.metadataDecoder instanceof Function);
     });
   });
 
@@ -609,11 +544,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const request = {
         name: formattedName,
       };
@@ -648,11 +579,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const request = {
         name: formattedName,
       };
@@ -741,11 +668,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const serveNodes = 1288838783;
       const request = {
         name: formattedName,
@@ -763,24 +686,17 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.updateCluster = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.updateCluster = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .updateCluster(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.updateCluster(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes updateCluster with error', done => {
@@ -790,11 +706,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const serveNodes = 1288838783;
       const request = {
         name: formattedName,
@@ -802,26 +714,18 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.updateCluster = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.updateCluster = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .updateCluster(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.updateCluster(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -829,14 +733,8 @@ describe('BigtableInstanceAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.updateCluster.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.updateCluster.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.updateCluster.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.updateCluster.metadataDecoder instanceof Function);
     });
   });
 
@@ -848,11 +746,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const request = {
         name: formattedName,
       };
@@ -873,11 +767,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedName = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const request = {
         name: formattedName,
       };
@@ -977,11 +867,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.appProfilePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[APP_PROFILE]'
-      );
+      const formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
       const request = {
         name: formattedName,
       };
@@ -1016,11 +902,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.appProfilePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[APP_PROFILE]'
-      );
+      const formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
       const request = {
         name: formattedName,
       };
@@ -1064,11 +946,7 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.listAppProfiles = (
-        actualRequest,
-        options,
-        callback
-      ) => {
+      client._innerApiCalls.listAppProfiles = (actualRequest, options, callback) => {
         assert.deepStrictEqual(actualRequest, request);
         callback(null, expectedResponse.appProfiles);
       };
@@ -1134,24 +1012,17 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.updateAppProfile = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.updateAppProfile = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .updateAppProfile(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.updateAppProfile(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes updateAppProfile with error', done => {
@@ -1169,26 +1040,18 @@ describe('BigtableInstanceAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.updateAppProfile = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.updateAppProfile = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .updateAppProfile(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.updateAppProfile(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -1196,14 +1059,8 @@ describe('BigtableInstanceAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.updateAppProfile
-          .responseDecoder instanceof Function
-      );
-      assert(
-        client._descriptors.longrunning.updateAppProfile
-          .metadataDecoder instanceof Function
-      );
+      assert(client._descriptors.longrunning.updateAppProfile.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.updateAppProfile.metadataDecoder instanceof Function);
     });
   });
 
@@ -1215,11 +1072,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.appProfilePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[APP_PROFILE]'
-      );
+      const formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
       const ignoreWarnings = true;
       const request = {
         name: formattedName,
@@ -1242,11 +1095,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.appProfilePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[APP_PROFILE]'
-      );
+      const formattedName = client.appProfilePath('[PROJECT]', '[INSTANCE]', '[APP_PROFILE]');
       const ignoreWarnings = true;
       const request = {
         name: formattedName,
@@ -1456,6 +1305,7 @@ describe('BigtableInstanceAdminClient', () => {
       });
     });
   });
+
 });
 describe('BigtableTableAdminClient', () => {
   it('has servicePath', () => {
@@ -1480,9 +1330,7 @@ describe('BigtableTableAdminClient', () => {
   });
 
   it('should create a client with gRPC fallback', () => {
-    const client = new adminModule.v2.BigtableTableAdminClient({
-      fallback: true,
-    });
+    const client = new adminModule.v2.BigtableTableAdminClient({fallback: true});
     assert(client);
   });
 
@@ -1578,24 +1426,17 @@ describe('BigtableTableAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createTableFromSnapshot = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.createTableFromSnapshot = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .createTableFromSnapshot(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.createTableFromSnapshot(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes createTableFromSnapshot with error', done => {
@@ -1615,26 +1456,18 @@ describe('BigtableTableAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.createTableFromSnapshot = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.createTableFromSnapshot = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .createTableFromSnapshot(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.createTableFromSnapshot(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -1642,14 +1475,8 @@ describe('BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.createTableFromSnapshot
-          .responseDecoder instanceof Function
-      );
-      assert(
-        client._descriptors.longrunning.createTableFromSnapshot
-          .metadataDecoder instanceof Function
-      );
+      assert(client._descriptors.longrunning.createTableFromSnapshot.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.createTableFromSnapshot.metadataDecoder instanceof Function);
     });
   });
 
@@ -1724,11 +1551,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -1759,11 +1582,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -1792,11 +1611,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -1817,11 +1632,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -1849,11 +1660,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const modifications = [];
       const request = {
         name: formattedName,
@@ -1886,11 +1693,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const modifications = [];
       const request = {
         name: formattedName,
@@ -1921,11 +1724,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -1946,11 +1745,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -1978,11 +1773,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -2013,11 +1804,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         name: formattedName,
       };
@@ -2046,11 +1833,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const consistencyToken = 'consistencyToken-1090516718';
       const request = {
         name: formattedName,
@@ -2083,11 +1866,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const consistencyToken = 'consistencyToken-1090516718';
       const request = {
         name: formattedName,
@@ -2118,11 +1897,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedResource = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedResource = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         resource: formattedResource,
       };
@@ -2155,11 +1930,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedResource = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedResource = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const request = {
         resource: formattedResource,
       };
@@ -2188,11 +1959,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedResource = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedResource = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const policy = {};
       const request = {
         resource: formattedResource,
@@ -2227,11 +1994,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedResource = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedResource = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const policy = {};
       const request = {
         resource: formattedResource,
@@ -2262,11 +2025,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedResource = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedResource = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const permissions = [];
       const request = {
         resource: formattedResource,
@@ -2296,11 +2055,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedResource = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedResource = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const permissions = [];
       const request = {
         resource: formattedResource,
@@ -2331,11 +2086,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const cluster = 'cluster872092154';
       const snapshotId = 'snapshotId-168585866';
       const description = 'description-1724546052';
@@ -2357,24 +2108,17 @@ describe('BigtableTableAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.snapshotTable = mockLongRunningGrpcMethod(
-        request,
-        expectedResponse
-      );
+      client._innerApiCalls.snapshotTable = mockLongRunningGrpcMethod(request, expectedResponse);
 
-      client
-        .snapshotTable(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(responses => {
-          assert.deepStrictEqual(responses[0], expectedResponse);
-          done();
-        })
-        .catch(err => {
-          done(err);
-        });
+      client.snapshotTable(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(responses => {
+        assert.deepStrictEqual(responses[0], expectedResponse);
+        done();
+      }).catch(err => {
+        done(err);
+      });
     });
 
     it('invokes snapshotTable with error', done => {
@@ -2384,11 +2128,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.tablePath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[TABLE]'
-      );
+      const formattedName = client.tablePath('[PROJECT]', '[INSTANCE]', '[TABLE]');
       const cluster = 'cluster872092154';
       const snapshotId = 'snapshotId-168585866';
       const description = 'description-1724546052';
@@ -2400,26 +2140,18 @@ describe('BigtableTableAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.snapshotTable = mockLongRunningGrpcMethod(
-        request,
-        null,
-        error
-      );
+      client._innerApiCalls.snapshotTable = mockLongRunningGrpcMethod(request, null, error);
 
-      client
-        .snapshotTable(request)
-        .then(responses => {
-          const operation = responses[0];
-          return operation.promise();
-        })
-        .then(() => {
-          assert.fail();
-        })
-        .catch(err => {
-          assert(err instanceof Error);
-          assert.strictEqual(err.code, FAKE_STATUS_CODE);
-          done();
-        });
+      client.snapshotTable(request).then(responses => {
+        const operation = responses[0];
+        return operation.promise();
+      }).then(() => {
+        assert.fail();
+      }).catch(err => {
+        assert(err instanceof Error);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        done();
+      });
     });
 
     it('has longrunning decoder functions', () => {
@@ -2427,14 +2159,8 @@ describe('BigtableTableAdminClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-      assert(
-        client._descriptors.longrunning.snapshotTable.responseDecoder instanceof
-          Function
-      );
-      assert(
-        client._descriptors.longrunning.snapshotTable.metadataDecoder instanceof
-          Function
-      );
+      assert(client._descriptors.longrunning.snapshotTable.responseDecoder instanceof Function);
+      assert(client._descriptors.longrunning.snapshotTable.metadataDecoder instanceof Function);
     });
   });
 
@@ -2446,12 +2172,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.snapshotPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]',
-        '[SNAPSHOT]'
-      );
+      const formattedName = client.snapshotPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]', '[SNAPSHOT]');
       const request = {
         name: formattedName,
       };
@@ -2486,12 +2207,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.snapshotPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]',
-        '[SNAPSHOT]'
-      );
+      const formattedName = client.snapshotPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]', '[SNAPSHOT]');
       const request = {
         name: formattedName,
       };
@@ -2520,11 +2236,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedParent = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedParent = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const request = {
         parent: formattedParent,
       };
@@ -2539,11 +2251,7 @@ describe('BigtableTableAdminClient', () => {
       };
 
       // Mock Grpc layer
-      client._innerApiCalls.listSnapshots = (
-        actualRequest,
-        options,
-        callback
-      ) => {
+      client._innerApiCalls.listSnapshots = (actualRequest, options, callback) => {
         assert.deepStrictEqual(actualRequest, request);
         callback(null, expectedResponse.snapshots);
       };
@@ -2562,11 +2270,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedParent = client.clusterPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]'
-      );
+      const formattedParent = client.clusterPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]');
       const request = {
         parent: formattedParent,
       };
@@ -2595,12 +2299,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.snapshotPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]',
-        '[SNAPSHOT]'
-      );
+      const formattedName = client.snapshotPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]', '[SNAPSHOT]');
       const request = {
         name: formattedName,
       };
@@ -2621,12 +2320,7 @@ describe('BigtableTableAdminClient', () => {
       });
 
       // Mock request
-      const formattedName = client.snapshotPath(
-        '[PROJECT]',
-        '[INSTANCE]',
-        '[CLUSTER]',
-        '[SNAPSHOT]'
-      );
+      const formattedName = client.snapshotPath('[PROJECT]', '[INSTANCE]', '[CLUSTER]', '[SNAPSHOT]');
       const request = {
         name: formattedName,
       };
@@ -2645,6 +2339,7 @@ describe('BigtableTableAdminClient', () => {
       });
     });
   });
+
 });
 
 function mockSimpleGrpcMethod(expectedRequest, response, error) {
@@ -2668,11 +2363,12 @@ function mockLongRunningGrpcMethod(expectedRequest, response, error) {
         return new Promise((resolve, reject) => {
           if (error) {
             reject(error);
-          } else {
+          }
+          else {
             resolve([response]);
           }
         });
-      },
+      }
     };
     return Promise.resolve([mockOperation]);
   };

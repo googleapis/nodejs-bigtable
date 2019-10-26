@@ -69,7 +69,9 @@ class BigtableClient {
     const gaxModule = !global.isBrowser && opts.fallback ? gax.fallback : gax;
 
     const servicePath =
-      opts.servicePath || opts.apiEndpoint || this.constructor.servicePath;
+      opts.servicePath ||
+      opts.apiEndpoint ||
+      this.constructor.servicePath;
 
     // Ensure that options include the service address and port.
     opts = Object.assign(
@@ -110,15 +112,11 @@ class BigtableClient {
     // For Node.js, pass the path to JSON proto file.
     // For browsers, pass the JSON content.
 
-    const nodejsProtoPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'protos',
-      'protos.json'
-    );
+    const nodejsProtoPath = path.join(__dirname, '..', '..', 'protos', 'protos.json');
     const protos = gaxGrpc.loadProto(
-      opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
+      opts.fallback ?
+        require("../../protos/protos.json") :
+        nodejsProtoPath
     );
 
     // This API contains "path templates"; forward-slash-separated
@@ -134,12 +132,8 @@ class BigtableClient {
     // Provide descriptors for these.
     this._descriptors.stream = {
       readRows: new gaxModule.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
-      sampleRowKeys: new gaxModule.StreamDescriptor(
-        gax.StreamType.SERVER_STREAMING
-      ),
-      mutateRows: new gaxModule.StreamDescriptor(
-        gax.StreamType.SERVER_STREAMING
-      ),
+      sampleRowKeys: new gaxModule.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
+      mutateRows: new gaxModule.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
     };
 
     // Put together the default options sent with requests.
@@ -158,9 +152,9 @@ class BigtableClient {
     // Put together the "service stub" for
     // google.bigtable.v2.Bigtable.
     const bigtableStub = gaxGrpc.createStub(
-      opts.fallback
-        ? protos.lookupService('google.bigtable.v2.Bigtable')
-        : protos.google.bigtable.v2.Bigtable,
+      opts.fallback ?
+        protos.lookupService('google.bigtable.v2.Bigtable') :
+        protos.google.bigtable.v2.Bigtable,
       opts
     );
 
@@ -293,11 +287,10 @@ class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'table_name': request.tableName
+      });
 
     return this._innerApiCalls.readRows(request, options);
   }
@@ -341,11 +334,10 @@ class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'table_name': request.tableName
+      });
 
     return this._innerApiCalls.sampleRowKeys(request, options);
   }
@@ -416,11 +408,10 @@ class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'table_name': request.tableName
+      });
 
     return this._innerApiCalls.mutateRow(request, options, callback);
   }
@@ -474,11 +465,10 @@ class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'table_name': request.tableName
+      });
 
     return this._innerApiCalls.mutateRows(request, options);
   }
@@ -564,11 +554,10 @@ class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'table_name': request.tableName
+      });
 
     return this._innerApiCalls.checkAndMutateRow(request, options, callback);
   }
@@ -643,11 +632,10 @@ class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'table_name': request.tableName
+      });
 
     return this._innerApiCalls.readModifyWriteRow(request, options, callback);
   }
@@ -680,7 +668,9 @@ class BigtableClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).project;
+    return this._pathTemplates.tablePathTemplate
+      .match(tableName)
+      .project;
   }
 
   /**
@@ -691,7 +681,9 @@ class BigtableClient {
    * @returns {String} - A string representing the instance.
    */
   matchInstanceFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).instance;
+    return this._pathTemplates.tablePathTemplate
+      .match(tableName)
+      .instance;
   }
 
   /**
@@ -702,8 +694,11 @@ class BigtableClient {
    * @returns {String} - A string representing the table.
    */
   matchTableFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).table;
+    return this._pathTemplates.tablePathTemplate
+      .match(tableName)
+      .table;
   }
 }
+
 
 module.exports = BigtableClient;
