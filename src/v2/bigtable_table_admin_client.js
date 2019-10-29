@@ -73,7 +73,9 @@ class BigtableTableAdminClient {
     const gaxModule = !global.isBrowser && opts.fallback ? gax.fallback : gax;
 
     const servicePath =
-      opts.servicePath || opts.apiEndpoint || this.constructor.servicePath;
+      opts.servicePath ||
+      opts.apiEndpoint ||
+      this.constructor.servicePath;
 
     // Ensure that options include the service address and port.
     opts = Object.assign(
@@ -114,15 +116,11 @@ class BigtableTableAdminClient {
     // For Node.js, pass the path to JSON proto file.
     // For browsers, pass the JSON content.
 
-    const nodejsProtoPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'protos',
-      'protos.json'
-    );
+    const nodejsProtoPath = path.join(__dirname, '..', '..', 'protos', 'protos.json');
     const protos = gaxGrpc.loadProto(
-      opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
+      opts.fallback ?
+        require("../../protos/protos.json") :
+        nodejsProtoPath
     );
 
     // This API contains "path templates"; forward-slash-separated
@@ -159,9 +157,9 @@ class BigtableTableAdminClient {
       ),
     };
 
-    const protoFilesRoot = opts.fallback
-      ? gaxModule.protobuf.Root.fromJSON(require('../../protos/protos.json'))
-      : gaxModule.protobuf.loadSync(nodejsProtoPath);
+    const protoFilesRoot = opts.fallback ?
+      gaxModule.protobuf.Root.fromJSON(require("../../protos/protos.json")) :
+      gaxModule.protobuf.loadSync(nodejsProtoPath);
 
     // This API contains "long-running operations", which return a
     // an Operation object that allows for tracking of the operation,
@@ -187,12 +185,8 @@ class BigtableTableAdminClient {
     this._descriptors.longrunning = {
       createTableFromSnapshot: new gaxModule.LongrunningDescriptor(
         this.operationsClient,
-        createTableFromSnapshotResponse.decode.bind(
-          createTableFromSnapshotResponse
-        ),
-        createTableFromSnapshotMetadata.decode.bind(
-          createTableFromSnapshotMetadata
-        )
+        createTableFromSnapshotResponse.decode.bind(createTableFromSnapshotResponse),
+        createTableFromSnapshotMetadata.decode.bind(createTableFromSnapshotMetadata)
       ),
       snapshotTable: new gaxModule.LongrunningDescriptor(
         this.operationsClient,
@@ -217,9 +211,9 @@ class BigtableTableAdminClient {
     // Put together the "service stub" for
     // google.bigtable.admin.v2.BigtableTableAdmin.
     const bigtableTableAdminStub = gaxGrpc.createStub(
-      opts.fallback
-        ? protos.lookupService('google.bigtable.admin.v2.BigtableTableAdmin')
-        : protos.google.bigtable.admin.v2.BigtableTableAdmin,
+      opts.fallback ?
+        protos.lookupService('google.bigtable.admin.v2.BigtableTableAdmin') :
+        protos.google.bigtable.admin.v2.BigtableTableAdmin,
       opts
     );
 
@@ -255,8 +249,7 @@ class BigtableTableAdminClient {
       this._innerApiCalls[methodName] = gaxModule.createApiCall(
         innerCallPromise,
         defaults[methodName],
-        this._descriptors.page[methodName] ||
-          this._descriptors.longrunning[methodName]
+        this._descriptors.page[methodName] || this._descriptors.longrunning[methodName]
       );
     }
   }
@@ -395,11 +388,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'parent': request.parent
+      });
 
     return this._innerApiCalls.createTable(request, options, callback);
   }
@@ -530,17 +522,12 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'parent': request.parent
+      });
 
-    return this._innerApiCalls.createTableFromSnapshot(
-      request,
-      options,
-      callback
-    );
+    return this._innerApiCalls.createTableFromSnapshot(request, options, callback);
   }
 
   /**
@@ -639,11 +626,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'parent': request.parent
+      });
 
     return this._innerApiCalls.listTables(request, options, callback);
   }
@@ -704,7 +690,7 @@ class BigtableTableAdminClient {
       request,
       options
     );
-  }
+  };
 
   /**
    * Gets metadata information about the specified table.
@@ -758,11 +744,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.getTable(request, options, callback);
   }
@@ -806,11 +791,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.deleteTable(request, options, callback);
   }
@@ -877,11 +861,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.modifyColumnFamilies(request, options, callback);
   }
@@ -932,11 +915,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.dropRowRange(request, options, callback);
   }
@@ -991,17 +973,12 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
-    return this._innerApiCalls.generateConsistencyToken(
-      request,
-      options,
-      callback
-    );
+    return this._innerApiCalls.generateConsistencyToken(request, options, callback);
   }
 
   /**
@@ -1060,11 +1037,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.checkConsistency(request, options, callback);
   }
@@ -1121,11 +1097,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      resource: request.resource,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'resource': request.resource
+      });
 
     return this._innerApiCalls.getIamPolicy(request, options, callback);
   }
@@ -1189,11 +1164,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      resource: request.resource,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'resource': request.resource
+      });
 
     return this._innerApiCalls.setIamPolicy(request, options, callback);
   }
@@ -1254,11 +1228,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      resource: request.resource,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'resource': request.resource
+      });
 
     return this._innerApiCalls.testIamPermissions(request, options, callback);
   }
@@ -1406,11 +1379,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.snapshotTable(request, options, callback);
   }
@@ -1468,11 +1440,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.getSnapshot(request, options, callback);
   }
@@ -1580,11 +1551,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'parent': request.parent
+      });
 
     return this._innerApiCalls.listSnapshots(request, options, callback);
   }
@@ -1646,7 +1616,7 @@ class BigtableTableAdminClient {
       request,
       options
     );
-  }
+  };
 
   /**
    * Permanently deletes the specified snapshot.
@@ -1693,11 +1663,10 @@ class BigtableTableAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name,
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'name': request.name
+      });
 
     return this._innerApiCalls.deleteSnapshot(request, options, callback);
   }
@@ -1778,7 +1747,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromClusterName(clusterName) {
-    return this._pathTemplates.clusterPathTemplate.match(clusterName).project;
+    return this._pathTemplates.clusterPathTemplate
+      .match(clusterName)
+      .project;
   }
 
   /**
@@ -1789,7 +1760,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the instance.
    */
   matchInstanceFromClusterName(clusterName) {
-    return this._pathTemplates.clusterPathTemplate.match(clusterName).instance;
+    return this._pathTemplates.clusterPathTemplate
+      .match(clusterName)
+      .instance;
   }
 
   /**
@@ -1800,7 +1773,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the cluster.
    */
   matchClusterFromClusterName(clusterName) {
-    return this._pathTemplates.clusterPathTemplate.match(clusterName).cluster;
+    return this._pathTemplates.clusterPathTemplate
+      .match(clusterName)
+      .cluster;
   }
 
   /**
@@ -1811,7 +1786,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromInstanceName(instanceName) {
-    return this._pathTemplates.instancePathTemplate.match(instanceName).project;
+    return this._pathTemplates.instancePathTemplate
+      .match(instanceName)
+      .project;
   }
 
   /**
@@ -1822,7 +1799,8 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the instance.
    */
   matchInstanceFromInstanceName(instanceName) {
-    return this._pathTemplates.instancePathTemplate.match(instanceName)
+    return this._pathTemplates.instancePathTemplate
+      .match(instanceName)
       .instance;
   }
 
@@ -1834,7 +1812,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromSnapshotName(snapshotName) {
-    return this._pathTemplates.snapshotPathTemplate.match(snapshotName).project;
+    return this._pathTemplates.snapshotPathTemplate
+      .match(snapshotName)
+      .project;
   }
 
   /**
@@ -1845,7 +1825,8 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the instance.
    */
   matchInstanceFromSnapshotName(snapshotName) {
-    return this._pathTemplates.snapshotPathTemplate.match(snapshotName)
+    return this._pathTemplates.snapshotPathTemplate
+      .match(snapshotName)
       .instance;
   }
 
@@ -1857,7 +1838,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the cluster.
    */
   matchClusterFromSnapshotName(snapshotName) {
-    return this._pathTemplates.snapshotPathTemplate.match(snapshotName).cluster;
+    return this._pathTemplates.snapshotPathTemplate
+      .match(snapshotName)
+      .cluster;
   }
 
   /**
@@ -1868,7 +1851,8 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the snapshot.
    */
   matchSnapshotFromSnapshotName(snapshotName) {
-    return this._pathTemplates.snapshotPathTemplate.match(snapshotName)
+    return this._pathTemplates.snapshotPathTemplate
+      .match(snapshotName)
       .snapshot;
   }
 
@@ -1880,7 +1864,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the project.
    */
   matchProjectFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).project;
+    return this._pathTemplates.tablePathTemplate
+      .match(tableName)
+      .project;
   }
 
   /**
@@ -1891,7 +1877,9 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the instance.
    */
   matchInstanceFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).instance;
+    return this._pathTemplates.tablePathTemplate
+      .match(tableName)
+      .instance;
   }
 
   /**
@@ -1902,8 +1890,11 @@ class BigtableTableAdminClient {
    * @returns {String} - A string representing the table.
    */
   matchTableFromTableName(tableName) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).table;
+    return this._pathTemplates.tablePathTemplate
+      .match(tableName)
+      .table;
   }
 }
+
 
 module.exports = BigtableTableAdminClient;
