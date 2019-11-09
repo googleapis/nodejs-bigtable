@@ -770,7 +770,10 @@ describe('Bigtable/Table', function() {
         ],
       };
 
-      const formattedRows = [{key: 'c', data: {}}, {key: 'd', data: {}}];
+      const formattedRows = [
+        {key: 'c', data: {}},
+        {key: 'd', data: {}},
+      ];
 
       beforeEach(function() {
         sinon.stub(table, 'row').callsFake(function() {
@@ -1899,7 +1902,10 @@ describe('Bigtable/Table', function() {
 
   describe('getRows', function() {
     describe('success', function() {
-      const fakeRows = [{key: 'c', data: {}}, {key: 'd', data: {}}];
+      const fakeRows = [
+        {key: 'c', data: {}},
+        {key: 'd', data: {}},
+      ];
 
       beforeEach(function() {
         table.createReadStream = sinon.spy(function() {
