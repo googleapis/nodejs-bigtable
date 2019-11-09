@@ -40,7 +40,7 @@ common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library(
   source_location='build/src'
 )
-s.copy(templates)
+s.copy(templates, exclude='.jsdoc.js')
 
 # No webpack support for TypeScript libraries yet
 os.unlink("webpack.config.js")

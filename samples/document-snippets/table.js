@@ -309,7 +309,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [START bigtable_del_rows]
+    // [END bigtable_del_rows]
   },
 
   delTable: (instanceId, tableId) => {
