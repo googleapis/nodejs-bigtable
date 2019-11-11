@@ -616,15 +616,35 @@ export class Bigtable {
   ): void;
   getInstances(gaxOptions?: GetInstancesRequest): Promise<GetInstancesResponse>;
   /**
+   * Query object for listing instances.
+   *
+   * @typedef {object} GetInstancesRequest
+   * @property {boolean} [autoPaginate=true] Have pagination handled
+   *     automatically.
+   * @property {number} [maxApiCalls] Maximum number of API calls to make.
+   * @property {number} [maxResults] Maximum number of items to return.
+   * @property {number} [pageSize] Maximum number of results per page.
+   * @property {string} [pageToken] A previously-returned page token
+   *     representing part of the larger set of results to view.
+   */
+  /**
+   * @typedef {array} GetInstancesResponse
+   * @property {Instance[]} 0 Array of {@link Instance} instances.
+   * @property {object} 1 The full API response.
+   */
+  /**
+   * @callback GetInstancesCallback
+   * @param {?Error} err Request error, if any.
+   * @param {Instance[]} instances Array of {@link Instance} instances.
+   * @param {object} apiResponse The full API response.
+   */
+  /**
    * Get Instance objects for all of your Cloud Bigtable instances.
    *
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   * @param {GetInstancesRequest} [gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @param {function} callback The callback function.
-   * @param {?error} callback.error An error returned while making this request.
-   * @param {Instance[]} callback.instances List of all
-   *     instances.
-   * @param {object} callback.apiResponse The full API response.
+   * @param {GetInstancesCallback} [callback] The callback function.
+   * @returns {Promise<GetInstancesResponse>}
    *
    * @example
    * const Bigtable = require('@google-cloud/bigtable');
