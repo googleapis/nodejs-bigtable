@@ -54,6 +54,8 @@ import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Instance} from './instance';
 import {shouldRetryRequest} from './decorateStatus';
+import {google} from '../proto/bigtable';
+import {ServiceError} from '@grpc/grpc-js';
 
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -62,6 +64,25 @@ const PKG = require('../../package.json');
 const v2 = require('./v2');
 const {grpc} = new gax.GrpcClient();
 
+export interface GetInstancesRequest
+  extends google.bigtable.admin.v2.IListInstancesRequest {
+  autoPaginate?: boolean;
+  maxApiCalls?: number;
+  maxResults?: number;
+}
+export interface GetInstancesCallback {
+  (
+    err: ServiceError | null,
+    result?: Instance[] | null,
+    nextQuery?: {} | null,
+    response?: google.bigtable.admin.v2.IListInstancesResponse | null
+  ): void;
+}
+export type GetInstancesResponse = [
+  Instance[] | null,
+  {} | null,
+  google.bigtable.admin.v2.IListInstancesResponse | null
+];
 /**
  * @typedef {object} ClientConfig
  * @property {string} [apiEndpoint] Override the default API endpoint used
@@ -588,6 +609,12 @@ export class Bigtable {
     );
   }
 
+  getInstances(callback: GetInstancesCallback): void;
+  getInstances(
+    gaxOptions: GetInstancesRequest,
+    callback: GetInstancesCallback
+  ): void;
+  getInstances(gaxOptions?: GetInstancesRequest): Promise<GetInstancesResponse>;
   /**
    * Get Instance objects for all of your Cloud Bigtable instances.
    *
@@ -610,16 +637,34 @@ export class Bigtable {
    * });
    *
    * //-
+   * // To control how many API requests are made and page through the results
+   * // manually, set `autoPaginate` to `false`.
+   * //-
+   * function callback(err, instances, nextQuery, apiResponse) {
+   *   if (nextQuery) {
+   *     // More results exist.
+   *     bigtable.getInstances(nextQuery, callback);
+   *   }
+   * }
+   *
+   * bigtable.getInstances({
+   *   autoPaginate: false
+   * }, callback);
+   *
+   * //-
    * // If the callback is omitted, we'll return a Promise.
    * //-
    * bigtable.getInstances().then(function(data) {
    *   const instances = data[0];
    * });
    */
-  getInstances(gaxOptions?, callback?) {
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
+  getInstances(
+    gaxOptionsOrCallback?: GetInstancesRequest | GetInstancesCallback,
+    callback?: GetInstancesCallback
+  ): void | Promise<GetInstancesResponse> {
+    if (is.function(gaxOptionsOrCallback)) {
+      callback = gaxOptionsOrCallback as GetInstancesCallback;
+      gaxOptionsOrCallback = {};
     }
 
     const reqOpts = {
@@ -631,11 +676,11 @@ export class Bigtable {
         client: 'BigtableInstanceAdminClient',
         method: 'listInstances',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: gaxOptionsOrCallback,
       },
       (err, resp) => {
         if (err) {
-          callback(err);
+          callback!(err);
           return;
         }
 
@@ -645,7 +690,7 @@ export class Bigtable {
           return instance;
         });
 
-        callback(null, instances, resp);
+        callback!(null, instances, resp);
       }
     );
   }
