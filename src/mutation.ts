@@ -111,7 +111,7 @@ export class Mutation {
       // tslint:disable-next-line no-any
       const num = Long.fromBytes(buf as any).toNumber();
 
-      if (Number.MIN_SAFE_INTEGER < num && num < Number.MAX_SAFE_INTEGER) {
+      if (Number.isSafeInteger(num)) {
         return num;
       }
     }
