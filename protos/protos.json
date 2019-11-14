@@ -1192,10 +1192,16 @@
                 "java_multiple_files": true,
                 "java_outer_classname": "DataProto",
                 "java_package": "com.google.bigtable.v2",
-                "php_namespace": "Google\\Cloud\\Bigtable\\V2"
+                "php_namespace": "Google\\Cloud\\Bigtable\\V2",
+                "(google.api.resource_definition).type": "bigtable.googleapis.com/Table",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
               },
               "nested": {
                 "Bigtable": {
+                  "options": {
+                    "(google.api.default_host)": "bigtable.googleapis.com",
+                    "(google.api.oauth_scopes)": "https://www.googleapis.com/auth/bigtable.data,https://www.googleapis.com/auth/bigtable.data.readonly,https://www.googleapis.com/auth/cloud-bigtable.data,https://www.googleapis.com/auth/cloud-bigtable.data.readonly,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only"
+                  },
                   "methods": {
                     "ReadRows": {
                       "requestType": "ReadRowsRequest",
@@ -1203,7 +1209,8 @@
                       "responseStream": true,
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
-                        "(google.api.http).body": "*"
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,app_profile_id"
                       }
                     },
                     "SampleRowKeys": {
@@ -1211,7 +1218,8 @@
                       "responseType": "SampleRowKeysResponse",
                       "responseStream": true,
                       "options": {
-                        "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys"
+                        "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
+                        "(google.api.method_signature)": "table_name,app_profile_id"
                       }
                     },
                     "MutateRow": {
@@ -1219,7 +1227,8 @@
                       "responseType": "MutateRowResponse",
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
-                        "(google.api.http).body": "*"
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,row_key,mutations,app_profile_id"
                       }
                     },
                     "MutateRows": {
@@ -1228,7 +1237,8 @@
                       "responseStream": true,
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
-                        "(google.api.http).body": "*"
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,entries,app_profile_id"
                       }
                     },
                     "CheckAndMutateRow": {
@@ -1236,7 +1246,8 @@
                       "responseType": "CheckAndMutateRowResponse",
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:checkAndMutateRow",
-                        "(google.api.http).body": "*"
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations,app_profile_id"
                       }
                     },
                     "ReadModifyWriteRow": {
@@ -1244,7 +1255,8 @@
                       "responseType": "ReadModifyWriteRowResponse",
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
-                        "(google.api.http).body": "*"
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                       }
                     }
                   }
@@ -1253,7 +1265,11 @@
                   "fields": {
                     "tableName": {
                       "type": "string",
-                      "id": 1
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                      }
                     },
                     "appProfileId": {
                       "type": "string",
@@ -1341,7 +1357,11 @@
                   "fields": {
                     "tableName": {
                       "type": "string",
-                      "id": 1
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                      }
                     },
                     "appProfileId": {
                       "type": "string",
@@ -1365,7 +1385,11 @@
                   "fields": {
                     "tableName": {
                       "type": "string",
-                      "id": 1
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                      }
                     },
                     "appProfileId": {
                       "type": "string",
@@ -1373,12 +1397,18 @@
                     },
                     "rowKey": {
                       "type": "bytes",
-                      "id": 2
+                      "id": 2,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
                     },
                     "mutations": {
                       "rule": "repeated",
                       "type": "Mutation",
-                      "id": 3
+                      "id": 3,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
                     }
                   }
                 },
@@ -1389,7 +1419,11 @@
                   "fields": {
                     "tableName": {
                       "type": "string",
-                      "id": 1
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                      }
                     },
                     "appProfileId": {
                       "type": "string",
@@ -1398,7 +1432,10 @@
                     "entries": {
                       "rule": "repeated",
                       "type": "Entry",
-                      "id": 2
+                      "id": 2,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
                     }
                   },
                   "nested": {
@@ -1411,7 +1448,10 @@
                         "mutations": {
                           "rule": "repeated",
                           "type": "Mutation",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     }
@@ -1444,7 +1484,11 @@
                   "fields": {
                     "tableName": {
                       "type": "string",
-                      "id": 1
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                      }
                     },
                     "appProfileId": {
                       "type": "string",
@@ -1452,7 +1496,10 @@
                     },
                     "rowKey": {
                       "type": "bytes",
-                      "id": 2
+                      "id": 2,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
                     },
                     "predicateFilter": {
                       "type": "RowFilter",
@@ -1482,7 +1529,11 @@
                   "fields": {
                     "tableName": {
                       "type": "string",
-                      "id": 1
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                      }
                     },
                     "appProfileId": {
                       "type": "string",
@@ -1490,12 +1541,18 @@
                     },
                     "rowKey": {
                       "type": "bytes",
-                      "id": 2
+                      "id": 2,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
                     },
                     "rules": {
                       "rule": "repeated",
                       "type": "ReadModifyWriteRule",
-                      "id": 3
+                      "id": 3,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED"
+                      }
                     }
                   }
                 },
@@ -1951,7 +2008,7 @@
           "options": {
             "go_package": "google.golang.org/genproto/googleapis/api/annotations;annotations",
             "java_multiple_files": true,
-            "java_outer_classname": "ClientProto",
+            "java_outer_classname": "ResourceProto",
             "java_package": "com.google.api",
             "objc_class_prefix": "GAPI",
             "cc_enable_arenas": true
@@ -2059,6 +2116,74 @@
               "type": "string",
               "id": 1050,
               "extend": "google.protobuf.ServiceOptions"
+            },
+            "fieldBehavior": {
+              "rule": "repeated",
+              "type": "google.api.FieldBehavior",
+              "id": 1052,
+              "extend": "google.protobuf.FieldOptions"
+            },
+            "FieldBehavior": {
+              "values": {
+                "FIELD_BEHAVIOR_UNSPECIFIED": 0,
+                "OPTIONAL": 1,
+                "REQUIRED": 2,
+                "OUTPUT_ONLY": 3,
+                "INPUT_ONLY": 4,
+                "IMMUTABLE": 5
+              }
+            },
+            "resourceReference": {
+              "type": "google.api.ResourceReference",
+              "id": 1055,
+              "extend": "google.protobuf.FieldOptions"
+            },
+            "resource": {
+              "type": "google.api.ResourceDescriptor",
+              "id": 1053,
+              "extend": "google.protobuf.MessageOptions"
+            },
+            "ResourceDescriptor": {
+              "fields": {
+                "type": {
+                  "type": "string",
+                  "id": 1
+                },
+                "pattern": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 2
+                },
+                "nameField": {
+                  "type": "string",
+                  "id": 3
+                },
+                "history": {
+                  "type": "History",
+                  "id": 4
+                }
+              },
+              "nested": {
+                "History": {
+                  "values": {
+                    "HISTORY_UNSPECIFIED": 0,
+                    "ORIGINALLY_SINGLE_PATTERN": 1,
+                    "FUTURE_MULTI_PATTERN": 2
+                  }
+                }
+              }
+            },
+            "ResourceReference": {
+              "fields": {
+                "type": {
+                  "type": "string",
+                  "id": 1
+                },
+                "childType": {
+                  "type": "string",
+                  "id": 2
+                }
+              }
             }
           }
         },
