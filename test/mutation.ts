@@ -81,6 +81,30 @@ describe('Bigtable/Mutation', function() {
         assert.strictEqual(num, decoded);
       });
 
+      it('should not convert a base64 encoded smaller than MIN_SAFE_INTEGER number when true', function() {
+        const num = Number.MIN_SAFE_INTEGER - 100;
+        const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
+          'base64'
+        );
+        const decoded = Mutation.convertFromBytes(encoded, {
+          isPossibleNumber: true,
+        });
+
+        assert.notStrictEqual(num, decoded);
+      });
+
+      it('should not convert a base64 encoded larger than MAX_SAFE_INTEGER number when true', function() {
+        const num = Number.MAX_SAFE_INTEGER + 100;
+        const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
+          'base64'
+        );
+        const decoded = Mutation.convertFromBytes(encoded, {
+          isPossibleNumber: true,
+        });
+
+        assert.notStrictEqual(num, decoded);
+      });
+
       it('should not convert a base64 encoded number when false', function() {
         const num = 10;
         const encoded = Buffer.from(Long.fromNumber(num).toBytesBE()).toString(
