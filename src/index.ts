@@ -45,7 +45,7 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
-import {GoogleAuth} from 'google-gax';
+import {GoogleAuth, CallOptions} from 'google-gax';
 import * as gax from 'google-gax';
 import * as is from 'is';
 import * as through from 'through2';
@@ -64,12 +64,6 @@ const PKG = require('../../package.json');
 const v2 = require('./v2');
 const {grpc} = new gax.GrpcClient();
 
-export interface GetInstancesRequest
-  extends google.bigtable.admin.v2.IListInstancesRequest {
-  autoPaginate?: boolean;
-  maxApiCalls?: number;
-  maxResults?: number;
-}
 export interface GetInstancesCallback {
   (
     err: ServiceError | null,
@@ -610,15 +604,12 @@ export class Bigtable {
   }
 
   getInstances(callback: GetInstancesCallback): void;
-  getInstances(
-    gaxOptions: GetInstancesRequest,
-    callback: GetInstancesCallback
-  ): void;
-  getInstances(gaxOptions?: GetInstancesRequest): Promise<GetInstancesResponse>;
+  getInstances(gaxOptions: CallOptions, callback: GetInstancesCallback): void;
+  getInstances(gaxOptions?: CallOptions): Promise<GetInstancesResponse>;
   /**
    * Query object for listing instances.
    *
-   * @typedef {object} GetInstancesRequest
+   * @typedef {object} CallOptions
    * @property {boolean} [autoPaginate=true] Have pagination handled
    *     automatically.
    * @property {number} [maxApiCalls] Maximum number of API calls to make.
@@ -641,8 +632,8 @@ export class Bigtable {
   /**
    * Get Instance objects for all of your Cloud Bigtable instances.
    *
-   * @param {GetInstancesRequest} [gaxOptions] Request configuration options, outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/classes/CallSettings.html.
    * @param {GetInstancesCallback} [callback] The callback function.
    * @returns {Promise<GetInstancesResponse>}
    *
@@ -679,13 +670,15 @@ export class Bigtable {
    * });
    */
   getInstances(
-    gaxOptionsOrCallback?: GetInstancesRequest | GetInstancesCallback,
+    gaxOptionsOrCallback?: CallOptions | GetInstancesCallback,
     callback?: GetInstancesCallback
   ): void | Promise<GetInstancesResponse> {
-    if (is.function(gaxOptionsOrCallback)) {
-      callback = gaxOptionsOrCallback as GetInstancesCallback;
-      gaxOptionsOrCallback = {};
-    }
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback;
 
     const reqOpts = {
       parent: this.projectName,
@@ -696,7 +689,7 @@ export class Bigtable {
         client: 'BigtableInstanceAdminClient',
         method: 'listInstances',
         reqOpts,
-        gaxOpts: gaxOptionsOrCallback,
+        gaxOpts: gaxOptions,
       },
       (err, resp) => {
         if (err) {
