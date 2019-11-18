@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [2.2.4](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.2.3...v2.2.4) (2019-11-18)
+
+
+### Bug Fixes
+
+* safe integer bounds conversion ([#576](https://www.github.com/googleapis/nodejs-bigtable/issues/576)) ([a1cd9c0](https://www.github.com/googleapis/nodejs-bigtable/commit/a1cd9c0ad5f732a13f12784f18fb895f9765ea4f))
+* **deps:** update dependency yargs to v15 ([#583](https://www.github.com/googleapis/nodejs-bigtable/issues/583)) ([b95c430](https://www.github.com/googleapis/nodejs-bigtable/commit/b95c430796175f03d063ad863d685752d0534dcd))
+
 ### [2.2.3](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.2.2...v2.2.3) (2019-11-12)
 
 
