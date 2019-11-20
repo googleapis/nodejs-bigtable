@@ -23,7 +23,7 @@ import {AppProfile} from '../src/app-profile.js';
 import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
-import {Table} from '../src/table.js';
+import {Table, Policy} from '../src/table.js';
 
 const PREFIX = 'gcloud-tests-';
 
@@ -236,6 +236,34 @@ describe('Bigtable', () => {
 
     it('should get a table', async () => {
       await TABLE.get();
+    });
+
+    it('should get an Iam Policy for the table', async () => {
+      const policyProperties = ['version', 'bindings', 'etag'];
+      const [policy] = await TABLE.getIamPolicy();
+      policyProperties.forEach(property => {
+        assert.strictEqual(Object.keys(policy).includes(property), true);
+      });
+    });
+
+    it('should test Iam permissions', async () => {
+      const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
+      const [grantedPermissions] = await TABLE.testIamPermissions(permissions);
+      assert.strictEqual(grantedPermissions.length, permissions.length);
+      permissions.forEach(permission => {
+        assert.strictEqual(grantedPermissions.includes(permission), true);
+      });
+    });
+
+    it('should set Iam Policy on a table', async () => {
+      const table = INSTANCE.table(generateId('table'));
+      await table.create();
+
+      const [policy] = await table.getIamPolicy();
+      const [updatedPolicy] = await table.setIamPolicy(policy);
+      assert.notStrictEqual(updatedPolicy, null);
+
+      await table.delete();
     });
 
     it('should delete a table', async () => {

@@ -1457,6 +1457,56 @@ describe('Bigtable/Table', function() {
     });
   });
 
+  describe('getIamPolicy', () => {
+    it('should provide the proper request options', done => {
+      table.bigtable.request = config => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'getIamPolicy');
+        assert.strictEqual(config.reqOpts.resource, table.name);
+        assert.strictEqual(config.reqOpts.requestedPolicyVersion, undefined);
+        assert.strictEqual(config.gaxOpt, undefined);
+        done();
+      };
+      table.getIamPolicy(assert.ifError);
+    });
+
+    it('should accept options', done => {
+      const requestedPolicyVersion = 0;
+      const gaxOptions = {};
+      const options = {gaxOptions, requestedPolicyVersion};
+
+      table.bigtable.request = config => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        assert.strictEqual(
+          config.reqOpts.options.requestedPolicyVersion,
+          requestedPolicyVersion
+        );
+        done();
+      };
+      table.getIamPolicy(options, assert.ifError);
+    });
+
+    it('should return error', done => {
+      const error = new Error('error');
+      table.bigtable.request = (config, callback) => {
+        callback(error);
+      };
+      table.getIamPolicy(err => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should call decodePolicyEtag', () => {
+      table.bigtable.request = (config, callback) => {
+        callback(null, {});
+      };
+      const spy = sandbox.stub(Table, 'decodePolicyEtag');
+      table.getIamPolicy(assert.ifError);
+      assert.strictEqual(spy.calledOnce, true);
+    });
+  });
+
   describe('getReplicationStates', function() {
     it('should accept gaxOptions', function(done) {
       const gaxOptions = {};
@@ -2530,6 +2580,153 @@ describe('Bigtable/Table', function() {
       });
     });
   });
+
+  describe('setIamPolicy', () => {
+    const policy = {};
+    it('should provide the proper request options', done => {
+      table.bigtable.request = config => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'setIamPolicy');
+        assert.strictEqual(config.reqOpts.resource, table.name);
+        assert.strictEqual(config.reqOpts.policy, policy);
+        assert.strictEqual(config.gaxOpt, undefined);
+        done();
+      };
+      table.setIamPolicy(policy, assert.ifError);
+    });
+
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {};
+
+      table.bigtable.request = config => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      table.setIamPolicy(policy, gaxOptions, assert.ifError);
+    });
+
+    it('should pass policy to bigtable.request', done => {
+      const policy: tblTypes.Policy = {
+        bindings: [
+          {
+            role: 'roles/bigtable.viewer',
+            members: ['user:mike@example.com', 'group:admins@example.com'],
+            condition: {
+              title: 'expirable access',
+              description: 'Does not grant access after Sep 2020',
+              expression: "request.time <timestamp('2020-10-01T00:00:00.000Z')",
+            },
+          },
+        ],
+      };
+
+      table.bigtable.request = config => {
+        assert.strictEqual(config.reqOpts.policy, policy);
+        done();
+      };
+      table.setIamPolicy(policy, assert.ifError);
+    });
+
+    it('should encode policy etag', done => {
+      const policy = {etag: 'ABS'};
+      table.bigtable.request = config => {
+        assert.deepStrictEqual(
+          config.reqOpts.policy.etag,
+          Buffer.from(policy.etag)
+        );
+        done();
+      };
+      table.setIamPolicy(policy, assert.ifError);
+    });
+
+    it('should return error', done => {
+      const error = new Error('error');
+      table.bigtable.request = (config, callback) => {
+        callback(error);
+      };
+      table.setIamPolicy(policy, err => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should call decodePolicyEtag', () => {
+      table.bigtable.request = (config, callback) => {
+        callback(null, {});
+      };
+      const spy = sandbox.stub(Table, 'decodePolicyEtag');
+      table.setIamPolicy(policy, assert.ifError);
+      assert.strictEqual(spy.calledOnce, true);
+    });
+  });
+
+  describe('testIamPermissions', () => {
+    const permissions = 'bigtable.tables.get';
+    it('should provide the proper request options', done => {
+      table.bigtable.request = config => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'testIamPermissions');
+        assert.strictEqual(config.reqOpts.resource, table.name);
+        assert.deepStrictEqual(config.reqOpts.permissions, [permissions]);
+        assert.strictEqual(config.gaxOpt, undefined);
+        done();
+      };
+      table.testIamPermissions(permissions, assert.ifError);
+    });
+
+    it('should accept permissions as array', done => {
+      const permissions = [`bigtable.tables.get`, `bigtable.tables.list`];
+      table.bigtable.request = config => {
+        assert.deepStrictEqual(config.reqOpts.permissions, permissions);
+        done();
+      };
+      table.testIamPermissions(permissions, assert.ifError);
+    });
+
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {};
+      table.bigtable.request = config => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      table.testIamPermissions(permissions, gaxOptions, assert.ifError);
+    });
+
+    it('should unpack permissions from resp object', done => {
+      const testPermissions = [`bigtable.tables.get`, `bigtable.tables.list`];
+      table.bigtable.request = (config, callback) => {
+        callback(null, {permissions: testPermissions});
+      };
+      table.testIamPermissions(testPermissions, (err, permissions) => {
+        assert.ifError(err);
+        assert.strictEqual(Array.isArray(permissions), true);
+        assert.deepStrictEqual(permissions, testPermissions);
+        done();
+      });
+    });
+
+    it('should return error', done => {
+      const permission = 'bigtable.tables.get';
+      const error = new Error('error');
+      table.bigtable.request = (config, callback) => {
+        callback(error);
+      };
+      table.testIamPermissions(permission, (err, resp) => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+  });
+
+  describe('decodePolicyEtag', () => {
+    it('should return policy with etag decoded to string', () => {
+      const etagString = 'ABC';
+      const policy = {
+        etag: Buffer.from(etagString)
+      }
+      assert.strictEqual(Table.decodePolicyEtag(policy).etag, etagString);
+    })
+  })
 
   describe('truncate', function() {
     it('should provide the proper request options', function(done) {

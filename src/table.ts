@@ -29,12 +29,120 @@ import {Filter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
+import {CallOptions} from 'google-gax';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
 const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
+
+/**
+ * @typedef {object} Policy
+ * @property {number} [version] Specifies the format of the policy.
+ *     Valid values are 0, 1, and 3. Requests specifying an invalid value will
+ *     be rejected.
+ *
+ *     Operations affecting conditional bindings must specify version 3. This
+ *     can be either setting a conditional policy, modifying a conditional
+ *     binding, or removing a binding (conditional or unconditional) from the
+ *     stored conditional policy.
+ *     Operations on non-conditional policies may specify any valid value or
+ *     leave the field unset.
+ *
+ *     If no etag is provided in the call to `setIamPolicy`, version compliance
+ *     checks against the stored policy is skipped.
+ * @property {array} [policy.bindings] Bindings associate members with roles.
+ * @property {string} [policy.etag] `etag` is used for optimistic concurrency
+ *     control as a way to help prevent simultaneous updates of a policy from
+ *     overwriting each other. It is strongly suggested that systems make use
+ *     of the `etag` in the read-modify-write cycle to perform policy updates
+ *     in order to avoid raceconditions.
+ */
+export interface Policy {
+  version?: number;
+  bindings?: PolicyBinding[];
+  etag?: string;
+}
+
+/**
+ * @typedef {object} PolicyBinding
+ * @property {array} [PolicyBinding.role] Role that is assigned to `members`.
+ *     For example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+ * @property {string} [PolicyBinding.members] Identities requesting access.
+ *     The full list of accepted values is outlined here
+ *     https://googleapis.dev/nodejs/bigtable/latest/google.iam.v1.html#.Binding
+ * @property {Expr} [PolicyBinding.condition] The condition that is associated
+ *     with this binding.
+ *     NOTE: An unsatisfied condition will not allow user access via current
+ *     binding. Different bindings, including their conditions, are examined
+ *     independently.
+ */
+export interface PolicyBinding {
+  role?: string;
+  members?: string[];
+  condition?: Expr | null;
+}
+
+/**
+ * @typedef {object} Expr
+ * @property {string} [Expr.expression] The application context of the containing
+ *     message determines which well-known feature set of CEL is supported.
+ * @property {string} [Expr.title] An optional title for the expression, i.e. a
+ *     short string describing its purpose. This can be used e.g. in UIs which
+ *     allow to enter the expression.
+ * @property {string} [Expr.description] An optional description of the
+ *     expression. This is a longer text which describes the expression,
+ *     e.g. when hovered over it in a UI.
+ * @property {string} [Expr.location] An optional string indicating the location
+ *     of the expression for error reporting, e.g. a file name and a position
+ *     in the file.
+ */
+interface Expr {
+  expression?: string;
+  title?: string;
+  description?: string;
+  location?: string;
+}
+
+/**
+ * @callback GetIamPolicyCallback
+ * @param {?Error} err Request error, if any.
+ * @param {object} policy The policy.
+ */
+export interface GetIamPolicyCallback {
+  (err?: Error | null, policy?: Policy): void;
+}
+
+/**
+ * @typedef {array} GetIamPolicyResponse
+ * @property {object} 0 The policy.
+ */
+export type GetIamPolicyResponse = [Policy];
+
+export interface GetIamPolicyOptions {
+  gaxOptions?: CallOptions;
+  requestedPolicyVersion?: 0 | 1 | 3;
+}
+
+export interface SetIamPolicyCallback extends GetIamPolicyCallback {}
+export type SetIamPolicyResponse = GetIamPolicyResponse;
+
+/**
+ * @callback TestIamPermissionsCallback
+ * @param {?Error} err Request error, if any.
+ * @param {string[]} permissions A subset of permissions that the caller is
+ *     allowed.
+ */
+export interface TestIamPermissionsCallback {
+  (err?: Error | null, permissions?: string[]): void;
+}
+
+/**
+ * @typedef {array} TestIamPermissionsResponse
+ * @property {string[]} 0 A subset of permissions that the caller is allowed.
+ */
+export type TestIamPermissionsResponse = [string[]];
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
@@ -75,6 +183,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     this.name = name;
     this.id = name.split('/').pop();
+  }
+
+  /**
+   * Formats the decodes policy etag value to string.
+   *
+   * @private
+   *
+   * @param {object} policy
+   */
+  static decodePolicyEtag(policy): Policy {
+    policy.etag = policy.etag.toString('ascii');
+    return policy as Policy;
   }
 
   /**
@@ -653,6 +773,60 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     });
   }
 
+  getIamPolicy(options?): Promise<[Policy]>;
+  getIamPolicy(options, callback): void;
+  /**
+   * @param {object} [options] Configuration object.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {number} [options.requestedPolicyVersion] The policy format version
+   *     to be returned. Valid values are 0, 1, and 3. Requests specifying an
+   *     invalid value will be rejected. Requests for policies with any
+   *     conditional bindings must specify version 3. Policies without any
+   *     conditional bindings may specify any valid value or leave the field unset.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Policy} policy The policy.
+   */
+  getIamPolicy(
+    optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
+    callback?: GetIamPolicyCallback
+  ): void | Promise<GetIamPolicyResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : callback!;
+
+    const reqOpts: any = {
+      resource: this.name,
+    };
+
+    if (
+      options.requestedPolicyVersion !== null &&
+      options.requestedPolicyVersion !== undefined
+    ) {
+      reqOpts.options = {
+        requestedPolicyVersion: options.requestedPolicyVersion,
+      };
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'getIamPolicy',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (err, resp) => {
+        if (err) {
+          callback!(err);
+          return;
+        }
+        callback!(null, Table.decodePolicyEtag(resp));
+      }
+    );
+  }
+
   /**
    * Get Family objects for all the column familes in your table.
    *
@@ -1061,6 +1235,116 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         });
       }),
     ]);
+  }
+
+  setIamPolicy(
+    policy: Policy,
+    gaxOptions?: CallOptions
+  ): Promise<SetIamPolicyResponse>;
+  setIamPolicy(
+    policy: Policy,
+    gaxOptions: CallOptions,
+    callback: SetIamPolicyCallback
+  ): void;
+  setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
+  /**
+   * @param {object} [gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Policy} policy The policy.
+   */
+  setIamPolicy(
+    policy: Policy,
+    gaxOptionsOrCallback?: CallOptions | SetIamPolicyCallback,
+    callback?: SetIamPolicyCallback
+  ): void | Promise<SetIamPolicyResponse> {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback!;
+
+    if (policy.etag !== null && policy.etag !== undefined) {
+      ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
+    }
+    const reqOpts: any = {
+      resource: this.name,
+      policy,
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'setIamPolicy',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (err, resp) => {
+        if (err) {
+          callback!(err);
+        }
+        callback!(null, Table.decodePolicyEtag(resp));
+      }
+    );
+  }
+
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptions?: CallOptions
+  ): Promise<TestIamPermissionsResponse>;
+  testIamPermissions(
+    permissions: string | string[],
+    callback: TestIamPermissionsCallback
+  ): void;
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptions: CallOptions,
+    callback: TestIamPermissionsCallback
+  ): void;
+  /**
+   *
+   * @param {string | string[]} permissions The permission(s) to test for.
+   * @param {object} [gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {string[]} permissions A subset of permissions that the caller is
+   *     allowed.
+   */
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptionsOrCallback?: CallOptions | TestIamPermissionsCallback,
+    callback?: TestIamPermissionsCallback
+  ): void | Promise<TestIamPermissionsResponse> {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback!;
+
+    const reqOpts: any = {
+      resource: this.name,
+      permissions: arrify(permissions),
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'testIamPermissions',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (err, resp) => {
+        if (err) {
+          callback!(err);
+          return;
+        }
+        callback!(null, resp.permissions);
+      }
+    );
   }
 
   /**
