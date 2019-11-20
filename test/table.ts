@@ -2722,11 +2722,11 @@ describe('Bigtable/Table', function() {
     it('should return policy with etag decoded to string', () => {
       const etagString = 'ABC';
       const policy = {
-        etag: Buffer.from(etagString)
-      }
+        etag: Buffer.from(etagString),
+      };
       assert.strictEqual(Table.decodePolicyEtag(policy).etag, etagString);
-    })
-  })
+    });
+  });
 
   describe('truncate', function() {
     it('should provide the proper request options', function(done) {
