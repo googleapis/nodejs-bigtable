@@ -73,9 +73,9 @@ export interface GetInstancesCallback {
   ): void;
 }
 export type GetInstancesResponse = [
-  Instance[] | null,
+  Instance[],
   {} | null,
-  google.bigtable.admin.v2.IListInstancesResponse | null
+  google.bigtable.admin.v2.IListInstancesResponse
 ];
 /**
  * @typedef {object} ClientConfig
@@ -603,21 +603,9 @@ export class Bigtable {
     );
   }
 
+  getInstances(gaxOptions?: CallOptions): Promise<GetInstancesResponse>;
   getInstances(callback: GetInstancesCallback): void;
   getInstances(gaxOptions: CallOptions, callback: GetInstancesCallback): void;
-  getInstances(gaxOptions?: CallOptions): Promise<GetInstancesResponse>;
-  /**
-   * Query object for listing instances.
-   *
-   * @typedef {object} CallOptions
-   * @property {boolean} [autoPaginate=true] Have pagination handled
-   *     automatically.
-   * @property {number} [maxApiCalls] Maximum number of API calls to make.
-   * @property {number} [maxResults] Maximum number of items to return.
-   * @property {number} [pageSize] Maximum number of results per page.
-   * @property {string} [pageToken] A previously-returned page token
-   *     representing part of the larger set of results to view.
-   */
   /**
    * @typedef {array} GetInstancesResponse
    * @property {Instance[]} 0 Array of {@link Instance} instances.
@@ -647,10 +635,8 @@ export class Bigtable {
    *   }
    * });
    *
-   * //-
-   * // To control how many API requests are made and page through the results
-   * // manually, set `autoPaginate` to `false`.
-   * //-
+   * @example <caption>To control how many API requests are made and page
+   * through the results manually, set `autoPaginate` to `false`.</caption>
    * function callback(err, instances, nextQuery, apiResponse) {
    *   if (nextQuery) {
    *     // More results exist.
@@ -662,9 +648,8 @@ export class Bigtable {
    *   autoPaginate: false
    * }, callback);
    *
-   * //-
-   * // If the callback is omitted, we'll return a Promise.
-   * //-
+   * @example <caption>If the callback is omitted, we'll return a Promise.
+   * </caption>
    * bigtable.getInstances().then(function(data) {
    *   const instances = data[0];
    * });
