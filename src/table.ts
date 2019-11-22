@@ -87,7 +87,8 @@ export interface PolicyBinding {
 /**
  * @typedef {object} Expr
  * @property {string} [Expr.expression] The application context of the containing
- *     message determines which well-known feature set of CEL is supported.
+ *     message determines which well-known feature set of Common Expression Language
+ *     is supported.
  * @property {string} [Expr.title] An optional title for the expression, i.e. a
  *     short string describing its purpose. This can be used e.g. in UIs which
  *     allow to enter the expression.
