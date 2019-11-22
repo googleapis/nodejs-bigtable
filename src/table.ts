@@ -788,7 +788,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {function} [callback] The callback function.
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
-   * 
+   *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_table_Iam_policy
    */
@@ -1257,7 +1257,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {function} [callback] The callback function.
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
-   * 
+   *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_set_table_Iam_policy
    */
@@ -1319,7 +1319,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?error} callback.error An error returned while making this request.
    * @param {string[]} permissions A subset of permissions that the caller is
    *     allowed.
-   * 
+   *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_test_table_Iam_permissions
    */

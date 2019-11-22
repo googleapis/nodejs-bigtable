@@ -581,7 +581,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {function} [callback] The callback function.
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
-   * 
+   *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_instance_Iam_policy
    */
@@ -735,7 +735,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {function} [callback] The callback function.
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
-   * 
+   *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_set_instance_Iam_policy
    */
@@ -866,7 +866,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {?error} callback.error An error returned while making this request.
    * @param {string[]} permissions A subset of permissions that the caller is
    *     allowed.
-   * 
+   *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_test_instance_Iam_permissions
    */
