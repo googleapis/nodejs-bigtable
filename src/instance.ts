@@ -16,12 +16,24 @@
 
 import {paginator} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
+import arrify = require('arrify');
 import * as is from 'is';
 import snakeCase = require('lodash.snakecase');
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Family} from './family';
-import {Table} from './table';
+import {
+  GetIamPolicyCallback,
+  GetIamPolicyOptions,
+  GetIamPolicyResponse,
+  Policy,
+  SetIamPolicyCallback,
+  SetIamPolicyResponse,
+  Table,
+  TestIamPermissionsCallback,
+  TestIamPermissionsResponse,
+} from './table';
+import {CallOptions} from 'google-gax';
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -555,6 +567,60 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  getIamPolicy(options?): Promise<[Policy]>;
+  getIamPolicy(options, callback): void;
+  /**
+   * @param {object} [options] Configuration object.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {number} [options.requestedPolicyVersion] The policy format version
+   *     to be returned. Valid values are 0, 1, and 3. Requests specifying an
+   *     invalid value will be rejected. Requests for policies with any
+   *     conditional bindings must specify version 3. Policies without any
+   *     conditional bindings may specify any valid value or leave the field unset.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Policy} policy The policy.
+   */
+  getIamPolicy(
+    optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
+    callback?: GetIamPolicyCallback
+  ): void | Promise<GetIamPolicyResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : callback!;
+
+    const reqOpts: any = {
+      resource: this.name,
+    };
+
+    if (
+      options.requestedPolicyVersion !== null &&
+      options.requestedPolicyVersion !== undefined
+    ) {
+      reqOpts.options = {
+        requestedPolicyVersion: options.requestedPolicyVersion,
+      };
+    }
+
+    this.bigtable.request(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'getIamPolicy',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (err, resp) => {
+        if (err) {
+          callback!(err);
+          return;
+        }
+        callback!(null, Table.decodePolicyEtag(resp));
+      }
+    );
+  }
+
   /**
    * Get the instance metadata.
    *
@@ -650,6 +716,59 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  setIamPolicy(
+    policy: Policy,
+    gaxOptions?: CallOptions
+  ): Promise<SetIamPolicyResponse>;
+  setIamPolicy(
+    policy: Policy,
+    gaxOptions: CallOptions,
+    callback: SetIamPolicyCallback
+  ): void;
+  setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
+  /**
+   * @param {object} [gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Policy} policy The policy.
+   */
+  setIamPolicy(
+    policy: Policy,
+    gaxOptionsOrCallback?: CallOptions | SetIamPolicyCallback,
+    callback?: SetIamPolicyCallback
+  ): void | Promise<SetIamPolicyResponse> {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback!;
+
+    if (policy.etag !== null && policy.etag !== undefined) {
+      ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
+    }
+    const reqOpts: any = {
+      resource: this.name,
+      policy,
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'setIamPolicy',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (err, resp) => {
+        if (err) {
+          callback!(err);
+        }
+        callback!(null, Table.decodePolicyEtag(resp));
+      }
+    );
+  }
+
   /**
    * Set the instance metadata.
    *
@@ -717,6 +836,63 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   table(id) {
     return new Table(this, id);
+  }
+
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptions?: CallOptions
+  ): Promise<TestIamPermissionsResponse>;
+  testIamPermissions(
+    permissions: string | string[],
+    callback: TestIamPermissionsCallback
+  ): void;
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptions: CallOptions,
+    callback: TestIamPermissionsCallback
+  ): void;
+  /**
+   *
+   * @param {string | string[]} permissions The permission(s) to test for.
+   * @param {object} [gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {string[]} permissions A subset of permissions that the caller is
+   *     allowed.
+   */
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptionsOrCallback?: CallOptions | TestIamPermissionsCallback,
+    callback?: TestIamPermissionsCallback
+  ): void | Promise<TestIamPermissionsResponse> {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback!;
+
+    const reqOpts: any = {
+      resource: this.name,
+      permissions: arrify(permissions),
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'testIamPermissions',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (err, resp) => {
+        if (err) {
+          callback!(err);
+          return;
+        }
+        callback!(null, resp.permissions);
+      }
+    );
   }
 }
 

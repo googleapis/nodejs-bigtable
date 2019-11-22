@@ -1504,6 +1504,7 @@ describe('Bigtable/Table', function() {
       const spy = sandbox.stub(Table, 'decodePolicyEtag');
       table.getIamPolicy(assert.ifError);
       assert.strictEqual(spy.calledOnce, true);
+      spy.restore();
     });
   });
 
