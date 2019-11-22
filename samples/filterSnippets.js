@@ -40,7 +40,7 @@ function main(
   async function filterRowSample() {
     const filter = {
       row: {
-        sample: .75,
+        sample: 0.75,
       },
     };
     readWithFilter(filter);
@@ -165,7 +165,7 @@ function main(
   }
   // [END bigtable_filters_limit_pass_all]
 
-  // [START bigtable_filters_limit_strip_value]
+  // [START bigtable_filters_modify_strip_value]
   async function filterStripValue() {
     const filter = {
       value: {
@@ -174,15 +174,65 @@ function main(
     };
     readWithFilter(filter);
   }
-  // [END bigtable_filters_limit_strip_value]
-  // [START bigtable_filters_limit_apply_label]
+  // [END bigtable_filters_modify_strip_value]
+  // [START bigtable_filters_modify_apply_label]
   async function filterApplyLabel() {
     const filter = {
       label: 'labelled',
     };
     readWithFilter(filter);
   }
-  // [END bigtable_filters_limit_apply_label]
+  // [END bigtable_filters_modify_apply_label]
+
+  // [START bigtable_filters_composing_chain]
+  async function filterChain() {
+    const filter = [
+      {
+        column: {
+          cellLimit: 1,
+        },
+      },
+      {
+        family: 'cell_plan',
+      },
+    ];
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_composing_chain]
+  // [START bigtable_filters_composing_interleave]
+  async function filterInterleave() {
+    const filter = {
+      interleave: [
+        {
+          value: 'true',
+        },
+        {column: 'os_build'},
+      ],
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_composing_interleave]
+  // [START bigtable_filters_composing_condition]
+  async function filterCondition() {
+    const filter = {
+      condition: {
+        test: [
+          {column: 'data_plan_10gb'},
+          {
+            value: 'true',
+          },
+        ],
+        pass: {
+          label: 'passed-filter',
+        },
+        fail: {
+          label: 'filtered-out',
+        },
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_composing_condition]
 
   async function readWithFilter(filter) {
     await table

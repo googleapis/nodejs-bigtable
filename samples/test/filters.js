@@ -659,4 +659,119 @@ Column Family cell_plan
 `;
     assert.equal(stdout, result);
   });
+  it('should filter with chain', async () => {
+    const stdout = execSync(
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterChain`
+    );
+    const result = `Reading data for phone#4c410523#20190501:
+Column Family cell_plan
+\tdata_plan_01gb: true @${TIMESTAMP_SECS}
+\tdata_plan_05gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#4c410523#20190502:
+Column Family cell_plan
+\tdata_plan_05gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#4c410523#20190505:
+Column Family cell_plan
+\tdata_plan_05gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#5c10102#20190501:
+Column Family cell_plan
+\tdata_plan_10gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#5c10102#20190502:
+Column Family cell_plan
+\tdata_plan_10gb: true @${TIMESTAMP_SECS}
+
+`;
+    assert.equal(stdout, result);
+  });
+  it('should filter with interleave', async () => {
+    const stdout = execSync(
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterInterleave`
+    );
+    const result = `Reading data for phone#4c410523#20190501:
+Column Family stats_summary
+\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
+Column Family cell_plan
+\tdata_plan_01gb: true @${TIMESTAMP_SECS}
+\tdata_plan_05gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#4c410523#20190502:
+Column Family stats_summary
+\tos_build: PQ2A.190405.004 @${TIMESTAMP_SECS}
+Column Family cell_plan
+\tdata_plan_05gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#4c410523#20190505:
+Column Family stats_summary
+\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
+Column Family cell_plan
+\tdata_plan_05gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#5c10102#20190501:
+Column Family stats_summary
+\tos_build: PQ2A.190401.002 @${TIMESTAMP_SECS}
+Column Family cell_plan
+\tdata_plan_10gb: true @${TIMESTAMP_SECS}
+
+Reading data for phone#5c10102#20190502:
+Column Family stats_summary
+\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
+Column Family cell_plan
+\tdata_plan_10gb: true @${TIMESTAMP_SECS}
+
+`;
+    assert.equal(stdout, result);
+  });
+  it('should filter with condition', async () => {
+    const stdout = execSync(
+      `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterCondition`
+    );
+    const result = `Reading data for phone#4c410523#20190501:
+Column Family stats_summary
+\tconnected_cell: 1 @${TIMESTAMP_SECS} [filtered-out]
+\tconnected_wifi: 1 @${TIMESTAMP_SECS} [filtered-out]
+\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS} [filtered-out]
+Column Family cell_plan
+\tdata_plan_01gb: true @${TIMESTAMP_SECS} [filtered-out]
+\tdata_plan_01gb: false @${TIMESTAMP_MINUS_HR_SECS} [filtered-out]
+\tdata_plan_05gb: true @${TIMESTAMP_SECS} [filtered-out]
+
+Reading data for phone#4c410523#20190502:
+Column Family stats_summary
+\tconnected_cell: 1 @${TIMESTAMP_SECS} [filtered-out]
+\tconnected_wifi: 1 @${TIMESTAMP_SECS} [filtered-out]
+\tos_build: PQ2A.190405.004 @${TIMESTAMP_SECS} [filtered-out]
+Column Family cell_plan
+\tdata_plan_05gb: true @${TIMESTAMP_SECS} [filtered-out]
+
+Reading data for phone#4c410523#20190505:
+Column Family stats_summary
+\tconnected_cell: 0 @${TIMESTAMP_SECS} [filtered-out]
+\tconnected_wifi: 1 @${TIMESTAMP_SECS} [filtered-out]
+\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS} [filtered-out]
+Column Family cell_plan
+\tdata_plan_05gb: true @${TIMESTAMP_SECS} [filtered-out]
+
+Reading data for phone#5c10102#20190501:
+Column Family stats_summary
+\tconnected_cell: 1 @${TIMESTAMP_SECS} [passed-filter]
+\tconnected_wifi: 1 @${TIMESTAMP_SECS} [passed-filter]
+\tos_build: PQ2A.190401.002 @${TIMESTAMP_SECS} [passed-filter]
+Column Family cell_plan
+\tdata_plan_10gb: true @${TIMESTAMP_SECS} [passed-filter]
+
+Reading data for phone#5c10102#20190502:
+Column Family stats_summary
+\tconnected_cell: 1 @${TIMESTAMP_SECS} [passed-filter]
+\tconnected_wifi: 0 @${TIMESTAMP_SECS} [passed-filter]
+\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS} [passed-filter]
+Column Family cell_plan
+\tdata_plan_10gb: true @${TIMESTAMP_SECS} [passed-filter]
+
+`;
+    assert.equal(stdout, result);
+  });
 });
