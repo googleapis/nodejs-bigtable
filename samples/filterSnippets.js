@@ -20,165 +20,171 @@
 //   description: Get all the data for a Bigtable row by key.
 //   usage: node readRow.js <instanceId>
 
-function main(instanceId = 'YOUR_INSTANCE_ID') {
+function main(
+  instanceId = 'YOUR_INSTANCE_ID',
+  tableId = 'YOUR_TABLE_ID',
+  filterType = 'filterRowSample'
+) {
   const Bigtable = require('@google-cloud/bigtable');
   const bigtable = Bigtable();
 
-  async function filterSnippets() {
-    /**
-     * TODO(developer): Uncomment these variables before running the sample.
-     */
-    // const instanceId = 'YOUR_INSTANCE_ID';
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table('mobile-time-series');
-    const COLUMN_FAMILY = 'stats_summary';
-    let filter = {};
-    let filterType = 'timestamp_regex';
-    switch (filterType) {
-      case 'row_sample':
-        // [START bigtable_filters_limit_row_sample]
-        filter = {
-          row: {
-            sample: 0.5,
-          },
-        };
-        // [END bigtable_filters_limit_row_sample]
-        break;
-      case 'row_regex':
-        // [START bigtable_filters_limit_row_regex]
-        filter = {
-          row: /.*#20190501$/,
-        };
-        // [END bigtable_filters_limit_row_regex]
-        break;
-      case 'cells_per_col':
-        // [START bigtable_filters_limit_cells_per_col]
-        filter = {
-          column: {
-            cellLimit: 2,
-          },
-        };
-        // [END bigtable_filters_limit_cells_per_col]
-        break;
-      case 'cells_per_row':
-        // [START bigtable_filters_limit_cells_per_row]
-        filter = {
-          row: {
-            cellLimit: 2,
-          },
-        };
-        // [END bigtable_filters_limit_cells_per_row]
-        break;
-      case 'cells_per_row_offset':
-        // [START bigtable_filters_limit_cells_per_row_offset]
-        filter = {
-          row: {
-            cellOffset: 2,
-          },
-        };
-        // [END bigtable_filters_limit_cells_per_row_offset]
-        break;
-      case 'col_family_regex':
-        // [START bigtable_filters_limit_col_family_regex]
-        filter = {
-          family: /stats_.*$/,
-        };
-        // [END bigtable_filters_limit_col_family_regex]
-        break;
-      case 'col_qualifier_regex':
-        // [START bigtable_filters_limit_col_qualifier_regex]
-        filter = {
-          column: /connected_.*$/,
-        };
-        // [END bigtable_filters_limit_col_qualifier_regex]
-        break;
-      case 'col_range':
-        // [START bigtable_filters_limit_col_range]
-        filter = {
-          column: {
-            start: 'data_plan_01gb',
-            end: {
-              value: 'data_plan_10gb',
-              inclusive: false,
-            },
-          },
-        };
-        // [END bigtable_filters_limit_col_range]
-        break;
-      case 'value_range':
-        // [START bigtable_filters_limit_value_range]
-        filter = {
-          value: {
-            start: 'PQ2A.190405',
-            end: 'PQ2A.190406',
-          },
-        };
-        // [END bigtable_filters_limit_value_range]
-        break;
-      case 'value_regex':
-        // [START bigtable_filters_limit_value_regex]
-        filter = {
-          value: /PQ2A.*$/,
-        };
-        // [END bigtable_filters_limit_value_regex]
-        break;
-      case 'timestamp_range':
-        // [START bigtable_filters_limit_timestamp_range]
-        const end = new Date();
-        const start = new Date();
-        start.setHours(start.getHours() - 1);
-        filter = {
-          time: {
-            start,
-            end,
-          },
-        };
-        // [END bigtable_filters_limit_timestamp_range]
-        break;
-      case 'block_all':
-        // [START bigtable_filters_limit_block_all]
-        filter = {
-          all: false,
-        };
-        // [END bigtable_filters_limit_block_all]
-        break;
-      case 'pass_all':
-        // [START bigtable_filters_limit_pass_all]
-        filter = {
-          all: true,
-        };
-        // [END bigtable_filters_limit_pass_all]
-        break;
-      case 'sink':
-        // [START bigtable_filters_limit_sink]
-        filter = [
-          {
-            column: 'gwashington',
-          },
-          {
-            sink: true,
-          },
-        ];
-        // [END bigtable_filters_limit_sink]
-        break;
-      case 'strip_value':
-        // [START bigtable_filters_limit_strip_value]
-        filter = {
-          value: {
-            strip: true,
-          },
-        };
-        // [END bigtable_filters_limit_strip_value]
-        break;
-      case 'apply_label':
-        // [START bigtable_filters_limit_apply_label]
-        filter = {
-          label: 'my-label',
-        };
-        // [END bigtable_filters_limit_apply_label]
-        break;
-    }
+  /**
+   * TODO(developer): Uncomment these variables before running the sample.
+   */
+  // const instanceId = 'YOUR_INSTANCE_ID';
+  // const tableId = 'YOUR_TABLE_ID';
+  const instance = bigtable.instance(instanceId);
+  const table = instance.table(tableId);
 
+  // [START bigtable_filters_limit_row_sample]
+  async function filterRowSample() {
+    const filter = {
+      row: {
+        sample: .75,
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_row_sample]
+  // [START bigtable_filters_limit_row_regex]
+  async function filterRowRegex() {
+    const filter = {
+      row: /.*#20190501$/,
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_row_regex]
+  // [START bigtable_filters_limit_cells_per_col]
+  async function filterCellsPerCol() {
+    const filter = {
+      column: {
+        cellLimit: 2,
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_cells_per_col]
+  // [START bigtable_filters_limit_cells_per_row]
+  async function filterCellsPerRow() {
+    const filter = {
+      row: {
+        cellLimit: 2,
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_cells_per_row]
+  // [START bigtable_filters_limit_cells_per_row_offset]
+  async function filterCellsPerRowOffset() {
+    const filter = {
+      row: {
+        cellOffset: 2,
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_cells_per_row_offset]
+  // [START bigtable_filters_limit_col_family_regex]
+  async function filterColFamilyRegex() {
+    const filter = {
+      family: /stats_.*$/,
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_col_family_regex]
+  // [START bigtable_filters_limit_col_qualifier_regex]
+  async function filterColQualifierRegex() {
+    const filter = {
+      column: /connected_.*$/,
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_col_qualifier_regex]
+  // [START bigtable_filters_limit_col_range]
+  async function filterColRange() {
+    const filter = {
+      column: {
+        family: 'cell_plan',
+        start: 'data_plan_01gb',
+        end: {
+          value: 'data_plan_10gb',
+          inclusive: false,
+        },
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_col_range]
+  // [START bigtable_filters_limit_value_range]
+  async function filterValueRange() {
+    const filter = {
+      value: {
+        start: 'PQ2A.190405',
+        end: 'PQ2A.190406',
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_value_range]
+  // [START bigtable_filters_limit_value_regex]
+  async function filterValueRegex() {
+    const filter = {
+      value: /PQ2A.*$/,
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_value_regex]
+  // [START bigtable_filters_limit_timestamp_range]
+  async function filterTimestampRange() {
+    const start = 0;
+    const end = new Date();
+    end.setHours(end.getHours() - 1);
+    const filter = {
+      time: {
+        start,
+        end,
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_timestamp_range]
+  // [START bigtable_filters_limit_block_all]
+  async function filterBlockAll() {
+    const filter = {
+      all: false,
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_block_all]
+  // [START bigtable_filters_limit_pass_all]
+  async function filterPassAll() {
+    const filter = {
+      all: true,
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_pass_all]
+
+  // [START bigtable_filters_limit_strip_value]
+  async function filterStripValue() {
+    const filter = {
+      value: {
+        strip: true,
+      },
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_strip_value]
+  // [START bigtable_filters_limit_apply_label]
+  async function filterApplyLabel() {
+    const filter = {
+      label: 'labelled',
+    };
+    readWithFilter(filter);
+  }
+  // [END bigtable_filters_limit_apply_label]
+
+  async function readWithFilter(filter) {
     await table
       .createReadStream({
         filter,
@@ -186,26 +192,37 @@ function main(instanceId = 'YOUR_INSTANCE_ID') {
       .on('error', err => {
         // Handle the error.
       })
-      .on('data', function(row) {
-        const columnFamilyData = row.data[COLUMN_FAMILY];
-
-        console.log(`Reading ${COLUMN_FAMILY} data for ${row.id}`);
-
-        Object.keys(columnFamilyData).forEach(columnQualifier => {
-          const col = columnFamilyData[columnQualifier];
-          for (let i = 0; i < col.length; i++) {
-            console.log(
-              columnQualifier + ': ' + col[i].value + ' @' + col[i].timestamp
-            );
-          }
-        });
-      })
+      .on('data', row => printRow(row.id, row.data))
       .on('end', function() {
         // All rows retrieved.
       });
   }
 
-  filterSnippets();
+  function printRow(rowkey, rowData) {
+    console.log(`Reading data for ${rowkey}:`);
+
+    for (const columnFamily of Object.keys(rowData)) {
+      const columnFamilyData = rowData[columnFamily];
+      console.log(`Column Family ${columnFamily}`);
+
+      for (const columnQualifier of Object.keys(columnFamilyData)) {
+        const col = columnFamilyData[columnQualifier];
+
+        for (let i = 0; i < col.length; i++) {
+          const cell = col[i];
+          const labels = cell.labels.length
+            ? ` [${cell.labels.join(',')}]`
+            : '';
+          console.log(
+            `\t${columnQualifier}: ${cell.value} @${cell.timestamp}${labels}`
+          );
+        }
+      }
+    }
+    console.log();
+  }
+
+  eval(`${filterType}()`);
 }
 
 main(...process.argv.slice(2));
