@@ -205,6 +205,67 @@ const snippets = {
     // [END bigtable_get_clusters]
   },
 
+  getIamPolicy: instanceId => {
+    // [START bigtable_get_instance_Iam_policy]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+
+    instance
+      .getIamPolicy()
+      .then(result => {
+        const policy = result[0];
+      })
+      .catch(err => {
+        // Handle the error.
+      });
+    // [END bigtable_get_instance_Iam_policy]
+  },
+
+  setIamPolicy: instanceId => {
+    // [START bigtable_set_instance_Iam_policy]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+
+    const policy = {
+      bindings: [
+        {
+          role: 'roles/bigtable.viewer',
+          members: ['user:mike@example.com', 'group:admins@example.com'],
+        },
+      ],
+    };
+
+    instance
+      .setIamPolicy(policy)
+      .then(result => {
+        const setPolicy = result[0];
+      })
+      .catch(err => {
+        // Handle the error
+      });
+    // [END bigtable_set_instance_Iam_policy]
+  },
+
+  testIamPermissions: instanceId => {
+    // [START bigtable_test_instance_Iam_permissions]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+
+    const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
+    instance
+      .testIamPermissions(permissions)
+      .then(result => {
+        const grantedPermissions = result[0];
+      })
+      .catch(err => {
+        // Handle the error
+      });
+    // [END bigtable_test_instance_Iam_permissions]
+  },
+
   getAppProfiles: instanceId => {
     // [START bigtable_get_app_profiles]
     const Bigtable = require('@google-cloud/bigtable');
