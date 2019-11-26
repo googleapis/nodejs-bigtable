@@ -4,6 +4,21 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [2.2.3](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.2.2...v2.2.3) (2019-11-12)
+
+
+### Bug Fixes
+
+* **docs:** add jsdoc-region-tag plugin ([#571](https://www.github.com/googleapis/nodejs-bigtable/issues/571)) ([3159302](https://www.github.com/googleapis/nodejs-bigtable/commit/315930236ec396c3743d4929087e2d6565224072))
+* include long in types ([1cb65a4](https://www.github.com/googleapis/nodejs-bigtable/commit/1cb65a47553ab93572bfd95825074ab362ecd9f8))
+
+### [2.2.2](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.2.1...v2.2.2) (2019-11-11)
+
+
+### Bug Fixes
+
+* **docs:** fix missing snippets in sample documentation ([af6e15a](https://www.github.com/googleapis/nodejs-bigtable/commit/af6e15a1df3106368efa8a7fb1f81f0eb8e8663f))
+
 ### [2.2.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.2.0...v2.2.1) (2019-10-22)
 
 
