@@ -296,6 +296,7 @@ function main(
       })
       .on('error', err => {
         // Handle the error.
+        console.log(err);
       })
       .on('data', row => printRow(row.id, row.data))
       .on('end', function() {
