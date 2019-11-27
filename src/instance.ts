@@ -64,9 +64,7 @@ export class Instance {
         name = id;
       } else {
         throw new Error(`Instance id '${id}' is not formatted correctly.
-Please use the format 'my-instance' or '${
-          bigtable.projectName
-        }/instances/my-instance'.`);
+Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-instance'.`);
       }
     } else {
       name = `${bigtable.projectName}/instances/${id}`;
