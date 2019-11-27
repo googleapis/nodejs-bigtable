@@ -42,7 +42,7 @@ function main(
   // [START bigtable_filters_composing_chain]
   // [START bigtable_filters_composing_interleave]
   // [START bigtable_filters_composing_condition]
-  const Bigtable = require('@google-cloud/bigtable');
+  const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = Bigtable();
 
   /**

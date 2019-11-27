@@ -17,7 +17,7 @@ const uuid = require(`uuid`);
 
 const {assert} = require('chai');
 const cp = require('child_process');
-const Bigtable = require('@google-cloud/bigtable');
+const {Bigtable} = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 

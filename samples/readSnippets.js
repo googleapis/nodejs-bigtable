@@ -26,7 +26,7 @@ function main(
   // [START bigtable_reads_row_ranges]
   // [START bigtable_reads_prefix]
   // [START bigtable_reads_filter]
-  const Bigtable = require('@google-cloud/bigtable');
+  const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = Bigtable();
 
   /**
