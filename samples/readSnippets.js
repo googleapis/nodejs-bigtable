@@ -97,7 +97,7 @@ function main(
         console.log(err);
       })
       .on('data', row => printRow(row.id, row.data))
-      .on('end', function() {
+      .on('end', () => {
         // All rows retrieved.
       });
   }
@@ -124,7 +124,7 @@ function main(
         console.log(err);
       })
       .on('data', row => printRow(row.id, row.data))
-      .on('end', function() {
+      .on('end', () => {
         // All rows retrieved.
       });
   }
@@ -144,7 +144,7 @@ function main(
         console.log(err);
       })
       .on('data', row => printRow(row.id, row.data))
-      .on('end', function() {
+      .on('end', () => {
         // All rows retrieved.
       });
   }
@@ -166,7 +166,7 @@ function main(
         console.log(err);
       })
       .on('data', row => printRow(row.id, row.data))
-      .on('end', function() {
+      .on('end', () => {
         // All rows retrieved.
       });
   }
