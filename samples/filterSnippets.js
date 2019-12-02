@@ -183,8 +183,7 @@ function main(
   // [START bigtable_filters_limit_timestamp_range]
   function filterTimestampRange() {
     const start = 0;
-    const end = new Date();
-    end.setHours(end.getHours() - 1);
+    const end = new Date(2019, 5, 1);
     const filter = {
       time: {
         start,

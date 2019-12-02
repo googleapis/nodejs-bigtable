@@ -14,8 +14,8 @@
 
 'use strict';
 const uuid = require(`uuid`);
+const snapshot = require('snap-shot-it');
 
-const {assert} = require('chai');
 const cp = require('child_process');
 const {Bigtable} = require('@google-cloud/bigtable');
 
@@ -28,11 +28,9 @@ describe('reads', async () => {
   const bigtable = Bigtable();
   const instance = bigtable.instance(INSTANCE_ID);
   let table;
-  const TIMESTAMP = new Date();
-  const TIMESTAMP_SECS = TIMESTAMP.getTime() * 1000;
+  const TIMESTAMP = new Date(2019, 5, 1);
 
   before(async () => {
-    this.timeout(20000);
     table = instance.table(TABLE_ID);
 
     await table.create().catch(console.error);
@@ -145,176 +143,49 @@ describe('reads', async () => {
 
   it('should read one row', async () => {
     const stdout = execSync(`node readSnippets ${INSTANCE_ID} ${TABLE_ID}`);
-    const result = `Reading data for phone#4c410523#20190501:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
-
-`;
-    assert.equal(stdout, result);
+    snapshot(stdout);
   });
 
   it('should read part of one row', async () => {
     const stdout = execSync(
       `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowPartial`
     );
-    const result = `Reading data for phone#4c410523#20190501:
-Column Family stats_summary
-	os_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
-
-`;
-    assert.equal(stdout, result);
+    snapshot(stdout);
   });
 
   it('should read multiple rows', async () => {
     const stdout = execSync(
       `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRows`
     );
-    const result = `Reading data for phone#4c410523#20190501:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190502:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.004 @${TIMESTAMP_SECS}
-
-`;
-    assert.equal(stdout, result);
+    snapshot(stdout);
   });
 
   it('should read a range of rows', async () => {
     const stdout = execSync(
       `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRange`
     );
-    const result = `Reading data for phone#4c410523#20190501:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190502:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.004 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190505:
-Column Family stats_summary
-\tconnected_cell: 0 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
-
-`;
-    assert.equal(stdout, result);
+    snapshot(stdout);
   });
 
   it('should read multiple ranges of rows', async () => {
     const stdout = execSync(
       `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readRowRanges`
     );
-    const result = `Reading data for phone#4c410523#20190501:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190502:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.004 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190505:
-Column Family stats_summary
-\tconnected_cell: 0 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
-
-Reading data for phone#5c10102#20190501:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190401.002 @${TIMESTAMP_SECS}
-
-Reading data for phone#5c10102#20190502:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 0 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
-
-`;
-    assert.equal(stdout, result);
+    snapshot(stdout);
   });
 
   it('should read using a row prefix', async () => {
     const stdout = execSync(
       `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readPrefix`
     );
-    const result = `Reading data for phone#4c410523#20190501:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190502:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190405.004 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190505:
-Column Family stats_summary
-\tconnected_cell: 0 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
-
-Reading data for phone#5c10102#20190501:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 1 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190401.002 @${TIMESTAMP_SECS}
-
-Reading data for phone#5c10102#20190502:
-Column Family stats_summary
-\tconnected_cell: 1 @${TIMESTAMP_SECS}
-\tconnected_wifi: 0 @${TIMESTAMP_SECS}
-\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
-
-`;
-    assert.equal(stdout, result);
+    snapshot(stdout);
   });
 
   it('should read with a filter', async () => {
     const stdout = execSync(
       `node readSnippets ${INSTANCE_ID} ${TABLE_ID} readFilter`
     );
-    const result = `Reading data for phone#4c410523#20190501:
-Column Family stats_summary
-\tos_build: PQ2A.190405.003 @${TIMESTAMP_SECS}
 
-Reading data for phone#4c410523#20190502:
-Column Family stats_summary
-\tos_build: PQ2A.190405.004 @${TIMESTAMP_SECS}
-
-Reading data for phone#4c410523#20190505:
-Column Family stats_summary
-\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
-
-Reading data for phone#5c10102#20190501:
-Column Family stats_summary
-\tos_build: PQ2A.190401.002 @${TIMESTAMP_SECS}
-
-Reading data for phone#5c10102#20190502:
-Column Family stats_summary
-\tos_build: PQ2A.190406.000 @${TIMESTAMP_SECS}
-
-`;
-
-    assert.equal(stdout, result);
+    snapshot(stdout);
   });
 });
