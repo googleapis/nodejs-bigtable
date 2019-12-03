@@ -343,8 +343,7 @@ function main(
       for (const columnQualifier of Object.keys(columnFamilyData)) {
         const col = columnFamilyData[columnQualifier];
 
-        for (let i = 0; i < col.length; i++) {
-          const cell = col[i];
+        for (const cell of col) {
           const labels = cell.labels.length
             ? ` [${cell.labels.join(',')}]`
             : '';

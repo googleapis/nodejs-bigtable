@@ -49,7 +49,6 @@ async function main(
       const rowkey = 'phone#4c410523#20190501';
 
       const [row] = await table.row(rowkey).get();
-
       printRow(rowkey, row.data);
       // [END bigtable_reads_row]
       break;
@@ -73,11 +72,8 @@ async function main(
     // [START bigtable_reads_rows]
     case 'readRows': {
       const rowKeys = ['phone#4c410523#20190501', 'phone#4c410523#20190502'];
-
       const [rows] = await table.getRows({keys: rowKeys});
-      for (let i = 0; i < rows.length; i++) {
-        printRow(rows[i].id, rows[i].data);
-      }
+      rows.forEach(row => printRow(row.id, row.data));
       // [END bigtable_reads_rows]
       break;
     }
@@ -191,8 +187,7 @@ async function main(
       for (const columnQualifier of Object.keys(columnFamilyData)) {
         const col = columnFamilyData[columnQualifier];
 
-        for (let i = 0; i < col.length; i++) {
-          const cell = col[i];
+        for (const cell of col) {
           const labels = cell.labels.length
             ? ` [${cell.labels.join(',')}]`
             : '';

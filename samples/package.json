@@ -24,6 +24,7 @@
     "snap-shot-it": "^7.9.1"
   },
   "scripts": {
-    "test": "mocha --timeout=60000"
+    "test": "mocha --timeout=60000",
+    "test:snap": "SNAPSHOT_UPDATE=1 npm test"
   }
 }
