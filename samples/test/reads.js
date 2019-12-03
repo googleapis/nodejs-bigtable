@@ -29,6 +29,7 @@ describe('reads', async () => {
   const instance = bigtable.instance(INSTANCE_ID);
   let table;
   const TIMESTAMP = new Date(2019, 5, 1);
+  TIMESTAMP.setUTCHours(0);
 
   before(async () => {
     table = instance.table(TABLE_ID);

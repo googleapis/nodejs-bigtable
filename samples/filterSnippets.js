@@ -14,11 +14,6 @@
 
 'use strict';
 
-// sample-metadata:
-//   title: Read a row
-//   description: Get all the data for a Bigtable row by key.
-//   usage: node readRow.js <instanceId>
-
 function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
@@ -195,6 +190,7 @@ function main(
       // [START bigtable_filters_limit_timestamp_range]
       const start = 0;
       const end = new Date(2019, 5, 1);
+      end.setUTCHours(0);
       const filter = {
         time: {
           start,

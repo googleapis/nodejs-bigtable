@@ -30,7 +30,9 @@ describe('filters', async () => {
   const instance = bigtable.instance(INSTANCE_ID);
   let table;
   const TIMESTAMP = new Date(2019, 5, 1);
+  TIMESTAMP.setUTCHours(0);
   const TIMESTAMP_OLDER = new Date(2019, 4, 30);
+  TIMESTAMP_OLDER.setUTCHours(0);
 
   before(async () => {
     table = instance.table(TABLE_ID);
