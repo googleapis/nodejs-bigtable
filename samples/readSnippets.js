@@ -14,10 +14,10 @@
 
 'use strict';
 
-function main(
+async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  read = 'readRow'
+  readType = 'readRow'
 ) {
   // [START bigtable_reads_row]
   // [START bigtable_reads_row_partial]
@@ -43,135 +43,136 @@ function main(
   // [END bigtable_reads_row_ranges]
   // [END bigtable_reads_prefix]
   // [END bigtable_reads_filter]
+  switch (readType) {
+    // [START bigtable_reads_row]
+    case 'readRow': {
+      const rowkey = 'phone#4c410523#20190501';
 
-  // [START bigtable_reads_row]
-  async function readRow() {
-    const rowkey = 'phone#4c410523#20190501';
+      const [row] = await table.row(rowkey).get();
 
-    const [row] = await table.row(rowkey).get();
+      printRow(rowkey, row.data);
+      // [END bigtable_reads_row]
+      break;
+    }
 
-    printRow(rowkey, row.data);
-  }
+    // [START bigtable_reads_row_partial]
+    case 'readRowPartial': {
+      const COLUMN_FAMILY = 'stats_summary';
+      const COLUMN_QUALIFIER = 'os_build';
+      const rowkey = 'phone#4c410523#20190501';
 
-  // [END bigtable_reads_row]
+      const [row] = await table
+        .row(rowkey)
+        .get([`${COLUMN_FAMILY}:${COLUMN_QUALIFIER}`]);
 
-  // [START bigtable_reads_row_partial]
-  async function readRowPartial() {
-    const COLUMN_FAMILY = 'stats_summary';
-    const COLUMN_QUALIFIER = 'os_build';
-    const rowkey = 'phone#4c410523#20190501';
+      printRow(rowkey, row);
+      // [END bigtable_reads_row_partial]
+      break;
+    }
 
-    const [row] = await table
-      .row(rowkey)
-      .get([`${COLUMN_FAMILY}:${COLUMN_QUALIFIER}`]);
+    // [START bigtable_reads_rows]
+    case 'readRows': {
+      const rowKeys = ['phone#4c410523#20190501', 'phone#4c410523#20190502'];
 
-    printRow(rowkey, row);
-  }
+      const [rows] = await table.getRows({keys: rowKeys});
+      for (let i = 0; i < rows.length; i++) {
+        printRow(rows[i].id, rows[i].data);
+      }
+      // [END bigtable_reads_rows]
+      break;
+    }
 
-  // [END bigtable_reads_row_partial]
+    // [START bigtable_reads_row_range]
+    case 'readRowRange': {
+      const start = 'phone#4c410523#20190501';
+      const end = 'phone#4c410523#201906201';
 
-  // [START bigtable_reads_rows]
-  async function readRows() {
-    const rowKeys = ['phone#4c410523#20190501', 'phone#4c410523#20190502'];
+      await table
+        .createReadStream({
+          start,
+          end,
+        })
+        .on('error', err => {
+          // Handle the error.
+          console.log(err);
+        })
+        .on('data', row => printRow(row.id, row.data))
+        .on('end', () => {
+          // All rows retrieved.
+        });
+      // [END bigtable_reads_row_range]
+      break;
+    }
 
-    const [rows] = await table.getRows({keys: rowKeys});
-    for (let i = 0; i < rows.length; i++) {
-      printRow(rows[i].id, rows[i].data);
+    // [START bigtable_reads_row_ranges]
+    case 'readRowRanges': {
+      await table
+        .createReadStream({
+          ranges: [
+            {
+              start: 'phone#4c410523#20190501',
+              end: 'phone#4c410523#20190601',
+            },
+            {
+              start: 'phone#5c10102#20190501',
+              end: 'phone#5c10102#20190601',
+            },
+          ],
+        })
+        .on('error', err => {
+          // Handle the error.
+          console.log(err);
+        })
+        .on('data', row => printRow(row.id, row.data))
+        .on('end', () => {
+          // All rows retrieved.
+        });
+      // [END bigtable_reads_row_ranges]
+      break;
+    }
+
+    // [START bigtable_reads_prefix]
+    case 'readPrefix': {
+      const prefix = 'phone#';
+
+      await table
+        .createReadStream({
+          prefix,
+        })
+        .on('error', err => {
+          // Handle the error.
+          console.log(err);
+        })
+        .on('data', row => printRow(row.id, row.data))
+        .on('end', () => {
+          // All rows retrieved.
+        });
+      // [END bigtable_reads_prefix]
+      break;
+    }
+
+    // [START bigtable_reads_filter]
+    case 'readFilter': {
+      const filter = {
+        value: /PQ2A.*$/,
+      };
+
+      await table
+        .createReadStream({
+          filter,
+        })
+        .on('error', err => {
+          // Handle the error.
+          console.log(err);
+        })
+        .on('data', row => printRow(row.id, row.data))
+        .on('end', () => {
+          // All rows retrieved.
+        });
+      // [END bigtable_reads_filter]
+      break;
     }
   }
-
-  // [END bigtable_reads_rows]
-
-  // [START bigtable_reads_row_range]
-  async function readRowRange() {
-    const start = 'phone#4c410523#20190501';
-    const end = 'phone#4c410523#201906201';
-
-    await table
-      .createReadStream({
-        start,
-        end,
-      })
-      .on('error', err => {
-        // Handle the error.
-        console.log(err);
-      })
-      .on('data', row => printRow(row.id, row.data))
-      .on('end', () => {
-        // All rows retrieved.
-      });
-  }
-
-  // [END bigtable_reads_row_range]
-
-  // [START bigtable_reads_row_ranges]
-  async function readRowRanges() {
-    await table
-      .createReadStream({
-        ranges: [
-          {
-            start: 'phone#4c410523#20190501',
-            end: 'phone#4c410523#20190601',
-          },
-          {
-            start: 'phone#5c10102#20190501',
-            end: 'phone#5c10102#20190601',
-          },
-        ],
-      })
-      .on('error', err => {
-        // Handle the error.
-        console.log(err);
-      })
-      .on('data', row => printRow(row.id, row.data))
-      .on('end', () => {
-        // All rows retrieved.
-      });
-  }
-
-  // [END bigtable_reads_row_ranges]
-
-  // [START bigtable_reads_prefix]
-  async function readPrefix() {
-    const prefix = 'phone#';
-
-    await table
-      .createReadStream({
-        prefix,
-      })
-      .on('error', err => {
-        // Handle the error.
-        console.log(err);
-      })
-      .on('data', row => printRow(row.id, row.data))
-      .on('end', () => {
-        // All rows retrieved.
-      });
-  }
-
-  // [END bigtable_reads_prefix]
-
-  // [START bigtable_reads_filter]
-  async function readFilter() {
-    const filter = {
-      value: /PQ2A.*$/,
-    };
-
-    await table
-      .createReadStream({
-        filter,
-      })
-      .on('error', err => {
-        // Handle the error.
-        console.log(err);
-      })
-      .on('data', row => printRow(row.id, row.data))
-      .on('end', () => {
-        // All rows retrieved.
-      });
-  }
-
-  // [END bigtable_reads_filter]
 
   // [START bigtable_reads_row]
   // [START bigtable_reads_row_partial]
@@ -211,8 +212,6 @@ function main(
   // [END bigtable_reads_row_ranges]
   // [END bigtable_reads_prefix]
   // [END bigtable_reads_filter]
-
-  eval(`${read}()`);
 }
 
 main(...process.argv.slice(2));

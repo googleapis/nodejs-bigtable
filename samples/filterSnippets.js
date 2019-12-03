@@ -72,220 +72,237 @@ function main(
   // [END bigtable_filters_composing_interleave]
   // [END bigtable_filters_composing_condition]
 
-  // [START bigtable_filters_limit_row_sample]
-  function filterRowSample() {
-    const filter = {
-      row: {
-        sample: 0.75,
-      },
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_row_sample]
-  // [START bigtable_filters_limit_row_regex]
-  function filterRowRegex() {
-    const filter = {
-      row: /.*#20190501$/,
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_row_regex]
-  // [START bigtable_filters_limit_cells_per_col]
-  function filterCellsPerCol() {
-    const filter = {
-      column: {
-        cellLimit: 2,
-      },
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_cells_per_col]
-  // [START bigtable_filters_limit_cells_per_row]
-  function filterCellsPerRow() {
-    const filter = {
-      row: {
-        cellLimit: 2,
-      },
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_cells_per_row]
-  // [START bigtable_filters_limit_cells_per_row_offset]
-  function filterCellsPerRowOffset() {
-    const filter = {
-      row: {
-        cellOffset: 2,
-      },
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_cells_per_row_offset]
-  // [START bigtable_filters_limit_col_family_regex]
-  function filterColFamilyRegex() {
-    const filter = {
-      family: /stats_.*$/,
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_col_family_regex]
-  // [START bigtable_filters_limit_col_qualifier_regex]
-  function filterColQualifierRegex() {
-    const filter = {
-      column: /connected_.*$/,
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_col_qualifier_regex]
-  // [START bigtable_filters_limit_col_range]
-  function filterColRange() {
-    const filter = {
-      column: {
-        family: 'cell_plan',
-        start: 'data_plan_01gb',
-        end: {
-          value: 'data_plan_10gb',
-          inclusive: false,
+  switch (filterType) {
+    case 'filterRowSample': {
+      // [START bigtable_filters_limit_row_sample]
+      const filter = {
+        row: {
+          sample: 0.75,
         },
-      },
-    };
-    readWithFilter(filter);
-  }
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_row_sample]
+      break;
+    }
 
-  // [END bigtable_filters_limit_col_range]
-  // [START bigtable_filters_limit_value_range]
-  function filterValueRange() {
-    const filter = {
-      value: {
-        start: 'PQ2A.190405',
-        end: 'PQ2A.190406',
-      },
-    };
-    readWithFilter(filter);
-  }
+    case 'filterRowRegex': {
+      // [START bigtable_filters_limit_row_regex]
+      const filter = {
+        row: /.*#20190501$/,
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_row_regex]
+      break;
+    }
 
-  // [END bigtable_filters_limit_value_range]
-  // [START bigtable_filters_limit_value_regex]
-  function filterValueRegex() {
-    const filter = {
-      value: /PQ2A.*$/,
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_value_regex]
-  // [START bigtable_filters_limit_timestamp_range]
-  function filterTimestampRange() {
-    const start = 0;
-    const end = new Date(2019, 5, 1);
-    const filter = {
-      time: {
-        start,
-        end,
-      },
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_timestamp_range]
-  // [START bigtable_filters_limit_block_all]
-  function filterBlockAll() {
-    const filter = {
-      all: false,
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_block_all]
-  // [START bigtable_filters_limit_pass_all]
-  function filterPassAll() {
-    const filter = {
-      all: true,
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_limit_pass_all]
-
-  // [START bigtable_filters_modify_strip_value]
-  function filterStripValue() {
-    const filter = {
-      value: {
-        strip: true,
-      },
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_modify_strip_value]
-  // [START bigtable_filters_modify_apply_label]
-  function filterApplyLabel() {
-    const filter = {
-      label: 'labelled',
-    };
-    readWithFilter(filter);
-  }
-
-  // [END bigtable_filters_modify_apply_label]
-
-  // [START bigtable_filters_composing_chain]
-  function filterChain() {
-    const filter = [
-      {
+    case 'filterCellsPerCol': {
+      // [START bigtable_filters_limit_cells_per_col]
+      const filter = {
         column: {
-          cellLimit: 1,
+          cellLimit: 2,
         },
-      },
-      {
-        family: 'cell_plan',
-      },
-    ];
-    readWithFilter(filter);
-  }
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_cells_per_col]
+      break;
+    }
 
-  // [END bigtable_filters_composing_chain]
-  // [START bigtable_filters_composing_interleave]
-  function filterInterleave() {
-    const filter = {
-      interleave: [
+    case 'filterCellsPerRow': {
+      // [START bigtable_filters_limit_cells_per_row]
+      const filter = {
+        row: {
+          cellLimit: 2,
+        },
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_cells_per_row]
+      break;
+    }
+
+    case 'filterCellsPerRowOffset': {
+      // [START bigtable_filters_limit_cells_per_row_offset]
+      const filter = {
+        row: {
+          cellOffset: 2,
+        },
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_cells_per_row_offset]
+      break;
+    }
+
+    case 'filterColFamilyRegex': {
+      // [START bigtable_filters_limit_col_family_regex]
+      const filter = {
+        family: /stats_.*$/,
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_col_family_regex]
+      break;
+    }
+
+    case 'filterColQualifierRegex': {
+      // [START bigtable_filters_limit_col_qualifier_regex]
+      const filter = {
+        column: /connected_.*$/,
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_col_qualifier_regex]
+      break;
+    }
+
+    case 'filterColRange': {
+      // [START bigtable_filters_limit_col_range]
+      const filter = {
+        column: {
+          family: 'cell_plan',
+          start: 'data_plan_01gb',
+          end: {
+            value: 'data_plan_10gb',
+            inclusive: false,
+          },
+        },
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_col_range]
+      break;
+    }
+
+    case 'filterValueRange': {
+      // [START bigtable_filters_limit_value_range]
+      const filter = {
+        value: {
+          start: 'PQ2A.190405',
+          end: 'PQ2A.190406',
+        },
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_value_range]
+      break;
+    }
+
+    case 'filterValueRegex': {
+      // [START bigtable_filters_limit_value_regex]
+      const filter = {
+        value: /PQ2A.*$/,
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_value_regex]
+      break;
+    }
+
+    case 'filterTimestampRange': {
+      // [START bigtable_filters_limit_timestamp_range]
+      const start = 0;
+      const end = new Date(2019, 5, 1);
+      const filter = {
+        time: {
+          start,
+          end,
+        },
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_timestamp_range]
+      break;
+    }
+
+    case 'filterBlockAll': {
+      // [START bigtable_filters_limit_block_all]
+      const filter = {
+        all: false,
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_block_all]
+      break;
+    }
+
+    case 'filterPassAll': {
+      // [START bigtable_filters_limit_pass_all]
+      const filter = {
+        all: true,
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_limit_pass_all]
+      break;
+    }
+
+    case 'filterStripValue': {
+      // [START bigtable_filters_modify_strip_value]
+      const filter = {
+        value: {
+          strip: true,
+        },
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_modify_strip_value]
+      break;
+    }
+
+    case 'filterApplyLabel': {
+      // [START bigtable_filters_modify_apply_label]
+      const filter = {
+        label: 'labelled',
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_modify_apply_label]
+      break;
+    }
+
+    case 'filterChain': {
+      // [START bigtable_filters_composing_chain]
+      const filter = [
         {
-          value: 'true',
+          column: {
+            cellLimit: 1,
+          },
         },
-        {column: 'os_build'},
-      ],
-    };
-    readWithFilter(filter);
-  }
+        {
+          family: 'cell_plan',
+        },
+      ];
+      readWithFilter(filter);
+      // [END bigtable_filters_composing_chain]
+      break;
+    }
 
-  // [END bigtable_filters_composing_interleave]
-  // [START bigtable_filters_composing_condition]
-  function filterCondition() {
-    const filter = {
-      condition: {
-        test: [
-          {column: 'data_plan_10gb'},
+    case 'filterInterleave': {
+      // [START bigtable_filters_composing_interleave]
+      const filter = {
+        interleave: [
           {
             value: 'true',
           },
+          {column: 'os_build'},
         ],
-        pass: {
-          label: 'passed-filter',
-        },
-        fail: {
-          label: 'filtered-out',
-        },
-      },
-    };
-    readWithFilter(filter);
-  }
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_composing_interleave]
+      break;
+    }
 
-  // [END bigtable_filters_composing_condition]
+    case 'filterCondition': {
+      // [START bigtable_filters_composing_condition]
+      const filter = {
+        condition: {
+          test: [
+            {column: 'data_plan_10gb'},
+            {
+              value: 'true',
+            },
+          ],
+          pass: {
+            label: 'passed-filter',
+          },
+          fail: {
+            label: 'filtered-out',
+          },
+        },
+      };
+      readWithFilter(filter);
+      // [END bigtable_filters_composing_condition]
+      break;
+    }
+  }
 
   // [START bigtable_filters_limit_row_sample]
   // [START bigtable_filters_limit_row_regex]
@@ -362,7 +379,6 @@ function main(
   // [END bigtable_filters_composing_chain]
   // [END bigtable_filters_composing_interleave]
   // [END bigtable_filters_composing_condition]
-  eval(`${filterType}()`);
 }
 
 main(...process.argv.slice(2));
