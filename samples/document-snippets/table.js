@@ -1,17 +1,16 @@
-/**
- * Copyright 2018, Google, Inc.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
@@ -294,6 +293,70 @@ const snippets = {
         // Handle the error.
       });
     // [END bigtable_sample_row_keys]
+  },
+
+  getIamPolicy: (instanceId, tableId) => {
+    // [START bigtable_get_table_Iam_policy]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+
+    table
+      .getIamPolicy()
+      .then(result => {
+        const policy = result[0];
+      })
+      .catch(err => {
+        // Handle the error.
+      });
+    // [END bigtable_get_table_Iam_policy]
+  },
+
+  setIamPolicy: (instanceId, tableId) => {
+    // [START bigtable_set_table_Iam_policy]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+
+    const policy = {
+      bindings: [
+        {
+          role: 'roles/bigtable.viewer',
+          members: ['user:mike@example.com', 'group:admins@example.com'],
+        },
+      ],
+    };
+
+    table
+      .setIamPolicy(policy)
+      .then(result => {
+        const setPolicy = result[0];
+      })
+      .catch(err => {
+        // Handle the error
+      });
+    // [END bigtable_set_table_Iam_policy]
+  },
+
+  testIamPermissions: (instanceId, tableId) => {
+    // [START bigtable_test_table_Iam_permissions]
+    const Bigtable = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+
+    const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
+    table
+      .testIamPermissions(permissions)
+      .then(result => {
+        const grantedPermissions = result[0];
+      })
+      .catch(err => {
+        // Handle the error
+      });
+    // [END bigtable_test_table_Iam_permissions]
   },
 
   delRows: (instanceId, tableId) => {
