@@ -15,14 +15,76 @@
  */
 
 import {promisifyAll} from '@google-cloud/promisify';
+import {CallOptions} from 'google-gax';
+import {ServiceError} from '@grpc/grpc-js';
 import * as is from 'is';
+
+import {Bigtable} from './';
+import {Table} from './table';
+import {google} from '../proto/bigtable';
+
+export type IColumnFamily = google.bigtable.admin.v2.IColumnFamily;
+export type IGcRule = google.bigtable.admin.v2.IGcRule;
+export type IModification = google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification;
+export type ITable = google.bigtable.admin.v2.ITable;
+
+export interface RequestCallback<R> {
+  (err: null | ServiceError, response?: null | R): void;
+}
+
+export interface InstanceCallback<I, R> {
+  (err: null | ServiceError, instance?: null | I, response?: null | R): void;
+}
+
+export interface GcRule {
+  age?: google.protobuf.IDuration;
+  versions?: number;
+  rule?: GcRule;
+  union?: boolean;
+}
+
+export interface CreateFamilyOptions {
+  rule?: GcRule;
+  gaxOptions?: CallOptions;
+}
+
+export type CreateFamilyResponse = [Family, ITable];
+export type CreateFamilyCallback = InstanceCallback<Family, ITable>;
+
+export type DeleteFamilyResponse = [ITable];
+export type DeleteFamilyCallback = RequestCallback<ITable>;
+
+export type FamilyExistsResponse = [boolean];
+export type FamilyExistsCallback = RequestCallback<boolean>;
+
+export interface GetFamilyOptions {
+  autoCreate?: boolean;
+  gaxOptions?: CallOptions;
+  rule?: GcRule;
+}
+
+export type GetFamilyResponse = [Family, IColumnFamily | ITable];
+export type GetFamilyCallback = InstanceCallback<
+  Family,
+  IColumnFamily | ITable
+>;
+
+export type GetFamilyMetadataResponse = [IColumnFamily];
+export type GetFamilyMetadataCallback = RequestCallback<IColumnFamily>;
+
+export interface SetFamilyMetadataOptions {
+  rule?: GcRule;
+}
+
+export type SetFamilyMetadataResponse = [IColumnFamily, ITable];
+export type SetFamilyMetadataCallback = InstanceCallback<IColumnFamily, ITable>;
 
 /**
  * @private
  */
 export class FamilyError extends Error {
-  code;
-  constructor(name) {
+  code: number;
+  constructor(name: string) {
     super();
     this.name = 'FamilyError';
     this.message = `Column family not found: ${name}.`;
@@ -45,16 +107,16 @@ export class FamilyError extends Error {
  * const family = table.family('follows');
  */
 export class Family {
-  bigtable;
-  table;
-  name;
-  id;
-  metadata;
-  constructor(table, id) {
+  bigtable: Bigtable;
+  table: Table;
+  name: string;
+  id: string;
+  metadata?: IColumnFamily;
+  constructor(table: Table, id: string) {
     this.bigtable = table.bigtable;
     this.table = table;
 
-    let name;
+    let name: string;
     if (id.includes('/')) {
       if (id.startsWith(`${table.name}/columnFamilies/`)) {
         name = id;
@@ -67,7 +129,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     }
 
     this.name = name;
-    this.id = name.split('/').pop();
+    this.id = name.split('/').pop()!;
   }
 
   /**
@@ -102,8 +164,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * //   }
    * // }
    */
-  static formatRule_(ruleObj) {
-    const rules: any[] = [];
+  static formatRule_(ruleObj: GcRule): IGcRule {
+    const rules: IGcRule[] = [];
 
     if (ruleObj.age) {
       rules.push({
@@ -134,7 +196,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
       throw new Error('No garbage collection rules were specified.');
     }
 
-    const rule = {};
+    const rule = {} as IGcRule;
     const ruleType = ruleObj.union ? 'union' : 'intersection';
 
     rule[ruleType] = {
@@ -144,6 +206,9 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     return rule;
   }
 
+  create(options?: CreateFamilyOptions): Promise<CreateFamilyResponse>;
+  create(options: CreateFamilyOptions, callback: CreateFamilyCallback): void;
+  create(callback: CreateFamilyCallback): void;
   /**
    * Create a column family.
    *
@@ -157,15 +222,19 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @example <caption>include:samples/document-snippets/family.js</caption>
    * region_tag:bigtable_create_family
    */
-  create(options, callback) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
+  create(
+    options?: CreateFamilyOptions | CreateFamilyCallback,
+    callback?: CreateFamilyCallback
+  ): void | Promise<CreateFamilyResponse> {
+    callback = typeof options === 'function' ? options : callback!;
+    options = typeof options === 'object' ? options : {};
 
     this.table.createFamily(this.id, options, callback);
   }
 
+  delete(gaxOptions?: CallOptions): Promise<DeleteFamilyResponse>;
+  delete(gaxOptions: CallOptions, callback: DeleteFamilyCallback): void;
+  delete(callback: DeleteFamilyCallback): void;
   /**
    * Delete the column family.
    *
@@ -179,11 +248,12 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @example <caption>include:samples/document-snippets/family.js</caption>
    * region_tag:bigtable_del_family
    */
-  delete(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  delete(
+    gaxOptions?: CallOptions | DeleteFamilyCallback,
+    callback?: DeleteFamilyCallback
+  ): void | Promise<DeleteFamilyResponse> {
+    callback = typeof gaxOptions === 'function' ? gaxOptions : callback!;
+    gaxOptions = typeof gaxOptions === 'object' ? gaxOptions : {};
 
     this.bigtable.request(
       {
@@ -204,6 +274,9 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     );
   }
 
+  exists(gaxOptions?: CallOptions): Promise<FamilyExistsResponse>;
+  exists(gaxOptions: CallOptions, callback: FamilyExistsCallback): void;
+  exists(callback: FamilyExistsCallback): void;
   /**
    * Check if the column family exists.
    *
@@ -217,11 +290,12 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @example <caption>include:samples/document-snippets/family.js</caption>
    * region_tag:bigtable_exists_family
    */
-  exists(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  exists(
+    opts?: CallOptions | FamilyExistsCallback,
+    cb?: FamilyExistsCallback
+  ): void | Promise<FamilyExistsResponse> {
+    const callback = typeof opts === 'function' ? opts : cb!;
+    const gaxOptions = typeof opts === 'object' ? opts : {};
 
     this.getMetadata(gaxOptions, err => {
       if (err) {
@@ -238,6 +312,9 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     });
   }
 
+  get(options?: GetFamilyOptions): Promise<GetFamilyResponse>;
+  get(options: GetFamilyOptions, callback: GetFamilyCallback): void;
+  get(callback: GetFamilyCallback): void;
   /**
    * Get a column family if it exists.
    *
@@ -258,14 +335,15 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @example <caption>include:samples/document-snippets/family.js</caption>
    * region_tag:bigtable_get_family
    */
-  get(options, callback) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
+  get(
+    opts?: GetFamilyOptions | GetFamilyCallback,
+    cb?: GetFamilyCallback
+  ): void | Promise<GetFamilyResponse> {
+    const callback = typeof opts === 'function' ? opts : cb!;
+    const options = typeof opts === 'object' ? opts : {};
 
     const autoCreate = !!options.autoCreate;
-    const gaxOptions = options.gaxOptions;
+    const gaxOptions = options.gaxOptions!;
 
     this.getMetadata(gaxOptions, (err, metadata) => {
       if (err) {
@@ -274,7 +352,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
           return;
         }
 
-        callback(err);
+        callback(err as ServiceError);
         return;
       }
 
@@ -282,6 +360,12 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
     });
   }
 
+  getMetadata(gaxOptions?: CallOptions): Promise<GetFamilyMetadataResponse>;
+  getMetadata(
+    gaxOptions: CallOptions,
+    callback: GetFamilyMetadataCallback
+  ): void;
+  getMetadata(callback: GetFamilyMetadataCallback): void;
   /**
    * Get the column family's metadata.
    *
@@ -295,11 +379,12 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @example <caption>include:samples/document-snippets/family.js</caption>
    * region_tag:bigtable_get_family_meta
    */
-  getMetadata(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  getMetadata(
+    opts?: CallOptions | GetFamilyMetadataCallback,
+    cb?: GetFamilyMetadataCallback
+  ): void | Promise<GetFamilyMetadataResponse> {
+    const callback = typeof opts === 'function' ? opts : cb!;
+    const gaxOptions = typeof opts === 'object' ? opts : {};
 
     this.table.getFamilies(gaxOptions, (err, families) => {
       if (err) {
@@ -316,10 +401,23 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
       }
 
       const error = new FamilyError(this.id);
-      callback(error);
+      callback(error as ServiceError);
     });
   }
 
+  setMetadata(
+    metadata: SetFamilyMetadataOptions,
+    gaxOptions?: CallOptions
+  ): Promise<SetFamilyMetadataResponse>;
+  setMetadata(
+    metadata: SetFamilyMetadataOptions,
+    gaxOptions: CallOptions,
+    callback: SetFamilyMetadataCallback
+  ): void;
+  setMetadata(
+    metadata: SetFamilyMetadataOptions,
+    callback: SetFamilyMetadataCallback
+  ): void;
   /**
    * Set the column family's metadata.
    *
@@ -340,19 +438,21 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @example <caption>include:samples/document-snippets/family.js</caption>
    * region_tag:bigtable_set_family_meta
    */
-  setMetadata(metadata, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  setMetadata(
+    metadata: SetFamilyMetadataOptions,
+    opts?: CallOptions | SetFamilyMetadataCallback,
+    cb?: SetFamilyMetadataCallback
+  ): void | Promise<SetFamilyMetadataResponse> {
+    const callback = typeof opts === 'function' ? opts : cb!;
+    const gaxOptions = typeof opts === 'object' ? opts : {};
 
-    const mod: any = {
+    const mod: IModification = {
       id: this.id,
       update: {},
     };
 
     if (metadata.rule) {
-      mod.update.gcRule = Family.formatRule_(metadata.rule);
+      mod.update!.gcRule = Family.formatRule_(metadata.rule);
     }
 
     const reqOpts = {
@@ -367,13 +467,14 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      (...args) => {
-        if (args[1]) {
-          this.metadata = args[1].columnFamilies[this.id];
-          args.splice(1, 0, this.metadata);
+      (err, resp) => {
+        if (err) {
+          callback(err, null, resp);
+          return;
         }
 
-        callback(...args);
+        this.metadata = resp.columnFamilies[this.id];
+        callback(null, this.metadata, resp);
       }
     );
   }
