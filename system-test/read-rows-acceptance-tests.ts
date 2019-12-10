@@ -22,6 +22,8 @@ import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
 import * as ProtoBuf from 'protobufjs';
 import * as path from 'path';
+import {Instance} from '../src/instance.js';
+import {Bigtable} from '../src/index.js';
 
 const protosRoot = path.resolve(__dirname, '../protos');
 function applyProtoRoot(filename, root) {
@@ -53,7 +55,7 @@ const CellChunk = root.lookupType(
 describe('Read Row Acceptance tests', function() {
   testcases.forEach(function(test) {
     it(test.name, done => {
-      const table = new Table({id: 'xyz'}, 'my-table');
+      const table = new Table({id: 'xyz'} as Instance, 'my-table');
       const results: any[] = [];
       const rawResults = test.results || [];
       const errorCount = rawResults.filter(result => result.error).length;
@@ -81,7 +83,7 @@ describe('Read Row Acceptance tests', function() {
           });
         });
 
-      table.bigtable = {};
+      table.bigtable = {} as Bigtable;
       table.bigtable.request = function() {
         const stream = new PassThrough({
           objectMode: true,

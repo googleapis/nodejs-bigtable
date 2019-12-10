@@ -51,7 +51,7 @@ import * as is from 'is';
 import * as through from 'through2';
 
 import {AppProfile} from './app-profile';
-import {Cluster} from './cluster';
+import {Cluster, GenericCallback} from './cluster';
 import {Instance} from './instance';
 import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../proto/bigtable';
@@ -77,6 +77,36 @@ export type GetInstancesResponse = [
   {} | null,
   google.bigtable.admin.v2.IListInstancesResponse
 ];
+export interface RequestConfig {
+  gaxOpts?: CallOptions;
+  method: string;
+  // tslint:disable-next-line: no-any
+  reqOpts: any;
+  client: string;
+  retryOpts?: {};
+}
+
+export type RequestCallback<T, R = void> = R extends void
+  ? GenericCallback<T>
+  : ResourceCallback<T, R>;
+export interface ResourceCallback<Resource, Response> {
+  (
+    err: ServiceError | null,
+    resource?: Resource | null,
+    response?: Response
+  ): void;
+}
+export interface PagedCallback<Item, Response> {
+  (
+    err: ServiceError | null,
+    results?: Item[] | null,
+    nextQuery?: {} | null,
+    response?: Response | null
+  ): void;
+}
+export interface OptionInterface {
+  gaxOptions?: CallOptions;
+}
 /**
  * @typedef {object} ClientConfig
  * @property {string} [apiEndpoint] Override the default API endpoint used
@@ -712,7 +742,10 @@ export class Bigtable {
    * @param {object} config.reqOpts Request options.
    * @param {function} [callback] Callback function.
    */
-  request(config, callback) {
+  request<T, R = void>(
+    config: RequestConfig,
+    callback?: RequestCallback<T, R>
+  ) {
     const isStreamMode = !callback;
 
     let gaxStream;
@@ -768,7 +801,7 @@ export class Bigtable {
     function makeRequestCallback() {
       prepareGaxRequest((err, requestFn) => {
         if (err) {
-          callback(err);
+          callback!(err);
           return;
         }
 
