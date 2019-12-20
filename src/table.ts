@@ -36,15 +36,31 @@ import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
-import {Bigtable, RequestCallback, OptionInterface} from '.';
+import {
+  Bigtable,
+  RequestCallback,
+  OptionInterface,
+  DeleteCallback,
+  DeleteResposne,
+} from '.';
 import {Instance} from './instance';
 import {google} from '../proto/bigtable';
+import {GenericCallback} from './cluster';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
 const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
+export type ExistsCallback = GenericCallback<boolean>;
+export type ExistsResponse = [boolean];
+export interface GetTableMetadataOptions extends OptionInterface {
+  view?: string;
+}
+export type GetTableMetadataCallback = GenericCallback<
+  google.bigtable.admin.v2.ITable
+>;
+export type GetTableMetadataResponse = [google.bigtable.admin.v2.ITable];
 
 /**
  * @typedef {object} Policy
@@ -367,6 +383,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       throw new Error('An id is required to create a family.');
     }
 
+    // tslint:disable-next-line: no-any
     const mod: any = {
       id,
       create: {},
@@ -638,11 +655,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     return userStream;
   }
 
+  delete(gaxOptions?: CallOptions): Promise<DeleteResposne>;
+  delete(callback: DeleteCallback): void;
+  delete(gaxOptions: CallOptions, callback: DeleteCallback): void;
   /**
    * Delete the table.
    *
    * @param {object} [gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     here: https://googleapis.github.io/gax-nodejs/classes/CallSettings.html.
    * @param {function} [callback] The callback function.
    * @param {?error} callback.err An error returned while making this
    *     request.
@@ -651,11 +671,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_del_table
    */
-  delete(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  delete(
+    gaxOptionsOrCallback?: CallOptions | DeleteCallback,
+    callback?: DeleteCallback
+  ): Promise<DeleteResposne> | void {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback;
 
     this.bigtable.request(
       {
@@ -670,6 +695,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  deleteRows(prefix: string, gaxOptions?: CallOptions): Promise<DeleteResposne>;
+  deleteRows(prefix: string, callback: DeleteCallback): void;
+  deleteRows(
+    prefix: string,
+    gaxOptions: CallOptions,
+    callback: DeleteCallback
+  ): void;
   /**
    * Delete all rows in the table, optionally corresponding to a particular
    * prefix.
@@ -678,7 +710,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *
    * @param {string} prefix Row key prefix.
    * @param {object} [gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     here: https://googleapis.github.io/gax-nodejs/classes/CallSettings.html.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {object} callback.apiResponse The full API response.
@@ -686,11 +718,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_del_rows
    */
-  deleteRows(prefix, gaxOptions, callback?) {
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  deleteRows(
+    prefix: string,
+    gaxOptionsOrCallback?: CallOptions | DeleteCallback,
+    callback?: DeleteCallback
+  ): Promise<DeleteResposne> | void {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback;
 
     if (!prefix || is.fn(prefix)) {
       throw new Error('A prefix is required for deleteRows.');
@@ -712,11 +750,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  exists(gaxOptions?: CallOptions): Promise<ExistsResponse>;
+  exists(callback: ExistsCallback): void;
+  exists(gaxOptions: CallOptions, callback: ExistsCallback): void;
   /**
    * Check if a table exists.
    *
    * @param {object} [gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     here: https://googleapis.github.io/gax-nodejs/classes/CallSettings.html.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this
    *     request.
@@ -725,11 +766,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_exists_table
    */
-  exists(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  exists(
+    gaxOptionsOrCallback?: CallOptions | ExistsCallback,
+    callback?: ExistsCallback
+  ): Promise<ExistsResponse> | void {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    callback =
+      typeof gaxOptionsOrCallback === 'function'
+        ? gaxOptionsOrCallback
+        : callback;
 
     const reqOpts = {
       view: 'name',
@@ -739,15 +785,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     this.getMetadata(reqOpts, err => {
       if (err) {
         if (err.code === 5) {
-          callback(null, false);
+          callback!(null, false);
           return;
         }
 
-        callback(err);
+        callback!(err);
         return;
       }
 
-      callback(null, true);
+      callback!(null, true);
     });
   }
 
@@ -840,6 +886,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : callback!;
 
+    // tslint:disable-next-line: no-any
     const reqOpts: any = {
       resource: this.name,
     };
@@ -895,13 +942,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return;
       }
 
-      const families = Object.keys(metadata.columnFamilies).map(familyId => {
+      const families = Object.keys(metadata!.columnFamilies!).map(familyId => {
         const family = this.family(familyId);
-        family.metadata = metadata.columnFamilies[familyId];
+        family.metadata = metadata!.columnFamilies![familyId];
         return family;
       });
 
-      callback(null, families, metadata.columnFamilies);
+      callback(null, families, metadata!.columnFamilies);
     });
   }
 
@@ -948,19 +995,27 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return;
       }
       const clusterStates = new Map();
-      Object.keys(metadata.clusterStates).map(clusterId =>
-        clusterStates.set(clusterId, metadata.clusterStates[clusterId])
+      Object.keys(metadata!.clusterStates!).map(clusterId =>
+        clusterStates.set(clusterId, metadata!.clusterStates![clusterId])
       );
       callback(null, clusterStates, metadata);
     });
   }
 
+  getMetadata(
+    options?: GetTableMetadataOptions
+  ): Promise<GetTableMetadataResponse>;
+  getMetadata(callback: GetTableMetadataCallback): void;
+  getMetadata(
+    options: GetTableMetadataOptions,
+    callback: GetTableMetadataCallback
+  ): void;
   /**
    * Get the table's metadata.
    *
    * @param {object} [options] Table request options.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     here: https://googleapis.github.io/gax-nodejs/classes/CallSettings.html.
    * @param {string} [options.view] The view to be applied to the table fields.
    * @param {function} [callback] The callback function.
    * @param {?error} callback.err An error returned while making this
@@ -970,18 +1025,22 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_table_meta
    */
-  getMetadata(options, callback?) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+  getMetadata(
+    optionsOrCallback?: GetTableMetadataOptions | GetTableMetadataCallback,
+    callback?: GetTableMetadataCallback
+  ): Promise<GetTableMetadataResponse> | void {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : callback;
 
     const reqOpts = {
       name: this.name,
+      // tslint:disable-next-line: no-any
       view: (Table as any).VIEWS[options.view || 'unspecified'],
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.ITable>(
       {
         client: 'BigtableTableAdminClient',
         method: 'getTable',
@@ -993,7 +1052,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           this.metadata = args[1];
         }
 
-        callback(...args);
+        callback!(...args);
       }
     );
   }
@@ -1315,6 +1374,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     if (policy.etag !== null && policy.etag !== undefined) {
       ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
     }
+    // tslint:disable-next-line: no-any
     const reqOpts: any = {
       resource: this.name,
       policy,
@@ -1374,6 +1434,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         ? gaxOptionsOrCallback
         : callback!;
 
+    // tslint:disable-next-line: no-any
     const reqOpts: any = {
       resource: this.name,
       permissions: arrify(permissions),

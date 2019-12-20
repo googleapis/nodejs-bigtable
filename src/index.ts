@@ -107,6 +107,8 @@ export interface PagedCallback<Item, Response> {
 export interface OptionInterface {
   gaxOptions?: CallOptions;
 }
+export type DeleteCallback = GenericCallback<google.protobuf.Empty>;
+export type DeleteResposne = [google.protobuf.Empty];
 /**
  * @typedef {object} ClientConfig
  * @property {string} [apiEndpoint] Override the default API endpoint used
