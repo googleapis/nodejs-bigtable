@@ -12,8 +12,10 @@
 
 * [Before you begin](#before-you-begin)
 * [Samples](#samples)
+  * [Filter Snippets](#filter-snippets)
   * [Instances](#instances)
   * [Quickstart](#quickstart)
+  * [Read Snippets](#read-snippets)
   * [Tableadmin](#tableadmin)
   * [Write Batch](#write-batch)
   * [Write Conditionally](#write-conditionally)
@@ -25,7 +27,30 @@
 Before running the samples, make sure you've followed the steps outlined in
 [Using the client library](https://github.com/googleapis/nodejs-bigtable#using-the-client-library).
 
+`cd samples`
+
+`npm install`
+
+`cd ..`
+
 ## Samples
+
+
+
+### Filter Snippets
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/filterSnippets.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/filterSnippets.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/filterSnippets.js`
+
+
+-----
+
 
 
 
@@ -38,7 +63,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node instances.js`
+`node samples/instances.js`
 
 
 -----
@@ -63,6 +88,23 @@ __Usage:__
 
 
 
+### Read Snippets
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/readSnippets.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/readSnippets.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/readSnippets.js`
+
+
+-----
+
+
+
+
 ### Tableadmin
 
 View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/tableadmin.js).
@@ -72,7 +114,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node tableadmin.js`
+`node samples/tableadmin.js`
 
 
 -----
