@@ -281,7 +281,7 @@ describe('Bigtable/Table', function() {
 
     it('should throw if a id is not provided', function() {
       assert.throws(function() {
-        // tslint:disable-next-line no-any
+        // tslint:disable-next-line: no-any
         (table as any).createFamily();
       }, /An id is required to create a family\./);
     });
@@ -500,7 +500,7 @@ describe('Bigtable/Table', function() {
       });
 
       it('should retrieve multiple ranges', function(done) {
-        const options = {
+        const options = ({
           ranges: [
             {
               start: 'a',
@@ -511,7 +511,7 @@ describe('Bigtable/Table', function() {
               end: 'd',
             },
           ],
-        };
+        } as {}) as tblTypes.CreateReadStreamTableOptions;
 
         const fakeRanges = [
           {
@@ -532,13 +532,13 @@ describe('Bigtable/Table', function() {
           assert.deepStrictEqual(config.reqOpts.rows.rowRanges, fakeRanges);
           assert.strictEqual(formatSpy.callCount, 2);
           assert.deepStrictEqual(formatSpy.getCall(0).args, [
-            options.ranges[0].start,
-            options.ranges[0].end,
+            options!.ranges![0].start,
+            options!.ranges![0].end,
             'Key',
           ]);
           assert.deepStrictEqual(formatSpy.getCall(1).args, [
-            options.ranges[1].start,
-            options.ranges[1].end,
+            options!.ranges![1].start,
+            options!.ranges![1].end,
             'Key',
           ]);
           done();
@@ -548,9 +548,9 @@ describe('Bigtable/Table', function() {
       });
 
       it('should parse a filter object', function(done) {
-        const options = {
+        const options = ({
           filter: [{}],
-        };
+        } as {}) as tblTypes.CreateReadStreamTableOptions;
 
         const fakeFilter = {};
 

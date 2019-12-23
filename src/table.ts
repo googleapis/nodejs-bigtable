@@ -32,7 +32,7 @@ import {
   IColumnFamily,
 } from './family';
 import {Filter} from './filter';
-import {Mutation} from './mutation';
+import {Mutation, Data} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
@@ -46,6 +46,8 @@ import {
 import {Instance} from './instance';
 import {google} from '../proto/bigtable';
 import {GenericCallback} from './cluster';
+import {ServiceError} from '@grpc/grpc-js';
+import {TransformOptions} from 'stream';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -61,6 +63,18 @@ export type GetTableMetadataCallback = GenericCallback<
   google.bigtable.admin.v2.ITable
 >;
 export type GetTableMetadataResponse = [google.bigtable.admin.v2.ITable];
+export interface CreateReadStreamTableOptions extends OptionInterface {
+  decode?: boolean;
+  encoding?: boolean;
+  end?: string;
+  filter?: Filter;
+  keys?: string[];
+  limit?: number;
+  prefix?: string;
+  prefixes?: string[];
+  ranges?: PrefixRange[];
+  start?: string;
+}
 
 /**
  * @typedef {object} Policy
@@ -432,7 +446,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {Filter} [options.filter] Row filters allow you to
    *     both make advanced queries and format how the data is returned.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     here: https://googleapis.github.io/gax-nodejs/classes/CallSettings.html.
    * @param {string[]} [options.keys] A list of row keys.
    * @param {number} [options.limit] Maximum number of rows to be returned.
    * @param {string} [options.prefix] Prefix that the row key must match.
@@ -445,16 +459,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_table_readstream
    */
-  createReadStream(options?) {
+  createReadStream(options?: CreateReadStreamTableOptions) {
     options = options || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
 
-    let activeRequestStream;
+    let activeRequestStream: common.Abortable;
 
-    let rowKeys;
+    let rowKeys: string[] | null;
     const ranges = options.ranges || [];
-    let filter;
-    let rowsLimit;
+    let filter: Filter;
+    let rowsLimit: number;
     let rowsRead = 0;
     let numRequestsMade = 0;
 
@@ -464,10 +478,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           'start/end should be used exclusively to ranges/prefix/prefixes.'
         );
       }
-      ranges.push({
+      ranges.push(({
         start: options.start,
         end: options.end,
-      });
+      } as {}) as PrefixRange);
     }
 
     if (options.keys) {
@@ -511,12 +525,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       end();
     };
 
-    let chunkTransformer;
+    let chunkTransformer: ChunkTransformer;
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+      chunkTransformer = new ChunkTransformer({
+        decode: options!.decode,
+      } as TransformOptions);
 
+      // tslint:disable-next-line: no-any
       const reqOpts: any = {
         tableName: this.name,
         appProfileId: this.bigtable.appProfileId,
@@ -527,21 +544,23 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
-        const lessThan = (lhs, rhs) => {
+        const lessThan = (lhs: Buffer | Data, rhs: Buffer | Data) => {
           const lhsBytes = Mutation.convertToBytes(lhs);
           const rhsBytes = Mutation.convertToBytes(rhs);
           return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
         };
-        const greaterThan = (lhs, rhs) => lessThan(rhs, lhs);
-        const greaterThanOrEqualTo = (lhs, rhs) => !lessThan(rhs, lhs);
+        const greaterThan = (lhs: Buffer | Data, rhs: Buffer | Data) =>
+          lessThan(rhs, lhs);
+        const greaterThanOrEqualTo = (lhs: Buffer | Data, rhs: Buffer | Data) =>
+          !lessThan(rhs, lhs);
 
         if (ranges.length === 0) {
-          ranges.push({
+          ranges.push(({
             start: {
               value: lastRowKey,
               inclusive: false,
             },
-          });
+          } as {}) as PrefixRange);
         } else {
           // Readjust and/or remove ranges based on previous valid row reads.
 
@@ -549,20 +568,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           for (let index = ranges.length - 1; index >= 0; index--) {
             const range = ranges[index];
             const startValue = is.object(range.start)
-              ? range.start.value
+              ? // tslint:disable-next-line: no-any
+                (range.start as any).value
               : range.start;
             const endValue = is.object(range.end) ? range.end.value : range.end;
             const isWithinStart =
-              !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
-            const isWithinEnd = !endValue || lessThan(lastRowKey, endValue);
+              !startValue ||
+              greaterThanOrEqualTo(startValue, lastRowKey as Buffer | Data);
+            const isWithinEnd =
+              !endValue ||
+              lessThan(lastRowKey as Buffer | Data, endValue as Buffer | Data);
             if (isWithinStart) {
               if (isWithinEnd) {
                 // The lastRowKey is within this range, adjust the start
                 // value.
-                range.start = {
+                range.start = ({
                   value: lastRowKey,
                   inclusive: false,
-                };
+                } as {}) as string;
               } else {
                 // The lastRowKey is past this range, remove this range.
                 ranges.splice(index, 1);
@@ -573,7 +596,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
         // Remove rowKeys already read.
         if (rowKeys) {
-          rowKeys = rowKeys.filter(rowKey => greaterThan(rowKey, lastRowKey));
+          rowKeys = rowKeys.filter(rowKey =>
+            greaterThan(rowKey, lastRowKey as Buffer | Data)
+          );
           if (rowKeys.length === 0) {
             rowKeys = null;
           }
@@ -605,7 +630,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         client: 'BigtableClient',
         method: 'readRows',
         reqOpts,
-        gaxOpts: options.gaxOptions,
+        gaxOpts: options!.gaxOptions,
         retryOpts,
       });
 
@@ -619,6 +644,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         through.obj((rowData, enc, next) => {
           if (
             chunkTransformer._destroyed ||
+            // tslint:disable-next-line: no-any
             (userStream as any)._writableState.ended
           ) {
             return next();
@@ -631,7 +657,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }),
       ]);
 
-      rowStream.on('error', error => {
+      rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
