@@ -43,7 +43,7 @@
     "presystem-test": "npm run compile",
     "system-test": "mocha build/system-test --timeout 600000",
     "pretest": "npm run compile",
-    "test": "nyc mocha build/test",
+    "test": "c8 mocha build/test",
     "posttest": "npm run check"
   },
   "dependencies": {
@@ -95,7 +95,7 @@
     "mocha": "^6.0.0",
     "mv": "^2.1.1",
     "npc": "0.0.1",
-    "nyc": "^15.0.0",
+    "c8": "^7.0.0",
     "p-queue": "^6.0.2",
     "power-assert": "^1.4.4",
     "prettier": "^1.7.4",
