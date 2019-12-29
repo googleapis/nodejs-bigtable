@@ -17,6 +17,7 @@ const uuid = require(`uuid`);
 const snapshot = require('snap-shot-it');
 
 const {assert} = require('chai');
+const {describe, it} = require('mocha');
 const cp = require('child_process');
 const {Bigtable} = require('@google-cloud/bigtable');
 
