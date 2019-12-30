@@ -18,6 +18,7 @@ const Bigtable = require('../src');
 const {tests} = require('../../system-test/data/mutate-rows-retry-test.json');
 
 import * as assert from 'assert';
+import {describe, it} from 'mocha';
 import * as grpc from '@grpc/grpc-js';
 import * as sinon from 'sinon';
 import * as through from 'through2';

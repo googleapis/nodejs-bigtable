@@ -20,6 +20,7 @@ const {tests} = require('../../system-test/data/read-rows-retry-test.json');
 
 import * as grpc from '@grpc/grpc-js';
 import * as assert from 'assert';
+import {describe, it} from 'mocha';
 import * as sinon from 'sinon';
 import * as through from 'through2';
 

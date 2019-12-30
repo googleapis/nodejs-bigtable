@@ -15,6 +15,7 @@
  */
 
 import * as assert from 'assert';
+import {describe, it} from 'mocha';
 import Q from 'p-queue';
 import * as uuid from 'uuid';
 
