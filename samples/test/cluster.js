@@ -13,8 +13,9 @@
 // limitations under the License.
 
 'use strict';
-const uuid = require(`uuid`);
 
+const uuid = require(`uuid`);
+const {describe, it, before, after} = require('mocha');
 const Bigtable = require(`@google-cloud/bigtable`);
 const bigtable = new Bigtable();
 
