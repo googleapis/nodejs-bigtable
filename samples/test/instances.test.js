@@ -15,6 +15,7 @@
 'use strict';
 
 const {assert} = require('chai');
+const {describe, it, before, after} = require('mocha');
 const uuid = require('uuid');
 const {execSync} = require('child_process');
 const Bigtable = require('@google-cloud/bigtable');
