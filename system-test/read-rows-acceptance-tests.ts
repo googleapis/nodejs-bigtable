@@ -15,6 +15,7 @@
  */
 
 import * as assert from 'assert';
+import {describe, it} from 'mocha';
 const testcases = require('../../system-test/read-rows-acceptance-test.json')
   .tests;
 import {PassThrough} from 'stream';

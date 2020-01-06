@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as assert from 'assert';
+import {describe, it} from 'mocha';
 import * as Long from 'long';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
