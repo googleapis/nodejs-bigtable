@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [2.3.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.3.0...v2.3.1) (2019-12-27)
+
+
+### Bug Fixes
+
+* **deps:** pin TypeScript below 3.7.0 ([0c6232d](https://www.github.com/googleapis/nodejs-bigtable/commit/0c6232df47194b2d43e86c484f25d6f3b933b605))
+* **types:** overload for bigtable.getInstances ([#579](https://www.github.com/googleapis/nodejs-bigtable/issues/579)) ([91a07ba](https://www.github.com/googleapis/nodejs-bigtable/commit/91a07bab35c6ec4b8c4143c6499914aa34ef3689))
+
 ## [2.3.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.2.3...v2.3.0) (2019-12-03)
 
 
