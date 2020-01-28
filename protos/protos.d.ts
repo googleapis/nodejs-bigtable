@@ -39,7 +39,7 @@ export namespace google {
                     columnFamilies?: ({ [k: string]: google.bigtable.admin.v2.IColumnFamily }|null);
 
                     /** Table granularity */
-                    granularity?: (google.bigtable.admin.v2.Table.TimestampGranularity|null);
+                    granularity?: (google.bigtable.admin.v2.Table.TimestampGranularity|keyof typeof google.bigtable.admin.v2.Table.TimestampGranularity|null);
                 }
 
                 /** Represents a Table. */
@@ -61,7 +61,7 @@ export namespace google {
                     public columnFamilies: { [k: string]: google.bigtable.admin.v2.IColumnFamily };
 
                     /** Table granularity. */
-                    public granularity: google.bigtable.admin.v2.Table.TimestampGranularity;
+                    public granularity: (google.bigtable.admin.v2.Table.TimestampGranularity|keyof typeof google.bigtable.admin.v2.Table.TimestampGranularity);
 
                     /**
                      * Creates a new Table instance using the specified properties.
@@ -140,7 +140,7 @@ export namespace google {
                     interface IClusterState {
 
                         /** ClusterState replicationState */
-                        replicationState?: (google.bigtable.admin.v2.Table.ClusterState.ReplicationState|null);
+                        replicationState?: (google.bigtable.admin.v2.Table.ClusterState.ReplicationState|keyof typeof google.bigtable.admin.v2.Table.ClusterState.ReplicationState|null);
                     }
 
                     /** Represents a ClusterState. */
@@ -153,7 +153,7 @@ export namespace google {
                         constructor(properties?: google.bigtable.admin.v2.Table.IClusterState);
 
                         /** ClusterState replicationState. */
-                        public replicationState: google.bigtable.admin.v2.Table.ClusterState.ReplicationState;
+                        public replicationState: (google.bigtable.admin.v2.Table.ClusterState.ReplicationState|keyof typeof google.bigtable.admin.v2.Table.ClusterState.ReplicationState);
 
                         /**
                          * Creates a new ClusterState instance using the specified properties.
@@ -648,7 +648,7 @@ export namespace google {
                     sourceTable?: (google.bigtable.admin.v2.ITable|null);
 
                     /** Snapshot dataSizeBytes */
-                    dataSizeBytes?: (number|Long|null);
+                    dataSizeBytes?: (number|Long|string|null);
 
                     /** Snapshot createTime */
                     createTime?: (google.protobuf.ITimestamp|null);
@@ -657,7 +657,7 @@ export namespace google {
                     deleteTime?: (google.protobuf.ITimestamp|null);
 
                     /** Snapshot state */
-                    state?: (google.bigtable.admin.v2.Snapshot.State|null);
+                    state?: (google.bigtable.admin.v2.Snapshot.State|keyof typeof google.bigtable.admin.v2.Snapshot.State|null);
 
                     /** Snapshot description */
                     description?: (string|null);
@@ -679,7 +679,7 @@ export namespace google {
                     public sourceTable?: (google.bigtable.admin.v2.ITable|null);
 
                     /** Snapshot dataSizeBytes. */
-                    public dataSizeBytes: (number|Long);
+                    public dataSizeBytes: (number|Long|string);
 
                     /** Snapshot createTime. */
                     public createTime?: (google.protobuf.ITimestamp|null);
@@ -688,7 +688,7 @@ export namespace google {
                     public deleteTime?: (google.protobuf.ITimestamp|null);
 
                     /** Snapshot state. */
-                    public state: google.bigtable.admin.v2.Snapshot.State;
+                    public state: (google.bigtable.admin.v2.Snapshot.State|keyof typeof google.bigtable.admin.v2.Snapshot.State);
 
                     /** Snapshot description. */
                     public description: string;
@@ -3368,10 +3368,10 @@ export namespace google {
                     displayName?: (string|null);
 
                     /** Instance state */
-                    state?: (google.bigtable.admin.v2.Instance.State|null);
+                    state?: (google.bigtable.admin.v2.Instance.State|keyof typeof google.bigtable.admin.v2.Instance.State|null);
 
                     /** Instance type */
-                    type?: (google.bigtable.admin.v2.Instance.Type|null);
+                    type?: (google.bigtable.admin.v2.Instance.Type|keyof typeof google.bigtable.admin.v2.Instance.Type|null);
 
                     /** Instance labels */
                     labels?: ({ [k: string]: string }|null);
@@ -3393,10 +3393,10 @@ export namespace google {
                     public displayName: string;
 
                     /** Instance state. */
-                    public state: google.bigtable.admin.v2.Instance.State;
+                    public state: (google.bigtable.admin.v2.Instance.State|keyof typeof google.bigtable.admin.v2.Instance.State);
 
                     /** Instance type. */
-                    public type: google.bigtable.admin.v2.Instance.Type;
+                    public type: (google.bigtable.admin.v2.Instance.Type|keyof typeof google.bigtable.admin.v2.Instance.Type);
 
                     /** Instance labels. */
                     public labels: { [k: string]: string };
@@ -3499,13 +3499,13 @@ export namespace google {
                     location?: (string|null);
 
                     /** Cluster state */
-                    state?: (google.bigtable.admin.v2.Cluster.State|null);
+                    state?: (google.bigtable.admin.v2.Cluster.State|keyof typeof google.bigtable.admin.v2.Cluster.State|null);
 
                     /** Cluster serveNodes */
                     serveNodes?: (number|null);
 
                     /** Cluster defaultStorageType */
-                    defaultStorageType?: (google.bigtable.admin.v2.StorageType|null);
+                    defaultStorageType?: (google.bigtable.admin.v2.StorageType|keyof typeof google.bigtable.admin.v2.StorageType|null);
                 }
 
                 /** Represents a Cluster. */
@@ -3524,13 +3524,13 @@ export namespace google {
                     public location: string;
 
                     /** Cluster state. */
-                    public state: google.bigtable.admin.v2.Cluster.State;
+                    public state: (google.bigtable.admin.v2.Cluster.State|keyof typeof google.bigtable.admin.v2.Cluster.State);
 
                     /** Cluster serveNodes. */
                     public serveNodes: number;
 
                     /** Cluster defaultStorageType. */
-                    public defaultStorageType: google.bigtable.admin.v2.StorageType;
+                    public defaultStorageType: (google.bigtable.admin.v2.StorageType|keyof typeof google.bigtable.admin.v2.StorageType);
 
                     /**
                      * Creates a new Cluster instance using the specified properties.
@@ -4389,7 +4389,7 @@ export namespace google {
                     interface ISplit {
 
                         /** Split key */
-                        key?: (Uint8Array|null);
+                        key?: (Uint8Array|string|null);
                     }
 
                     /** Represents a Split. */
@@ -4402,7 +4402,7 @@ export namespace google {
                         constructor(properties?: google.bigtable.admin.v2.CreateTableRequest.ISplit);
 
                         /** Split key. */
-                        public key: Uint8Array;
+                        public key: (Uint8Array|string);
 
                         /**
                          * Creates a new Split instance using the specified properties.
@@ -4585,7 +4585,7 @@ export namespace google {
                     name?: (string|null);
 
                     /** DropRowRangeRequest rowKeyPrefix */
-                    rowKeyPrefix?: (Uint8Array|null);
+                    rowKeyPrefix?: (Uint8Array|string|null);
 
                     /** DropRowRangeRequest deleteAllDataFromTable */
                     deleteAllDataFromTable?: (boolean|null);
@@ -4604,7 +4604,7 @@ export namespace google {
                     public name: string;
 
                     /** DropRowRangeRequest rowKeyPrefix. */
-                    public rowKeyPrefix: Uint8Array;
+                    public rowKeyPrefix: (Uint8Array|string);
 
                     /** DropRowRangeRequest deleteAllDataFromTable. */
                     public deleteAllDataFromTable: boolean;
@@ -4690,7 +4690,7 @@ export namespace google {
                     parent?: (string|null);
 
                     /** ListTablesRequest view */
-                    view?: (google.bigtable.admin.v2.Table.View|null);
+                    view?: (google.bigtable.admin.v2.Table.View|keyof typeof google.bigtable.admin.v2.Table.View|null);
 
                     /** ListTablesRequest pageSize */
                     pageSize?: (number|null);
@@ -4712,7 +4712,7 @@ export namespace google {
                     public parent: string;
 
                     /** ListTablesRequest view. */
-                    public view: google.bigtable.admin.v2.Table.View;
+                    public view: (google.bigtable.admin.v2.Table.View|keyof typeof google.bigtable.admin.v2.Table.View);
 
                     /** ListTablesRequest pageSize. */
                     public pageSize: number;
@@ -4894,7 +4894,7 @@ export namespace google {
                     name?: (string|null);
 
                     /** GetTableRequest view */
-                    view?: (google.bigtable.admin.v2.Table.View|null);
+                    view?: (google.bigtable.admin.v2.Table.View|keyof typeof google.bigtable.admin.v2.Table.View|null);
                 }
 
                 /** Represents a GetTableRequest. */
@@ -4910,7 +4910,7 @@ export namespace google {
                     public name: string;
 
                     /** GetTableRequest view. */
-                    public view: google.bigtable.admin.v2.Table.View;
+                    public view: (google.bigtable.admin.v2.Table.View|keyof typeof google.bigtable.admin.v2.Table.View);
 
                     /**
                      * Creates a new GetTableRequest instance using the specified properties.
@@ -6516,7 +6516,7 @@ export namespace google {
                 filter?: (google.bigtable.v2.IRowFilter|null);
 
                 /** ReadRowsRequest rowsLimit */
-                rowsLimit?: (number|Long|null);
+                rowsLimit?: (number|Long|string|null);
             }
 
             /** Represents a ReadRowsRequest. */
@@ -6541,7 +6541,7 @@ export namespace google {
                 public filter?: (google.bigtable.v2.IRowFilter|null);
 
                 /** ReadRowsRequest rowsLimit. */
-                public rowsLimit: (number|Long);
+                public rowsLimit: (number|Long|string);
 
                 /**
                  * Creates a new ReadRowsRequest instance using the specified properties.
@@ -6621,7 +6621,7 @@ export namespace google {
                 chunks?: (google.bigtable.v2.ReadRowsResponse.ICellChunk[]|null);
 
                 /** ReadRowsResponse lastScannedRowKey */
-                lastScannedRowKey?: (Uint8Array|null);
+                lastScannedRowKey?: (Uint8Array|string|null);
             }
 
             /** Represents a ReadRowsResponse. */
@@ -6637,7 +6637,7 @@ export namespace google {
                 public chunks: google.bigtable.v2.ReadRowsResponse.ICellChunk[];
 
                 /** ReadRowsResponse lastScannedRowKey. */
-                public lastScannedRowKey: Uint8Array;
+                public lastScannedRowKey: (Uint8Array|string);
 
                 /**
                  * Creates a new ReadRowsResponse instance using the specified properties.
@@ -6716,7 +6716,7 @@ export namespace google {
                 interface ICellChunk {
 
                     /** CellChunk rowKey */
-                    rowKey?: (Uint8Array|null);
+                    rowKey?: (Uint8Array|string|null);
 
                     /** CellChunk familyName */
                     familyName?: (google.protobuf.IStringValue|null);
@@ -6725,13 +6725,13 @@ export namespace google {
                     qualifier?: (google.protobuf.IBytesValue|null);
 
                     /** CellChunk timestampMicros */
-                    timestampMicros?: (number|Long|null);
+                    timestampMicros?: (number|Long|string|null);
 
                     /** CellChunk labels */
                     labels?: (string[]|null);
 
                     /** CellChunk value */
-                    value?: (Uint8Array|null);
+                    value?: (Uint8Array|string|null);
 
                     /** CellChunk valueSize */
                     valueSize?: (number|null);
@@ -6753,7 +6753,7 @@ export namespace google {
                     constructor(properties?: google.bigtable.v2.ReadRowsResponse.ICellChunk);
 
                     /** CellChunk rowKey. */
-                    public rowKey: Uint8Array;
+                    public rowKey: (Uint8Array|string);
 
                     /** CellChunk familyName. */
                     public familyName?: (google.protobuf.IStringValue|null);
@@ -6762,13 +6762,13 @@ export namespace google {
                     public qualifier?: (google.protobuf.IBytesValue|null);
 
                     /** CellChunk timestampMicros. */
-                    public timestampMicros: (number|Long);
+                    public timestampMicros: (number|Long|string);
 
                     /** CellChunk labels. */
                     public labels: string[];
 
                     /** CellChunk value. */
-                    public value: Uint8Array;
+                    public value: (Uint8Array|string);
 
                     /** CellChunk valueSize. */
                     public valueSize: number;
@@ -6954,10 +6954,10 @@ export namespace google {
             interface ISampleRowKeysResponse {
 
                 /** SampleRowKeysResponse rowKey */
-                rowKey?: (Uint8Array|null);
+                rowKey?: (Uint8Array|string|null);
 
                 /** SampleRowKeysResponse offsetBytes */
-                offsetBytes?: (number|Long|null);
+                offsetBytes?: (number|Long|string|null);
             }
 
             /** Represents a SampleRowKeysResponse. */
@@ -6970,10 +6970,10 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.ISampleRowKeysResponse);
 
                 /** SampleRowKeysResponse rowKey. */
-                public rowKey: Uint8Array;
+                public rowKey: (Uint8Array|string);
 
                 /** SampleRowKeysResponse offsetBytes. */
-                public offsetBytes: (number|Long);
+                public offsetBytes: (number|Long|string);
 
                 /**
                  * Creates a new SampleRowKeysResponse instance using the specified properties.
@@ -7056,7 +7056,7 @@ export namespace google {
                 appProfileId?: (string|null);
 
                 /** MutateRowRequest rowKey */
-                rowKey?: (Uint8Array|null);
+                rowKey?: (Uint8Array|string|null);
 
                 /** MutateRowRequest mutations */
                 mutations?: (google.bigtable.v2.IMutation[]|null);
@@ -7078,7 +7078,7 @@ export namespace google {
                 public appProfileId: string;
 
                 /** MutateRowRequest rowKey. */
-                public rowKey: Uint8Array;
+                public rowKey: (Uint8Array|string);
 
                 /** MutateRowRequest mutations. */
                 public mutations: google.bigtable.v2.IMutation[];
@@ -7346,7 +7346,7 @@ export namespace google {
                 interface IEntry {
 
                     /** Entry rowKey */
-                    rowKey?: (Uint8Array|null);
+                    rowKey?: (Uint8Array|string|null);
 
                     /** Entry mutations */
                     mutations?: (google.bigtable.v2.IMutation[]|null);
@@ -7362,7 +7362,7 @@ export namespace google {
                     constructor(properties?: google.bigtable.v2.MutateRowsRequest.IEntry);
 
                     /** Entry rowKey. */
-                    public rowKey: Uint8Array;
+                    public rowKey: (Uint8Array|string);
 
                     /** Entry mutations. */
                     public mutations: google.bigtable.v2.IMutation[];
@@ -7535,7 +7535,7 @@ export namespace google {
                 interface IEntry {
 
                     /** Entry index */
-                    index?: (number|Long|null);
+                    index?: (number|Long|string|null);
 
                     /** Entry status */
                     status?: (google.rpc.IStatus|null);
@@ -7551,7 +7551,7 @@ export namespace google {
                     constructor(properties?: google.bigtable.v2.MutateRowsResponse.IEntry);
 
                     /** Entry index. */
-                    public index: (number|Long);
+                    public index: (number|Long|string);
 
                     /** Entry status. */
                     public status?: (google.rpc.IStatus|null);
@@ -7638,7 +7638,7 @@ export namespace google {
                 appProfileId?: (string|null);
 
                 /** CheckAndMutateRowRequest rowKey */
-                rowKey?: (Uint8Array|null);
+                rowKey?: (Uint8Array|string|null);
 
                 /** CheckAndMutateRowRequest predicateFilter */
                 predicateFilter?: (google.bigtable.v2.IRowFilter|null);
@@ -7666,7 +7666,7 @@ export namespace google {
                 public appProfileId: string;
 
                 /** CheckAndMutateRowRequest rowKey. */
-                public rowKey: Uint8Array;
+                public rowKey: (Uint8Array|string);
 
                 /** CheckAndMutateRowRequest predicateFilter. */
                 public predicateFilter?: (google.bigtable.v2.IRowFilter|null);
@@ -7848,7 +7848,7 @@ export namespace google {
                 appProfileId?: (string|null);
 
                 /** ReadModifyWriteRowRequest rowKey */
-                rowKey?: (Uint8Array|null);
+                rowKey?: (Uint8Array|string|null);
 
                 /** ReadModifyWriteRowRequest rules */
                 rules?: (google.bigtable.v2.IReadModifyWriteRule[]|null);
@@ -7870,7 +7870,7 @@ export namespace google {
                 public appProfileId: string;
 
                 /** ReadModifyWriteRowRequest rowKey. */
-                public rowKey: Uint8Array;
+                public rowKey: (Uint8Array|string);
 
                 /** ReadModifyWriteRowRequest rules. */
                 public rules: google.bigtable.v2.IReadModifyWriteRule[];
@@ -8040,7 +8040,7 @@ export namespace google {
             interface IRow {
 
                 /** Row key */
-                key?: (Uint8Array|null);
+                key?: (Uint8Array|string|null);
 
                 /** Row families */
                 families?: (google.bigtable.v2.IFamily[]|null);
@@ -8056,7 +8056,7 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.IRow);
 
                 /** Row key. */
-                public key: Uint8Array;
+                public key: (Uint8Array|string);
 
                 /** Row families. */
                 public families: google.bigtable.v2.IFamily[];
@@ -8232,7 +8232,7 @@ export namespace google {
             interface IColumn {
 
                 /** Column qualifier */
-                qualifier?: (Uint8Array|null);
+                qualifier?: (Uint8Array|string|null);
 
                 /** Column cells */
                 cells?: (google.bigtable.v2.ICell[]|null);
@@ -8248,7 +8248,7 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.IColumn);
 
                 /** Column qualifier. */
-                public qualifier: Uint8Array;
+                public qualifier: (Uint8Array|string);
 
                 /** Column cells. */
                 public cells: google.bigtable.v2.ICell[];
@@ -8328,10 +8328,10 @@ export namespace google {
             interface ICell {
 
                 /** Cell timestampMicros */
-                timestampMicros?: (number|Long|null);
+                timestampMicros?: (number|Long|string|null);
 
                 /** Cell value */
-                value?: (Uint8Array|null);
+                value?: (Uint8Array|string|null);
 
                 /** Cell labels */
                 labels?: (string[]|null);
@@ -8347,10 +8347,10 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.ICell);
 
                 /** Cell timestampMicros. */
-                public timestampMicros: (number|Long);
+                public timestampMicros: (number|Long|string);
 
                 /** Cell value. */
-                public value: Uint8Array;
+                public value: (Uint8Array|string);
 
                 /** Cell labels. */
                 public labels: string[];
@@ -8430,16 +8430,16 @@ export namespace google {
             interface IRowRange {
 
                 /** RowRange startKeyClosed */
-                startKeyClosed?: (Uint8Array|null);
+                startKeyClosed?: (Uint8Array|string|null);
 
                 /** RowRange startKeyOpen */
-                startKeyOpen?: (Uint8Array|null);
+                startKeyOpen?: (Uint8Array|string|null);
 
                 /** RowRange endKeyOpen */
-                endKeyOpen?: (Uint8Array|null);
+                endKeyOpen?: (Uint8Array|string|null);
 
                 /** RowRange endKeyClosed */
-                endKeyClosed?: (Uint8Array|null);
+                endKeyClosed?: (Uint8Array|string|null);
             }
 
             /** Represents a RowRange. */
@@ -8452,16 +8452,16 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.IRowRange);
 
                 /** RowRange startKeyClosed. */
-                public startKeyClosed: Uint8Array;
+                public startKeyClosed: (Uint8Array|string);
 
                 /** RowRange startKeyOpen. */
-                public startKeyOpen: Uint8Array;
+                public startKeyOpen: (Uint8Array|string);
 
                 /** RowRange endKeyOpen. */
-                public endKeyOpen: Uint8Array;
+                public endKeyOpen: (Uint8Array|string);
 
                 /** RowRange endKeyClosed. */
-                public endKeyClosed: Uint8Array;
+                public endKeyClosed: (Uint8Array|string);
 
                 /** RowRange startKey. */
                 public startKey?: ("startKeyClosed"|"startKeyOpen");
@@ -8643,16 +8643,16 @@ export namespace google {
                 familyName?: (string|null);
 
                 /** ColumnRange startQualifierClosed */
-                startQualifierClosed?: (Uint8Array|null);
+                startQualifierClosed?: (Uint8Array|string|null);
 
                 /** ColumnRange startQualifierOpen */
-                startQualifierOpen?: (Uint8Array|null);
+                startQualifierOpen?: (Uint8Array|string|null);
 
                 /** ColumnRange endQualifierClosed */
-                endQualifierClosed?: (Uint8Array|null);
+                endQualifierClosed?: (Uint8Array|string|null);
 
                 /** ColumnRange endQualifierOpen */
-                endQualifierOpen?: (Uint8Array|null);
+                endQualifierOpen?: (Uint8Array|string|null);
             }
 
             /** Represents a ColumnRange. */
@@ -8668,16 +8668,16 @@ export namespace google {
                 public familyName: string;
 
                 /** ColumnRange startQualifierClosed. */
-                public startQualifierClosed: Uint8Array;
+                public startQualifierClosed: (Uint8Array|string);
 
                 /** ColumnRange startQualifierOpen. */
-                public startQualifierOpen: Uint8Array;
+                public startQualifierOpen: (Uint8Array|string);
 
                 /** ColumnRange endQualifierClosed. */
-                public endQualifierClosed: Uint8Array;
+                public endQualifierClosed: (Uint8Array|string);
 
                 /** ColumnRange endQualifierOpen. */
-                public endQualifierOpen: Uint8Array;
+                public endQualifierOpen: (Uint8Array|string);
 
                 /** ColumnRange startQualifier. */
                 public startQualifier?: ("startQualifierClosed"|"startQualifierOpen");
@@ -8760,10 +8760,10 @@ export namespace google {
             interface ITimestampRange {
 
                 /** TimestampRange startTimestampMicros */
-                startTimestampMicros?: (number|Long|null);
+                startTimestampMicros?: (number|Long|string|null);
 
                 /** TimestampRange endTimestampMicros */
-                endTimestampMicros?: (number|Long|null);
+                endTimestampMicros?: (number|Long|string|null);
             }
 
             /** Represents a TimestampRange. */
@@ -8776,10 +8776,10 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.ITimestampRange);
 
                 /** TimestampRange startTimestampMicros. */
-                public startTimestampMicros: (number|Long);
+                public startTimestampMicros: (number|Long|string);
 
                 /** TimestampRange endTimestampMicros. */
-                public endTimestampMicros: (number|Long);
+                public endTimestampMicros: (number|Long|string);
 
                 /**
                  * Creates a new TimestampRange instance using the specified properties.
@@ -8856,16 +8856,16 @@ export namespace google {
             interface IValueRange {
 
                 /** ValueRange startValueClosed */
-                startValueClosed?: (Uint8Array|null);
+                startValueClosed?: (Uint8Array|string|null);
 
                 /** ValueRange startValueOpen */
-                startValueOpen?: (Uint8Array|null);
+                startValueOpen?: (Uint8Array|string|null);
 
                 /** ValueRange endValueClosed */
-                endValueClosed?: (Uint8Array|null);
+                endValueClosed?: (Uint8Array|string|null);
 
                 /** ValueRange endValueOpen */
-                endValueOpen?: (Uint8Array|null);
+                endValueOpen?: (Uint8Array|string|null);
             }
 
             /** Represents a ValueRange. */
@@ -8878,16 +8878,16 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.IValueRange);
 
                 /** ValueRange startValueClosed. */
-                public startValueClosed: Uint8Array;
+                public startValueClosed: (Uint8Array|string);
 
                 /** ValueRange startValueOpen. */
-                public startValueOpen: Uint8Array;
+                public startValueOpen: (Uint8Array|string);
 
                 /** ValueRange endValueClosed. */
-                public endValueClosed: Uint8Array;
+                public endValueClosed: (Uint8Array|string);
 
                 /** ValueRange endValueOpen. */
-                public endValueOpen: Uint8Array;
+                public endValueOpen: (Uint8Array|string);
 
                 /** ValueRange startValue. */
                 public startValue?: ("startValueClosed"|"startValueOpen");
@@ -8988,7 +8988,7 @@ export namespace google {
                 blockAllFilter?: (boolean|null);
 
                 /** RowFilter rowKeyRegexFilter */
-                rowKeyRegexFilter?: (Uint8Array|null);
+                rowKeyRegexFilter?: (Uint8Array|string|null);
 
                 /** RowFilter rowSampleFilter */
                 rowSampleFilter?: (number|null);
@@ -8997,7 +8997,7 @@ export namespace google {
                 familyNameRegexFilter?: (string|null);
 
                 /** RowFilter columnQualifierRegexFilter */
-                columnQualifierRegexFilter?: (Uint8Array|null);
+                columnQualifierRegexFilter?: (Uint8Array|string|null);
 
                 /** RowFilter columnRangeFilter */
                 columnRangeFilter?: (google.bigtable.v2.IColumnRange|null);
@@ -9006,7 +9006,7 @@ export namespace google {
                 timestampRangeFilter?: (google.bigtable.v2.ITimestampRange|null);
 
                 /** RowFilter valueRegexFilter */
-                valueRegexFilter?: (Uint8Array|null);
+                valueRegexFilter?: (Uint8Array|string|null);
 
                 /** RowFilter valueRangeFilter */
                 valueRangeFilter?: (google.bigtable.v2.IValueRange|null);
@@ -9055,7 +9055,7 @@ export namespace google {
                 public blockAllFilter: boolean;
 
                 /** RowFilter rowKeyRegexFilter. */
-                public rowKeyRegexFilter: Uint8Array;
+                public rowKeyRegexFilter: (Uint8Array|string);
 
                 /** RowFilter rowSampleFilter. */
                 public rowSampleFilter: number;
@@ -9064,7 +9064,7 @@ export namespace google {
                 public familyNameRegexFilter: string;
 
                 /** RowFilter columnQualifierRegexFilter. */
-                public columnQualifierRegexFilter: Uint8Array;
+                public columnQualifierRegexFilter: (Uint8Array|string);
 
                 /** RowFilter columnRangeFilter. */
                 public columnRangeFilter?: (google.bigtable.v2.IColumnRange|null);
@@ -9073,7 +9073,7 @@ export namespace google {
                 public timestampRangeFilter?: (google.bigtable.v2.ITimestampRange|null);
 
                 /** RowFilter valueRegexFilter. */
-                public valueRegexFilter: Uint8Array;
+                public valueRegexFilter: (Uint8Array|string);
 
                 /** RowFilter valueRangeFilter. */
                 public valueRangeFilter?: (google.bigtable.v2.IValueRange|null);
@@ -9572,13 +9572,13 @@ export namespace google {
                     familyName?: (string|null);
 
                     /** SetCell columnQualifier */
-                    columnQualifier?: (Uint8Array|null);
+                    columnQualifier?: (Uint8Array|string|null);
 
                     /** SetCell timestampMicros */
-                    timestampMicros?: (number|Long|null);
+                    timestampMicros?: (number|Long|string|null);
 
                     /** SetCell value */
-                    value?: (Uint8Array|null);
+                    value?: (Uint8Array|string|null);
                 }
 
                 /** Represents a SetCell. */
@@ -9594,13 +9594,13 @@ export namespace google {
                     public familyName: string;
 
                     /** SetCell columnQualifier. */
-                    public columnQualifier: Uint8Array;
+                    public columnQualifier: (Uint8Array|string);
 
                     /** SetCell timestampMicros. */
-                    public timestampMicros: (number|Long);
+                    public timestampMicros: (number|Long|string);
 
                     /** SetCell value. */
-                    public value: Uint8Array;
+                    public value: (Uint8Array|string);
 
                     /**
                      * Creates a new SetCell instance using the specified properties.
@@ -9680,7 +9680,7 @@ export namespace google {
                     familyName?: (string|null);
 
                     /** DeleteFromColumn columnQualifier */
-                    columnQualifier?: (Uint8Array|null);
+                    columnQualifier?: (Uint8Array|string|null);
 
                     /** DeleteFromColumn timeRange */
                     timeRange?: (google.bigtable.v2.ITimestampRange|null);
@@ -9699,7 +9699,7 @@ export namespace google {
                     public familyName: string;
 
                     /** DeleteFromColumn columnQualifier. */
-                    public columnQualifier: Uint8Array;
+                    public columnQualifier: (Uint8Array|string);
 
                     /** DeleteFromColumn timeRange. */
                     public timeRange?: (google.bigtable.v2.ITimestampRange|null);
@@ -9957,13 +9957,13 @@ export namespace google {
                 familyName?: (string|null);
 
                 /** ReadModifyWriteRule columnQualifier */
-                columnQualifier?: (Uint8Array|null);
+                columnQualifier?: (Uint8Array|string|null);
 
                 /** ReadModifyWriteRule appendValue */
-                appendValue?: (Uint8Array|null);
+                appendValue?: (Uint8Array|string|null);
 
                 /** ReadModifyWriteRule incrementAmount */
-                incrementAmount?: (number|Long|null);
+                incrementAmount?: (number|Long|string|null);
             }
 
             /** Represents a ReadModifyWriteRule. */
@@ -9979,13 +9979,13 @@ export namespace google {
                 public familyName: string;
 
                 /** ReadModifyWriteRule columnQualifier. */
-                public columnQualifier: Uint8Array;
+                public columnQualifier: (Uint8Array|string);
 
                 /** ReadModifyWriteRule appendValue. */
-                public appendValue: Uint8Array;
+                public appendValue: (Uint8Array|string);
 
                 /** ReadModifyWriteRule incrementAmount. */
-                public incrementAmount: (number|Long);
+                public incrementAmount: (number|Long|string);
 
                 /** ReadModifyWriteRule rule. */
                 public rule?: ("appendValue"|"incrementAmount");
@@ -10428,7 +10428,7 @@ export namespace google {
             nameField?: (string|null);
 
             /** ResourceDescriptor history */
-            history?: (google.api.ResourceDescriptor.History|null);
+            history?: (google.api.ResourceDescriptor.History|keyof typeof google.api.ResourceDescriptor.History|null);
 
             /** ResourceDescriptor plural */
             plural?: (string|null);
@@ -10456,7 +10456,7 @@ export namespace google {
             public nameField: string;
 
             /** ResourceDescriptor history. */
-            public history: google.api.ResourceDescriptor.History;
+            public history: (google.api.ResourceDescriptor.History|keyof typeof google.api.ResourceDescriptor.History);
 
             /** ResourceDescriptor plural. */
             public plural: string;
@@ -11336,10 +11336,10 @@ export namespace google {
             number?: (number|null);
 
             /** FieldDescriptorProto label */
-            label?: (google.protobuf.FieldDescriptorProto.Label|null);
+            label?: (google.protobuf.FieldDescriptorProto.Label|keyof typeof google.protobuf.FieldDescriptorProto.Label|null);
 
             /** FieldDescriptorProto type */
-            type?: (google.protobuf.FieldDescriptorProto.Type|null);
+            type?: (google.protobuf.FieldDescriptorProto.Type|keyof typeof google.protobuf.FieldDescriptorProto.Type|null);
 
             /** FieldDescriptorProto typeName */
             typeName?: (string|null);
@@ -11376,10 +11376,10 @@ export namespace google {
             public number: number;
 
             /** FieldDescriptorProto label. */
-            public label: google.protobuf.FieldDescriptorProto.Label;
+            public label: (google.protobuf.FieldDescriptorProto.Label|keyof typeof google.protobuf.FieldDescriptorProto.Label);
 
             /** FieldDescriptorProto type. */
-            public type: google.protobuf.FieldDescriptorProto.Type;
+            public type: (google.protobuf.FieldDescriptorProto.Type|keyof typeof google.protobuf.FieldDescriptorProto.Type);
 
             /** FieldDescriptorProto typeName. */
             public typeName: string;
@@ -12154,7 +12154,7 @@ export namespace google {
             javaStringCheckUtf8?: (boolean|null);
 
             /** FileOptions optimizeFor */
-            optimizeFor?: (google.protobuf.FileOptions.OptimizeMode|null);
+            optimizeFor?: (google.protobuf.FileOptions.OptimizeMode|keyof typeof google.protobuf.FileOptions.OptimizeMode|null);
 
             /** FileOptions goPackage */
             goPackage?: (string|null);
@@ -12230,7 +12230,7 @@ export namespace google {
             public javaStringCheckUtf8: boolean;
 
             /** FileOptions optimizeFor. */
-            public optimizeFor: google.protobuf.FileOptions.OptimizeMode;
+            public optimizeFor: (google.protobuf.FileOptions.OptimizeMode|keyof typeof google.protobuf.FileOptions.OptimizeMode);
 
             /** FileOptions goPackage. */
             public goPackage: string;
@@ -12479,13 +12479,13 @@ export namespace google {
         interface IFieldOptions {
 
             /** FieldOptions ctype */
-            ctype?: (google.protobuf.FieldOptions.CType|null);
+            ctype?: (google.protobuf.FieldOptions.CType|keyof typeof google.protobuf.FieldOptions.CType|null);
 
             /** FieldOptions packed */
             packed?: (boolean|null);
 
             /** FieldOptions jstype */
-            jstype?: (google.protobuf.FieldOptions.JSType|null);
+            jstype?: (google.protobuf.FieldOptions.JSType|keyof typeof google.protobuf.FieldOptions.JSType|null);
 
             /** FieldOptions lazy */
             lazy?: (boolean|null);
@@ -12516,13 +12516,13 @@ export namespace google {
             constructor(properties?: google.protobuf.IFieldOptions);
 
             /** FieldOptions ctype. */
-            public ctype: google.protobuf.FieldOptions.CType;
+            public ctype: (google.protobuf.FieldOptions.CType|keyof typeof google.protobuf.FieldOptions.CType);
 
             /** FieldOptions packed. */
             public packed: boolean;
 
             /** FieldOptions jstype. */
-            public jstype: google.protobuf.FieldOptions.JSType;
+            public jstype: (google.protobuf.FieldOptions.JSType|keyof typeof google.protobuf.FieldOptions.JSType);
 
             /** FieldOptions lazy. */
             public lazy: boolean;
@@ -13021,7 +13021,7 @@ export namespace google {
             deprecated?: (boolean|null);
 
             /** MethodOptions idempotencyLevel */
-            idempotencyLevel?: (google.protobuf.MethodOptions.IdempotencyLevel|null);
+            idempotencyLevel?: (google.protobuf.MethodOptions.IdempotencyLevel|keyof typeof google.protobuf.MethodOptions.IdempotencyLevel|null);
 
             /** MethodOptions uninterpretedOption */
             uninterpretedOption?: (google.protobuf.IUninterpretedOption[]|null);
@@ -13049,7 +13049,7 @@ export namespace google {
             public deprecated: boolean;
 
             /** MethodOptions idempotencyLevel. */
-            public idempotencyLevel: google.protobuf.MethodOptions.IdempotencyLevel;
+            public idempotencyLevel: (google.protobuf.MethodOptions.IdempotencyLevel|keyof typeof google.protobuf.MethodOptions.IdempotencyLevel);
 
             /** MethodOptions uninterpretedOption. */
             public uninterpretedOption: google.protobuf.IUninterpretedOption[];
@@ -13145,16 +13145,16 @@ export namespace google {
             identifierValue?: (string|null);
 
             /** UninterpretedOption positiveIntValue */
-            positiveIntValue?: (number|Long|null);
+            positiveIntValue?: (number|Long|string|null);
 
             /** UninterpretedOption negativeIntValue */
-            negativeIntValue?: (number|Long|null);
+            negativeIntValue?: (number|Long|string|null);
 
             /** UninterpretedOption doubleValue */
             doubleValue?: (number|null);
 
             /** UninterpretedOption stringValue */
-            stringValue?: (Uint8Array|null);
+            stringValue?: (Uint8Array|string|null);
 
             /** UninterpretedOption aggregateValue */
             aggregateValue?: (string|null);
@@ -13176,16 +13176,16 @@ export namespace google {
             public identifierValue: string;
 
             /** UninterpretedOption positiveIntValue. */
-            public positiveIntValue: (number|Long);
+            public positiveIntValue: (number|Long|string);
 
             /** UninterpretedOption negativeIntValue. */
-            public negativeIntValue: (number|Long);
+            public negativeIntValue: (number|Long|string);
 
             /** UninterpretedOption doubleValue. */
             public doubleValue: number;
 
             /** UninterpretedOption stringValue. */
-            public stringValue: Uint8Array;
+            public stringValue: (Uint8Array|string);
 
             /** UninterpretedOption aggregateValue. */
             public aggregateValue: string;
@@ -13772,7 +13772,7 @@ export namespace google {
         interface IDuration {
 
             /** Duration seconds */
-            seconds?: (number|Long|null);
+            seconds?: (number|Long|string|null);
 
             /** Duration nanos */
             nanos?: (number|null);
@@ -13788,7 +13788,7 @@ export namespace google {
             constructor(properties?: google.protobuf.IDuration);
 
             /** Duration seconds. */
-            public seconds: (number|Long);
+            public seconds: (number|Long|string);
 
             /** Duration nanos. */
             public nanos: number;
@@ -13868,7 +13868,7 @@ export namespace google {
         interface ITimestamp {
 
             /** Timestamp seconds */
-            seconds?: (number|Long|null);
+            seconds?: (number|Long|string|null);
 
             /** Timestamp nanos */
             nanos?: (number|null);
@@ -13884,7 +13884,7 @@ export namespace google {
             constructor(properties?: google.protobuf.ITimestamp);
 
             /** Timestamp seconds. */
-            public seconds: (number|Long);
+            public seconds: (number|Long|string);
 
             /** Timestamp nanos. */
             public nanos: number;
@@ -13967,7 +13967,7 @@ export namespace google {
             type_url?: (string|null);
 
             /** Any value */
-            value?: (Uint8Array|null);
+            value?: (Uint8Array|string|null);
         }
 
         /** Represents an Any. */
@@ -13983,7 +13983,7 @@ export namespace google {
             public type_url: string;
 
             /** Any value. */
-            public value: Uint8Array;
+            public value: (Uint8Array|string);
 
             /**
              * Creates a new Any instance using the specified properties.
@@ -14414,7 +14414,7 @@ export namespace google {
         interface IInt64Value {
 
             /** Int64Value value */
-            value?: (number|Long|null);
+            value?: (number|Long|string|null);
         }
 
         /** Represents an Int64Value. */
@@ -14427,7 +14427,7 @@ export namespace google {
             constructor(properties?: google.protobuf.IInt64Value);
 
             /** Int64Value value. */
-            public value: (number|Long);
+            public value: (number|Long|string);
 
             /**
              * Creates a new Int64Value instance using the specified properties.
@@ -14504,7 +14504,7 @@ export namespace google {
         interface IUInt64Value {
 
             /** UInt64Value value */
-            value?: (number|Long|null);
+            value?: (number|Long|string|null);
         }
 
         /** Represents a UInt64Value. */
@@ -14517,7 +14517,7 @@ export namespace google {
             constructor(properties?: google.protobuf.IUInt64Value);
 
             /** UInt64Value value. */
-            public value: (number|Long);
+            public value: (number|Long|string);
 
             /**
              * Creates a new UInt64Value instance using the specified properties.
@@ -14954,7 +14954,7 @@ export namespace google {
         interface IBytesValue {
 
             /** BytesValue value */
-            value?: (Uint8Array|null);
+            value?: (Uint8Array|string|null);
         }
 
         /** Represents a BytesValue. */
@@ -14967,7 +14967,7 @@ export namespace google {
             constructor(properties?: google.protobuf.IBytesValue);
 
             /** BytesValue value. */
-            public value: Uint8Array;
+            public value: (Uint8Array|string);
 
             /**
              * Creates a new BytesValue instance using the specified properties.
@@ -15612,7 +15612,7 @@ export namespace google {
                 bindings?: (google.iam.v1.IBinding[]|null);
 
                 /** Policy etag */
-                etag?: (Uint8Array|null);
+                etag?: (Uint8Array|string|null);
             }
 
             /** Represents a Policy. */
@@ -15631,7 +15631,7 @@ export namespace google {
                 public bindings: google.iam.v1.IBinding[];
 
                 /** Policy etag. */
-                public etag: Uint8Array;
+                public etag: (Uint8Array|string);
 
                 /**
                  * Creates a new Policy instance using the specified properties.
@@ -15906,7 +15906,7 @@ export namespace google {
             interface IBindingDelta {
 
                 /** BindingDelta action */
-                action?: (google.iam.v1.BindingDelta.Action|null);
+                action?: (google.iam.v1.BindingDelta.Action|keyof typeof google.iam.v1.BindingDelta.Action|null);
 
                 /** BindingDelta role */
                 role?: (string|null);
@@ -15928,7 +15928,7 @@ export namespace google {
                 constructor(properties?: google.iam.v1.IBindingDelta);
 
                 /** BindingDelta action. */
-                public action: google.iam.v1.BindingDelta.Action;
+                public action: (google.iam.v1.BindingDelta.Action|keyof typeof google.iam.v1.BindingDelta.Action);
 
                 /** BindingDelta role. */
                 public role: string;
@@ -16024,7 +16024,7 @@ export namespace google {
             interface IAuditConfigDelta {
 
                 /** AuditConfigDelta action */
-                action?: (google.iam.v1.AuditConfigDelta.Action|null);
+                action?: (google.iam.v1.AuditConfigDelta.Action|keyof typeof google.iam.v1.AuditConfigDelta.Action|null);
 
                 /** AuditConfigDelta service */
                 service?: (string|null);
@@ -16046,7 +16046,7 @@ export namespace google {
                 constructor(properties?: google.iam.v1.IAuditConfigDelta);
 
                 /** AuditConfigDelta action. */
-                public action: google.iam.v1.AuditConfigDelta.Action;
+                public action: (google.iam.v1.AuditConfigDelta.Action|keyof typeof google.iam.v1.AuditConfigDelta.Action);
 
                 /** AuditConfigDelta service. */
                 public service: string;

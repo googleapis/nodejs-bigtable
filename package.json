@@ -37,7 +37,7 @@
     "lint": "eslint '**/*.js'",
     "lintfix": "eslint --fix '**/*.js'",
     "prepare": "npm run compile",
-    "proto": "mkdirp proto && pbjs -t static-module -w commonjs -p protos google/bigtable/v2/bigtable.proto google/bigtable/admin/v2/bigtable_instance_admin.proto google/bigtable/admin/v2/bigtable_table_admin.proto | pbts -o proto/bigtable.d.ts -",
+    "proto": "mkdirp proto && pbjs -t static-module -w commonjs -p protos -p node_modules/google-gax/protos google/protobuf/wrappers.proto google/bigtable/v2/bigtable.proto google/bigtable/admin/v2/bigtable_instance_admin.proto google/bigtable/admin/v2/bigtable_table_admin.proto google/bigtable/v2/data.proto | pbts -o proto/bigtable.d.ts -",
     "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
     "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
     "presystem-test": "npm run compile",
