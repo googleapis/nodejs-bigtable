@@ -390,7 +390,20 @@ export class Row {
       gaxOptions = {};
     }
 
-    this.getMetadata(gaxOptions, err => {
+    const options = Object.assign(
+      {
+        filter: [
+          {
+            column: {
+              cellLimit: 1,
+            },
+          },
+        ],
+      },
+      gaxOptions
+    );
+
+    this.getMetadata(options, err => {
       if (err) {
         if (err instanceof RowError) {
           callback(null, false);

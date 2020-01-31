@@ -777,6 +777,25 @@ describe('Bigtable/Row', function() {
       row.exists(assert.ifError);
     });
 
+    it('should add cellLimit 1 to the read row options', function(done) {
+      const gaxOptions = {};
+
+      row.getMetadata = function(gaxOptions) {
+        assert.deepStrictEqual(gaxOptions, {
+          filter: [
+            {
+              column: {
+                cellLimit: 1,
+              },
+            },
+          ],
+        });
+        done();
+      };
+
+      row.exists(assert.ifError);
+    });
+
     it('should pass gaxOptions to getMetadata', function(done) {
       const gaxOptions = {
         testProperty: true,
