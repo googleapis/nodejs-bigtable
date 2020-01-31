@@ -770,7 +770,7 @@ describe('Bigtable/Row', function() {
   describe('exists', function() {
     it('should not require gaxOptions', function(done) {
       row.getMetadata = function(gaxOptions) {
-        assert.deepStrictEqual(gaxOptions, {});
+        assert.strictEqual(typeof gaxOptions, 'object');
         done();
       };
 
@@ -778,10 +778,12 @@ describe('Bigtable/Row', function() {
     });
 
     it('should pass gaxOptions to getMetadata', function(done) {
-      const gaxOptions = {};
+      const gaxOptions = {
+        testProperty: true,
+      };
 
       row.getMetadata = function(gaxOptions_) {
-        assert.strictEqual(gaxOptions_, gaxOptions);
+        assert('testProperty' in gaxOptions_);
         done();
       };
 
