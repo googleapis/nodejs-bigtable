@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -251,7 +251,7 @@ class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   The unique name of the table from which to read.
+   *   Required. The unique name of the table from which to read.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} [request.appProfileId]
@@ -311,7 +311,7 @@ class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   The unique name of the table from which to sample row keys.
+   *   Required. The unique name of the table from which to sample row keys.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} [request.appProfileId]
@@ -357,13 +357,13 @@ class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   The unique name of the table to which the mutation should be applied.
+   *   Required. The unique name of the table to which the mutation should be applied.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {Buffer} request.rowKey
-   *   The key of the row to which the mutation should be applied.
+   *   Required. The key of the row to which the mutation should be applied.
    * @param {Object[]} request.mutations
-   *   Changes to be atomically applied to the specified row. Entries are applied
+   *   Required. Changes to be atomically applied to the specified row. Entries are applied
    *   in order, meaning that earlier mutations can be masked by later ones.
    *   Must contain at least one entry and at most 100000.
    *
@@ -433,9 +433,9 @@ class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   The unique name of the table to which the mutations should be applied.
+   *   Required. The unique name of the table to which the mutations should be applied.
    * @param {Object[]} request.entries
-   *   The row keys and corresponding mutations to be applied in bulk.
+   *   Required. The row keys and corresponding mutations to be applied in bulk.
    *   Each entry is applied as an atomic mutation, but the entries may be
    *   applied in arbitrary order (even between entries for the same row).
    *   At least one entry must be specified, and in total the entries can
@@ -489,12 +489,12 @@ class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   The unique name of the table to which the conditional mutation should be
+   *   Required. The unique name of the table to which the conditional mutation should be
    *   applied.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {Buffer} request.rowKey
-   *   The key of the row to which the conditional mutation should be applied.
+   *   Required. The key of the row to which the conditional mutation should be applied.
    * @param {string} [request.appProfileId]
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
@@ -583,14 +583,14 @@ class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   The unique name of the table to which the read/modify/write rules should be
+   *   Required. The unique name of the table to which the read/modify/write rules should be
    *   applied.
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {Buffer} request.rowKey
-   *   The key of the row to which the read/modify/write rules should be applied.
+   *   Required. The key of the row to which the read/modify/write rules should be applied.
    * @param {Object[]} request.rules
-   *   Rules specifying how the specified row's contents are to be transformed
+   *   Required. Rules specifying how the specified row's contents are to be transformed
    *   into writes. Entries are applied in order, meaning that earlier rules will
    *   affect the results of later ones.
    *

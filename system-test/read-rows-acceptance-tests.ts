@@ -22,32 +22,14 @@ import {PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
 import * as ProtoBuf from 'protobufjs';
+import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance.js';
 import {Bigtable} from '../src/index.js';
 
-const protosRoot = path.resolve(__dirname, '../protos');
-function applyProtoRoot(filename, root) {
-  filename.root = path.resolve(filename.root) + '/';
-  root.resolvePath = function(originPath, importPath, alreadyNormalized) {
-    return ProtoBuf.util.path.resolve(
-      filename.root,
-      importPath,
-      alreadyNormalized
-    );
-  };
-  return filename.file;
-}
-const root = new ProtoBuf.Root();
-root.loadSync(
-  applyProtoRoot(
-    {
-      root: protosRoot,
-      file: 'google/bigtable/v2/bigtable.proto',
-    },
-    root
-  ),
-  {keepCase: false}
+const protosJson = path.resolve(__dirname, '../protos/protos.json');
+const root = ProtoBuf.Root.fromJSON(
+  JSON.parse(fs.readFileSync(protosJson).toString())
 );
 const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');
 const CellChunk = root.lookupType(
