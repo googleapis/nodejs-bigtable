@@ -20,15 +20,16 @@
  * google.bigtable.admin.v2.BigtableTableAdmin.CreateTable
  *
  * @property {string} parent
- *   The unique name of the instance in which to create the table.
- *   Values are of the form `projects/<project>/instances/<instance>`.
+ *   Required. The unique name of the instance in which to create the table.
+ *   Values are of the form `projects/{project}/instances/{instance}`.
  *
  * @property {string} tableId
- *   The name by which the new table should be referred to within the parent
- *   instance, e.g., `foobar` rather than `<parent>/tables/foobar`.
+ *   Required. The name by which the new table should be referred to within the parent
+ *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+ *   Maximum 50 characters.
  *
  * @property {Object} table
- *   The Table to create.
+ *   Required. The Table to create.
  *
  *   This object should have the same structure as [Table]{@link google.bigtable.admin.v2.Table}
  *
@@ -84,18 +85,18 @@ const CreateTableRequest = {
  * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} parent
- *   The unique name of the instance in which to create the table.
- *   Values are of the form `projects/<project>/instances/<instance>`.
+ *   Required. The unique name of the instance in which to create the table.
+ *   Values are of the form `projects/{project}/instances/{instance}`.
  *
  * @property {string} tableId
- *   The name by which the new table should be referred to within the parent
- *   instance, e.g., `foobar` rather than `<parent>/tables/foobar`.
+ *   Required. The name by which the new table should be referred to within the parent
+ *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
  *
  * @property {string} sourceSnapshot
- *   The unique name of the snapshot from which to restore the table. The
+ *   Required. The unique name of the snapshot from which to restore the table. The
  *   snapshot and the table must be in the same instance.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
  *
  * @typedef CreateTableFromSnapshotRequest
  * @memberof google.bigtable.admin.v2
@@ -110,9 +111,9 @@ const CreateTableFromSnapshotRequest = {
  * google.bigtable.admin.v2.BigtableTableAdmin.DropRowRange
  *
  * @property {string} name
- *   The unique name of the table on which to drop a range of rows.
+ *   Required. The unique name of the table on which to drop a range of rows.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
+ *   `projects/{project}/instances/{instance}/tables/{table}`.
  *
  * @property {Buffer} rowKeyPrefix
  *   Delete all rows that start with this row key prefix. Prefix cannot be
@@ -134,18 +135,25 @@ const DropRowRangeRequest = {
  * google.bigtable.admin.v2.BigtableTableAdmin.ListTables
  *
  * @property {string} parent
- *   The unique name of the instance for which tables should be listed.
- *   Values are of the form `projects/<project>/instances/<instance>`.
+ *   Required. The unique name of the instance for which tables should be listed.
+ *   Values are of the form `projects/{project}/instances/{instance}`.
  *
  * @property {number} view
  *   The view to be applied to the returned tables' fields.
- *   Defaults to `NAME_ONLY` if unspecified; no others are currently supported.
+ *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
  *
  *   The number should be among the values of [View]{@link google.bigtable.admin.v2.View}
  *
  * @property {number} pageSize
  *   Maximum number of results per page.
- *   CURRENTLY UNIMPLEMENTED AND IGNORED.
+ *
+ *   A page_size of zero lets the server choose the number of items to return.
+ *   A page_size which is strictly positive will return at most that many items.
+ *   A negative page_size will cause an error.
+ *
+ *   Following the first request, subsequent paginated calls are not required
+ *   to pass a page_size. If a page_size is set in subsequent calls, it must
+ *   match the page_size given in the first request.
  *
  * @property {string} pageToken
  *   The value of `next_page_token` returned by a previous call.
@@ -185,9 +193,9 @@ const ListTablesResponse = {
  * google.bigtable.admin.v2.BigtableTableAdmin.GetTable
  *
  * @property {string} name
- *   The unique name of the requested table.
+ *   Required. The unique name of the requested table.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
+ *   `projects/{project}/instances/{instance}/tables/{table}`.
  *
  * @property {number} view
  *   The view to be applied to the returned table's fields.
@@ -208,9 +216,9 @@ const GetTableRequest = {
  * google.bigtable.admin.v2.BigtableTableAdmin.DeleteTable
  *
  * @property {string} name
- *   The unique name of the table to be deleted.
+ *   Required. The unique name of the table to be deleted.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
+ *   `projects/{project}/instances/{instance}/tables/{table}`.
  *
  * @typedef DeleteTableRequest
  * @memberof google.bigtable.admin.v2
@@ -225,12 +233,12 @@ const DeleteTableRequest = {
  * google.bigtable.admin.v2.BigtableTableAdmin.ModifyColumnFamilies
  *
  * @property {string} name
- *   The unique name of the table whose families should be modified.
+ *   Required. The unique name of the table whose families should be modified.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
+ *   `projects/{project}/instances/{instance}/tables/{table}`.
  *
  * @property {Object[]} modifications
- *   Modifications to be atomically applied to the specified table's families.
+ *   Required. Modifications to be atomically applied to the specified table's families.
  *   Entries are applied in order, meaning that earlier modifications can be
  *   masked by later ones (in the case of repeated updates to the same family,
  *   for example).
@@ -280,9 +288,9 @@ const ModifyColumnFamiliesRequest = {
  * google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
  *
  * @property {string} name
- *   The unique name of the Table for which to create a consistency token.
+ *   Required. The unique name of the Table for which to create a consistency token.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
+ *   `projects/{project}/instances/{instance}/tables/{table}`.
  *
  * @typedef GenerateConsistencyTokenRequest
  * @memberof google.bigtable.admin.v2
@@ -312,12 +320,12 @@ const GenerateConsistencyTokenResponse = {
  * google.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency
  *
  * @property {string} name
- *   The unique name of the Table for which to check replication consistency.
+ *   Required. The unique name of the Table for which to check replication consistency.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
+ *   `projects/{project}/instances/{instance}/tables/{table}`.
  *
  * @property {string} consistencyToken
- *   The token created using GenerateConsistencyToken for the Table.
+ *   Required. The token created using GenerateConsistencyToken for the Table.
  *
  * @typedef CheckConsistencyRequest
  * @memberof google.bigtable.admin.v2
@@ -355,18 +363,18 @@ const CheckConsistencyResponse = {
  * @property {string} name
  *   The unique name of the table to have the snapshot taken.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
+ *   `projects/{project}/instances/{instance}/tables/{table}`.
  *
  * @property {string} cluster
  *   The name of the cluster where the snapshot will be created in.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
  *
  * @property {string} snapshotId
  *   The ID by which the new snapshot should be referred to within the parent
  *   cluster, e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
  *   rather than
- *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/mysnapshot`.
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/mysnapshot`.
  *
  * @property {Object} ttl
  *   The amount of time that the new snapshot can stay active after it is
@@ -397,9 +405,9 @@ const SnapshotTableRequest = {
  * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} name
- *   The unique name of the requested snapshot.
+ *   Required. The unique name of the requested snapshot.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
  *
  * @typedef GetSnapshotRequest
  * @memberof google.bigtable.admin.v2
@@ -419,11 +427,11 @@ const GetSnapshotRequest = {
  * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} parent
- *   The unique name of the cluster for which snapshots should be listed.
+ *   Required. The unique name of the cluster for which snapshots should be listed.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
- *   Use `<cluster> = '-'` to list snapshots for all clusters in an instance,
- *   e.g., `projects/<project>/instances/<instance>/clusters/-`.
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+ *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
+ *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
  *
  * @property {number} pageSize
  *   The maximum number of snapshots to return per page.
@@ -477,9 +485,9 @@ const ListSnapshotsResponse = {
  * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} name
- *   The unique name of the snapshot to be deleted.
+ *   Required. The unique name of the snapshot to be deleted.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
  *
  * @typedef DeleteSnapshotRequest
  * @memberof google.bigtable.admin.v2

@@ -17,6 +17,10 @@
                   },
                   "nested": {
                     "Table": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Table",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}"
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -133,6 +137,10 @@
                       }
                     },
                     "Snapshot": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Snapshot",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}"
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -181,27 +189,36 @@
                       }
                     },
                     "BigtableInstanceAdmin": {
+                      "options": {
+                        "(google.api.default_host)": "bigtableadmin.googleapis.com",
+                        "(google.api.oauth_scopes)": "https://www.googleapis.com/auth/bigtable.admin,https://www.googleapis.com/auth/bigtable.admin.cluster,https://www.googleapis.com/auth/bigtable.admin.instance,https://www.googleapis.com/auth/cloud-bigtable.admin,https://www.googleapis.com/auth/cloud-bigtable.admin.cluster,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only"
+                      },
                       "methods": {
                         "CreateInstance": {
                           "requestType": "CreateInstanceRequest",
                           "responseType": "google.longrunning.Operation",
                           "options": {
                             "(google.api.http).post": "/v2/{parent=projects/*}/instances",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,instance_id,instance,clusters",
+                            "(google.longrunning.operation_info).response_type": "Instance",
+                            "(google.longrunning.operation_info).metadata_type": "CreateInstanceMetadata"
                           }
                         },
                         "GetInstance": {
                           "requestType": "GetInstanceRequest",
                           "responseType": "Instance",
                           "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*}"
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "ListInstances": {
                           "requestType": "ListInstancesRequest",
                           "responseType": "ListInstancesResponse",
                           "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*}/instances"
+                            "(google.api.http).get": "/v2/{parent=projects/*}/instances",
+                            "(google.api.method_signature)": "parent"
                           }
                         },
                         "UpdateInstance": {
@@ -217,14 +234,18 @@
                           "responseType": "google.longrunning.Operation",
                           "options": {
                             "(google.api.http).patch": "/v2/{instance.name=projects/*/instances/*}",
-                            "(google.api.http).body": "instance"
+                            "(google.api.http).body": "instance",
+                            "(google.api.method_signature)": "instance,update_mask",
+                            "(google.longrunning.operation_info).response_type": "Instance",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateInstanceMetadata"
                           }
                         },
                         "DeleteInstance": {
                           "requestType": "DeleteInstanceRequest",
                           "responseType": "google.protobuf.Empty",
                           "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*}"
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "CreateCluster": {
@@ -232,21 +253,26 @@
                           "responseType": "google.longrunning.Operation",
                           "options": {
                             "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/clusters",
-                            "(google.api.http).body": "cluster"
+                            "(google.api.http).body": "cluster",
+                            "(google.api.method_signature)": "parent,cluster_id,cluster",
+                            "(google.longrunning.operation_info).response_type": "Cluster",
+                            "(google.longrunning.operation_info).metadata_type": "CreateClusterMetadata"
                           }
                         },
                         "GetCluster": {
                           "requestType": "GetClusterRequest",
                           "responseType": "Cluster",
                           "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*}"
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "ListClusters": {
                           "requestType": "ListClustersRequest",
                           "responseType": "ListClustersResponse",
                           "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/clusters"
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/clusters",
+                            "(google.api.method_signature)": "parent"
                           }
                         },
                         "UpdateCluster": {
@@ -254,14 +280,17 @@
                           "responseType": "google.longrunning.Operation",
                           "options": {
                             "(google.api.http).put": "/v2/{name=projects/*/instances/*/clusters/*}",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.longrunning.operation_info).response_type": "Cluster",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateClusterMetadata"
                           }
                         },
                         "DeleteCluster": {
                           "requestType": "DeleteClusterRequest",
                           "responseType": "google.protobuf.Empty",
                           "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*}"
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "CreateAppProfile": {
@@ -269,21 +298,24 @@
                           "responseType": "AppProfile",
                           "options": {
                             "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/appProfiles",
-                            "(google.api.http).body": "app_profile"
+                            "(google.api.http).body": "app_profile",
+                            "(google.api.method_signature)": "parent,app_profile_id,app_profile"
                           }
                         },
                         "GetAppProfile": {
                           "requestType": "GetAppProfileRequest",
                           "responseType": "AppProfile",
                           "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/appProfiles/*}"
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/appProfiles/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "ListAppProfiles": {
                           "requestType": "ListAppProfilesRequest",
                           "responseType": "ListAppProfilesResponse",
                           "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/appProfiles"
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/appProfiles",
+                            "(google.api.method_signature)": "parent"
                           }
                         },
                         "UpdateAppProfile": {
@@ -291,14 +323,18 @@
                           "responseType": "google.longrunning.Operation",
                           "options": {
                             "(google.api.http).patch": "/v2/{app_profile.name=projects/*/instances/*/appProfiles/*}",
-                            "(google.api.http).body": "app_profile"
+                            "(google.api.http).body": "app_profile",
+                            "(google.api.method_signature)": "app_profile,update_mask",
+                            "(google.longrunning.operation_info).response_type": "AppProfile",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateAppProfileMetadata"
                           }
                         },
                         "DeleteAppProfile": {
                           "requestType": "DeleteAppProfileRequest",
                           "responseType": "google.protobuf.Empty",
                           "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/appProfiles/*}"
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/appProfiles/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "GetIamPolicy": {
@@ -306,7 +342,8 @@
                           "responseType": "google.iam.v1.Policy",
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:getIamPolicy",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource"
                           }
                         },
                         "SetIamPolicy": {
@@ -314,7 +351,8 @@
                           "responseType": "google.iam.v1.Policy",
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:setIamPolicy",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource,policy"
                           }
                         },
                         "TestIamPermissions": {
@@ -322,7 +360,8 @@
                           "responseType": "google.iam.v1.TestIamPermissionsResponse",
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:testIamPermissions",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource,permissions"
                           }
                         }
                       }
@@ -331,20 +370,33 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "cloudresourcemanager.googleapis.com/Project"
+                          }
                         },
                         "instanceId": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "instance": {
                           "type": "Instance",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "clusters": {
                           "keyType": "string",
                           "type": "Cluster",
-                          "id": 4
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     },
@@ -352,7 +404,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         }
                       }
                     },
@@ -360,7 +416,11 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "cloudresourcemanager.googleapis.com/Project"
+                          }
                         },
                         "pageToken": {
                           "type": "string",
@@ -390,11 +450,17 @@
                       "fields": {
                         "instance": {
                           "type": "Instance",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "updateMask": {
                           "type": "google.protobuf.FieldMask",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     },
@@ -402,7 +468,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         }
                       }
                     },
@@ -410,15 +480,25 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         },
                         "clusterId": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "cluster": {
                           "type": "Cluster",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     },
@@ -426,7 +506,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
                         }
                       }
                     },
@@ -434,7 +518,11 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         },
                         "pageToken": {
                           "type": "string",
@@ -464,7 +552,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
                         }
                       }
                     },
@@ -536,15 +628,25 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         },
                         "appProfileId": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "appProfile": {
                           "type": "AppProfile",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "ignoreWarnings": {
                           "type": "bool",
@@ -556,7 +658,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/AppProfile"
+                          }
                         }
                       }
                     },
@@ -564,7 +670,11 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         },
                         "pageSize": {
                           "type": "int32",
@@ -598,11 +708,17 @@
                       "fields": {
                         "appProfile": {
                           "type": "AppProfile",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "updateMask": {
                           "type": "google.protobuf.FieldMask",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "ignoreWarnings": {
                           "type": "bool",
@@ -614,7 +730,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/AppProfile"
+                          }
                         },
                         "ignoreWarnings": {
                           "type": "bool",
@@ -626,14 +746,24 @@
                       "fields": {}
                     },
                     "Instance": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Instance",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "displayName": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "state": {
                           "type": "State",
@@ -667,22 +797,38 @@
                       }
                     },
                     "Cluster": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Cluster",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}"
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "location": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.resource_reference).type": "locations.googleapis.com/Location"
+                          }
                         },
                         "state": {
                           "type": "State",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "serveNodes": {
                           "type": "int32",
-                          "id": 4
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "defaultStorageType": {
                           "type": "StorageType",
@@ -702,6 +848,10 @@
                       }
                     },
                     "AppProfile": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/AppProfile",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/appProfiles/{app_profile}"
+                      },
                       "oneofs": {
                         "routingPolicy": {
                           "oneof": [
@@ -751,13 +901,18 @@
                       }
                     },
                     "BigtableTableAdmin": {
+                      "options": {
+                        "(google.api.default_host)": "bigtableadmin.googleapis.com",
+                        "(google.api.oauth_scopes)": "https://www.googleapis.com/auth/bigtable.admin,https://www.googleapis.com/auth/bigtable.admin.table,https://www.googleapis.com/auth/cloud-bigtable.admin,https://www.googleapis.com/auth/cloud-bigtable.admin.table,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only"
+                      },
                       "methods": {
                         "CreateTable": {
                           "requestType": "CreateTableRequest",
                           "responseType": "Table",
                           "options": {
                             "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/tables",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,table_id,table"
                           }
                         },
                         "CreateTableFromSnapshot": {
@@ -765,28 +920,34 @@
                           "responseType": "google.longrunning.Operation",
                           "options": {
                             "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/tables:createFromSnapshot",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,table_id,source_snapshot",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "CreateTableFromSnapshotMetadata"
                           }
                         },
                         "ListTables": {
                           "requestType": "ListTablesRequest",
                           "responseType": "ListTablesResponse",
                           "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/tables"
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/tables",
+                            "(google.api.method_signature)": "parent"
                           }
                         },
                         "GetTable": {
                           "requestType": "GetTableRequest",
                           "responseType": "Table",
                           "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/tables/*}"
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/tables/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "DeleteTable": {
                           "requestType": "DeleteTableRequest",
                           "responseType": "google.protobuf.Empty",
                           "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/tables/*}"
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/tables/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "ModifyColumnFamilies": {
@@ -794,7 +955,8 @@
                           "responseType": "Table",
                           "options": {
                             "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:modifyColumnFamilies",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name,modifications"
                           }
                         },
                         "DropRowRange": {
@@ -810,7 +972,8 @@
                           "responseType": "GenerateConsistencyTokenResponse",
                           "options": {
                             "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:generateConsistencyToken",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "CheckConsistency": {
@@ -818,7 +981,8 @@
                           "responseType": "CheckConsistencyResponse",
                           "options": {
                             "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:checkConsistency",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name,consistency_token"
                           }
                         },
                         "SnapshotTable": {
@@ -826,28 +990,34 @@
                           "responseType": "google.longrunning.Operation",
                           "options": {
                             "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:snapshot",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name,cluster,snapshot_id,description",
+                            "(google.longrunning.operation_info).response_type": "Snapshot",
+                            "(google.longrunning.operation_info).metadata_type": "SnapshotTableMetadata"
                           }
                         },
                         "GetSnapshot": {
                           "requestType": "GetSnapshotRequest",
                           "responseType": "Snapshot",
                           "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}"
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "ListSnapshots": {
                           "requestType": "ListSnapshotsRequest",
                           "responseType": "ListSnapshotsResponse",
                           "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/snapshots"
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/snapshots",
+                            "(google.api.method_signature)": "parent"
                           }
                         },
                         "DeleteSnapshot": {
                           "requestType": "DeleteSnapshotRequest",
                           "responseType": "google.protobuf.Empty",
                           "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}"
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "GetIamPolicy": {
@@ -855,7 +1025,8 @@
                           "responseType": "google.iam.v1.Policy",
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource"
                           }
                         },
                         "SetIamPolicy": {
@@ -863,7 +1034,10 @@
                           "responseType": "google.iam.v1.Policy",
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
+                            "(google.api.http).additional_bindings.body": "*",
+                            "(google.api.method_signature)": "resource,policy"
                           }
                         },
                         "TestIamPermissions": {
@@ -871,7 +1045,10 @@
                           "responseType": "google.iam.v1.TestIamPermissionsResponse",
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
-                            "(google.api.http).body": "*"
+                            "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
+                            "(google.api.http).additional_bindings.body": "*",
+                            "(google.api.method_signature)": "resource,permissions"
                           }
                         }
                       }
@@ -880,15 +1057,25 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         },
                         "tableId": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "table": {
                           "type": "Table",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "initialSplits": {
                           "rule": "repeated",
@@ -911,15 +1098,26 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         },
                         "tableId": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         },
                         "sourceSnapshot": {
                           "type": "string",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                          }
                         }
                       }
                     },
@@ -935,7 +1133,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
                         },
                         "rowKeyPrefix": {
                           "type": "bytes",
@@ -951,7 +1153,11 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
                         },
                         "view": {
                           "type": "Table.View",
@@ -984,7 +1190,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
                         },
                         "view": {
                           "type": "Table.View",
@@ -996,7 +1206,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
                         }
                       }
                     },
@@ -1004,12 +1218,19 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
                         },
                         "modifications": {
                           "rule": "repeated",
                           "type": "Modification",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       },
                       "nested": {
@@ -1048,7 +1269,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
                         }
                       }
                     },
@@ -1064,11 +1289,18 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
                         },
                         "consistencyToken": {
                           "type": "string",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     },
@@ -1108,7 +1340,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                          }
                         }
                       }
                     },
@@ -1116,7 +1352,11 @@
                       "fields": {
                         "parent": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
                         },
                         "pageSize": {
                           "type": "int32",
@@ -1145,7 +1385,11 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                          }
                         }
                       }
                     },
@@ -2008,7 +2252,7 @@
           "options": {
             "go_package": "google.golang.org/genproto/googleapis/api/annotations;annotations",
             "java_multiple_files": true,
-            "java_outer_classname": "ResourceProto",
+            "java_outer_classname": "ClientProto",
             "java_package": "com.google.api",
             "objc_class_prefix": "GAPI",
             "cc_enable_arenas": true
@@ -2101,22 +2345,6 @@
                 }
               }
             },
-            "methodSignature": {
-              "rule": "repeated",
-              "type": "string",
-              "id": 1051,
-              "extend": "google.protobuf.MethodOptions"
-            },
-            "defaultHost": {
-              "type": "string",
-              "id": 1049,
-              "extend": "google.protobuf.ServiceOptions"
-            },
-            "oauthScopes": {
-              "type": "string",
-              "id": 1050,
-              "extend": "google.protobuf.ServiceOptions"
-            },
             "fieldBehavior": {
               "rule": "repeated",
               "type": "google.api.FieldBehavior",
@@ -2198,6 +2426,22 @@
                   "id": 2
                 }
               }
+            },
+            "methodSignature": {
+              "rule": "repeated",
+              "type": "string",
+              "id": 1051,
+              "extend": "google.protobuf.MethodOptions"
+            },
+            "defaultHost": {
+              "type": "string",
+              "id": 1049,
+              "extend": "google.protobuf.ServiceOptions"
+            },
+            "oauthScopes": {
+              "type": "string",
+              "id": 1050,
+              "extend": "google.protobuf.ServiceOptions"
             }
           }
         },
