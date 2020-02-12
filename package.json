@@ -45,7 +45,7 @@
     "pretest": "npm run compile",
     "test": "c8 mocha build/test",
     "posttest": "npm run check",
-    "prelint": "cd samples; npm link ../"
+    "prelint": "cd samples; npm link ../; npm i"
   },
   "dependencies": {
     "@google-cloud/common": "^2.2.2",
