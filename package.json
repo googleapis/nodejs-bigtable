@@ -44,7 +44,8 @@
     "system-test": "mocha build/system-test --timeout 600000",
     "pretest": "npm run compile",
     "test": "c8 mocha build/test",
-    "posttest": "npm run check"
+    "posttest": "npm run check",
+    "prelint": "cd samples; npm link ../"
   },
   "dependencies": {
     "@google-cloud/common": "^2.2.2",
