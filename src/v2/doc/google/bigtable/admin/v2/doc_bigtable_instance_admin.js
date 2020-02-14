@@ -19,26 +19,26 @@
  * Request message for BigtableInstanceAdmin.CreateInstance.
  *
  * @property {string} parent
- *   The unique name of the project in which to create the new instance.
- *   Values are of the form `projects/<project>`.
+ *   Required. The unique name of the project in which to create the new instance.
+ *   Values are of the form `projects/{project}`.
  *
  * @property {string} instanceId
- *   The ID to be used when referring to the new instance within its project,
+ *   Required. The ID to be used when referring to the new instance within its project,
  *   e.g., just `myinstance` rather than
  *   `projects/myproject/instances/myinstance`.
  *
  * @property {Object} instance
- *   The instance to create.
+ *   Required. The instance to create.
  *   Fields marked `OutputOnly` must be left blank.
  *
  *   This object should have the same structure as [Instance]{@link google.bigtable.admin.v2.Instance}
  *
  * @property {Object.<string, Object>} clusters
- *   The clusters to be created within the instance, mapped by desired
+ *   Required. The clusters to be created within the instance, mapped by desired
  *   cluster ID, e.g., just `mycluster` rather than
  *   `projects/myproject/instances/myinstance/clusters/mycluster`.
  *   Fields marked `OutputOnly` must be left blank.
- *   Currently, at most two clusters can be specified.
+ *   Currently, at most four clusters can be specified.
  *
  * @typedef CreateInstanceRequest
  * @memberof google.bigtable.admin.v2
@@ -52,8 +52,8 @@ const CreateInstanceRequest = {
  * Request message for BigtableInstanceAdmin.GetInstance.
  *
  * @property {string} name
- *   The unique name of the requested instance. Values are of the form
- *   `projects/<project>/instances/<instance>`.
+ *   Required. The unique name of the requested instance. Values are of the form
+ *   `projects/{project}/instances/{instance}`.
  *
  * @typedef GetInstanceRequest
  * @memberof google.bigtable.admin.v2
@@ -67,8 +67,8 @@ const GetInstanceRequest = {
  * Request message for BigtableInstanceAdmin.ListInstances.
  *
  * @property {string} parent
- *   The unique name of the project for which a list of instances is requested.
- *   Values are of the form `projects/<project>`.
+ *   Required. The unique name of the project for which a list of instances is requested.
+ *   Values are of the form `projects/{project}`.
  *
  * @property {string} pageToken
  *   DEPRECATED: This field is unused and ignored.
@@ -112,12 +112,12 @@ const ListInstancesResponse = {
  * Request message for BigtableInstanceAdmin.PartialUpdateInstance.
  *
  * @property {Object} instance
- *   The Instance which will (partially) replace the current value.
+ *   Required. The Instance which will (partially) replace the current value.
  *
  *   This object should have the same structure as [Instance]{@link google.bigtable.admin.v2.Instance}
  *
  * @property {Object} updateMask
- *   The subset of Instance fields which should be replaced.
+ *   Required. The subset of Instance fields which should be replaced.
  *   Must be explicitly set.
  *
  *   This object should have the same structure as [FieldMask]{@link google.protobuf.FieldMask}
@@ -134,8 +134,8 @@ const PartialUpdateInstanceRequest = {
  * Request message for BigtableInstanceAdmin.DeleteInstance.
  *
  * @property {string} name
- *   The unique name of the instance to be deleted.
- *   Values are of the form `projects/<project>/instances/<instance>`.
+ *   Required. The unique name of the instance to be deleted.
+ *   Values are of the form `projects/{project}/instances/{instance}`.
  *
  * @typedef DeleteInstanceRequest
  * @memberof google.bigtable.admin.v2
@@ -149,17 +149,17 @@ const DeleteInstanceRequest = {
  * Request message for BigtableInstanceAdmin.CreateCluster.
  *
  * @property {string} parent
- *   The unique name of the instance in which to create the new cluster.
+ *   Required. The unique name of the instance in which to create the new cluster.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>`.
+ *   `projects/{project}/instances/{instance}`.
  *
  * @property {string} clusterId
- *   The ID to be used when referring to the new cluster within its instance,
+ *   Required. The ID to be used when referring to the new cluster within its instance,
  *   e.g., just `mycluster` rather than
  *   `projects/myproject/instances/myinstance/clusters/mycluster`.
  *
  * @property {Object} cluster
- *   The cluster to be created.
+ *   Required. The cluster to be created.
  *   Fields marked `OutputOnly` must be left blank.
  *
  *   This object should have the same structure as [Cluster]{@link google.bigtable.admin.v2.Cluster}
@@ -176,8 +176,8 @@ const CreateClusterRequest = {
  * Request message for BigtableInstanceAdmin.GetCluster.
  *
  * @property {string} name
- *   The unique name of the requested cluster. Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
+ *   Required. The unique name of the requested cluster. Values are of the form
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
  *
  * @typedef GetClusterRequest
  * @memberof google.bigtable.admin.v2
@@ -191,9 +191,9 @@ const GetClusterRequest = {
  * Request message for BigtableInstanceAdmin.ListClusters.
  *
  * @property {string} parent
- *   The unique name of the instance for which a list of clusters is requested.
- *   Values are of the form `projects/<project>/instances/<instance>`.
- *   Use `<instance> = '-'` to list Clusters for all Instances in a project,
+ *   Required. The unique name of the instance for which a list of clusters is requested.
+ *   Values are of the form `projects/{project}/instances/{instance}`.
+ *   Use `{instance} = '-'` to list Clusters for all Instances in a project,
  *   e.g., `projects/myproject/instances/-`.
  *
  * @property {string} pageToken
@@ -237,8 +237,8 @@ const ListClustersResponse = {
  * Request message for BigtableInstanceAdmin.DeleteCluster.
  *
  * @property {string} name
- *   The unique name of the cluster to be deleted. Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
+ *   Required. The unique name of the cluster to be deleted. Values are of the form
+ *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
  *
  * @typedef DeleteClusterRequest
  * @memberof google.bigtable.admin.v2
@@ -356,17 +356,17 @@ const UpdateClusterMetadata = {
  * Request message for BigtableInstanceAdmin.CreateAppProfile.
  *
  * @property {string} parent
- *   The unique name of the instance in which to create the new app profile.
+ *   Required. The unique name of the instance in which to create the new app profile.
  *   Values are of the form
- *   `projects/<project>/instances/<instance>`.
+ *   `projects/{project}/instances/{instance}`.
  *
  * @property {string} appProfileId
- *   The ID to be used when referring to the new app profile within its
+ *   Required. The ID to be used when referring to the new app profile within its
  *   instance, e.g., just `myprofile` rather than
  *   `projects/myproject/instances/myinstance/appProfiles/myprofile`.
  *
  * @property {Object} appProfile
- *   The app profile to be created.
+ *   Required. The app profile to be created.
  *   Fields marked `OutputOnly` will be ignored.
  *
  *   This object should have the same structure as [AppProfile]{@link google.bigtable.admin.v2.AppProfile}
@@ -386,8 +386,8 @@ const CreateAppProfileRequest = {
  * Request message for BigtableInstanceAdmin.GetAppProfile.
  *
  * @property {string} name
- *   The unique name of the requested app profile. Values are of the form
- *   `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
+ *   Required. The unique name of the requested app profile. Values are of the form
+ *   `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
  *
  * @typedef GetAppProfileRequest
  * @memberof google.bigtable.admin.v2
@@ -401,15 +401,22 @@ const GetAppProfileRequest = {
  * Request message for BigtableInstanceAdmin.ListAppProfiles.
  *
  * @property {string} parent
- *   The unique name of the instance for which a list of app profiles is
+ *   Required. The unique name of the instance for which a list of app profiles is
  *   requested. Values are of the form
- *   `projects/<project>/instances/<instance>`.
- *   Use `<instance> = '-'` to list AppProfiles for all Instances in a project,
+ *   `projects/{project}/instances/{instance}`.
+ *   Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
  *   e.g., `projects/myproject/instances/-`.
  *
  * @property {number} pageSize
  *   Maximum number of results per page.
- *   CURRENTLY UNIMPLEMENTED AND IGNORED.
+ *
+ *   A page_size of zero lets the server choose the number of items to return.
+ *   A page_size which is strictly positive will return at most that many items.
+ *   A negative page_size will cause an error.
+ *
+ *   Following the first request, subsequent paginated calls are not required
+ *   to pass a page_size. If a page_size is set in subsequent calls, it must
+ *   match the page_size given in the first request.
  *
  * @property {string} pageToken
  *   The value of `next_page_token` returned by a previous call.
@@ -453,12 +460,12 @@ const ListAppProfilesResponse = {
  * Request message for BigtableInstanceAdmin.UpdateAppProfile.
  *
  * @property {Object} appProfile
- *   The app profile which will (partially) replace the current value.
+ *   Required. The app profile which will (partially) replace the current value.
  *
  *   This object should have the same structure as [AppProfile]{@link google.bigtable.admin.v2.AppProfile}
  *
  * @property {Object} updateMask
- *   The subset of app profile fields which should be replaced.
+ *   Required. The subset of app profile fields which should be replaced.
  *   If unset, all fields will be replaced.
  *
  *   This object should have the same structure as [FieldMask]{@link google.protobuf.FieldMask}
@@ -478,8 +485,8 @@ const UpdateAppProfileRequest = {
  * Request message for BigtableInstanceAdmin.DeleteAppProfile.
  *
  * @property {string} name
- *   The unique name of the app profile to be deleted. Values are of the form
- *   `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
+ *   Required. The unique name of the app profile to be deleted. Values are of the form
+ *   `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
  *
  * @property {boolean} ignoreWarnings
  *   If true, ignore safety checks when deleting the app profile.
