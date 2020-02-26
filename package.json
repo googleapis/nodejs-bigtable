@@ -80,7 +80,7 @@
     "@types/pumpify": "^1.4.1",
     "@types/sinon": "^7.0.7",
     "@types/through2": "^2.0.34",
-    "@types/uuid": "^3.4.4",
+    "@types/uuid": "^7.0.0",
     "codecov": "^3.0.0",
     "eslint": "^6.0.0",
     "eslint-config-prettier": "^6.0.0",
@@ -101,7 +101,7 @@
     "proxyquire": "^2.0.0",
     "sinon": "^9.0.0",
     "typescript": "3.6.4",
-    "uuid": "^3.0.1"
+    "uuid": "^7.0.0"
   },
   "engines": {
     "node": ">=8.10.0"
