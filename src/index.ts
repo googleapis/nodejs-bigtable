@@ -914,3 +914,5 @@ promisifyAll(Bigtable, {
 module.exports = Bigtable;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
+import * as protos from '../protos/protos';
+export {protos};
