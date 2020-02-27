@@ -348,23 +348,23 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   The unique name of the project in which to create the new instance.
-   *   Values are of the form `projects/<project>`.
+   *   Required. The unique name of the project in which to create the new instance.
+   *   Values are of the form `projects/{project}`.
    * @param {string} request.instanceId
-   *   The ID to be used when referring to the new instance within its project,
+   *   Required. The ID to be used when referring to the new instance within its project,
    *   e.g., just `myinstance` rather than
    *   `projects/myproject/instances/myinstance`.
    * @param {Object} request.instance
-   *   The instance to create.
+   *   Required. The instance to create.
    *   Fields marked `OutputOnly` must be left blank.
    *
    *   This object should have the same structure as [Instance]{@link google.bigtable.admin.v2.Instance}
    * @param {Object.<string, Object>} request.clusters
-   *   The clusters to be created within the instance, mapped by desired
+   *   Required. The clusters to be created within the instance, mapped by desired
    *   cluster ID, e.g., just `mycluster` rather than
    *   `projects/myproject/instances/myinstance/clusters/mycluster`.
    *   Fields marked `OutputOnly` must be left blank.
-   *   Currently, at most two clusters can be specified.
+   *   Currently, at most four clusters can be specified.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -489,8 +489,8 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   The unique name of the requested instance. Values are of the form
-   *   `projects/<project>/instances/<instance>`.
+   *   Required. The unique name of the requested instance. Values are of the form
+   *   `projects/{project}/instances/{instance}`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -544,8 +544,8 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   The unique name of the project for which a list of instances is requested.
-   *   Values are of the form `projects/<project>`.
+   *   Required. The unique name of the project for which a list of instances is requested.
+   *   Values are of the form `projects/{project}`.
    * @param {string} [request.pageToken]
    *   DEPRECATED: This field is unused and ignored.
    * @param {Object} [options]
@@ -596,16 +596,17 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * Updates an instance within a project.
+   * Updates an instance within a project. This method updates only the display
+   * name and type for an Instance. To update other Instance properties, such as
+   * labels, use PartialUpdateInstance.
    *
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   (`OutputOnly`)
    *   The unique name of the instance. Values are of the form
-   *   `projects/<project>/instances/[a-z][a-z0-9\\-]+[a-z0-9]`.
+   *   `projects/{project}/instances/[a-z][a-z0-9\\-]+[a-z0-9]`.
    * @param {string} request.displayName
-   *   The descriptive name for this instance as it appears in UIs.
+   *   Required. The descriptive name for this instance as it appears in UIs.
    *   Can be changed at any time, but should be kept globally unique
    *   to avoid confusion.
    * @param {number} request.type
@@ -686,16 +687,17 @@ class BigtableInstanceAdminClient {
   }
 
   /**
-   * Partially updates an instance within a project.
+   * Partially updates an instance within a project. This method can modify all
+   * fields of an Instance and is the preferred way to update an Instance.
    *
    * @param {Object} request
    *   The request object that will be sent.
    * @param {Object} request.instance
-   *   The Instance which will (partially) replace the current value.
+   *   Required. The Instance which will (partially) replace the current value.
    *
    *   This object should have the same structure as [Instance]{@link google.bigtable.admin.v2.Instance}
    * @param {Object} request.updateMask
-   *   The subset of Instance fields which should be replaced.
+   *   Required. The subset of Instance fields which should be replaced.
    *   Must be explicitly set.
    *
    *   This object should have the same structure as [FieldMask]{@link google.protobuf.FieldMask}
@@ -815,8 +817,8 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   The unique name of the instance to be deleted.
-   *   Values are of the form `projects/<project>/instances/<instance>`.
+   *   Required. The unique name of the instance to be deleted.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -862,15 +864,15 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   The unique name of the instance in which to create the new cluster.
+   *   Required. The unique name of the instance in which to create the new cluster.
    *   Values are of the form
-   *   `projects/<project>/instances/<instance>`.
+   *   `projects/{project}/instances/{instance}`.
    * @param {string} request.clusterId
-   *   The ID to be used when referring to the new cluster within its instance,
+   *   Required. The ID to be used when referring to the new cluster within its instance,
    *   e.g., just `mycluster` rather than
    *   `projects/myproject/instances/myinstance/clusters/mycluster`.
    * @param {Object} request.cluster
-   *   The cluster to be created.
+   *   Required. The cluster to be created.
    *   Fields marked `OutputOnly` must be left blank.
    *
    *   This object should have the same structure as [Cluster]{@link google.bigtable.admin.v2.Cluster}
@@ -992,8 +994,8 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   The unique name of the requested cluster. Values are of the form
-   *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
+   *   Required. The unique name of the requested cluster. Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -1047,9 +1049,9 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   The unique name of the instance for which a list of clusters is requested.
-   *   Values are of the form `projects/<project>/instances/<instance>`.
-   *   Use `<instance> = '-'` to list Clusters for all Instances in a project,
+   *   Required. The unique name of the instance for which a list of clusters is requested.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
+   *   Use `{instance} = '-'` to list Clusters for all Instances in a project,
    *   e.g., `projects/myproject/instances/-`.
    * @param {string} [request.pageToken]
    *   DEPRECATED: This field is unused and ignored.
@@ -1106,20 +1108,18 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   (`OutputOnly`)
    *   The unique name of the cluster. Values are of the form
-   *   `projects/<project>/instances/<instance>/clusters/[a-z][-a-z0-9]*`.
+   *   `projects/{project}/instances/{instance}/clusters/[a-z][-a-z0-9]*`.
    * @param {number} request.serveNodes
-   *   The number of nodes allocated to this cluster. More nodes enable higher
+   *   Required. The number of nodes allocated to this cluster. More nodes enable higher
    *   throughput and more consistent performance.
    * @param {string} [request.location]
    *   (`CreationOnly`)
    *   The location where this cluster's nodes and storage reside. For best
    *   performance, clients should be located as close as possible to this
    *   cluster. Currently only zones are supported, so values should be of the
-   *   form `projects/<project>/locations/<zone>`.
+   *   form `projects/{project}/locations/{zone}`.
    * @param {number} [request.state]
-   *   (`OutputOnly`)
    *   The current state of the cluster.
    *
    *   The number should be among the values of [State]{@link google.bigtable.admin.v2.State}
@@ -1241,8 +1241,8 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   The unique name of the cluster to be deleted. Values are of the form
-   *   `projects/<project>/instances/<instance>/clusters/<cluster>`.
+   *   Required. The unique name of the cluster to be deleted. Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -1288,15 +1288,15 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   The unique name of the instance in which to create the new app profile.
+   *   Required. The unique name of the instance in which to create the new app profile.
    *   Values are of the form
-   *   `projects/<project>/instances/<instance>`.
+   *   `projects/{project}/instances/{instance}`.
    * @param {string} request.appProfileId
-   *   The ID to be used when referring to the new app profile within its
+   *   Required. The ID to be used when referring to the new app profile within its
    *   instance, e.g., just `myprofile` rather than
    *   `projects/myproject/instances/myinstance/appProfiles/myprofile`.
    * @param {Object} request.appProfile
-   *   The app profile to be created.
+   *   Required. The app profile to be created.
    *   Fields marked `OutputOnly` will be ignored.
    *
    *   This object should have the same structure as [AppProfile]{@link google.bigtable.admin.v2.AppProfile}
@@ -1362,8 +1362,8 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   The unique name of the requested app profile. Values are of the form
-   *   `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
+   *   Required. The unique name of the requested app profile. Values are of the form
+   *   `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -1417,14 +1417,21 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   The unique name of the instance for which a list of app profiles is
+   *   Required. The unique name of the instance for which a list of app profiles is
    *   requested. Values are of the form
-   *   `projects/<project>/instances/<instance>`.
-   *   Use `<instance> = '-'` to list AppProfiles for all Instances in a project,
+   *   `projects/{project}/instances/{instance}`.
+   *   Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
    *   e.g., `projects/myproject/instances/-`.
    * @param {number} [request.pageSize]
    *   Maximum number of results per page.
-   *   CURRENTLY UNIMPLEMENTED AND IGNORED.
+   *
+   *   A page_size of zero lets the server choose the number of items to return.
+   *   A page_size which is strictly positive will return at most that many items.
+   *   A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls are not required
+   *   to pass a page_size. If a page_size is set in subsequent calls, it must
+   *   match the page_size given in the first request.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -1530,14 +1537,21 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   The unique name of the instance for which a list of app profiles is
+   *   Required. The unique name of the instance for which a list of app profiles is
    *   requested. Values are of the form
-   *   `projects/<project>/instances/<instance>`.
-   *   Use `<instance> = '-'` to list AppProfiles for all Instances in a project,
+   *   `projects/{project}/instances/{instance}`.
+   *   Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
    *   e.g., `projects/myproject/instances/-`.
    * @param {number} [request.pageSize]
    *   Maximum number of results per page.
-   *   CURRENTLY UNIMPLEMENTED AND IGNORED.
+   *
+   *   A page_size of zero lets the server choose the number of items to return.
+   *   A page_size which is strictly positive will return at most that many items.
+   *   A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls are not required
+   *   to pass a page_size. If a page_size is set in subsequent calls, it must
+   *   match the page_size given in the first request.
    * @param {Object} [options]
    *   Optional parameters. You can override the default settings for this call, e.g, timeout,
    *   retries, paginations, etc. See [gax.CallOptions]{@link https://googleapis.github.io/gax-nodejs/interfaces/CallOptions.html} for the details.
@@ -1576,11 +1590,11 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {Object} request.appProfile
-   *   The app profile which will (partially) replace the current value.
+   *   Required. The app profile which will (partially) replace the current value.
    *
    *   This object should have the same structure as [AppProfile]{@link google.bigtable.admin.v2.AppProfile}
    * @param {Object} request.updateMask
-   *   The subset of app profile fields which should be replaced.
+   *   Required. The subset of app profile fields which should be replaced.
    *   If unset, all fields will be replaced.
    *
    *   This object should have the same structure as [FieldMask]{@link google.protobuf.FieldMask}
@@ -1698,8 +1712,8 @@ class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   The unique name of the app profile to be deleted. Values are of the form
-   *   `projects/<project>/instances/<instance>/appProfiles/<app_profile>`.
+   *   Required. The unique name of the app profile to be deleted. Values are of the form
+   *   `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
    * @param {boolean} request.ignoreWarnings
    *   If true, ignore safety checks when deleting the app profile.
    * @param {Object} [options]
