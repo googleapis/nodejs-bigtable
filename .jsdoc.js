@@ -43,7 +43,7 @@ module.exports = {
     systemName: '@google-cloud/bigtable',
     theme: 'lumen',
     default: {
-      "outputSourceFiles": false
+      outputSourceFiles: false
     }
   },
   markdown: {
