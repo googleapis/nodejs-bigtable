@@ -18,16 +18,15 @@
 /**
  * A collection of Bigtable Tables and
  * the resources that serve them.
- * All tables in an instance are served from a single
- * Cluster.
+ * All tables in an instance are served from all
+ * Clusters in the instance.
  *
  * @property {string} name
- *   (`OutputOnly`)
  *   The unique name of the instance. Values are of the form
- *   `projects/<project>/instances/[a-z][a-z0-9\\-]+[a-z0-9]`.
+ *   `projects/{project}/instances/[a-z][a-z0-9\\-]+[a-z0-9]`.
  *
  * @property {string} displayName
- *   The descriptive name for this instance as it appears in UIs.
+ *   Required. The descriptive name for this instance as it appears in UIs.
  *   Can be changed at any time, but should be kept globally unique
  *   to avoid confusion.
  *
@@ -128,25 +127,23 @@ const Instance = {
  * Instance.
  *
  * @property {string} name
- *   (`OutputOnly`)
  *   The unique name of the cluster. Values are of the form
- *   `projects/<project>/instances/<instance>/clusters/[a-z][-a-z0-9]*`.
+ *   `projects/{project}/instances/{instance}/clusters/[a-z][-a-z0-9]*`.
  *
  * @property {string} location
  *   (`CreationOnly`)
  *   The location where this cluster's nodes and storage reside. For best
  *   performance, clients should be located as close as possible to this
  *   cluster. Currently only zones are supported, so values should be of the
- *   form `projects/<project>/locations/<zone>`.
+ *   form `projects/{project}/locations/{zone}`.
  *
  * @property {number} state
- *   (`OutputOnly`)
  *   The current state of the cluster.
  *
  *   The number should be among the values of [State]{@link google.bigtable.admin.v2.State}
  *
  * @property {number} serveNodes
- *   The number of nodes allocated to this cluster. More nodes enable higher
+ *   Required. The number of nodes allocated to this cluster. More nodes enable higher
  *   throughput and more consistent performance.
  *
  * @property {number} defaultStorageType
@@ -228,7 +225,7 @@ const Cluster = {
  *   Optional long form description of the use case for this AppProfile.
  *
  * @property {Object} multiClusterRoutingUseAny
- *   Use a multi-cluster routing policy that may pick any cluster.
+ *   Use a multi-cluster routing policy.
  *
  *   This object should have the same structure as [MultiClusterRoutingUseAny]{@link google.bigtable.admin.v2.MultiClusterRoutingUseAny}
  *
@@ -245,10 +242,11 @@ const AppProfile = {
   // This is for documentation. Actual contents will be loaded by gRPC.
 
   /**
-   * Read/write requests may be routed to any cluster in the instance, and will
-   * fail over to another cluster in the event of transient errors or delays.
-   * Choosing this option sacrifices read-your-writes consistency to improve
-   * availability.
+   * Read/write requests are routed to the nearest cluster in the instance, and
+   * will fail over to the nearest cluster that is available in the event of
+   * transient errors or delays. Clusters in a region are considered
+   * equidistant. Choosing this option sacrifices read-your-writes consistency
+   * to improve availability.
    * @typedef MultiClusterRoutingUseAny
    * @memberof google.bigtable.admin.v2
    * @see [google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny definition in proto format]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/v2/instance.proto}
@@ -259,7 +257,7 @@ const AppProfile = {
 
   /**
    * Unconditionally routes all read/write requests to a specific cluster.
-   * This option preserves read-your-writes consistency, but does not improve
+   * This option preserves read-your-writes consistency but does not improve
    * availability.
    *
    * @property {string} clusterId

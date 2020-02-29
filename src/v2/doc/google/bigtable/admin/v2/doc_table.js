@@ -20,14 +20,12 @@
  * Each table is served using the resources of its parent cluster.
  *
  * @property {string} name
- *   (`OutputOnly`)
- *   The unique name of the table. Values are of the form
+ *   Output only. The unique name of the table. Values are of the form
  *   `projects/<project>/instances/<instance>/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*`.
  *   Views: `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
  *
  * @property {Object.<string, Object>} clusterStates
- *   (`OutputOnly`)
- *   Map from cluster ID to per-cluster table state.
+ *   Output only. Map from cluster ID to per-cluster table state.
  *   If it could not be determined whether or not the table has data in a
  *   particular cluster (for example, if its zone is unavailable), then
  *   there will be an entry for the cluster with UNKNOWN `replication_status`.
@@ -43,7 +41,7 @@
  *   The granularity (i.e. `MILLIS`) at which timestamps are stored in
  *   this table. Timestamps not matching the granularity will be rejected.
  *   If unspecified at creation time, the value will be set to `MILLIS`.
- *   Views: `SCHEMA_VIEW`, `FULL`
+ *   Views: `SCHEMA_VIEW`, `FULL`.
  *
  *   The number should be among the values of [TimestampGranularity]{@link google.bigtable.admin.v2.TimestampGranularity}
  *
@@ -58,8 +56,7 @@ const Table = {
    * The state of a table's data in a particular cluster.
    *
    * @property {number} replicationState
-   *   (`OutputOnly`)
-   *   The state of replication for the table in this cluster.
+   *   Output only. The state of replication for the table in this cluster.
    *
    *   The number should be among the values of [ReplicationState]{@link google.bigtable.admin.v2.ReplicationState}
    *
@@ -156,8 +153,8 @@ const Table = {
     SCHEMA_VIEW: 2,
 
     /**
-     * Only populates `name` and fields related to the table's
-     * replication state.
+     * Only populates `name` and fields related to the table's replication
+     * state.
      */
     REPLICATION_VIEW: 3,
 
@@ -262,46 +259,39 @@ const GcRule = {
  * for production use. It is not subject to any SLA or deprecation policy.
  *
  * @property {string} name
- *   (`OutputOnly`)
- *   The unique name of the snapshot.
+ *   Output only. The unique name of the snapshot.
  *   Values are of the form
  *   `projects/<project>/instances/<instance>/clusters/<cluster>/snapshots/<snapshot>`.
  *
  * @property {Object} sourceTable
- *   (`OutputOnly`)
- *   The source table at the time the snapshot was taken.
+ *   Output only. The source table at the time the snapshot was taken.
  *
  *   This object should have the same structure as [Table]{@link google.bigtable.admin.v2.Table}
  *
  * @property {number} dataSizeBytes
- *   (`OutputOnly`)
- *   The size of the data in the source table at the time the snapshot was
+ *   Output only. The size of the data in the source table at the time the snapshot was
  *   taken. In some cases, this value may be computed asynchronously via a
  *   background process and a placeholder of 0 will be used in the meantime.
  *
  * @property {Object} createTime
- *   (`OutputOnly`)
- *   The time when the snapshot is created.
+ *   Output only. The time when the snapshot is created.
  *
  *   This object should have the same structure as [Timestamp]{@link google.protobuf.Timestamp}
  *
  * @property {Object} deleteTime
- *   (`OutputOnly`)
- *   The time when the snapshot will be deleted. The maximum amount of time a
+ *   Output only. The time when the snapshot will be deleted. The maximum amount of time a
  *   snapshot can stay active is 365 days. If 'ttl' is not specified,
  *   the default maximum of 365 days will be used.
  *
  *   This object should have the same structure as [Timestamp]{@link google.protobuf.Timestamp}
  *
  * @property {number} state
- *   (`OutputOnly`)
- *   The current state of the snapshot.
+ *   Output only. The current state of the snapshot.
  *
  *   The number should be among the values of [State]{@link google.bigtable.admin.v2.State}
  *
  * @property {string} description
- *   (`OutputOnly`)
- *   Description of the snapshot.
+ *   Output only. Description of the snapshot.
  *
  * @typedef Snapshot
  * @memberof google.bigtable.admin.v2
