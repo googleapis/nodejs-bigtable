@@ -32,7 +32,8 @@ module.exports = {
   source: {
     excludePattern: '(^|\\/|\\\\)[._]',
     include: [
-      'build/src'
+      'build/src',
+      'protos'
     ],
     includePattern: '\\.js$'
   },
@@ -43,7 +44,7 @@ module.exports = {
     systemName: '@google-cloud/bigtable',
     theme: 'lumen',
     default: {
-      "outputSourceFiles": false
+      outputSourceFiles: false
     }
   },
   markdown: {
