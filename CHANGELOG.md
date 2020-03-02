@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [2.3.2](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.3.1...v2.3.2) (2020-02-12)
+
+
+### Bug Fixes
+
+* migrate to new proto annotations ([#604](https://www.github.com/googleapis/nodejs-bigtable/issues/604)) ([e095c5a](https://www.github.com/googleapis/nodejs-bigtable/commit/e095c5a85f86fde44e7560c4599894d61180afbe))
+
 ### [2.3.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.3.0...v2.3.1) (2019-12-27)
 
 

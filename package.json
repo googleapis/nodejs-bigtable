@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/bigtable",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Cloud Bigtable Client Library for Node.js",
   "keywords": [
     "bigtable",
@@ -44,7 +44,8 @@
     "system-test": "mocha build/system-test --timeout 600000",
     "pretest": "npm run compile",
     "test": "c8 mocha build/test",
-    "posttest": "npm run check"
+    "posttest": "npm run check",
+    "prelint": "cd samples; npm link ../; npm i"
   },
   "dependencies": {
     "@google-cloud/common": "^2.2.2",
@@ -79,7 +80,7 @@
     "@types/pumpify": "^1.4.1",
     "@types/sinon": "^7.0.7",
     "@types/through2": "^2.0.34",
-    "@types/uuid": "^3.4.4",
+    "@types/uuid": "^7.0.0",
     "codecov": "^3.0.0",
     "eslint": "^6.0.0",
     "eslint-config-prettier": "^6.0.0",
@@ -89,7 +90,7 @@
     "jsdoc": "^3.6.2",
     "jsdoc-fresh": "^1.0.1",
     "jsdoc-region-tag": "^1.0.2",
-    "linkinator": "^1.5.0",
+    "linkinator": "^2.0.0",
     "mkdirp": "^1.0.0",
     "mocha": "^7.0.0",
     "mv": "^2.1.1",
@@ -98,9 +99,9 @@
     "p-queue": "^6.0.2",
     "prettier": "^1.7.4",
     "proxyquire": "^2.0.0",
-    "sinon": "^8.0.0",
+    "sinon": "^9.0.0",
     "typescript": "3.6.4",
-    "uuid": "^3.0.1"
+    "uuid": "^7.0.0"
   },
   "engines": {
     "node": ">=8.10.0"
