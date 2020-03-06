@@ -1,11 +1,3 @@
 {
-  "extends": "gts/tslint.json",
-  "rules": {
-    "only-arrow-functions": false,
-    "no-any": false,
-    "no-unused-expression": false,
-    "variable-name": false,
-    "switch-default": false,
-    "ban": false
-  }
+  "extends": "gts/tslint.json"
 }
