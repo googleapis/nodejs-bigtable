@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
+    "noImplicitAny": false,
     "resolveJsonModule": true,
     "lib": [
       "es2016",

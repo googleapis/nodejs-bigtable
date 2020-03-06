@@ -17,10 +17,19 @@
 // ** All changes to this file may be overwritten. **
 
 import * as gax from 'google-gax';
-import {APICallback, Callback, CallOptions, Descriptors, ClientOptions, LROperation, PaginationCallback, PaginationResponse} from 'google-gax';
+import {
+  APICallback,
+  Callback,
+  CallOptions,
+  Descriptors,
+  ClientOptions,
+  LROperation,
+  PaginationCallback,
+  PaginationResponse,
+} from 'google-gax';
 import * as path from 'path';
 
-import { Transform } from 'stream';
+import {Transform} from 'stream';
 import * as protosTypes from '../../protos/protos';
 import * as gapicConfig from './bigtable_table_admin_client_config.json';
 
@@ -78,10 +87,12 @@ export class BigtableTableAdminClient {
   constructor(opts?: ClientOptions) {
     // Ensure that options include the service address and port.
     const staticMembers = this.constructor as typeof BigtableTableAdminClient;
-    const servicePath = opts && opts.servicePath ?
-        opts.servicePath :
-        ((opts && opts.apiEndpoint) ? opts.apiEndpoint :
-                                      staticMembers.servicePath);
+    const servicePath =
+      opts && opts.servicePath
+        ? opts.servicePath
+        : opts && opts.apiEndpoint
+        ? opts.apiEndpoint
+        : staticMembers.servicePath;
     const port = opts && opts.port ? opts.port : staticMembers.port;
 
     if (!opts) {
@@ -91,8 +102,8 @@ export class BigtableTableAdminClient {
     opts.port = opts.port || port;
     opts.clientConfig = opts.clientConfig || {};
 
-    const isBrowser = (typeof window !== 'undefined');
-    if (isBrowser){
+    const isBrowser = typeof window !== 'undefined';
+    if (isBrowser) {
       opts.fallback = true;
     }
     // If we are in browser, we are already using fallback because of the
@@ -109,13 +120,10 @@ export class BigtableTableAdminClient {
     this._opts = opts;
 
     // Save the auth object to the client, for use by other methods.
-    this.auth = (this._gaxGrpc.auth as gax.GoogleAuth);
+    this.auth = this._gaxGrpc.auth as gax.GoogleAuth;
 
     // Determine the client header string.
-    const clientHeader = [
-      `gax/${this._gaxModule.version}`,
-      `gapic/${version}`,
-    ];
+    const clientHeader = [`gax/${this._gaxModule.version}`, `gapic/${version}`];
     if (typeof process !== 'undefined' && 'versions' in process) {
       clientHeader.push(`gl-node/${process.versions.node}`);
     } else {
@@ -131,11 +139,15 @@ export class BigtableTableAdminClient {
     // For Node.js, pass the path to JSON proto file.
     // For browsers, pass the JSON content.
 
-    const nodejsProtoPath = path.join(__dirname, '..', '..', 'protos', 'protos.json');
+    const nodejsProtoPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'protos',
+      'protos.json'
+    );
     this._protos = this._gaxGrpc.loadProto(
-      opts.fallback ?
-        require("../../protos/protos.json") :
-        nodejsProtoPath
+      opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
     );
 
     // This API contains "path templates"; forward-slash-separated
@@ -163,47 +175,70 @@ export class BigtableTableAdminClient {
     // (e.g. 50 results at a time, with tokens to get subsequent
     // pages). Denote the keys used for pagination and results.
     this._descriptors.page = {
-      listTables:
-          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'tables'),
-      listSnapshots:
-          new this._gaxModule.PageDescriptor('pageToken', 'nextPageToken', 'snapshots')
+      listTables: new this._gaxModule.PageDescriptor(
+        'pageToken',
+        'nextPageToken',
+        'tables'
+      ),
+      listSnapshots: new this._gaxModule.PageDescriptor(
+        'pageToken',
+        'nextPageToken',
+        'snapshots'
+      ),
     };
 
     // This API contains "long-running operations", which return a
     // an Operation object that allows for tracking of the operation,
     // rather than holding a request open.
-    const protoFilesRoot = opts.fallback?
-      this._gaxModule.protobuf.Root.fromJSON(require("../../protos/protos.json")) :
-      this._gaxModule.protobuf.loadSync(nodejsProtoPath);
+    const protoFilesRoot = opts.fallback
+      ? this._gaxModule.protobuf.Root.fromJSON(
+          require('../../protos/protos.json')
+        )
+      : this._gaxModule.protobuf.loadSync(nodejsProtoPath);
 
-    this.operationsClient = this._gaxModule.lro({
-      auth: this.auth,
-      grpc: 'grpc' in this._gaxGrpc ? this._gaxGrpc.grpc : undefined
-    }).operationsClient(opts);
+    this.operationsClient = this._gaxModule
+      .lro({
+        auth: this.auth,
+        grpc: 'grpc' in this._gaxGrpc ? this._gaxGrpc.grpc : undefined,
+      })
+      .operationsClient(opts);
     const createTableFromSnapshotResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Table') as gax.protobuf.Type;
+      '.google.bigtable.admin.v2.Table'
+    ) as gax.protobuf.Type;
     const createTableFromSnapshotMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata') as gax.protobuf.Type;
+      '.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata'
+    ) as gax.protobuf.Type;
     const snapshotTableResponse = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.Snapshot') as gax.protobuf.Type;
+      '.google.bigtable.admin.v2.Snapshot'
+    ) as gax.protobuf.Type;
     const snapshotTableMetadata = protoFilesRoot.lookup(
-      '.google.bigtable.admin.v2.SnapshotTableMetadata') as gax.protobuf.Type;
+      '.google.bigtable.admin.v2.SnapshotTableMetadata'
+    ) as gax.protobuf.Type;
 
     this._descriptors.longrunning = {
       createTableFromSnapshot: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
-        createTableFromSnapshotResponse.decode.bind(createTableFromSnapshotResponse),
-        createTableFromSnapshotMetadata.decode.bind(createTableFromSnapshotMetadata)),
+        createTableFromSnapshotResponse.decode.bind(
+          createTableFromSnapshotResponse
+        ),
+        createTableFromSnapshotMetadata.decode.bind(
+          createTableFromSnapshotMetadata
+        )
+      ),
       snapshotTable: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
         snapshotTableResponse.decode.bind(snapshotTableResponse),
-        snapshotTableMetadata.decode.bind(snapshotTableMetadata))
+        snapshotTableMetadata.decode.bind(snapshotTableMetadata)
+      ),
     };
 
     // Put together the default options sent with requests.
     this._defaults = this._gaxGrpc.constructSettings(
-        'google.bigtable.admin.v2.BigtableTableAdmin', gapicConfig as gax.ClientConfig,
-        opts.clientConfig || {}, {'x-goog-api-client': clientHeader.join(' ')});
+      'google.bigtable.admin.v2.BigtableTableAdmin',
+      gapicConfig as gax.ClientConfig,
+      opts.clientConfig || {},
+      {'x-goog-api-client': clientHeader.join(' ')}
+    );
 
     // Set up a dictionary of "inner API calls"; the core implementation
     // of calling the API is handled in `google-gax`, with this code
@@ -231,16 +266,35 @@ export class BigtableTableAdminClient {
     // Put together the "service stub" for
     // google.bigtable.admin.v2.BigtableTableAdmin.
     this.bigtableTableAdminStub = this._gaxGrpc.createStub(
-        this._opts.fallback ?
-          (this._protos as protobuf.Root).lookupService('google.bigtable.admin.v2.BigtableTableAdmin') :
-          // tslint:disable-next-line no-any
+      this._opts.fallback
+        ? (this._protos as protobuf.Root).lookupService(
+            'google.bigtable.admin.v2.BigtableTableAdmin'
+          )
+        : // tslint:disable-next-line no-any
           (this._protos as any).google.bigtable.admin.v2.BigtableTableAdmin,
-        this._opts) as Promise<{[method: string]: Function}>;
+      this._opts
+    ) as Promise<{[method: string]: Function}>;
 
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
-    const bigtableTableAdminStubMethods =
-        ['createTable', 'createTableFromSnapshot', 'listTables', 'getTable', 'deleteTable', 'modifyColumnFamilies', 'dropRowRange', 'generateConsistencyToken', 'checkConsistency', 'snapshotTable', 'getSnapshot', 'listSnapshots', 'deleteSnapshot', 'getIamPolicy', 'setIamPolicy', 'testIamPermissions'];
+    const bigtableTableAdminStubMethods = [
+      'createTable',
+      'createTableFromSnapshot',
+      'listTables',
+      'getTable',
+      'deleteTable',
+      'modifyColumnFamilies',
+      'dropRowRange',
+      'generateConsistencyToken',
+      'checkConsistency',
+      'snapshotTable',
+      'getSnapshot',
+      'listSnapshots',
+      'deleteSnapshot',
+      'getIamPolicy',
+      'setIamPolicy',
+      'testIamPermissions',
+    ];
 
     for (const methodName of bigtableTableAdminStubMethods) {
       const innerCallPromise = this.bigtableTableAdminStub.then(
@@ -250,16 +304,17 @@ export class BigtableTableAdminClient {
           }
           return stub[methodName].apply(stub, args);
         },
-        (err: Error|null|undefined) => () => {
+        (err: Error | null | undefined) => () => {
           throw err;
-        });
+        }
+      );
 
       const apiCall = this._gaxModule.createApiCall(
         innerCallPromise,
         this._defaults[methodName],
         this._descriptors.page[methodName] ||
-            this._descriptors.stream[methodName] ||
-            this._descriptors.longrunning[methodName]
+          this._descriptors.stream[methodName] ||
+          this._descriptors.longrunning[methodName]
       );
 
       this._innerApiCalls[methodName] = (
@@ -307,7 +362,7 @@ export class BigtableTableAdminClient {
       'https://www.googleapis.com/auth/cloud-bigtable.admin',
       'https://www.googleapis.com/auth/cloud-bigtable.admin.table',
       'https://www.googleapis.com/auth/cloud-platform',
-      'https://www.googleapis.com/auth/cloud-platform.read-only'
+      'https://www.googleapis.com/auth/cloud-platform.read-only',
     ];
   }
 
@@ -318,8 +373,9 @@ export class BigtableTableAdminClient {
    * @param {function(Error, string)} callback - the callback to
    *   be called with the current project Id.
    */
-  getProjectId(callback?: Callback<string, undefined, undefined>):
-      Promise<string>|void {
+  getProjectId(
+    callback?: Callback<string, undefined, undefined>
+  ): Promise<string> | void {
     if (callback) {
       this.auth.getProjectId(callback);
       return;
@@ -331,78 +387,90 @@ export class BigtableTableAdminClient {
   // -- Service calls --
   // -------------------
   createTable(
-      request: protosTypes.google.bigtable.admin.v2.ICreateTableRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable,
-        protosTypes.google.bigtable.admin.v2.ICreateTableRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.ICreateTableRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.ICreateTableRequest | undefined,
+      {} | undefined
+    ]
+  >;
   createTable(
-      request: protosTypes.google.bigtable.admin.v2.ICreateTableRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.ICreateTableRequest|undefined,
-          {}|undefined>): void;
-/**
- * Creates a new table in the specified instance.
- * The table can be created with a full set of initial column families,
- * specified in the request.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.parent
- *   Required. The unique name of the instance in which to create the table.
- *   Values are of the form `projects/{project}/instances/{instance}`.
- * @param {string} request.tableId
- *   Required. The name by which the new table should be referred to within the parent
- *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
- *   Maximum 50 characters.
- * @param {google.bigtable.admin.v2.Table} request.table
- *   Required. The Table to create.
- * @param {number[]} request.initialSplits
- *   The optional list of row keys that will be used to initially split the
- *   table into several tablets (tablets are similar to HBase regions).
- *   Given two split keys, `s1` and `s2`, three tablets will be created,
- *   spanning the key ranges: `[, s1), [s1, s2), [s2, )`.
- *
- *   Example:
- *
- *   * Row keys := `["a", "apple", "custom", "customer_1", "customer_2",`
- *                  `"other", "zz"]`
- *   * initial_split_keys := `["apple", "customer_1", "customer_2", "other"]`
- *   * Key assignment:
- *       - Tablet 1 `[, apple)                => {"a"}.`
- *       - Tablet 2 `[apple, customer_1)      => {"apple", "custom"}.`
- *       - Tablet 3 `[customer_1, customer_2) => {"customer_1"}.`
- *       - Tablet 4 `[customer_2, other)      => {"customer_2"}.`
- *       - Tablet 5 `[other, )                => {"other", "zz"}.`
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Table]{@link google.bigtable.admin.v2.Table}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.ICreateTableRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.ICreateTableRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Creates a new table in the specified instance.
+   * The table can be created with a full set of initial column families,
+   * specified in the request.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the instance in which to create the table.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
+   * @param {string} request.tableId
+   *   Required. The name by which the new table should be referred to within the parent
+   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *   Maximum 50 characters.
+   * @param {google.bigtable.admin.v2.Table} request.table
+   *   Required. The Table to create.
+   * @param {number[]} request.initialSplits
+   *   The optional list of row keys that will be used to initially split the
+   *   table into several tablets (tablets are similar to HBase regions).
+   *   Given two split keys, `s1` and `s2`, three tablets will be created,
+   *   spanning the key ranges: `[, s1), [s1, s2), [s2, )`.
+   *
+   *   Example:
+   *
+   *   * Row keys := `["a", "apple", "custom", "customer_1", "customer_2",`
+   *                  `"other", "zz"]`
+   *   * initial_split_keys := `["apple", "customer_1", "customer_2", "other"]`
+   *   * Key assignment:
+   *       - Tablet 1 `[, apple)                => {"a"}.`
+   *       - Tablet 2 `[apple, customer_1)      => {"apple", "custom"}.`
+   *       - Tablet 3 `[customer_1, customer_2) => {"customer_1"}.`
+   *       - Tablet 4 `[customer_2, other)      => {"customer_2"}.`
+   *       - Tablet 5 `[other, )                => {"other", "zz"}.`
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Table]{@link google.bigtable.admin.v2.Table}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   createTable(
-      request: protosTypes.google.bigtable.admin.v2.ICreateTableRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.ICreateTableRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.ICreateTableRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.ICreateTableRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable,
-        protosTypes.google.bigtable.admin.v2.ICreateTableRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.admin.v2.ICreateTableRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.ICreateTableRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.ICreateTableRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -411,63 +479,75 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'parent': request.parent || '',
+      parent: request.parent || '',
     });
     this.initialize();
     return this._innerApiCalls.createTable(request, options, callback);
   }
   getTable(
-      request: protosTypes.google.bigtable.admin.v2.IGetTableRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable,
-        protosTypes.google.bigtable.admin.v2.IGetTableRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IGetTableRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.IGetTableRequest | undefined,
+      {} | undefined
+    ]
+  >;
   getTable(
-      request: protosTypes.google.bigtable.admin.v2.IGetTableRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.IGetTableRequest|undefined,
-          {}|undefined>): void;
-/**
- * Gets metadata information about the specified table.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the requested table.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/tables/{table}`.
- * @param {google.bigtable.admin.v2.Table.View} request.view
- *   The view to be applied to the returned table's fields.
- *   Defaults to `SCHEMA_VIEW` if unspecified.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Table]{@link google.bigtable.admin.v2.Table}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IGetTableRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.IGetTableRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Gets metadata information about the specified table.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the requested table.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {google.bigtable.admin.v2.Table.View} request.view
+   *   The view to be applied to the returned table's fields.
+   *   Defaults to `SCHEMA_VIEW` if unspecified.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Table]{@link google.bigtable.admin.v2.Table}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   getTable(
-      request: protosTypes.google.bigtable.admin.v2.IGetTableRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IGetTableRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.IGetTableRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.IGetTableRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable,
-        protosTypes.google.bigtable.admin.v2.IGetTableRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.admin.v2.IGetTableRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.IGetTableRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable,
+      protosTypes.google.bigtable.admin.v2.IGetTableRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -476,60 +556,72 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.getTable(request, options, callback);
   }
   deleteTable(
-      request: protosTypes.google.bigtable.admin.v2.IDeleteTableRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.bigtable.admin.v2.IDeleteTableRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IDeleteTableRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteTableRequest | undefined,
+      {} | undefined
+    ]
+  >;
   deleteTable(
-      request: protosTypes.google.bigtable.admin.v2.IDeleteTableRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDeleteTableRequest|undefined,
-          {}|undefined>): void;
-/**
- * Permanently deletes a specified table and all of its data.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the table to be deleted.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/tables/{table}`.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Empty]{@link google.protobuf.Empty}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IDeleteTableRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteTableRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Permanently deletes a specified table and all of its data.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the table to be deleted.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Empty]{@link google.protobuf.Empty}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   deleteTable(
-      request: protosTypes.google.bigtable.admin.v2.IDeleteTableRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IDeleteTableRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDeleteTableRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDeleteTableRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.bigtable.admin.v2.IDeleteTableRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.admin.v2.IDeleteTableRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteTableRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteTableRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -538,68 +630,89 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.deleteTable(request, options, callback);
   }
   modifyColumnFamilies(
-      request: protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable,
-        protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable,
+      (
+        | protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest
+        | undefined
+      ),
+      {} | undefined
+    ]
+  >;
   modifyColumnFamilies(
-      request: protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest|undefined,
-          {}|undefined>): void;
-/**
- * Performs a series of column family modifications on the specified table.
- * Either all or none of the modifications will occur before this method
- * returns, but data requests received prior to that point may see a table
- * where only some modifications have taken effect.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the table whose families should be modified.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/tables/{table}`.
- * @param {number[]} request.modifications
- *   Required. Modifications to be atomically applied to the specified table's families.
- *   Entries are applied in order, meaning that earlier modifications can be
- *   masked by later ones (in the case of repeated updates to the same family,
- *   for example).
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Table]{@link google.bigtable.admin.v2.Table}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable,
+      | protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest
+      | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Performs a series of column family modifications on the specified table.
+   * Either all or none of the modifications will occur before this method
+   * returns, but data requests received prior to that point may see a table
+   * where only some modifications have taken effect.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the table whose families should be modified.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {number[]} request.modifications
+   *   Required. Modifications to be atomically applied to the specified table's families.
+   *   Entries are applied in order, meaning that earlier modifications can be
+   *   masked by later ones (in the case of repeated updates to the same family,
+   *   for example).
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Table]{@link google.bigtable.admin.v2.Table}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   modifyColumnFamilies(
-      request: protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable,
-          protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable,
-        protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest|undefined, {}|undefined
-      ]>|void {
+          | protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest
+          | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable,
+      | protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest
+      | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable,
+      (
+        | protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest
+        | undefined
+      ),
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -608,67 +721,79 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.modifyColumnFamilies(request, options, callback);
   }
   dropRowRange(
-      request: protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest | undefined,
+      {} | undefined
+    ]
+  >;
   dropRowRange(
-      request: protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest|undefined,
-          {}|undefined>): void;
-/**
- * Permanently drop/delete a row range from a specified table. The request can
- * specify whether to delete all rows in a table, or only those that match a
- * particular prefix.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the table on which to drop a range of rows.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/tables/{table}`.
- * @param {Buffer} request.rowKeyPrefix
- *   Delete all rows that start with this row key prefix. Prefix cannot be
- *   zero length.
- * @param {boolean} request.deleteAllDataFromTable
- *   Delete all rows in the table. Setting this to false is a no-op.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Empty]{@link google.protobuf.Empty}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Permanently drop/delete a row range from a specified table. The request can
+   * specify whether to delete all rows in a table, or only those that match a
+   * particular prefix.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the table on which to drop a range of rows.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {Buffer} request.rowKeyPrefix
+   *   Delete all rows that start with this row key prefix. Prefix cannot be
+   *   zero length.
+   * @param {boolean} request.deleteAllDataFromTable
+   *   Delete all rows in the table. Setting this to false is a no-op.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Empty]{@link google.protobuf.Empty}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   dropRowRange(
-      request: protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -677,63 +802,84 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.dropRowRange(request, options, callback);
   }
   generateConsistencyToken(
-      request: protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
-        protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
+      (
+        | protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest
+        | undefined
+      ),
+      {} | undefined
+    ]
+  >;
   generateConsistencyToken(
-      request: protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
-          protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest|undefined,
-          {}|undefined>): void;
-/**
- * Generates a consistency token for a Table, which can be used in
- * CheckConsistency to check whether mutations to the table that finished
- * before this call started have been replicated. The tokens will be available
- * for 90 days.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the Table for which to create a consistency token.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/tables/{table}`.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [GenerateConsistencyTokenResponse]{@link google.bigtable.admin.v2.GenerateConsistencyTokenResponse}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
+      | protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest
+      | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Generates a consistency token for a Table, which can be used in
+   * CheckConsistency to check whether mutations to the table that finished
+   * before this call started have been replicated. The tokens will be available
+   * for 90 days.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the Table for which to create a consistency token.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [GenerateConsistencyTokenResponse]{@link google.bigtable.admin.v2.GenerateConsistencyTokenResponse}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   generateConsistencyToken(
-      request: protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
-          protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
-          protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
-        protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest|undefined, {}|undefined
-      ]>|void {
+          | protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest
+          | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
+      | protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest
+      | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenResponse,
+      (
+        | protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest
+        | undefined
+      ),
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -742,64 +888,81 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
-    return this._innerApiCalls.generateConsistencyToken(request, options, callback);
+    return this._innerApiCalls.generateConsistencyToken(
+      request,
+      options,
+      callback
+    );
   }
   checkConsistency(
-      request: protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
-        protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest | undefined,
+      {} | undefined
+    ]
+  >;
   checkConsistency(
-      request: protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
-          protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest|undefined,
-          {}|undefined>): void;
-/**
- * Checks replication consistency based on a consistency token, that is, if
- * replication has caught up based on the conditions specified in the token
- * and the check request.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the Table for which to check replication consistency.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/tables/{table}`.
- * @param {string} request.consistencyToken
- *   Required. The token created using GenerateConsistencyToken for the Table.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [CheckConsistencyResponse]{@link google.bigtable.admin.v2.CheckConsistencyResponse}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Checks replication consistency based on a consistency token, that is, if
+   * replication has caught up based on the conditions specified in the token
+   * and the check request.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the Table for which to check replication consistency.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {string} request.consistencyToken
+   *   Required. The token created using GenerateConsistencyToken for the Table.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [CheckConsistencyResponse]{@link google.bigtable.admin.v2.CheckConsistencyResponse}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   checkConsistency(
-      request: protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
-          protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
-          protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
-        protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest|undefined, {}|undefined
-      ]>|void {
+          | protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest
+          | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyResponse,
+      protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -808,66 +971,78 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.checkConsistency(request, options, callback);
   }
   getSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ISnapshot,
-        protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ISnapshot,
+      protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest | undefined,
+      {} | undefined
+    ]
+  >;
   getSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.ISnapshot,
-          protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest|undefined,
-          {}|undefined>): void;
-/**
- * Gets metadata information about the specified snapshot.
- *
- * Note: This is a private alpha release of Cloud Bigtable snapshots. This
- * feature is not currently available to most Cloud Bigtable customers. This
- * feature might be changed in backward-incompatible ways and is not
- * recommended for production use. It is not subject to any SLA or deprecation
- * policy.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the requested snapshot.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Snapshot]{@link google.bigtable.admin.v2.Snapshot}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.ISnapshot,
+      protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Gets metadata information about the specified snapshot.
+   *
+   * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+   * feature is not currently available to most Cloud Bigtable customers. This
+   * feature might be changed in backward-incompatible ways and is not
+   * recommended for production use. It is not subject to any SLA or deprecation
+   * policy.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the requested snapshot.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Snapshot]{@link google.bigtable.admin.v2.Snapshot}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   getSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.ISnapshot,
-          protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.ISnapshot,
-          protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ISnapshot,
-        protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.ISnapshot,
+      protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ISnapshot,
+      protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -876,66 +1051,79 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.getSnapshot(request, options, callback);
   }
   deleteSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest | undefined,
+      {} | undefined
+    ]
+  >;
   deleteSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest|undefined,
-          {}|undefined>): void;
-/**
- * Permanently deletes the specified snapshot.
- *
- * Note: This is a private alpha release of Cloud Bigtable snapshots. This
- * feature is not currently available to most Cloud Bigtable customers. This
- * feature might be changed in backward-incompatible ways and is not
- * recommended for production use. It is not subject to any SLA or deprecation
- * policy.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   Required. The unique name of the snapshot to be deleted.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Empty]{@link google.protobuf.Empty}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Permanently deletes the specified snapshot.
+   *
+   * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+   * feature is not currently available to most Cloud Bigtable customers. This
+   * feature might be changed in backward-incompatible ways and is not
+   * recommended for production use. It is not subject to any SLA or deprecation
+   * policy.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the snapshot to be deleted.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Empty]{@link google.protobuf.Empty}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   deleteSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.protobuf.IEmpty,
-          protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.protobuf.IEmpty,
-        protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest|undefined, {}|undefined
-      ]>|void {
+          | protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest
+          | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -944,58 +1132,70 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.deleteSnapshot(request, options, callback);
   }
   getIamPolicy(
-      request: protosTypes.google.iam.v1.IGetIamPolicyRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.iam.v1.IPolicy,
-        protosTypes.google.iam.v1.IGetIamPolicyRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.iam.v1.IGetIamPolicyRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.IGetIamPolicyRequest | undefined,
+      {} | undefined
+    ]
+  >;
   getIamPolicy(
-      request: protosTypes.google.iam.v1.IGetIamPolicyRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.iam.v1.IPolicy,
-          protosTypes.google.iam.v1.IGetIamPolicyRequest|undefined,
-          {}|undefined>): void;
-/**
- * Gets the access control policy for a resource.
- * Returns an empty policy if the resource exists but does not have a policy
- * set.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Policy]{@link google.iam.v1.Policy}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.iam.v1.IGetIamPolicyRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.IGetIamPolicyRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Gets the access control policy for a resource.
+   * Returns an empty policy if the resource exists but does not have a policy
+   * set.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Policy]{@link google.iam.v1.Policy}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   getIamPolicy(
-      request: protosTypes.google.iam.v1.IGetIamPolicyRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.iam.v1.IGetIamPolicyRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.iam.v1.IPolicy,
-          protosTypes.google.iam.v1.IGetIamPolicyRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.iam.v1.IPolicy,
-          protosTypes.google.iam.v1.IGetIamPolicyRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.iam.v1.IPolicy,
-        protosTypes.google.iam.v1.IGetIamPolicyRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.iam.v1.IGetIamPolicyRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.IGetIamPolicyRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.IGetIamPolicyRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1004,57 +1204,69 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'resource': request.resource || '',
+      resource: request.resource || '',
     });
     this.initialize();
     return this._innerApiCalls.getIamPolicy(request, options, callback);
   }
   setIamPolicy(
-      request: protosTypes.google.iam.v1.ISetIamPolicyRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.iam.v1.IPolicy,
-        protosTypes.google.iam.v1.ISetIamPolicyRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.iam.v1.ISetIamPolicyRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.ISetIamPolicyRequest | undefined,
+      {} | undefined
+    ]
+  >;
   setIamPolicy(
-      request: protosTypes.google.iam.v1.ISetIamPolicyRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.iam.v1.IPolicy,
-          protosTypes.google.iam.v1.ISetIamPolicyRequest|undefined,
-          {}|undefined>): void;
-/**
- * Sets the access control policy on a Table or Backup resource.
- * Replaces any existing policy.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Policy]{@link google.iam.v1.Policy}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.iam.v1.ISetIamPolicyRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.ISetIamPolicyRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Sets the access control policy on a Table or Backup resource.
+   * Replaces any existing policy.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Policy]{@link google.iam.v1.Policy}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   setIamPolicy(
-      request: protosTypes.google.iam.v1.ISetIamPolicyRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.iam.v1.ISetIamPolicyRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.iam.v1.IPolicy,
-          protosTypes.google.iam.v1.ISetIamPolicyRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.iam.v1.IPolicy,
-          protosTypes.google.iam.v1.ISetIamPolicyRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.iam.v1.IPolicy,
-        protosTypes.google.iam.v1.ISetIamPolicyRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.iam.v1.ISetIamPolicyRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.ISetIamPolicyRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.iam.v1.IPolicy,
+      protosTypes.google.iam.v1.ISetIamPolicyRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1063,56 +1275,68 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'resource': request.resource || '',
+      resource: request.resource || '',
     });
     this.initialize();
     return this._innerApiCalls.setIamPolicy(request, options, callback);
   }
   testIamPermissions(
-      request: protosTypes.google.iam.v1.ITestIamPermissionsRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.iam.v1.ITestIamPermissionsResponse,
-        protosTypes.google.iam.v1.ITestIamPermissionsRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.iam.v1.ITestIamPermissionsRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.iam.v1.ITestIamPermissionsResponse,
+      protosTypes.google.iam.v1.ITestIamPermissionsRequest | undefined,
+      {} | undefined
+    ]
+  >;
   testIamPermissions(
-      request: protosTypes.google.iam.v1.ITestIamPermissionsRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.iam.v1.ITestIamPermissionsResponse,
-          protosTypes.google.iam.v1.ITestIamPermissionsRequest|undefined,
-          {}|undefined>): void;
-/**
- * Returns permissions that the caller has on the specified table resource.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [TestIamPermissionsResponse]{@link google.iam.v1.TestIamPermissionsResponse}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.iam.v1.ITestIamPermissionsRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.iam.v1.ITestIamPermissionsResponse,
+      protosTypes.google.iam.v1.ITestIamPermissionsRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Returns permissions that the caller has on the specified table resource.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [TestIamPermissionsResponse]{@link google.iam.v1.TestIamPermissionsResponse}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   testIamPermissions(
-      request: protosTypes.google.iam.v1.ITestIamPermissionsRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.iam.v1.ITestIamPermissionsRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.iam.v1.ITestIamPermissionsResponse,
-          protosTypes.google.iam.v1.ITestIamPermissionsRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.iam.v1.ITestIamPermissionsResponse,
-          protosTypes.google.iam.v1.ITestIamPermissionsRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.iam.v1.ITestIamPermissionsResponse,
-        protosTypes.google.iam.v1.ITestIamPermissionsRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.iam.v1.ITestIamPermissionsRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.iam.v1.ITestIamPermissionsResponse,
+      protosTypes.google.iam.v1.ITestIamPermissionsRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.iam.v1.ITestIamPermissionsResponse,
+      protosTypes.google.iam.v1.ITestIamPermissionsRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1121,75 +1345,102 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'resource': request.resource || '',
+      resource: request.resource || '',
     });
     this.initialize();
     return this._innerApiCalls.testIamPermissions(request, options, callback);
   }
 
   createTableFromSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        LROperation<protosTypes.google.bigtable.admin.v2.ITable, protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata>,
-        protosTypes.google.longrunning.IOperation|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  >;
   createTableFromSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          LROperation<protosTypes.google.bigtable.admin.v2.ITable, protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata>,
-          protosTypes.google.longrunning.IOperation|undefined,
-          {}|undefined>): void;
-/**
- * Creates a new table from the specified snapshot. The target table must
- * not exist. The snapshot and the table must be in the same instance.
- *
- * Note: This is a private alpha release of Cloud Bigtable snapshots. This
- * feature is not currently available to most Cloud Bigtable customers. This
- * feature might be changed in backward-incompatible ways and is not
- * recommended for production use. It is not subject to any SLA or deprecation
- * policy.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.parent
- *   Required. The unique name of the instance in which to create the table.
- *   Values are of the form `projects/{project}/instances/{instance}`.
- * @param {string} request.tableId
- *   Required. The name by which the new table should be referred to within the parent
- *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
- * @param {string} request.sourceSnapshot
- *   Required. The unique name of the snapshot from which to restore the table. The
- *   snapshot and the table must be in the same instance.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Creates a new table from the specified snapshot. The target table must
+   * not exist. The snapshot and the table must be in the same instance.
+   *
+   * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+   * feature is not currently available to most Cloud Bigtable customers. This
+   * feature might be changed in backward-incompatible ways and is not
+   * recommended for production use. It is not subject to any SLA or deprecation
+   * policy.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the instance in which to create the table.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
+   * @param {string} request.tableId
+   *   Required. The name by which the new table should be referred to within the parent
+   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   * @param {string} request.sourceSnapshot
+   *   Required. The unique name of the snapshot from which to restore the table. The
+   *   snapshot and the table must be in the same instance.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   createTableFromSnapshot(
-      request: protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
-          LROperation<protosTypes.google.bigtable.admin.v2.ITable, protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata>,
-          protosTypes.google.longrunning.IOperation|undefined, {}|undefined>,
-      callback?: Callback<
-          LROperation<protosTypes.google.bigtable.admin.v2.ITable, protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata>,
-          protosTypes.google.longrunning.IOperation|undefined,
-          {}|undefined>):
-      Promise<[
-        LROperation<protosTypes.google.bigtable.admin.v2.ITable, protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata>,
-        protosTypes.google.longrunning.IOperation|undefined, {}|undefined
-      ]>|void {
+    request: protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          LROperation<
+            protosTypes.google.bigtable.admin.v2.ITable,
+            protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata
+          >,
+          protosTypes.google.longrunning.IOperation | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1198,83 +1449,114 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'parent': request.parent || '',
+      parent: request.parent || '',
     });
     this.initialize();
-    return this._innerApiCalls.createTableFromSnapshot(request, options, callback);
+    return this._innerApiCalls.createTableFromSnapshot(
+      request,
+      options,
+      callback
+    );
   }
   snapshotTable(
-      request: protosTypes.google.bigtable.admin.v2.ISnapshotTableRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        LROperation<protosTypes.google.bigtable.admin.v2.ISnapshot, protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata>,
-        protosTypes.google.longrunning.IOperation|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.ISnapshotTableRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ISnapshot,
+        protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  >;
   snapshotTable(
-      request: protosTypes.google.bigtable.admin.v2.ISnapshotTableRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          LROperation<protosTypes.google.bigtable.admin.v2.ISnapshot, protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata>,
-          protosTypes.google.longrunning.IOperation|undefined,
-          {}|undefined>): void;
-/**
- * Creates a new snapshot in the specified cluster from the specified
- * source table. The cluster and the table must be in the same instance.
- *
- * Note: This is a private alpha release of Cloud Bigtable snapshots. This
- * feature is not currently available to most Cloud Bigtable customers. This
- * feature might be changed in backward-incompatible ways and is not
- * recommended for production use. It is not subject to any SLA or deprecation
- * policy.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.name
- *   The unique name of the table to have the snapshot taken.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/tables/{table}`.
- * @param {string} request.cluster
- *   The name of the cluster where the snapshot will be created in.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
- * @param {string} request.snapshotId
- *   The ID by which the new snapshot should be referred to within the parent
- *   cluster, e.g., `mysnapshot` of the form: `{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*`
- *   rather than
- *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/mysnapshot`.
- * @param {google.protobuf.Duration} request.ttl
- *   The amount of time that the new snapshot can stay active after it is
- *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
- *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
- *   specified, the default value of 24 hours will be used.
- * @param {string} request.description
- *   Description of the snapshot.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.ISnapshotTableRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ISnapshot,
+        protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Creates a new snapshot in the specified cluster from the specified
+   * source table. The cluster and the table must be in the same instance.
+   *
+   * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+   * feature is not currently available to most Cloud Bigtable customers. This
+   * feature might be changed in backward-incompatible ways and is not
+   * recommended for production use. It is not subject to any SLA or deprecation
+   * policy.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   The unique name of the table to have the snapshot taken.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {string} request.cluster
+   *   The name of the cluster where the snapshot will be created in.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   * @param {string} request.snapshotId
+   *   The ID by which the new snapshot should be referred to within the parent
+   *   cluster, e.g., `mysnapshot` of the form: `{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*`
+   *   rather than
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/mysnapshot`.
+   * @param {google.protobuf.Duration} request.ttl
+   *   The amount of time that the new snapshot can stay active after it is
+   *   created. Once 'ttl' expires, the snapshot will get deleted. The maximum
+   *   amount of time a snapshot can stay active is 7 days. If 'ttl' is not
+   *   specified, the default value of 24 hours will be used.
+   * @param {string} request.description
+   *   Description of the snapshot.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   snapshotTable(
-      request: protosTypes.google.bigtable.admin.v2.ISnapshotTableRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
-          LROperation<protosTypes.google.bigtable.admin.v2.ISnapshot, protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata>,
-          protosTypes.google.longrunning.IOperation|undefined, {}|undefined>,
-      callback?: Callback<
-          LROperation<protosTypes.google.bigtable.admin.v2.ISnapshot, protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata>,
-          protosTypes.google.longrunning.IOperation|undefined,
-          {}|undefined>):
-      Promise<[
-        LROperation<protosTypes.google.bigtable.admin.v2.ISnapshot, protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata>,
-        protosTypes.google.longrunning.IOperation|undefined, {}|undefined
-      ]>|void {
+    request: protosTypes.google.bigtable.admin.v2.ISnapshotTableRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          LROperation<
+            protosTypes.google.bigtable.admin.v2.ISnapshot,
+            protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata
+          >,
+          protosTypes.google.longrunning.IOperation | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ISnapshot,
+        protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ISnapshot,
+        protosTypes.google.bigtable.admin.v2.ISnapshotTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1283,89 +1565,98 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'name': request.name || '',
+      name: request.name || '',
     });
     this.initialize();
     return this._innerApiCalls.snapshotTable(request, options, callback);
   }
   listTables(
-      request: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable[],
-        protosTypes.google.bigtable.admin.v2.IListTablesRequest|null,
-        protosTypes.google.bigtable.admin.v2.IListTablesResponse
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable[],
+      protosTypes.google.bigtable.admin.v2.IListTablesRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListTablesResponse
+    ]
+  >;
   listTables(
-      request: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable[],
-          protosTypes.google.bigtable.admin.v2.IListTablesRequest|null,
-          protosTypes.google.bigtable.admin.v2.IListTablesResponse>): void;
-/**
- * Lists all tables served from a specified instance.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.parent
- *   Required. The unique name of the instance for which tables should be listed.
- *   Values are of the form `projects/{project}/instances/{instance}`.
- * @param {google.bigtable.admin.v2.Table.View} request.view
- *   The view to be applied to the returned tables' fields.
- *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
- * @param {number} request.pageSize
- *   Maximum number of results per page.
- *
- *   A page_size of zero lets the server choose the number of items to return.
- *   A page_size which is strictly positive will return at most that many items.
- *   A negative page_size will cause an error.
- *
- *   Following the first request, subsequent paginated calls are not required
- *   to pass a page_size. If a page_size is set in subsequent calls, it must
- *   match the page_size given in the first request.
- * @param {string} request.pageToken
- *   The value of `next_page_token` returned by a previous call.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is Array of [Table]{@link google.bigtable.admin.v2.Table}.
- *   The client library support auto-pagination by default: it will call the API as many
- *   times as needed and will merge results from all the pages into this array.
- *
- *   When autoPaginate: false is specified through options, the array has three elements.
- *   The first element is Array of [Table]{@link google.bigtable.admin.v2.Table} that corresponds to
- *   the one page received from the API server.
- *   If the second element is not null it contains the request object of type [ListTablesRequest]{@link google.bigtable.admin.v2.ListTablesRequest}
- *   that can be used to obtain the next page of the results.
- *   If it is null, the next page does not exist.
- *   The third element contains the raw response received from the API server. Its type is
- *   [ListTablesResponse]{@link google.bigtable.admin.v2.ListTablesResponse}.
- *
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable[],
+      protosTypes.google.bigtable.admin.v2.IListTablesRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListTablesResponse
+    >
+  ): void;
+  /**
+   * Lists all tables served from a specified instance.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the instance for which tables should be listed.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
+   * @param {google.bigtable.admin.v2.Table.View} request.view
+   *   The view to be applied to the returned tables' fields.
+   *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
+   * @param {number} request.pageSize
+   *   Maximum number of results per page.
+   *
+   *   A page_size of zero lets the server choose the number of items to return.
+   *   A page_size which is strictly positive will return at most that many items.
+   *   A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls are not required
+   *   to pass a page_size. If a page_size is set in subsequent calls, it must
+   *   match the page_size given in the first request.
+   * @param {string} request.pageToken
+   *   The value of `next_page_token` returned by a previous call.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is Array of [Table]{@link google.bigtable.admin.v2.Table}.
+   *   The client library support auto-pagination by default: it will call the API as many
+   *   times as needed and will merge results from all the pages into this array.
+   *
+   *   When autoPaginate: false is specified through options, the array has three elements.
+   *   The first element is Array of [Table]{@link google.bigtable.admin.v2.Table} that corresponds to
+   *   the one page received from the API server.
+   *   If the second element is not null it contains the request object of type [ListTablesRequest]{@link google.bigtable.admin.v2.ListTablesRequest}
+   *   that can be used to obtain the next page of the results.
+   *   If it is null, the next page does not exist.
+   *   The third element contains the raw response received from the API server. Its type is
+   *   [ListTablesResponse]{@link google.bigtable.admin.v2.ListTablesResponse}.
+   *
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   listTables(
-      request: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.ITable[],
-          protosTypes.google.bigtable.admin.v2.IListTablesRequest|null,
-          protosTypes.google.bigtable.admin.v2.IListTablesResponse>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.ITable[],
-          protosTypes.google.bigtable.admin.v2.IListTablesRequest|null,
-          protosTypes.google.bigtable.admin.v2.IListTablesResponse>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ITable[],
-        protosTypes.google.bigtable.admin.v2.IListTablesRequest|null,
-        protosTypes.google.bigtable.admin.v2.IListTablesResponse
-      ]>|void {
+          protosTypes.google.bigtable.admin.v2.IListTablesRequest | null,
+          protosTypes.google.bigtable.admin.v2.IListTablesResponse
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.ITable[],
+      protosTypes.google.bigtable.admin.v2.IListTablesRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListTablesResponse
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ITable[],
+      protosTypes.google.bigtable.admin.v2.IListTablesRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListTablesResponse
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1374,54 +1665,54 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'parent': request.parent || '',
+      parent: request.parent || '',
     });
     this.initialize();
     return this._innerApiCalls.listTables(request, options, callback);
   }
 
-/**
- * Equivalent to {@link listTables}, but returns a NodeJS Stream object.
- *
- * This fetches the paged responses for {@link listTables} continuously
- * and invokes the callback registered for 'data' event for each element in the
- * responses.
- *
- * The returned object has 'end' method when no more elements are required.
- *
- * autoPaginate option will be ignored.
- *
- * @see {@link https://nodejs.org/api/stream.html}
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.parent
- *   Required. The unique name of the instance for which tables should be listed.
- *   Values are of the form `projects/{project}/instances/{instance}`.
- * @param {google.bigtable.admin.v2.Table.View} request.view
- *   The view to be applied to the returned tables' fields.
- *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
- * @param {number} request.pageSize
- *   Maximum number of results per page.
- *
- *   A page_size of zero lets the server choose the number of items to return.
- *   A page_size which is strictly positive will return at most that many items.
- *   A negative page_size will cause an error.
- *
- *   Following the first request, subsequent paginated calls are not required
- *   to pass a page_size. If a page_size is set in subsequent calls, it must
- *   match the page_size given in the first request.
- * @param {string} request.pageToken
- *   The value of `next_page_token` returned by a previous call.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Stream}
- *   An object stream which emits an object representing [Table]{@link google.bigtable.admin.v2.Table} on 'data' event.
- */
+  /**
+   * Equivalent to {@link listTables}, but returns a NodeJS Stream object.
+   *
+   * This fetches the paged responses for {@link listTables} continuously
+   * and invokes the callback registered for 'data' event for each element in the
+   * responses.
+   *
+   * The returned object has 'end' method when no more elements are required.
+   *
+   * autoPaginate option will be ignored.
+   *
+   * @see {@link https://nodejs.org/api/stream.html}
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the instance for which tables should be listed.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
+   * @param {google.bigtable.admin.v2.Table.View} request.view
+   *   The view to be applied to the returned tables' fields.
+   *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
+   * @param {number} request.pageSize
+   *   Maximum number of results per page.
+   *
+   *   A page_size of zero lets the server choose the number of items to return.
+   *   A page_size which is strictly positive will return at most that many items.
+   *   A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls are not required
+   *   to pass a page_size. If a page_size is set in subsequent calls, it must
+   *   match the page_size given in the first request.
+   * @param {string} request.pageToken
+   *   The value of `next_page_token` returned by a previous call.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits an object representing [Table]{@link google.bigtable.admin.v2.Table} on 'data' event.
+   */
   listTablesStream(
-      request?: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
-      options?: gax.CallOptions):
-    Transform{
+    request?: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
+    options?: gax.CallOptions
+  ): Transform {
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1429,7 +1720,7 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'parent': request.parent || '',
+      parent: request.parent || '',
     });
     const callSettings = new gax.CallSettings(options);
     this.initialize();
@@ -1440,82 +1731,91 @@ export class BigtableTableAdminClient {
     );
   }
   listSnapshots(
-      request: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ISnapshot[],
-        protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest|null,
-        protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse
-      ]>;
+    request: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ISnapshot[],
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse
+    ]
+  >;
   listSnapshots(
-      request: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.admin.v2.ISnapshot[],
-          protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest|null,
-          protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse>): void;
-/**
- * Lists all snapshots associated with the specified cluster.
- *
- * Note: This is a private alpha release of Cloud Bigtable snapshots. This
- * feature is not currently available to most Cloud Bigtable customers. This
- * feature might be changed in backward-incompatible ways and is not
- * recommended for production use. It is not subject to any SLA or deprecation
- * policy.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.parent
- *   Required. The unique name of the cluster for which snapshots should be listed.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
- *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
- *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
- * @param {number} request.pageSize
- *   The maximum number of snapshots to return per page.
- *   CURRENTLY UNIMPLEMENTED AND IGNORED.
- * @param {string} request.pageToken
- *   The value of `next_page_token` returned by a previous call.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is Array of [Snapshot]{@link google.bigtable.admin.v2.Snapshot}.
- *   The client library support auto-pagination by default: it will call the API as many
- *   times as needed and will merge results from all the pages into this array.
- *
- *   When autoPaginate: false is specified through options, the array has three elements.
- *   The first element is Array of [Snapshot]{@link google.bigtable.admin.v2.Snapshot} that corresponds to
- *   the one page received from the API server.
- *   If the second element is not null it contains the request object of type [ListSnapshotsRequest]{@link google.bigtable.admin.v2.ListSnapshotsRequest}
- *   that can be used to obtain the next page of the results.
- *   If it is null, the next page does not exist.
- *   The third element contains the raw response received from the API server. Its type is
- *   [ListSnapshotsResponse]{@link google.bigtable.admin.v2.ListSnapshotsResponse}.
- *
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.ISnapshot[],
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse
+    >
+  ): void;
+  /**
+   * Lists all snapshots associated with the specified cluster.
+   *
+   * Note: This is a private alpha release of Cloud Bigtable snapshots. This
+   * feature is not currently available to most Cloud Bigtable customers. This
+   * feature might be changed in backward-incompatible ways and is not
+   * recommended for production use. It is not subject to any SLA or deprecation
+   * policy.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the cluster for which snapshots should be listed.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
+   *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
+   * @param {number} request.pageSize
+   *   The maximum number of snapshots to return per page.
+   *   CURRENTLY UNIMPLEMENTED AND IGNORED.
+   * @param {string} request.pageToken
+   *   The value of `next_page_token` returned by a previous call.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is Array of [Snapshot]{@link google.bigtable.admin.v2.Snapshot}.
+   *   The client library support auto-pagination by default: it will call the API as many
+   *   times as needed and will merge results from all the pages into this array.
+   *
+   *   When autoPaginate: false is specified through options, the array has three elements.
+   *   The first element is Array of [Snapshot]{@link google.bigtable.admin.v2.Snapshot} that corresponds to
+   *   the one page received from the API server.
+   *   If the second element is not null it contains the request object of type [ListSnapshotsRequest]{@link google.bigtable.admin.v2.ListSnapshotsRequest}
+   *   that can be used to obtain the next page of the results.
+   *   If it is null, the next page does not exist.
+   *   The third element contains the raw response received from the API server. Its type is
+   *   [ListSnapshotsResponse]{@link google.bigtable.admin.v2.ListSnapshotsResponse}.
+   *
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   listSnapshots(
-      request: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.admin.v2.ISnapshot[],
-          protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest|null,
-          protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse>,
-      callback?: Callback<
-          protosTypes.google.bigtable.admin.v2.ISnapshot[],
-          protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest|null,
-          protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse>):
-      Promise<[
-        protosTypes.google.bigtable.admin.v2.ISnapshot[],
-        protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest|null,
-        protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse
-      ]>|void {
+          protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest | null,
+          protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.ISnapshot[],
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.ISnapshot[],
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListSnapshotsResponse
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -1524,47 +1824,47 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'parent': request.parent || '',
+      parent: request.parent || '',
     });
     this.initialize();
     return this._innerApiCalls.listSnapshots(request, options, callback);
   }
 
-/**
- * Equivalent to {@link listSnapshots}, but returns a NodeJS Stream object.
- *
- * This fetches the paged responses for {@link listSnapshots} continuously
- * and invokes the callback registered for 'data' event for each element in the
- * responses.
- *
- * The returned object has 'end' method when no more elements are required.
- *
- * autoPaginate option will be ignored.
- *
- * @see {@link https://nodejs.org/api/stream.html}
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.parent
- *   Required. The unique name of the cluster for which snapshots should be listed.
- *   Values are of the form
- *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
- *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
- *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
- * @param {number} request.pageSize
- *   The maximum number of snapshots to return per page.
- *   CURRENTLY UNIMPLEMENTED AND IGNORED.
- * @param {string} request.pageToken
- *   The value of `next_page_token` returned by a previous call.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Stream}
- *   An object stream which emits an object representing [Snapshot]{@link google.bigtable.admin.v2.Snapshot} on 'data' event.
- */
+  /**
+   * Equivalent to {@link listSnapshots}, but returns a NodeJS Stream object.
+   *
+   * This fetches the paged responses for {@link listSnapshots} continuously
+   * and invokes the callback registered for 'data' event for each element in the
+   * responses.
+   *
+   * The returned object has 'end' method when no more elements are required.
+   *
+   * autoPaginate option will be ignored.
+   *
+   * @see {@link https://nodejs.org/api/stream.html}
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the cluster for which snapshots should be listed.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
+   *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
+   * @param {number} request.pageSize
+   *   The maximum number of snapshots to return per page.
+   *   CURRENTLY UNIMPLEMENTED AND IGNORED.
+   * @param {string} request.pageToken
+   *   The value of `next_page_token` returned by a previous call.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits an object representing [Snapshot]{@link google.bigtable.admin.v2.Snapshot} on 'data' event.
+   */
   listSnapshotsStream(
-      request?: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
-      options?: gax.CallOptions):
-    Transform{
+    request?: protosTypes.google.bigtable.admin.v2.IListSnapshotsRequest,
+    options?: gax.CallOptions
+  ): Transform {
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1572,7 +1872,7 @@ export class BigtableTableAdminClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'parent': request.parent || '',
+      parent: request.parent || '',
     });
     const callSettings = new gax.CallSettings(options);
     this.initialize();
@@ -1594,10 +1894,10 @@ export class BigtableTableAdminClient {
    * @param {string} app_profile
    * @returns {string} Resource name string.
    */
-  appProfilePath(project:string,instance:string,appProfile:string) {
+  appProfilePath(project: string, instance: string, appProfile: string) {
     return this._pathTemplates.appProfilePathTemplate.render({
-      project: project,
-      instance: instance,
+      project,
+      instance,
       app_profile: appProfile,
     });
   }
@@ -1610,7 +1910,8 @@ export class BigtableTableAdminClient {
    * @returns {string} A string representing the project.
    */
   matchProjectFromAppProfileName(appProfileName: string) {
-    return this._pathTemplates.appProfilePathTemplate.match(appProfileName).project;
+    return this._pathTemplates.appProfilePathTemplate.match(appProfileName)
+      .project;
   }
 
   /**
@@ -1621,7 +1922,8 @@ export class BigtableTableAdminClient {
    * @returns {string} A string representing the instance.
    */
   matchInstanceFromAppProfileName(appProfileName: string) {
-    return this._pathTemplates.appProfilePathTemplate.match(appProfileName).instance;
+    return this._pathTemplates.appProfilePathTemplate.match(appProfileName)
+      .instance;
   }
 
   /**
@@ -1632,7 +1934,8 @@ export class BigtableTableAdminClient {
    * @returns {string} A string representing the app_profile.
    */
   matchAppProfileFromAppProfileName(appProfileName: string) {
-    return this._pathTemplates.appProfilePathTemplate.match(appProfileName).app_profile;
+    return this._pathTemplates.appProfilePathTemplate.match(appProfileName)
+      .app_profile;
   }
 
   /**
@@ -1643,11 +1946,11 @@ export class BigtableTableAdminClient {
    * @param {string} cluster
    * @returns {string} Resource name string.
    */
-  clusterPath(project:string,instance:string,cluster:string) {
+  clusterPath(project: string, instance: string, cluster: string) {
     return this._pathTemplates.clusterPathTemplate.render({
-      project: project,
-      instance: instance,
-      cluster: cluster,
+      project,
+      instance,
+      cluster,
     });
   }
 
@@ -1691,10 +1994,10 @@ export class BigtableTableAdminClient {
    * @param {string} instance
    * @returns {string} Resource name string.
    */
-  instancePath(project:string,instance:string) {
+  instancePath(project: string, instance: string) {
     return this._pathTemplates.instancePathTemplate.render({
-      project: project,
-      instance: instance,
+      project,
+      instance,
     });
   }
 
@@ -1717,7 +2020,8 @@ export class BigtableTableAdminClient {
    * @returns {string} A string representing the instance.
    */
   matchInstanceFromInstanceName(instanceName: string) {
-    return this._pathTemplates.instancePathTemplate.match(instanceName).instance;
+    return this._pathTemplates.instancePathTemplate.match(instanceName)
+      .instance;
   }
 
   /**
@@ -1729,12 +2033,17 @@ export class BigtableTableAdminClient {
    * @param {string} snapshot
    * @returns {string} Resource name string.
    */
-  snapshotPath(project:string,instance:string,cluster:string,snapshot:string) {
+  snapshotPath(
+    project: string,
+    instance: string,
+    cluster: string,
+    snapshot: string
+  ) {
     return this._pathTemplates.snapshotPathTemplate.render({
-      project: project,
-      instance: instance,
-      cluster: cluster,
-      snapshot: snapshot,
+      project,
+      instance,
+      cluster,
+      snapshot,
     });
   }
 
@@ -1757,7 +2066,8 @@ export class BigtableTableAdminClient {
    * @returns {string} A string representing the instance.
    */
   matchInstanceFromSnapshotName(snapshotName: string) {
-    return this._pathTemplates.snapshotPathTemplate.match(snapshotName).instance;
+    return this._pathTemplates.snapshotPathTemplate.match(snapshotName)
+      .instance;
   }
 
   /**
@@ -1779,7 +2089,8 @@ export class BigtableTableAdminClient {
    * @returns {string} A string representing the snapshot.
    */
   matchSnapshotFromSnapshotName(snapshotName: string) {
-    return this._pathTemplates.snapshotPathTemplate.match(snapshotName).snapshot;
+    return this._pathTemplates.snapshotPathTemplate.match(snapshotName)
+      .snapshot;
   }
 
   /**
@@ -1790,11 +2101,11 @@ export class BigtableTableAdminClient {
    * @param {string} table
    * @returns {string} Resource name string.
    */
-  tablePath(project:string,instance:string,table:string) {
+  tablePath(project: string, instance: string, table: string) {
     return this._pathTemplates.tablePathTemplate.render({
-      project: project,
-      instance: instance,
-      table: table,
+      project,
+      instance,
+      table,
     });
   }
 

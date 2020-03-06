@@ -17,7 +17,13 @@
 // ** All changes to this file may be overwritten. **
 
 import * as gax from 'google-gax';
-import {APICallback, Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
+import {
+  APICallback,
+  Callback,
+  CallOptions,
+  Descriptors,
+  ClientOptions,
+} from 'google-gax';
 import * as path from 'path';
 
 import * as protosTypes from '../../protos/protos';
@@ -69,10 +75,12 @@ export class BigtableClient {
   constructor(opts?: ClientOptions) {
     // Ensure that options include the service address and port.
     const staticMembers = this.constructor as typeof BigtableClient;
-    const servicePath = opts && opts.servicePath ?
-        opts.servicePath :
-        ((opts && opts.apiEndpoint) ? opts.apiEndpoint :
-                                      staticMembers.servicePath);
+    const servicePath =
+      opts && opts.servicePath
+        ? opts.servicePath
+        : opts && opts.apiEndpoint
+        ? opts.apiEndpoint
+        : staticMembers.servicePath;
     const port = opts && opts.port ? opts.port : staticMembers.port;
 
     if (!opts) {
@@ -82,8 +90,8 @@ export class BigtableClient {
     opts.port = opts.port || port;
     opts.clientConfig = opts.clientConfig || {};
 
-    const isBrowser = (typeof window !== 'undefined');
-    if (isBrowser){
+    const isBrowser = typeof window !== 'undefined';
+    if (isBrowser) {
       opts.fallback = true;
     }
     // If we are in browser, we are already using fallback because of the
@@ -97,13 +105,10 @@ export class BigtableClient {
     const gaxGrpc = new gaxModule.GrpcClient(opts);
 
     // Save the auth object to the client, for use by other methods.
-    this.auth = (gaxGrpc.auth as gax.GoogleAuth);
+    this.auth = gaxGrpc.auth as gax.GoogleAuth;
 
     // Determine the client header string.
-    const clientHeader = [
-      `gax/${gaxModule.version}`,
-      `gapic/${version}`,
-    ];
+    const clientHeader = [`gax/${gaxModule.version}`, `gapic/${version}`];
     if (typeof process !== 'undefined' && 'versions' in process) {
       clientHeader.push(`gl-node/${process.versions.node}`);
     } else {
@@ -119,11 +124,15 @@ export class BigtableClient {
     // For Node.js, pass the path to JSON proto file.
     // For browsers, pass the JSON content.
 
-    const nodejsProtoPath = path.join(__dirname, '..', '..', 'protos', 'protos.json');
+    const nodejsProtoPath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'protos',
+      'protos.json'
+    );
     const protos = gaxGrpc.loadProto(
-      opts.fallback ?
-        require("../../protos/protos.json") :
-        nodejsProtoPath
+      opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
     );
 
     // This API contains "path templates"; forward-slash-separated
@@ -139,14 +148,21 @@ export class BigtableClient {
     // Provide descriptors for these.
     this._descriptors.stream = {
       readRows: new gaxModule.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
-      sampleRowKeys: new gaxModule.StreamDescriptor(gax.StreamType.SERVER_STREAMING),
-      mutateRows: new gaxModule.StreamDescriptor(gax.StreamType.SERVER_STREAMING)
+      sampleRowKeys: new gaxModule.StreamDescriptor(
+        gax.StreamType.SERVER_STREAMING
+      ),
+      mutateRows: new gaxModule.StreamDescriptor(
+        gax.StreamType.SERVER_STREAMING
+      ),
     };
 
     // Put together the default options sent with requests.
     const defaults = gaxGrpc.constructSettings(
-        'google.bigtable.v2.Bigtable', gapicConfig as gax.ClientConfig,
-        opts.clientConfig || {}, {'x-goog-api-client': clientHeader.join(' ')});
+      'google.bigtable.v2.Bigtable',
+      gapicConfig as gax.ClientConfig,
+      opts.clientConfig || {},
+      {'x-goog-api-client': clientHeader.join(' ')}
+    );
 
     // Set up a dictionary of "inner API calls"; the core implementation
     // of calling the API is handled in `google-gax`, with this code
@@ -156,16 +172,23 @@ export class BigtableClient {
     // Put together the "service stub" for
     // google.bigtable.v2.Bigtable.
     this.bigtableStub = gaxGrpc.createStub(
-        opts.fallback ?
-          (protos as protobuf.Root).lookupService('google.bigtable.v2.Bigtable') :
-          // tslint:disable-next-line no-any
+      opts.fallback
+        ? (protos as protobuf.Root).lookupService('google.bigtable.v2.Bigtable')
+        : // tslint:disable-next-line no-any
           (protos as any).google.bigtable.v2.Bigtable,
-        opts) as Promise<{[method: string]: Function}>;
+      opts
+    ) as Promise<{[method: string]: Function}>;
 
     // Iterate over each of the methods that the service provides
     // and create an API call method for each.
-    const bigtableStubMethods =
-        ['readRows', 'sampleRowKeys', 'mutateRow', 'mutateRows', 'checkAndMutateRow', 'readModifyWriteRow'];
+    const bigtableStubMethods = [
+      'readRows',
+      'sampleRowKeys',
+      'mutateRow',
+      'mutateRows',
+      'checkAndMutateRow',
+      'readModifyWriteRow',
+    ];
 
     for (const methodName of bigtableStubMethods) {
       const innerCallPromise = this.bigtableStub.then(
@@ -175,16 +198,17 @@ export class BigtableClient {
           }
           return stub[methodName].apply(stub, args);
         },
-        (err: Error|null|undefined) => () => {
+        (err: Error | null | undefined) => () => {
           throw err;
-        });
+        }
+      );
 
       const apiCall = gaxModule.createApiCall(
         innerCallPromise,
         defaults[methodName],
         this._descriptors.page[methodName] ||
-            this._descriptors.stream[methodName] ||
-            this._descriptors.longrunning[methodName]
+          this._descriptors.stream[methodName] ||
+          this._descriptors.longrunning[methodName]
       );
 
       this._innerApiCalls[methodName] = (
@@ -230,7 +254,7 @@ export class BigtableClient {
       'https://www.googleapis.com/auth/cloud-bigtable.data',
       'https://www.googleapis.com/auth/cloud-bigtable.data.readonly',
       'https://www.googleapis.com/auth/cloud-platform',
-      'https://www.googleapis.com/auth/cloud-platform.read-only'
+      'https://www.googleapis.com/auth/cloud-platform.read-only',
     ];
   }
 
@@ -241,8 +265,9 @@ export class BigtableClient {
    * @param {function(Error, string)} callback - the callback to
    *   be called with the current project Id.
    */
-  getProjectId(callback?: Callback<string, undefined, undefined>):
-      Promise<string>|void {
+  getProjectId(
+    callback?: Callback<string, undefined, undefined>
+  ): Promise<string> | void {
     if (callback) {
       this.auth.getProjectId(callback);
       return;
@@ -254,64 +279,76 @@ export class BigtableClient {
   // -- Service calls --
   // -------------------
   mutateRow(
-      request: protosTypes.google.bigtable.v2.IMutateRowRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.v2.IMutateRowResponse,
-        protosTypes.google.bigtable.v2.IMutateRowRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.v2.IMutateRowRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.v2.IMutateRowResponse,
+      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
+      {} | undefined
+    ]
+  >;
   mutateRow(
-      request: protosTypes.google.bigtable.v2.IMutateRowRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.v2.IMutateRowResponse,
-          protosTypes.google.bigtable.v2.IMutateRowRequest|undefined,
-          {}|undefined>): void;
-/**
- * Mutates a row atomically. Cells already present in the row are left
- * unchanged unless explicitly changed by `mutation`.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.tableName
- *   Required. The unique name of the table to which the mutation should be applied.
- *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
- * @param {string} request.appProfileId
- *   This value specifies routing for replication. If not specified, the
- *   "default" application profile will be used.
- * @param {Buffer} request.rowKey
- *   Required. The key of the row to which the mutation should be applied.
- * @param {number[]} request.mutations
- *   Required. Changes to be atomically applied to the specified row. Entries are applied
- *   in order, meaning that earlier mutations can be masked by later ones.
- *   Must contain at least one entry and at most 100000.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [MutateRowResponse]{@link google.bigtable.v2.MutateRowResponse}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.v2.IMutateRowRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.v2.IMutateRowResponse,
+      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Mutates a row atomically. Cells already present in the row are left
+   * unchanged unless explicitly changed by `mutation`.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table to which the mutation should be applied.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {Buffer} request.rowKey
+   *   Required. The key of the row to which the mutation should be applied.
+   * @param {number[]} request.mutations
+   *   Required. Changes to be atomically applied to the specified row. Entries are applied
+   *   in order, meaning that earlier mutations can be masked by later ones.
+   *   Must contain at least one entry and at most 100000.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [MutateRowResponse]{@link google.bigtable.v2.MutateRowResponse}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   mutateRow(
-      request: protosTypes.google.bigtable.v2.IMutateRowRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.v2.IMutateRowRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.v2.IMutateRowResponse,
-          protosTypes.google.bigtable.v2.IMutateRowRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.v2.IMutateRowResponse,
-          protosTypes.google.bigtable.v2.IMutateRowRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.v2.IMutateRowResponse,
-        protosTypes.google.bigtable.v2.IMutateRowRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.v2.IMutateRowResponse,
+      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.v2.IMutateRowResponse,
+      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -320,82 +357,94 @@ export class BigtableClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'table_name': request.tableName || '',
+      table_name: request.tableName || '',
     });
     return this._innerApiCalls.mutateRow(request, options, callback);
   }
   checkAndMutateRow(
-      request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-        protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+      {} | undefined
+    ]
+  >;
   checkAndMutateRow(
-      request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-          protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest|undefined,
-          {}|undefined>): void;
-/**
- * Mutates a row atomically based on the output of a predicate Reader filter.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.tableName
- *   Required. The unique name of the table to which the conditional mutation should be
- *   applied.
- *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
- * @param {string} request.appProfileId
- *   This value specifies routing for replication. If not specified, the
- *   "default" application profile will be used.
- * @param {Buffer} request.rowKey
- *   Required. The key of the row to which the conditional mutation should be applied.
- * @param {google.bigtable.v2.RowFilter} request.predicateFilter
- *   The filter to be applied to the contents of the specified row. Depending
- *   on whether or not any results are yielded, either `true_mutations` or
- *   `false_mutations` will be executed. If unset, checks that the row contains
- *   any values at all.
- * @param {number[]} request.trueMutations
- *   Changes to be atomically applied to the specified row if `predicate_filter`
- *   yields at least one cell when applied to `row_key`. Entries are applied in
- *   order, meaning that earlier mutations can be masked by later ones.
- *   Must contain at least one entry if `false_mutations` is empty, and at most
- *   100000.
- * @param {number[]} request.falseMutations
- *   Changes to be atomically applied to the specified row if `predicate_filter`
- *   does not yield any cells when applied to `row_key`. Entries are applied in
- *   order, meaning that earlier mutations can be masked by later ones.
- *   Must contain at least one entry if `true_mutations` is empty, and at most
- *   100000.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [CheckAndMutateRowResponse]{@link google.bigtable.v2.CheckAndMutateRowResponse}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Mutates a row atomically based on the output of a predicate Reader filter.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table to which the conditional mutation should be
+   *   applied.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {Buffer} request.rowKey
+   *   Required. The key of the row to which the conditional mutation should be applied.
+   * @param {google.bigtable.v2.RowFilter} request.predicateFilter
+   *   The filter to be applied to the contents of the specified row. Depending
+   *   on whether or not any results are yielded, either `true_mutations` or
+   *   `false_mutations` will be executed. If unset, checks that the row contains
+   *   any values at all.
+   * @param {number[]} request.trueMutations
+   *   Changes to be atomically applied to the specified row if `predicate_filter`
+   *   yields at least one cell when applied to `row_key`. Entries are applied in
+   *   order, meaning that earlier mutations can be masked by later ones.
+   *   Must contain at least one entry if `false_mutations` is empty, and at most
+   *   100000.
+   * @param {number[]} request.falseMutations
+   *   Changes to be atomically applied to the specified row if `predicate_filter`
+   *   does not yield any cells when applied to `row_key`. Entries are applied in
+   *   order, meaning that earlier mutations can be masked by later ones.
+   *   Must contain at least one entry if `true_mutations` is empty, and at most
+   *   100000.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [CheckAndMutateRowResponse]{@link google.bigtable.v2.CheckAndMutateRowResponse}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   checkAndMutateRow(
-      request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-          protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-          protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-        protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -404,73 +453,85 @@ export class BigtableClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'table_name': request.tableName || '',
+      table_name: request.tableName || '',
     });
     return this._innerApiCalls.checkAndMutateRow(request, options, callback);
   }
   readModifyWriteRow(
-      request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
-      options?: gax.CallOptions):
-      Promise<[
-        protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-        protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest|undefined, {}|undefined
-      ]>;
+    request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+      {} | undefined
+    ]
+  >;
   readModifyWriteRow(
-      request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
-      options: gax.CallOptions,
-      callback: Callback<
-          protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-          protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest|undefined,
-          {}|undefined>): void;
-/**
- * Modifies a row atomically on the server. The method reads the latest
- * existing timestamp and value from the specified columns and writes a new
- * entry based on pre-defined read/modify/write rules. The new value for the
- * timestamp is the greater of the existing timestamp or the current server
- * time. The method returns the new contents of all modified cells.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.tableName
- *   Required. The unique name of the table to which the read/modify/write rules should be
- *   applied.
- *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
- * @param {string} request.appProfileId
- *   This value specifies routing for replication. If not specified, the
- *   "default" application profile will be used.
- * @param {Buffer} request.rowKey
- *   Required. The key of the row to which the read/modify/write rules should be applied.
- * @param {number[]} request.rules
- *   Required. Rules specifying how the specified row's contents are to be transformed
- *   into writes. Entries are applied in order, meaning that earlier rules will
- *   affect the results of later ones.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Promise} - The promise which resolves to an array.
- *   The first element of the array is an object representing [ReadModifyWriteRowResponse]{@link google.bigtable.v2.ReadModifyWriteRowResponse}.
- *   The promise has a method named "cancel" which cancels the ongoing API call.
- */
+    request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Modifies a row atomically on the server. The method reads the latest
+   * existing timestamp and value from the specified columns and writes a new
+   * entry based on pre-defined read/modify/write rules. The new value for the
+   * timestamp is the greater of the existing timestamp or the current server
+   * time. The method returns the new contents of all modified cells.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table to which the read/modify/write rules should be
+   *   applied.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {Buffer} request.rowKey
+   *   Required. The key of the row to which the read/modify/write rules should be applied.
+   * @param {number[]} request.rules
+   *   Required. Rules specifying how the specified row's contents are to be transformed
+   *   into writes. Entries are applied in order, meaning that earlier rules will
+   *   affect the results of later ones.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [ReadModifyWriteRowResponse]{@link google.bigtable.v2.ReadModifyWriteRowResponse}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
   readModifyWriteRow(
-      request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
-      optionsOrCallback?: gax.CallOptions|Callback<
+    request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
           protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-          protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest|undefined, {}|undefined>,
-      callback?: Callback<
-          protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-          protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest|undefined,
-          {}|undefined>):
-      Promise<[
-        protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-        protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest|undefined, {}|undefined
-      ]>|void {
+          protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
     request = request || {};
     let options: gax.CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
-    }
-    else {
+    } else {
       options = optionsOrCallback as gax.CallOptions;
     }
     options = options || {};
@@ -479,44 +540,44 @@ export class BigtableClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'table_name': request.tableName || '',
+      table_name: request.tableName || '',
     });
     return this._innerApiCalls.readModifyWriteRow(request, options, callback);
   }
 
-/**
- * Streams back the contents of all requested rows in key order, optionally
- * applying the same Reader filter to each. Depending on their size,
- * rows and cells may be broken up across multiple responses, but
- * atomicity of each row will still be preserved. See the
- * ReadRowsResponse documentation for details.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.tableName
- *   Required. The unique name of the table from which to read.
- *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
- * @param {string} request.appProfileId
- *   This value specifies routing for replication. If not specified, the
- *   "default" application profile will be used.
- * @param {google.bigtable.v2.RowSet} request.rows
- *   The row keys and/or ranges to read. If not specified, reads from all rows.
- * @param {google.bigtable.v2.RowFilter} request.filter
- *   The filter to apply to the contents of the specified row(s). If unset,
- *   reads the entirety of each row.
- * @param {number} request.rowsLimit
- *   The read will terminate after committing to N rows' worth of results. The
- *   default (zero) is to return all results.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Stream}
- *   An object stream which emits [ReadRowsResponse]{@link google.bigtable.v2.ReadRowsResponse} on 'data' event.
- */
+  /**
+   * Streams back the contents of all requested rows in key order, optionally
+   * applying the same Reader filter to each. Depending on their size,
+   * rows and cells may be broken up across multiple responses, but
+   * atomicity of each row will still be preserved. See the
+   * ReadRowsResponse documentation for details.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table from which to read.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {google.bigtable.v2.RowSet} request.rows
+   *   The row keys and/or ranges to read. If not specified, reads from all rows.
+   * @param {google.bigtable.v2.RowFilter} request.filter
+   *   The filter to apply to the contents of the specified row(s). If unset,
+   *   reads the entirety of each row.
+   * @param {number} request.rowsLimit
+   *   The read will terminate after committing to N rows' worth of results. The
+   *   default (zero) is to return all results.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits [ReadRowsResponse]{@link google.bigtable.v2.ReadRowsResponse} on 'data' event.
+   */
   readRows(
-      request?: protosTypes.google.bigtable.v2.IReadRowsRequest,
-      options?: gax.CallOptions):
-    gax.CancellableStream{
+    request?: protosTypes.google.bigtable.v2.IReadRowsRequest,
+    options?: gax.CallOptions
+  ): gax.CancellableStream {
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -524,35 +585,35 @@ export class BigtableClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'table_name': request.tableName || '',
+      table_name: request.tableName || '',
     });
     return this._innerApiCalls.readRows(request, options);
   }
 
-/**
- * Returns a sample of row keys in the table. The returned row keys will
- * delimit contiguous sections of the table of approximately equal size,
- * which can be used to break up the data for distributed tasks like
- * mapreduces.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.tableName
- *   Required. The unique name of the table from which to sample row keys.
- *   Values are of the form
- *   `projects/<project>/instances/<instance>/tables/<table>`.
- * @param {string} request.appProfileId
- *   This value specifies routing for replication. If not specified, the
- *   "default" application profile will be used.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Stream}
- *   An object stream which emits [SampleRowKeysResponse]{@link google.bigtable.v2.SampleRowKeysResponse} on 'data' event.
- */
+  /**
+   * Returns a sample of row keys in the table. The returned row keys will
+   * delimit contiguous sections of the table of approximately equal size,
+   * which can be used to break up the data for distributed tasks like
+   * mapreduces.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table from which to sample row keys.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits [SampleRowKeysResponse]{@link google.bigtable.v2.SampleRowKeysResponse} on 'data' event.
+   */
   sampleRowKeys(
-      request?: protosTypes.google.bigtable.v2.ISampleRowKeysRequest,
-      options?: gax.CallOptions):
-    gax.CancellableStream{
+    request?: protosTypes.google.bigtable.v2.ISampleRowKeysRequest,
+    options?: gax.CallOptions
+  ): gax.CancellableStream {
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -560,38 +621,38 @@ export class BigtableClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'table_name': request.tableName || '',
+      table_name: request.tableName || '',
     });
     return this._innerApiCalls.sampleRowKeys(request, options);
   }
 
-/**
- * Mutates multiple rows in a batch. Each individual row is mutated
- * atomically as in MutateRow, but the entire batch is not executed
- * atomically.
- *
- * @param {Object} request
- *   The request object that will be sent.
- * @param {string} request.tableName
- *   Required. The unique name of the table to which the mutations should be applied.
- * @param {string} request.appProfileId
- *   This value specifies routing for replication. If not specified, the
- *   "default" application profile will be used.
- * @param {number[]} request.entries
- *   Required. The row keys and corresponding mutations to be applied in bulk.
- *   Each entry is applied as an atomic mutation, but the entries may be
- *   applied in arbitrary order (even between entries for the same row).
- *   At least one entry must be specified, and in total the entries can
- *   contain at most 100000 mutations.
- * @param {object} [options]
- *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
- * @returns {Stream}
- *   An object stream which emits [MutateRowsResponse]{@link google.bigtable.v2.MutateRowsResponse} on 'data' event.
- */
+  /**
+   * Mutates multiple rows in a batch. Each individual row is mutated
+   * atomically as in MutateRow, but the entire batch is not executed
+   * atomically.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table to which the mutations should be applied.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {number[]} request.entries
+   *   Required. The row keys and corresponding mutations to be applied in bulk.
+   *   Each entry is applied as an atomic mutation, but the entries may be
+   *   applied in arbitrary order (even between entries for the same row).
+   *   At least one entry must be specified, and in total the entries can
+   *   contain at most 100000 mutations.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits [MutateRowsResponse]{@link google.bigtable.v2.MutateRowsResponse} on 'data' event.
+   */
   mutateRows(
-      request?: protosTypes.google.bigtable.v2.IMutateRowsRequest,
-      options?: gax.CallOptions):
-    gax.CancellableStream{
+    request?: protosTypes.google.bigtable.v2.IMutateRowsRequest,
+    options?: gax.CallOptions
+  ): gax.CancellableStream {
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -599,7 +660,7 @@ export class BigtableClient {
     options.otherArgs.headers[
       'x-goog-request-params'
     ] = gax.routingHeader.fromParams({
-      'table_name': request.tableName || '',
+      table_name: request.tableName || '',
     });
     return this._innerApiCalls.mutateRows(request, options);
   }
@@ -616,11 +677,11 @@ export class BigtableClient {
    * @param {string} table
    * @returns {string} Resource name string.
    */
-  tablePath(project:string,instance:string,table:string) {
+  tablePath(project: string, instance: string, table: string) {
     return this._pathTemplates.tablePathTemplate.render({
-      project: project,
-      instance: instance,
-      table: table,
+      project,
+      instance,
+      table,
     });
   }
 
