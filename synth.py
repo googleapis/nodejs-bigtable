@@ -21,7 +21,7 @@ v2_library = gapic.typescript_library(
 
 s.copy(
   v2_library,
-  excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts']
+  excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json']
 )
 
 v2_library = gapic.typescript_library(
@@ -36,15 +36,12 @@ v2_library = gapic.typescript_library(
       )
 s.copy(
   v2_library,
-  excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts']
+  excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json']
 )
-
-# Update path discovery due to build/ dir and TypeScript conversion.
-# s.replace("src/v2/bigtable_client.js", "../../package.json", "../../../package.json")
-# s.replace("src/v2/bigtable_instance_admin_client.js", "../../package.json", "../../../package.json")
-# s.replace("src/v2/bigtable_table_admin_client.js", "../../package.json", "../../../package.json")
-
-
+# Replace the client name for generated system-test.
+system_test_files=['system-test/fixtures/sample/src/index.ts','system-test/fixtures/sample/src/index.js']
+for file in system_test_files:
+    s.replace(file, 'BigtableClient', 'Bigtable')
 common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library(
   source_location='build/src'
