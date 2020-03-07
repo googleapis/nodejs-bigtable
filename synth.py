@@ -29,14 +29,16 @@ v2_library = gapic.typescript_library(
     "v2",
     generator_args={
       "grpc-service-config": f"google/bigtable/admin/{version}/bigtableadmin_grpc_service_config.json",
+      "package-name": f"@google-cloud/bigtable",
       "main-service": f"bigtable"
       },
       proto_path=f'/google/bigtable/admin/{version}',
       extra_proto_files=['google/cloud/common_resources.proto'],
       )
+# Not override system-test for admin/v2, just keep the v2 version.
 s.copy(
   v2_library,
-  excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json']
+  excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json', 'system-test/fixtures/sample/src/index.ts', 'system-test/fixtures/sample/src/index.js']
 )
 # Replace the client name for generated system-test.
 system_test_files=['system-test/fixtures/sample/src/index.ts','system-test/fixtures/sample/src/index.js']

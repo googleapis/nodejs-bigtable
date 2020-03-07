@@ -103,12 +103,30 @@ describe('v2.BigtableClient', () => {
     });
     assert(client);
   });
+  it('has initialize method and supports deferred initialization', async () => {
+    const client = new bigtableModule.v2.BigtableClient({
+      credentials: {client_email: 'bogus', private_key: 'bogus'},
+      projectId: 'bogus',
+    });
+    assert.strictEqual(client.bigtableStub, undefined);
+    await client.initialize();
+    assert(client.bigtableStub);
+  });
+  it('has close method', () => {
+    const client = new bigtableModule.v2.BigtableClient({
+      credentials: {client_email: 'bogus', private_key: 'bogus'},
+      projectId: 'bogus',
+    });
+    client.close();
+  });
   describe('mutateRow', () => {
     it('invokes mutateRow without error', done => {
       const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IMutateRowRequest = {};
       request.tableName = '';
@@ -132,6 +150,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IMutateRowRequest = {};
       request.tableName = '';
@@ -157,6 +177,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest = {};
       request.tableName = '';
@@ -180,6 +202,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest = {};
       request.tableName = '';
@@ -205,6 +229,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest = {};
       request.tableName = '';
@@ -228,6 +254,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest = {};
       request.tableName = '';
@@ -253,6 +281,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IReadRowsRequest = {};
       request.tableName = '';
@@ -279,6 +309,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IReadRowsRequest = {};
       request.tableName = '';
@@ -308,6 +340,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.ISampleRowKeysRequest = {};
       request.tableName = '';
@@ -334,6 +368,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.ISampleRowKeysRequest = {};
       request.tableName = '';
@@ -363,6 +399,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IMutateRowsRequest = {};
       request.tableName = '';
@@ -389,6 +427,8 @@ describe('v2.BigtableClient', () => {
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
+      // Initialize client before mocking
+      client.initialize();
       // Mock request
       const request: protosTypes.google.bigtable.v2.IMutateRowsRequest = {};
       request.tableName = '';
