@@ -20,6 +20,8 @@ v2_library = gapic.typescript_library(
   )
 # src/index.ts src/v2/index.ts has added AdminClients manually, we don't wanna override it.
 # src/*.ts is a added layer for the client libraries, they need extra setting in tsconfig.json & tslint.json
+# Tracking issues: 1. https://github.com/googleapis/nodejs-bigtable/issues/636
+#                  2. https://github.com/googleapis/nodejs-bigtable/issues/635
 s.copy(
   v2_library,
   excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json']
