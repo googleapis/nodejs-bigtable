@@ -18,7 +18,8 @@ v2_library = gapic.typescript_library(
     proto_path=f'/google/bigtable/{version}',
     extra_proto_files=['google/cloud/common_resources.proto'],
   )
-
+# src/index.ts src/v2/index.ts has added AdminClients manually, we don't wanna override it.
+# src/*.ts is a added layer for the client libraries, they need extra setting in tsconfig.json & tslint.json
 s.copy(
   v2_library,
   excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json']
