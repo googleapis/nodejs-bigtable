@@ -66,1913 +66,6 @@
                      */
                     var v2 = {};
     
-                    v2.Table = (function() {
-    
-                        /**
-                         * Properties of a Table.
-                         * @memberof google.bigtable.admin.v2
-                         * @interface ITable
-                         * @property {string|null} [name] Table name
-                         * @property {Object.<string,google.bigtable.admin.v2.Table.IClusterState>|null} [clusterStates] Table clusterStates
-                         * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
-                         * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
-                         */
-    
-                        /**
-                         * Constructs a new Table.
-                         * @memberof google.bigtable.admin.v2
-                         * @classdesc Represents a Table.
-                         * @implements ITable
-                         * @constructor
-                         * @param {google.bigtable.admin.v2.ITable=} [properties] Properties to set
-                         */
-                        function Table(properties) {
-                            this.clusterStates = {};
-                            this.columnFamilies = {};
-                            if (properties)
-                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                    if (properties[keys[i]] != null)
-                                        this[keys[i]] = properties[keys[i]];
-                        }
-    
-                        /**
-                         * Table name.
-                         * @member {string} name
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @instance
-                         */
-                        Table.prototype.name = "";
-    
-                        /**
-                         * Table clusterStates.
-                         * @member {Object.<string,google.bigtable.admin.v2.Table.IClusterState>} clusterStates
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @instance
-                         */
-                        Table.prototype.clusterStates = $util.emptyObject;
-    
-                        /**
-                         * Table columnFamilies.
-                         * @member {Object.<string,google.bigtable.admin.v2.IColumnFamily>} columnFamilies
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @instance
-                         */
-                        Table.prototype.columnFamilies = $util.emptyObject;
-    
-                        /**
-                         * Table granularity.
-                         * @member {google.bigtable.admin.v2.Table.TimestampGranularity} granularity
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @instance
-                         */
-                        Table.prototype.granularity = 0;
-    
-                        /**
-                         * Creates a new Table instance using the specified properties.
-                         * @function create
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {google.bigtable.admin.v2.ITable=} [properties] Properties to set
-                         * @returns {google.bigtable.admin.v2.Table} Table instance
-                         */
-                        Table.create = function create(properties) {
-                            return new Table(properties);
-                        };
-    
-                        /**
-                         * Encodes the specified Table message. Does not implicitly {@link google.bigtable.admin.v2.Table.verify|verify} messages.
-                         * @function encode
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {google.bigtable.admin.v2.ITable} message Table message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        Table.encode = function encode(message, writer) {
-                            if (!writer)
-                                writer = $Writer.create();
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-                            if (message.clusterStates != null && message.hasOwnProperty("clusterStates"))
-                                for (var keys = Object.keys(message.clusterStates), i = 0; i < keys.length; ++i) {
-                                    writer.uint32(/* id 2, wireType 2 =*/18).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                                    $root.google.bigtable.admin.v2.Table.ClusterState.encode(message.clusterStates[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
-                                }
-                            if (message.columnFamilies != null && message.hasOwnProperty("columnFamilies"))
-                                for (var keys = Object.keys(message.columnFamilies), i = 0; i < keys.length; ++i) {
-                                    writer.uint32(/* id 3, wireType 2 =*/26).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                                    $root.google.bigtable.admin.v2.ColumnFamily.encode(message.columnFamilies[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
-                                }
-                            if (message.granularity != null && message.hasOwnProperty("granularity"))
-                                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
-                            return writer;
-                        };
-    
-                        /**
-                         * Encodes the specified Table message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Table.verify|verify} messages.
-                         * @function encodeDelimited
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {google.bigtable.admin.v2.ITable} message Table message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        Table.encodeDelimited = function encodeDelimited(message, writer) {
-                            return this.encode(message, writer).ldelim();
-                        };
-    
-                        /**
-                         * Decodes a Table message from the specified reader or buffer.
-                         * @function decode
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @param {number} [length] Message length if known beforehand
-                         * @returns {google.bigtable.admin.v2.Table} Table
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        Table.decode = function decode(reader, length) {
-                            if (!(reader instanceof $Reader))
-                                reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Table(), key;
-                            while (reader.pos < end) {
-                                var tag = reader.uint32();
-                                switch (tag >>> 3) {
-                                case 1:
-                                    message.name = reader.string();
-                                    break;
-                                case 2:
-                                    reader.skip().pos++;
-                                    if (message.clusterStates === $util.emptyObject)
-                                        message.clusterStates = {};
-                                    key = reader.string();
-                                    reader.pos++;
-                                    message.clusterStates[key] = $root.google.bigtable.admin.v2.Table.ClusterState.decode(reader, reader.uint32());
-                                    break;
-                                case 3:
-                                    reader.skip().pos++;
-                                    if (message.columnFamilies === $util.emptyObject)
-                                        message.columnFamilies = {};
-                                    key = reader.string();
-                                    reader.pos++;
-                                    message.columnFamilies[key] = $root.google.bigtable.admin.v2.ColumnFamily.decode(reader, reader.uint32());
-                                    break;
-                                case 4:
-                                    message.granularity = reader.int32();
-                                    break;
-                                default:
-                                    reader.skipType(tag & 7);
-                                    break;
-                                }
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Decodes a Table message from the specified reader or buffer, length delimited.
-                         * @function decodeDelimited
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @returns {google.bigtable.admin.v2.Table} Table
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        Table.decodeDelimited = function decodeDelimited(reader) {
-                            if (!(reader instanceof $Reader))
-                                reader = new $Reader(reader);
-                            return this.decode(reader, reader.uint32());
-                        };
-    
-                        /**
-                         * Verifies a Table message.
-                         * @function verify
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {Object.<string,*>} message Plain object to verify
-                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                         */
-                        Table.verify = function verify(message) {
-                            if (typeof message !== "object" || message === null)
-                                return "object expected";
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                if (!$util.isString(message.name))
-                                    return "name: string expected";
-                            if (message.clusterStates != null && message.hasOwnProperty("clusterStates")) {
-                                if (!$util.isObject(message.clusterStates))
-                                    return "clusterStates: object expected";
-                                var key = Object.keys(message.clusterStates);
-                                for (var i = 0; i < key.length; ++i) {
-                                    var error = $root.google.bigtable.admin.v2.Table.ClusterState.verify(message.clusterStates[key[i]]);
-                                    if (error)
-                                        return "clusterStates." + error;
-                                }
-                            }
-                            if (message.columnFamilies != null && message.hasOwnProperty("columnFamilies")) {
-                                if (!$util.isObject(message.columnFamilies))
-                                    return "columnFamilies: object expected";
-                                var key = Object.keys(message.columnFamilies);
-                                for (var i = 0; i < key.length; ++i) {
-                                    var error = $root.google.bigtable.admin.v2.ColumnFamily.verify(message.columnFamilies[key[i]]);
-                                    if (error)
-                                        return "columnFamilies." + error;
-                                }
-                            }
-                            if (message.granularity != null && message.hasOwnProperty("granularity"))
-                                switch (message.granularity) {
-                                default:
-                                    return "granularity: enum value expected";
-                                case 0:
-                                case 1:
-                                    break;
-                                }
-                            return null;
-                        };
-    
-                        /**
-                         * Creates a Table message from a plain object. Also converts values to their respective internal types.
-                         * @function fromObject
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {Object.<string,*>} object Plain object
-                         * @returns {google.bigtable.admin.v2.Table} Table
-                         */
-                        Table.fromObject = function fromObject(object) {
-                            if (object instanceof $root.google.bigtable.admin.v2.Table)
-                                return object;
-                            var message = new $root.google.bigtable.admin.v2.Table();
-                            if (object.name != null)
-                                message.name = String(object.name);
-                            if (object.clusterStates) {
-                                if (typeof object.clusterStates !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.Table.clusterStates: object expected");
-                                message.clusterStates = {};
-                                for (var keys = Object.keys(object.clusterStates), i = 0; i < keys.length; ++i) {
-                                    if (typeof object.clusterStates[keys[i]] !== "object")
-                                        throw TypeError(".google.bigtable.admin.v2.Table.clusterStates: object expected");
-                                    message.clusterStates[keys[i]] = $root.google.bigtable.admin.v2.Table.ClusterState.fromObject(object.clusterStates[keys[i]]);
-                                }
-                            }
-                            if (object.columnFamilies) {
-                                if (typeof object.columnFamilies !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.Table.columnFamilies: object expected");
-                                message.columnFamilies = {};
-                                for (var keys = Object.keys(object.columnFamilies), i = 0; i < keys.length; ++i) {
-                                    if (typeof object.columnFamilies[keys[i]] !== "object")
-                                        throw TypeError(".google.bigtable.admin.v2.Table.columnFamilies: object expected");
-                                    message.columnFamilies[keys[i]] = $root.google.bigtable.admin.v2.ColumnFamily.fromObject(object.columnFamilies[keys[i]]);
-                                }
-                            }
-                            switch (object.granularity) {
-                            case "TIMESTAMP_GRANULARITY_UNSPECIFIED":
-                            case 0:
-                                message.granularity = 0;
-                                break;
-                            case "MILLIS":
-                            case 1:
-                                message.granularity = 1;
-                                break;
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Creates a plain object from a Table message. Also converts values to other types if specified.
-                         * @function toObject
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @static
-                         * @param {google.bigtable.admin.v2.Table} message Table
-                         * @param {$protobuf.IConversionOptions} [options] Conversion options
-                         * @returns {Object.<string,*>} Plain object
-                         */
-                        Table.toObject = function toObject(message, options) {
-                            if (!options)
-                                options = {};
-                            var object = {};
-                            if (options.objects || options.defaults) {
-                                object.clusterStates = {};
-                                object.columnFamilies = {};
-                            }
-                            if (options.defaults) {
-                                object.name = "";
-                                object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
-                            }
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                object.name = message.name;
-                            var keys2;
-                            if (message.clusterStates && (keys2 = Object.keys(message.clusterStates)).length) {
-                                object.clusterStates = {};
-                                for (var j = 0; j < keys2.length; ++j)
-                                    object.clusterStates[keys2[j]] = $root.google.bigtable.admin.v2.Table.ClusterState.toObject(message.clusterStates[keys2[j]], options);
-                            }
-                            if (message.columnFamilies && (keys2 = Object.keys(message.columnFamilies)).length) {
-                                object.columnFamilies = {};
-                                for (var j = 0; j < keys2.length; ++j)
-                                    object.columnFamilies[keys2[j]] = $root.google.bigtable.admin.v2.ColumnFamily.toObject(message.columnFamilies[keys2[j]], options);
-                            }
-                            if (message.granularity != null && message.hasOwnProperty("granularity"))
-                                object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
-                            return object;
-                        };
-    
-                        /**
-                         * Converts this Table to JSON.
-                         * @function toJSON
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @instance
-                         * @returns {Object.<string,*>} JSON object
-                         */
-                        Table.prototype.toJSON = function toJSON() {
-                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                        };
-    
-                        Table.ClusterState = (function() {
-    
-                            /**
-                             * Properties of a ClusterState.
-                             * @memberof google.bigtable.admin.v2.Table
-                             * @interface IClusterState
-                             * @property {google.bigtable.admin.v2.Table.ClusterState.ReplicationState|null} [replicationState] ClusterState replicationState
-                             */
-    
-                            /**
-                             * Constructs a new ClusterState.
-                             * @memberof google.bigtable.admin.v2.Table
-                             * @classdesc Represents a ClusterState.
-                             * @implements IClusterState
-                             * @constructor
-                             * @param {google.bigtable.admin.v2.Table.IClusterState=} [properties] Properties to set
-                             */
-                            function ClusterState(properties) {
-                                if (properties)
-                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                        if (properties[keys[i]] != null)
-                                            this[keys[i]] = properties[keys[i]];
-                            }
-    
-                            /**
-                             * ClusterState replicationState.
-                             * @member {google.bigtable.admin.v2.Table.ClusterState.ReplicationState} replicationState
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @instance
-                             */
-                            ClusterState.prototype.replicationState = 0;
-    
-                            /**
-                             * Creates a new ClusterState instance using the specified properties.
-                             * @function create
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {google.bigtable.admin.v2.Table.IClusterState=} [properties] Properties to set
-                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState instance
-                             */
-                            ClusterState.create = function create(properties) {
-                                return new ClusterState(properties);
-                            };
-    
-                            /**
-                             * Encodes the specified ClusterState message. Does not implicitly {@link google.bigtable.admin.v2.Table.ClusterState.verify|verify} messages.
-                             * @function encode
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {google.bigtable.admin.v2.Table.IClusterState} message ClusterState message or plain object to encode
-                             * @param {$protobuf.Writer} [writer] Writer to encode to
-                             * @returns {$protobuf.Writer} Writer
-                             */
-                            ClusterState.encode = function encode(message, writer) {
-                                if (!writer)
-                                    writer = $Writer.create();
-                                if (message.replicationState != null && message.hasOwnProperty("replicationState"))
-                                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.replicationState);
-                                return writer;
-                            };
-    
-                            /**
-                             * Encodes the specified ClusterState message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Table.ClusterState.verify|verify} messages.
-                             * @function encodeDelimited
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {google.bigtable.admin.v2.Table.IClusterState} message ClusterState message or plain object to encode
-                             * @param {$protobuf.Writer} [writer] Writer to encode to
-                             * @returns {$protobuf.Writer} Writer
-                             */
-                            ClusterState.encodeDelimited = function encodeDelimited(message, writer) {
-                                return this.encode(message, writer).ldelim();
-                            };
-    
-                            /**
-                             * Decodes a ClusterState message from the specified reader or buffer.
-                             * @function decode
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                             * @param {number} [length] Message length if known beforehand
-                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState
-                             * @throws {Error} If the payload is not a reader or valid buffer
-                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                             */
-                            ClusterState.decode = function decode(reader, length) {
-                                if (!(reader instanceof $Reader))
-                                    reader = $Reader.create(reader);
-                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Table.ClusterState();
-                                while (reader.pos < end) {
-                                    var tag = reader.uint32();
-                                    switch (tag >>> 3) {
-                                    case 1:
-                                        message.replicationState = reader.int32();
-                                        break;
-                                    default:
-                                        reader.skipType(tag & 7);
-                                        break;
-                                    }
-                                }
-                                return message;
-                            };
-    
-                            /**
-                             * Decodes a ClusterState message from the specified reader or buffer, length delimited.
-                             * @function decodeDelimited
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState
-                             * @throws {Error} If the payload is not a reader or valid buffer
-                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                             */
-                            ClusterState.decodeDelimited = function decodeDelimited(reader) {
-                                if (!(reader instanceof $Reader))
-                                    reader = new $Reader(reader);
-                                return this.decode(reader, reader.uint32());
-                            };
-    
-                            /**
-                             * Verifies a ClusterState message.
-                             * @function verify
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {Object.<string,*>} message Plain object to verify
-                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                             */
-                            ClusterState.verify = function verify(message) {
-                                if (typeof message !== "object" || message === null)
-                                    return "object expected";
-                                if (message.replicationState != null && message.hasOwnProperty("replicationState"))
-                                    switch (message.replicationState) {
-                                    default:
-                                        return "replicationState: enum value expected";
-                                    case 0:
-                                    case 1:
-                                    case 2:
-                                    case 3:
-                                    case 4:
-                                        break;
-                                    }
-                                return null;
-                            };
-    
-                            /**
-                             * Creates a ClusterState message from a plain object. Also converts values to their respective internal types.
-                             * @function fromObject
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {Object.<string,*>} object Plain object
-                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState
-                             */
-                            ClusterState.fromObject = function fromObject(object) {
-                                if (object instanceof $root.google.bigtable.admin.v2.Table.ClusterState)
-                                    return object;
-                                var message = new $root.google.bigtable.admin.v2.Table.ClusterState();
-                                switch (object.replicationState) {
-                                case "STATE_NOT_KNOWN":
-                                case 0:
-                                    message.replicationState = 0;
-                                    break;
-                                case "INITIALIZING":
-                                case 1:
-                                    message.replicationState = 1;
-                                    break;
-                                case "PLANNED_MAINTENANCE":
-                                case 2:
-                                    message.replicationState = 2;
-                                    break;
-                                case "UNPLANNED_MAINTENANCE":
-                                case 3:
-                                    message.replicationState = 3;
-                                    break;
-                                case "READY":
-                                case 4:
-                                    message.replicationState = 4;
-                                    break;
-                                }
-                                return message;
-                            };
-    
-                            /**
-                             * Creates a plain object from a ClusterState message. Also converts values to other types if specified.
-                             * @function toObject
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @static
-                             * @param {google.bigtable.admin.v2.Table.ClusterState} message ClusterState
-                             * @param {$protobuf.IConversionOptions} [options] Conversion options
-                             * @returns {Object.<string,*>} Plain object
-                             */
-                            ClusterState.toObject = function toObject(message, options) {
-                                if (!options)
-                                    options = {};
-                                var object = {};
-                                if (options.defaults)
-                                    object.replicationState = options.enums === String ? "STATE_NOT_KNOWN" : 0;
-                                if (message.replicationState != null && message.hasOwnProperty("replicationState"))
-                                    object.replicationState = options.enums === String ? $root.google.bigtable.admin.v2.Table.ClusterState.ReplicationState[message.replicationState] : message.replicationState;
-                                return object;
-                            };
-    
-                            /**
-                             * Converts this ClusterState to JSON.
-                             * @function toJSON
-                             * @memberof google.bigtable.admin.v2.Table.ClusterState
-                             * @instance
-                             * @returns {Object.<string,*>} JSON object
-                             */
-                            ClusterState.prototype.toJSON = function toJSON() {
-                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                            };
-    
-                            /**
-                             * ReplicationState enum.
-                             * @name google.bigtable.admin.v2.Table.ClusterState.ReplicationState
-                             * @enum {string}
-                             * @property {number} STATE_NOT_KNOWN=0 STATE_NOT_KNOWN value
-                             * @property {number} INITIALIZING=1 INITIALIZING value
-                             * @property {number} PLANNED_MAINTENANCE=2 PLANNED_MAINTENANCE value
-                             * @property {number} UNPLANNED_MAINTENANCE=3 UNPLANNED_MAINTENANCE value
-                             * @property {number} READY=4 READY value
-                             */
-                            ClusterState.ReplicationState = (function() {
-                                var valuesById = {}, values = Object.create(valuesById);
-                                values[valuesById[0] = "STATE_NOT_KNOWN"] = 0;
-                                values[valuesById[1] = "INITIALIZING"] = 1;
-                                values[valuesById[2] = "PLANNED_MAINTENANCE"] = 2;
-                                values[valuesById[3] = "UNPLANNED_MAINTENANCE"] = 3;
-                                values[valuesById[4] = "READY"] = 4;
-                                return values;
-                            })();
-    
-                            return ClusterState;
-                        })();
-    
-                        /**
-                         * TimestampGranularity enum.
-                         * @name google.bigtable.admin.v2.Table.TimestampGranularity
-                         * @enum {string}
-                         * @property {number} TIMESTAMP_GRANULARITY_UNSPECIFIED=0 TIMESTAMP_GRANULARITY_UNSPECIFIED value
-                         * @property {number} MILLIS=1 MILLIS value
-                         */
-                        Table.TimestampGranularity = (function() {
-                            var valuesById = {}, values = Object.create(valuesById);
-                            values[valuesById[0] = "TIMESTAMP_GRANULARITY_UNSPECIFIED"] = 0;
-                            values[valuesById[1] = "MILLIS"] = 1;
-                            return values;
-                        })();
-    
-                        /**
-                         * View enum.
-                         * @name google.bigtable.admin.v2.Table.View
-                         * @enum {string}
-                         * @property {number} VIEW_UNSPECIFIED=0 VIEW_UNSPECIFIED value
-                         * @property {number} NAME_ONLY=1 NAME_ONLY value
-                         * @property {number} SCHEMA_VIEW=2 SCHEMA_VIEW value
-                         * @property {number} REPLICATION_VIEW=3 REPLICATION_VIEW value
-                         * @property {number} FULL=4 FULL value
-                         */
-                        Table.View = (function() {
-                            var valuesById = {}, values = Object.create(valuesById);
-                            values[valuesById[0] = "VIEW_UNSPECIFIED"] = 0;
-                            values[valuesById[1] = "NAME_ONLY"] = 1;
-                            values[valuesById[2] = "SCHEMA_VIEW"] = 2;
-                            values[valuesById[3] = "REPLICATION_VIEW"] = 3;
-                            values[valuesById[4] = "FULL"] = 4;
-                            return values;
-                        })();
-    
-                        return Table;
-                    })();
-    
-                    v2.ColumnFamily = (function() {
-    
-                        /**
-                         * Properties of a ColumnFamily.
-                         * @memberof google.bigtable.admin.v2
-                         * @interface IColumnFamily
-                         * @property {google.bigtable.admin.v2.IGcRule|null} [gcRule] ColumnFamily gcRule
-                         */
-    
-                        /**
-                         * Constructs a new ColumnFamily.
-                         * @memberof google.bigtable.admin.v2
-                         * @classdesc Represents a ColumnFamily.
-                         * @implements IColumnFamily
-                         * @constructor
-                         * @param {google.bigtable.admin.v2.IColumnFamily=} [properties] Properties to set
-                         */
-                        function ColumnFamily(properties) {
-                            if (properties)
-                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                    if (properties[keys[i]] != null)
-                                        this[keys[i]] = properties[keys[i]];
-                        }
-    
-                        /**
-                         * ColumnFamily gcRule.
-                         * @member {google.bigtable.admin.v2.IGcRule|null|undefined} gcRule
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @instance
-                         */
-                        ColumnFamily.prototype.gcRule = null;
-    
-                        /**
-                         * Creates a new ColumnFamily instance using the specified properties.
-                         * @function create
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {google.bigtable.admin.v2.IColumnFamily=} [properties] Properties to set
-                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily instance
-                         */
-                        ColumnFamily.create = function create(properties) {
-                            return new ColumnFamily(properties);
-                        };
-    
-                        /**
-                         * Encodes the specified ColumnFamily message. Does not implicitly {@link google.bigtable.admin.v2.ColumnFamily.verify|verify} messages.
-                         * @function encode
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {google.bigtable.admin.v2.IColumnFamily} message ColumnFamily message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        ColumnFamily.encode = function encode(message, writer) {
-                            if (!writer)
-                                writer = $Writer.create();
-                            if (message.gcRule != null && message.hasOwnProperty("gcRule"))
-                                $root.google.bigtable.admin.v2.GcRule.encode(message.gcRule, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                            return writer;
-                        };
-    
-                        /**
-                         * Encodes the specified ColumnFamily message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ColumnFamily.verify|verify} messages.
-                         * @function encodeDelimited
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {google.bigtable.admin.v2.IColumnFamily} message ColumnFamily message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        ColumnFamily.encodeDelimited = function encodeDelimited(message, writer) {
-                            return this.encode(message, writer).ldelim();
-                        };
-    
-                        /**
-                         * Decodes a ColumnFamily message from the specified reader or buffer.
-                         * @function decode
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @param {number} [length] Message length if known beforehand
-                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        ColumnFamily.decode = function decode(reader, length) {
-                            if (!(reader instanceof $Reader))
-                                reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ColumnFamily();
-                            while (reader.pos < end) {
-                                var tag = reader.uint32();
-                                switch (tag >>> 3) {
-                                case 1:
-                                    message.gcRule = $root.google.bigtable.admin.v2.GcRule.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag & 7);
-                                    break;
-                                }
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Decodes a ColumnFamily message from the specified reader or buffer, length delimited.
-                         * @function decodeDelimited
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        ColumnFamily.decodeDelimited = function decodeDelimited(reader) {
-                            if (!(reader instanceof $Reader))
-                                reader = new $Reader(reader);
-                            return this.decode(reader, reader.uint32());
-                        };
-    
-                        /**
-                         * Verifies a ColumnFamily message.
-                         * @function verify
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {Object.<string,*>} message Plain object to verify
-                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                         */
-                        ColumnFamily.verify = function verify(message) {
-                            if (typeof message !== "object" || message === null)
-                                return "object expected";
-                            if (message.gcRule != null && message.hasOwnProperty("gcRule")) {
-                                var error = $root.google.bigtable.admin.v2.GcRule.verify(message.gcRule);
-                                if (error)
-                                    return "gcRule." + error;
-                            }
-                            return null;
-                        };
-    
-                        /**
-                         * Creates a ColumnFamily message from a plain object. Also converts values to their respective internal types.
-                         * @function fromObject
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {Object.<string,*>} object Plain object
-                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily
-                         */
-                        ColumnFamily.fromObject = function fromObject(object) {
-                            if (object instanceof $root.google.bigtable.admin.v2.ColumnFamily)
-                                return object;
-                            var message = new $root.google.bigtable.admin.v2.ColumnFamily();
-                            if (object.gcRule != null) {
-                                if (typeof object.gcRule !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.ColumnFamily.gcRule: object expected");
-                                message.gcRule = $root.google.bigtable.admin.v2.GcRule.fromObject(object.gcRule);
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Creates a plain object from a ColumnFamily message. Also converts values to other types if specified.
-                         * @function toObject
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @static
-                         * @param {google.bigtable.admin.v2.ColumnFamily} message ColumnFamily
-                         * @param {$protobuf.IConversionOptions} [options] Conversion options
-                         * @returns {Object.<string,*>} Plain object
-                         */
-                        ColumnFamily.toObject = function toObject(message, options) {
-                            if (!options)
-                                options = {};
-                            var object = {};
-                            if (options.defaults)
-                                object.gcRule = null;
-                            if (message.gcRule != null && message.hasOwnProperty("gcRule"))
-                                object.gcRule = $root.google.bigtable.admin.v2.GcRule.toObject(message.gcRule, options);
-                            return object;
-                        };
-    
-                        /**
-                         * Converts this ColumnFamily to JSON.
-                         * @function toJSON
-                         * @memberof google.bigtable.admin.v2.ColumnFamily
-                         * @instance
-                         * @returns {Object.<string,*>} JSON object
-                         */
-                        ColumnFamily.prototype.toJSON = function toJSON() {
-                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                        };
-    
-                        return ColumnFamily;
-                    })();
-    
-                    v2.GcRule = (function() {
-    
-                        /**
-                         * Properties of a GcRule.
-                         * @memberof google.bigtable.admin.v2
-                         * @interface IGcRule
-                         * @property {number|null} [maxNumVersions] GcRule maxNumVersions
-                         * @property {google.protobuf.IDuration|null} [maxAge] GcRule maxAge
-                         * @property {google.bigtable.admin.v2.GcRule.IIntersection|null} [intersection] GcRule intersection
-                         * @property {google.bigtable.admin.v2.GcRule.IUnion|null} [union] GcRule union
-                         */
-    
-                        /**
-                         * Constructs a new GcRule.
-                         * @memberof google.bigtable.admin.v2
-                         * @classdesc Represents a GcRule.
-                         * @implements IGcRule
-                         * @constructor
-                         * @param {google.bigtable.admin.v2.IGcRule=} [properties] Properties to set
-                         */
-                        function GcRule(properties) {
-                            if (properties)
-                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                    if (properties[keys[i]] != null)
-                                        this[keys[i]] = properties[keys[i]];
-                        }
-    
-                        /**
-                         * GcRule maxNumVersions.
-                         * @member {number} maxNumVersions
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @instance
-                         */
-                        GcRule.prototype.maxNumVersions = 0;
-    
-                        /**
-                         * GcRule maxAge.
-                         * @member {google.protobuf.IDuration|null|undefined} maxAge
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @instance
-                         */
-                        GcRule.prototype.maxAge = null;
-    
-                        /**
-                         * GcRule intersection.
-                         * @member {google.bigtable.admin.v2.GcRule.IIntersection|null|undefined} intersection
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @instance
-                         */
-                        GcRule.prototype.intersection = null;
-    
-                        /**
-                         * GcRule union.
-                         * @member {google.bigtable.admin.v2.GcRule.IUnion|null|undefined} union
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @instance
-                         */
-                        GcRule.prototype.union = null;
-    
-                        // OneOf field names bound to virtual getters and setters
-                        var $oneOfFields;
-    
-                        /**
-                         * GcRule rule.
-                         * @member {"maxNumVersions"|"maxAge"|"intersection"|"union"|undefined} rule
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @instance
-                         */
-                        Object.defineProperty(GcRule.prototype, "rule", {
-                            get: $util.oneOfGetter($oneOfFields = ["maxNumVersions", "maxAge", "intersection", "union"]),
-                            set: $util.oneOfSetter($oneOfFields)
-                        });
-    
-                        /**
-                         * Creates a new GcRule instance using the specified properties.
-                         * @function create
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {google.bigtable.admin.v2.IGcRule=} [properties] Properties to set
-                         * @returns {google.bigtable.admin.v2.GcRule} GcRule instance
-                         */
-                        GcRule.create = function create(properties) {
-                            return new GcRule(properties);
-                        };
-    
-                        /**
-                         * Encodes the specified GcRule message. Does not implicitly {@link google.bigtable.admin.v2.GcRule.verify|verify} messages.
-                         * @function encode
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {google.bigtable.admin.v2.IGcRule} message GcRule message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        GcRule.encode = function encode(message, writer) {
-                            if (!writer)
-                                writer = $Writer.create();
-                            if (message.maxNumVersions != null && message.hasOwnProperty("maxNumVersions"))
-                                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.maxNumVersions);
-                            if (message.maxAge != null && message.hasOwnProperty("maxAge"))
-                                $root.google.protobuf.Duration.encode(message.maxAge, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                            if (message.intersection != null && message.hasOwnProperty("intersection"))
-                                $root.google.bigtable.admin.v2.GcRule.Intersection.encode(message.intersection, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-                            if (message.union != null && message.hasOwnProperty("union"))
-                                $root.google.bigtable.admin.v2.GcRule.Union.encode(message.union, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-                            return writer;
-                        };
-    
-                        /**
-                         * Encodes the specified GcRule message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GcRule.verify|verify} messages.
-                         * @function encodeDelimited
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {google.bigtable.admin.v2.IGcRule} message GcRule message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        GcRule.encodeDelimited = function encodeDelimited(message, writer) {
-                            return this.encode(message, writer).ldelim();
-                        };
-    
-                        /**
-                         * Decodes a GcRule message from the specified reader or buffer.
-                         * @function decode
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @param {number} [length] Message length if known beforehand
-                         * @returns {google.bigtable.admin.v2.GcRule} GcRule
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        GcRule.decode = function decode(reader, length) {
-                            if (!(reader instanceof $Reader))
-                                reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GcRule();
-                            while (reader.pos < end) {
-                                var tag = reader.uint32();
-                                switch (tag >>> 3) {
-                                case 1:
-                                    message.maxNumVersions = reader.int32();
-                                    break;
-                                case 2:
-                                    message.maxAge = $root.google.protobuf.Duration.decode(reader, reader.uint32());
-                                    break;
-                                case 3:
-                                    message.intersection = $root.google.bigtable.admin.v2.GcRule.Intersection.decode(reader, reader.uint32());
-                                    break;
-                                case 4:
-                                    message.union = $root.google.bigtable.admin.v2.GcRule.Union.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag & 7);
-                                    break;
-                                }
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Decodes a GcRule message from the specified reader or buffer, length delimited.
-                         * @function decodeDelimited
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @returns {google.bigtable.admin.v2.GcRule} GcRule
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        GcRule.decodeDelimited = function decodeDelimited(reader) {
-                            if (!(reader instanceof $Reader))
-                                reader = new $Reader(reader);
-                            return this.decode(reader, reader.uint32());
-                        };
-    
-                        /**
-                         * Verifies a GcRule message.
-                         * @function verify
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {Object.<string,*>} message Plain object to verify
-                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                         */
-                        GcRule.verify = function verify(message) {
-                            if (typeof message !== "object" || message === null)
-                                return "object expected";
-                            var properties = {};
-                            if (message.maxNumVersions != null && message.hasOwnProperty("maxNumVersions")) {
-                                properties.rule = 1;
-                                if (!$util.isInteger(message.maxNumVersions))
-                                    return "maxNumVersions: integer expected";
-                            }
-                            if (message.maxAge != null && message.hasOwnProperty("maxAge")) {
-                                if (properties.rule === 1)
-                                    return "rule: multiple values";
-                                properties.rule = 1;
-                                {
-                                    var error = $root.google.protobuf.Duration.verify(message.maxAge);
-                                    if (error)
-                                        return "maxAge." + error;
-                                }
-                            }
-                            if (message.intersection != null && message.hasOwnProperty("intersection")) {
-                                if (properties.rule === 1)
-                                    return "rule: multiple values";
-                                properties.rule = 1;
-                                {
-                                    var error = $root.google.bigtable.admin.v2.GcRule.Intersection.verify(message.intersection);
-                                    if (error)
-                                        return "intersection." + error;
-                                }
-                            }
-                            if (message.union != null && message.hasOwnProperty("union")) {
-                                if (properties.rule === 1)
-                                    return "rule: multiple values";
-                                properties.rule = 1;
-                                {
-                                    var error = $root.google.bigtable.admin.v2.GcRule.Union.verify(message.union);
-                                    if (error)
-                                        return "union." + error;
-                                }
-                            }
-                            return null;
-                        };
-    
-                        /**
-                         * Creates a GcRule message from a plain object. Also converts values to their respective internal types.
-                         * @function fromObject
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {Object.<string,*>} object Plain object
-                         * @returns {google.bigtable.admin.v2.GcRule} GcRule
-                         */
-                        GcRule.fromObject = function fromObject(object) {
-                            if (object instanceof $root.google.bigtable.admin.v2.GcRule)
-                                return object;
-                            var message = new $root.google.bigtable.admin.v2.GcRule();
-                            if (object.maxNumVersions != null)
-                                message.maxNumVersions = object.maxNumVersions | 0;
-                            if (object.maxAge != null) {
-                                if (typeof object.maxAge !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.GcRule.maxAge: object expected");
-                                message.maxAge = $root.google.protobuf.Duration.fromObject(object.maxAge);
-                            }
-                            if (object.intersection != null) {
-                                if (typeof object.intersection !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.GcRule.intersection: object expected");
-                                message.intersection = $root.google.bigtable.admin.v2.GcRule.Intersection.fromObject(object.intersection);
-                            }
-                            if (object.union != null) {
-                                if (typeof object.union !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.GcRule.union: object expected");
-                                message.union = $root.google.bigtable.admin.v2.GcRule.Union.fromObject(object.union);
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Creates a plain object from a GcRule message. Also converts values to other types if specified.
-                         * @function toObject
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @static
-                         * @param {google.bigtable.admin.v2.GcRule} message GcRule
-                         * @param {$protobuf.IConversionOptions} [options] Conversion options
-                         * @returns {Object.<string,*>} Plain object
-                         */
-                        GcRule.toObject = function toObject(message, options) {
-                            if (!options)
-                                options = {};
-                            var object = {};
-                            if (message.maxNumVersions != null && message.hasOwnProperty("maxNumVersions")) {
-                                object.maxNumVersions = message.maxNumVersions;
-                                if (options.oneofs)
-                                    object.rule = "maxNumVersions";
-                            }
-                            if (message.maxAge != null && message.hasOwnProperty("maxAge")) {
-                                object.maxAge = $root.google.protobuf.Duration.toObject(message.maxAge, options);
-                                if (options.oneofs)
-                                    object.rule = "maxAge";
-                            }
-                            if (message.intersection != null && message.hasOwnProperty("intersection")) {
-                                object.intersection = $root.google.bigtable.admin.v2.GcRule.Intersection.toObject(message.intersection, options);
-                                if (options.oneofs)
-                                    object.rule = "intersection";
-                            }
-                            if (message.union != null && message.hasOwnProperty("union")) {
-                                object.union = $root.google.bigtable.admin.v2.GcRule.Union.toObject(message.union, options);
-                                if (options.oneofs)
-                                    object.rule = "union";
-                            }
-                            return object;
-                        };
-    
-                        /**
-                         * Converts this GcRule to JSON.
-                         * @function toJSON
-                         * @memberof google.bigtable.admin.v2.GcRule
-                         * @instance
-                         * @returns {Object.<string,*>} JSON object
-                         */
-                        GcRule.prototype.toJSON = function toJSON() {
-                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                        };
-    
-                        GcRule.Intersection = (function() {
-    
-                            /**
-                             * Properties of an Intersection.
-                             * @memberof google.bigtable.admin.v2.GcRule
-                             * @interface IIntersection
-                             * @property {Array.<google.bigtable.admin.v2.IGcRule>|null} [rules] Intersection rules
-                             */
-    
-                            /**
-                             * Constructs a new Intersection.
-                             * @memberof google.bigtable.admin.v2.GcRule
-                             * @classdesc Represents an Intersection.
-                             * @implements IIntersection
-                             * @constructor
-                             * @param {google.bigtable.admin.v2.GcRule.IIntersection=} [properties] Properties to set
-                             */
-                            function Intersection(properties) {
-                                this.rules = [];
-                                if (properties)
-                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                        if (properties[keys[i]] != null)
-                                            this[keys[i]] = properties[keys[i]];
-                            }
-    
-                            /**
-                             * Intersection rules.
-                             * @member {Array.<google.bigtable.admin.v2.IGcRule>} rules
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @instance
-                             */
-                            Intersection.prototype.rules = $util.emptyArray;
-    
-                            /**
-                             * Creates a new Intersection instance using the specified properties.
-                             * @function create
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.IIntersection=} [properties] Properties to set
-                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection instance
-                             */
-                            Intersection.create = function create(properties) {
-                                return new Intersection(properties);
-                            };
-    
-                            /**
-                             * Encodes the specified Intersection message. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Intersection.verify|verify} messages.
-                             * @function encode
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.IIntersection} message Intersection message or plain object to encode
-                             * @param {$protobuf.Writer} [writer] Writer to encode to
-                             * @returns {$protobuf.Writer} Writer
-                             */
-                            Intersection.encode = function encode(message, writer) {
-                                if (!writer)
-                                    writer = $Writer.create();
-                                if (message.rules != null && message.rules.length)
-                                    for (var i = 0; i < message.rules.length; ++i)
-                                        $root.google.bigtable.admin.v2.GcRule.encode(message.rules[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                                return writer;
-                            };
-    
-                            /**
-                             * Encodes the specified Intersection message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Intersection.verify|verify} messages.
-                             * @function encodeDelimited
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.IIntersection} message Intersection message or plain object to encode
-                             * @param {$protobuf.Writer} [writer] Writer to encode to
-                             * @returns {$protobuf.Writer} Writer
-                             */
-                            Intersection.encodeDelimited = function encodeDelimited(message, writer) {
-                                return this.encode(message, writer).ldelim();
-                            };
-    
-                            /**
-                             * Decodes an Intersection message from the specified reader or buffer.
-                             * @function decode
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                             * @param {number} [length] Message length if known beforehand
-                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection
-                             * @throws {Error} If the payload is not a reader or valid buffer
-                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                             */
-                            Intersection.decode = function decode(reader, length) {
-                                if (!(reader instanceof $Reader))
-                                    reader = $Reader.create(reader);
-                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GcRule.Intersection();
-                                while (reader.pos < end) {
-                                    var tag = reader.uint32();
-                                    switch (tag >>> 3) {
-                                    case 1:
-                                        if (!(message.rules && message.rules.length))
-                                            message.rules = [];
-                                        message.rules.push($root.google.bigtable.admin.v2.GcRule.decode(reader, reader.uint32()));
-                                        break;
-                                    default:
-                                        reader.skipType(tag & 7);
-                                        break;
-                                    }
-                                }
-                                return message;
-                            };
-    
-                            /**
-                             * Decodes an Intersection message from the specified reader or buffer, length delimited.
-                             * @function decodeDelimited
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection
-                             * @throws {Error} If the payload is not a reader or valid buffer
-                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                             */
-                            Intersection.decodeDelimited = function decodeDelimited(reader) {
-                                if (!(reader instanceof $Reader))
-                                    reader = new $Reader(reader);
-                                return this.decode(reader, reader.uint32());
-                            };
-    
-                            /**
-                             * Verifies an Intersection message.
-                             * @function verify
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {Object.<string,*>} message Plain object to verify
-                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                             */
-                            Intersection.verify = function verify(message) {
-                                if (typeof message !== "object" || message === null)
-                                    return "object expected";
-                                if (message.rules != null && message.hasOwnProperty("rules")) {
-                                    if (!Array.isArray(message.rules))
-                                        return "rules: array expected";
-                                    for (var i = 0; i < message.rules.length; ++i) {
-                                        var error = $root.google.bigtable.admin.v2.GcRule.verify(message.rules[i]);
-                                        if (error)
-                                            return "rules." + error;
-                                    }
-                                }
-                                return null;
-                            };
-    
-                            /**
-                             * Creates an Intersection message from a plain object. Also converts values to their respective internal types.
-                             * @function fromObject
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {Object.<string,*>} object Plain object
-                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection
-                             */
-                            Intersection.fromObject = function fromObject(object) {
-                                if (object instanceof $root.google.bigtable.admin.v2.GcRule.Intersection)
-                                    return object;
-                                var message = new $root.google.bigtable.admin.v2.GcRule.Intersection();
-                                if (object.rules) {
-                                    if (!Array.isArray(object.rules))
-                                        throw TypeError(".google.bigtable.admin.v2.GcRule.Intersection.rules: array expected");
-                                    message.rules = [];
-                                    for (var i = 0; i < object.rules.length; ++i) {
-                                        if (typeof object.rules[i] !== "object")
-                                            throw TypeError(".google.bigtable.admin.v2.GcRule.Intersection.rules: object expected");
-                                        message.rules[i] = $root.google.bigtable.admin.v2.GcRule.fromObject(object.rules[i]);
-                                    }
-                                }
-                                return message;
-                            };
-    
-                            /**
-                             * Creates a plain object from an Intersection message. Also converts values to other types if specified.
-                             * @function toObject
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.Intersection} message Intersection
-                             * @param {$protobuf.IConversionOptions} [options] Conversion options
-                             * @returns {Object.<string,*>} Plain object
-                             */
-                            Intersection.toObject = function toObject(message, options) {
-                                if (!options)
-                                    options = {};
-                                var object = {};
-                                if (options.arrays || options.defaults)
-                                    object.rules = [];
-                                if (message.rules && message.rules.length) {
-                                    object.rules = [];
-                                    for (var j = 0; j < message.rules.length; ++j)
-                                        object.rules[j] = $root.google.bigtable.admin.v2.GcRule.toObject(message.rules[j], options);
-                                }
-                                return object;
-                            };
-    
-                            /**
-                             * Converts this Intersection to JSON.
-                             * @function toJSON
-                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
-                             * @instance
-                             * @returns {Object.<string,*>} JSON object
-                             */
-                            Intersection.prototype.toJSON = function toJSON() {
-                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                            };
-    
-                            return Intersection;
-                        })();
-    
-                        GcRule.Union = (function() {
-    
-                            /**
-                             * Properties of an Union.
-                             * @memberof google.bigtable.admin.v2.GcRule
-                             * @interface IUnion
-                             * @property {Array.<google.bigtable.admin.v2.IGcRule>|null} [rules] Union rules
-                             */
-    
-                            /**
-                             * Constructs a new Union.
-                             * @memberof google.bigtable.admin.v2.GcRule
-                             * @classdesc Represents an Union.
-                             * @implements IUnion
-                             * @constructor
-                             * @param {google.bigtable.admin.v2.GcRule.IUnion=} [properties] Properties to set
-                             */
-                            function Union(properties) {
-                                this.rules = [];
-                                if (properties)
-                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                        if (properties[keys[i]] != null)
-                                            this[keys[i]] = properties[keys[i]];
-                            }
-    
-                            /**
-                             * Union rules.
-                             * @member {Array.<google.bigtable.admin.v2.IGcRule>} rules
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @instance
-                             */
-                            Union.prototype.rules = $util.emptyArray;
-    
-                            /**
-                             * Creates a new Union instance using the specified properties.
-                             * @function create
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.IUnion=} [properties] Properties to set
-                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union instance
-                             */
-                            Union.create = function create(properties) {
-                                return new Union(properties);
-                            };
-    
-                            /**
-                             * Encodes the specified Union message. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Union.verify|verify} messages.
-                             * @function encode
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.IUnion} message Union message or plain object to encode
-                             * @param {$protobuf.Writer} [writer] Writer to encode to
-                             * @returns {$protobuf.Writer} Writer
-                             */
-                            Union.encode = function encode(message, writer) {
-                                if (!writer)
-                                    writer = $Writer.create();
-                                if (message.rules != null && message.rules.length)
-                                    for (var i = 0; i < message.rules.length; ++i)
-                                        $root.google.bigtable.admin.v2.GcRule.encode(message.rules[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                                return writer;
-                            };
-    
-                            /**
-                             * Encodes the specified Union message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Union.verify|verify} messages.
-                             * @function encodeDelimited
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.IUnion} message Union message or plain object to encode
-                             * @param {$protobuf.Writer} [writer] Writer to encode to
-                             * @returns {$protobuf.Writer} Writer
-                             */
-                            Union.encodeDelimited = function encodeDelimited(message, writer) {
-                                return this.encode(message, writer).ldelim();
-                            };
-    
-                            /**
-                             * Decodes an Union message from the specified reader or buffer.
-                             * @function decode
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                             * @param {number} [length] Message length if known beforehand
-                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union
-                             * @throws {Error} If the payload is not a reader or valid buffer
-                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                             */
-                            Union.decode = function decode(reader, length) {
-                                if (!(reader instanceof $Reader))
-                                    reader = $Reader.create(reader);
-                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GcRule.Union();
-                                while (reader.pos < end) {
-                                    var tag = reader.uint32();
-                                    switch (tag >>> 3) {
-                                    case 1:
-                                        if (!(message.rules && message.rules.length))
-                                            message.rules = [];
-                                        message.rules.push($root.google.bigtable.admin.v2.GcRule.decode(reader, reader.uint32()));
-                                        break;
-                                    default:
-                                        reader.skipType(tag & 7);
-                                        break;
-                                    }
-                                }
-                                return message;
-                            };
-    
-                            /**
-                             * Decodes an Union message from the specified reader or buffer, length delimited.
-                             * @function decodeDelimited
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union
-                             * @throws {Error} If the payload is not a reader or valid buffer
-                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                             */
-                            Union.decodeDelimited = function decodeDelimited(reader) {
-                                if (!(reader instanceof $Reader))
-                                    reader = new $Reader(reader);
-                                return this.decode(reader, reader.uint32());
-                            };
-    
-                            /**
-                             * Verifies an Union message.
-                             * @function verify
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {Object.<string,*>} message Plain object to verify
-                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                             */
-                            Union.verify = function verify(message) {
-                                if (typeof message !== "object" || message === null)
-                                    return "object expected";
-                                if (message.rules != null && message.hasOwnProperty("rules")) {
-                                    if (!Array.isArray(message.rules))
-                                        return "rules: array expected";
-                                    for (var i = 0; i < message.rules.length; ++i) {
-                                        var error = $root.google.bigtable.admin.v2.GcRule.verify(message.rules[i]);
-                                        if (error)
-                                            return "rules." + error;
-                                    }
-                                }
-                                return null;
-                            };
-    
-                            /**
-                             * Creates an Union message from a plain object. Also converts values to their respective internal types.
-                             * @function fromObject
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {Object.<string,*>} object Plain object
-                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union
-                             */
-                            Union.fromObject = function fromObject(object) {
-                                if (object instanceof $root.google.bigtable.admin.v2.GcRule.Union)
-                                    return object;
-                                var message = new $root.google.bigtable.admin.v2.GcRule.Union();
-                                if (object.rules) {
-                                    if (!Array.isArray(object.rules))
-                                        throw TypeError(".google.bigtable.admin.v2.GcRule.Union.rules: array expected");
-                                    message.rules = [];
-                                    for (var i = 0; i < object.rules.length; ++i) {
-                                        if (typeof object.rules[i] !== "object")
-                                            throw TypeError(".google.bigtable.admin.v2.GcRule.Union.rules: object expected");
-                                        message.rules[i] = $root.google.bigtable.admin.v2.GcRule.fromObject(object.rules[i]);
-                                    }
-                                }
-                                return message;
-                            };
-    
-                            /**
-                             * Creates a plain object from an Union message. Also converts values to other types if specified.
-                             * @function toObject
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @static
-                             * @param {google.bigtable.admin.v2.GcRule.Union} message Union
-                             * @param {$protobuf.IConversionOptions} [options] Conversion options
-                             * @returns {Object.<string,*>} Plain object
-                             */
-                            Union.toObject = function toObject(message, options) {
-                                if (!options)
-                                    options = {};
-                                var object = {};
-                                if (options.arrays || options.defaults)
-                                    object.rules = [];
-                                if (message.rules && message.rules.length) {
-                                    object.rules = [];
-                                    for (var j = 0; j < message.rules.length; ++j)
-                                        object.rules[j] = $root.google.bigtable.admin.v2.GcRule.toObject(message.rules[j], options);
-                                }
-                                return object;
-                            };
-    
-                            /**
-                             * Converts this Union to JSON.
-                             * @function toJSON
-                             * @memberof google.bigtable.admin.v2.GcRule.Union
-                             * @instance
-                             * @returns {Object.<string,*>} JSON object
-                             */
-                            Union.prototype.toJSON = function toJSON() {
-                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                            };
-    
-                            return Union;
-                        })();
-    
-                        return GcRule;
-                    })();
-    
-                    v2.Snapshot = (function() {
-    
-                        /**
-                         * Properties of a Snapshot.
-                         * @memberof google.bigtable.admin.v2
-                         * @interface ISnapshot
-                         * @property {string|null} [name] Snapshot name
-                         * @property {google.bigtable.admin.v2.ITable|null} [sourceTable] Snapshot sourceTable
-                         * @property {number|Long|null} [dataSizeBytes] Snapshot dataSizeBytes
-                         * @property {google.protobuf.ITimestamp|null} [createTime] Snapshot createTime
-                         * @property {google.protobuf.ITimestamp|null} [deleteTime] Snapshot deleteTime
-                         * @property {google.bigtable.admin.v2.Snapshot.State|null} [state] Snapshot state
-                         * @property {string|null} [description] Snapshot description
-                         */
-    
-                        /**
-                         * Constructs a new Snapshot.
-                         * @memberof google.bigtable.admin.v2
-                         * @classdesc Represents a Snapshot.
-                         * @implements ISnapshot
-                         * @constructor
-                         * @param {google.bigtable.admin.v2.ISnapshot=} [properties] Properties to set
-                         */
-                        function Snapshot(properties) {
-                            if (properties)
-                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                                    if (properties[keys[i]] != null)
-                                        this[keys[i]] = properties[keys[i]];
-                        }
-    
-                        /**
-                         * Snapshot name.
-                         * @member {string} name
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         */
-                        Snapshot.prototype.name = "";
-    
-                        /**
-                         * Snapshot sourceTable.
-                         * @member {google.bigtable.admin.v2.ITable|null|undefined} sourceTable
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         */
-                        Snapshot.prototype.sourceTable = null;
-    
-                        /**
-                         * Snapshot dataSizeBytes.
-                         * @member {number|Long} dataSizeBytes
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         */
-                        Snapshot.prototype.dataSizeBytes = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
-                        /**
-                         * Snapshot createTime.
-                         * @member {google.protobuf.ITimestamp|null|undefined} createTime
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         */
-                        Snapshot.prototype.createTime = null;
-    
-                        /**
-                         * Snapshot deleteTime.
-                         * @member {google.protobuf.ITimestamp|null|undefined} deleteTime
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         */
-                        Snapshot.prototype.deleteTime = null;
-    
-                        /**
-                         * Snapshot state.
-                         * @member {google.bigtable.admin.v2.Snapshot.State} state
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         */
-                        Snapshot.prototype.state = 0;
-    
-                        /**
-                         * Snapshot description.
-                         * @member {string} description
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         */
-                        Snapshot.prototype.description = "";
-    
-                        /**
-                         * Creates a new Snapshot instance using the specified properties.
-                         * @function create
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {google.bigtable.admin.v2.ISnapshot=} [properties] Properties to set
-                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot instance
-                         */
-                        Snapshot.create = function create(properties) {
-                            return new Snapshot(properties);
-                        };
-    
-                        /**
-                         * Encodes the specified Snapshot message. Does not implicitly {@link google.bigtable.admin.v2.Snapshot.verify|verify} messages.
-                         * @function encode
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {google.bigtable.admin.v2.ISnapshot} message Snapshot message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        Snapshot.encode = function encode(message, writer) {
-                            if (!writer)
-                                writer = $Writer.create();
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
-                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
-                                $root.google.bigtable.admin.v2.Table.encode(message.sourceTable, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
-                            if (message.dataSizeBytes != null && message.hasOwnProperty("dataSizeBytes"))
-                                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.dataSizeBytes);
-                            if (message.createTime != null && message.hasOwnProperty("createTime"))
-                                $root.google.protobuf.Timestamp.encode(message.createTime, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-                            if (message.deleteTime != null && message.hasOwnProperty("deleteTime"))
-                                $root.google.protobuf.Timestamp.encode(message.deleteTime, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-                            if (message.state != null && message.hasOwnProperty("state"))
-                                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.state);
-                            if (message.description != null && message.hasOwnProperty("description"))
-                                writer.uint32(/* id 7, wireType 2 =*/58).string(message.description);
-                            return writer;
-                        };
-    
-                        /**
-                         * Encodes the specified Snapshot message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Snapshot.verify|verify} messages.
-                         * @function encodeDelimited
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {google.bigtable.admin.v2.ISnapshot} message Snapshot message or plain object to encode
-                         * @param {$protobuf.Writer} [writer] Writer to encode to
-                         * @returns {$protobuf.Writer} Writer
-                         */
-                        Snapshot.encodeDelimited = function encodeDelimited(message, writer) {
-                            return this.encode(message, writer).ldelim();
-                        };
-    
-                        /**
-                         * Decodes a Snapshot message from the specified reader or buffer.
-                         * @function decode
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @param {number} [length] Message length if known beforehand
-                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        Snapshot.decode = function decode(reader, length) {
-                            if (!(reader instanceof $Reader))
-                                reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Snapshot();
-                            while (reader.pos < end) {
-                                var tag = reader.uint32();
-                                switch (tag >>> 3) {
-                                case 1:
-                                    message.name = reader.string();
-                                    break;
-                                case 2:
-                                    message.sourceTable = $root.google.bigtable.admin.v2.Table.decode(reader, reader.uint32());
-                                    break;
-                                case 3:
-                                    message.dataSizeBytes = reader.int64();
-                                    break;
-                                case 4:
-                                    message.createTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                                    break;
-                                case 5:
-                                    message.deleteTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
-                                    break;
-                                case 6:
-                                    message.state = reader.int32();
-                                    break;
-                                case 7:
-                                    message.description = reader.string();
-                                    break;
-                                default:
-                                    reader.skipType(tag & 7);
-                                    break;
-                                }
-                            }
-                            return message;
-                        };
-    
-                        /**
-                         * Decodes a Snapshot message from the specified reader or buffer, length delimited.
-                         * @function decodeDelimited
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        Snapshot.decodeDelimited = function decodeDelimited(reader) {
-                            if (!(reader instanceof $Reader))
-                                reader = new $Reader(reader);
-                            return this.decode(reader, reader.uint32());
-                        };
-    
-                        /**
-                         * Verifies a Snapshot message.
-                         * @function verify
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {Object.<string,*>} message Plain object to verify
-                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                         */
-                        Snapshot.verify = function verify(message) {
-                            if (typeof message !== "object" || message === null)
-                                return "object expected";
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                if (!$util.isString(message.name))
-                                    return "name: string expected";
-                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable")) {
-                                var error = $root.google.bigtable.admin.v2.Table.verify(message.sourceTable);
-                                if (error)
-                                    return "sourceTable." + error;
-                            }
-                            if (message.dataSizeBytes != null && message.hasOwnProperty("dataSizeBytes"))
-                                if (!$util.isInteger(message.dataSizeBytes) && !(message.dataSizeBytes && $util.isInteger(message.dataSizeBytes.low) && $util.isInteger(message.dataSizeBytes.high)))
-                                    return "dataSizeBytes: integer|Long expected";
-                            if (message.createTime != null && message.hasOwnProperty("createTime")) {
-                                var error = $root.google.protobuf.Timestamp.verify(message.createTime);
-                                if (error)
-                                    return "createTime." + error;
-                            }
-                            if (message.deleteTime != null && message.hasOwnProperty("deleteTime")) {
-                                var error = $root.google.protobuf.Timestamp.verify(message.deleteTime);
-                                if (error)
-                                    return "deleteTime." + error;
-                            }
-                            if (message.state != null && message.hasOwnProperty("state"))
-                                switch (message.state) {
-                                default:
-                                    return "state: enum value expected";
-                                case 0:
-                                case 1:
-                                case 2:
-                                    break;
-                                }
-                            if (message.description != null && message.hasOwnProperty("description"))
-                                if (!$util.isString(message.description))
-                                    return "description: string expected";
-                            return null;
-                        };
-    
-                        /**
-                         * Creates a Snapshot message from a plain object. Also converts values to their respective internal types.
-                         * @function fromObject
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {Object.<string,*>} object Plain object
-                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot
-                         */
-                        Snapshot.fromObject = function fromObject(object) {
-                            if (object instanceof $root.google.bigtable.admin.v2.Snapshot)
-                                return object;
-                            var message = new $root.google.bigtable.admin.v2.Snapshot();
-                            if (object.name != null)
-                                message.name = String(object.name);
-                            if (object.sourceTable != null) {
-                                if (typeof object.sourceTable !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.Snapshot.sourceTable: object expected");
-                                message.sourceTable = $root.google.bigtable.admin.v2.Table.fromObject(object.sourceTable);
-                            }
-                            if (object.dataSizeBytes != null)
-                                if ($util.Long)
-                                    (message.dataSizeBytes = $util.Long.fromValue(object.dataSizeBytes)).unsigned = false;
-                                else if (typeof object.dataSizeBytes === "string")
-                                    message.dataSizeBytes = parseInt(object.dataSizeBytes, 10);
-                                else if (typeof object.dataSizeBytes === "number")
-                                    message.dataSizeBytes = object.dataSizeBytes;
-                                else if (typeof object.dataSizeBytes === "object")
-                                    message.dataSizeBytes = new $util.LongBits(object.dataSizeBytes.low >>> 0, object.dataSizeBytes.high >>> 0).toNumber();
-                            if (object.createTime != null) {
-                                if (typeof object.createTime !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.Snapshot.createTime: object expected");
-                                message.createTime = $root.google.protobuf.Timestamp.fromObject(object.createTime);
-                            }
-                            if (object.deleteTime != null) {
-                                if (typeof object.deleteTime !== "object")
-                                    throw TypeError(".google.bigtable.admin.v2.Snapshot.deleteTime: object expected");
-                                message.deleteTime = $root.google.protobuf.Timestamp.fromObject(object.deleteTime);
-                            }
-                            switch (object.state) {
-                            case "STATE_NOT_KNOWN":
-                            case 0:
-                                message.state = 0;
-                                break;
-                            case "READY":
-                            case 1:
-                                message.state = 1;
-                                break;
-                            case "CREATING":
-                            case 2:
-                                message.state = 2;
-                                break;
-                            }
-                            if (object.description != null)
-                                message.description = String(object.description);
-                            return message;
-                        };
-    
-                        /**
-                         * Creates a plain object from a Snapshot message. Also converts values to other types if specified.
-                         * @function toObject
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @static
-                         * @param {google.bigtable.admin.v2.Snapshot} message Snapshot
-                         * @param {$protobuf.IConversionOptions} [options] Conversion options
-                         * @returns {Object.<string,*>} Plain object
-                         */
-                        Snapshot.toObject = function toObject(message, options) {
-                            if (!options)
-                                options = {};
-                            var object = {};
-                            if (options.defaults) {
-                                object.name = "";
-                                object.sourceTable = null;
-                                if ($util.Long) {
-                                    var long = new $util.Long(0, 0, false);
-                                    object.dataSizeBytes = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                                } else
-                                    object.dataSizeBytes = options.longs === String ? "0" : 0;
-                                object.createTime = null;
-                                object.deleteTime = null;
-                                object.state = options.enums === String ? "STATE_NOT_KNOWN" : 0;
-                                object.description = "";
-                            }
-                            if (message.name != null && message.hasOwnProperty("name"))
-                                object.name = message.name;
-                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
-                                object.sourceTable = $root.google.bigtable.admin.v2.Table.toObject(message.sourceTable, options);
-                            if (message.dataSizeBytes != null && message.hasOwnProperty("dataSizeBytes"))
-                                if (typeof message.dataSizeBytes === "number")
-                                    object.dataSizeBytes = options.longs === String ? String(message.dataSizeBytes) : message.dataSizeBytes;
-                                else
-                                    object.dataSizeBytes = options.longs === String ? $util.Long.prototype.toString.call(message.dataSizeBytes) : options.longs === Number ? new $util.LongBits(message.dataSizeBytes.low >>> 0, message.dataSizeBytes.high >>> 0).toNumber() : message.dataSizeBytes;
-                            if (message.createTime != null && message.hasOwnProperty("createTime"))
-                                object.createTime = $root.google.protobuf.Timestamp.toObject(message.createTime, options);
-                            if (message.deleteTime != null && message.hasOwnProperty("deleteTime"))
-                                object.deleteTime = $root.google.protobuf.Timestamp.toObject(message.deleteTime, options);
-                            if (message.state != null && message.hasOwnProperty("state"))
-                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Snapshot.State[message.state] : message.state;
-                            if (message.description != null && message.hasOwnProperty("description"))
-                                object.description = message.description;
-                            return object;
-                        };
-    
-                        /**
-                         * Converts this Snapshot to JSON.
-                         * @function toJSON
-                         * @memberof google.bigtable.admin.v2.Snapshot
-                         * @instance
-                         * @returns {Object.<string,*>} JSON object
-                         */
-                        Snapshot.prototype.toJSON = function toJSON() {
-                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                        };
-    
-                        /**
-                         * State enum.
-                         * @name google.bigtable.admin.v2.Snapshot.State
-                         * @enum {string}
-                         * @property {number} STATE_NOT_KNOWN=0 STATE_NOT_KNOWN value
-                         * @property {number} READY=1 READY value
-                         * @property {number} CREATING=2 CREATING value
-                         */
-                        Snapshot.State = (function() {
-                            var valuesById = {}, values = Object.create(valuesById);
-                            values[valuesById[0] = "STATE_NOT_KNOWN"] = 0;
-                            values[valuesById[1] = "READY"] = 1;
-                            values[valuesById[2] = "CREATING"] = 2;
-                            return values;
-                        })();
-    
-                        return Snapshot;
-                    })();
-    
-                    /**
-                     * StorageType enum.
-                     * @name google.bigtable.admin.v2.StorageType
-                     * @enum {string}
-                     * @property {number} STORAGE_TYPE_UNSPECIFIED=0 STORAGE_TYPE_UNSPECIFIED value
-                     * @property {number} SSD=1 SSD value
-                     * @property {number} HDD=2 HDD value
-                     */
-                    v2.StorageType = (function() {
-                        var valuesById = {}, values = Object.create(valuesById);
-                        values[valuesById[0] = "STORAGE_TYPE_UNSPECIFIED"] = 0;
-                        values[valuesById[1] = "SSD"] = 1;
-                        values[valuesById[2] = "HDD"] = 2;
-                        return values;
-                    })();
-    
                     v2.BigtableInstanceAdmin = (function() {
     
                         /**
@@ -9027,6 +7120,22 @@
                         return AppProfile;
                     })();
     
+                    /**
+                     * StorageType enum.
+                     * @name google.bigtable.admin.v2.StorageType
+                     * @enum {string}
+                     * @property {number} STORAGE_TYPE_UNSPECIFIED=0 STORAGE_TYPE_UNSPECIFIED value
+                     * @property {number} SSD=1 SSD value
+                     * @property {number} HDD=2 HDD value
+                     */
+                    v2.StorageType = (function() {
+                        var valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "STORAGE_TYPE_UNSPECIFIED"] = 0;
+                        values[valuesById[1] = "SSD"] = 1;
+                        values[valuesById[2] = "HDD"] = 2;
+                        return values;
+                    })();
+    
                     v2.BigtableTableAdmin = (function() {
     
                         /**
@@ -14404,6 +12513,1897 @@
                         };
     
                         return CreateTableFromSnapshotMetadata;
+                    })();
+    
+                    v2.Table = (function() {
+    
+                        /**
+                         * Properties of a Table.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ITable
+                         * @property {string|null} [name] Table name
+                         * @property {Object.<string,google.bigtable.admin.v2.Table.IClusterState>|null} [clusterStates] Table clusterStates
+                         * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
+                         * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
+                         */
+    
+                        /**
+                         * Constructs a new Table.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a Table.
+                         * @implements ITable
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ITable=} [properties] Properties to set
+                         */
+                        function Table(properties) {
+                            this.clusterStates = {};
+                            this.columnFamilies = {};
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * Table name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.name = "";
+    
+                        /**
+                         * Table clusterStates.
+                         * @member {Object.<string,google.bigtable.admin.v2.Table.IClusterState>} clusterStates
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.clusterStates = $util.emptyObject;
+    
+                        /**
+                         * Table columnFamilies.
+                         * @member {Object.<string,google.bigtable.admin.v2.IColumnFamily>} columnFamilies
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.columnFamilies = $util.emptyObject;
+    
+                        /**
+                         * Table granularity.
+                         * @member {google.bigtable.admin.v2.Table.TimestampGranularity} granularity
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.granularity = 0;
+    
+                        /**
+                         * Creates a new Table instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {google.bigtable.admin.v2.ITable=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.Table} Table instance
+                         */
+                        Table.create = function create(properties) {
+                            return new Table(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified Table message. Does not implicitly {@link google.bigtable.admin.v2.Table.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {google.bigtable.admin.v2.ITable} message Table message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Table.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.clusterStates != null && message.hasOwnProperty("clusterStates"))
+                                for (var keys = Object.keys(message.clusterStates), i = 0; i < keys.length; ++i) {
+                                    writer.uint32(/* id 2, wireType 2 =*/18).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
+                                    $root.google.bigtable.admin.v2.Table.ClusterState.encode(message.clusterStates[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                                }
+                            if (message.columnFamilies != null && message.hasOwnProperty("columnFamilies"))
+                                for (var keys = Object.keys(message.columnFamilies), i = 0; i < keys.length; ++i) {
+                                    writer.uint32(/* id 3, wireType 2 =*/26).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
+                                    $root.google.bigtable.admin.v2.ColumnFamily.encode(message.columnFamilies[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                                }
+                            if (message.granularity != null && message.hasOwnProperty("granularity"))
+                                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified Table message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Table.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {google.bigtable.admin.v2.ITable} message Table message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Table.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a Table message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.Table} Table
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Table.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Table(), key;
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    reader.skip().pos++;
+                                    if (message.clusterStates === $util.emptyObject)
+                                        message.clusterStates = {};
+                                    key = reader.string();
+                                    reader.pos++;
+                                    message.clusterStates[key] = $root.google.bigtable.admin.v2.Table.ClusterState.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    reader.skip().pos++;
+                                    if (message.columnFamilies === $util.emptyObject)
+                                        message.columnFamilies = {};
+                                    key = reader.string();
+                                    reader.pos++;
+                                    message.columnFamilies[key] = $root.google.bigtable.admin.v2.ColumnFamily.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.granularity = reader.int32();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a Table message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.Table} Table
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Table.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a Table message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Table.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.clusterStates != null && message.hasOwnProperty("clusterStates")) {
+                                if (!$util.isObject(message.clusterStates))
+                                    return "clusterStates: object expected";
+                                var key = Object.keys(message.clusterStates);
+                                for (var i = 0; i < key.length; ++i) {
+                                    var error = $root.google.bigtable.admin.v2.Table.ClusterState.verify(message.clusterStates[key[i]]);
+                                    if (error)
+                                        return "clusterStates." + error;
+                                }
+                            }
+                            if (message.columnFamilies != null && message.hasOwnProperty("columnFamilies")) {
+                                if (!$util.isObject(message.columnFamilies))
+                                    return "columnFamilies: object expected";
+                                var key = Object.keys(message.columnFamilies);
+                                for (var i = 0; i < key.length; ++i) {
+                                    var error = $root.google.bigtable.admin.v2.ColumnFamily.verify(message.columnFamilies[key[i]]);
+                                    if (error)
+                                        return "columnFamilies." + error;
+                                }
+                            }
+                            if (message.granularity != null && message.hasOwnProperty("granularity"))
+                                switch (message.granularity) {
+                                default:
+                                    return "granularity: enum value expected";
+                                case 0:
+                                case 1:
+                                    break;
+                                }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a Table message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.Table} Table
+                         */
+                        Table.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.Table)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.Table();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.clusterStates) {
+                                if (typeof object.clusterStates !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Table.clusterStates: object expected");
+                                message.clusterStates = {};
+                                for (var keys = Object.keys(object.clusterStates), i = 0; i < keys.length; ++i) {
+                                    if (typeof object.clusterStates[keys[i]] !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.Table.clusterStates: object expected");
+                                    message.clusterStates[keys[i]] = $root.google.bigtable.admin.v2.Table.ClusterState.fromObject(object.clusterStates[keys[i]]);
+                                }
+                            }
+                            if (object.columnFamilies) {
+                                if (typeof object.columnFamilies !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Table.columnFamilies: object expected");
+                                message.columnFamilies = {};
+                                for (var keys = Object.keys(object.columnFamilies), i = 0; i < keys.length; ++i) {
+                                    if (typeof object.columnFamilies[keys[i]] !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.Table.columnFamilies: object expected");
+                                    message.columnFamilies[keys[i]] = $root.google.bigtable.admin.v2.ColumnFamily.fromObject(object.columnFamilies[keys[i]]);
+                                }
+                            }
+                            switch (object.granularity) {
+                            case "TIMESTAMP_GRANULARITY_UNSPECIFIED":
+                            case 0:
+                                message.granularity = 0;
+                                break;
+                            case "MILLIS":
+                            case 1:
+                                message.granularity = 1;
+                                break;
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a Table message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @static
+                         * @param {google.bigtable.admin.v2.Table} message Table
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Table.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.objects || options.defaults) {
+                                object.clusterStates = {};
+                                object.columnFamilies = {};
+                            }
+                            if (options.defaults) {
+                                object.name = "";
+                                object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            var keys2;
+                            if (message.clusterStates && (keys2 = Object.keys(message.clusterStates)).length) {
+                                object.clusterStates = {};
+                                for (var j = 0; j < keys2.length; ++j)
+                                    object.clusterStates[keys2[j]] = $root.google.bigtable.admin.v2.Table.ClusterState.toObject(message.clusterStates[keys2[j]], options);
+                            }
+                            if (message.columnFamilies && (keys2 = Object.keys(message.columnFamilies)).length) {
+                                object.columnFamilies = {};
+                                for (var j = 0; j < keys2.length; ++j)
+                                    object.columnFamilies[keys2[j]] = $root.google.bigtable.admin.v2.ColumnFamily.toObject(message.columnFamilies[keys2[j]], options);
+                            }
+                            if (message.granularity != null && message.hasOwnProperty("granularity"))
+                                object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this Table to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Table.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        Table.ClusterState = (function() {
+    
+                            /**
+                             * Properties of a ClusterState.
+                             * @memberof google.bigtable.admin.v2.Table
+                             * @interface IClusterState
+                             * @property {google.bigtable.admin.v2.Table.ClusterState.ReplicationState|null} [replicationState] ClusterState replicationState
+                             */
+    
+                            /**
+                             * Constructs a new ClusterState.
+                             * @memberof google.bigtable.admin.v2.Table
+                             * @classdesc Represents a ClusterState.
+                             * @implements IClusterState
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.Table.IClusterState=} [properties] Properties to set
+                             */
+                            function ClusterState(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * ClusterState replicationState.
+                             * @member {google.bigtable.admin.v2.Table.ClusterState.ReplicationState} replicationState
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @instance
+                             */
+                            ClusterState.prototype.replicationState = 0;
+    
+                            /**
+                             * Creates a new ClusterState instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {google.bigtable.admin.v2.Table.IClusterState=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState instance
+                             */
+                            ClusterState.create = function create(properties) {
+                                return new ClusterState(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified ClusterState message. Does not implicitly {@link google.bigtable.admin.v2.Table.ClusterState.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {google.bigtable.admin.v2.Table.IClusterState} message ClusterState message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClusterState.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.replicationState != null && message.hasOwnProperty("replicationState"))
+                                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.replicationState);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified ClusterState message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Table.ClusterState.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {google.bigtable.admin.v2.Table.IClusterState} message ClusterState message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClusterState.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a ClusterState message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClusterState.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Table.ClusterState();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.replicationState = reader.int32();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a ClusterState message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClusterState.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a ClusterState message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            ClusterState.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.replicationState != null && message.hasOwnProperty("replicationState"))
+                                    switch (message.replicationState) {
+                                    default:
+                                        return "replicationState: enum value expected";
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                    case 4:
+                                        break;
+                                    }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a ClusterState message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.Table.ClusterState} ClusterState
+                             */
+                            ClusterState.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.Table.ClusterState)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.Table.ClusterState();
+                                switch (object.replicationState) {
+                                case "STATE_NOT_KNOWN":
+                                case 0:
+                                    message.replicationState = 0;
+                                    break;
+                                case "INITIALIZING":
+                                case 1:
+                                    message.replicationState = 1;
+                                    break;
+                                case "PLANNED_MAINTENANCE":
+                                case 2:
+                                    message.replicationState = 2;
+                                    break;
+                                case "UNPLANNED_MAINTENANCE":
+                                case 3:
+                                    message.replicationState = 3;
+                                    break;
+                                case "READY":
+                                case 4:
+                                    message.replicationState = 4;
+                                    break;
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a ClusterState message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @static
+                             * @param {google.bigtable.admin.v2.Table.ClusterState} message ClusterState
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            ClusterState.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults)
+                                    object.replicationState = options.enums === String ? "STATE_NOT_KNOWN" : 0;
+                                if (message.replicationState != null && message.hasOwnProperty("replicationState"))
+                                    object.replicationState = options.enums === String ? $root.google.bigtable.admin.v2.Table.ClusterState.ReplicationState[message.replicationState] : message.replicationState;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this ClusterState to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            ClusterState.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            /**
+                             * ReplicationState enum.
+                             * @name google.bigtable.admin.v2.Table.ClusterState.ReplicationState
+                             * @enum {string}
+                             * @property {number} STATE_NOT_KNOWN=0 STATE_NOT_KNOWN value
+                             * @property {number} INITIALIZING=1 INITIALIZING value
+                             * @property {number} PLANNED_MAINTENANCE=2 PLANNED_MAINTENANCE value
+                             * @property {number} UNPLANNED_MAINTENANCE=3 UNPLANNED_MAINTENANCE value
+                             * @property {number} READY=4 READY value
+                             */
+                            ClusterState.ReplicationState = (function() {
+                                var valuesById = {}, values = Object.create(valuesById);
+                                values[valuesById[0] = "STATE_NOT_KNOWN"] = 0;
+                                values[valuesById[1] = "INITIALIZING"] = 1;
+                                values[valuesById[2] = "PLANNED_MAINTENANCE"] = 2;
+                                values[valuesById[3] = "UNPLANNED_MAINTENANCE"] = 3;
+                                values[valuesById[4] = "READY"] = 4;
+                                return values;
+                            })();
+    
+                            return ClusterState;
+                        })();
+    
+                        /**
+                         * TimestampGranularity enum.
+                         * @name google.bigtable.admin.v2.Table.TimestampGranularity
+                         * @enum {string}
+                         * @property {number} TIMESTAMP_GRANULARITY_UNSPECIFIED=0 TIMESTAMP_GRANULARITY_UNSPECIFIED value
+                         * @property {number} MILLIS=1 MILLIS value
+                         */
+                        Table.TimestampGranularity = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "TIMESTAMP_GRANULARITY_UNSPECIFIED"] = 0;
+                            values[valuesById[1] = "MILLIS"] = 1;
+                            return values;
+                        })();
+    
+                        /**
+                         * View enum.
+                         * @name google.bigtable.admin.v2.Table.View
+                         * @enum {string}
+                         * @property {number} VIEW_UNSPECIFIED=0 VIEW_UNSPECIFIED value
+                         * @property {number} NAME_ONLY=1 NAME_ONLY value
+                         * @property {number} SCHEMA_VIEW=2 SCHEMA_VIEW value
+                         * @property {number} REPLICATION_VIEW=3 REPLICATION_VIEW value
+                         * @property {number} FULL=4 FULL value
+                         */
+                        Table.View = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "VIEW_UNSPECIFIED"] = 0;
+                            values[valuesById[1] = "NAME_ONLY"] = 1;
+                            values[valuesById[2] = "SCHEMA_VIEW"] = 2;
+                            values[valuesById[3] = "REPLICATION_VIEW"] = 3;
+                            values[valuesById[4] = "FULL"] = 4;
+                            return values;
+                        })();
+    
+                        return Table;
+                    })();
+    
+                    v2.ColumnFamily = (function() {
+    
+                        /**
+                         * Properties of a ColumnFamily.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IColumnFamily
+                         * @property {google.bigtable.admin.v2.IGcRule|null} [gcRule] ColumnFamily gcRule
+                         */
+    
+                        /**
+                         * Constructs a new ColumnFamily.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ColumnFamily.
+                         * @implements IColumnFamily
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IColumnFamily=} [properties] Properties to set
+                         */
+                        function ColumnFamily(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ColumnFamily gcRule.
+                         * @member {google.bigtable.admin.v2.IGcRule|null|undefined} gcRule
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @instance
+                         */
+                        ColumnFamily.prototype.gcRule = null;
+    
+                        /**
+                         * Creates a new ColumnFamily instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {google.bigtable.admin.v2.IColumnFamily=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily instance
+                         */
+                        ColumnFamily.create = function create(properties) {
+                            return new ColumnFamily(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ColumnFamily message. Does not implicitly {@link google.bigtable.admin.v2.ColumnFamily.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {google.bigtable.admin.v2.IColumnFamily} message ColumnFamily message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ColumnFamily.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.gcRule != null && message.hasOwnProperty("gcRule"))
+                                $root.google.bigtable.admin.v2.GcRule.encode(message.gcRule, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ColumnFamily message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ColumnFamily.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {google.bigtable.admin.v2.IColumnFamily} message ColumnFamily message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ColumnFamily.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ColumnFamily message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ColumnFamily.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ColumnFamily();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.gcRule = $root.google.bigtable.admin.v2.GcRule.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ColumnFamily message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ColumnFamily.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ColumnFamily message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ColumnFamily.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.gcRule != null && message.hasOwnProperty("gcRule")) {
+                                var error = $root.google.bigtable.admin.v2.GcRule.verify(message.gcRule);
+                                if (error)
+                                    return "gcRule." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ColumnFamily message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ColumnFamily} ColumnFamily
+                         */
+                        ColumnFamily.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ColumnFamily)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ColumnFamily();
+                            if (object.gcRule != null) {
+                                if (typeof object.gcRule !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.ColumnFamily.gcRule: object expected");
+                                message.gcRule = $root.google.bigtable.admin.v2.GcRule.fromObject(object.gcRule);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ColumnFamily message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @static
+                         * @param {google.bigtable.admin.v2.ColumnFamily} message ColumnFamily
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ColumnFamily.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.gcRule = null;
+                            if (message.gcRule != null && message.hasOwnProperty("gcRule"))
+                                object.gcRule = $root.google.bigtable.admin.v2.GcRule.toObject(message.gcRule, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ColumnFamily to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ColumnFamily
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ColumnFamily.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return ColumnFamily;
+                    })();
+    
+                    v2.GcRule = (function() {
+    
+                        /**
+                         * Properties of a GcRule.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IGcRule
+                         * @property {number|null} [maxNumVersions] GcRule maxNumVersions
+                         * @property {google.protobuf.IDuration|null} [maxAge] GcRule maxAge
+                         * @property {google.bigtable.admin.v2.GcRule.IIntersection|null} [intersection] GcRule intersection
+                         * @property {google.bigtable.admin.v2.GcRule.IUnion|null} [union] GcRule union
+                         */
+    
+                        /**
+                         * Constructs a new GcRule.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a GcRule.
+                         * @implements IGcRule
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IGcRule=} [properties] Properties to set
+                         */
+                        function GcRule(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * GcRule maxNumVersions.
+                         * @member {number} maxNumVersions
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @instance
+                         */
+                        GcRule.prototype.maxNumVersions = 0;
+    
+                        /**
+                         * GcRule maxAge.
+                         * @member {google.protobuf.IDuration|null|undefined} maxAge
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @instance
+                         */
+                        GcRule.prototype.maxAge = null;
+    
+                        /**
+                         * GcRule intersection.
+                         * @member {google.bigtable.admin.v2.GcRule.IIntersection|null|undefined} intersection
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @instance
+                         */
+                        GcRule.prototype.intersection = null;
+    
+                        /**
+                         * GcRule union.
+                         * @member {google.bigtable.admin.v2.GcRule.IUnion|null|undefined} union
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @instance
+                         */
+                        GcRule.prototype.union = null;
+    
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+    
+                        /**
+                         * GcRule rule.
+                         * @member {"maxNumVersions"|"maxAge"|"intersection"|"union"|undefined} rule
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @instance
+                         */
+                        Object.defineProperty(GcRule.prototype, "rule", {
+                            get: $util.oneOfGetter($oneOfFields = ["maxNumVersions", "maxAge", "intersection", "union"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+    
+                        /**
+                         * Creates a new GcRule instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGcRule=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.GcRule} GcRule instance
+                         */
+                        GcRule.create = function create(properties) {
+                            return new GcRule(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified GcRule message. Does not implicitly {@link google.bigtable.admin.v2.GcRule.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGcRule} message GcRule message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        GcRule.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.maxNumVersions != null && message.hasOwnProperty("maxNumVersions"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.maxNumVersions);
+                            if (message.maxAge != null && message.hasOwnProperty("maxAge"))
+                                $root.google.protobuf.Duration.encode(message.maxAge, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.intersection != null && message.hasOwnProperty("intersection"))
+                                $root.google.bigtable.admin.v2.GcRule.Intersection.encode(message.intersection, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.union != null && message.hasOwnProperty("union"))
+                                $root.google.bigtable.admin.v2.GcRule.Union.encode(message.union, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified GcRule message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GcRule.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGcRule} message GcRule message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        GcRule.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a GcRule message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.GcRule} GcRule
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        GcRule.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GcRule();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.maxNumVersions = reader.int32();
+                                    break;
+                                case 2:
+                                    message.maxAge = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    message.intersection = $root.google.bigtable.admin.v2.GcRule.Intersection.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.union = $root.google.bigtable.admin.v2.GcRule.Union.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a GcRule message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.GcRule} GcRule
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        GcRule.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a GcRule message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        GcRule.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.maxNumVersions != null && message.hasOwnProperty("maxNumVersions")) {
+                                properties.rule = 1;
+                                if (!$util.isInteger(message.maxNumVersions))
+                                    return "maxNumVersions: integer expected";
+                            }
+                            if (message.maxAge != null && message.hasOwnProperty("maxAge")) {
+                                if (properties.rule === 1)
+                                    return "rule: multiple values";
+                                properties.rule = 1;
+                                {
+                                    var error = $root.google.protobuf.Duration.verify(message.maxAge);
+                                    if (error)
+                                        return "maxAge." + error;
+                                }
+                            }
+                            if (message.intersection != null && message.hasOwnProperty("intersection")) {
+                                if (properties.rule === 1)
+                                    return "rule: multiple values";
+                                properties.rule = 1;
+                                {
+                                    var error = $root.google.bigtable.admin.v2.GcRule.Intersection.verify(message.intersection);
+                                    if (error)
+                                        return "intersection." + error;
+                                }
+                            }
+                            if (message.union != null && message.hasOwnProperty("union")) {
+                                if (properties.rule === 1)
+                                    return "rule: multiple values";
+                                properties.rule = 1;
+                                {
+                                    var error = $root.google.bigtable.admin.v2.GcRule.Union.verify(message.union);
+                                    if (error)
+                                        return "union." + error;
+                                }
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a GcRule message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.GcRule} GcRule
+                         */
+                        GcRule.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.GcRule)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.GcRule();
+                            if (object.maxNumVersions != null)
+                                message.maxNumVersions = object.maxNumVersions | 0;
+                            if (object.maxAge != null) {
+                                if (typeof object.maxAge !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.GcRule.maxAge: object expected");
+                                message.maxAge = $root.google.protobuf.Duration.fromObject(object.maxAge);
+                            }
+                            if (object.intersection != null) {
+                                if (typeof object.intersection !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.GcRule.intersection: object expected");
+                                message.intersection = $root.google.bigtable.admin.v2.GcRule.Intersection.fromObject(object.intersection);
+                            }
+                            if (object.union != null) {
+                                if (typeof object.union !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.GcRule.union: object expected");
+                                message.union = $root.google.bigtable.admin.v2.GcRule.Union.fromObject(object.union);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a GcRule message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @static
+                         * @param {google.bigtable.admin.v2.GcRule} message GcRule
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        GcRule.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (message.maxNumVersions != null && message.hasOwnProperty("maxNumVersions")) {
+                                object.maxNumVersions = message.maxNumVersions;
+                                if (options.oneofs)
+                                    object.rule = "maxNumVersions";
+                            }
+                            if (message.maxAge != null && message.hasOwnProperty("maxAge")) {
+                                object.maxAge = $root.google.protobuf.Duration.toObject(message.maxAge, options);
+                                if (options.oneofs)
+                                    object.rule = "maxAge";
+                            }
+                            if (message.intersection != null && message.hasOwnProperty("intersection")) {
+                                object.intersection = $root.google.bigtable.admin.v2.GcRule.Intersection.toObject(message.intersection, options);
+                                if (options.oneofs)
+                                    object.rule = "intersection";
+                            }
+                            if (message.union != null && message.hasOwnProperty("union")) {
+                                object.union = $root.google.bigtable.admin.v2.GcRule.Union.toObject(message.union, options);
+                                if (options.oneofs)
+                                    object.rule = "union";
+                            }
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this GcRule to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.GcRule
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        GcRule.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        GcRule.Intersection = (function() {
+    
+                            /**
+                             * Properties of an Intersection.
+                             * @memberof google.bigtable.admin.v2.GcRule
+                             * @interface IIntersection
+                             * @property {Array.<google.bigtable.admin.v2.IGcRule>|null} [rules] Intersection rules
+                             */
+    
+                            /**
+                             * Constructs a new Intersection.
+                             * @memberof google.bigtable.admin.v2.GcRule
+                             * @classdesc Represents an Intersection.
+                             * @implements IIntersection
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.GcRule.IIntersection=} [properties] Properties to set
+                             */
+                            function Intersection(properties) {
+                                this.rules = [];
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * Intersection rules.
+                             * @member {Array.<google.bigtable.admin.v2.IGcRule>} rules
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @instance
+                             */
+                            Intersection.prototype.rules = $util.emptyArray;
+    
+                            /**
+                             * Creates a new Intersection instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.IIntersection=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection instance
+                             */
+                            Intersection.create = function create(properties) {
+                                return new Intersection(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified Intersection message. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Intersection.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.IIntersection} message Intersection message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Intersection.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.rules != null && message.rules.length)
+                                    for (var i = 0; i < message.rules.length; ++i)
+                                        $root.google.bigtable.admin.v2.GcRule.encode(message.rules[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified Intersection message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Intersection.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.IIntersection} message Intersection message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Intersection.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes an Intersection message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Intersection.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GcRule.Intersection();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.rules && message.rules.length))
+                                            message.rules = [];
+                                        message.rules.push($root.google.bigtable.admin.v2.GcRule.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes an Intersection message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Intersection.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies an Intersection message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            Intersection.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.rules != null && message.hasOwnProperty("rules")) {
+                                    if (!Array.isArray(message.rules))
+                                        return "rules: array expected";
+                                    for (var i = 0; i < message.rules.length; ++i) {
+                                        var error = $root.google.bigtable.admin.v2.GcRule.verify(message.rules[i]);
+                                        if (error)
+                                            return "rules." + error;
+                                    }
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates an Intersection message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.GcRule.Intersection} Intersection
+                             */
+                            Intersection.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.GcRule.Intersection)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.GcRule.Intersection();
+                                if (object.rules) {
+                                    if (!Array.isArray(object.rules))
+                                        throw TypeError(".google.bigtable.admin.v2.GcRule.Intersection.rules: array expected");
+                                    message.rules = [];
+                                    for (var i = 0; i < object.rules.length; ++i) {
+                                        if (typeof object.rules[i] !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.GcRule.Intersection.rules: object expected");
+                                        message.rules[i] = $root.google.bigtable.admin.v2.GcRule.fromObject(object.rules[i]);
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from an Intersection message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.Intersection} message Intersection
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            Intersection.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults)
+                                    object.rules = [];
+                                if (message.rules && message.rules.length) {
+                                    object.rules = [];
+                                    for (var j = 0; j < message.rules.length; ++j)
+                                        object.rules[j] = $root.google.bigtable.admin.v2.GcRule.toObject(message.rules[j], options);
+                                }
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this Intersection to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.GcRule.Intersection
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            Intersection.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return Intersection;
+                        })();
+    
+                        GcRule.Union = (function() {
+    
+                            /**
+                             * Properties of an Union.
+                             * @memberof google.bigtable.admin.v2.GcRule
+                             * @interface IUnion
+                             * @property {Array.<google.bigtable.admin.v2.IGcRule>|null} [rules] Union rules
+                             */
+    
+                            /**
+                             * Constructs a new Union.
+                             * @memberof google.bigtable.admin.v2.GcRule
+                             * @classdesc Represents an Union.
+                             * @implements IUnion
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.GcRule.IUnion=} [properties] Properties to set
+                             */
+                            function Union(properties) {
+                                this.rules = [];
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * Union rules.
+                             * @member {Array.<google.bigtable.admin.v2.IGcRule>} rules
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @instance
+                             */
+                            Union.prototype.rules = $util.emptyArray;
+    
+                            /**
+                             * Creates a new Union instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.IUnion=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union instance
+                             */
+                            Union.create = function create(properties) {
+                                return new Union(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified Union message. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Union.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.IUnion} message Union message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Union.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.rules != null && message.rules.length)
+                                    for (var i = 0; i < message.rules.length; ++i)
+                                        $root.google.bigtable.admin.v2.GcRule.encode(message.rules[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified Union message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GcRule.Union.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.IUnion} message Union message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            Union.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes an Union message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Union.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GcRule.Union();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.rules && message.rules.length))
+                                            message.rules = [];
+                                        message.rules.push($root.google.bigtable.admin.v2.GcRule.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes an Union message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            Union.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies an Union message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            Union.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.rules != null && message.hasOwnProperty("rules")) {
+                                    if (!Array.isArray(message.rules))
+                                        return "rules: array expected";
+                                    for (var i = 0; i < message.rules.length; ++i) {
+                                        var error = $root.google.bigtable.admin.v2.GcRule.verify(message.rules[i]);
+                                        if (error)
+                                            return "rules." + error;
+                                    }
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates an Union message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.GcRule.Union} Union
+                             */
+                            Union.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.GcRule.Union)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.GcRule.Union();
+                                if (object.rules) {
+                                    if (!Array.isArray(object.rules))
+                                        throw TypeError(".google.bigtable.admin.v2.GcRule.Union.rules: array expected");
+                                    message.rules = [];
+                                    for (var i = 0; i < object.rules.length; ++i) {
+                                        if (typeof object.rules[i] !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.GcRule.Union.rules: object expected");
+                                        message.rules[i] = $root.google.bigtable.admin.v2.GcRule.fromObject(object.rules[i]);
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from an Union message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @static
+                             * @param {google.bigtable.admin.v2.GcRule.Union} message Union
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            Union.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults)
+                                    object.rules = [];
+                                if (message.rules && message.rules.length) {
+                                    object.rules = [];
+                                    for (var j = 0; j < message.rules.length; ++j)
+                                        object.rules[j] = $root.google.bigtable.admin.v2.GcRule.toObject(message.rules[j], options);
+                                }
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this Union to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.GcRule.Union
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            Union.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return Union;
+                        })();
+    
+                        return GcRule;
+                    })();
+    
+                    v2.Snapshot = (function() {
+    
+                        /**
+                         * Properties of a Snapshot.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ISnapshot
+                         * @property {string|null} [name] Snapshot name
+                         * @property {google.bigtable.admin.v2.ITable|null} [sourceTable] Snapshot sourceTable
+                         * @property {number|Long|null} [dataSizeBytes] Snapshot dataSizeBytes
+                         * @property {google.protobuf.ITimestamp|null} [createTime] Snapshot createTime
+                         * @property {google.protobuf.ITimestamp|null} [deleteTime] Snapshot deleteTime
+                         * @property {google.bigtable.admin.v2.Snapshot.State|null} [state] Snapshot state
+                         * @property {string|null} [description] Snapshot description
+                         */
+    
+                        /**
+                         * Constructs a new Snapshot.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a Snapshot.
+                         * @implements ISnapshot
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ISnapshot=} [properties] Properties to set
+                         */
+                        function Snapshot(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * Snapshot name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         */
+                        Snapshot.prototype.name = "";
+    
+                        /**
+                         * Snapshot sourceTable.
+                         * @member {google.bigtable.admin.v2.ITable|null|undefined} sourceTable
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         */
+                        Snapshot.prototype.sourceTable = null;
+    
+                        /**
+                         * Snapshot dataSizeBytes.
+                         * @member {number|Long} dataSizeBytes
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         */
+                        Snapshot.prototype.dataSizeBytes = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                        /**
+                         * Snapshot createTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} createTime
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         */
+                        Snapshot.prototype.createTime = null;
+    
+                        /**
+                         * Snapshot deleteTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} deleteTime
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         */
+                        Snapshot.prototype.deleteTime = null;
+    
+                        /**
+                         * Snapshot state.
+                         * @member {google.bigtable.admin.v2.Snapshot.State} state
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         */
+                        Snapshot.prototype.state = 0;
+    
+                        /**
+                         * Snapshot description.
+                         * @member {string} description
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         */
+                        Snapshot.prototype.description = "";
+    
+                        /**
+                         * Creates a new Snapshot instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {google.bigtable.admin.v2.ISnapshot=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot instance
+                         */
+                        Snapshot.create = function create(properties) {
+                            return new Snapshot(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified Snapshot message. Does not implicitly {@link google.bigtable.admin.v2.Snapshot.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {google.bigtable.admin.v2.ISnapshot} message Snapshot message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Snapshot.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                $root.google.bigtable.admin.v2.Table.encode(message.sourceTable, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.dataSizeBytes != null && message.hasOwnProperty("dataSizeBytes"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).int64(message.dataSizeBytes);
+                            if (message.createTime != null && message.hasOwnProperty("createTime"))
+                                $root.google.protobuf.Timestamp.encode(message.createTime, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            if (message.deleteTime != null && message.hasOwnProperty("deleteTime"))
+                                $root.google.protobuf.Timestamp.encode(message.deleteTime, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                            if (message.state != null && message.hasOwnProperty("state"))
+                                writer.uint32(/* id 6, wireType 0 =*/48).int32(message.state);
+                            if (message.description != null && message.hasOwnProperty("description"))
+                                writer.uint32(/* id 7, wireType 2 =*/58).string(message.description);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified Snapshot message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Snapshot.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {google.bigtable.admin.v2.ISnapshot} message Snapshot message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Snapshot.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a Snapshot message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Snapshot.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Snapshot();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    message.sourceTable = $root.google.bigtable.admin.v2.Table.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    message.dataSizeBytes = reader.int64();
+                                    break;
+                                case 4:
+                                    message.createTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 5:
+                                    message.deleteTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 6:
+                                    message.state = reader.int32();
+                                    break;
+                                case 7:
+                                    message.description = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a Snapshot message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Snapshot.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a Snapshot message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Snapshot.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable")) {
+                                var error = $root.google.bigtable.admin.v2.Table.verify(message.sourceTable);
+                                if (error)
+                                    return "sourceTable." + error;
+                            }
+                            if (message.dataSizeBytes != null && message.hasOwnProperty("dataSizeBytes"))
+                                if (!$util.isInteger(message.dataSizeBytes) && !(message.dataSizeBytes && $util.isInteger(message.dataSizeBytes.low) && $util.isInteger(message.dataSizeBytes.high)))
+                                    return "dataSizeBytes: integer|Long expected";
+                            if (message.createTime != null && message.hasOwnProperty("createTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.createTime);
+                                if (error)
+                                    return "createTime." + error;
+                            }
+                            if (message.deleteTime != null && message.hasOwnProperty("deleteTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.deleteTime);
+                                if (error)
+                                    return "deleteTime." + error;
+                            }
+                            if (message.state != null && message.hasOwnProperty("state"))
+                                switch (message.state) {
+                                default:
+                                    return "state: enum value expected";
+                                case 0:
+                                case 1:
+                                case 2:
+                                    break;
+                                }
+                            if (message.description != null && message.hasOwnProperty("description"))
+                                if (!$util.isString(message.description))
+                                    return "description: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a Snapshot message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.Snapshot} Snapshot
+                         */
+                        Snapshot.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.Snapshot)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.Snapshot();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.sourceTable != null) {
+                                if (typeof object.sourceTable !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Snapshot.sourceTable: object expected");
+                                message.sourceTable = $root.google.bigtable.admin.v2.Table.fromObject(object.sourceTable);
+                            }
+                            if (object.dataSizeBytes != null)
+                                if ($util.Long)
+                                    (message.dataSizeBytes = $util.Long.fromValue(object.dataSizeBytes)).unsigned = false;
+                                else if (typeof object.dataSizeBytes === "string")
+                                    message.dataSizeBytes = parseInt(object.dataSizeBytes, 10);
+                                else if (typeof object.dataSizeBytes === "number")
+                                    message.dataSizeBytes = object.dataSizeBytes;
+                                else if (typeof object.dataSizeBytes === "object")
+                                    message.dataSizeBytes = new $util.LongBits(object.dataSizeBytes.low >>> 0, object.dataSizeBytes.high >>> 0).toNumber();
+                            if (object.createTime != null) {
+                                if (typeof object.createTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Snapshot.createTime: object expected");
+                                message.createTime = $root.google.protobuf.Timestamp.fromObject(object.createTime);
+                            }
+                            if (object.deleteTime != null) {
+                                if (typeof object.deleteTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Snapshot.deleteTime: object expected");
+                                message.deleteTime = $root.google.protobuf.Timestamp.fromObject(object.deleteTime);
+                            }
+                            switch (object.state) {
+                            case "STATE_NOT_KNOWN":
+                            case 0:
+                                message.state = 0;
+                                break;
+                            case "READY":
+                            case 1:
+                                message.state = 1;
+                                break;
+                            case "CREATING":
+                            case 2:
+                                message.state = 2;
+                                break;
+                            }
+                            if (object.description != null)
+                                message.description = String(object.description);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a Snapshot message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @static
+                         * @param {google.bigtable.admin.v2.Snapshot} message Snapshot
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Snapshot.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.sourceTable = null;
+                                if ($util.Long) {
+                                    var long = new $util.Long(0, 0, false);
+                                    object.dataSizeBytes = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                } else
+                                    object.dataSizeBytes = options.longs === String ? "0" : 0;
+                                object.createTime = null;
+                                object.deleteTime = null;
+                                object.state = options.enums === String ? "STATE_NOT_KNOWN" : 0;
+                                object.description = "";
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                object.sourceTable = $root.google.bigtable.admin.v2.Table.toObject(message.sourceTable, options);
+                            if (message.dataSizeBytes != null && message.hasOwnProperty("dataSizeBytes"))
+                                if (typeof message.dataSizeBytes === "number")
+                                    object.dataSizeBytes = options.longs === String ? String(message.dataSizeBytes) : message.dataSizeBytes;
+                                else
+                                    object.dataSizeBytes = options.longs === String ? $util.Long.prototype.toString.call(message.dataSizeBytes) : options.longs === Number ? new $util.LongBits(message.dataSizeBytes.low >>> 0, message.dataSizeBytes.high >>> 0).toNumber() : message.dataSizeBytes;
+                            if (message.createTime != null && message.hasOwnProperty("createTime"))
+                                object.createTime = $root.google.protobuf.Timestamp.toObject(message.createTime, options);
+                            if (message.deleteTime != null && message.hasOwnProperty("deleteTime"))
+                                object.deleteTime = $root.google.protobuf.Timestamp.toObject(message.deleteTime, options);
+                            if (message.state != null && message.hasOwnProperty("state"))
+                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Snapshot.State[message.state] : message.state;
+                            if (message.description != null && message.hasOwnProperty("description"))
+                                object.description = message.description;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this Snapshot to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.Snapshot
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Snapshot.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * State enum.
+                         * @name google.bigtable.admin.v2.Snapshot.State
+                         * @enum {string}
+                         * @property {number} STATE_NOT_KNOWN=0 STATE_NOT_KNOWN value
+                         * @property {number} READY=1 READY value
+                         * @property {number} CREATING=2 CREATING value
+                         */
+                        Snapshot.State = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "STATE_NOT_KNOWN"] = 0;
+                            values[valuesById[1] = "READY"] = 1;
+                            values[valuesById[2] = "CREATING"] = 2;
+                            return values;
+                        })();
+    
+                        return Snapshot;
                     })();
     
                     return v2;
@@ -34007,230 +34007,6 @@
                 return GeneratedCodeInfo;
             })();
     
-            protobuf.Duration = (function() {
-    
-                /**
-                 * Properties of a Duration.
-                 * @memberof google.protobuf
-                 * @interface IDuration
-                 * @property {number|Long|null} [seconds] Duration seconds
-                 * @property {number|null} [nanos] Duration nanos
-                 */
-    
-                /**
-                 * Constructs a new Duration.
-                 * @memberof google.protobuf
-                 * @classdesc Represents a Duration.
-                 * @implements IDuration
-                 * @constructor
-                 * @param {google.protobuf.IDuration=} [properties] Properties to set
-                 */
-                function Duration(properties) {
-                    if (properties)
-                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
-                }
-    
-                /**
-                 * Duration seconds.
-                 * @member {number|Long} seconds
-                 * @memberof google.protobuf.Duration
-                 * @instance
-                 */
-                Duration.prototype.seconds = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-    
-                /**
-                 * Duration nanos.
-                 * @member {number} nanos
-                 * @memberof google.protobuf.Duration
-                 * @instance
-                 */
-                Duration.prototype.nanos = 0;
-    
-                /**
-                 * Creates a new Duration instance using the specified properties.
-                 * @function create
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {google.protobuf.IDuration=} [properties] Properties to set
-                 * @returns {google.protobuf.Duration} Duration instance
-                 */
-                Duration.create = function create(properties) {
-                    return new Duration(properties);
-                };
-    
-                /**
-                 * Encodes the specified Duration message. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
-                 * @function encode
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {google.protobuf.IDuration} message Duration message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                Duration.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.seconds != null && message.hasOwnProperty("seconds"))
-                        writer.uint32(/* id 1, wireType 0 =*/8).int64(message.seconds);
-                    if (message.nanos != null && message.hasOwnProperty("nanos"))
-                        writer.uint32(/* id 2, wireType 0 =*/16).int32(message.nanos);
-                    return writer;
-                };
-    
-                /**
-                 * Encodes the specified Duration message, length delimited. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
-                 * @function encodeDelimited
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {google.protobuf.IDuration} message Duration message or plain object to encode
-                 * @param {$protobuf.Writer} [writer] Writer to encode to
-                 * @returns {$protobuf.Writer} Writer
-                 */
-                Duration.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
-    
-                /**
-                 * Decodes a Duration message from the specified reader or buffer.
-                 * @function decode
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @param {number} [length] Message length if known beforehand
-                 * @returns {google.protobuf.Duration} Duration
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                Duration.decode = function decode(reader, length) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Duration();
-                    while (reader.pos < end) {
-                        var tag = reader.uint32();
-                        switch (tag >>> 3) {
-                        case 1:
-                            message.seconds = reader.int64();
-                            break;
-                        case 2:
-                            message.nanos = reader.int32();
-                            break;
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
-                        }
-                    }
-                    return message;
-                };
-    
-                /**
-                 * Decodes a Duration message from the specified reader or buffer, length delimited.
-                 * @function decodeDelimited
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-                 * @returns {google.protobuf.Duration} Duration
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                Duration.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
-    
-                /**
-                 * Verifies a Duration message.
-                 * @function verify
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {Object.<string,*>} message Plain object to verify
-                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
-                 */
-                Duration.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
-                    if (message.seconds != null && message.hasOwnProperty("seconds"))
-                        if (!$util.isInteger(message.seconds) && !(message.seconds && $util.isInteger(message.seconds.low) && $util.isInteger(message.seconds.high)))
-                            return "seconds: integer|Long expected";
-                    if (message.nanos != null && message.hasOwnProperty("nanos"))
-                        if (!$util.isInteger(message.nanos))
-                            return "nanos: integer expected";
-                    return null;
-                };
-    
-                /**
-                 * Creates a Duration message from a plain object. Also converts values to their respective internal types.
-                 * @function fromObject
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {Object.<string,*>} object Plain object
-                 * @returns {google.protobuf.Duration} Duration
-                 */
-                Duration.fromObject = function fromObject(object) {
-                    if (object instanceof $root.google.protobuf.Duration)
-                        return object;
-                    var message = new $root.google.protobuf.Duration();
-                    if (object.seconds != null)
-                        if ($util.Long)
-                            (message.seconds = $util.Long.fromValue(object.seconds)).unsigned = false;
-                        else if (typeof object.seconds === "string")
-                            message.seconds = parseInt(object.seconds, 10);
-                        else if (typeof object.seconds === "number")
-                            message.seconds = object.seconds;
-                        else if (typeof object.seconds === "object")
-                            message.seconds = new $util.LongBits(object.seconds.low >>> 0, object.seconds.high >>> 0).toNumber();
-                    if (object.nanos != null)
-                        message.nanos = object.nanos | 0;
-                    return message;
-                };
-    
-                /**
-                 * Creates a plain object from a Duration message. Also converts values to other types if specified.
-                 * @function toObject
-                 * @memberof google.protobuf.Duration
-                 * @static
-                 * @param {google.protobuf.Duration} message Duration
-                 * @param {$protobuf.IConversionOptions} [options] Conversion options
-                 * @returns {Object.<string,*>} Plain object
-                 */
-                Duration.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    var object = {};
-                    if (options.defaults) {
-                        if ($util.Long) {
-                            var long = new $util.Long(0, 0, false);
-                            object.seconds = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
-                        } else
-                            object.seconds = options.longs === String ? "0" : 0;
-                        object.nanos = 0;
-                    }
-                    if (message.seconds != null && message.hasOwnProperty("seconds"))
-                        if (typeof message.seconds === "number")
-                            object.seconds = options.longs === String ? String(message.seconds) : message.seconds;
-                        else
-                            object.seconds = options.longs === String ? $util.Long.prototype.toString.call(message.seconds) : options.longs === Number ? new $util.LongBits(message.seconds.low >>> 0, message.seconds.high >>> 0).toNumber() : message.seconds;
-                    if (message.nanos != null && message.hasOwnProperty("nanos"))
-                        object.nanos = message.nanos;
-                    return object;
-                };
-    
-                /**
-                 * Converts this Duration to JSON.
-                 * @function toJSON
-                 * @memberof google.protobuf.Duration
-                 * @instance
-                 * @returns {Object.<string,*>} JSON object
-                 */
-                Duration.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
-    
-                return Duration;
-            })();
-    
             protobuf.Timestamp = (function() {
     
                 /**
@@ -34672,6 +34448,230 @@
                 };
     
                 return Any;
+            })();
+    
+            protobuf.Duration = (function() {
+    
+                /**
+                 * Properties of a Duration.
+                 * @memberof google.protobuf
+                 * @interface IDuration
+                 * @property {number|Long|null} [seconds] Duration seconds
+                 * @property {number|null} [nanos] Duration nanos
+                 */
+    
+                /**
+                 * Constructs a new Duration.
+                 * @memberof google.protobuf
+                 * @classdesc Represents a Duration.
+                 * @implements IDuration
+                 * @constructor
+                 * @param {google.protobuf.IDuration=} [properties] Properties to set
+                 */
+                function Duration(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+    
+                /**
+                 * Duration seconds.
+                 * @member {number|Long} seconds
+                 * @memberof google.protobuf.Duration
+                 * @instance
+                 */
+                Duration.prototype.seconds = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                /**
+                 * Duration nanos.
+                 * @member {number} nanos
+                 * @memberof google.protobuf.Duration
+                 * @instance
+                 */
+                Duration.prototype.nanos = 0;
+    
+                /**
+                 * Creates a new Duration instance using the specified properties.
+                 * @function create
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {google.protobuf.IDuration=} [properties] Properties to set
+                 * @returns {google.protobuf.Duration} Duration instance
+                 */
+                Duration.create = function create(properties) {
+                    return new Duration(properties);
+                };
+    
+                /**
+                 * Encodes the specified Duration message. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
+                 * @function encode
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {google.protobuf.IDuration} message Duration message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Duration.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.seconds != null && message.hasOwnProperty("seconds"))
+                        writer.uint32(/* id 1, wireType 0 =*/8).int64(message.seconds);
+                    if (message.nanos != null && message.hasOwnProperty("nanos"))
+                        writer.uint32(/* id 2, wireType 0 =*/16).int32(message.nanos);
+                    return writer;
+                };
+    
+                /**
+                 * Encodes the specified Duration message, length delimited. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {google.protobuf.IDuration} message Duration message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                Duration.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+    
+                /**
+                 * Decodes a Duration message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {google.protobuf.Duration} Duration
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Duration.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.protobuf.Duration();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.seconds = reader.int64();
+                            break;
+                        case 2:
+                            message.nanos = reader.int32();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+    
+                /**
+                 * Decodes a Duration message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {google.protobuf.Duration} Duration
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                Duration.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+    
+                /**
+                 * Verifies a Duration message.
+                 * @function verify
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                Duration.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.seconds != null && message.hasOwnProperty("seconds"))
+                        if (!$util.isInteger(message.seconds) && !(message.seconds && $util.isInteger(message.seconds.low) && $util.isInteger(message.seconds.high)))
+                            return "seconds: integer|Long expected";
+                    if (message.nanos != null && message.hasOwnProperty("nanos"))
+                        if (!$util.isInteger(message.nanos))
+                            return "nanos: integer expected";
+                    return null;
+                };
+    
+                /**
+                 * Creates a Duration message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {google.protobuf.Duration} Duration
+                 */
+                Duration.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.protobuf.Duration)
+                        return object;
+                    var message = new $root.google.protobuf.Duration();
+                    if (object.seconds != null)
+                        if ($util.Long)
+                            (message.seconds = $util.Long.fromValue(object.seconds)).unsigned = false;
+                        else if (typeof object.seconds === "string")
+                            message.seconds = parseInt(object.seconds, 10);
+                        else if (typeof object.seconds === "number")
+                            message.seconds = object.seconds;
+                        else if (typeof object.seconds === "object")
+                            message.seconds = new $util.LongBits(object.seconds.low >>> 0, object.seconds.high >>> 0).toNumber();
+                    if (object.nanos != null)
+                        message.nanos = object.nanos | 0;
+                    return message;
+                };
+    
+                /**
+                 * Creates a plain object from a Duration message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof google.protobuf.Duration
+                 * @static
+                 * @param {google.protobuf.Duration} message Duration
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                Duration.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        if ($util.Long) {
+                            var long = new $util.Long(0, 0, false);
+                            object.seconds = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                        } else
+                            object.seconds = options.longs === String ? "0" : 0;
+                        object.nanos = 0;
+                    }
+                    if (message.seconds != null && message.hasOwnProperty("seconds"))
+                        if (typeof message.seconds === "number")
+                            object.seconds = options.longs === String ? String(message.seconds) : message.seconds;
+                        else
+                            object.seconds = options.longs === String ? $util.Long.prototype.toString.call(message.seconds) : options.longs === Number ? new $util.LongBits(message.seconds.low >>> 0, message.seconds.high >>> 0).toNumber() : message.seconds;
+                    if (message.nanos != null && message.hasOwnProperty("nanos"))
+                        object.nanos = message.nanos;
+                    return object;
+                };
+    
+                /**
+                 * Converts this Duration to JSON.
+                 * @function toJSON
+                 * @memberof google.protobuf.Duration
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                Duration.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+    
+                return Duration;
             })();
     
             protobuf.Empty = (function() {

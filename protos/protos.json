@@ -11,183 +11,11 @@
                     "csharp_namespace": "Google.Cloud.Bigtable.Admin.V2",
                     "go_package": "google.golang.org/genproto/googleapis/bigtable/admin/v2;admin",
                     "java_multiple_files": true,
-                    "java_outer_classname": "BigtableTableAdminProto",
+                    "java_outer_classname": "TableProto",
                     "java_package": "com.google.bigtable.admin.v2",
                     "php_namespace": "Google\\Cloud\\Bigtable\\Admin\\V2"
                   },
                   "nested": {
-                    "Table": {
-                      "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/Table",
-                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}"
-                      },
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "clusterStates": {
-                          "keyType": "string",
-                          "type": "ClusterState",
-                          "id": 2
-                        },
-                        "columnFamilies": {
-                          "keyType": "string",
-                          "type": "ColumnFamily",
-                          "id": 3
-                        },
-                        "granularity": {
-                          "type": "TimestampGranularity",
-                          "id": 4
-                        }
-                      },
-                      "nested": {
-                        "ClusterState": {
-                          "fields": {
-                            "replicationState": {
-                              "type": "ReplicationState",
-                              "id": 1
-                            }
-                          },
-                          "nested": {
-                            "ReplicationState": {
-                              "values": {
-                                "STATE_NOT_KNOWN": 0,
-                                "INITIALIZING": 1,
-                                "PLANNED_MAINTENANCE": 2,
-                                "UNPLANNED_MAINTENANCE": 3,
-                                "READY": 4
-                              }
-                            }
-                          }
-                        },
-                        "TimestampGranularity": {
-                          "values": {
-                            "TIMESTAMP_GRANULARITY_UNSPECIFIED": 0,
-                            "MILLIS": 1
-                          }
-                        },
-                        "View": {
-                          "values": {
-                            "VIEW_UNSPECIFIED": 0,
-                            "NAME_ONLY": 1,
-                            "SCHEMA_VIEW": 2,
-                            "REPLICATION_VIEW": 3,
-                            "FULL": 4
-                          }
-                        }
-                      }
-                    },
-                    "ColumnFamily": {
-                      "fields": {
-                        "gcRule": {
-                          "type": "GcRule",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "GcRule": {
-                      "oneofs": {
-                        "rule": {
-                          "oneof": [
-                            "maxNumVersions",
-                            "maxAge",
-                            "intersection",
-                            "union"
-                          ]
-                        }
-                      },
-                      "fields": {
-                        "maxNumVersions": {
-                          "type": "int32",
-                          "id": 1
-                        },
-                        "maxAge": {
-                          "type": "google.protobuf.Duration",
-                          "id": 2
-                        },
-                        "intersection": {
-                          "type": "Intersection",
-                          "id": 3
-                        },
-                        "union": {
-                          "type": "Union",
-                          "id": 4
-                        }
-                      },
-                      "nested": {
-                        "Intersection": {
-                          "fields": {
-                            "rules": {
-                              "rule": "repeated",
-                              "type": "GcRule",
-                              "id": 1
-                            }
-                          }
-                        },
-                        "Union": {
-                          "fields": {
-                            "rules": {
-                              "rule": "repeated",
-                              "type": "GcRule",
-                              "id": 1
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "Snapshot": {
-                      "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/Snapshot",
-                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}"
-                      },
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "sourceTable": {
-                          "type": "Table",
-                          "id": 2
-                        },
-                        "dataSizeBytes": {
-                          "type": "int64",
-                          "id": 3
-                        },
-                        "createTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 4
-                        },
-                        "deleteTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 5
-                        },
-                        "state": {
-                          "type": "State",
-                          "id": 6
-                        },
-                        "description": {
-                          "type": "string",
-                          "id": 7
-                        }
-                      },
-                      "nested": {
-                        "State": {
-                          "values": {
-                            "STATE_NOT_KNOWN": 0,
-                            "READY": 1,
-                            "CREATING": 2
-                          }
-                        }
-                      }
-                    },
-                    "StorageType": {
-                      "values": {
-                        "STORAGE_TYPE_UNSPECIFIED": 0,
-                        "SSD": 1,
-                        "HDD": 2
-                      }
-                    },
                     "BigtableInstanceAdmin": {
                       "options": {
                         "(google.api.default_host)": "bigtableadmin.googleapis.com",
@@ -900,6 +728,13 @@
                         }
                       }
                     },
+                    "StorageType": {
+                      "values": {
+                        "STORAGE_TYPE_UNSPECIFIED": 0,
+                        "SSD": 1,
+                        "HDD": 2
+                      }
+                    },
                     "BigtableTableAdmin": {
                       "options": {
                         "(google.api.default_host)": "bigtableadmin.googleapis.com",
@@ -1433,6 +1268,171 @@
                         "finishTime": {
                           "type": "google.protobuf.Timestamp",
                           "id": 3
+                        }
+                      }
+                    },
+                    "Table": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Table",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "clusterStates": {
+                          "keyType": "string",
+                          "type": "ClusterState",
+                          "id": 2
+                        },
+                        "columnFamilies": {
+                          "keyType": "string",
+                          "type": "ColumnFamily",
+                          "id": 3
+                        },
+                        "granularity": {
+                          "type": "TimestampGranularity",
+                          "id": 4
+                        }
+                      },
+                      "nested": {
+                        "ClusterState": {
+                          "fields": {
+                            "replicationState": {
+                              "type": "ReplicationState",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "ReplicationState": {
+                              "values": {
+                                "STATE_NOT_KNOWN": 0,
+                                "INITIALIZING": 1,
+                                "PLANNED_MAINTENANCE": 2,
+                                "UNPLANNED_MAINTENANCE": 3,
+                                "READY": 4
+                              }
+                            }
+                          }
+                        },
+                        "TimestampGranularity": {
+                          "values": {
+                            "TIMESTAMP_GRANULARITY_UNSPECIFIED": 0,
+                            "MILLIS": 1
+                          }
+                        },
+                        "View": {
+                          "values": {
+                            "VIEW_UNSPECIFIED": 0,
+                            "NAME_ONLY": 1,
+                            "SCHEMA_VIEW": 2,
+                            "REPLICATION_VIEW": 3,
+                            "FULL": 4
+                          }
+                        }
+                      }
+                    },
+                    "ColumnFamily": {
+                      "fields": {
+                        "gcRule": {
+                          "type": "GcRule",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "GcRule": {
+                      "oneofs": {
+                        "rule": {
+                          "oneof": [
+                            "maxNumVersions",
+                            "maxAge",
+                            "intersection",
+                            "union"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "maxNumVersions": {
+                          "type": "int32",
+                          "id": 1
+                        },
+                        "maxAge": {
+                          "type": "google.protobuf.Duration",
+                          "id": 2
+                        },
+                        "intersection": {
+                          "type": "Intersection",
+                          "id": 3
+                        },
+                        "union": {
+                          "type": "Union",
+                          "id": 4
+                        }
+                      },
+                      "nested": {
+                        "Intersection": {
+                          "fields": {
+                            "rules": {
+                              "rule": "repeated",
+                              "type": "GcRule",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "Union": {
+                          "fields": {
+                            "rules": {
+                              "rule": "repeated",
+                              "type": "GcRule",
+                              "id": 1
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "Snapshot": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Snapshot",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "sourceTable": {
+                          "type": "Table",
+                          "id": 2
+                        },
+                        "dataSizeBytes": {
+                          "type": "int64",
+                          "id": 3
+                        },
+                        "createTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4
+                        },
+                        "deleteTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 5
+                        },
+                        "state": {
+                          "type": "State",
+                          "id": 6
+                        },
+                        "description": {
+                          "type": "string",
+                          "id": 7
+                        }
+                      },
+                      "nested": {
+                        "State": {
+                          "values": {
+                            "STATE_NOT_KNOWN": 0,
+                            "READY": 1,
+                            "CREATING": 2
+                          }
                         }
                       }
                     }
@@ -2263,7 +2263,7 @@
           "options": {
             "go_package": "google.golang.org/genproto/googleapis/api/annotations;annotations",
             "java_multiple_files": true,
-            "java_outer_classname": "ClientProto",
+            "java_outer_classname": "ResourceProto",
             "java_package": "com.google.api",
             "objc_class_prefix": "GAPI",
             "cc_enable_arenas": true
@@ -2356,6 +2356,22 @@
                 }
               }
             },
+            "methodSignature": {
+              "rule": "repeated",
+              "type": "string",
+              "id": 1051,
+              "extend": "google.protobuf.MethodOptions"
+            },
+            "defaultHost": {
+              "type": "string",
+              "id": 1049,
+              "extend": "google.protobuf.ServiceOptions"
+            },
+            "oauthScopes": {
+              "type": "string",
+              "id": 1050,
+              "extend": "google.protobuf.ServiceOptions"
+            },
             "fieldBehavior": {
               "rule": "repeated",
               "type": "google.api.FieldBehavior",
@@ -2437,22 +2453,6 @@
                   "id": 2
                 }
               }
-            },
-            "methodSignature": {
-              "rule": "repeated",
-              "type": "string",
-              "id": 1051,
-              "extend": "google.protobuf.MethodOptions"
-            },
-            "defaultHost": {
-              "type": "string",
-              "id": 1049,
-              "extend": "google.protobuf.ServiceOptions"
-            },
-            "oauthScopes": {
-              "type": "string",
-              "id": 1050,
-              "extend": "google.protobuf.ServiceOptions"
             }
           }
         },
@@ -3347,18 +3347,6 @@
                 }
               }
             },
-            "Duration": {
-              "fields": {
-                "seconds": {
-                  "type": "int64",
-                  "id": 1
-                },
-                "nanos": {
-                  "type": "int32",
-                  "id": 2
-                }
-              }
-            },
             "Timestamp": {
               "fields": {
                 "seconds": {
@@ -3379,6 +3367,18 @@
                 },
                 "value": {
                   "type": "bytes",
+                  "id": 2
+                }
+              }
+            },
+            "Duration": {
+              "fields": {
+                "seconds": {
+                  "type": "int64",
+                  "id": 1
+                },
+                "nanos": {
+                  "type": "int32",
                   "id": 2
                 }
               }
