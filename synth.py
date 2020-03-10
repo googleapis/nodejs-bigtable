@@ -9,7 +9,7 @@ version='v2'
 gapic = gcp.GAPICMicrogenerator()
 v2_library = gapic.typescript_library(
   'bigtable',
-  'v2',
+  version,
   generator_args={
     "grpc-service-config": f"google/bigtable/{version}/bigtable_grpc_service_config.json",
     "package-name": f"@google-cloud/bigtable",
@@ -29,7 +29,7 @@ s.copy(
 
 v2_library = gapic.typescript_library(
     "bigtable_admin",
-    "v2",
+    version,
     generator_args={
       "grpc-service-config": f"google/bigtable/admin/{version}/bigtableadmin_grpc_service_config.json",
       "package-name": f"@google-cloud/bigtable",
