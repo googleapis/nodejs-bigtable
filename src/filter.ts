@@ -847,7 +847,7 @@ export class Filter {
    * //-
    * // <h4>Value Ranges</h4>
    * //
-   * // Specifies a contigous range of values.
+   * // Specifies a contiguous range of values.
    * //
    * // When the `start` bound is omitted it is interpreted as an empty string.
    * // When the `end` bound is omitted it is interpreted as Infinity.
