@@ -1291,7 +1291,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
   /**
    * Returns a sample of row keys in the table. The returned row keys will delimit
-   * contigous sections of the table of approximately equal size, which can be
+   * contiguous sections of the table of approximately equal size, which can be
    * used to break up the data for distributed tasks like mapreduces.
    *
    * @param {object} [gaxOptions] Request configuration options, outlined here:

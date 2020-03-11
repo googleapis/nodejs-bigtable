@@ -11,12 +11,1271 @@
                     "csharp_namespace": "Google.Cloud.Bigtable.Admin.V2",
                     "go_package": "google.golang.org/genproto/googleapis/bigtable/admin/v2;admin",
                     "java_multiple_files": true,
-                    "java_outer_classname": "BigtableTableAdminProto",
+                    "java_outer_classname": "TableProto",
                     "java_package": "com.google.bigtable.admin.v2",
                     "php_namespace": "Google\\Cloud\\Bigtable\\Admin\\V2"
                   },
                   "nested": {
+                    "BigtableInstanceAdmin": {
+                      "options": {
+                        "(google.api.default_host)": "bigtableadmin.googleapis.com",
+                        "(google.api.oauth_scopes)": "https://www.googleapis.com/auth/bigtable.admin,https://www.googleapis.com/auth/bigtable.admin.cluster,https://www.googleapis.com/auth/bigtable.admin.instance,https://www.googleapis.com/auth/cloud-bigtable.admin,https://www.googleapis.com/auth/cloud-bigtable.admin.cluster,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only"
+                      },
+                      "methods": {
+                        "CreateInstance": {
+                          "requestType": "CreateInstanceRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*}/instances",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,instance_id,instance,clusters",
+                            "(google.longrunning.operation_info).response_type": "Instance",
+                            "(google.longrunning.operation_info).metadata_type": "CreateInstanceMetadata"
+                          }
+                        },
+                        "GetInstance": {
+                          "requestType": "GetInstanceRequest",
+                          "responseType": "Instance",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "ListInstances": {
+                          "requestType": "ListInstancesRequest",
+                          "responseType": "ListInstancesResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*}/instances",
+                            "(google.api.method_signature)": "parent"
+                          }
+                        },
+                        "UpdateInstance": {
+                          "requestType": "Instance",
+                          "responseType": "Instance",
+                          "options": {
+                            "(google.api.http).put": "/v2/{name=projects/*/instances/*}",
+                            "(google.api.http).body": "*"
+                          }
+                        },
+                        "PartialUpdateInstance": {
+                          "requestType": "PartialUpdateInstanceRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{instance.name=projects/*/instances/*}",
+                            "(google.api.http).body": "instance",
+                            "(google.api.method_signature)": "instance,update_mask",
+                            "(google.longrunning.operation_info).response_type": "Instance",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateInstanceMetadata"
+                          }
+                        },
+                        "DeleteInstance": {
+                          "requestType": "DeleteInstanceRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "CreateCluster": {
+                          "requestType": "CreateClusterRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/clusters",
+                            "(google.api.http).body": "cluster",
+                            "(google.api.method_signature)": "parent,cluster_id,cluster",
+                            "(google.longrunning.operation_info).response_type": "Cluster",
+                            "(google.longrunning.operation_info).metadata_type": "CreateClusterMetadata"
+                          }
+                        },
+                        "GetCluster": {
+                          "requestType": "GetClusterRequest",
+                          "responseType": "Cluster",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "ListClusters": {
+                          "requestType": "ListClustersRequest",
+                          "responseType": "ListClustersResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/clusters",
+                            "(google.api.method_signature)": "parent"
+                          }
+                        },
+                        "UpdateCluster": {
+                          "requestType": "Cluster",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).put": "/v2/{name=projects/*/instances/*/clusters/*}",
+                            "(google.api.http).body": "*",
+                            "(google.longrunning.operation_info).response_type": "Cluster",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateClusterMetadata"
+                          }
+                        },
+                        "DeleteCluster": {
+                          "requestType": "DeleteClusterRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "CreateAppProfile": {
+                          "requestType": "CreateAppProfileRequest",
+                          "responseType": "AppProfile",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/appProfiles",
+                            "(google.api.http).body": "app_profile",
+                            "(google.api.method_signature)": "parent,app_profile_id,app_profile"
+                          }
+                        },
+                        "GetAppProfile": {
+                          "requestType": "GetAppProfileRequest",
+                          "responseType": "AppProfile",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/appProfiles/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "ListAppProfiles": {
+                          "requestType": "ListAppProfilesRequest",
+                          "responseType": "ListAppProfilesResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/appProfiles",
+                            "(google.api.method_signature)": "parent"
+                          }
+                        },
+                        "UpdateAppProfile": {
+                          "requestType": "UpdateAppProfileRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{app_profile.name=projects/*/instances/*/appProfiles/*}",
+                            "(google.api.http).body": "app_profile",
+                            "(google.api.method_signature)": "app_profile,update_mask",
+                            "(google.longrunning.operation_info).response_type": "AppProfile",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateAppProfileMetadata"
+                          }
+                        },
+                        "DeleteAppProfile": {
+                          "requestType": "DeleteAppProfileRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/appProfiles/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "GetIamPolicy": {
+                          "requestType": "google.iam.v1.GetIamPolicyRequest",
+                          "responseType": "google.iam.v1.Policy",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:getIamPolicy",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource"
+                          }
+                        },
+                        "SetIamPolicy": {
+                          "requestType": "google.iam.v1.SetIamPolicyRequest",
+                          "responseType": "google.iam.v1.Policy",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:setIamPolicy",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource,policy"
+                          }
+                        },
+                        "TestIamPermissions": {
+                          "requestType": "google.iam.v1.TestIamPermissionsRequest",
+                          "responseType": "google.iam.v1.TestIamPermissionsResponse",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:testIamPermissions",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource,permissions"
+                          }
+                        }
+                      }
+                    },
+                    "CreateInstanceRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "cloudresourcemanager.googleapis.com/Project"
+                          }
+                        },
+                        "instanceId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "instance": {
+                          "type": "Instance",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "clusters": {
+                          "keyType": "string",
+                          "type": "Cluster",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "GetInstanceRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        }
+                      }
+                    },
+                    "ListInstancesRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "cloudresourcemanager.googleapis.com/Project"
+                          }
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "ListInstancesResponse": {
+                      "fields": {
+                        "instances": {
+                          "rule": "repeated",
+                          "type": "Instance",
+                          "id": 1
+                        },
+                        "failedLocations": {
+                          "rule": "repeated",
+                          "type": "string",
+                          "id": 2
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "PartialUpdateInstanceRequest": {
+                      "fields": {
+                        "instance": {
+                          "type": "Instance",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "DeleteInstanceRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        }
+                      }
+                    },
+                    "CreateClusterRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "clusterId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "cluster": {
+                          "type": "Cluster",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "GetClusterRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
+                        }
+                      }
+                    },
+                    "ListClustersRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "ListClustersResponse": {
+                      "fields": {
+                        "clusters": {
+                          "rule": "repeated",
+                          "type": "Cluster",
+                          "id": 1
+                        },
+                        "failedLocations": {
+                          "rule": "repeated",
+                          "type": "string",
+                          "id": 2
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "DeleteClusterRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
+                        }
+                      }
+                    },
+                    "CreateInstanceMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "CreateInstanceRequest",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "UpdateInstanceMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "PartialUpdateInstanceRequest",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "CreateClusterMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "CreateClusterRequest",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "UpdateClusterMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "Cluster",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "CreateAppProfileRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "appProfileId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "appProfile": {
+                          "type": "AppProfile",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "ignoreWarnings": {
+                          "type": "bool",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "GetAppProfileRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/AppProfile"
+                          }
+                        }
+                      }
+                    },
+                    "ListAppProfilesRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "pageSize": {
+                          "type": "int32",
+                          "id": 3
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "ListAppProfilesResponse": {
+                      "fields": {
+                        "appProfiles": {
+                          "rule": "repeated",
+                          "type": "AppProfile",
+                          "id": 1
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "failedLocations": {
+                          "rule": "repeated",
+                          "type": "string",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "UpdateAppProfileRequest": {
+                      "fields": {
+                        "appProfile": {
+                          "type": "AppProfile",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "ignoreWarnings": {
+                          "type": "bool",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "DeleteAppProfileRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/AppProfile"
+                          }
+                        },
+                        "ignoreWarnings": {
+                          "type": "bool",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "UpdateAppProfileMetadata": {
+                      "fields": {}
+                    },
+                    "Instance": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Instance",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "displayName": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "state": {
+                          "type": "State",
+                          "id": 3
+                        },
+                        "type": {
+                          "type": "Type",
+                          "id": 4
+                        },
+                        "labels": {
+                          "keyType": "string",
+                          "type": "string",
+                          "id": 5
+                        }
+                      },
+                      "nested": {
+                        "State": {
+                          "values": {
+                            "STATE_NOT_KNOWN": 0,
+                            "READY": 1,
+                            "CREATING": 2
+                          }
+                        },
+                        "Type": {
+                          "values": {
+                            "TYPE_UNSPECIFIED": 0,
+                            "PRODUCTION": 1,
+                            "DEVELOPMENT": 2
+                          }
+                        }
+                      }
+                    },
+                    "Cluster": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Cluster",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "location": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.resource_reference).type": "locations.googleapis.com/Location"
+                          }
+                        },
+                        "state": {
+                          "type": "State",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "serveNodes": {
+                          "type": "int32",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "defaultStorageType": {
+                          "type": "StorageType",
+                          "id": 5
+                        }
+                      },
+                      "nested": {
+                        "State": {
+                          "values": {
+                            "STATE_NOT_KNOWN": 0,
+                            "READY": 1,
+                            "CREATING": 2,
+                            "RESIZING": 3,
+                            "DISABLED": 4
+                          }
+                        }
+                      }
+                    },
+                    "AppProfile": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/AppProfile",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/appProfiles/{app_profile}"
+                      },
+                      "oneofs": {
+                        "routingPolicy": {
+                          "oneof": [
+                            "multiClusterRoutingUseAny",
+                            "singleClusterRouting"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "etag": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "description": {
+                          "type": "string",
+                          "id": 3
+                        },
+                        "multiClusterRoutingUseAny": {
+                          "type": "MultiClusterRoutingUseAny",
+                          "id": 5
+                        },
+                        "singleClusterRouting": {
+                          "type": "SingleClusterRouting",
+                          "id": 6
+                        }
+                      },
+                      "nested": {
+                        "MultiClusterRoutingUseAny": {
+                          "fields": {}
+                        },
+                        "SingleClusterRouting": {
+                          "fields": {
+                            "clusterId": {
+                              "type": "string",
+                              "id": 1
+                            },
+                            "allowTransactionalWrites": {
+                              "type": "bool",
+                              "id": 2
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "StorageType": {
+                      "values": {
+                        "STORAGE_TYPE_UNSPECIFIED": 0,
+                        "SSD": 1,
+                        "HDD": 2
+                      }
+                    },
+                    "BigtableTableAdmin": {
+                      "options": {
+                        "(google.api.default_host)": "bigtableadmin.googleapis.com",
+                        "(google.api.oauth_scopes)": "https://www.googleapis.com/auth/bigtable.admin,https://www.googleapis.com/auth/bigtable.admin.table,https://www.googleapis.com/auth/cloud-bigtable.admin,https://www.googleapis.com/auth/cloud-bigtable.admin.table,https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only"
+                      },
+                      "methods": {
+                        "CreateTable": {
+                          "requestType": "CreateTableRequest",
+                          "responseType": "Table",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/tables",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,table_id,table"
+                          }
+                        },
+                        "CreateTableFromSnapshot": {
+                          "requestType": "CreateTableFromSnapshotRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/tables:createFromSnapshot",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,table_id,source_snapshot",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "CreateTableFromSnapshotMetadata"
+                          }
+                        },
+                        "ListTables": {
+                          "requestType": "ListTablesRequest",
+                          "responseType": "ListTablesResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/tables",
+                            "(google.api.method_signature)": "parent"
+                          }
+                        },
+                        "GetTable": {
+                          "requestType": "GetTableRequest",
+                          "responseType": "Table",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/tables/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "DeleteTable": {
+                          "requestType": "DeleteTableRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/tables/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "ModifyColumnFamilies": {
+                          "requestType": "ModifyColumnFamiliesRequest",
+                          "responseType": "Table",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:modifyColumnFamilies",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name,modifications"
+                          }
+                        },
+                        "DropRowRange": {
+                          "requestType": "DropRowRangeRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:dropRowRange",
+                            "(google.api.http).body": "*"
+                          }
+                        },
+                        "GenerateConsistencyToken": {
+                          "requestType": "GenerateConsistencyTokenRequest",
+                          "responseType": "GenerateConsistencyTokenResponse",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:generateConsistencyToken",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "CheckConsistency": {
+                          "requestType": "CheckConsistencyRequest",
+                          "responseType": "CheckConsistencyResponse",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:checkConsistency",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name,consistency_token"
+                          }
+                        },
+                        "SnapshotTable": {
+                          "requestType": "SnapshotTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:snapshot",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name,cluster,snapshot_id,description",
+                            "(google.longrunning.operation_info).response_type": "Snapshot",
+                            "(google.longrunning.operation_info).metadata_type": "SnapshotTableMetadata"
+                          }
+                        },
+                        "GetSnapshot": {
+                          "requestType": "GetSnapshotRequest",
+                          "responseType": "Snapshot",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "ListSnapshots": {
+                          "requestType": "ListSnapshotsRequest",
+                          "responseType": "ListSnapshotsResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/snapshots",
+                            "(google.api.method_signature)": "parent"
+                          }
+                        },
+                        "DeleteSnapshot": {
+                          "requestType": "DeleteSnapshotRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}",
+                            "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "GetIamPolicy": {
+                          "requestType": "google.iam.v1.GetIamPolicyRequest",
+                          "responseType": "google.iam.v1.Policy",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "resource"
+                          }
+                        },
+                        "SetIamPolicy": {
+                          "requestType": "google.iam.v1.SetIamPolicyRequest",
+                          "responseType": "google.iam.v1.Policy",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
+                            "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:setIamPolicy",
+                            "(google.api.http).additional_bindings.body": "*",
+                            "(google.api.method_signature)": "resource,policy"
+                          }
+                        },
+                        "TestIamPermissions": {
+                          "requestType": "google.iam.v1.TestIamPermissionsRequest",
+                          "responseType": "google.iam.v1.TestIamPermissionsResponse",
+                          "options": {
+                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
+                            "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:testIamPermissions",
+                            "(google.api.http).additional_bindings.body": "*",
+                            "(google.api.method_signature)": "resource,permissions"
+                          }
+                        }
+                      }
+                    },
+                    "CreateTableRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "tableId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "table": {
+                          "type": "Table",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "initialSplits": {
+                          "rule": "repeated",
+                          "type": "Split",
+                          "id": 4
+                        }
+                      },
+                      "nested": {
+                        "Split": {
+                          "fields": {
+                            "key": {
+                              "type": "bytes",
+                              "id": 1
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "CreateTableFromSnapshotRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "tableId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "sourceSnapshot": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                          }
+                        }
+                      }
+                    },
+                    "DropRowRangeRequest": {
+                      "oneofs": {
+                        "target": {
+                          "oneof": [
+                            "rowKeyPrefix",
+                            "deleteAllDataFromTable"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
+                        },
+                        "rowKeyPrefix": {
+                          "type": "bytes",
+                          "id": 2
+                        },
+                        "deleteAllDataFromTable": {
+                          "type": "bool",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "ListTablesRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "view": {
+                          "type": "Table.View",
+                          "id": 2
+                        },
+                        "pageSize": {
+                          "type": "int32",
+                          "id": 4
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "ListTablesResponse": {
+                      "fields": {
+                        "tables": {
+                          "rule": "repeated",
+                          "type": "Table",
+                          "id": 1
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "GetTableRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
+                        },
+                        "view": {
+                          "type": "Table.View",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "DeleteTableRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
+                        }
+                      }
+                    },
+                    "ModifyColumnFamiliesRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
+                        },
+                        "modifications": {
+                          "rule": "repeated",
+                          "type": "Modification",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      },
+                      "nested": {
+                        "Modification": {
+                          "oneofs": {
+                            "mod": {
+                              "oneof": [
+                                "create",
+                                "update",
+                                "drop"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "id": {
+                              "type": "string",
+                              "id": 1
+                            },
+                            "create": {
+                              "type": "ColumnFamily",
+                              "id": 2
+                            },
+                            "update": {
+                              "type": "ColumnFamily",
+                              "id": 3
+                            },
+                            "drop": {
+                              "type": "bool",
+                              "id": 4
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "GenerateConsistencyTokenRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
+                        }
+                      }
+                    },
+                    "GenerateConsistencyTokenResponse": {
+                      "fields": {
+                        "consistencyToken": {
+                          "type": "string",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "CheckConsistencyRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
+                        },
+                        "consistencyToken": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CheckConsistencyResponse": {
+                      "fields": {
+                        "consistent": {
+                          "type": "bool",
+                          "id": 1
+                        }
+                      }
+                    },
+                    "SnapshotTableRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                          }
+                        },
+                        "cluster": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
+                        },
+                        "snapshotId": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "ttl": {
+                          "type": "google.protobuf.Duration",
+                          "id": 4
+                        },
+                        "description": {
+                          "type": "string",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "GetSnapshotRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                          }
+                        }
+                      }
+                    },
+                    "ListSnapshotsRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
+                        },
+                        "pageSize": {
+                          "type": "int32",
+                          "id": 2
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "ListSnapshotsResponse": {
+                      "fields": {
+                        "snapshots": {
+                          "rule": "repeated",
+                          "type": "Snapshot",
+                          "id": 1
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "DeleteSnapshotRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                          }
+                        }
+                      }
+                    },
+                    "SnapshotTableMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "SnapshotTableRequest",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "CreateTableFromSnapshotMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "CreateTableFromSnapshotRequest",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
                     "Table": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Table",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}"
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -133,6 +1392,10 @@
                       }
                     },
                     "Snapshot": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Snapshot",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}"
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -170,1014 +1433,6 @@
                             "READY": 1,
                             "CREATING": 2
                           }
-                        }
-                      }
-                    },
-                    "StorageType": {
-                      "values": {
-                        "STORAGE_TYPE_UNSPECIFIED": 0,
-                        "SSD": 1,
-                        "HDD": 2
-                      }
-                    },
-                    "BigtableInstanceAdmin": {
-                      "methods": {
-                        "CreateInstance": {
-                          "requestType": "CreateInstanceRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).post": "/v2/{parent=projects/*}/instances",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "GetInstance": {
-                          "requestType": "GetInstanceRequest",
-                          "responseType": "Instance",
-                          "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*}"
-                          }
-                        },
-                        "ListInstances": {
-                          "requestType": "ListInstancesRequest",
-                          "responseType": "ListInstancesResponse",
-                          "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*}/instances"
-                          }
-                        },
-                        "UpdateInstance": {
-                          "requestType": "Instance",
-                          "responseType": "Instance",
-                          "options": {
-                            "(google.api.http).put": "/v2/{name=projects/*/instances/*}",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "PartialUpdateInstance": {
-                          "requestType": "PartialUpdateInstanceRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).patch": "/v2/{instance.name=projects/*/instances/*}",
-                            "(google.api.http).body": "instance"
-                          }
-                        },
-                        "DeleteInstance": {
-                          "requestType": "DeleteInstanceRequest",
-                          "responseType": "google.protobuf.Empty",
-                          "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*}"
-                          }
-                        },
-                        "CreateCluster": {
-                          "requestType": "CreateClusterRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/clusters",
-                            "(google.api.http).body": "cluster"
-                          }
-                        },
-                        "GetCluster": {
-                          "requestType": "GetClusterRequest",
-                          "responseType": "Cluster",
-                          "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*}"
-                          }
-                        },
-                        "ListClusters": {
-                          "requestType": "ListClustersRequest",
-                          "responseType": "ListClustersResponse",
-                          "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/clusters"
-                          }
-                        },
-                        "UpdateCluster": {
-                          "requestType": "Cluster",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).put": "/v2/{name=projects/*/instances/*/clusters/*}",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "DeleteCluster": {
-                          "requestType": "DeleteClusterRequest",
-                          "responseType": "google.protobuf.Empty",
-                          "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*}"
-                          }
-                        },
-                        "CreateAppProfile": {
-                          "requestType": "CreateAppProfileRequest",
-                          "responseType": "AppProfile",
-                          "options": {
-                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/appProfiles",
-                            "(google.api.http).body": "app_profile"
-                          }
-                        },
-                        "GetAppProfile": {
-                          "requestType": "GetAppProfileRequest",
-                          "responseType": "AppProfile",
-                          "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/appProfiles/*}"
-                          }
-                        },
-                        "ListAppProfiles": {
-                          "requestType": "ListAppProfilesRequest",
-                          "responseType": "ListAppProfilesResponse",
-                          "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/appProfiles"
-                          }
-                        },
-                        "UpdateAppProfile": {
-                          "requestType": "UpdateAppProfileRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).patch": "/v2/{app_profile.name=projects/*/instances/*/appProfiles/*}",
-                            "(google.api.http).body": "app_profile"
-                          }
-                        },
-                        "DeleteAppProfile": {
-                          "requestType": "DeleteAppProfileRequest",
-                          "responseType": "google.protobuf.Empty",
-                          "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/appProfiles/*}"
-                          }
-                        },
-                        "GetIamPolicy": {
-                          "requestType": "google.iam.v1.GetIamPolicyRequest",
-                          "responseType": "google.iam.v1.Policy",
-                          "options": {
-                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:getIamPolicy",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "SetIamPolicy": {
-                          "requestType": "google.iam.v1.SetIamPolicyRequest",
-                          "responseType": "google.iam.v1.Policy",
-                          "options": {
-                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:setIamPolicy",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "TestIamPermissions": {
-                          "requestType": "google.iam.v1.TestIamPermissionsRequest",
-                          "responseType": "google.iam.v1.TestIamPermissionsResponse",
-                          "options": {
-                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*}:testIamPermissions",
-                            "(google.api.http).body": "*"
-                          }
-                        }
-                      }
-                    },
-                    "CreateInstanceRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "instanceId": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "instance": {
-                          "type": "Instance",
-                          "id": 3
-                        },
-                        "clusters": {
-                          "keyType": "string",
-                          "type": "Cluster",
-                          "id": 4
-                        }
-                      }
-                    },
-                    "GetInstanceRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "ListInstancesRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "pageToken": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "ListInstancesResponse": {
-                      "fields": {
-                        "instances": {
-                          "rule": "repeated",
-                          "type": "Instance",
-                          "id": 1
-                        },
-                        "failedLocations": {
-                          "rule": "repeated",
-                          "type": "string",
-                          "id": 2
-                        },
-                        "nextPageToken": {
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "PartialUpdateInstanceRequest": {
-                      "fields": {
-                        "instance": {
-                          "type": "Instance",
-                          "id": 1
-                        },
-                        "updateMask": {
-                          "type": "google.protobuf.FieldMask",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "DeleteInstanceRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "CreateClusterRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "clusterId": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "cluster": {
-                          "type": "Cluster",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "GetClusterRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "ListClustersRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "pageToken": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "ListClustersResponse": {
-                      "fields": {
-                        "clusters": {
-                          "rule": "repeated",
-                          "type": "Cluster",
-                          "id": 1
-                        },
-                        "failedLocations": {
-                          "rule": "repeated",
-                          "type": "string",
-                          "id": 2
-                        },
-                        "nextPageToken": {
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "DeleteClusterRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "CreateInstanceMetadata": {
-                      "fields": {
-                        "originalRequest": {
-                          "type": "CreateInstanceRequest",
-                          "id": 1
-                        },
-                        "requestTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "finishTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "UpdateInstanceMetadata": {
-                      "fields": {
-                        "originalRequest": {
-                          "type": "PartialUpdateInstanceRequest",
-                          "id": 1
-                        },
-                        "requestTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "finishTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "CreateClusterMetadata": {
-                      "fields": {
-                        "originalRequest": {
-                          "type": "CreateClusterRequest",
-                          "id": 1
-                        },
-                        "requestTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "finishTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "UpdateClusterMetadata": {
-                      "fields": {
-                        "originalRequest": {
-                          "type": "Cluster",
-                          "id": 1
-                        },
-                        "requestTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "finishTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "CreateAppProfileRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "appProfileId": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "appProfile": {
-                          "type": "AppProfile",
-                          "id": 3
-                        },
-                        "ignoreWarnings": {
-                          "type": "bool",
-                          "id": 4
-                        }
-                      }
-                    },
-                    "GetAppProfileRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "ListAppProfilesRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "pageSize": {
-                          "type": "int32",
-                          "id": 3
-                        },
-                        "pageToken": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "ListAppProfilesResponse": {
-                      "fields": {
-                        "appProfiles": {
-                          "rule": "repeated",
-                          "type": "AppProfile",
-                          "id": 1
-                        },
-                        "nextPageToken": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "failedLocations": {
-                          "rule": "repeated",
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "UpdateAppProfileRequest": {
-                      "fields": {
-                        "appProfile": {
-                          "type": "AppProfile",
-                          "id": 1
-                        },
-                        "updateMask": {
-                          "type": "google.protobuf.FieldMask",
-                          "id": 2
-                        },
-                        "ignoreWarnings": {
-                          "type": "bool",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "DeleteAppProfileRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "ignoreWarnings": {
-                          "type": "bool",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "UpdateAppProfileMetadata": {
-                      "fields": {}
-                    },
-                    "Instance": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "displayName": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "state": {
-                          "type": "State",
-                          "id": 3
-                        },
-                        "type": {
-                          "type": "Type",
-                          "id": 4
-                        },
-                        "labels": {
-                          "keyType": "string",
-                          "type": "string",
-                          "id": 5
-                        }
-                      },
-                      "nested": {
-                        "State": {
-                          "values": {
-                            "STATE_NOT_KNOWN": 0,
-                            "READY": 1,
-                            "CREATING": 2
-                          }
-                        },
-                        "Type": {
-                          "values": {
-                            "TYPE_UNSPECIFIED": 0,
-                            "PRODUCTION": 1,
-                            "DEVELOPMENT": 2
-                          }
-                        }
-                      }
-                    },
-                    "Cluster": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "location": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "state": {
-                          "type": "State",
-                          "id": 3
-                        },
-                        "serveNodes": {
-                          "type": "int32",
-                          "id": 4
-                        },
-                        "defaultStorageType": {
-                          "type": "StorageType",
-                          "id": 5
-                        }
-                      },
-                      "nested": {
-                        "State": {
-                          "values": {
-                            "STATE_NOT_KNOWN": 0,
-                            "READY": 1,
-                            "CREATING": 2,
-                            "RESIZING": 3,
-                            "DISABLED": 4
-                          }
-                        }
-                      }
-                    },
-                    "AppProfile": {
-                      "oneofs": {
-                        "routingPolicy": {
-                          "oneof": [
-                            "multiClusterRoutingUseAny",
-                            "singleClusterRouting"
-                          ]
-                        }
-                      },
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "etag": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "description": {
-                          "type": "string",
-                          "id": 3
-                        },
-                        "multiClusterRoutingUseAny": {
-                          "type": "MultiClusterRoutingUseAny",
-                          "id": 5
-                        },
-                        "singleClusterRouting": {
-                          "type": "SingleClusterRouting",
-                          "id": 6
-                        }
-                      },
-                      "nested": {
-                        "MultiClusterRoutingUseAny": {
-                          "fields": {}
-                        },
-                        "SingleClusterRouting": {
-                          "fields": {
-                            "clusterId": {
-                              "type": "string",
-                              "id": 1
-                            },
-                            "allowTransactionalWrites": {
-                              "type": "bool",
-                              "id": 2
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "BigtableTableAdmin": {
-                      "methods": {
-                        "CreateTable": {
-                          "requestType": "CreateTableRequest",
-                          "responseType": "Table",
-                          "options": {
-                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/tables",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "CreateTableFromSnapshot": {
-                          "requestType": "CreateTableFromSnapshotRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/tables:createFromSnapshot",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "ListTables": {
-                          "requestType": "ListTablesRequest",
-                          "responseType": "ListTablesResponse",
-                          "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*}/tables"
-                          }
-                        },
-                        "GetTable": {
-                          "requestType": "GetTableRequest",
-                          "responseType": "Table",
-                          "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/tables/*}"
-                          }
-                        },
-                        "DeleteTable": {
-                          "requestType": "DeleteTableRequest",
-                          "responseType": "google.protobuf.Empty",
-                          "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/tables/*}"
-                          }
-                        },
-                        "ModifyColumnFamilies": {
-                          "requestType": "ModifyColumnFamiliesRequest",
-                          "responseType": "Table",
-                          "options": {
-                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:modifyColumnFamilies",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "DropRowRange": {
-                          "requestType": "DropRowRangeRequest",
-                          "responseType": "google.protobuf.Empty",
-                          "options": {
-                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:dropRowRange",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "GenerateConsistencyToken": {
-                          "requestType": "GenerateConsistencyTokenRequest",
-                          "responseType": "GenerateConsistencyTokenResponse",
-                          "options": {
-                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:generateConsistencyToken",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "CheckConsistency": {
-                          "requestType": "CheckConsistencyRequest",
-                          "responseType": "CheckConsistencyResponse",
-                          "options": {
-                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:checkConsistency",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "SnapshotTable": {
-                          "requestType": "SnapshotTableRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:snapshot",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "GetSnapshot": {
-                          "requestType": "GetSnapshotRequest",
-                          "responseType": "Snapshot",
-                          "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}"
-                          }
-                        },
-                        "ListSnapshots": {
-                          "requestType": "ListSnapshotsRequest",
-                          "responseType": "ListSnapshotsResponse",
-                          "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/snapshots"
-                          }
-                        },
-                        "DeleteSnapshot": {
-                          "requestType": "DeleteSnapshotRequest",
-                          "responseType": "google.protobuf.Empty",
-                          "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}"
-                          }
-                        },
-                        "GetIamPolicy": {
-                          "requestType": "google.iam.v1.GetIamPolicyRequest",
-                          "responseType": "google.iam.v1.Policy",
-                          "options": {
-                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "SetIamPolicy": {
-                          "requestType": "google.iam.v1.SetIamPolicyRequest",
-                          "responseType": "google.iam.v1.Policy",
-                          "options": {
-                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:setIamPolicy",
-                            "(google.api.http).body": "*"
-                          }
-                        },
-                        "TestIamPermissions": {
-                          "requestType": "google.iam.v1.TestIamPermissionsRequest",
-                          "responseType": "google.iam.v1.TestIamPermissionsResponse",
-                          "options": {
-                            "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:testIamPermissions",
-                            "(google.api.http).body": "*"
-                          }
-                        }
-                      }
-                    },
-                    "CreateTableRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "tableId": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "table": {
-                          "type": "Table",
-                          "id": 3
-                        },
-                        "initialSplits": {
-                          "rule": "repeated",
-                          "type": "Split",
-                          "id": 4
-                        }
-                      },
-                      "nested": {
-                        "Split": {
-                          "fields": {
-                            "key": {
-                              "type": "bytes",
-                              "id": 1
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "CreateTableFromSnapshotRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "tableId": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "sourceSnapshot": {
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "DropRowRangeRequest": {
-                      "oneofs": {
-                        "target": {
-                          "oneof": [
-                            "rowKeyPrefix",
-                            "deleteAllDataFromTable"
-                          ]
-                        }
-                      },
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "rowKeyPrefix": {
-                          "type": "bytes",
-                          "id": 2
-                        },
-                        "deleteAllDataFromTable": {
-                          "type": "bool",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "ListTablesRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "view": {
-                          "type": "Table.View",
-                          "id": 2
-                        },
-                        "pageSize": {
-                          "type": "int32",
-                          "id": 4
-                        },
-                        "pageToken": {
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "ListTablesResponse": {
-                      "fields": {
-                        "tables": {
-                          "rule": "repeated",
-                          "type": "Table",
-                          "id": 1
-                        },
-                        "nextPageToken": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "GetTableRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "view": {
-                          "type": "Table.View",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "DeleteTableRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "ModifyColumnFamiliesRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "modifications": {
-                          "rule": "repeated",
-                          "type": "Modification",
-                          "id": 2
-                        }
-                      },
-                      "nested": {
-                        "Modification": {
-                          "oneofs": {
-                            "mod": {
-                              "oneof": [
-                                "create",
-                                "update",
-                                "drop"
-                              ]
-                            }
-                          },
-                          "fields": {
-                            "id": {
-                              "type": "string",
-                              "id": 1
-                            },
-                            "create": {
-                              "type": "ColumnFamily",
-                              "id": 2
-                            },
-                            "update": {
-                              "type": "ColumnFamily",
-                              "id": 3
-                            },
-                            "drop": {
-                              "type": "bool",
-                              "id": 4
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "GenerateConsistencyTokenRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "GenerateConsistencyTokenResponse": {
-                      "fields": {
-                        "consistencyToken": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "CheckConsistencyRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "consistencyToken": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "CheckConsistencyResponse": {
-                      "fields": {
-                        "consistent": {
-                          "type": "bool",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "SnapshotTableRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "cluster": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "snapshotId": {
-                          "type": "string",
-                          "id": 3
-                        },
-                        "ttl": {
-                          "type": "google.protobuf.Duration",
-                          "id": 4
-                        },
-                        "description": {
-                          "type": "string",
-                          "id": 5
-                        }
-                      }
-                    },
-                    "GetSnapshotRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "ListSnapshotsRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "pageSize": {
-                          "type": "int32",
-                          "id": 2
-                        },
-                        "pageToken": {
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "ListSnapshotsResponse": {
-                      "fields": {
-                        "snapshots": {
-                          "rule": "repeated",
-                          "type": "Snapshot",
-                          "id": 1
-                        },
-                        "nextPageToken": {
-                          "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "DeleteSnapshotRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        }
-                      }
-                    },
-                    "SnapshotTableMetadata": {
-                      "fields": {
-                        "originalRequest": {
-                          "type": "SnapshotTableRequest",
-                          "id": 1
-                        },
-                        "requestTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "finishTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "CreateTableFromSnapshotMetadata": {
-                      "fields": {
-                        "originalRequest": {
-                          "type": "CreateTableFromSnapshotRequest",
-                          "id": 1
-                        },
-                        "requestTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "finishTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
                         }
                       }
                     }
@@ -3092,18 +3347,6 @@
                 }
               }
             },
-            "Duration": {
-              "fields": {
-                "seconds": {
-                  "type": "int64",
-                  "id": 1
-                },
-                "nanos": {
-                  "type": "int32",
-                  "id": 2
-                }
-              }
-            },
             "Timestamp": {
               "fields": {
                 "seconds": {
@@ -3124,6 +3367,18 @@
                 },
                 "value": {
                   "type": "bytes",
+                  "id": 2
+                }
+              }
+            },
+            "Duration": {
+              "fields": {
+                "seconds": {
+                  "type": "int64",
+                  "id": 1
+                },
+                "nanos": {
+                  "type": "int32",
                   "id": 2
                 }
               }
