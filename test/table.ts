@@ -95,7 +95,7 @@ describe('Bigtable/Table', function() {
   let TABLE_NAME;
 
   let Table: typeof tblTypes.Table;
-  let table: tblTypes.Table;
+  let table: any;
 
   before(function() {
     Table = proxyquire('../src/table.js', {

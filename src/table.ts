@@ -17,6 +17,7 @@
 import * as common from '@google-cloud/common';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
+import {ServiceError} from '@grpc/grpc-js';
 import {decorateStatus} from './decorateStatus';
 
 const concat = require('concat-stream');
@@ -24,12 +25,23 @@ import * as is from 'is';
 const pumpify = require('pumpify');
 import * as through from 'through2';
 
-import {Family} from './family';
+import {
+  Family,
+  CreateFamilyOptions,
+  CreateFamilyCallback,
+  CreateFamilyResponse,
+  IColumnFamily,
+} from './family';
 import {Filter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
+import {Bigtable} from '.';
+import {Instance} from './instance';
+import {google} from '../proto/bigtable';
+import {Duplex} from 'stream';
+import {Service} from 'protobufjs';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -62,7 +74,7 @@ const IGNORED_STATUS_CODES = new Set([1]);
 export interface Policy {
   version?: number;
   bindings?: PolicyBinding[];
-  etag?: string;
+  etag?: Buffer | string;
 }
 
 /**
@@ -145,6 +157,196 @@ export interface TestIamPermissionsCallback {
  */
 export type TestIamPermissionsResponse = [string[]];
 
+export interface CreateTableOptions {
+  families?: {} | string[];
+  gaxOptions?: CallOptions;
+  splits?: string[];
+}
+export type CreateTableCallback = (
+  err: ServiceError | null,
+  table?: Table,
+  apiResponse?: google.bigtable.admin.v2.Table
+) => void;
+export type CreateTableResponse = [Table, google.bigtable.admin.v2.Table];
+
+export type TableExistsCallback = (
+  err: ServiceError | null,
+  exists?: boolean
+) => void;
+export type TableExistsResponse = [boolean];
+
+export interface GetRowsOptions {
+  /**
+   * If set to `false` it will not decode Buffer values returned from Bigtable.
+   */
+  decode?: boolean;
+
+  /**
+   * The encoding to use when converting Buffer values to a string.
+   */
+  encoding?: string;
+
+  /**
+   * End value for key range.
+   */
+  end?: string;
+
+  /**
+   * Row filters allow you to both make advanced queries and format how the data is returned.
+   */
+  filter?: Filter;
+
+  /**
+   * Request configuration options, outlined here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   */
+  gaxOptions?: CallOptions;
+
+  /**
+   * A list of row keys.
+   */
+  keys?: string[];
+
+  /**
+   * Maximum number of rows to be returned.
+   */
+  limit?: number;
+
+  /**
+   * Prefix that the row key must match.
+   */
+  prefix?: string;
+
+  /**
+   * List of prefixes that a row key must match.
+   */
+  prefixes?: string[];
+
+  /**
+   * A list of key ranges.
+   */
+  ranges?: PrefixRange[];
+
+  /**
+   * Start value for key range.
+   */
+  start?: string;
+}
+
+export interface GetMetadataOptions {
+  /**
+   * Request configuration options, outlined here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   */
+  gaxOptions?: CallOptions;
+
+  /**
+   * The view to be applied to the table fields.
+   */
+  view?: string;
+}
+
+export interface GetTableOptions {
+  /**
+   * Automatically create the instance if it does not already exist.
+   */
+  autoCreate?: boolean;
+
+  /**
+   * Request configuration options, outlined here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   */
+  gaxOptions?: CallOptions;
+}
+
+export interface MutateOptions {
+  /**
+   * Request configuration options, outlined here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   */
+  gaxOptions?: CallOptions;
+  /**
+   * If set to `true` will treat entriesmas a raw Mutation object. See {@link Mutation#parse}.
+   */
+  rawMutation?: boolean;
+}
+
+export type Entry = Array<{}>;
+
+export type DeleteTableCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type DeleteTableResponse = [google.protobuf.Empty];
+export type CheckConsistencyCallback = (
+  err: ServiceError | null,
+  consistent?: boolean
+) => void;
+export type CheckConsistencyResponse = [boolean];
+export type GenerateConsistencyTokenCallback = (
+  err: ServiceError | null,
+  token?: string
+) => void;
+export type GenerateConsistencyTokenResponse = [string];
+export type WaitForReplicationCallback = (
+  err: ServiceError | null,
+  wait?: boolean
+) => void;
+export type WaitForReplicationResponse = [boolean];
+export type TruncateCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type TruncateResponse = [google.protobuf.Empty];
+export type SampleRowKeysCallback = (
+  err: ServiceError | null,
+  keys?: string[]
+) => void;
+export type SampleRowsKeysResponse = [string[]];
+export type DeleteRowsCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type DeleteRowsResponse = [google.protobuf.Empty];
+export type GetMetadataCallback = (
+  err: ServiceError | null,
+  apiResponse: google.bigtable.admin.v2.ITable
+) => void;
+export type GetMetadataResponse = [google.bigtable.admin.v2.Table];
+export type GetTableCallback = (
+  err: ServiceError | null,
+  table?: Table,
+  apiResponse?: google.bigtable.admin.v2.ITable
+) => void;
+export type GetTableResponse = [Table, google.bigtable.admin.v2.Table];
+export type GetFamiliesCallback = (
+  err: ServiceError | null,
+  families?: Family[],
+  apiResponse?: IColumnFamily
+) => void;
+export type GetFamiliesResponse = [Family[], IColumnFamily];
+export type GetReplicationStatesCallback = (
+  err: ServiceError | null,
+  clusterStates?: Map<string, google.bigtable.admin.v2.Table.IClusterState>,
+  apiResponse?: {}
+) => void;
+export type GetReplicationStatesResponse = [
+  Map<string, google.bigtable.admin.v2.Table.IClusterState>,
+  google.bigtable.admin.v2.ITable
+];
+export type GetRowsCallback = (
+  err: ServiceError | null,
+  rows?: Row[],
+  apiResponse?: google.bigtable.v2.ReadRowsResponse
+) => void;
+export type GetRowsResponse = [Row[], google.bigtable.v2.ReadRowsResponse];
+export type InsertRowsCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type InsertRowsResponse = [google.protobuf.Empty];
+export type MutateCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type MutateResponse = [google.protobuf.Empty];
+
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
  *
@@ -159,13 +361,13 @@ export type TestIamPermissionsResponse = [string[]];
  * const table = instance.table('prezzy');
  */
 export class Table {
-  bigtable;
-  instance;
-  name;
-  id;
-  metadata;
-  maxRetries;
-  constructor(instance, id) {
+  bigtable: Bigtable;
+  instance: Instance;
+  name: string;
+  id: string;
+  metadata?: {};
+  maxRetries?: number;
+  constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
 
@@ -183,7 +385,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     }
 
     this.name = name;
-    this.id = name.split('/').pop();
+    this.id = name.split('/').pop()!;
   }
 
   /**
@@ -193,9 +395,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *
    * @param {object} policy
    */
-  static decodePolicyEtag(policy): Policy {
-    policy.etag = policy.etag.toString('ascii');
-    return policy as Policy;
+  static decodePolicyEtag(policy: Policy): Policy {
+    policy.etag = policy.etag!.toString('ascii');
+    return policy;
   }
 
   /**
@@ -214,11 +416,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * //
    * 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
    */
-  static formatName_(instanceName, id) {
+  static formatName_(instanceName: string, id: string) {
     if (id.includes('/')) {
       return id;
     }
-
     return `${instanceName}/tables/${id}`;
   }
 
@@ -244,7 +445,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * //   }
    * // }
    */
-  static createPrefixRange(start): PrefixRange {
+  static createPrefixRange(start: string): PrefixRange {
     const prefix = start.replace(new RegExp('[\xff]+$'), '');
     let endKey = '';
     if (prefix) {
@@ -262,6 +463,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
   }
 
+  create(options?: CreateTableOptions): Promise<CreateTableResponse>;
+  create(options: CreateTableOptions, callback: CreateTableCallback): void;
+  create(callback: CreateTableCallback): void;
   /**
    * Create a table.
    *
@@ -276,15 +480,27 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_create_table
    */
-  create(options, callback?) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
-
+  create(
+    optionsOrCallback?: CreateTableOptions | CreateTableCallback,
+    cb?: CreateTableCallback
+  ): void | Promise<CreateTableResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.instance.createTable(this.id, options, callback);
   }
 
+  createFamily(
+    id: string,
+    options?: CreateFamilyOptions
+  ): Promise<CreateFamilyResponse>;
+  createFamily(
+    id: string,
+    options: CreateFamilyOptions,
+    callback: CreateFamilyCallback
+  ): void;
+  createFamily(id: string, callback: CreateFamilyCallback): void;
   /**
    * Create a column family.
    *
@@ -318,11 +534,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_create_family
    */
-  createFamily(id, options, callback?) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+  createFamily(
+    id: string,
+    optionsOrCallback?: CreateFamilyOptions | CreateFamilyCallback,
+    cb?: CreateFamilyCallback
+  ): void | Promise<CreateFamilyResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
 
     if (!id) {
       throw new Error('An id is required to create a family.');
@@ -354,10 +574,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback(err, null, resp);
           return;
         }
-
         const family = this.family(id);
         family.metadata = resp;
-
         callback(null, family, resp);
       }
     );
@@ -389,16 +607,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_table_readstream
    */
-  createReadStream(options?) {
-    options = options || {};
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
-
-    let activeRequestStream;
-
-    let rowKeys;
+  createReadStream(options: GetRowsOptions = {}) {
+    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
+    let activeRequestStream: common.AbortableDuplex;
+    let rowKeys: string[] | null;
     const ranges = options.ranges || [];
-    let filter;
-    let rowsLimit;
+    let filter: string;
+    let rowsLimit: number;
     let rowsRead = 0;
     let numRequestsMade = 0;
 
@@ -409,8 +624,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         );
       }
       ranges.push({
-        start: options.start,
-        end: options.end,
+        start: options.start!,
+        end: options.end!,
       });
     }
 
@@ -455,7 +670,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       end();
     };
 
-    let chunkTransformer;
+    let chunkTransformer: ChunkTransformer;
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
@@ -471,13 +686,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
-        const lessThan = (lhs, rhs) => {
+        const lessThan = (lhs: string, rhs: string) => {
           const lhsBytes = Mutation.convertToBytes(lhs);
           const rhsBytes = Mutation.convertToBytes(rhs);
           return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
         };
-        const greaterThan = (lhs, rhs) => lessThan(rhs, lhs);
-        const greaterThanOrEqualTo = (lhs, rhs) => !lessThan(rhs, lhs);
+        const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
+        const greaterThanOrEqualTo = (lhs: string, rhs: string) =>
+          !lessThan(rhs, lhs);
 
         if (ranges.length === 0) {
           ranges.push({
@@ -493,12 +709,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           for (let index = ranges.length - 1; index >= 0; index--) {
             const range = ranges[index];
             const startValue = is.object(range.start)
-              ? range.start.value
+              ? (range.start as PrefixRangeValue).value
               : range.start;
-            const endValue = is.object(range.end) ? range.end.value : range.end;
+            const endValue = is.object(range.end)
+              ? (range.end as PrefixRangeValue).value
+              : range.end;
             const isWithinStart =
-              !startValue || greaterThanOrEqualTo(startValue, lastRowKey);
-            const isWithinEnd = !endValue || lessThan(lastRowKey, endValue);
+              !startValue ||
+              greaterThanOrEqualTo(startValue as string, lastRowKey as string);
+            const isWithinEnd =
+              !endValue || lessThan(lastRowKey as string, endValue as string);
             if (isWithinStart) {
               if (isWithinEnd) {
                 // The lastRowKey is within this range, adjust the start
@@ -517,7 +737,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
         // Remove rowKeys already read.
         if (rowKeys) {
-          rowKeys = rowKeys.filter(rowKey => greaterThan(rowKey, lastRowKey));
+          rowKeys = rowKeys.filter(rowKey =>
+            greaterThan(rowKey, lastRowKey as string)
+          );
           if (rowKeys.length === 0) {
             rowKeys = null;
           }
@@ -557,7 +779,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream.on('request', () => numRequestsMade++);
 
-      const rowStream = pumpify.obj([
+      const rowStream: Duplex = pumpify.obj([
         requestStream,
         chunkTransformer,
         through.obj((rowData, enc, next) => {
@@ -575,7 +797,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }),
       ]);
 
-      rowStream.on('error', error => {
+      rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
@@ -599,6 +821,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     return userStream;
   }
 
+  delete(gaxOptions?: CallOptions): Promise<DeleteTableResponse>;
+  delete(gaxOptions: CallOptions, callback: DeleteTableCallback): void;
+  delete(callback: DeleteTableCallback): void;
   /**
    * Delete the table.
    *
@@ -612,12 +837,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_del_table
    */
-  delete(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  delete(
+    optionsOrCallback?: CallOptions | DeleteTableCallback,
+    cb?: DeleteTableCallback
+  ): void | Promise<DeleteTableResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -631,6 +858,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  deleteRows(
+    prefix: string,
+    gaxOptions?: CallOptions
+  ): Promise<DeleteRowsResponse>;
+  deleteRows(
+    prefix: string,
+    gaxOptions: CallOptions,
+    callback: DeleteRowsCallback
+  ): void;
+  deleteRows(prefix: string, callback: DeleteRowsCallback): void;
   /**
    * Delete all rows in the table, optionally corresponding to a particular
    * prefix.
@@ -647,21 +884,22 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_del_rows
    */
-  deleteRows(prefix, gaxOptions, callback?) {
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  deleteRows(
+    prefix: string,
+    optionsOrCallback?: CallOptions | DeleteRowsCallback,
+    cb?: DeleteRowsCallback
+  ): void | Promise<DeleteRowsResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     if (!prefix || is.fn(prefix)) {
       throw new Error('A prefix is required for deleteRows.');
     }
-
     const reqOpts = {
       name: this.name,
       rowKeyPrefix: Mutation.convertToBytes(prefix),
     };
-
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -673,6 +911,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  exists(gaxOptions?: CallOptions): Promise<TableExistsResponse>;
+  exists(gaxOptions: CallOptions, callback: TableExistsCallback): void;
+  exists(callback: TableExistsCallback): void;
   /**
    * Check if a table exists.
    *
@@ -686,28 +927,27 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_exists_table
    */
-  exists(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  exists(
+    optionsOrCallback?: CallOptions | TableExistsCallback,
+    cb?: TableExistsCallback
+  ): void | Promise<TableExistsResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const reqOpts = {
       view: 'name',
       gaxOptions,
     };
-
     this.getMetadata(reqOpts, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
           return;
         }
-
         callback(err);
         return;
       }
-
       callback(null, true);
     });
   }
@@ -723,13 +963,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example
    * const family = table.family('my-family');
    */
-  family(id: string) {
+  family(id: string): Family {
     if (!id) {
       throw new Error('A family id must be provided.');
     }
     return new Family(this, id);
   }
 
+  get(options?: GetTableOptions): Promise<GetTableResponse>;
+  get(options: GetTableOptions, callback: GetTableCallback): void;
+  get(callback: GetTableCallback): void;
   /**
    * Get a table if it exists.
    *
@@ -750,12 +993,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_table
    */
-  get(options, callback?) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
-
+  get(
+    optionsOrCallback?: GetTableOptions | GetTableCallback,
+    cb?: GetTableCallback
+  ): void | Promise<GetTableResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const autoCreate = !!options.autoCreate;
     const gaxOptions = options.gaxOptions;
 
@@ -774,8 +1019,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     });
   }
 
-  getIamPolicy(options?): Promise<[Policy]>;
-  getIamPolicy(options, callback): void;
+  getIamPolicy(options?: GetIamPolicyOptions): Promise<[Policy]>;
+  getIamPolicy(
+    options: GetIamPolicyOptions,
+    callback: GetIamPolicyCallback
+  ): void;
   /**
    * @param {object} [options] Configuration object.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
@@ -831,6 +1079,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  getFamilies(gaxOptions?: CallOptions): Promise<GetFamiliesResponse>;
+  getFamilies(gaxOptions: CallOptions, callback: GetFamiliesCallback): void;
+  getFamilies(callback: GetFamiliesCallback): void;
   /**
    * Get Family objects for all the column familes in your table.
    *
@@ -844,28 +1095,36 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_families
    */
-  getFamilies(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  getFamilies(
+    optionsOrCallback?: CallOptions | GetFamiliesCallback,
+    cb?: GetFamiliesCallback
+  ): void | Promise<GetFamiliesResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.getMetadata({gaxOptions}, (err, metadata) => {
       if (err) {
         callback(err);
         return;
       }
-
-      const families = Object.keys(metadata.columnFamilies).map(familyId => {
+      const families = Object.keys(metadata.columnFamilies!).map(familyId => {
         const family = this.family(familyId);
-        family.metadata = metadata.columnFamilies[familyId];
+        family.metadata = metadata.columnFamilies![familyId];
         return family;
       });
-
-      callback(null, families, metadata.columnFamilies);
+      callback(null, families, metadata.columnFamilies!);
     });
   }
 
+  getReplicationStates(
+    gaxOptions?: CallOptions
+  ): Promise<GetReplicationStatesResponse>;
+  getReplicationStates(
+    gaxOptions: CallOptions,
+    callback: GetReplicationStatesCallback
+  ): void;
+  getReplicationStates(callback: GetReplicationStatesCallback): void;
   /**
    * Get replication states of the clusters for this table.
    *
@@ -894,11 +1153,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *   var apiResponse = data[1];
    * });
    */
-  getReplicationStates(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  getReplicationStates(
+    optionsOrCallback?: CallOptions | GetReplicationStatesCallback,
+    cb?: GetReplicationStatesCallback
+  ): void | Promise<GetReplicationStatesResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const reqOpts = {
       view: 'replication',
       gaxOptions,
@@ -908,14 +1170,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         callback(err);
         return;
       }
-      const clusterStates = new Map();
-      Object.keys(metadata.clusterStates).map(clusterId =>
-        clusterStates.set(clusterId, metadata.clusterStates[clusterId])
+      const clusterStates = new Map<
+        string,
+        google.bigtable.admin.v2.Table.IClusterState
+      >();
+      Object.keys(metadata.clusterStates!).map(clusterId =>
+        clusterStates.set(clusterId, metadata.clusterStates![clusterId])
       );
       callback(null, clusterStates, metadata);
     });
   }
 
+  getMetadata(options?: GetMetadataOptions): Promise<GetMetadataResponse>;
+  getMetadata(options: GetMetadataOptions, callback: GetMetadataCallback): void;
+  getMetadata(callback: GetMetadataCallback): void;
   /**
    * Get the table's metadata.
    *
@@ -931,17 +1199,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_table_meta
    */
-  getMetadata(options, callback?) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
-
+  getMetadata(
+    optionsOrCallback?: GetMetadataOptions | GetMetadataCallback,
+    cb?: GetMetadataCallback
+  ): void | Promise<GetMetadataResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const reqOpts = {
       name: this.name,
       view: (Table as any).VIEWS[options.view || 'unspecified'],
     };
-
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -953,12 +1222,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         if (args[1]) {
           this.metadata = args[1];
         }
-
         callback(...args);
       }
     );
   }
 
+  getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
+  getRows(options: GetRowsOptions, callback: GetRowsCallback): void;
+  getRows(callback: GetRowsCallback): void;
   /**
    * Get {@link Row} objects for the rows currently in your table.
    *
@@ -977,21 +1248,33 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_get_rows
    */
-  getRows(options, callback?) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
-
+  getRows(
+    optionsOrCallback?: GetRowsOptions | GetRowsCallback,
+    cb?: GetRowsCallback
+  ): void | Promise<GetRowsResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.createReadStream(options)
       .on('error', callback)
       .pipe(
-        concat(rows => {
+        concat((rows: Row[]) => {
           callback(null, rows);
         })
       );
   }
 
+  insert(
+    entries: Entry | Entry[],
+    gaxOptions?: CallOptions
+  ): Promise<InsertRowsResponse>;
+  insert(
+    entries: Entry | Entry[],
+    gaxOptions: CallOptions,
+    callback: InsertRowsCallback
+  ): void;
+  insert(entries: Entry | Entry[], callback: InsertRowsCallback): void;
   /**
    * Insert or update rows in your table. It should be noted that gRPC only allows
    * you to send payloads that are less than or equal to 4MB. If you're inserting
@@ -1010,20 +1293,32 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_insert_rows
    */
-  insert(entries, gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
-    entries = arrify(entries).map(entry => {
-      entry.method = Mutation.methods.INSERT;
+  insert(
+    entries: Entry | Entry[],
+    optionsOrCallback?: CallOptions | InsertRowsCallback,
+    cb?: InsertRowsCallback
+  ): void | Promise<InsertRowsResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    entries = arrify<Entry>(entries).map(entry => {
+      (entry as any).method = Mutation.methods.INSERT;
       return entry;
     });
-
     return this.mutate(entries, {gaxOptions}, callback);
   }
 
+  mutate(
+    entries: Entry | Entry[],
+    options?: MutateOptions
+  ): Promise<MutateResponse>;
+  mutate(
+    entries: Entry | Entry[],
+    options: MutateOptions,
+    callback: MutateCallback
+  ): void;
+  mutate(entries: Entry | Entry[], callback: MutateCallback): void;
   /**
    * Apply a set of changes to be atomically applied to the specified row(s).
    * Mutations are applied in order, meaning that earlier mutations can be masked
@@ -1045,24 +1340,28 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_mutate_rows
    */
-  mutate(entries, options?, callback?) {
-    options = options || {};
-
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
-
-    entries = arrify(entries).reduce((a, b) => a.concat(b), []);
+  mutate(
+    entriesRaw: Entry | Entry[],
+    optionsOrCallback?: MutateOptions | MutateCallback,
+    cb?: MutateCallback
+  ): void | Promise<MutateResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const entries = (arrify(entriesRaw) as Entry[]).reduce(
+      (a, b) => a.concat(b),
+      []
+    );
 
     let numRequestsMade = 0;
 
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries : 3;
+    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     const pendingEntryIndices = new Set(entries.map((entry, index) => index));
     const entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
     const mutationErrorsByEntryIndex = new Map();
 
-    const onBatchResponse = err => {
+    const onBatchResponse = (err: ServiceError | null) => {
       if (err) {
         // The error happened before a request was even made, don't
         // retry.
@@ -1078,7 +1377,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         err = new common.util.PartialFailureError({
           errors: mutationErrors,
-        } as any);
+        } as any) as ServiceError;
       }
 
       callback(err);
@@ -1094,7 +1393,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         appProfileId: this.bigtable.appProfileId,
         entries: options.rawMutation
           ? entryBatch
-          : entryBatch.map(Mutation.parse),
+          : entryBatch.map(Mutation.parse as any),
       };
 
       const retryOpts = {
@@ -1110,7 +1409,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           retryOpts,
         })
         .on('request', () => numRequestsMade++)
-        .on('error', err => {
+        .on('error', (err: ServiceError) => {
           if (numRequestsMade === 0) {
             callback(err); // Likely a "projectId not detected" error.
             return;
@@ -1118,25 +1417,22 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
           onBatchResponse(err);
         })
-        .on('data', obj => {
-          obj.entries.forEach(entry => {
-            const originalEntry = entryBatch[entry.index];
+        .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
+          obj.entries!.forEach(entry => {
+            const originalEntry = entryBatch[entry.index as number];
             const originalEntriesIndex = entryToIndex.get(originalEntry)!;
 
             // Mutation was successful.
-            if (entry.status.code === 0) {
+            if (entry.status!.code === 0) {
               pendingEntryIndices.delete(originalEntriesIndex);
               mutationErrorsByEntryIndex.delete(originalEntriesIndex);
               return;
             }
-
-            if (!RETRYABLE_STATUS_CODES.has(entry.status.code)) {
+            if (!RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
               pendingEntryIndices.delete(originalEntriesIndex);
             }
-
             const status = decorateStatus(entry.status);
             status.entry = originalEntry;
-
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
           });
         })
@@ -1157,14 +1453,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example
    * var row = table.row('lincoln');
    */
-  row(key) {
+  row(key: string): Row {
     if (!key) {
       throw new Error('A row key must be provided.');
     }
-
     return new Row(this, key);
   }
 
+  sampleRowKeys(gaxOptions?: CallOptions): Promise<SampleRowsKeysResponse>;
+  sampleRowKeys(gaxOptions: CallOptions, callback: SampleRowKeysCallback): void;
+  sampleRowKeys(callback?: SampleRowKeysCallback): void;
   /**
    * Returns a sample of row keys in the table. The returned row keys will delimit
    * contiguous sections of the table of approximately equal size, which can be
@@ -1179,16 +1477,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_sample_row_keys
    */
-  sampleRowKeys(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  sampleRowKeys(
+    optionsOrCallback?: CallOptions | SampleRowKeysCallback,
+    cb?: SampleRowKeysCallback
+  ): void | Promise<SampleRowsKeysResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.sampleRowKeysStream(gaxOptions)
       .on('error', callback)
       .pipe(
-        concat(keys => {
+        concat((keys: string[]) => {
           callback(null, keys);
         })
       );
@@ -1219,7 +1519,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *     this.end();
    *   });
    */
-  sampleRowKeysStream(gaxOptions?) {
+  sampleRowKeysStream(gaxOptions?: CallOptions) {
     const reqOpts = {
       tableName: this.name,
       appProfileId: this.bigtable.appProfileId,
@@ -1280,7 +1580,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       resource: this.name,
       policy,
     };
-
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -1357,6 +1656,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  truncate(gaxOptions?: CallOptions): Promise<TruncateResponse>;
+  truncate(gaxOptions: CallOptions, callback: TruncateCallback): void;
+  truncate(callback: TruncateCallback): void;
   /**
    * Truncate the table.
    *
@@ -1376,17 +1678,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *   var apiResponse = data[0];
    * });
    */
-  truncate(gaxOptions, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  truncate(
+    optionsOrCallback?: CallOptions | TruncateCallback,
+    cb?: TruncateCallback
+  ): void | Promise<TruncateResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const reqOpts = {
       name: this.name,
       deleteAllDataFromTable: true,
     };
-
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -1398,6 +1701,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  waitForReplication(): Promise<WaitForReplicationResponse>;
+  waitForReplication(callback: WaitForReplicationCallback): void;
   /**
    * Generates Consistency-Token and check consistency for generated token
    * In-case consistency check returns false, retrial is done in interval
@@ -1407,29 +1712,31 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?Error} callback.err An error returned while making this request.
    * @param {?Boolean} callback.resp Boolean value.
    */
-  waitForReplication(callback) {
+  waitForReplication(
+    callback?: WaitForReplicationCallback
+  ): void | Promise<WaitForReplicationResponse> {
     // handler for generated consistency-token
-    const tokenHandler = (err, token) => {
+    const tokenHandler: GenerateConsistencyTokenCallback = (err, token) => {
       if (err) {
-        return callback(err);
+        return callback!(err);
       }
 
       // set timeout for 10 minutes
       const timeoutAfterTenMinutes = setTimeout(() => {
-        callback(null, false);
+        callback!(null, false);
       }, 10 * 60 * 1000);
 
       // method checks if retrial is required & init retrial with 5 sec
       // delay
-      const retryIfNecessary = (err, res) => {
+      const retryIfNecessary: CheckConsistencyCallback = (err, res) => {
         if (err) {
           clearTimeout(timeoutAfterTenMinutes);
-          return callback(err);
+          return callback!(err);
         }
 
         if (res === true) {
           clearTimeout(timeoutAfterTenMinutes);
-          return callback(null, true);
+          return callback!(null, true);
         }
 
         setTimeout(launchCheck, 5000);
@@ -1437,7 +1744,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       // method to launch token consistency check
       const launchCheck = () => {
-        this.checkConsistency(token, retryIfNecessary);
+        this.checkConsistency(token!, retryIfNecessary);
       };
 
       launchCheck();
@@ -1447,17 +1754,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     this.generateConsistencyToken(tokenHandler);
   }
 
+  generateConsistencyToken(): Promise<GenerateConsistencyTokenResponse>;
+  generateConsistencyToken(callback: GenerateConsistencyTokenCallback): void;
   /**
    * Generates Consistency-Token
    * @param {function(?error, ?boolean)} callback The callback function.
    * @param {?Error} callback.err An error returned while making this request.
    * @param {?String} callback.token The generated consistency token.
    */
-  generateConsistencyToken(callback) {
+  generateConsistencyToken(
+    callback?: GenerateConsistencyTokenCallback
+  ): void | Promise<GenerateConsistencyTokenResponse> {
     const reqOpts = {
       name: this.name,
     };
-
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -1466,15 +1776,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       },
       (err, res) => {
         if (err) {
-          callback(err);
+          callback!(err);
           return;
         }
-
-        callback(null, res.consistencyToken);
+        callback!(null, res.consistencyToken);
       }
     );
   }
 
+  checkConsistency(token: string): Promise<CheckConsistencyResponse>;
+  checkConsistency(token: string, callback: CheckConsistencyCallback): void;
   /**
    * Checks consistency for given ConsistencyToken
    * @param {string} token consistency token
@@ -1482,12 +1793,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?Error} callback.err An error returned while making this request.
    * @param {?Boolean} callback.consistent Boolean value.
    */
-  checkConsistency(token, callback) {
+  checkConsistency(
+    token: string,
+    callback?: CheckConsistencyCallback
+  ): void | Promise<CheckConsistencyResponse> {
     const reqOpts = {
       name: this.name,
       consistencyToken: token,
     };
-
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
@@ -1496,11 +1809,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       },
       (err, res) => {
         if (err) {
-          callback(err);
+          callback!(err);
           return;
         }
-
-        callback(null, res.consistent);
+        callback!(null, res.consistent);
       }
     );
   }
@@ -1529,6 +1841,11 @@ promisifyAll(Table, {
 });
 
 export interface PrefixRange {
-  start: string;
-  end: {value: string; inclusive: boolean};
+  start?: string | PrefixRangeValue;
+  end?: string | PrefixRangeValue;
+}
+
+export interface PrefixRangeValue {
+  value: string | number | boolean | Uint8Array | undefined;
+  inclusive: boolean;
 }

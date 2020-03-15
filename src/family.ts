@@ -17,7 +17,6 @@
 import {promisifyAll} from '@google-cloud/promisify';
 import {CallOptions} from 'google-gax';
 import {ServiceError} from '@grpc/grpc-js';
-import * as is from 'is';
 
 import {Bigtable} from './';
 import {Table} from './table';
@@ -392,9 +391,9 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
         return;
       }
 
-      for (let i = 0, l = families.length; i < l; i++) {
-        if (families[i].name === this.name) {
-          this.metadata = families[i].metadata;
+      for (let i = 0, l = families!.length; i < l; i++) {
+        if (families![i].name === this.name) {
+          this.metadata = families![i].metadata;
           callback(null, this.metadata);
           return;
         }

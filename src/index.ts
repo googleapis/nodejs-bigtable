@@ -712,7 +712,10 @@ export class Bigtable {
    * @param {object} config.reqOpts Request options.
    * @param {function} [callback] Callback function.
    */
-  request(config, callback) {
+  request<T = any>(
+    config?: any,
+    callback?: (err: ServiceError | null, resp?: T) => void
+  ) {
     const isStreamMode = !callback;
 
     let gaxStream;
@@ -768,7 +771,7 @@ export class Bigtable {
     function makeRequestCallback() {
       prepareGaxRequest((err, requestFn) => {
         if (err) {
-          callback(err);
+          callback!(err);
           return;
         }
 
