@@ -607,7 +607,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_table_readstream
    */
-  createReadStream(options: GetRowsOptions = {}) {
+  createReadStream(opts?: GetRowsOptions) {
+    const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     let activeRequestStream: common.AbortableDuplex;
     let rowKeys: string[] | null;
