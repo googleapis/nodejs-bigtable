@@ -16,10 +16,6 @@
 // ** https://github.com/googleapis/gapic-generator-typescript **
 // ** All changes to this file may be overwritten. **
 
-import {Bigtable} from '@google-cloud/bigtable';
-
-function main() {
-  const bigtableClient = new Bigtable();
-}
-
-main();
+export {BigtableInstanceAdminClient} from './bigtable_instance_admin_client';
+export {BigtableTableAdminClient} from './bigtable_table_admin_client';
+export {BigtableClient} from './bigtable_client';

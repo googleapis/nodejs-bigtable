@@ -1,12 +1,14 @@
 **/*.log
 **/node_modules
 .coverage
+coverage
 .nyc_output
 docs/
-.vscode
+out/
+build/
 system-test/secrets.js
 system-test/*key.json
 *.lock
+.DS_Store
 package-lock.json
-build/
 __pycache__
