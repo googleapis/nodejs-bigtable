@@ -20,7 +20,7 @@ import {ServiceError} from '@grpc/grpc-js';
 
 import {Bigtable} from './';
 import {Table} from './table';
-import {google} from '../proto/bigtable';
+import {google} from '../protos/protos';
 
 export type IColumnFamily = google.bigtable.admin.v2.IColumnFamily;
 export type IGcRule = google.bigtable.admin.v2.IGcRule;

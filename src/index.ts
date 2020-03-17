@@ -54,7 +54,7 @@ import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
 import {Instance} from './instance';
 import {shouldRetryRequest} from './decorateStatus';
-import {google} from '../proto/bigtable';
+import {google} from '../protos/protos';
 import {ServiceError} from '@grpc/grpc-js';
 
 const retryRequest = require('retry-request');
