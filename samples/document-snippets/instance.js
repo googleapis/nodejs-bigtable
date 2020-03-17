@@ -23,7 +23,7 @@ const snippets = {
     // const options = {
     //   clusters: [
     //     {
-    //       name: clusterId,
+    //       id: clusterId,
     //       nodes: 3,
     //       location: 'us-central1-f',
     //       storage: 'ssd',
@@ -36,7 +36,7 @@ const snippets = {
     const options = {
       clusters: [
         {
-          name: clusterId,
+          id: clusterId,
           location: 'us-central1-f',
           storage: 'hdd',
         },
