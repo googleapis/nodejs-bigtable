@@ -18,7 +18,7 @@ import arrify = require('arrify');
 import * as is from 'is';
 import * as Long from 'long';
 
-import {google as btTypes} from '../proto/bigtable';
+import {google as btTypes} from '../protos/protos';
 
 export type IMutation = btTypes.bigtable.v2.IMutation;
 export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
