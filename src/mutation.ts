@@ -206,7 +206,7 @@ export class Mutation {
     const mutations: SetCellObj[] = [];
 
     Object.keys(data).forEach(familyName => {
-      const family = data[familyName];
+      const family = (data as any)[familyName];
 
       Object.keys(family).forEach(cellName => {
         let cell = family[cellName];

@@ -20,6 +20,38 @@ import snakeCase = require('lodash.snakecase');
 import {Cluster} from './cluster';
 import {Bigtable} from '.';
 import {Instance} from './instance';
+import {CallOptions} from 'google-gax';
+import {google} from '../protos/protos';
+
+export interface AppProfileOptions {
+  /**
+   * The routing policy for all read/write requests which use this app profile.
+   * This can be either the string 'any' or a cluster of an instance. This
+   * value is required when creating the app profile and optional when setting
+   * the metadata.
+   */
+  routing?: 'any' | Cluster;
+  /**
+   * Whether or not CheckAndMutateRow and ReadModifyWriteRow requests are
+   * allowed by this app profile. It is unsafe to send these requests to the
+   * same table/row/column in multiple clusters. This is only used when the
+   * routing value is a cluster.
+   */
+  allowTransactionalWrites?: boolean;
+  /**
+   * The long form description of the use case for this AppProfile.
+   */
+  description?: string;
+  /**
+   * Request configuration options, outlined here:
+   * https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   */
+  gaxOptions?: CallOptions;
+  /**
+   * Whether to ignore safety checks when creating the app profile.
+   */
+  ignoreWarnings?: boolean;
+}
 
 /**
  * Create an app profile object to interact with your app profile.
@@ -39,7 +71,7 @@ export class AppProfile {
   instance: Instance;
   name: string;
   id: string;
-  metadata;
+  metadata?: {};
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
@@ -57,7 +89,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       name = `${instance.name}/appProfiles/${id}`;
     }
 
-    this.id = name.split('/').pop();
+    this.id = name.split('/').pop()!;
     this.name = name;
   }
 
@@ -95,8 +127,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * //   description: 'My App Profile',
    * // }
    */
-  static formatAppProfile_(options) {
-    const appProfile: any = {};
+  static formatAppProfile_(
+    options: AppProfileOptions
+  ): google.bigtable.admin.v2.IAppProfile {
+    const appProfile: google.bigtable.admin.v2.IAppProfile = {};
 
     if (options.routing) {
       if (options.routing === 'any') {
@@ -196,7 +230,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_exists_app_profile
    */
-  exists(gaxOptions, callback) {
+  exists(gaxOptions: CallOptions, callback) {
     if (is.fn(gaxOptions)) {
       callback = gaxOptions;
       gaxOptions = {};

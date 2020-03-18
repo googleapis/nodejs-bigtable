@@ -67,7 +67,7 @@ describe('Read Row Acceptance tests', function() {
         });
 
       table.bigtable = {} as Bigtable;
-      table.bigtable.request = function() {
+      (table.bigtable.request as any) = function() {
         const stream = new PassThrough({
           objectMode: true,
         });
