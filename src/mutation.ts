@@ -18,7 +18,7 @@ import arrify = require('arrify');
 import * as is from 'is';
 import * as Long from 'long';
 
-import {google as btTypes} from '../proto/bigtable';
+import {google as btTypes} from '../protos/protos';
 
 export type IMutation = btTypes.bigtable.v2.IMutation;
 export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
@@ -206,7 +206,7 @@ export class Mutation {
     const mutations: SetCellObj[] = [];
 
     Object.keys(data).forEach(familyName => {
-      const family = data[familyName];
+      const family = (data as any)[familyName];
 
       Object.keys(family).forEach(cellName => {
         let cell = family[cellName];

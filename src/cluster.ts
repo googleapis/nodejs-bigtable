@@ -18,7 +18,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import {CallOptions, Operation as GaxOperation} from 'google-gax';
 import {ServiceError} from '@grpc/grpc-js';
 
-import {google as btTypes} from '../proto/bigtable';
+import {google as btTypes} from '../protos/protos';
 import {Bigtable} from '.';
 import {Instance} from './instance';
 
@@ -26,7 +26,11 @@ export interface GenericCallback<T> {
   (err?: ServiceError | null, apiResponse?: T | null): void;
 }
 export interface GenericClusterCallback<T> {
-  (err?: ServiceError | null, cluster?: Cluster | null, apiResponse?: T | null);
+  (
+    err?: ServiceError | null,
+    cluster?: Cluster | null,
+    apiResponse?: T | null
+  ): void;
 }
 export interface GenericOperationCallback<T> {
   (

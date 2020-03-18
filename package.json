@@ -19,14 +19,11 @@
   "author": "Google Inc.",
   "main": "build/src/index.js",
   "files": [
-    "build/proto",
     "build/protos",
     "build/src",
     "!**/*.map"
   ],
   "scripts": {
-    "check": "gts check",
-    "clean": "gts clean",
     "compile": "tsc -p . && cp -r proto* build/",
     "compile-protos": "compileProtos src",
     "docs": "jsdoc -c .jsdoc.js",
@@ -34,17 +31,14 @@
     "docs-test": "linkinator docs",
     "fix": "gts fix && eslint '**/*.js' --fix",
     "prelint": "cd samples; npm link ../; npm i",
-    "lint": "gts fix && eslint samples/*.js",
-    "lintfix": "eslint --fix '**/*.js'",
+    "lint": "gts check && eslint samples/*.js",
     "prepare": "npm run compile",
-    "proto": "mkdirp proto && pbjs -t static-module -w commonjs -p protos -p node_modules/google-gax/protos google/protobuf/wrappers.proto google/bigtable/v2/bigtable.proto google/bigtable/admin/v2/bigtable_instance_admin.proto google/bigtable/admin/v2/bigtable_table_admin.proto google/bigtable/v2/data.proto | pbts -o proto/bigtable.d.ts -",
     "samples-test": "cd samples/ && npm link ../ && npm install && npm test && cd ../",
     "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
     "presystem-test": "npm run compile",
     "system-test": "mocha build/system-test --timeout 600000",
     "pretest": "npm run compile",
-    "test": "c8 mocha build/test",
-    "posttest": "npm run check"
+    "test": "c8 mocha build/test"
   },
   "dependencies": {
     "@google-cloud/common": "^2.2.2",
