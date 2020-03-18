@@ -22,6 +22,7 @@ import {Bigtable} from '.';
 import {Instance} from './instance';
 import {CallOptions} from 'google-gax';
 import {google} from '../protos/protos';
+import {ServiceError} from '@grpc/grpc-js';
 
 export interface AppProfileOptions {
   /**
@@ -53,6 +54,58 @@ export interface AppProfileOptions {
   ignoreWarnings?: boolean;
 }
 
+export interface DeleteAppProfileOptions {
+  /**
+   * Request configuration options, outlined here:
+   * https://googleapis.github.io/gax-nodejs/global.html#CallOptions
+   */
+  gaxOptions?: CallOptions;
+
+  /**
+   * Whether to ignore safety checks when deleting the app profile.
+   */
+  ignoreWarnings?: boolean;
+}
+
+export type CreateAppProfileCallback = (
+  err: ServiceError | null,
+  appProfile?: AppProfile
+) => void;
+export type CreateAppProfileResponse = [AppProfile];
+export type DeleteAppProfileCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type DeleteAppProfileResponse = [google.protobuf.Empty];
+export type AppProfileExistsCallback = (
+  err: ServiceError | null,
+  exists?: boolean
+) => void;
+export type AppProfileExistsResponse = [boolean];
+export type GetAppProfileMetadataCallback = (
+  err: ServiceError | null,
+  metadata?: google.bigtable.admin.v2.IAppProfile,
+  apiResponse?: google.bigtable.admin.v2.IAppProfile
+) => void;
+export type GetAppProfileMetadataResponse = [
+  google.bigtable.admin.v2.IAppProfile,
+  google.bigtable.admin.v2.IAppProfile
+];
+export type GetAppProfileCallback = (
+  err: ServiceError | null,
+  appProfile?: AppProfile,
+  apiResponse?: google.bigtable.admin.v2.IAppProfile
+) => void;
+export type GetAppProfileResponse = [
+  AppProfile,
+  google.bigtable.admin.v2.IAppProfile
+];
+export type SetAppProfileMetadataCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type SetAppProfileMetadataResponse = [google.protobuf.Empty];
+
 /**
  * Create an app profile object to interact with your app profile.
  *
@@ -71,7 +124,7 @@ export class AppProfile {
   instance: Instance;
   name: string;
   id: string;
-  metadata?: {};
+  metadata?: google.bigtable.admin.v2.IAppProfile;
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
@@ -157,6 +210,9 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
     return appProfile;
   }
 
+  create(options: AppProfileOptions): Promise<CreateAppProfileResponse>;
+  create(options: AppProfileOptions, callback: CreateAppProfileCallback): void;
+  create(callback: CreateAppProfileCallback): void;
   /**
    * Create an app profile.
    *
@@ -166,14 +222,23 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_create_app_profile
    */
-  create(options, callback) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
+  create(
+    optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
+    cb?: CreateAppProfileCallback
+  ): void | Promise<CreateAppProfileResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.instance.createAppProfile(this.id, options, callback);
   }
 
+  delete(options?: DeleteAppProfileOptions): Promise<DeleteAppProfileResponse>;
+  delete(
+    options: DeleteAppProfileOptions,
+    callback: DeleteAppProfileCallback
+  ): void;
+  delete(callback: DeleteAppProfileCallback): void;
   /**
    * Delete the app profile.
    *
@@ -191,11 +256,14 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_delete_app_profile
    */
-  delete(options, callback) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
+  delete(
+    optionsOrCallback?: DeleteAppProfileOptions | DeleteAppProfileCallback,
+    cb?: DeleteAppProfileCallback
+  ): void | Promise<DeleteAppProfileResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
 
     const reqOpts: any = {
       name: this.name,
@@ -216,6 +284,9 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
     );
   }
 
+  exists(options?: CallOptions): Promise<AppProfileExistsResponse>;
+  exists(options: CallOptions, callback: AppProfileExistsCallback): void;
+  exists(callback: AppProfileExistsCallback): void;
   /**
    * Check if an app profile exists.
    *
@@ -230,27 +301,30 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_exists_app_profile
    */
-  exists(gaxOptions: CallOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  exists(
+    optionsOrCallback?: CallOptions | AppProfileExistsCallback,
+    cb?: AppProfileExistsCallback
+  ): void | Promise<AppProfileExistsResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
           return;
         }
-
         callback(err);
         return;
       }
-
       callback(null, true);
     });
   }
 
+  get(options?: CallOptions): Promise<GetAppProfileResponse>;
+  get(options: CallOptions, callback: GetAppProfileCallback): void;
+  get(callback: GetAppProfileCallback): void;
   /**
    * Get a appProfile if it exists.
    *
@@ -261,17 +335,29 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_get_app_profile
    */
-  get(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  get(
+    optionsOrCallback?: CallOptions | GetAppProfileCallback,
+    cb?: GetAppProfileCallback
+  ): void | Promise<GetAppProfileResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.getMetadata(gaxOptions, (err, metadata) => {
-      callback(err, err ? null : this, metadata);
+      if (err) {
+        callback(err, undefined, metadata);
+      } else {
+        callback(null, this, metadata);
+      }
     });
   }
 
+  getMetadata(options?: CallOptions): Promise<GetAppProfileMetadataResponse>;
+  getMetadata(
+    options: CallOptions,
+    callback: GetAppProfileMetadataCallback
+  ): void;
+  getMetadata(callback: GetAppProfileMetadataCallback): void;
   /**
    * Get the app profile metadata.
    *
@@ -287,13 +373,15 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_app_profile_get_meta
    */
-  getMetadata(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
-    this.bigtable.request(
+  getMetadata(
+    optionsOrCallback?: CallOptions | GetAppProfileMetadataCallback,
+    cb?: GetAppProfileMetadataCallback
+  ): void | Promise<GetAppProfileMetadataResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    this.bigtable.request<google.bigtable.admin.v2.AppProfile>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'getAppProfile',
@@ -302,16 +390,28 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         },
         gaxOpts: gaxOptions,
       },
-      (...args) => {
-        if (args[1]) {
-          this.metadata = args[1];
+      (err, resp) => {
+        if (resp) {
+          this.metadata = resp;
         }
-
-        callback(...args);
+        callback(err, resp, resp);
       }
     );
   }
 
+  setMetadata(
+    metadata: AppProfileOptions,
+    options?: CallOptions
+  ): Promise<SetAppProfileMetadataResponse>;
+  setMetadata(
+    metadata: AppProfileOptions,
+    options: CallOptions,
+    callback: SetAppProfileMetadataCallback
+  ): void;
+  setMetadata(
+    metadata: AppProfileOptions,
+    callback: SetAppProfileMetadataCallback
+  ): void;
   /**
    * Set the app profile metadata.
    *
@@ -327,27 +427,28 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * <caption>include:samples/document-snippets/app-profile.js</caption>
    * region_tag:bigtable_app_profile_set_meta
    */
-  setMetadata(metadata, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  setMetadata(
+    metadata: AppProfileOptions,
+    optionsOrCallback?: CallOptions | SetAppProfileMetadataCallback,
+    cb?: SetAppProfileMetadataCallback
+  ): void | Promise<SetAppProfileMetadataResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const reqOpts: any = {
-      appProfile: AppProfile.formatAppProfile_(metadata),
+      appProfile: AppProfile.formatAppProfile_(metadata as AppProfileOptions),
       updateMask: {
         paths: [],
       },
     };
-    reqOpts.appProfile.name = this.name;
-
+    reqOpts.appProfile!.name = this.name;
     const fieldsForMask = [
       'description',
       'singleClusterRouting',
       'multiClusterRoutingUseAny',
       'allowTransactionalWrites',
     ];
-
     fieldsForMask.forEach(field => {
       if (reqOpts.appProfile[field]) {
         reqOpts.updateMask.paths.push(snakeCase(field));
