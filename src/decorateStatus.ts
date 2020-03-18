@@ -15,6 +15,7 @@
  */
 
 import * as extend from 'extend';
+import {google} from '../protos/protos';
 
 /**
  * @const {object} - A map of protobuf codes to HTTP status codes.
@@ -40,6 +41,11 @@ const GRPC_ERROR_CODE_TO_HTTP = [
   {code: 401, message: 'Unauthorized'},
 ];
 
+export type DecoratedStatus = google.rpc.IStatus & {
+  code: number;
+  message: string;
+};
+
 /**
  * Checks for a grpc status code and extends the supplied object with
  * additional information.
@@ -48,10 +54,12 @@ const GRPC_ERROR_CODE_TO_HTTP = [
  * @param {object} response - The grpc response.
  * @return {object|null}
  */
-export function decorateStatus(response) {
+export function decorateStatus(
+  response?: google.rpc.IStatus | null
+): DecoratedStatus | null {
   const obj = {};
-  if (response && GRPC_ERROR_CODE_TO_HTTP[response.code]) {
-    const defaultResponseDetails = GRPC_ERROR_CODE_TO_HTTP[response.code];
+  if (response && GRPC_ERROR_CODE_TO_HTTP[response.code!]) {
+    const defaultResponseDetails = GRPC_ERROR_CODE_TO_HTTP[response.code!];
     let message = defaultResponseDetails.message;
     if (response.message) {
       // gRPC error messages can be either stringified JSON or strings.

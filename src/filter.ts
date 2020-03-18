@@ -24,7 +24,7 @@ import {Mutation} from './mutation';
  * @private
  */
 export class FilterError extends Error {
-  constructor(filter) {
+  constructor(filter: string) {
     super();
     this.name = 'FilterError';
     this.message = `Unknown filter: ${filter}.`;
@@ -76,7 +76,7 @@ export class FilterError extends Error {
  * @class
  */
 export class Filter {
-  filters_;
+  filters_: Array<{[index: string]: {}}> = [];
   constructor() {
     this.filters_ = [];
   }
@@ -96,17 +96,21 @@ export class Filter {
    * var regexString = Filter.convertToRegExpString(['a', 'b', 'c']);
    * // => '(a|b|c)'
    */
-  static convertToRegExpString(regex) {
+  static convertToRegExpString(
+    regex: RegExp | string | string[] | Buffer | number
+  ): string | Buffer {
     if (is.regexp(regex)) {
       return regex.toString().replace(/^\/|\/$/g, '');
     }
 
     if (is.array(regex)) {
-      return `(${regex.map(Filter.convertToRegExpString).join('|')})`;
+      return `(${(regex as string[])
+        .map(Filter.convertToRegExpString)
+        .join('|')})`;
     }
 
     if (is.string(regex)) {
-      return regex;
+      return regex as string;
     }
 
     if (is.number(regex)) {
@@ -156,7 +160,7 @@ export class Filter {
    * //   startTest2Exclusive: 'value3'
    * // }
    */
-  static createRange(start, end, key) {
+  static createRange(start, end, key: string) {
     const range = {};
 
     if (start) {
@@ -211,17 +215,13 @@ export class Filter {
    */
   static parse(filters) {
     const filter = new Filter();
-
     arrify(filters).forEach(filterObj => {
       const key = Object.keys(filterObj)[0];
-
       if (!is.function(filter[key])) {
         throw new FilterError(key);
       }
-
       filter[key](filterObj[key]);
     });
-
     return filter.toProto();
   }
 
@@ -249,9 +249,8 @@ export class Filter {
    *   all: false
    * };
    */
-  all(pass) {
+  all(pass: boolean): void {
     const filterName = pass ? 'passAllFilter' : 'blockAllFilter';
-
     this.set(filterName, true);
   }
 
@@ -381,9 +380,9 @@ export class Filter {
     }
 
     if (column.name) {
-      let name = Filter.convertToRegExpString(column.name);
-
-      name = Mutation.convertToBytes(name);
+      const name = Mutation.convertToBytes(
+        Filter.convertToRegExpString(column.name)
+      );
       this.set('columnQualifierRegexFilter', name);
     }
 
@@ -480,9 +479,9 @@ export class Filter {
    *   }
    * ];
    */
-  family(family) {
-    family = Filter.convertToRegExpString(family);
-    this.set('familyNameRegexFilter', family);
+  family(family: RegExp): void {
+    const f = Filter.convertToRegExpString(family);
+    this.set('familyNameRegexFilter', f);
   }
 
   /**
@@ -550,7 +549,7 @@ export class Filter {
    *   label: 'my-label'
    * };
    */
-  label(label) {
+  label(label: string): void {
     this.set('applyLabelTransformer', label);
   }
 
@@ -667,9 +666,9 @@ export class Filter {
     }
 
     if (row.key) {
-      let key = Filter.convertToRegExpString(row.key);
-
-      key = Mutation.convertToBytes(key);
+      const key = Mutation.convertToBytes(
+        Filter.convertToRegExpString(row.key)
+      );
       this.set('rowKeyRegexFilter', key);
     }
 
@@ -692,11 +691,10 @@ export class Filter {
    * @param {string} key Filter name.
    * @param {*} value Filter value.
    */
-  set(key, value) {
-    const filter = {};
-
-    filter[key] = value;
-    this.filters_.push(filter);
+  set(key: string, value: {}): void {
+    this.filters_.push({
+      [key]: value,
+    });
   }
 
   /**
@@ -753,7 +751,7 @@ export class Filter {
    * // copy has label "prezzy" while the other does not.
    * //-
    */
-  sink(sink) {
+  sink(sink: boolean): void {
     this.set('sink', sink);
   }
 
@@ -781,7 +779,7 @@ export class Filter {
    * If we detect multiple filters, we'll assume it's a chain filter and the
    * execution of the filters will be the order in which they were specified.
    */
-  toProto() {
+  toProto(): null | {} {
     if (!this.filters_.length) {
       return null;
     }
@@ -894,7 +892,7 @@ export class Filter {
    *   }
    * ];
    */
-  value(value) {
+  value(value): void {
     if (!is.object(value)) {
       value = {
         value,
@@ -902,15 +900,14 @@ export class Filter {
     }
 
     if (value.value) {
-      let valueReg = Filter.convertToRegExpString(value.value);
-
-      valueReg = Mutation.convertToBytes(valueReg);
+      const valueReg = Mutation.convertToBytes(
+        Filter.convertToRegExpString(value.value)
+      );
       this.set('valueRegexFilter', valueReg);
     }
 
     if (value.start || value.end) {
       const range = Filter.createRange(value.start, value.end, 'Value');
-
       this.set('valueRangeFilter', range);
     }
 

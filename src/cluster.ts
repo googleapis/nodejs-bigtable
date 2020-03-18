@@ -26,7 +26,11 @@ export interface GenericCallback<T> {
   (err?: ServiceError | null, apiResponse?: T | null): void;
 }
 export interface GenericClusterCallback<T> {
-  (err?: ServiceError | null, cluster?: Cluster | null, apiResponse?: T | null);
+  (
+    err?: ServiceError | null,
+    cluster?: Cluster | null,
+    apiResponse?: T | null
+  ): void;
 }
 export interface GenericOperationCallback<T> {
   (

@@ -20,6 +20,7 @@ import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
 import {PassThrough} from 'stream';
 import * as through from 'through2';
+import {DecoratedStatus} from '../src/decorateStatus';
 
 import {ChunkTransformer} from '../src/chunktransformer.js';
 import {Family} from '../src/family.js';
@@ -2214,7 +2215,7 @@ describe('Bigtable/Table', function() {
           },
         ];
 
-        const parsedStatuses = [{}, {}];
+        const parsedStatuses = [{} as DecoratedStatus, {} as DecoratedStatus];
 
         beforeEach(function() {
           table.bigtable.request = function() {
@@ -2327,7 +2328,7 @@ describe('Bigtable/Table', function() {
             },
           ],
         ];
-        sandbox.stub(ds, 'decorateStatus').returns({});
+        sandbox.stub(ds, 'decorateStatus').returns({} as DecoratedStatus);
         table.bigtable.request = function(config) {
           entryRequests.push(config.reqOpts.entries);
           const stream = new PassThrough({

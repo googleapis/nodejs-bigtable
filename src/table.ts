@@ -612,7 +612,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let activeRequestStream: common.AbortableDuplex;
     let rowKeys: string[] | null;
     const ranges = options.ranges || [];
-    let filter: string;
+    let filter: {} | null;
     let rowsLimit: number;
     let rowsRead = 0;
     let numRequestsMade = 0;
@@ -775,9 +775,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         retryOpts,
       });
 
-      activeRequestStream = requestStream;
+      activeRequestStream = requestStream!;
 
-      requestStream.on('request', () => numRequestsMade++);
+      requestStream!.on('request', () => numRequestsMade++);
 
       const rowStream: Duplex = pumpify.obj([
         requestStream,
@@ -1432,7 +1432,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               pendingEntryIndices.delete(originalEntriesIndex);
             }
             const status = decorateStatus(entry.status);
-            status.entry = originalEntry;
+            (status as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
           });
         })

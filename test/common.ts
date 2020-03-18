@@ -20,7 +20,7 @@ describe('decorateStatus', () => {
   it('should attach the correct HTTP code', () => {
     const grpcStatus = {code: 0};
     const status = decorateStatus(grpcStatus);
-    assert.strictEqual(status.message, 'OK');
+    assert.strictEqual(status!.message, 'OK');
   });
 
   it('should return null if the code doesnt match', () => {
@@ -33,7 +33,7 @@ describe('decorateStatus', () => {
     const message = 'QUACK!';
     const grpcStatus = {code: 1, message};
     const status = decorateStatus(grpcStatus);
-    assert.strictEqual(status.message, message);
+    assert.strictEqual(status!.message, message);
   });
 
   it('should parse JSON from the response message', () => {
@@ -44,7 +44,7 @@ describe('decorateStatus', () => {
     };
     const grpcStatus = {code: 1, message: JSON.stringify(message)};
     const status = decorateStatus(grpcStatus);
-    assert.deepStrictEqual(status.message, message.description);
+    assert.deepStrictEqual(status!.message, message.description);
   });
 });
 

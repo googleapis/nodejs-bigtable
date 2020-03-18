@@ -49,6 +49,8 @@ import {GoogleAuth, CallOptions} from 'google-gax';
 import * as gax from 'google-gax';
 import * as is from 'is';
 import * as through from 'through2';
+import * as protos from '../protos/protos';
+import {AbortableDuplex} from '@google-cloud/common';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -56,6 +58,11 @@ import {Instance} from './instance';
 import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
 import {ServiceError} from '@grpc/grpc-js';
+import {
+  BigtableClient,
+  BigtableInstanceAdminClient,
+  BigtableTableAdminClient,
+} from './v2';
 
 const retryRequest = require('retry-request');
 const streamEvents = require('stream-events');
@@ -77,6 +84,31 @@ export type GetInstancesResponse = [
   {} | null,
   google.bigtable.admin.v2.IListInstancesResponse
 ];
+
+export type RequestCallback<T> = (err: ServiceError | null, resp?: T) => void;
+
+export interface BigtableOptions extends gax.GoogleAuthOptions {
+  /**
+   * Override the default API endpoint used to reach Bigtable. This is useful for connecting to your local Bigtable emulator.
+   */
+  apiEndpoint?: string;
+
+  /**
+   * Internal only.
+   */
+  BigtableClient: BigtableClient;
+
+  /**
+   * Internal only.
+   */
+  BigtableInstanceAdminClient: BigtableInstanceAdminClient;
+
+  /**
+   * Internal only.
+   */
+  BigtableTableAdminClient: BigtableTableAdminClient;
+}
+
 /**
  * @typedef {object} ClientConfig
  * @property {string} [apiEndpoint] Override the default API endpoint used
@@ -106,8 +138,6 @@ export type GetInstancesResponse = [
  *     We will exponentially backoff subsequent requests by default.
  * @property {number} [maxRetries=3] Maximum number of automatic retries
  *     attempted before returning the error.
- * @property {Constructor} [promise] Custom promise module to use instead of
- *     native Promises.
  */
 
 /**
@@ -383,14 +413,14 @@ export type GetInstancesResponse = [
  * });
  */
 export class Bigtable {
-  customEndpoint;
-  options;
-  api;
-  auth;
-  projectId;
-  appProfileId;
-  projectName;
-  shouldReplaceProjectIdToken;
+  customEndpoint: string;
+  options: BigtableOptions;
+  api: {};
+  auth: GoogleAuth;
+  projectId: string;
+  appProfileId: string;
+  projectName: string;
+  shouldReplaceProjectIdToken: boolean;
   static AppProfile: AppProfile;
   static Instance: Instance;
   static Cluster: Cluster;
@@ -555,7 +585,7 @@ export class Bigtable {
    *   const apiResponse = data[2];
    * });
    */
-  createInstance(id, options, callback) {
+  createInstance(id: string, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -699,10 +729,12 @@ export class Bigtable {
    * @param {string} id The id of the instance.
    * @returns {Instance}
    */
-  instance(name) {
+  instance(name: string) {
     return new Instance(this, name);
   }
 
+  request<T = any>(config?: any): AbortableDuplex;
+  request<T = any>(config?: any, callback?: RequestCallback<T>): void;
   /**
    * Funnel all API requests through this method, to be sure we have a project ID.
    *
@@ -715,13 +747,15 @@ export class Bigtable {
   request<T = any>(
     config?: any,
     callback?: (err: ServiceError | null, resp?: T) => void
-  ) {
+  ): void | AbortableDuplex {
     const isStreamMode = !callback;
 
-    let gaxStream;
-    let stream;
+    let gaxStream: gax.CancellableStream;
+    let stream: AbortableDuplex;
 
-    const prepareGaxRequest = callback => {
+    const prepareGaxRequest = (
+      callback: (err: Error | null, fn?: Function) => void
+    ) => {
       this.getProjectId_((err, projectId) => {
         if (err) {
           callback(err);
@@ -739,7 +773,7 @@ export class Bigtable {
         let reqOpts = extend(true, {}, config.reqOpts);
 
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
-          reqOpts = replaceProjectIdToken(reqOpts, projectId);
+          reqOpts = replaceProjectIdToken(reqOpts, projectId!);
         }
 
         const requestFn = gaxClient[config.method].bind(
@@ -771,11 +805,10 @@ export class Bigtable {
     function makeRequestCallback() {
       prepareGaxRequest((err, requestFn) => {
         if (err) {
-          callback!(err);
+          callback!(err as ServiceError);
           return;
         }
-
-        requestFn(callback);
+        requestFn!(callback);
       });
     }
 
@@ -796,7 +829,7 @@ export class Bigtable {
             objectMode: true,
             shouldRetryFn: shouldRetryRequest,
             request() {
-              gaxStream = requestFn();
+              gaxStream = requestFn!();
               return gaxStream;
             },
           },
@@ -821,7 +854,7 @@ export class Bigtable {
    * @param {?error} callback.err An error returned from the auth client.
    * @param {string} callback.projectId The detected project ID.
    */
-  getProjectId_(callback) {
+  getProjectId_(callback: (err: Error | null, projectId?: string) => void) {
     const projectIdRequired =
       this.projectId === '{{projectId}}' && !this.customEndpoint;
 
@@ -835,9 +868,7 @@ export class Bigtable {
         callback(err);
         return;
       }
-
-      this.projectId = projectId;
-
+      this.projectId = projectId!;
       callback(null, this.projectId);
     });
   }
@@ -917,5 +948,4 @@ promisifyAll(Bigtable, {
 module.exports = Bigtable;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
-import * as protos from '../protos/protos';
 export {protos};

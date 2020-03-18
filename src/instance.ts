@@ -34,6 +34,7 @@ import {
   TestIamPermissionsResponse,
 } from './table';
 import {CallOptions} from 'google-gax';
+import {Bigtable} from '.';
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -50,12 +51,12 @@ import {CallOptions} from 'google-gax';
  */
 
 export class Instance {
-  bigtable;
-  id;
-  name;
-  metadata;
+  bigtable: Bigtable;
+  id: string;
+  name: string;
+  metadata?: {};
   getTablesStream;
-  constructor(bigtable, id) {
+  constructor(bigtable: Bigtable, id: string) {
     this.bigtable = bigtable;
 
     let name;
@@ -70,7 +71,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       name = `${bigtable.projectName}/instances/${id}`;
     }
 
-    this.id = name.split('/').pop();
+    this.id = name.split('/').pop()!;
     this.name = name;
   }
 
@@ -86,7 +87,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * Instance.getTypeType_('production');
    * // 1
    */
-  static getTypeType_(type) {
+  static getTypeType_(type: string): number {
     const types = {
       unspecified: 0,
       production: 1,
@@ -106,7 +107,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {string} name The name of the app profile.
    * @returns {AppProfile}
    */
-  appProfile(name) {
+  appProfile(name: string): AppProfile {
     return new AppProfile(this, name);
   }
 
@@ -165,7 +166,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_app_profile
    */
-  createAppProfile(id, options, callback) {
+  createAppProfile(id: string, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -230,7 +231,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_cluster
    */
-  createCluster(id, options, callback) {
+  createCluster(id: string, options, callback) {
     if (is.function(options)) {
       callback = options;
       options = {};
@@ -302,7 +303,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_table
    */
-  createTable(id, options, callback) {
+  createTable(id: string, options, callback) {
     if (!id) {
       throw new Error('An id is required to create a table.');
     }
@@ -376,7 +377,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {string} id The id of the cluster.
    * @returns {Cluster}
    */
-  cluster(id) {
+  cluster(id: string): Cluster {
     return new Cluster(this, id);
   }
 
@@ -840,7 +841,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('presidents');
    */
-  table(id) {
+  table(id: string): Table {
     return new Table(this, id);
   }
 
