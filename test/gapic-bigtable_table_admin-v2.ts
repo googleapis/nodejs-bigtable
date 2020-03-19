@@ -591,6 +591,164 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
   });
+  describe('getBackup', () => {
+    it('invokes getBackup without error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IGetBackupRequest = {};
+      request.name = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.getBackup = mockSimpleGrpcMethod(
+        request,
+        expectedResponse,
+        null
+      );
+      client.getBackup(request, (err: {}, response: {}) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes getBackup with error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IGetBackupRequest = {};
+      request.name = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.getBackup = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+      client.getBackup(request, (err: FakeError, response: {}) => {
+        assert(err instanceof FakeError);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+  describe('updateBackup', () => {
+    it('invokes updateBackup without error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest = {};
+      request.backup = {};
+      request.backup.name = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.updateBackup = mockSimpleGrpcMethod(
+        request,
+        expectedResponse,
+        null
+      );
+      client.updateBackup(request, (err: {}, response: {}) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes updateBackup with error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest = {};
+      request.backup = {};
+      request.backup.name = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.updateBackup = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+      client.updateBackup(request, (err: FakeError, response: {}) => {
+        assert(err instanceof FakeError);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
+  describe('deleteBackup', () => {
+    it('invokes deleteBackup without error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest = {};
+      request.name = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.deleteBackup = mockSimpleGrpcMethod(
+        request,
+        expectedResponse,
+        null
+      );
+      client.deleteBackup(request, (err: {}, response: {}) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+
+    it('invokes deleteBackup with error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest = {};
+      request.name = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.deleteBackup = mockSimpleGrpcMethod(
+        request,
+        null,
+        error
+      );
+      client.deleteBackup(request, (err: FakeError, response: {}) => {
+        assert(err instanceof FakeError);
+        assert.strictEqual(err.code, FAKE_STATUS_CODE);
+        assert(typeof response === 'undefined');
+        done();
+      });
+    });
+  });
   describe('getIamPolicy', () => {
     it('invokes getIamPolicy without error', done => {
       const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
@@ -881,6 +1039,140 @@ describe('v2.BigtableTableAdminClient', () => {
         });
     });
   });
+  describe('createBackup', () => {
+    it('invokes createBackup without error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.ICreateBackupRequest = {};
+      request.parent = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.createBackup = mockLongRunningGrpcMethod(
+        request,
+        expectedResponse
+      );
+      client
+        .createBackup(request)
+        .then((responses: [Operation]) => {
+          const operation = responses[0];
+          return operation ? operation.promise() : {};
+        })
+        .then((responses: [Operation]) => {
+          assert.deepStrictEqual(responses[0], expectedResponse);
+          done();
+        })
+        .catch((err: {}) => {
+          done(err);
+        });
+    });
+
+    it('invokes createBackup with error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.ICreateBackupRequest = {};
+      request.parent = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.createBackup = mockLongRunningGrpcMethod(
+        request,
+        null,
+        error
+      );
+      client
+        .createBackup(request)
+        .then((responses: [Operation]) => {
+          const operation = responses[0];
+          return operation ? operation.promise() : {};
+        })
+        .then(() => {
+          assert.fail();
+        })
+        .catch((err: FakeError) => {
+          assert(err instanceof FakeError);
+          assert.strictEqual(err.code, FAKE_STATUS_CODE);
+          done();
+        });
+    });
+  });
+  describe('restoreTable', () => {
+    it('invokes restoreTable without error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IRestoreTableRequest = {};
+      request.parent = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.restoreTable = mockLongRunningGrpcMethod(
+        request,
+        expectedResponse
+      );
+      client
+        .restoreTable(request)
+        .then((responses: [Operation]) => {
+          const operation = responses[0];
+          return operation ? operation.promise() : {};
+        })
+        .then((responses: [Operation]) => {
+          assert.deepStrictEqual(responses[0], expectedResponse);
+          done();
+        })
+        .catch((err: {}) => {
+          done(err);
+        });
+    });
+
+    it('invokes restoreTable with error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IRestoreTableRequest = {};
+      request.parent = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock gRPC layer
+      client._innerApiCalls.restoreTable = mockLongRunningGrpcMethod(
+        request,
+        null,
+        error
+      );
+      client
+        .restoreTable(request)
+        .then((responses: [Operation]) => {
+          const operation = responses[0];
+          return operation ? operation.promise() : {};
+        })
+        .then(() => {
+          assert.fail();
+        })
+        .catch((err: FakeError) => {
+          assert(err instanceof FakeError);
+          assert.strictEqual(err.code, FAKE_STATUS_CODE);
+          done();
+        });
+    });
+  });
   describe('listTables', () => {
     it('invokes listTables without error', done => {
       const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
@@ -997,6 +1289,69 @@ describe('v2.BigtableTableAdminClient', () => {
       };
       const stream = client
         .listSnapshotsStream(request, {})
+        .on('data', (response: {}) => {
+          assert.deepStrictEqual(response, expectedResponse);
+          done();
+        })
+        .on('error', (err: FakeError) => {
+          done(err);
+        });
+      stream.write(expectedResponse);
+    });
+  });
+  describe('listBackups', () => {
+    it('invokes listBackups without error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IListBackupsRequest = {};
+      request.parent = '';
+      // Mock response
+      const expectedResponse = {};
+      // Mock Grpc layer
+      client._innerApiCalls.listBackups = (
+        actualRequest: {},
+        options: {},
+        callback: Callback
+      ) => {
+        assert.deepStrictEqual(actualRequest, request);
+        callback(null, expectedResponse);
+      };
+      client.listBackups(request, (err: FakeError, response: {}) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(response, expectedResponse);
+        done();
+      });
+    });
+  });
+  describe('listBackupsStream', () => {
+    it('invokes listBackupsStream without error', done => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      // Initialize client before mocking
+      client.initialize();
+      // Mock request
+      const request: protosTypes.google.bigtable.admin.v2.IListBackupsRequest = {};
+      request.parent = '';
+      // Mock response
+      const expectedResponse = {response: 'data'};
+      // Mock Grpc layer
+      client._innerApiCalls.listBackups = (
+        actualRequest: {},
+        options: {},
+        callback: Callback
+      ) => {
+        assert.deepStrictEqual(actualRequest, request);
+        callback(null, expectedResponse);
+      };
+      const stream = client
+        .listBackupsStream(request, {})
         .on('data', (response: {}) => {
           assert.deepStrictEqual(response, expectedResponse);
           done();

@@ -735,6 +735,22 @@
                         "HDD": 2
                       }
                     },
+                    "OperationProgress": {
+                      "fields": {
+                        "progressPercent": {
+                          "type": "int32",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
                     "BigtableTableAdmin": {
                       "options": {
                         "(google.api.default_host)": "bigtableadmin.googleapis.com",
@@ -853,6 +869,55 @@
                           "options": {
                             "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/snapshots/*}",
                             "(google.api.method_signature)": "name"
+                          }
+                        },
+                        "CreateBackup": {
+                          "requestType": "CreateBackupRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups",
+                            "(google.api.http).body": "backup",
+                            "(google.longrunning.operation_info).response_type": "Backup",
+                            "(google.longrunning.operation_info).metadata_type": "CreateBackupMetadata"
+                          }
+                        },
+                        "GetBackup": {
+                          "requestType": "GetBackupRequest",
+                          "responseType": "Backup",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*/backups/*}"
+                          }
+                        },
+                        "UpdateBackup": {
+                          "requestType": "UpdateBackupRequest",
+                          "responseType": "Backup",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{backup.name=projects/*/instances/*/clusters/*/backups/*}",
+                            "(google.api.http).body": "backup"
+                          }
+                        },
+                        "DeleteBackup": {
+                          "requestType": "DeleteBackupRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/backups/*}"
+                          }
+                        },
+                        "ListBackups": {
+                          "requestType": "ListBackupsRequest",
+                          "responseType": "ListBackupsResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/backups"
+                          }
+                        },
+                        "RestoreTable": {
+                          "requestType": "RestoreTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*}/tables:restore",
+                            "(google.api.http).body": "*",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "RestoreTableMetadata"
                           }
                         },
                         "GetIamPolicy": {
@@ -1271,6 +1336,226 @@
                         }
                       }
                     },
+                    "CreateBackupRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
+                        },
+                        "backupId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "backup": {
+                          "type": "Backup",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CreateBackupMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "sourceTable": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "GetBackupRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateBackupRequest": {
+                      "fields": {
+                        "backup": {
+                          "type": "Backup",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "DeleteBackupRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
+                          }
+                        }
+                      }
+                    },
+                    "ListBackupsRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                          }
+                        },
+                        "filter": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "orderBy": {
+                          "type": "string",
+                          "id": 3
+                        },
+                        "pageSize": {
+                          "type": "int32",
+                          "id": 4
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "ListBackupsResponse": {
+                      "fields": {
+                        "backups": {
+                          "rule": "repeated",
+                          "type": "Backup",
+                          "id": 1
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "RestoreTableRequest": {
+                      "oneofs": {
+                        "source": {
+                          "oneof": [
+                            "backup"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "tableId": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "backup": {
+                          "type": "string",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "RestoreTableMetadata": {
+                      "oneofs": {
+                        "sourceInfo": {
+                          "oneof": [
+                            "backupInfo"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "sourceType": {
+                          "type": "RestoreSourceType",
+                          "id": 2
+                        },
+                        "backupInfo": {
+                          "type": "BackupInfo",
+                          "id": 3
+                        },
+                        "optimizeTableOperationName": {
+                          "type": "string",
+                          "id": 4
+                        },
+                        "progress": {
+                          "type": "OperationProgress",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "OptimizeRestoredTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "progress": {
+                          "type": "OperationProgress",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "RestoreSourceType": {
+                      "values": {
+                        "RESTORE_SOURCE_TYPE_UNSPECIFIED": 0,
+                        "BACKUP": 1
+                      }
+                    },
+                    "RestoreInfo": {
+                      "oneofs": {
+                        "sourceInfo": {
+                          "oneof": [
+                            "backupInfo"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "sourceType": {
+                          "type": "RestoreSourceType",
+                          "id": 1
+                        },
+                        "backupInfo": {
+                          "type": "BackupInfo",
+                          "id": 2
+                        }
+                      }
+                    },
                     "Table": {
                       "options": {
                         "(google.api.resource).type": "bigtable.googleapis.com/Table",
@@ -1294,6 +1579,10 @@
                         "granularity": {
                           "type": "TimestampGranularity",
                           "id": 4
+                        },
+                        "restoreInfo": {
+                          "type": "RestoreInfo",
+                          "id": 6
                         }
                       },
                       "nested": {
@@ -1311,7 +1600,8 @@
                                 "INITIALIZING": 1,
                                 "PLANNED_MAINTENANCE": 2,
                                 "UNPLANNED_MAINTENANCE": 3,
-                                "READY": 4
+                                "READY": 4,
+                                "READY_OPTIMIZING": 5
                               }
                             }
                           }
@@ -1432,6 +1722,104 @@
                             "STATE_NOT_KNOWN": 0,
                             "READY": 1,
                             "CREATING": 2
+                          }
+                        }
+                      }
+                    },
+                    "Backup": {
+                      "options": {
+                        "(google.api.resource).type": "bigtable.googleapis.com/Backup",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "sourceTable": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "expireTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 5,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "sizeBytes": {
+                          "type": "int64",
+                          "id": 6,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "state": {
+                          "type": "State",
+                          "id": 7,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        }
+                      },
+                      "nested": {
+                        "State": {
+                          "values": {
+                            "STATE_UNSPECIFIED": 0,
+                            "CREATING": 1,
+                            "READY": 2
+                          }
+                        }
+                      }
+                    },
+                    "BackupInfo": {
+                      "fields": {
+                        "backup": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "sourceTable": {
+                          "type": "string",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
                         }
                       }
