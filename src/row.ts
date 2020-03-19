@@ -16,18 +16,19 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-
 const dotProp = require('dot-prop');
 import * as is from 'is';
 import {Filter} from './filter';
 import {Mutation} from './mutation';
+import {Bigtable} from '.';
+import {Table, Entry} from './table';
 
 /**
  * @private
  */
 export class RowError extends Error {
   code: number;
-  constructor(row) {
+  constructor(row: string) {
     super();
     this.name = 'RowError';
     this.message = `Unknown row: ${row}.`;
@@ -50,15 +51,14 @@ export class RowError extends Error {
  * const row = table.row('gwashington');
  */
 export class Row {
-  bigtable;
-  table;
-  id;
-  data;
-  constructor(table, key) {
+  bigtable: Bigtable;
+  table: Table;
+  id: string;
+  data: {};
+  constructor(table: Table, key: string) {
     this.bigtable = table.bigtable;
     this.table = table;
     this.id = key;
-
     this.data = {};
   }
 
@@ -234,11 +234,11 @@ export class Row {
       options = {};
     }
 
-    const entry = {
+    const entry = ({
       key: this.id,
       data: options.entry,
       method: Mutation.methods.INSERT,
-    };
+    } as {}) as Entry;
     this.data = {};
 
     this.table.mutate(entry, options.gaxOptions, (err, apiResponse) => {
@@ -334,10 +334,10 @@ export class Row {
       gaxOptions = {};
     }
 
-    const mutation = {
+    const mutation = ({
       key: this.id,
       method: Mutation.methods.DELETE,
-    };
+    } as {}) as Entry;
     this.data = {};
     this.table.mutate(mutation, gaxOptions, callback);
   }
@@ -362,11 +362,11 @@ export class Row {
       gaxOptions = {};
     }
 
-    const mutation = {
+    const mutation = ({
       key: this.id,
       data: arrify(columns),
       method: Mutation.methods.DELETE,
-    };
+    } as {}) as Entry;
     this.data = {};
     this.table.mutate(mutation, gaxOptions, callback);
   }
@@ -529,11 +529,11 @@ export class Row {
         return;
       }
 
-      const row = rows[0];
+      const row = rows![0];
 
       if (!row) {
-        err = new RowError(this.id);
-        callback(err);
+        const e = new RowError(this.id);
+        callback(e);
         return;
       }
 
@@ -655,11 +655,11 @@ export class Row {
       gaxOptions = {};
     }
 
-    const mutation = {
+    const mutation = ({
       key: this.id,
       data: entry,
       method: Mutation.methods.INSERT,
-    };
+    } as {}) as Entry;
     this.data = {};
     this.table.mutate(mutation, gaxOptions, callback);
   }
