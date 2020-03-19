@@ -55,26 +55,26 @@ npm install @google-cloud/bigtable
 ### Using the client library
 
 ```javascript
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
+// Imports the Google Cloud client library
+const Bigtable = require('@google-cloud/bigtable');
 
-  const bigtable = Bigtable();
+const bigtable = Bigtable();
 
-  async function quickstart() {
-    // Connect to an existing instance:my-bigtable-instance
-    const instance = bigtable.instance(INSTANCE_ID);
+async function quickstart() {
+  // Connect to an existing instance:my-bigtable-instance
+  const instance = bigtable.instance(INSTANCE_ID);
 
-    // Connect to an existing table:my-table
-    const table = instance.table(TABLE_ID);
+  // Connect to an existing table:my-table
+  const table = instance.table(TABLE_ID);
 
-    // Read a row from my-table using a row key
-    const [singleRow] = await table.row('r1').get();
+  // Read a row from my-table using a row key
+  const [singleRow] = await table.row('r1').get();
 
-    // Print the row key and data (column value, labels, timestamp)
-    const rowData = JSON.stringify(singleRow.data, null, 4);
-    console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
-  }
-  quickstart();
+  // Print the row key and data (column value, labels, timestamp)
+  const rowData = JSON.stringify(singleRow.data, null, 4);
+  console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
+}
+quickstart();
 
 ```
 
@@ -125,11 +125,13 @@ More Information: [Google Cloud Platform Launch Stages][launch_stages]
 
 Contributions welcome! See the [Contributing Guide](https://github.com/googleapis/nodejs-bigtable/blob/master/CONTRIBUTING.md).
 
-Please note that this `README.md`, the `samples/README.md`,
+Please note that this [README.md](README.md), the [samples/README.md](samples/README.md),
 and a variety of configuration files in this repository (including `.nycrc` and `tsconfig.json`)
-are generated from a central template. To edit one of these files, make an edit
-to its template in this
-[directory](https://github.com/googleapis/synthtool/tree/master/synthtool/gcp/templates/node_library).
+are generated from a central template.
+
+If you would like to make edits to one of those files
+(or if you aren't certain if the file you're changing is one, check in the template repository before making changes),
+look for the file in the [template](https://github.com/googleapis/synthtool/tree/master/synthtool/gcp/templates/node_library).
 
 ## License
 
