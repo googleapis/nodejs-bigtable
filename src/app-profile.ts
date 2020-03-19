@@ -100,6 +100,15 @@ export type GetAppProfileResponse = [
   AppProfile,
   google.bigtable.admin.v2.IAppProfile
 ];
+export type GetAppProfilesCallback = (
+  err: ServiceError | null,
+  appProfiles?: AppProfile[],
+  apiResponse?: google.bigtable.admin.v2.IAppProfile[]
+) => void;
+export type GetAppProfilesResponse = [
+  AppProfile[],
+  google.bigtable.admin.v2.IAppProfile[]
+];
 export type SetAppProfileMetadataCallback = (
   err: ServiceError | null,
   apiResponse?: google.protobuf.Empty

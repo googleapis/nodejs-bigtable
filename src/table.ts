@@ -174,6 +174,15 @@ export type TableExistsCallback = (
 ) => void;
 export type TableExistsResponse = [boolean];
 
+export interface GetTablesOptions {
+  gaxOptions?: CallOptions;
+  /**
+   * View over the table's fields. Possible options are 'name', 'schema' or
+   * 'full'. Default: 'name'.
+   */
+  view?: 'name' | 'schema' | 'full';
+}
+
 export interface GetRowsOptions {
   /**
    * If set to `false` it will not decode Buffer values returned from Bigtable.
@@ -314,6 +323,12 @@ export type GetTableCallback = (
   apiResponse?: google.bigtable.admin.v2.ITable
 ) => void;
 export type GetTableResponse = [Table, google.bigtable.admin.v2.Table];
+export type GetTablesCallback = (
+  err: ServiceError | null,
+  tables?: Table[],
+  apiResponse?: google.bigtable.admin.v2.ITable[]
+) => void;
+export type GetTablesResponse = [Table[], google.bigtable.admin.v2.Table[]];
 export type GetFamiliesCallback = (
   err: ServiceError | null,
   families?: Family[],
