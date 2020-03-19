@@ -46,7 +46,7 @@ export interface Qualifier {
 }
 export interface Row {
   key?: Value;
-  data?: Data;
+  data?: any;
 }
 export interface TransformErrorProps {
   message: string;
@@ -354,10 +354,10 @@ export class ChunkTransformer extends Transform {
     }) as string;
     this.validateNewRow(chunk, newRowKey);
     if (chunk.familyName && chunk.qualifier) {
-      const row = this.row;
-      row!.key = newRowKey;
-      row!.data = {} as Data;
-      this.family = row!.data![chunk.familyName.value] = {} as Family;
+      const row = this.row!;
+      row.key = newRowKey;
+      row.data = {};
+      this.family = row.data[chunk.familyName.value] = {} as Family;
       const qualifierName = Mutation.convertFromBytes(
         chunk.qualifier.value as Bytes,
         {

@@ -20,7 +20,7 @@ import arrify = require('arrify');
 import * as is from 'is';
 import snakeCase = require('lodash.snakecase');
 import {AppProfile} from './app-profile';
-import {Cluster} from './cluster';
+import {Cluster, ICluster, CreateClusterOptions} from './cluster';
 import {Family} from './family';
 import {
   GetIamPolicyCallback,
@@ -33,8 +33,63 @@ import {
   TestIamPermissionsCallback,
   TestIamPermissionsResponse,
 } from './table';
-import {CallOptions} from 'google-gax';
+import {CallOptions, Operation} from 'google-gax';
+import {ServiceError} from '@grpc/grpc-js';
 import {Bigtable} from '.';
+import {google} from '../protos/protos';
+
+export interface ClusterInfo {
+  id?: string;
+  location?: string;
+  serveNodes?: string;
+  nodes?: string;
+  storage?: string;
+  defaultStorageType?: number;
+}
+
+export interface InstanceOptions {
+  /**
+   * The clusters to be created within the instance.
+   */
+  clusters?: ClusterInfo[] | ClusterInfo;
+
+  /**
+   * The descriptive name for this instance as it appears in UIs.
+   */
+  displayName?: string;
+
+  /**
+   * Labels are a flexible and lightweight mechanism for organizing cloud
+   * resources into groups that reflect a customer's organizational needs and
+   * deployment strategies. They can be used to filter resources and
+   * aggregate metrics.
+   *
+   * Label keys must be between 1 and 63 characters long and must conform to
+   * the regular expression: `[\p{Ll}\p{Lo}][\p{Ll}\p{Lo}\p{N}_-]{0,62}`.
+   * Label values must be between 0 and 63 characters long and must conform
+   * to the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
+   * No more than 64 labels can be associated with a given resource.
+   * Keys and values must both be under 128 bytes.
+   */
+  labels?: {[index: string]: string};
+
+  type?: 'production' | 'development';
+
+  /**
+   * Request configuration options, outlined here:
+   * https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   */
+  gaxOptions?: CallOptions;
+}
+
+export type IInstance = google.bigtable.admin.v2.IInstance;
+export type CreateInstanceCallback = (
+  err: ServiceError | null,
+  instance?: Instance,
+  operation?: Operation,
+  apiResponse?: IInstance
+) => void;
+export type CreateInstanceResponse = [Instance, Operation, IInstance];
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
