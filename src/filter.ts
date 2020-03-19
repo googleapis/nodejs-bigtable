@@ -145,17 +145,17 @@ export class Filter {
       return regex.toString().replace(/^\/|\/$/g, '');
     }
 
-    if (is.array(regex)) {
+    if (Array.isArray(regex)) {
       return `(${(regex as string[])
         .map(Filter.convertToRegExpString)
         .join('|')})`;
     }
 
-    if (is.string(regex)) {
-      return regex as string;
+    if (typeof regex === 'string') {
+      return regex;
     }
 
-    if (is.number(regex)) {
+    if (typeof regex === 'number') {
       return regex.toString();
     }
 
@@ -255,16 +255,16 @@ export class Filter {
    * // }
    */
   static parse(filters: RawFilter[] | RawFilter) {
+    interface Fn {
+      [index: string]: Function;
+    }
     const filter = new Filter();
     arrify(filters).forEach(filterObj => {
       const key = Object.keys(filterObj)[0];
-      if (
-        typeof ((filter as {}) as {[index: string]: Function})[key] !==
-        'function'
-      ) {
+      if (typeof ((filter as {}) as Fn)[key] !== 'function') {
         throw new FilterError(key);
       }
-      ((filter as {}) as {[index: string]: Function})[key](filterObj[key]);
+      ((filter as {}) as Fn)[key](filterObj[key]);
     });
     return filter.toProto();
   }
@@ -418,7 +418,7 @@ export class Filter {
    */
   column(column: RegExp | string | {}): void {
     let col: Column;
-    if (typeof column !== 'object') {
+    if (!is.object(column)) {
       col = {
         name: column as string,
       };
@@ -703,9 +703,9 @@ export class Filter {
    */
   row(row: Row | string | RegExp | string[]): void {
     let r: Row;
-    if (typeof row !== 'object') {
+    if (!is.object(row)) {
       r = {
-        key: row,
+        key: row as string,
       };
     } else {
       r = row as Row;
@@ -720,11 +720,11 @@ export class Filter {
       this.set('rowSampleFilter', r.sample);
     }
 
-    if (is.number(r.cellOffset)) {
+    if (typeof r.cellOffset === 'number') {
       this.set('cellsPerRowOffsetFilter', r.cellOffset!);
     }
 
-    if (is.number(r.cellLimit)) {
+    if (typeof r.cellLimit === 'number') {
       this.set('cellsPerRowLimitFilter', r.cellLimit!);
     }
   }
@@ -938,9 +938,9 @@ export class Filter {
    */
   value(value: string | string[] | ValueFilter): void {
     let v: ValueFilter;
-    if (typeof value !== 'object') {
+    if (!is.object(value)) {
       v = {
-        value,
+        value: value as string,
       };
     } else {
       v = value as ValueFilter;

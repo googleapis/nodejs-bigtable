@@ -46,7 +46,7 @@ export interface Qualifier {
 }
 export interface Row {
   key?: Value;
-  data?: any;
+  data?: {[index: string]: Family};
 }
 export interface TransformErrorProps {
   message: string;
@@ -388,10 +388,10 @@ export class ChunkTransformer extends Transform {
     if (chunk.resetRow) {
       return this.reset();
     }
-    const row = this.row;
+    const row = this.row!;
     if (chunk.familyName) {
-      this.family = row!.data![chunk.familyName.value] =
-        row!.data![chunk.familyName.value] || {};
+      this.family = row.data![chunk.familyName.value] =
+        row.data![chunk.familyName.value] || {};
     }
     if (chunk.qualifier) {
       const qualifierName = Mutation.convertFromBytes(
