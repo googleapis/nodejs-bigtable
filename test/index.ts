@@ -487,6 +487,31 @@ describe('Bigtable', function() {
         done();
       });
     });
+
+    it('should throw an error if cluster id not provided.', function(done) {
+      const error = new Error(
+        'id of cluster is required to create an instance.'
+      );
+      const instanceOptions = {
+        clusters: [
+          {
+            nodes: 3,
+            location: 'us-central1-f',
+            storage: 'ssd',
+          },
+        ],
+        labels: {'prod-label': 'prod-label'},
+      };
+
+      bigtable.createInstance = function(id, option, callback) {
+        callback(error);
+      };
+      const instance = bigtable.instance('test-instance');
+      instance.create(instanceOptions, function(err, response) {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
   });
 
   describe('getInstances', function() {
