@@ -32,7 +32,7 @@ import {
   CreateFamilyResponse,
   IColumnFamily,
 } from './family';
-import {Filter} from './filter';
+import {Filter, BoundData, RawFilter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
@@ -193,7 +193,7 @@ export interface GetRowsOptions {
   /**
    * Row filters allow you to both make advanced queries and format how the data is returned.
    */
-  filter?: Filter;
+  filter?: RawFilter;
 
   /**
    * Request configuration options, outlined here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
@@ -345,6 +345,11 @@ export type MutateCallback = (
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type MutateResponse = [google.protobuf.Empty];
+
+export interface PrefixRange {
+  start?: BoundData | string;
+  end?: BoundData | string;
+}
 
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
@@ -709,10 +714,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           for (let index = ranges.length - 1; index >= 0; index--) {
             const range = ranges[index];
             const startValue = is.object(range.start)
-              ? (range.start as PrefixRangeValue).value
+              ? (range.start as BoundData).value
               : range.start;
             const endValue = is.object(range.end)
-              ? (range.end as PrefixRangeValue).value
+              ? (range.end as BoundData).value
               : range.end;
             const isWithinStart =
               !startValue ||
@@ -754,7 +759,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
         if (ranges.length) {
           reqOpts.rows.rowRanges = ranges.map(range =>
-            Filter.createRange(range.start, range.end, 'Key')
+            Filter.createRange(
+              range.start as BoundData,
+              range.end as BoundData,
+              'Key'
+            )
           );
         }
       }
@@ -1839,13 +1848,3 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
-
-export interface PrefixRange {
-  start?: string | PrefixRangeValue;
-  end?: string | PrefixRangeValue;
-}
-
-export interface PrefixRangeValue {
-  value: string | number | boolean | Uint8Array | undefined;
-  inclusive: boolean;
-}
