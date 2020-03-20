@@ -31,6 +31,48 @@ export class FilterError extends Error {
   }
 }
 
+export interface Column {
+  name?: string | RegExp;
+  cellLimit?: number;
+  start?: BoundData;
+  end?: {};
+  family?: BoundData;
+}
+
+export interface BoundData {
+  inclusive?: boolean;
+  value?: {};
+}
+
+export interface Time {
+  start: Date;
+  end: Date;
+}
+
+export interface RawFilter {
+  [index: string]: {};
+}
+
+export interface Condition {
+  pass: {};
+  fail: {};
+  test: {};
+}
+
+export interface Row {
+  cellLimit?: number;
+  sample?: string;
+  cellOffset?: number;
+  key?: string;
+}
+
+export interface ValueFilter {
+  value?: string;
+  start?: BoundData;
+  end?: BoundData;
+  strip?: boolean;
+}
+
 /**
  * A filter takes a row as input and produces an alternate view of the row based
  * on specified rules. For example, a row filter might trim down a row to
@@ -103,17 +145,17 @@ export class Filter {
       return regex.toString().replace(/^\/|\/$/g, '');
     }
 
-    if (is.array(regex)) {
+    if (Array.isArray(regex)) {
       return `(${(regex as string[])
         .map(Filter.convertToRegExpString)
         .join('|')})`;
     }
 
-    if (is.string(regex)) {
-      return regex as string;
+    if (typeof regex === 'string') {
+      return regex;
     }
 
-    if (is.number(regex)) {
+    if (typeof regex === 'number') {
       return regex.toString();
     }
 
@@ -160,7 +202,7 @@ export class Filter {
    * //   startTest2Exclusive: 'value3'
    * // }
    */
-  static createRange(start, end, key: string) {
+  static createRange(start: BoundData, end: BoundData, key: string) {
     const range = {};
 
     if (start) {
@@ -173,11 +215,10 @@ export class Filter {
 
     return range;
 
-    function createBound(boundName, boundData, key) {
+    function createBound(boundName: string, boundData: BoundData, key: string) {
       const isInclusive = boundData.inclusive !== false;
       const boundKey = boundName + key + (isInclusive ? 'Closed' : 'Open');
-      const bound = {};
-
+      const bound = {} as {[index: string]: {}};
       bound[boundKey] = Mutation.convertToBytes(boundData.value || boundData);
       return bound;
     }
@@ -213,14 +254,17 @@ export class Filter {
    * //   }
    * // }
    */
-  static parse(filters) {
+  static parse(filters: RawFilter[] | RawFilter) {
+    interface Fn {
+      [index: string]: Function;
+    }
     const filter = new Filter();
     arrify(filters).forEach(filterObj => {
       const key = Object.keys(filterObj)[0];
-      if (!is.function(filter[key])) {
+      if (typeof ((filter as {}) as Fn)[key] !== 'function') {
         throw new FilterError(key);
       }
-      filter[key](filterObj[key]);
+      ((filter as {}) as Fn)[key](filterObj[key]);
     });
     return filter.toProto();
   }
@@ -372,32 +416,31 @@ export class Filter {
    *   }
    * ];
    */
-  column(column) {
+  column(column: RegExp | string | {}): void {
+    let col: Column;
     if (!is.object(column)) {
-      column = {
-        name: column,
+      col = {
+        name: column as string,
       };
+    } else {
+      col = column as Column;
     }
 
-    if (column.name) {
+    if (col.name) {
       const name = Mutation.convertToBytes(
-        Filter.convertToRegExpString(column.name)
+        Filter.convertToRegExpString(col.name)
       );
       this.set('columnQualifierRegexFilter', name);
     }
 
-    if (is.number(column.cellLimit)) {
-      this.set('cellsPerColumnLimitFilter', column.cellLimit);
+    if (typeof col.cellLimit === 'number') {
+      this.set('cellsPerColumnLimitFilter', col.cellLimit!);
     }
 
-    if (column.start || column.end) {
-      const range: any = Filter.createRange(
-        column.start,
-        column.end,
-        'Qualifier'
-      );
+    if (col.start || col.end) {
+      const range: any = Filter.createRange(col.start!, col.end!, 'Qualifier');
 
-      range.familyName = column.family;
+      range.familyName = col.family;
       this.set('columnRangeFilter', range);
     }
   }
@@ -454,7 +497,7 @@ export class Filter {
    *   }
    * ];
    */
-  condition(condition) {
+  condition(condition: Condition) {
     this.set('condition', {
       predicateFilter: Filter.parse(condition.test),
       trueFilter: Filter.parse(condition.pass),
@@ -522,7 +565,7 @@ export class Filter {
    *   }
    * ];
    */
-  interleave(filters) {
+  interleave(filters: RawFilter[]): void {
     this.set('interleave', {
       filters: filters.map(Filter.parse),
     });
@@ -658,30 +701,31 @@ export class Filter {
    *   }
    * ];
    */
-  row(row) {
+  row(row: Row | string | RegExp | string[]): void {
+    let r: Row;
     if (!is.object(row)) {
-      row = {
-        key: row,
+      r = {
+        key: row as string,
       };
+    } else {
+      r = row as Row;
     }
 
-    if (row.key) {
-      const key = Mutation.convertToBytes(
-        Filter.convertToRegExpString(row.key)
-      );
+    if (r.key) {
+      const key = Mutation.convertToBytes(Filter.convertToRegExpString(r.key));
       this.set('rowKeyRegexFilter', key);
     }
 
-    if (row.sample) {
-      this.set('rowSampleFilter', row.sample);
+    if (r.sample) {
+      this.set('rowSampleFilter', r.sample);
     }
 
-    if (is.number(row.cellOffset)) {
-      this.set('cellsPerRowOffsetFilter', row.cellOffset);
+    if (typeof r.cellOffset === 'number') {
+      this.set('cellsPerRowOffsetFilter', r.cellOffset!);
     }
 
-    if (is.number(row.cellLimit)) {
-      this.set('cellsPerRowLimitFilter', row.cellLimit);
+    if (typeof r.cellLimit === 'number') {
+      this.set('cellsPerRowLimitFilter', r.cellLimit!);
     }
   }
 
@@ -770,7 +814,7 @@ export class Filter {
    *   }
    * ];
    */
-  time(time) {
+  time(time: Time): void {
     const range = Mutation.createTimeRange(time.start, time.end);
     this.set('timestampRangeFilter', range);
   }
@@ -892,27 +936,30 @@ export class Filter {
    *   }
    * ];
    */
-  value(value): void {
+  value(value: string | string[] | ValueFilter): void {
+    let v: ValueFilter;
     if (!is.object(value)) {
-      value = {
-        value,
+      v = {
+        value: value as string,
       };
+    } else {
+      v = value as ValueFilter;
     }
 
-    if (value.value) {
+    if (v.value) {
       const valueReg = Mutation.convertToBytes(
-        Filter.convertToRegExpString(value.value)
+        Filter.convertToRegExpString(v.value)
       );
       this.set('valueRegexFilter', valueReg);
     }
 
-    if (value.start || value.end) {
-      const range = Filter.createRange(value.start, value.end, 'Value');
+    if (v.start || v.end) {
+      const range = Filter.createRange(v.start!, v.end!, 'Value');
       this.set('valueRangeFilter', range);
     }
 
-    if (value.strip) {
-      this.set('stripValueTransformer', value.strip);
+    if (v.strip) {
+      this.set('stripValueTransformer', v.strip);
     }
   }
 }

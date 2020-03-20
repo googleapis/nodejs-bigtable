@@ -14,13 +14,28 @@
  * limitations under the License.
  */
 
-import {paginator} from '@google-cloud/paginator';
+import {paginator, ResourceStream} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as is from 'is';
 import snakeCase = require('lodash.snakecase');
-import {AppProfile} from './app-profile';
-import {Cluster} from './cluster';
+import {
+  AppProfile,
+  AppProfileOptions,
+  CreateAppProfileCallback,
+  CreateAppProfileResponse,
+  GetAppProfilesCallback,
+  GetAppProfilesResponse,
+} from './app-profile';
+import {
+  Cluster,
+  CreateClusterOptions,
+  CreateClusterCallback,
+  CreateClusterResponse,
+  GetClustersCallback,
+  GetClustersResponse,
+  Metadata,
+} from './cluster';
 import {Family} from './family';
 import {
   GetIamPolicyCallback,
@@ -32,9 +47,96 @@ import {
   Table,
   TestIamPermissionsCallback,
   TestIamPermissionsResponse,
+  CreateTableOptions,
+  CreateTableCallback,
+  CreateTableResponse,
+  GetTablesOptions,
+  GetTablesCallback,
+  GetTablesResponse,
 } from './table';
-import {CallOptions} from 'google-gax';
+import {CallOptions, Operation} from 'google-gax';
+import {ServiceError} from '@grpc/grpc-js';
 import {Bigtable} from '.';
+import {google} from '../protos/protos';
+
+export interface ClusterInfo {
+  id?: string;
+  location?: string;
+  serveNodes?: string;
+  nodes?: string;
+  storage?: string;
+  defaultStorageType?: number;
+}
+
+export interface InstanceOptions {
+  /**
+   * The clusters to be created within the instance.
+   */
+  clusters?: ClusterInfo[] | ClusterInfo;
+
+  /**
+   * The descriptive name for this instance as it appears in UIs.
+   */
+  displayName?: string;
+
+  /**
+   * Labels are a flexible and lightweight mechanism for organizing cloud
+   * resources into groups that reflect a customer's organizational needs and
+   * deployment strategies. They can be used to filter resources and
+   * aggregate metrics.
+   *
+   * Label keys must be between 1 and 63 characters long and must conform to
+   * the regular expression: `[\p{Ll}\p{Lo}][\p{Ll}\p{Lo}\p{N}_-]{0,62}`.
+   * Label values must be between 0 and 63 characters long and must conform
+   * to the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
+   * No more than 64 labels can be associated with a given resource.
+   * Keys and values must both be under 128 bytes.
+   */
+  labels?: {[index: string]: string};
+
+  type?: 'production' | 'development';
+
+  /**
+   * Request configuration options, outlined here:
+   * https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   */
+  gaxOptions?: CallOptions;
+}
+
+export type IInstance = google.bigtable.admin.v2.IInstance;
+export type CreateInstanceCallback = (
+  err: ServiceError | null,
+  instance?: Instance,
+  operation?: Operation,
+  apiResponse?: IInstance
+) => void;
+export type CreateInstanceResponse = [Instance, Operation, IInstance];
+export type DeleteInstanceCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type DeleteInstanceResponse = [google.protobuf.Empty];
+export type InstanceExistsCallback = (
+  err: ServiceError | null,
+  exists?: boolean
+) => void;
+export type InstanceExistsResponse = [boolean];
+export type GetInstanceCallback = (
+  err: ServiceError | null,
+  instance?: Instance,
+  apiResponse?: IInstance
+) => void;
+export type GetInstanceResponse = [Instance, IInstance];
+export type GetInstanceMetadataCallback = (
+  err: ServiceError | null,
+  metadata?: IInstance
+) => void;
+export type GetInstanceMetadataResponse = [IInstance];
+export type SetInstanceMetadataCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type SetInstanceMetadataResponse = [google.protobuf.Empty];
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -55,7 +157,7 @@ export class Instance {
   id: string;
   name: string;
   metadata?: {};
-  getTablesStream;
+  getTablesStream!: (options?: GetTablesOptions) => ResourceStream<Table>;
   constructor(bigtable: Bigtable, id: string) {
     this.bigtable = bigtable;
 
@@ -92,12 +194,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       unspecified: 0,
       production: 1,
       development: 2,
-    };
-
+    } as {[index: string]: number};
     if (is.string(type)) {
       type = type.toLowerCase();
     }
-
     return types[type] || types.unspecified;
   }
 
@@ -111,6 +211,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     return new AppProfile(this, name);
   }
 
+  create(options?: InstanceOptions): Promise<CreateInstanceResponse>;
+  create(options: InstanceOptions, callback: CreateInstanceCallback): void;
+  create(callback: CreateInstanceCallback): void;
   /**
    * Create an instance.
    *
@@ -129,15 +232,27 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_instance
    */
-  create(options, callback?) {
-    if (is.fn(options)) {
-      callback = options;
-      options = {};
-    }
-
+  create(
+    optionsOrCallback?: InstanceOptions | CreateInstanceCallback,
+    cb?: CreateInstanceCallback
+  ): void | Promise<CreateInstanceResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     this.bigtable.createInstance(this.id, options, callback);
   }
 
+  createAppProfile(
+    id: string,
+    options?: AppProfileOptions
+  ): Promise<CreateAppProfileResponse>;
+  createAppProfile(
+    id: string,
+    options: AppProfileOptions,
+    callback: CreateAppProfileCallback
+  ): void;
+  createAppProfile(id: string, callback: CreateAppProfileCallback): void;
   /**
    * Create an app profile.
    *
@@ -166,11 +281,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_app_profile
    */
-  createAppProfile(id: string, options, callback) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+  createAppProfile(
+    id: string,
+    optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
+    cb?: CreateAppProfileCallback
+  ): void | Promise<CreateAppProfileResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     if (!options.routing) {
       throw new Error('An app profile must contain a routing policy.');
     }
@@ -204,6 +323,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  createCluster(
+    id: string,
+    options?: CreateClusterOptions
+  ): Promise<CreateClusterResponse>;
+  createCluster(
+    id: string,
+    options: CreateClusterOptions,
+    callback: CreateClusterCallback
+  ): void;
+  createCluster(id: string, callback: CreateClusterCallback): void;
   /**
    * Create a cluster.
    *
@@ -231,11 +360,17 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_cluster
    */
-  createCluster(id: string, options, callback) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+  createCluster(
+    id: string,
+    optionsOrCallback?: CreateClusterOptions | CreateClusterCallback,
+    cb?: CreateClusterCallback
+  ): void | Promise<CreateClusterResponse> {
+    const options =
+      typeof optionsOrCallback === 'object'
+        ? optionsOrCallback
+        : ({} as CreateClusterOptions);
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     const reqOpts: any = {
       parent: this.name,
@@ -279,6 +414,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  createTable(
+    id: string,
+    options?: CreateTableOptions
+  ): Promise<CreateTableResponse>;
+  createTable(
+    id: string,
+    options: CreateTableOptions,
+    callback: CreateTableCallback
+  ): void;
+  createTable(id: string, callback: CreateTableCallback): void;
   /**
    * Create a table on your Bigtable instance.
    *
@@ -303,17 +448,19 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_create_table
    */
-  createTable(id: string, options, callback) {
+  createTable(
+    id: string,
+    optionsOrCallback?: CreateTableOptions | CreateTableCallback,
+    cb?: CreateTableCallback
+  ): void | Promise<CreateTableResponse> {
     if (!id) {
       throw new Error('An id is required to create a table.');
     }
 
-    options = options || {};
-
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     const reqOpts: any = {
       parent: this.name,
@@ -333,21 +480,21 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     }
 
     if (options.families) {
-      const columnFamilies = options.families.reduce((families, family) => {
-        if (is.string(family)) {
-          family = {
-            name: family,
-          };
-        }
-
-        const columnFamily: any = (families[family.name] = {});
-
-        if (family.rule) {
-          columnFamily.gcRule = Family.formatRule_(family.rule);
-        }
-
-        return families;
-      }, {});
+      const columnFamilies = (options.families as any[]).reduce(
+        (families, family) => {
+          if (typeof family === 'string') {
+            family = {
+              name: family,
+            };
+          }
+          const columnFamily: any = (families[family.name] = {});
+          if (family.rule) {
+            columnFamily.gcRule = Family.formatRule_(family.rule);
+          }
+          return families;
+        },
+        {}
+      );
 
       reqOpts.table.columnFamilies = columnFamilies;
     }
@@ -381,6 +528,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     return new Cluster(this, id);
   }
 
+  delete(gaxOptions?: CallOptions): Promise<DeleteInstanceResponse>;
+  delete(gaxOptions: CallOptions, callback: DeleteInstanceCallback): void;
+  delete(callback: DeleteInstanceCallback): void;
   /**
    * Delete the instance.
    *
@@ -394,11 +544,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_del_instance
    */
-  delete(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  delete(
+    optionsOrCallback?: CallOptions | DeleteInstanceCallback,
+    cb?: DeleteInstanceCallback
+  ): void | Promise<DeleteInstanceResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     this.bigtable.request(
       {
@@ -413,6 +566,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  exists(options?: CallOptions): Promise<InstanceExistsResponse>;
+  exists(options: CallOptions, callback: InstanceExistsCallback): void;
+  exists(callback: InstanceExistsCallback): void;
   /**
    * Check if an instance exists.
    *
@@ -426,27 +582,30 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_exists_instance
    */
-  exists(gaxOptions?, callback?) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  exists(
+    optionsOrCallback?: CallOptions | InstanceExistsCallback,
+    cb?: InstanceExistsCallback
+  ): void | Promise<InstanceExistsResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     this.getMetadata(gaxOptions, err => {
       if (err) {
         if (err.code === 5) {
           callback(null, false);
           return;
         }
-
         callback(err);
         return;
       }
-
       callback(null, true);
     });
   }
 
+  get(gaxOptions?: CallOptions): Promise<GetInstanceResponse>;
+  get(gaxOptions: CallOptions, callback: GetInstanceCallback): void;
+  get(callback: GetInstanceCallback): void;
   /**
    * Get an instance if it exists.
    *
@@ -460,17 +619,26 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_instance
    */
-  get(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  get(
+    optionsOrCallback?: CallOptions | GetInstanceCallback,
+    cb?: GetInstanceCallback
+  ): void | Promise<GetInstanceResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     this.getMetadata(gaxOptions, (err, metadata) => {
-      callback(err, err ? null : this, metadata);
+      if (err) {
+        callback(err, undefined, metadata);
+      } else {
+        callback(null, this, metadata);
+      }
     });
   }
 
+  getAppProfiles(options?: CallOptions): Promise<GetAppProfilesResponse>;
+  getAppProfiles(options: CallOptions, callback: GetAppProfilesCallback): void;
+  getAppProfiles(callback: GetAppProfilesCallback): void;
   /**
    * Get App Profile objects for this instance.
    *
@@ -484,17 +652,20 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_app_profiles
    */
-  getAppProfiles(gaxOptions, callback) {
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  getAppProfiles(
+    optionsOrCallback?: CallOptions | GetAppProfilesCallback,
+    cb?: GetAppProfilesCallback
+  ): void | Promise<GetAppProfilesResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     const reqOpts = {
       parent: this.name,
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.IAppProfile[]>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'listAppProfiles',
@@ -506,20 +677,21 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           callback(err);
           return;
         }
-
-        const appProfiles = resp.map(appProfileObj => {
+        const appProfiles = resp!.map(appProfileObj => {
           const appProfile = this.appProfile(
-            appProfileObj.name.split('/').pop()
+            appProfileObj.name!.split('/').pop()!
           );
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
-
         callback(null, appProfiles, resp);
       }
     );
   }
 
+  getClusters(options?: CallOptions): Promise<GetClustersResponse>;
+  getClusters(options: CallOptions, callback: GetClustersCallback): void;
+  getClusters(callback: GetClustersCallback): void;
   /**
    * Get Cluster objects for all of your clusters.
    *
@@ -534,17 +706,20 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_clusters
    */
-  getClusters(gaxOptions, callback) {
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  getClusters(
+    optionsOrCallback?: CallOptions | GetClustersCallback,
+    cb?: GetClustersCallback
+  ): void | Promise<GetClustersResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     const reqOpts = {
       parent: this.name,
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.IListClustersResponse>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'listClusters',
@@ -556,20 +731,21 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           callback(err);
           return;
         }
-
-        const clusters = resp.clusters.map(clusterObj => {
-          const cluster = this.cluster(clusterObj.name.split('/').pop());
-          cluster.metadata = clusterObj;
+        const clusters = resp!.clusters!.map(clusterObj => {
+          const cluster = this.cluster(clusterObj.name!.split('/').pop()!);
+          cluster.metadata = clusterObj as Metadata;
           return cluster;
         });
-
         callback(null, clusters, resp);
       }
     );
   }
 
-  getIamPolicy(options?): Promise<[Policy]>;
-  getIamPolicy(options, callback): void;
+  getIamPolicy(options?: GetIamPolicyOptions): Promise<[Policy]>;
+  getIamPolicy(
+    options: GetIamPolicyOptions,
+    callback: GetIamPolicyCallback
+  ): void;
   /**
    * @param {object} [options] Configuration object.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
@@ -625,6 +801,12 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  getMetadata(options?: CallOptions): Promise<GetInstanceMetadataResponse>;
+  getMetadata(
+    options: CallOptions,
+    callback: GetInstanceMetadataCallback
+  ): void;
+  getMetadata(callback: GetInstanceMetadataCallback): void;
   /**
    * Get the instance metadata.
    *
@@ -638,13 +820,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_instance_metadata
    */
-  getMetadata(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  getMetadata(
+    optionsOrCallback?: CallOptions | GetInstanceMetadataCallback,
+    cb?: GetInstanceMetadataCallback
+  ): void | Promise<GetInstanceMetadataResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.IInstance>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'getInstance',
@@ -657,12 +842,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         if (args[1]) {
           this.metadata = args[1];
         }
-
         callback(...args);
       }
     );
   }
 
+  getTables(options?: GetTablesOptions): Promise<GetTablesResponse>;
+  getTables(options: GetTablesOptions, callback: GetTablesCallback): void;
+  getTables(callback: GetTablesCallback): void;
   /**
    * Get Table objects for all the tables in your Cloud Bigtable instance.
    *
@@ -686,11 +873,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_tables
    */
-  getTables(options, callback) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+  getTables(
+    optionsOrCallback?: GetTablesOptions | GetTablesCallback,
+    cb?: GetTablesCallback
+  ): void | Promise<GetTablesResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     const reqOpts = Object.assign({}, options, {
       parent: this.name,
@@ -699,7 +889,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     delete reqOpts.gaxOptions;
 
-    this.bigtable.request(
+    this.bigtable.request<Table[]>(
       {
         client: 'BigtableTableAdminClient',
         method: 'listTables',
@@ -709,7 +899,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       (...args) => {
         if (args[1]) {
           args[1] = args[1].map(tableObj => {
-            const table = this.table(tableObj.name.split('/').pop());
+            const table = this.table(tableObj.name!.split('/').pop()!);
             table.metadata = tableObj;
             return table;
           });
@@ -776,6 +966,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  setMetadata(
+    metadata: IInstance,
+    options?: CallOptions
+  ): Promise<SetInstanceMetadataResponse>;
+  setMetadata(
+    metadata: IInstance,
+    options: CallOptions,
+    callback: SetInstanceMetadataCallback
+  ): void;
+  setMetadata(metadata: IInstance, callback: SetInstanceMetadataCallback): void;
   /**
    * Set the instance metadata.
    *
@@ -793,11 +993,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_set_meta_data
    */
-  setMetadata(metadata, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  setMetadata(
+    metadata: IInstance,
+    optionsOrCallback?: CallOptions | SetInstanceMetadataCallback,
+    cb?: SetInstanceMetadataCallback
+  ): void | Promise<SetInstanceMetadataResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const reqOpts: any = {
       instance: Object.assign({name: this.name}, metadata),
       updateMask: {
@@ -823,7 +1027,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         if (args[1]) {
           this.metadata = args[1];
         }
-
         callback(...args);
       }
     );
@@ -937,7 +1140,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
  *     this.end();
  *   });
  */
-Instance.prototype.getTablesStream = paginator.streamify('getTables');
+Instance.prototype.getTablesStream = paginator.streamify<Table>('getTables');
 
 /*! Developer Documentation
  *
