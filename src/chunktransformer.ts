@@ -23,7 +23,7 @@ export interface Chunk {
   rowContents: Value;
   commitRow: boolean;
   resetRow: boolean;
-  rowKey?: string | Uint8Array;
+  rowKey?: string | Bytes;
   familyName?: {value: string};
   qualifier?: Qualifier | {value: Value};
   timestampMicros?: number | Long;
