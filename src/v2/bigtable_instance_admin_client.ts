@@ -157,6 +157,9 @@ export class BigtableInstanceAdminClient {
       appProfilePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/appProfiles/{app_profile}'
       ),
+      backupPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}'
+      ),
       clusterPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}'
       ),
@@ -2068,6 +2071,73 @@ export class BigtableInstanceAdminClient {
   matchAppProfileFromAppProfileName(appProfileName: string) {
     return this._pathTemplates.appProfilePathTemplate.match(appProfileName)
       .app_profile;
+  }
+
+  /**
+   * Return a fully-qualified backup resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} cluster
+   * @param {string} backup
+   * @returns {string} Resource name string.
+   */
+  backupPath(
+    project: string,
+    instance: string,
+    cluster: string,
+    backup: string
+  ) {
+    return this._pathTemplates.backupPathTemplate.render({
+      project,
+      instance,
+      cluster,
+      backup,
+    });
+  }
+
+  /**
+   * Parse the project from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).project;
+  }
+
+  /**
+   * Parse the instance from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).instance;
+  }
+
+  /**
+   * Parse the cluster from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the cluster.
+   */
+  matchClusterFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).cluster;
+  }
+
+  /**
+   * Parse the backup from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the backup.
+   */
+  matchBackupFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).backup;
   }
 
   /**

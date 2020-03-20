@@ -7136,6 +7136,248 @@
                         return values;
                     })();
     
+                    v2.OperationProgress = (function() {
+    
+                        /**
+                         * Properties of an OperationProgress.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IOperationProgress
+                         * @property {number|null} [progressPercent] OperationProgress progressPercent
+                         * @property {google.protobuf.ITimestamp|null} [startTime] OperationProgress startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] OperationProgress endTime
+                         */
+    
+                        /**
+                         * Constructs a new OperationProgress.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an OperationProgress.
+                         * @implements IOperationProgress
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IOperationProgress=} [properties] Properties to set
+                         */
+                        function OperationProgress(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * OperationProgress progressPercent.
+                         * @member {number} progressPercent
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @instance
+                         */
+                        OperationProgress.prototype.progressPercent = 0;
+    
+                        /**
+                         * OperationProgress startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @instance
+                         */
+                        OperationProgress.prototype.startTime = null;
+    
+                        /**
+                         * OperationProgress endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @instance
+                         */
+                        OperationProgress.prototype.endTime = null;
+    
+                        /**
+                         * Creates a new OperationProgress instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {google.bigtable.admin.v2.IOperationProgress=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.OperationProgress} OperationProgress instance
+                         */
+                        OperationProgress.create = function create(properties) {
+                            return new OperationProgress(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified OperationProgress message. Does not implicitly {@link google.bigtable.admin.v2.OperationProgress.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {google.bigtable.admin.v2.IOperationProgress} message OperationProgress message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        OperationProgress.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.progressPercent != null && message.hasOwnProperty("progressPercent"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.progressPercent);
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified OperationProgress message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.OperationProgress.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {google.bigtable.admin.v2.IOperationProgress} message OperationProgress message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        OperationProgress.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an OperationProgress message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.OperationProgress} OperationProgress
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        OperationProgress.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.OperationProgress();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.progressPercent = reader.int32();
+                                    break;
+                                case 2:
+                                    message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an OperationProgress message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.OperationProgress} OperationProgress
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        OperationProgress.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an OperationProgress message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        OperationProgress.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.progressPercent != null && message.hasOwnProperty("progressPercent"))
+                                if (!$util.isInteger(message.progressPercent))
+                                    return "progressPercent: integer expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an OperationProgress message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.OperationProgress} OperationProgress
+                         */
+                        OperationProgress.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.OperationProgress)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.OperationProgress();
+                            if (object.progressPercent != null)
+                                message.progressPercent = object.progressPercent | 0;
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.OperationProgress.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.OperationProgress.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an OperationProgress message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @static
+                         * @param {google.bigtable.admin.v2.OperationProgress} message OperationProgress
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        OperationProgress.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.progressPercent = 0;
+                                object.startTime = null;
+                                object.endTime = null;
+                            }
+                            if (message.progressPercent != null && message.hasOwnProperty("progressPercent"))
+                                object.progressPercent = message.progressPercent;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this OperationProgress to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.OperationProgress
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        OperationProgress.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return OperationProgress;
+                    })();
+    
                     v2.BigtableTableAdmin = (function() {
     
                         /**
@@ -7594,6 +7836,204 @@
                          * @instance
                          * @param {google.bigtable.admin.v2.IDeleteSnapshotRequest} request DeleteSnapshotRequest message or plain object
                          * @returns {Promise<google.protobuf.Empty>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createBackup}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef CreateBackupCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls CreateBackup.
+                         * @function createBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.ICreateBackupRequest} request CreateBackupRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.CreateBackupCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.createBackup = function createBackup(request, callback) {
+                            return this.rpcCall(createBackup, $root.google.bigtable.admin.v2.CreateBackupRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "CreateBackup" });
+    
+                        /**
+                         * Calls CreateBackup.
+                         * @function createBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.ICreateBackupRequest} request CreateBackupRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getBackup}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef GetBackupCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.bigtable.admin.v2.Backup} [response] Backup
+                         */
+    
+                        /**
+                         * Calls GetBackup.
+                         * @function getBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IGetBackupRequest} request GetBackupRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.GetBackupCallback} callback Node-style callback called with the error, if any, and Backup
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.getBackup = function getBackup(request, callback) {
+                            return this.rpcCall(getBackup, $root.google.bigtable.admin.v2.GetBackupRequest, $root.google.bigtable.admin.v2.Backup, request, callback);
+                        }, "name", { value: "GetBackup" });
+    
+                        /**
+                         * Calls GetBackup.
+                         * @function getBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IGetBackupRequest} request GetBackupRequest message or plain object
+                         * @returns {Promise<google.bigtable.admin.v2.Backup>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#updateBackup}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef UpdateBackupCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.bigtable.admin.v2.Backup} [response] Backup
+                         */
+    
+                        /**
+                         * Calls UpdateBackup.
+                         * @function updateBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateBackupRequest} request UpdateBackupRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.UpdateBackupCallback} callback Node-style callback called with the error, if any, and Backup
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.updateBackup = function updateBackup(request, callback) {
+                            return this.rpcCall(updateBackup, $root.google.bigtable.admin.v2.UpdateBackupRequest, $root.google.bigtable.admin.v2.Backup, request, callback);
+                        }, "name", { value: "UpdateBackup" });
+    
+                        /**
+                         * Calls UpdateBackup.
+                         * @function updateBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateBackupRequest} request UpdateBackupRequest message or plain object
+                         * @returns {Promise<google.bigtable.admin.v2.Backup>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteBackup}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef DeleteBackupCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.protobuf.Empty} [response] Empty
+                         */
+    
+                        /**
+                         * Calls DeleteBackup.
+                         * @function deleteBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IDeleteBackupRequest} request DeleteBackupRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.DeleteBackupCallback} callback Node-style callback called with the error, if any, and Empty
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.deleteBackup = function deleteBackup(request, callback) {
+                            return this.rpcCall(deleteBackup, $root.google.bigtable.admin.v2.DeleteBackupRequest, $root.google.protobuf.Empty, request, callback);
+                        }, "name", { value: "DeleteBackup" });
+    
+                        /**
+                         * Calls DeleteBackup.
+                         * @function deleteBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IDeleteBackupRequest} request DeleteBackupRequest message or plain object
+                         * @returns {Promise<google.protobuf.Empty>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listBackups}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef ListBackupsCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.bigtable.admin.v2.ListBackupsResponse} [response] ListBackupsResponse
+                         */
+    
+                        /**
+                         * Calls ListBackups.
+                         * @function listBackups
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IListBackupsRequest} request ListBackupsRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.ListBackupsCallback} callback Node-style callback called with the error, if any, and ListBackupsResponse
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.listBackups = function listBackups(request, callback) {
+                            return this.rpcCall(listBackups, $root.google.bigtable.admin.v2.ListBackupsRequest, $root.google.bigtable.admin.v2.ListBackupsResponse, request, callback);
+                        }, "name", { value: "ListBackups" });
+    
+                        /**
+                         * Calls ListBackups.
+                         * @function listBackups
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IListBackupsRequest} request ListBackupsRequest message or plain object
+                         * @returns {Promise<google.bigtable.admin.v2.ListBackupsResponse>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#restoreTable}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef RestoreTableCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls RestoreTable.
+                         * @function restoreTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IRestoreTableRequest} request RestoreTableRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.RestoreTableCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.restoreTable = function restoreTable(request, callback) {
+                            return this.rpcCall(restoreTable, $root.google.bigtable.admin.v2.RestoreTableRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "RestoreTable" });
+    
+                        /**
+                         * Calls RestoreTable.
+                         * @function restoreTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IRestoreTableRequest} request RestoreTableRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
                          * @variation 2
                          */
     
@@ -12515,6 +12955,2654 @@
                         return CreateTableFromSnapshotMetadata;
                     })();
     
+                    v2.CreateBackupRequest = (function() {
+    
+                        /**
+                         * Properties of a CreateBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ICreateBackupRequest
+                         * @property {string|null} [parent] CreateBackupRequest parent
+                         * @property {string|null} [backupId] CreateBackupRequest backupId
+                         * @property {google.bigtable.admin.v2.IBackup|null} [backup] CreateBackupRequest backup
+                         */
+    
+                        /**
+                         * Constructs a new CreateBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a CreateBackupRequest.
+                         * @implements ICreateBackupRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ICreateBackupRequest=} [properties] Properties to set
+                         */
+                        function CreateBackupRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * CreateBackupRequest parent.
+                         * @member {string} parent
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @instance
+                         */
+                        CreateBackupRequest.prototype.parent = "";
+    
+                        /**
+                         * CreateBackupRequest backupId.
+                         * @member {string} backupId
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @instance
+                         */
+                        CreateBackupRequest.prototype.backupId = "";
+    
+                        /**
+                         * CreateBackupRequest backup.
+                         * @member {google.bigtable.admin.v2.IBackup|null|undefined} backup
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @instance
+                         */
+                        CreateBackupRequest.prototype.backup = null;
+    
+                        /**
+                         * Creates a new CreateBackupRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateBackupRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.CreateBackupRequest} CreateBackupRequest instance
+                         */
+                        CreateBackupRequest.create = function create(properties) {
+                            return new CreateBackupRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified CreateBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.CreateBackupRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateBackupRequest} message CreateBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateBackupRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.parent);
+                            if (message.backupId != null && message.hasOwnProperty("backupId"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.backupId);
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                $root.google.bigtable.admin.v2.Backup.encode(message.backup, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified CreateBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateBackupRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateBackupRequest} message CreateBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateBackupRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a CreateBackupRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.CreateBackupRequest} CreateBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateBackupRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateBackupRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.parent = reader.string();
+                                    break;
+                                case 2:
+                                    message.backupId = reader.string();
+                                    break;
+                                case 3:
+                                    message.backup = $root.google.bigtable.admin.v2.Backup.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a CreateBackupRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.CreateBackupRequest} CreateBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateBackupRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a CreateBackupRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        CreateBackupRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                if (!$util.isString(message.parent))
+                                    return "parent: string expected";
+                            if (message.backupId != null && message.hasOwnProperty("backupId"))
+                                if (!$util.isString(message.backupId))
+                                    return "backupId: string expected";
+                            if (message.backup != null && message.hasOwnProperty("backup")) {
+                                var error = $root.google.bigtable.admin.v2.Backup.verify(message.backup);
+                                if (error)
+                                    return "backup." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a CreateBackupRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.CreateBackupRequest} CreateBackupRequest
+                         */
+                        CreateBackupRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.CreateBackupRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.CreateBackupRequest();
+                            if (object.parent != null)
+                                message.parent = String(object.parent);
+                            if (object.backupId != null)
+                                message.backupId = String(object.backupId);
+                            if (object.backup != null) {
+                                if (typeof object.backup !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CreateBackupRequest.backup: object expected");
+                                message.backup = $root.google.bigtable.admin.v2.Backup.fromObject(object.backup);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a CreateBackupRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.CreateBackupRequest} message CreateBackupRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        CreateBackupRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.parent = "";
+                                object.backupId = "";
+                                object.backup = null;
+                            }
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                object.parent = message.parent;
+                            if (message.backupId != null && message.hasOwnProperty("backupId"))
+                                object.backupId = message.backupId;
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                object.backup = $root.google.bigtable.admin.v2.Backup.toObject(message.backup, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this CreateBackupRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.CreateBackupRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        CreateBackupRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return CreateBackupRequest;
+                    })();
+    
+                    v2.CreateBackupMetadata = (function() {
+    
+                        /**
+                         * Properties of a CreateBackupMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ICreateBackupMetadata
+                         * @property {string|null} [name] CreateBackupMetadata name
+                         * @property {string|null} [sourceTable] CreateBackupMetadata sourceTable
+                         * @property {google.protobuf.ITimestamp|null} [startTime] CreateBackupMetadata startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] CreateBackupMetadata endTime
+                         */
+    
+                        /**
+                         * Constructs a new CreateBackupMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a CreateBackupMetadata.
+                         * @implements ICreateBackupMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ICreateBackupMetadata=} [properties] Properties to set
+                         */
+                        function CreateBackupMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * CreateBackupMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @instance
+                         */
+                        CreateBackupMetadata.prototype.name = "";
+    
+                        /**
+                         * CreateBackupMetadata sourceTable.
+                         * @member {string} sourceTable
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @instance
+                         */
+                        CreateBackupMetadata.prototype.sourceTable = "";
+    
+                        /**
+                         * CreateBackupMetadata startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @instance
+                         */
+                        CreateBackupMetadata.prototype.startTime = null;
+    
+                        /**
+                         * CreateBackupMetadata endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @instance
+                         */
+                        CreateBackupMetadata.prototype.endTime = null;
+    
+                        /**
+                         * Creates a new CreateBackupMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateBackupMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.CreateBackupMetadata} CreateBackupMetadata instance
+                         */
+                        CreateBackupMetadata.create = function create(properties) {
+                            return new CreateBackupMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified CreateBackupMetadata message. Does not implicitly {@link google.bigtable.admin.v2.CreateBackupMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateBackupMetadata} message CreateBackupMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateBackupMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.sourceTable);
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified CreateBackupMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateBackupMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICreateBackupMetadata} message CreateBackupMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CreateBackupMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a CreateBackupMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.CreateBackupMetadata} CreateBackupMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateBackupMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateBackupMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    message.sourceTable = reader.string();
+                                    break;
+                                case 3:
+                                    message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a CreateBackupMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.CreateBackupMetadata} CreateBackupMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CreateBackupMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a CreateBackupMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        CreateBackupMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                if (!$util.isString(message.sourceTable))
+                                    return "sourceTable: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a CreateBackupMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.CreateBackupMetadata} CreateBackupMetadata
+                         */
+                        CreateBackupMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.CreateBackupMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.CreateBackupMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.sourceTable != null)
+                                message.sourceTable = String(object.sourceTable);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CreateBackupMetadata.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CreateBackupMetadata.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a CreateBackupMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.CreateBackupMetadata} message CreateBackupMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        CreateBackupMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.sourceTable = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                object.sourceTable = message.sourceTable;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this CreateBackupMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.CreateBackupMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        CreateBackupMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return CreateBackupMetadata;
+                    })();
+    
+                    v2.GetBackupRequest = (function() {
+    
+                        /**
+                         * Properties of a GetBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IGetBackupRequest
+                         * @property {string|null} [name] GetBackupRequest name
+                         */
+    
+                        /**
+                         * Constructs a new GetBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a GetBackupRequest.
+                         * @implements IGetBackupRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IGetBackupRequest=} [properties] Properties to set
+                         */
+                        function GetBackupRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * GetBackupRequest name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @instance
+                         */
+                        GetBackupRequest.prototype.name = "";
+    
+                        /**
+                         * Creates a new GetBackupRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGetBackupRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.GetBackupRequest} GetBackupRequest instance
+                         */
+                        GetBackupRequest.create = function create(properties) {
+                            return new GetBackupRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified GetBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.GetBackupRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGetBackupRequest} message GetBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        GetBackupRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified GetBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GetBackupRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IGetBackupRequest} message GetBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        GetBackupRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a GetBackupRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.GetBackupRequest} GetBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        GetBackupRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.GetBackupRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a GetBackupRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.GetBackupRequest} GetBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        GetBackupRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a GetBackupRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        GetBackupRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a GetBackupRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.GetBackupRequest} GetBackupRequest
+                         */
+                        GetBackupRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.GetBackupRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.GetBackupRequest();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a GetBackupRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.GetBackupRequest} message GetBackupRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        GetBackupRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.name = "";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this GetBackupRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.GetBackupRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        GetBackupRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return GetBackupRequest;
+                    })();
+    
+                    v2.UpdateBackupRequest = (function() {
+    
+                        /**
+                         * Properties of an UpdateBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUpdateBackupRequest
+                         * @property {google.bigtable.admin.v2.IBackup|null} [backup] UpdateBackupRequest backup
+                         * @property {google.protobuf.IFieldMask|null} [updateMask] UpdateBackupRequest updateMask
+                         */
+    
+                        /**
+                         * Constructs a new UpdateBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UpdateBackupRequest.
+                         * @implements IUpdateBackupRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUpdateBackupRequest=} [properties] Properties to set
+                         */
+                        function UpdateBackupRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UpdateBackupRequest backup.
+                         * @member {google.bigtable.admin.v2.IBackup|null|undefined} backup
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @instance
+                         */
+                        UpdateBackupRequest.prototype.backup = null;
+    
+                        /**
+                         * UpdateBackupRequest updateMask.
+                         * @member {google.protobuf.IFieldMask|null|undefined} updateMask
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @instance
+                         */
+                        UpdateBackupRequest.prototype.updateMask = null;
+    
+                        /**
+                         * Creates a new UpdateBackupRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateBackupRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UpdateBackupRequest} UpdateBackupRequest instance
+                         */
+                        UpdateBackupRequest.create = function create(properties) {
+                            return new UpdateBackupRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.UpdateBackupRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateBackupRequest} message UpdateBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateBackupRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                $root.google.bigtable.admin.v2.Backup.encode(message.backup, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask"))
+                                $root.google.protobuf.FieldMask.encode(message.updateMask, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateBackupRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateBackupRequest} message UpdateBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateBackupRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UpdateBackupRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UpdateBackupRequest} UpdateBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateBackupRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UpdateBackupRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.backup = $root.google.bigtable.admin.v2.Backup.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.updateMask = $root.google.protobuf.FieldMask.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UpdateBackupRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UpdateBackupRequest} UpdateBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateBackupRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UpdateBackupRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UpdateBackupRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.backup != null && message.hasOwnProperty("backup")) {
+                                var error = $root.google.bigtable.admin.v2.Backup.verify(message.backup);
+                                if (error)
+                                    return "backup." + error;
+                            }
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask")) {
+                                var error = $root.google.protobuf.FieldMask.verify(message.updateMask);
+                                if (error)
+                                    return "updateMask." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UpdateBackupRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UpdateBackupRequest} UpdateBackupRequest
+                         */
+                        UpdateBackupRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UpdateBackupRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UpdateBackupRequest();
+                            if (object.backup != null) {
+                                if (typeof object.backup !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateBackupRequest.backup: object expected");
+                                message.backup = $root.google.bigtable.admin.v2.Backup.fromObject(object.backup);
+                            }
+                            if (object.updateMask != null) {
+                                if (typeof object.updateMask !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateBackupRequest.updateMask: object expected");
+                                message.updateMask = $root.google.protobuf.FieldMask.fromObject(object.updateMask);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UpdateBackupRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.UpdateBackupRequest} message UpdateBackupRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UpdateBackupRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.backup = null;
+                                object.updateMask = null;
+                            }
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                object.backup = $root.google.bigtable.admin.v2.Backup.toObject(message.backup, options);
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask"))
+                                object.updateMask = $root.google.protobuf.FieldMask.toObject(message.updateMask, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UpdateBackupRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UpdateBackupRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UpdateBackupRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return UpdateBackupRequest;
+                    })();
+    
+                    v2.DeleteBackupRequest = (function() {
+    
+                        /**
+                         * Properties of a DeleteBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IDeleteBackupRequest
+                         * @property {string|null} [name] DeleteBackupRequest name
+                         */
+    
+                        /**
+                         * Constructs a new DeleteBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a DeleteBackupRequest.
+                         * @implements IDeleteBackupRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IDeleteBackupRequest=} [properties] Properties to set
+                         */
+                        function DeleteBackupRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * DeleteBackupRequest name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @instance
+                         */
+                        DeleteBackupRequest.prototype.name = "";
+    
+                        /**
+                         * Creates a new DeleteBackupRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IDeleteBackupRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.DeleteBackupRequest} DeleteBackupRequest instance
+                         */
+                        DeleteBackupRequest.create = function create(properties) {
+                            return new DeleteBackupRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified DeleteBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.DeleteBackupRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IDeleteBackupRequest} message DeleteBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DeleteBackupRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified DeleteBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.DeleteBackupRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IDeleteBackupRequest} message DeleteBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        DeleteBackupRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a DeleteBackupRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.DeleteBackupRequest} DeleteBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DeleteBackupRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.DeleteBackupRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a DeleteBackupRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.DeleteBackupRequest} DeleteBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        DeleteBackupRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a DeleteBackupRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        DeleteBackupRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a DeleteBackupRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.DeleteBackupRequest} DeleteBackupRequest
+                         */
+                        DeleteBackupRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.DeleteBackupRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.DeleteBackupRequest();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a DeleteBackupRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.DeleteBackupRequest} message DeleteBackupRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        DeleteBackupRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.name = "";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this DeleteBackupRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.DeleteBackupRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        DeleteBackupRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return DeleteBackupRequest;
+                    })();
+    
+                    v2.ListBackupsRequest = (function() {
+    
+                        /**
+                         * Properties of a ListBackupsRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IListBackupsRequest
+                         * @property {string|null} [parent] ListBackupsRequest parent
+                         * @property {string|null} [filter] ListBackupsRequest filter
+                         * @property {string|null} [orderBy] ListBackupsRequest orderBy
+                         * @property {number|null} [pageSize] ListBackupsRequest pageSize
+                         * @property {string|null} [pageToken] ListBackupsRequest pageToken
+                         */
+    
+                        /**
+                         * Constructs a new ListBackupsRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ListBackupsRequest.
+                         * @implements IListBackupsRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IListBackupsRequest=} [properties] Properties to set
+                         */
+                        function ListBackupsRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ListBackupsRequest parent.
+                         * @member {string} parent
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @instance
+                         */
+                        ListBackupsRequest.prototype.parent = "";
+    
+                        /**
+                         * ListBackupsRequest filter.
+                         * @member {string} filter
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @instance
+                         */
+                        ListBackupsRequest.prototype.filter = "";
+    
+                        /**
+                         * ListBackupsRequest orderBy.
+                         * @member {string} orderBy
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @instance
+                         */
+                        ListBackupsRequest.prototype.orderBy = "";
+    
+                        /**
+                         * ListBackupsRequest pageSize.
+                         * @member {number} pageSize
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @instance
+                         */
+                        ListBackupsRequest.prototype.pageSize = 0;
+    
+                        /**
+                         * ListBackupsRequest pageToken.
+                         * @member {string} pageToken
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @instance
+                         */
+                        ListBackupsRequest.prototype.pageToken = "";
+    
+                        /**
+                         * Creates a new ListBackupsRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListBackupsRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ListBackupsRequest} ListBackupsRequest instance
+                         */
+                        ListBackupsRequest.create = function create(properties) {
+                            return new ListBackupsRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ListBackupsRequest message. Does not implicitly {@link google.bigtable.admin.v2.ListBackupsRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListBackupsRequest} message ListBackupsRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListBackupsRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.parent);
+                            if (message.filter != null && message.hasOwnProperty("filter"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.filter);
+                            if (message.orderBy != null && message.hasOwnProperty("orderBy"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.orderBy);
+                            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.pageSize);
+                            if (message.pageToken != null && message.hasOwnProperty("pageToken"))
+                                writer.uint32(/* id 5, wireType 2 =*/42).string(message.pageToken);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ListBackupsRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListBackupsRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListBackupsRequest} message ListBackupsRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListBackupsRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ListBackupsRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ListBackupsRequest} ListBackupsRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListBackupsRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ListBackupsRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.parent = reader.string();
+                                    break;
+                                case 2:
+                                    message.filter = reader.string();
+                                    break;
+                                case 3:
+                                    message.orderBy = reader.string();
+                                    break;
+                                case 4:
+                                    message.pageSize = reader.int32();
+                                    break;
+                                case 5:
+                                    message.pageToken = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ListBackupsRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ListBackupsRequest} ListBackupsRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListBackupsRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ListBackupsRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ListBackupsRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                if (!$util.isString(message.parent))
+                                    return "parent: string expected";
+                            if (message.filter != null && message.hasOwnProperty("filter"))
+                                if (!$util.isString(message.filter))
+                                    return "filter: string expected";
+                            if (message.orderBy != null && message.hasOwnProperty("orderBy"))
+                                if (!$util.isString(message.orderBy))
+                                    return "orderBy: string expected";
+                            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                                if (!$util.isInteger(message.pageSize))
+                                    return "pageSize: integer expected";
+                            if (message.pageToken != null && message.hasOwnProperty("pageToken"))
+                                if (!$util.isString(message.pageToken))
+                                    return "pageToken: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ListBackupsRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ListBackupsRequest} ListBackupsRequest
+                         */
+                        ListBackupsRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ListBackupsRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ListBackupsRequest();
+                            if (object.parent != null)
+                                message.parent = String(object.parent);
+                            if (object.filter != null)
+                                message.filter = String(object.filter);
+                            if (object.orderBy != null)
+                                message.orderBy = String(object.orderBy);
+                            if (object.pageSize != null)
+                                message.pageSize = object.pageSize | 0;
+                            if (object.pageToken != null)
+                                message.pageToken = String(object.pageToken);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ListBackupsRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ListBackupsRequest} message ListBackupsRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ListBackupsRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.parent = "";
+                                object.filter = "";
+                                object.orderBy = "";
+                                object.pageSize = 0;
+                                object.pageToken = "";
+                            }
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                object.parent = message.parent;
+                            if (message.filter != null && message.hasOwnProperty("filter"))
+                                object.filter = message.filter;
+                            if (message.orderBy != null && message.hasOwnProperty("orderBy"))
+                                object.orderBy = message.orderBy;
+                            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                                object.pageSize = message.pageSize;
+                            if (message.pageToken != null && message.hasOwnProperty("pageToken"))
+                                object.pageToken = message.pageToken;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ListBackupsRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ListBackupsRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ListBackupsRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return ListBackupsRequest;
+                    })();
+    
+                    v2.ListBackupsResponse = (function() {
+    
+                        /**
+                         * Properties of a ListBackupsResponse.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IListBackupsResponse
+                         * @property {Array.<google.bigtable.admin.v2.IBackup>|null} [backups] ListBackupsResponse backups
+                         * @property {string|null} [nextPageToken] ListBackupsResponse nextPageToken
+                         */
+    
+                        /**
+                         * Constructs a new ListBackupsResponse.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ListBackupsResponse.
+                         * @implements IListBackupsResponse
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IListBackupsResponse=} [properties] Properties to set
+                         */
+                        function ListBackupsResponse(properties) {
+                            this.backups = [];
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ListBackupsResponse backups.
+                         * @member {Array.<google.bigtable.admin.v2.IBackup>} backups
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @instance
+                         */
+                        ListBackupsResponse.prototype.backups = $util.emptyArray;
+    
+                        /**
+                         * ListBackupsResponse nextPageToken.
+                         * @member {string} nextPageToken
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @instance
+                         */
+                        ListBackupsResponse.prototype.nextPageToken = "";
+    
+                        /**
+                         * Creates a new ListBackupsResponse instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListBackupsResponse=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ListBackupsResponse} ListBackupsResponse instance
+                         */
+                        ListBackupsResponse.create = function create(properties) {
+                            return new ListBackupsResponse(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ListBackupsResponse message. Does not implicitly {@link google.bigtable.admin.v2.ListBackupsResponse.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListBackupsResponse} message ListBackupsResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListBackupsResponse.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.backups != null && message.backups.length)
+                                for (var i = 0; i < message.backups.length; ++i)
+                                    $root.google.bigtable.admin.v2.Backup.encode(message.backups[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.nextPageToken != null && message.hasOwnProperty("nextPageToken"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.nextPageToken);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ListBackupsResponse message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListBackupsResponse.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListBackupsResponse} message ListBackupsResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListBackupsResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ListBackupsResponse message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ListBackupsResponse} ListBackupsResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListBackupsResponse.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ListBackupsResponse();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    if (!(message.backups && message.backups.length))
+                                        message.backups = [];
+                                    message.backups.push($root.google.bigtable.admin.v2.Backup.decode(reader, reader.uint32()));
+                                    break;
+                                case 2:
+                                    message.nextPageToken = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ListBackupsResponse message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ListBackupsResponse} ListBackupsResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListBackupsResponse.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ListBackupsResponse message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ListBackupsResponse.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.backups != null && message.hasOwnProperty("backups")) {
+                                if (!Array.isArray(message.backups))
+                                    return "backups: array expected";
+                                for (var i = 0; i < message.backups.length; ++i) {
+                                    var error = $root.google.bigtable.admin.v2.Backup.verify(message.backups[i]);
+                                    if (error)
+                                        return "backups." + error;
+                                }
+                            }
+                            if (message.nextPageToken != null && message.hasOwnProperty("nextPageToken"))
+                                if (!$util.isString(message.nextPageToken))
+                                    return "nextPageToken: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ListBackupsResponse message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ListBackupsResponse} ListBackupsResponse
+                         */
+                        ListBackupsResponse.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ListBackupsResponse)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ListBackupsResponse();
+                            if (object.backups) {
+                                if (!Array.isArray(object.backups))
+                                    throw TypeError(".google.bigtable.admin.v2.ListBackupsResponse.backups: array expected");
+                                message.backups = [];
+                                for (var i = 0; i < object.backups.length; ++i) {
+                                    if (typeof object.backups[i] !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.ListBackupsResponse.backups: object expected");
+                                    message.backups[i] = $root.google.bigtable.admin.v2.Backup.fromObject(object.backups[i]);
+                                }
+                            }
+                            if (object.nextPageToken != null)
+                                message.nextPageToken = String(object.nextPageToken);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ListBackupsResponse message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.ListBackupsResponse} message ListBackupsResponse
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ListBackupsResponse.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.arrays || options.defaults)
+                                object.backups = [];
+                            if (options.defaults)
+                                object.nextPageToken = "";
+                            if (message.backups && message.backups.length) {
+                                object.backups = [];
+                                for (var j = 0; j < message.backups.length; ++j)
+                                    object.backups[j] = $root.google.bigtable.admin.v2.Backup.toObject(message.backups[j], options);
+                            }
+                            if (message.nextPageToken != null && message.hasOwnProperty("nextPageToken"))
+                                object.nextPageToken = message.nextPageToken;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ListBackupsResponse to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ListBackupsResponse
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ListBackupsResponse.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return ListBackupsResponse;
+                    })();
+    
+                    v2.RestoreTableRequest = (function() {
+    
+                        /**
+                         * Properties of a RestoreTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IRestoreTableRequest
+                         * @property {string|null} [parent] RestoreTableRequest parent
+                         * @property {string|null} [tableId] RestoreTableRequest tableId
+                         * @property {string|null} [backup] RestoreTableRequest backup
+                         */
+    
+                        /**
+                         * Constructs a new RestoreTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a RestoreTableRequest.
+                         * @implements IRestoreTableRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IRestoreTableRequest=} [properties] Properties to set
+                         */
+                        function RestoreTableRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * RestoreTableRequest parent.
+                         * @member {string} parent
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @instance
+                         */
+                        RestoreTableRequest.prototype.parent = "";
+    
+                        /**
+                         * RestoreTableRequest tableId.
+                         * @member {string} tableId
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @instance
+                         */
+                        RestoreTableRequest.prototype.tableId = "";
+    
+                        /**
+                         * RestoreTableRequest backup.
+                         * @member {string} backup
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @instance
+                         */
+                        RestoreTableRequest.prototype.backup = "";
+    
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+    
+                        /**
+                         * RestoreTableRequest source.
+                         * @member {"backup"|undefined} source
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @instance
+                         */
+                        Object.defineProperty(RestoreTableRequest.prototype, "source", {
+                            get: $util.oneOfGetter($oneOfFields = ["backup"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+    
+                        /**
+                         * Creates a new RestoreTableRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreTableRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.RestoreTableRequest} RestoreTableRequest instance
+                         */
+                        RestoreTableRequest.create = function create(properties) {
+                            return new RestoreTableRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified RestoreTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreTableRequest} message RestoreTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        RestoreTableRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.parent);
+                            if (message.tableId != null && message.hasOwnProperty("tableId"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.tableId);
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.backup);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified RestoreTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreTableRequest} message RestoreTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        RestoreTableRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a RestoreTableRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.RestoreTableRequest} RestoreTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        RestoreTableRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.RestoreTableRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.parent = reader.string();
+                                    break;
+                                case 2:
+                                    message.tableId = reader.string();
+                                    break;
+                                case 3:
+                                    message.backup = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a RestoreTableRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.RestoreTableRequest} RestoreTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        RestoreTableRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a RestoreTableRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        RestoreTableRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                if (!$util.isString(message.parent))
+                                    return "parent: string expected";
+                            if (message.tableId != null && message.hasOwnProperty("tableId"))
+                                if (!$util.isString(message.tableId))
+                                    return "tableId: string expected";
+                            if (message.backup != null && message.hasOwnProperty("backup")) {
+                                properties.source = 1;
+                                if (!$util.isString(message.backup))
+                                    return "backup: string expected";
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a RestoreTableRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.RestoreTableRequest} RestoreTableRequest
+                         */
+                        RestoreTableRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.RestoreTableRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.RestoreTableRequest();
+                            if (object.parent != null)
+                                message.parent = String(object.parent);
+                            if (object.tableId != null)
+                                message.tableId = String(object.tableId);
+                            if (object.backup != null)
+                                message.backup = String(object.backup);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a RestoreTableRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.RestoreTableRequest} message RestoreTableRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        RestoreTableRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.parent = "";
+                                object.tableId = "";
+                            }
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                object.parent = message.parent;
+                            if (message.tableId != null && message.hasOwnProperty("tableId"))
+                                object.tableId = message.tableId;
+                            if (message.backup != null && message.hasOwnProperty("backup")) {
+                                object.backup = message.backup;
+                                if (options.oneofs)
+                                    object.source = "backup";
+                            }
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this RestoreTableRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.RestoreTableRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        RestoreTableRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return RestoreTableRequest;
+                    })();
+    
+                    v2.RestoreTableMetadata = (function() {
+    
+                        /**
+                         * Properties of a RestoreTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IRestoreTableMetadata
+                         * @property {string|null} [name] RestoreTableMetadata name
+                         * @property {google.bigtable.admin.v2.RestoreSourceType|null} [sourceType] RestoreTableMetadata sourceType
+                         * @property {google.bigtable.admin.v2.IBackupInfo|null} [backupInfo] RestoreTableMetadata backupInfo
+                         * @property {string|null} [optimizeTableOperationName] RestoreTableMetadata optimizeTableOperationName
+                         * @property {google.bigtable.admin.v2.IOperationProgress|null} [progress] RestoreTableMetadata progress
+                         */
+    
+                        /**
+                         * Constructs a new RestoreTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a RestoreTableMetadata.
+                         * @implements IRestoreTableMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IRestoreTableMetadata=} [properties] Properties to set
+                         */
+                        function RestoreTableMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * RestoreTableMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @instance
+                         */
+                        RestoreTableMetadata.prototype.name = "";
+    
+                        /**
+                         * RestoreTableMetadata sourceType.
+                         * @member {google.bigtable.admin.v2.RestoreSourceType} sourceType
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @instance
+                         */
+                        RestoreTableMetadata.prototype.sourceType = 0;
+    
+                        /**
+                         * RestoreTableMetadata backupInfo.
+                         * @member {google.bigtable.admin.v2.IBackupInfo|null|undefined} backupInfo
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @instance
+                         */
+                        RestoreTableMetadata.prototype.backupInfo = null;
+    
+                        /**
+                         * RestoreTableMetadata optimizeTableOperationName.
+                         * @member {string} optimizeTableOperationName
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @instance
+                         */
+                        RestoreTableMetadata.prototype.optimizeTableOperationName = "";
+    
+                        /**
+                         * RestoreTableMetadata progress.
+                         * @member {google.bigtable.admin.v2.IOperationProgress|null|undefined} progress
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @instance
+                         */
+                        RestoreTableMetadata.prototype.progress = null;
+    
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+    
+                        /**
+                         * RestoreTableMetadata sourceInfo.
+                         * @member {"backupInfo"|undefined} sourceInfo
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @instance
+                         */
+                        Object.defineProperty(RestoreTableMetadata.prototype, "sourceInfo", {
+                            get: $util.oneOfGetter($oneOfFields = ["backupInfo"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+    
+                        /**
+                         * Creates a new RestoreTableMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreTableMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.RestoreTableMetadata} RestoreTableMetadata instance
+                         */
+                        RestoreTableMetadata.create = function create(properties) {
+                            return new RestoreTableMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified RestoreTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreTableMetadata} message RestoreTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        RestoreTableMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.sourceType != null && message.hasOwnProperty("sourceType"))
+                                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.sourceType);
+                            if (message.backupInfo != null && message.hasOwnProperty("backupInfo"))
+                                $root.google.bigtable.admin.v2.BackupInfo.encode(message.backupInfo, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.optimizeTableOperationName != null && message.hasOwnProperty("optimizeTableOperationName"))
+                                writer.uint32(/* id 4, wireType 2 =*/34).string(message.optimizeTableOperationName);
+                            if (message.progress != null && message.hasOwnProperty("progress"))
+                                $root.google.bigtable.admin.v2.OperationProgress.encode(message.progress, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified RestoreTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreTableMetadata} message RestoreTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        RestoreTableMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a RestoreTableMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.RestoreTableMetadata} RestoreTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        RestoreTableMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.RestoreTableMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    message.sourceType = reader.int32();
+                                    break;
+                                case 3:
+                                    message.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.optimizeTableOperationName = reader.string();
+                                    break;
+                                case 5:
+                                    message.progress = $root.google.bigtable.admin.v2.OperationProgress.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a RestoreTableMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.RestoreTableMetadata} RestoreTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        RestoreTableMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a RestoreTableMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        RestoreTableMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.sourceType != null && message.hasOwnProperty("sourceType"))
+                                switch (message.sourceType) {
+                                default:
+                                    return "sourceType: enum value expected";
+                                case 0:
+                                case 1:
+                                    break;
+                                }
+                            if (message.backupInfo != null && message.hasOwnProperty("backupInfo")) {
+                                properties.sourceInfo = 1;
+                                {
+                                    var error = $root.google.bigtable.admin.v2.BackupInfo.verify(message.backupInfo);
+                                    if (error)
+                                        return "backupInfo." + error;
+                                }
+                            }
+                            if (message.optimizeTableOperationName != null && message.hasOwnProperty("optimizeTableOperationName"))
+                                if (!$util.isString(message.optimizeTableOperationName))
+                                    return "optimizeTableOperationName: string expected";
+                            if (message.progress != null && message.hasOwnProperty("progress")) {
+                                var error = $root.google.bigtable.admin.v2.OperationProgress.verify(message.progress);
+                                if (error)
+                                    return "progress." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a RestoreTableMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.RestoreTableMetadata} RestoreTableMetadata
+                         */
+                        RestoreTableMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.RestoreTableMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.RestoreTableMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            switch (object.sourceType) {
+                            case "RESTORE_SOURCE_TYPE_UNSPECIFIED":
+                            case 0:
+                                message.sourceType = 0;
+                                break;
+                            case "BACKUP":
+                            case 1:
+                                message.sourceType = 1;
+                                break;
+                            }
+                            if (object.backupInfo != null) {
+                                if (typeof object.backupInfo !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.RestoreTableMetadata.backupInfo: object expected");
+                                message.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.fromObject(object.backupInfo);
+                            }
+                            if (object.optimizeTableOperationName != null)
+                                message.optimizeTableOperationName = String(object.optimizeTableOperationName);
+                            if (object.progress != null) {
+                                if (typeof object.progress !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.RestoreTableMetadata.progress: object expected");
+                                message.progress = $root.google.bigtable.admin.v2.OperationProgress.fromObject(object.progress);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a RestoreTableMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.RestoreTableMetadata} message RestoreTableMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        RestoreTableMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.sourceType = options.enums === String ? "RESTORE_SOURCE_TYPE_UNSPECIFIED" : 0;
+                                object.optimizeTableOperationName = "";
+                                object.progress = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.sourceType != null && message.hasOwnProperty("sourceType"))
+                                object.sourceType = options.enums === String ? $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] : message.sourceType;
+                            if (message.backupInfo != null && message.hasOwnProperty("backupInfo")) {
+                                object.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.toObject(message.backupInfo, options);
+                                if (options.oneofs)
+                                    object.sourceInfo = "backupInfo";
+                            }
+                            if (message.optimizeTableOperationName != null && message.hasOwnProperty("optimizeTableOperationName"))
+                                object.optimizeTableOperationName = message.optimizeTableOperationName;
+                            if (message.progress != null && message.hasOwnProperty("progress"))
+                                object.progress = $root.google.bigtable.admin.v2.OperationProgress.toObject(message.progress, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this RestoreTableMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.RestoreTableMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        RestoreTableMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return RestoreTableMetadata;
+                    })();
+    
+                    v2.OptimizeRestoredTableMetadata = (function() {
+    
+                        /**
+                         * Properties of an OptimizeRestoredTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IOptimizeRestoredTableMetadata
+                         * @property {string|null} [name] OptimizeRestoredTableMetadata name
+                         * @property {google.bigtable.admin.v2.IOperationProgress|null} [progress] OptimizeRestoredTableMetadata progress
+                         */
+    
+                        /**
+                         * Constructs a new OptimizeRestoredTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an OptimizeRestoredTableMetadata.
+                         * @implements IOptimizeRestoredTableMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IOptimizeRestoredTableMetadata=} [properties] Properties to set
+                         */
+                        function OptimizeRestoredTableMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * OptimizeRestoredTableMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @instance
+                         */
+                        OptimizeRestoredTableMetadata.prototype.name = "";
+    
+                        /**
+                         * OptimizeRestoredTableMetadata progress.
+                         * @member {google.bigtable.admin.v2.IOperationProgress|null|undefined} progress
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @instance
+                         */
+                        OptimizeRestoredTableMetadata.prototype.progress = null;
+    
+                        /**
+                         * Creates a new OptimizeRestoredTableMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IOptimizeRestoredTableMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.OptimizeRestoredTableMetadata} OptimizeRestoredTableMetadata instance
+                         */
+                        OptimizeRestoredTableMetadata.create = function create(properties) {
+                            return new OptimizeRestoredTableMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified OptimizeRestoredTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.OptimizeRestoredTableMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IOptimizeRestoredTableMetadata} message OptimizeRestoredTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        OptimizeRestoredTableMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.progress != null && message.hasOwnProperty("progress"))
+                                $root.google.bigtable.admin.v2.OperationProgress.encode(message.progress, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified OptimizeRestoredTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.OptimizeRestoredTableMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IOptimizeRestoredTableMetadata} message OptimizeRestoredTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        OptimizeRestoredTableMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an OptimizeRestoredTableMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.OptimizeRestoredTableMetadata} OptimizeRestoredTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        OptimizeRestoredTableMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.OptimizeRestoredTableMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    message.progress = $root.google.bigtable.admin.v2.OperationProgress.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an OptimizeRestoredTableMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.OptimizeRestoredTableMetadata} OptimizeRestoredTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        OptimizeRestoredTableMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an OptimizeRestoredTableMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        OptimizeRestoredTableMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.progress != null && message.hasOwnProperty("progress")) {
+                                var error = $root.google.bigtable.admin.v2.OperationProgress.verify(message.progress);
+                                if (error)
+                                    return "progress." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an OptimizeRestoredTableMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.OptimizeRestoredTableMetadata} OptimizeRestoredTableMetadata
+                         */
+                        OptimizeRestoredTableMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.OptimizeRestoredTableMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.OptimizeRestoredTableMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.progress != null) {
+                                if (typeof object.progress !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.OptimizeRestoredTableMetadata.progress: object expected");
+                                message.progress = $root.google.bigtable.admin.v2.OperationProgress.fromObject(object.progress);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an OptimizeRestoredTableMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.OptimizeRestoredTableMetadata} message OptimizeRestoredTableMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        OptimizeRestoredTableMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.progress = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.progress != null && message.hasOwnProperty("progress"))
+                                object.progress = $root.google.bigtable.admin.v2.OperationProgress.toObject(message.progress, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this OptimizeRestoredTableMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.OptimizeRestoredTableMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        OptimizeRestoredTableMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return OptimizeRestoredTableMetadata;
+                    })();
+    
+                    /**
+                     * RestoreSourceType enum.
+                     * @name google.bigtable.admin.v2.RestoreSourceType
+                     * @enum {string}
+                     * @property {number} RESTORE_SOURCE_TYPE_UNSPECIFIED=0 RESTORE_SOURCE_TYPE_UNSPECIFIED value
+                     * @property {number} BACKUP=1 BACKUP value
+                     */
+                    v2.RestoreSourceType = (function() {
+                        var valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "RESTORE_SOURCE_TYPE_UNSPECIFIED"] = 0;
+                        values[valuesById[1] = "BACKUP"] = 1;
+                        return values;
+                    })();
+    
+                    v2.RestoreInfo = (function() {
+    
+                        /**
+                         * Properties of a RestoreInfo.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IRestoreInfo
+                         * @property {google.bigtable.admin.v2.RestoreSourceType|null} [sourceType] RestoreInfo sourceType
+                         * @property {google.bigtable.admin.v2.IBackupInfo|null} [backupInfo] RestoreInfo backupInfo
+                         */
+    
+                        /**
+                         * Constructs a new RestoreInfo.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a RestoreInfo.
+                         * @implements IRestoreInfo
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IRestoreInfo=} [properties] Properties to set
+                         */
+                        function RestoreInfo(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * RestoreInfo sourceType.
+                         * @member {google.bigtable.admin.v2.RestoreSourceType} sourceType
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @instance
+                         */
+                        RestoreInfo.prototype.sourceType = 0;
+    
+                        /**
+                         * RestoreInfo backupInfo.
+                         * @member {google.bigtable.admin.v2.IBackupInfo|null|undefined} backupInfo
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @instance
+                         */
+                        RestoreInfo.prototype.backupInfo = null;
+    
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+    
+                        /**
+                         * RestoreInfo sourceInfo.
+                         * @member {"backupInfo"|undefined} sourceInfo
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @instance
+                         */
+                        Object.defineProperty(RestoreInfo.prototype, "sourceInfo", {
+                            get: $util.oneOfGetter($oneOfFields = ["backupInfo"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+    
+                        /**
+                         * Creates a new RestoreInfo instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreInfo=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.RestoreInfo} RestoreInfo instance
+                         */
+                        RestoreInfo.create = function create(properties) {
+                            return new RestoreInfo(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified RestoreInfo message. Does not implicitly {@link google.bigtable.admin.v2.RestoreInfo.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreInfo} message RestoreInfo message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        RestoreInfo.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.sourceType != null && message.hasOwnProperty("sourceType"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.sourceType);
+                            if (message.backupInfo != null && message.hasOwnProperty("backupInfo"))
+                                $root.google.bigtable.admin.v2.BackupInfo.encode(message.backupInfo, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified RestoreInfo message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.RestoreInfo.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IRestoreInfo} message RestoreInfo message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        RestoreInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a RestoreInfo message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.RestoreInfo} RestoreInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        RestoreInfo.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.RestoreInfo();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.sourceType = reader.int32();
+                                    break;
+                                case 2:
+                                    message.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a RestoreInfo message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.RestoreInfo} RestoreInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        RestoreInfo.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a RestoreInfo message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        RestoreInfo.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            var properties = {};
+                            if (message.sourceType != null && message.hasOwnProperty("sourceType"))
+                                switch (message.sourceType) {
+                                default:
+                                    return "sourceType: enum value expected";
+                                case 0:
+                                case 1:
+                                    break;
+                                }
+                            if (message.backupInfo != null && message.hasOwnProperty("backupInfo")) {
+                                properties.sourceInfo = 1;
+                                {
+                                    var error = $root.google.bigtable.admin.v2.BackupInfo.verify(message.backupInfo);
+                                    if (error)
+                                        return "backupInfo." + error;
+                                }
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a RestoreInfo message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.RestoreInfo} RestoreInfo
+                         */
+                        RestoreInfo.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.RestoreInfo)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.RestoreInfo();
+                            switch (object.sourceType) {
+                            case "RESTORE_SOURCE_TYPE_UNSPECIFIED":
+                            case 0:
+                                message.sourceType = 0;
+                                break;
+                            case "BACKUP":
+                            case 1:
+                                message.sourceType = 1;
+                                break;
+                            }
+                            if (object.backupInfo != null) {
+                                if (typeof object.backupInfo !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.RestoreInfo.backupInfo: object expected");
+                                message.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.fromObject(object.backupInfo);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a RestoreInfo message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.RestoreInfo} message RestoreInfo
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        RestoreInfo.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.sourceType = options.enums === String ? "RESTORE_SOURCE_TYPE_UNSPECIFIED" : 0;
+                            if (message.sourceType != null && message.hasOwnProperty("sourceType"))
+                                object.sourceType = options.enums === String ? $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] : message.sourceType;
+                            if (message.backupInfo != null && message.hasOwnProperty("backupInfo")) {
+                                object.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.toObject(message.backupInfo, options);
+                                if (options.oneofs)
+                                    object.sourceInfo = "backupInfo";
+                            }
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this RestoreInfo to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.RestoreInfo
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        RestoreInfo.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return RestoreInfo;
+                    })();
+    
                     v2.Table = (function() {
     
                         /**
@@ -12525,6 +15613,7 @@
                          * @property {Object.<string,google.bigtable.admin.v2.Table.IClusterState>|null} [clusterStates] Table clusterStates
                          * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
                          * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
+                         * @property {google.bigtable.admin.v2.IRestoreInfo|null} [restoreInfo] Table restoreInfo
                          */
     
                         /**
@@ -12577,6 +15666,14 @@
                         Table.prototype.granularity = 0;
     
                         /**
+                         * Table restoreInfo.
+                         * @member {google.bigtable.admin.v2.IRestoreInfo|null|undefined} restoreInfo
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.restoreInfo = null;
+    
+                        /**
                          * Creates a new Table instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.Table
@@ -12614,6 +15711,8 @@
                                 }
                             if (message.granularity != null && message.hasOwnProperty("granularity"))
                                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
+                            if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
+                                $root.google.bigtable.admin.v2.RestoreInfo.encode(message.restoreInfo, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
                             return writer;
                         };
     
@@ -12669,6 +15768,9 @@
                                     break;
                                 case 4:
                                     message.granularity = reader.int32();
+                                    break;
+                                case 6:
+                                    message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.decode(reader, reader.uint32());
                                     break;
                                 default:
                                     reader.skipType(tag & 7);
@@ -12736,6 +15838,11 @@
                                 case 1:
                                     break;
                                 }
+                            if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo")) {
+                                var error = $root.google.bigtable.admin.v2.RestoreInfo.verify(message.restoreInfo);
+                                if (error)
+                                    return "restoreInfo." + error;
+                            }
                             return null;
                         };
     
@@ -12783,6 +15890,11 @@
                                 message.granularity = 1;
                                 break;
                             }
+                            if (object.restoreInfo != null) {
+                                if (typeof object.restoreInfo !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Table.restoreInfo: object expected");
+                                message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.fromObject(object.restoreInfo);
+                            }
                             return message;
                         };
     
@@ -12806,6 +15918,7 @@
                             if (options.defaults) {
                                 object.name = "";
                                 object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
+                                object.restoreInfo = null;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -12822,6 +15935,8 @@
                             }
                             if (message.granularity != null && message.hasOwnProperty("granularity"))
                                 object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
+                            if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
+                                object.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.toObject(message.restoreInfo, options);
                             return object;
                         };
     
@@ -12975,6 +16090,7 @@
                                     case 2:
                                     case 3:
                                     case 4:
+                                    case 5:
                                         break;
                                     }
                                 return null;
@@ -13012,6 +16128,10 @@
                                 case "READY":
                                 case 4:
                                     message.replicationState = 4;
+                                    break;
+                                case "READY_OPTIMIZING":
+                                case 5:
+                                    message.replicationState = 5;
                                     break;
                                 }
                                 return message;
@@ -13057,6 +16177,7 @@
                              * @property {number} PLANNED_MAINTENANCE=2 PLANNED_MAINTENANCE value
                              * @property {number} UNPLANNED_MAINTENANCE=3 UNPLANNED_MAINTENANCE value
                              * @property {number} READY=4 READY value
+                             * @property {number} READY_OPTIMIZING=5 READY_OPTIMIZING value
                              */
                             ClusterState.ReplicationState = (function() {
                                 var valuesById = {}, values = Object.create(valuesById);
@@ -13065,6 +16186,7 @@
                                 values[valuesById[2] = "PLANNED_MAINTENANCE"] = 2;
                                 values[valuesById[3] = "UNPLANNED_MAINTENANCE"] = 3;
                                 values[valuesById[4] = "READY"] = 4;
+                                values[valuesById[5] = "READY_OPTIMIZING"] = 5;
                                 return values;
                             })();
     
@@ -14404,6 +17526,653 @@
                         })();
     
                         return Snapshot;
+                    })();
+    
+                    v2.Backup = (function() {
+    
+                        /**
+                         * Properties of a Backup.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IBackup
+                         * @property {string|null} [name] Backup name
+                         * @property {string|null} [sourceTable] Backup sourceTable
+                         * @property {google.protobuf.ITimestamp|null} [expireTime] Backup expireTime
+                         * @property {google.protobuf.ITimestamp|null} [startTime] Backup startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] Backup endTime
+                         * @property {number|Long|null} [sizeBytes] Backup sizeBytes
+                         * @property {google.bigtable.admin.v2.Backup.State|null} [state] Backup state
+                         */
+    
+                        /**
+                         * Constructs a new Backup.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a Backup.
+                         * @implements IBackup
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IBackup=} [properties] Properties to set
+                         */
+                        function Backup(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * Backup name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.name = "";
+    
+                        /**
+                         * Backup sourceTable.
+                         * @member {string} sourceTable
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.sourceTable = "";
+    
+                        /**
+                         * Backup expireTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} expireTime
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.expireTime = null;
+    
+                        /**
+                         * Backup startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.startTime = null;
+    
+                        /**
+                         * Backup endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.endTime = null;
+    
+                        /**
+                         * Backup sizeBytes.
+                         * @member {number|Long} sizeBytes
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.sizeBytes = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                        /**
+                         * Backup state.
+                         * @member {google.bigtable.admin.v2.Backup.State} state
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.state = 0;
+    
+                        /**
+                         * Creates a new Backup instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {google.bigtable.admin.v2.IBackup=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.Backup} Backup instance
+                         */
+                        Backup.create = function create(properties) {
+                            return new Backup(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified Backup message. Does not implicitly {@link google.bigtable.admin.v2.Backup.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {google.bigtable.admin.v2.IBackup} message Backup message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Backup.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.sourceTable);
+                            if (message.expireTime != null && message.hasOwnProperty("expireTime"))
+                                $root.google.protobuf.Timestamp.encode(message.expireTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                            if (message.sizeBytes != null && message.hasOwnProperty("sizeBytes"))
+                                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.sizeBytes);
+                            if (message.state != null && message.hasOwnProperty("state"))
+                                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.state);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified Backup message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Backup.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {google.bigtable.admin.v2.IBackup} message Backup message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        Backup.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a Backup message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.Backup} Backup
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Backup.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Backup();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    message.sourceTable = reader.string();
+                                    break;
+                                case 3:
+                                    message.expireTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 5:
+                                    message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 6:
+                                    message.sizeBytes = reader.int64();
+                                    break;
+                                case 7:
+                                    message.state = reader.int32();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a Backup message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.Backup} Backup
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        Backup.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a Backup message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        Backup.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                if (!$util.isString(message.sourceTable))
+                                    return "sourceTable: string expected";
+                            if (message.expireTime != null && message.hasOwnProperty("expireTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.expireTime);
+                                if (error)
+                                    return "expireTime." + error;
+                            }
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            if (message.sizeBytes != null && message.hasOwnProperty("sizeBytes"))
+                                if (!$util.isInteger(message.sizeBytes) && !(message.sizeBytes && $util.isInteger(message.sizeBytes.low) && $util.isInteger(message.sizeBytes.high)))
+                                    return "sizeBytes: integer|Long expected";
+                            if (message.state != null && message.hasOwnProperty("state"))
+                                switch (message.state) {
+                                default:
+                                    return "state: enum value expected";
+                                case 0:
+                                case 1:
+                                case 2:
+                                    break;
+                                }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a Backup message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.Backup} Backup
+                         */
+                        Backup.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.Backup)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.Backup();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.sourceTable != null)
+                                message.sourceTable = String(object.sourceTable);
+                            if (object.expireTime != null) {
+                                if (typeof object.expireTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Backup.expireTime: object expected");
+                                message.expireTime = $root.google.protobuf.Timestamp.fromObject(object.expireTime);
+                            }
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Backup.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Backup.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            if (object.sizeBytes != null)
+                                if ($util.Long)
+                                    (message.sizeBytes = $util.Long.fromValue(object.sizeBytes)).unsigned = false;
+                                else if (typeof object.sizeBytes === "string")
+                                    message.sizeBytes = parseInt(object.sizeBytes, 10);
+                                else if (typeof object.sizeBytes === "number")
+                                    message.sizeBytes = object.sizeBytes;
+                                else if (typeof object.sizeBytes === "object")
+                                    message.sizeBytes = new $util.LongBits(object.sizeBytes.low >>> 0, object.sizeBytes.high >>> 0).toNumber();
+                            switch (object.state) {
+                            case "STATE_UNSPECIFIED":
+                            case 0:
+                                message.state = 0;
+                                break;
+                            case "CREATING":
+                            case 1:
+                                message.state = 1;
+                                break;
+                            case "READY":
+                            case 2:
+                                message.state = 2;
+                                break;
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a Backup message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @static
+                         * @param {google.bigtable.admin.v2.Backup} message Backup
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        Backup.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.sourceTable = "";
+                                object.expireTime = null;
+                                object.startTime = null;
+                                object.endTime = null;
+                                if ($util.Long) {
+                                    var long = new $util.Long(0, 0, false);
+                                    object.sizeBytes = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                } else
+                                    object.sizeBytes = options.longs === String ? "0" : 0;
+                                object.state = options.enums === String ? "STATE_UNSPECIFIED" : 0;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                object.sourceTable = message.sourceTable;
+                            if (message.expireTime != null && message.hasOwnProperty("expireTime"))
+                                object.expireTime = $root.google.protobuf.Timestamp.toObject(message.expireTime, options);
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            if (message.sizeBytes != null && message.hasOwnProperty("sizeBytes"))
+                                if (typeof message.sizeBytes === "number")
+                                    object.sizeBytes = options.longs === String ? String(message.sizeBytes) : message.sizeBytes;
+                                else
+                                    object.sizeBytes = options.longs === String ? $util.Long.prototype.toString.call(message.sizeBytes) : options.longs === Number ? new $util.LongBits(message.sizeBytes.low >>> 0, message.sizeBytes.high >>> 0).toNumber() : message.sizeBytes;
+                            if (message.state != null && message.hasOwnProperty("state"))
+                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Backup.State[message.state] : message.state;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this Backup to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        Backup.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * State enum.
+                         * @name google.bigtable.admin.v2.Backup.State
+                         * @enum {string}
+                         * @property {number} STATE_UNSPECIFIED=0 STATE_UNSPECIFIED value
+                         * @property {number} CREATING=1 CREATING value
+                         * @property {number} READY=2 READY value
+                         */
+                        Backup.State = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "STATE_UNSPECIFIED"] = 0;
+                            values[valuesById[1] = "CREATING"] = 1;
+                            values[valuesById[2] = "READY"] = 2;
+                            return values;
+                        })();
+    
+                        return Backup;
+                    })();
+    
+                    v2.BackupInfo = (function() {
+    
+                        /**
+                         * Properties of a BackupInfo.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IBackupInfo
+                         * @property {string|null} [backup] BackupInfo backup
+                         * @property {google.protobuf.ITimestamp|null} [startTime] BackupInfo startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] BackupInfo endTime
+                         * @property {string|null} [sourceTable] BackupInfo sourceTable
+                         */
+    
+                        /**
+                         * Constructs a new BackupInfo.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a BackupInfo.
+                         * @implements IBackupInfo
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IBackupInfo=} [properties] Properties to set
+                         */
+                        function BackupInfo(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * BackupInfo backup.
+                         * @member {string} backup
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @instance
+                         */
+                        BackupInfo.prototype.backup = "";
+    
+                        /**
+                         * BackupInfo startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @instance
+                         */
+                        BackupInfo.prototype.startTime = null;
+    
+                        /**
+                         * BackupInfo endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @instance
+                         */
+                        BackupInfo.prototype.endTime = null;
+    
+                        /**
+                         * BackupInfo sourceTable.
+                         * @member {string} sourceTable
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @instance
+                         */
+                        BackupInfo.prototype.sourceTable = "";
+    
+                        /**
+                         * Creates a new BackupInfo instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IBackupInfo=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.BackupInfo} BackupInfo instance
+                         */
+                        BackupInfo.create = function create(properties) {
+                            return new BackupInfo(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified BackupInfo message. Does not implicitly {@link google.bigtable.admin.v2.BackupInfo.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IBackupInfo} message BackupInfo message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        BackupInfo.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.backup);
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                writer.uint32(/* id 4, wireType 2 =*/34).string(message.sourceTable);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified BackupInfo message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.BackupInfo.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IBackupInfo} message BackupInfo message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        BackupInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a BackupInfo message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.BackupInfo} BackupInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        BackupInfo.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.BackupInfo();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.backup = reader.string();
+                                    break;
+                                case 2:
+                                    message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.sourceTable = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a BackupInfo message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.BackupInfo} BackupInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        BackupInfo.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a BackupInfo message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        BackupInfo.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                if (!$util.isString(message.backup))
+                                    return "backup: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                if (!$util.isString(message.sourceTable))
+                                    return "sourceTable: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a BackupInfo message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.BackupInfo} BackupInfo
+                         */
+                        BackupInfo.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.BackupInfo)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.BackupInfo();
+                            if (object.backup != null)
+                                message.backup = String(object.backup);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.BackupInfo.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.BackupInfo.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            if (object.sourceTable != null)
+                                message.sourceTable = String(object.sourceTable);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a BackupInfo message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.BackupInfo} message BackupInfo
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        BackupInfo.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.backup = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                                object.sourceTable = "";
+                            }
+                            if (message.backup != null && message.hasOwnProperty("backup"))
+                                object.backup = message.backup;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
+                                object.sourceTable = message.sourceTable;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this BackupInfo to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        BackupInfo.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return BackupInfo;
                     })();
     
                     return v2;

@@ -157,6 +157,9 @@ export class BigtableTableAdminClient {
       appProfilePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/appProfiles/{app_profile}'
       ),
+      backupPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}'
+      ),
       clusterPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}'
       ),
@@ -184,6 +187,11 @@ export class BigtableTableAdminClient {
         'pageToken',
         'nextPageToken',
         'snapshots'
+      ),
+      listBackups: new this._gaxModule.PageDescriptor(
+        'pageToken',
+        'nextPageToken',
+        'backups'
       ),
     };
 
@@ -214,6 +222,18 @@ export class BigtableTableAdminClient {
     const snapshotTableMetadata = protoFilesRoot.lookup(
       '.google.bigtable.admin.v2.SnapshotTableMetadata'
     ) as gax.protobuf.Type;
+    const createBackupResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.Backup'
+    ) as gax.protobuf.Type;
+    const createBackupMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.CreateBackupMetadata'
+    ) as gax.protobuf.Type;
+    const restoreTableResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.Table'
+    ) as gax.protobuf.Type;
+    const restoreTableMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.RestoreTableMetadata'
+    ) as gax.protobuf.Type;
 
     this._descriptors.longrunning = {
       createTableFromSnapshot: new this._gaxModule.LongrunningDescriptor(
@@ -229,6 +249,16 @@ export class BigtableTableAdminClient {
         this.operationsClient,
         snapshotTableResponse.decode.bind(snapshotTableResponse),
         snapshotTableMetadata.decode.bind(snapshotTableMetadata)
+      ),
+      createBackup: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        createBackupResponse.decode.bind(createBackupResponse),
+        createBackupMetadata.decode.bind(createBackupMetadata)
+      ),
+      restoreTable: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        restoreTableResponse.decode.bind(restoreTableResponse),
+        restoreTableMetadata.decode.bind(restoreTableMetadata)
       ),
     };
 
@@ -291,6 +321,12 @@ export class BigtableTableAdminClient {
       'getSnapshot',
       'listSnapshots',
       'deleteSnapshot',
+      'createBackup',
+      'getBackup',
+      'updateBackup',
+      'deleteBackup',
+      'listBackups',
+      'restoreTable',
       'getIamPolicy',
       'setIamPolicy',
       'testIamPermissions',
@@ -416,8 +452,8 @@ export class BigtableTableAdminClient {
    *   Required. The unique name of the instance in which to create the table.
    *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.tableId
-   *   Required. The name by which the new table should be referred to within the parent
-   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *   Required. The name by which the new table should be referred to within the
+   *   parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    *   Maximum 50 characters.
    * @param {google.bigtable.admin.v2.Table} request.table
    *   Required. The Table to create.
@@ -671,10 +707,10 @@ export class BigtableTableAdminClient {
    *   Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {number[]} request.modifications
-   *   Required. Modifications to be atomically applied to the specified table's families.
-   *   Entries are applied in order, meaning that earlier modifications can be
-   *   masked by later ones (in the case of repeated updates to the same family,
-   *   for example).
+   *   Required. Modifications to be atomically applied to the specified table's
+   *   families. Entries are applied in order, meaning that earlier modifications
+   *   can be masked by later ones (in the case of repeated updates to the same
+   *   family, for example).
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -839,8 +875,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the Table for which to create a consistency token.
-   *   Values are of the form
+   *   Required. The unique name of the Table for which to create a consistency
+   *   token. Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -924,8 +960,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the Table for which to check replication consistency.
-   *   Values are of the form
+   *   Required. The unique name of the Table for which to check replication
+   *   consistency. Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {string} request.consistencyToken
    *   Required. The token created using GenerateConsistencyToken for the Table.
@@ -1136,6 +1172,235 @@ export class BigtableTableAdminClient {
     });
     this.initialize();
     return this._innerApiCalls.deleteSnapshot(request, options, callback);
+  }
+  getBackup(
+    request: protosTypes.google.bigtable.admin.v2.IGetBackupRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IGetBackupRequest | undefined,
+      {} | undefined
+    ]
+  >;
+  getBackup(
+    request: protosTypes.google.bigtable.admin.v2.IGetBackupRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IGetBackupRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Gets metadata on a pending or completed Cloud Bigtable Backup.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. Name of the backup.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Backup]{@link google.bigtable.admin.v2.Backup}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
+  getBackup(
+    request: protosTypes.google.bigtable.admin.v2.IGetBackupRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          protosTypes.google.bigtable.admin.v2.IBackup,
+          protosTypes.google.bigtable.admin.v2.IGetBackupRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IGetBackupRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IGetBackupRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
+    request = request || {};
+    let options: gax.CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as gax.CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      name: request.name || '',
+    });
+    this.initialize();
+    return this._innerApiCalls.getBackup(request, options, callback);
+  }
+  updateBackup(
+    request: protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest | undefined,
+      {} | undefined
+    ]
+  >;
+  updateBackup(
+    request: protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Updates a pending or completed Cloud Bigtable Backup.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {google.bigtable.admin.v2.Backup} request.backup
+   *   Required. The backup to update. `backup.name`, and the fields to be updated
+   *   as specified by `update_mask` are required. Other fields are ignored.
+   *   Update is only supported for the following fields:
+   *    * `backup.expire_time`.
+   * @param {google.protobuf.FieldMask} request.updateMask
+   *   Required. A mask specifying which fields (e.g. `expire_time`) in the
+   *   Backup resource should be updated. This mask is relative to the Backup
+   *   resource, not to the request message. The field mask must always be
+   *   specified; this prevents any future fields from being erased accidentally
+   *   by clients that do not know about them.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Backup]{@link google.bigtable.admin.v2.Backup}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
+  updateBackup(
+    request: protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          protosTypes.google.bigtable.admin.v2.IBackup,
+          protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IBackup,
+      protosTypes.google.bigtable.admin.v2.IUpdateBackupRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
+    request = request || {};
+    let options: gax.CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as gax.CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      'backup.name': request.backup!.name || '',
+    });
+    this.initialize();
+    return this._innerApiCalls.updateBackup(request, options, callback);
+  }
+  deleteBackup(
+    request: protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest | undefined,
+      {} | undefined
+    ]
+  >;
+  deleteBackup(
+    request: protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Deletes a pending or completed Cloud Bigtable backup.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. Name of the backup to delete.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Empty]{@link google.protobuf.Empty}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
+  deleteBackup(
+    request: protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          protosTypes.google.protobuf.IEmpty,
+          protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      protosTypes.google.protobuf.IEmpty,
+      protosTypes.google.bigtable.admin.v2.IDeleteBackupRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
+    request = request || {};
+    let options: gax.CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as gax.CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      name: request.name || '',
+    });
+    this.initialize();
+    return this._innerApiCalls.deleteBackup(request, options, callback);
   }
   getIamPolicy(
     request: protosTypes.google.iam.v1.IGetIamPolicyRequest,
@@ -1392,12 +1657,12 @@ export class BigtableTableAdminClient {
    *   Required. The unique name of the instance in which to create the table.
    *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.tableId
-   *   Required. The name by which the new table should be referred to within the parent
-   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *   Required. The name by which the new table should be referred to within the
+   *   parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    * @param {string} request.sourceSnapshot
-   *   Required. The unique name of the snapshot from which to restore the table. The
-   *   snapshot and the table must be in the same instance.
-   *   Values are of the form
+   *   Required. The unique name of the snapshot from which to restore the table.
+   *   The snapshot and the table must be in the same instance. Values are of the
+   *   form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -1496,17 +1761,17 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   The unique name of the table to have the snapshot taken.
+   *   Required. The unique name of the table to have the snapshot taken.
    *   Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {string} request.cluster
-   *   The name of the cluster where the snapshot will be created in.
+   *   Required. The name of the cluster where the snapshot will be created in.
    *   Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    * @param {string} request.snapshotId
-   *   The ID by which the new snapshot should be referred to within the parent
-   *   cluster, e.g., `mysnapshot` of the form: `{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*`
-   *   rather than
+   *   Required. The ID by which the new snapshot should be referred to within the
+   *   parent cluster, e.g., `mysnapshot` of the form:
+   *   `{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*` rather than
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/mysnapshot`.
    * @param {google.protobuf.Duration} request.ttl
    *   The amount of time that the new snapshot can stay active after it is
@@ -1570,6 +1835,215 @@ export class BigtableTableAdminClient {
     this.initialize();
     return this._innerApiCalls.snapshotTable(request, options, callback);
   }
+  createBackup(
+    request: protosTypes.google.bigtable.admin.v2.ICreateBackupRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.IBackup,
+        protosTypes.google.bigtable.admin.v2.ICreateBackupMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  >;
+  createBackup(
+    request: protosTypes.google.bigtable.admin.v2.ICreateBackupRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.IBackup,
+        protosTypes.google.bigtable.admin.v2.ICreateBackupMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Starts creating a new Cloud Bigtable Backup. The returned backup
+   * {@link google.longrunning.Operation|long-running operation} can be used to
+   * track creation of the backup. The
+   * {@link google.longrunning.Operation.metadata|metadata} field type is
+   * {@link google.bigtable.admin.v2.CreateBackupMetadata|CreateBackupMetadata}. The
+   * {@link google.longrunning.Operation.response|response} field type is
+   * {@link google.bigtable.admin.v2.Backup|Backup}, if successful. Cancelling the
+   * returned operation will stop the creation and delete the backup.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. This must be one of the clusters in the instance in which this
+   *   table is located. The backup will be stored in this cluster. Values are
+   *   of the form `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   * @param {string} request.backupId
+   *   Required. The id of the backup to be created. The `backup_id` along with
+   *   the parent `parent` are combined as {parent}/backups/{backup_id} to create
+   *   the full backup name, of the form:
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup_id}`.
+   *   This string must be between 1 and 50 characters in length and match the
+   *   regex {@link -_.a-zA-Z0-9|_a-zA-Z0-9}*.
+   * @param {google.bigtable.admin.v2.Backup} request.backup
+   *   Required. The backup to create.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
+  createBackup(
+    request: protosTypes.google.bigtable.admin.v2.ICreateBackupRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          LROperation<
+            protosTypes.google.bigtable.admin.v2.IBackup,
+            protosTypes.google.bigtable.admin.v2.ICreateBackupMetadata
+          >,
+          protosTypes.google.longrunning.IOperation | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.IBackup,
+        protosTypes.google.bigtable.admin.v2.ICreateBackupMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.IBackup,
+        protosTypes.google.bigtable.admin.v2.ICreateBackupMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  > | void {
+    request = request || {};
+    let options: gax.CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as gax.CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      parent: request.parent || '',
+    });
+    this.initialize();
+    return this._innerApiCalls.createBackup(request, options, callback);
+  }
+  restoreTable(
+    request: protosTypes.google.bigtable.admin.v2.IRestoreTableRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.IRestoreTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  >;
+  restoreTable(
+    request: protosTypes.google.bigtable.admin.v2.IRestoreTableRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.IRestoreTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): void;
+  /**
+   * Create a new table by restoring from a completed backup. The new table
+   * must be in the same instance as the instance containing the backup. The
+   * returned table {@link google.longrunning.Operation|long-running operation} can
+   * be used to track the progress of the operation, and to cancel it. The
+   * {@link google.longrunning.Operation.metadata|metadata} field type is
+   * {@link google.bigtable.admin.RestoreTableMetadata|RestoreTableMetadata}. The
+   * {@link google.longrunning.Operation.response|response} type is
+   * {@link google.bigtable.admin.v2.Table|Table}, if successful.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The name of the instance in which to create the restored
+   *   table. This instance must be the parent of the source backup. Values are
+   *   of the form `projects/<project>/instances/<instance>`.
+   * @param {string} request.tableId
+   *   Required. The id of the table to create and restore to. This
+   *   table must not already exist. The `table_id` appended to
+   *   `parent` forms the full table name of the form
+   *   `projects/<project>/instances/<instance>/tables/<table_id>`.
+   * @param {string} request.backup
+   *   Name of the backup from which to restore. Values are of the form
+   *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [Operation]{@link google.longrunning.Operation}.
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
+  restoreTable(
+    request: protosTypes.google.bigtable.admin.v2.IRestoreTableRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          LROperation<
+            protosTypes.google.bigtable.admin.v2.ITable,
+            protosTypes.google.bigtable.admin.v2.IRestoreTableMetadata
+          >,
+          protosTypes.google.longrunning.IOperation | undefined,
+          {} | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.IRestoreTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protosTypes.google.bigtable.admin.v2.ITable,
+        protosTypes.google.bigtable.admin.v2.IRestoreTableMetadata
+      >,
+      protosTypes.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  > | void {
+    request = request || {};
+    let options: gax.CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as gax.CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      parent: request.parent || '',
+    });
+    this.initialize();
+    return this._innerApiCalls.restoreTable(request, options, callback);
+  }
   listTables(
     request: protosTypes.google.bigtable.admin.v2.IListTablesRequest,
     options?: gax.CallOptions
@@ -1595,8 +2069,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be listed.
-   *   Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be
+   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
    *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
@@ -1687,8 +2161,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be listed.
-   *   Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be
+   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
    *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
@@ -1761,8 +2235,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be listed.
-   *   Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be
+   *   listed. Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -1846,8 +2320,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be listed.
-   *   Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be
+   *   listed. Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -1878,6 +2352,269 @@ export class BigtableTableAdminClient {
     this.initialize();
     return this._descriptors.page.listSnapshots.createStream(
       this._innerApiCalls.listSnapshots as gax.GaxCall,
+      request,
+      callSettings
+    );
+  }
+  listBackups(
+    request: protosTypes.google.bigtable.admin.v2.IListBackupsRequest,
+    options?: gax.CallOptions
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IBackup[],
+      protosTypes.google.bigtable.admin.v2.IListBackupsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListBackupsResponse
+    ]
+  >;
+  listBackups(
+    request: protosTypes.google.bigtable.admin.v2.IListBackupsRequest,
+    options: gax.CallOptions,
+    callback: Callback<
+      protosTypes.google.bigtable.admin.v2.IBackup[],
+      protosTypes.google.bigtable.admin.v2.IListBackupsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListBackupsResponse
+    >
+  ): void;
+  /**
+   * Lists Cloud Bigtable backups. Returns both completed and pending
+   * backups.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The cluster to list backups from. Values are of the
+   *   form `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   *   Use `{cluster} = '-'` to list backups for all clusters in an instance,
+   *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
+   * @param {string} request.filter
+   *   A filter expression that filters backups listed in the response.
+   *   The expression must specify the field name, a comparison operator,
+   *   and the value that you want to use for filtering. The value must be a
+   *   string, a number, or a boolean. The comparison operator must be
+   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
+   *   roughly synonymous with equality. Filter rules are case insensitive.
+   *
+   *   The fields eligible for filtering are:
+   *     * `name`
+   *     * `source_table`
+   *     * `state`
+   *     * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *     * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *     * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *     * `size_bytes`
+   *
+   *   To filter on multiple expressions, provide each separate expression within
+   *   parentheses. By default, each expression is an AND expression. However,
+   *   you can include AND, OR, and NOT expressions explicitly.
+   *
+   *   Some examples of using filters are:
+   *
+   *     * `name:"exact"` --> The backup's name is the string "exact".
+   *     * `name:howl` --> The backup's name contains the string "howl".
+   *     * `source_table:prod`
+   *            --> The source_table's name contains the string "prod".
+   *     * `state:CREATING` --> The backup is pending creation.
+   *     * `state:READY` --> The backup is fully created and ready for use.
+   *     * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
+   *            --> The backup name contains the string "howl" and start_time
+   *                of the backup is before 2018-03-28T14:50:00Z.
+   *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
+   * @param {string} request.orderBy
+   *   An expression for specifying the sort order of the results of the request.
+   *   The string value should specify one or more fields in
+   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
+   *   https://aip.dev/132#ordering.
+   *
+   *   Fields supported are:
+   *      * name
+   *      * source_table
+   *      * expire_time
+   *      * start_time
+   *      * end_time
+   *      * size_bytes
+   *      * state
+   *
+   *   For example, "start_time". The default sorting order is ascending.
+   *   To specify descending order for the field, a suffix " desc" should
+   *   be appended to the field name. For example, "start_time desc".
+   *   Redundant space characters in the syntax are insigificant.
+   *
+   *   If order_by is empty, results will be sorted by `start_time` in descending
+   *   order starting from the most recently created backup.
+   * @param {number} request.pageSize
+   *   Number of backups to be returned in the response. If 0 or
+   *   less, defaults to the server's maximum allowed page size.
+   * @param {string} request.pageToken
+   *   If non-empty, `page_token` should contain a
+   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
+   *   from a previous
+   *   {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
+   *   same `parent` and with the same `filter`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is Array of [Backup]{@link google.bigtable.admin.v2.Backup}.
+   *   The client library support auto-pagination by default: it will call the API as many
+   *   times as needed and will merge results from all the pages into this array.
+   *
+   *   When autoPaginate: false is specified through options, the array has three elements.
+   *   The first element is Array of [Backup]{@link google.bigtable.admin.v2.Backup} that corresponds to
+   *   the one page received from the API server.
+   *   If the second element is not null it contains the request object of type [ListBackupsRequest]{@link google.bigtable.admin.v2.ListBackupsRequest}
+   *   that can be used to obtain the next page of the results.
+   *   If it is null, the next page does not exist.
+   *   The third element contains the raw response received from the API server. Its type is
+   *   [ListBackupsResponse]{@link google.bigtable.admin.v2.ListBackupsResponse}.
+   *
+   *   The promise has a method named "cancel" which cancels the ongoing API call.
+   */
+  listBackups(
+    request: protosTypes.google.bigtable.admin.v2.IListBackupsRequest,
+    optionsOrCallback?:
+      | gax.CallOptions
+      | Callback<
+          protosTypes.google.bigtable.admin.v2.IBackup[],
+          protosTypes.google.bigtable.admin.v2.IListBackupsRequest | null,
+          protosTypes.google.bigtable.admin.v2.IListBackupsResponse
+        >,
+    callback?: Callback<
+      protosTypes.google.bigtable.admin.v2.IBackup[],
+      protosTypes.google.bigtable.admin.v2.IListBackupsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListBackupsResponse
+    >
+  ): Promise<
+    [
+      protosTypes.google.bigtable.admin.v2.IBackup[],
+      protosTypes.google.bigtable.admin.v2.IListBackupsRequest | null,
+      protosTypes.google.bigtable.admin.v2.IListBackupsResponse
+    ]
+  > | void {
+    request = request || {};
+    let options: gax.CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as gax.CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      parent: request.parent || '',
+    });
+    this.initialize();
+    return this._innerApiCalls.listBackups(request, options, callback);
+  }
+
+  /**
+   * Equivalent to {@link listBackups}, but returns a NodeJS Stream object.
+   *
+   * This fetches the paged responses for {@link listBackups} continuously
+   * and invokes the callback registered for 'data' event for each element in the
+   * responses.
+   *
+   * The returned object has 'end' method when no more elements are required.
+   *
+   * autoPaginate option will be ignored.
+   *
+   * @see {@link https://nodejs.org/api/stream.html}
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The cluster to list backups from. Values are of the
+   *   form `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   *   Use `{cluster} = '-'` to list backups for all clusters in an instance,
+   *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
+   * @param {string} request.filter
+   *   A filter expression that filters backups listed in the response.
+   *   The expression must specify the field name, a comparison operator,
+   *   and the value that you want to use for filtering. The value must be a
+   *   string, a number, or a boolean. The comparison operator must be
+   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
+   *   roughly synonymous with equality. Filter rules are case insensitive.
+   *
+   *   The fields eligible for filtering are:
+   *     * `name`
+   *     * `source_table`
+   *     * `state`
+   *     * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *     * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *     * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *     * `size_bytes`
+   *
+   *   To filter on multiple expressions, provide each separate expression within
+   *   parentheses. By default, each expression is an AND expression. However,
+   *   you can include AND, OR, and NOT expressions explicitly.
+   *
+   *   Some examples of using filters are:
+   *
+   *     * `name:"exact"` --> The backup's name is the string "exact".
+   *     * `name:howl` --> The backup's name contains the string "howl".
+   *     * `source_table:prod`
+   *            --> The source_table's name contains the string "prod".
+   *     * `state:CREATING` --> The backup is pending creation.
+   *     * `state:READY` --> The backup is fully created and ready for use.
+   *     * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
+   *            --> The backup name contains the string "howl" and start_time
+   *                of the backup is before 2018-03-28T14:50:00Z.
+   *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
+   * @param {string} request.orderBy
+   *   An expression for specifying the sort order of the results of the request.
+   *   The string value should specify one or more fields in
+   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
+   *   https://aip.dev/132#ordering.
+   *
+   *   Fields supported are:
+   *      * name
+   *      * source_table
+   *      * expire_time
+   *      * start_time
+   *      * end_time
+   *      * size_bytes
+   *      * state
+   *
+   *   For example, "start_time". The default sorting order is ascending.
+   *   To specify descending order for the field, a suffix " desc" should
+   *   be appended to the field name. For example, "start_time desc".
+   *   Redundant space characters in the syntax are insigificant.
+   *
+   *   If order_by is empty, results will be sorted by `start_time` in descending
+   *   order starting from the most recently created backup.
+   * @param {number} request.pageSize
+   *   Number of backups to be returned in the response. If 0 or
+   *   less, defaults to the server's maximum allowed page size.
+   * @param {string} request.pageToken
+   *   If non-empty, `page_token` should contain a
+   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
+   *   from a previous
+   *   {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
+   *   same `parent` and with the same `filter`.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits an object representing [Backup]{@link google.bigtable.admin.v2.Backup} on 'data' event.
+   */
+  listBackupsStream(
+    request?: protosTypes.google.bigtable.admin.v2.IListBackupsRequest,
+    options?: gax.CallOptions
+  ): Transform {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      parent: request.parent || '',
+    });
+    const callSettings = new gax.CallSettings(options);
+    this.initialize();
+    return this._descriptors.page.listBackups.createStream(
+      this._innerApiCalls.listBackups as gax.GaxCall,
       request,
       callSettings
     );
@@ -1936,6 +2673,73 @@ export class BigtableTableAdminClient {
   matchAppProfileFromAppProfileName(appProfileName: string) {
     return this._pathTemplates.appProfilePathTemplate.match(appProfileName)
       .app_profile;
+  }
+
+  /**
+   * Return a fully-qualified backup resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} cluster
+   * @param {string} backup
+   * @returns {string} Resource name string.
+   */
+  backupPath(
+    project: string,
+    instance: string,
+    cluster: string,
+    backup: string
+  ) {
+    return this._pathTemplates.backupPathTemplate.render({
+      project,
+      instance,
+      cluster,
+      backup,
+    });
+  }
+
+  /**
+   * Parse the project from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).project;
+  }
+
+  /**
+   * Parse the instance from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).instance;
+  }
+
+  /**
+   * Parse the cluster from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the cluster.
+   */
+  matchClusterFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).cluster;
+  }
+
+  /**
+   * Parse the backup from Backup resource.
+   *
+   * @param {string} backupName
+   *   A fully-qualified path representing Backup resource.
+   * @returns {string} A string representing the backup.
+   */
+  matchBackupFromBackupName(backupName: string) {
+    return this._pathTemplates.backupPathTemplate.match(backupName).backup;
   }
 
   /**

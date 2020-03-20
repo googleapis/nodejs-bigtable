@@ -55,26 +55,26 @@ npm install @google-cloud/bigtable
 ### Using the client library
 
 ```javascript
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
+// Imports the Google Cloud client library
+const Bigtable = require('@google-cloud/bigtable');
 
-  const bigtable = Bigtable();
+const bigtable = Bigtable();
 
-  async function quickstart() {
-    // Connect to an existing instance:my-bigtable-instance
-    const instance = bigtable.instance(INSTANCE_ID);
+async function quickstart() {
+  // Connect to an existing instance:my-bigtable-instance
+  const instance = bigtable.instance(INSTANCE_ID);
 
-    // Connect to an existing table:my-table
-    const table = instance.table(TABLE_ID);
+  // Connect to an existing table:my-table
+  const table = instance.table(TABLE_ID);
 
-    // Read a row from my-table using a row key
-    const [singleRow] = await table.row('r1').get();
+  // Read a row from my-table using a row key
+  const [singleRow] = await table.row('r1').get();
 
-    // Print the row key and data (column value, labels, timestamp)
-    const rowData = JSON.stringify(singleRow.data, null, 4);
-    console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
-  }
-  quickstart();
+  // Print the row key and data (column value, labels, timestamp)
+  const rowData = JSON.stringify(singleRow.data, null, 4);
+  console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
+}
+quickstart();
 
 ```
 
