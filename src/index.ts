@@ -623,6 +623,9 @@ export class Bigtable {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb;
 
+    if (arrify(options.clusters).some(cluster => !cluster.id)) {
+      throw new Error('An id of cluster is required to create an instance.');
+    }
     const reqOpts: any = {
       parent: this.projectName,
       instanceId: id,
