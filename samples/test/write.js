@@ -17,6 +17,7 @@
 const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
 const cp = require('child_process');
+const uuid = require('uuid');
 const Bigtable = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
@@ -46,7 +47,9 @@ describe('writes', async () => {
   });
 
   it('should do a conditional write', function() {
-    const stdout = execSync(`node writeConditionally ${INSTANCE_ID} ${TABLE_ID}`);
+    const stdout = execSync(
+      `node writeConditionally ${INSTANCE_ID} ${TABLE_ID}`
+    );
     assert.match(stdout, /Successfully updated row's os_name/);
   });
 
