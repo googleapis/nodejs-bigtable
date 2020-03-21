@@ -34,7 +34,6 @@ import {
   CreateClusterResponse,
   GetClustersCallback,
   GetClustersResponse,
-  Metadata,
 } from './cluster';
 import {Family} from './family';
 import {
@@ -62,8 +61,8 @@ import {google} from '../protos/protos';
 export interface ClusterInfo {
   id?: string;
   location?: string;
-  serveNodes?: string;
-  nodes?: string;
+  serveNodes?: number;
+  nodes?: number;
   storage?: string;
   defaultStorageType?: number;
 }
@@ -92,7 +91,7 @@ export interface InstanceOptions {
    * No more than 64 labels can be associated with a given resource.
    * Keys and values must both be under 128 bytes.
    */
-  labels?: {[index: string]: string};
+  labels?: {[index: string]: any};
 
   type?: 'production' | 'development';
 
@@ -733,7 +732,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
         const clusters = resp!.clusters!.map(clusterObj => {
           const cluster = this.cluster(clusterObj.name!.split('/').pop()!);
-          cluster.metadata = clusterObj as Metadata;
+          cluster.metadata = clusterObj;
           return cluster;
         });
         callback(null, clusters, resp);

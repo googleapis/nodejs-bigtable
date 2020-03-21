@@ -16,8 +16,9 @@
 
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
+import {Test} from './testTypes';
 const testcases = require('../../system-test/read-rows-acceptance-test.json')
-  .tests;
+  .tests as Test[];
 import {PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
@@ -26,6 +27,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
 import {Bigtable} from '../src';
+import {AbortableDuplex} from '@google-cloud/common';
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
 const root = ProtoBuf.Root.fromJSON(
@@ -72,13 +74,14 @@ describe('Read Row Acceptance tests', function() {
           objectMode: true,
         });
 
-        /* tslint:disable-next-line */
-        (stream as any).abort = function() {};
+        ((stream as {}) as AbortableDuplex).abort = function() {};
 
         setImmediate(function() {
           test.chunks_base64
             .map(chunk => {
-              const cellChunk = CellChunk.decode(Buffer.from(chunk, 'base64')); //.decode64(chunk);
+              const cellChunk = CellChunk.decode(
+                Buffer.from(chunk as string, 'base64')
+              ); //.decode64(chunk);
               let readRowsResponse: any = {chunks: [cellChunk]};
               readRowsResponse = ReadRowsResponse.create(readRowsResponse);
               readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {

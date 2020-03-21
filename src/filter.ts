@@ -49,9 +49,7 @@ export interface Time {
   end: Date;
 }
 
-export interface RawFilter {
-  [index: string]: {};
-}
+export type RawFilter = any;
 
 export interface Condition {
   pass: {};
@@ -259,7 +257,7 @@ export class Filter {
       [index: string]: Function;
     }
     const filter = new Filter();
-    arrify(filters).forEach(filterObj => {
+    arrify(filters).forEach((filterObj: any) => {
       const key = Object.keys(filterObj)[0];
       if (typeof ((filter as {}) as Fn)[key] !== 'function') {
         throw new FilterError(key);

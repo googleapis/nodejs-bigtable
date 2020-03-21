@@ -345,7 +345,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should execute callback with original arguments', function(done) {
-      const args = [{}, {}, {}];
+      const args = [{}, {}];
 
       cluster.bigtable.request = function(config, callback) {
         callback.apply(null, args);
@@ -429,7 +429,7 @@ describe('Bigtable/Cluster', function() {
     });
 
     it('should execute callback with all arguments', function(done) {
-      const args = [{}, {}, {}];
+      const args = [{}, {}];
 
       cluster.bigtable.request = function(config, callback) {
         callback.apply(null, args);

@@ -275,7 +275,7 @@ export interface MutateOptions {
   rawMutation?: boolean;
 }
 
-export type Entry = Array<{}>;
+export type Entry = any;
 
 export type DeleteTableCallback = (
   err: ServiceError | null,
@@ -384,7 +384,7 @@ export class Table {
   instance: Instance;
   name: string;
   id: string;
-  metadata?: {};
+  metadata?: google.bigtable.admin.v2.ITable;
   maxRetries?: number;
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
