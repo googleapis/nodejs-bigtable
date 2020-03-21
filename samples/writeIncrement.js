@@ -16,14 +16,15 @@
 
 // sample-metadata:
 //   title: Write Increment
-//   usage: node writeIncrement.js <instanceId>
+//   usage: node writeIncrement.js <instanceId> <tableId>
 
-function main(instanceId = 'YOUR_INSTANCE_ID') {
+function main(instanceId = 'YOUR_INSTANCE_ID', tableId = 'YOUR_TABLE_ID') {
   // [START bigtable_writes_increment]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const instanceId = 'YOUR_INSTANCE_ID';
+  // const tableId = 'YOUR_TABLE_ID';
 
   const Bigtable = require('@google-cloud/bigtable');
 
@@ -31,7 +32,7 @@ function main(instanceId = 'YOUR_INSTANCE_ID') {
 
   async function writeIncrement() {
     const instance = bigtable.instance(instanceId);
-    const table = instance.table('mobile-time-series');
+    const table = instance.table(tableId);
 
     const row = table.row('phone#4c410523#20190501');
     await row.increment('stats_summary:connected_wifi', -1);
