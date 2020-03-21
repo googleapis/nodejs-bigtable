@@ -17,12 +17,13 @@
 const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
 const cp = require('child_process');
+const uuid = require('uuid');
 const Bigtable = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
 const INSTANCE_ID = `nodejs-bigtable-samples-keepme`;
-const TABLE_ID = 'mobile-time-series';
+const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('writes', async () => {
   const bigtable = Bigtable();
@@ -41,22 +42,24 @@ describe('writes', async () => {
   });
 
   it('should do a simple write', async () => {
-    const stdout = execSync(`node writeSimple ${INSTANCE_ID}`);
+    const stdout = execSync(`node writeSimple ${INSTANCE_ID} ${TABLE_ID}`);
     assert.match(stdout, /Successfully wrote row .*/);
   });
 
   it('should do a conditional write', function() {
-    const stdout = execSync(`node writeConditionally ${INSTANCE_ID}`);
+    const stdout = execSync(
+      `node writeConditionally ${INSTANCE_ID} ${TABLE_ID}`
+    );
     assert.match(stdout, /Successfully updated row's os_name/);
   });
 
   it('should do an increment', function() {
-    const stdout = execSync(`node writeIncrement ${INSTANCE_ID}`);
+    const stdout = execSync(`node writeIncrement ${INSTANCE_ID} ${TABLE_ID}`);
     assert.match(stdout, /Successfully updated row .*/);
   });
 
   it('should do a batch write', function() {
-    const stdout = execSync(`node writeBatch ${INSTANCE_ID}`);
+    const stdout = execSync(`node writeBatch ${INSTANCE_ID} ${TABLE_ID}`);
     assert.match(stdout, /Successfully wrote 2 rows: .*/);
   });
 });

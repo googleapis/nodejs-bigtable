@@ -17,11 +17,114 @@
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 const dotProp = require('dot-prop');
-import * as is from 'is';
-import {Filter} from './filter';
-import {Mutation} from './mutation';
+import {Filter, RawFilter} from './filter';
+import {
+  Mutation,
+  ConvertFromBytesUserOptions,
+  Bytes,
+  IMutation,
+} from './mutation';
 import {Bigtable} from '.';
-import {Table, Entry} from './table';
+import {
+  Table,
+  Entry,
+  MutateCallback,
+  MutateResponse,
+  MutateOptions,
+} from './table';
+import {Chunk} from './chunktransformer';
+import {CallOptions} from 'google-gax';
+import {ServiceError} from '@grpc/grpc-js';
+import {google} from '../protos/protos';
+
+export interface Rule {
+  column: string;
+  append: string;
+  increment: number;
+}
+export interface CreateRowOptions {
+  gaxOptions?: CallOptions;
+  entry?: Entry;
+}
+export interface FormatFamiliesOptions {
+  decode?: boolean;
+}
+export interface Family {
+  name: string;
+  columns: Array<{
+    qualifier?: Bytes;
+    cells: Array<{
+      value?: Bytes;
+      timestampMicros?: number;
+      labels?: string[];
+    }>;
+  }>;
+}
+export interface FilterConfig {
+  gaxOptions?: CallOptions;
+  onMatch?: IMutation[];
+  onNoMatch?: IMutation[];
+}
+export interface GetRowOptions {
+  /**
+   *  If set to `false` it will not decode Buffer values returned from Bigtable.
+   */
+  decode?: boolean;
+  /**
+   * Request configuration options, outlined here:
+   * https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   */
+  gaxOptions?: CallOptions;
+
+  filter?: {};
+}
+export type RowExistsCallback = (
+  err: ServiceError | null,
+  exists?: boolean
+) => void;
+export type RowExistsResponse = [boolean];
+export type CreateRulesCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse
+) => void;
+export type CreateRulesResponse = [
+  google.bigtable.v2.IReadModifyWriteRowResponse
+];
+export type CreateRowCallback = (
+  err: ServiceError | null,
+  row?: Row | null,
+  apiResponse?: google.protobuf.Empty
+) => void;
+export type CreateRowResponse = [Row, google.protobuf.Empty];
+export type GetRowMetadataCallback = (
+  err: RowError | null,
+  apiResponse?: google.bigtable.v2.ReadRowsResponse
+) => void;
+export type GetRowMetadataResponse = [google.bigtable.v2.ReadRowsResponse];
+export type GetRowCallback = (
+  err: RowError | null,
+  row?: Row,
+  apiResponse?: {}
+) => void;
+export type GetRowResponse = [Row, {}];
+export type FilterCallback = (
+  err: ServiceError | null,
+  matched?: boolean | null,
+  apiResponse?: google.bigtable.v2.ICheckAndMutateRowResponse
+) => void;
+export type FilterResponse = [
+  boolean | null,
+  google.bigtable.v2.ICheckAndMutateRowResponse
+];
+export type IncrementCallback = (
+  err: ServiceError | null,
+  value?: number | null,
+  apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse
+) => void;
+export type IncrementResponse = [
+  number | null,
+  google.bigtable.v2.IReadModifyWriteRowResponse
+];
 
 /**
  * @private
@@ -54,7 +157,9 @@ export class Row {
   bigtable: Bigtable;
   table: Table;
   id: string;
-  data: {};
+  data: {[index: string]: {}};
+  key?: string;
+  metadata?: {};
   constructor(table: Table, key: string) {
     this.bigtable = table.bigtable;
     this.table = table;
@@ -91,23 +196,23 @@ export class Row {
    * //   }
    * // }
    */
-  static formatChunks_(chunks, options) {
-    const rows: any[] = [];
-    let familyName;
-    let qualifierName;
+  static formatChunks_(chunks: Chunk[], options: ConvertFromBytesUserOptions) {
+    const rows: Row[] = [];
+    let familyName: string | null;
+    let qualifierName: string | null;
 
     options = options || {};
 
     chunks.reduce((row, chunk) => {
-      let family;
-      let qualifier;
+      let family: {[index: string]: []};
+      let qualifier: Array<{}>;
 
       row.data = row.data || {};
 
       if (chunk.rowKey) {
         row.key = Mutation.convertFromBytes(chunk.rowKey, {
           userOptions: options,
-        });
+        }) as string;
       }
 
       if (chunk.familyName) {
@@ -119,17 +224,20 @@ export class Row {
       }
 
       if (chunk.qualifier) {
-        qualifierName = Mutation.convertFromBytes(chunk.qualifier.value, {
-          userOptions: options,
-        });
+        qualifierName = Mutation.convertFromBytes(
+          chunk.qualifier.value as string,
+          {
+            userOptions: options,
+          }
+        ) as string;
       }
 
-      if (family && qualifierName) {
-        qualifier = family[qualifierName] = family[qualifierName] || [];
+      if (family! && qualifierName) {
+        qualifier = family![qualifierName] = family![qualifierName] || [];
       }
 
-      if (qualifier && chunk.value) {
-        qualifier.push({
+      if (qualifier! && chunk.value) {
+        qualifier!.push({
           value: Mutation.convertFromBytes(chunk.value, {userOptions: options}),
           labels: chunk.labels,
           timestamp: chunk.timestampMicros,
@@ -147,7 +255,7 @@ export class Row {
       }
 
       return row;
-    }, {});
+    }, {} as any);
 
     return rows;
   }
@@ -188,17 +296,26 @@ export class Row {
    * //   }
    * // }
    */
-  static formatFamilies_(families, options?) {
-    const data = {};
+  static formatFamilies_(
+    families: google.bigtable.v2.IFamily[],
+    options?: FormatFamiliesOptions
+  ) {
+    const data = {} as {[index: string]: {}};
     options = options || {};
     families.forEach(family => {
-      const familyData = (data[family.name] = {});
-      family.columns.forEach(column => {
-        const qualifier = Mutation.convertFromBytes(column.qualifier);
-        familyData[qualifier as any] = column.cells.map(cell => {
+      const familyData = (data[family.name!] = {}) as {
+        [index: string]: {};
+      };
+      family.columns!.forEach(column => {
+        const qualifier = Mutation.convertFromBytes(
+          column.qualifier as string
+        ) as string;
+        familyData[qualifier] = column.cells!.map(cell => {
           let value = cell.value;
-          if (options.decode !== false) {
-            value = Mutation.convertFromBytes(value, {isPossibleNumber: true});
+          if (options!.decode !== false) {
+            value = Mutation.convertFromBytes(value as Bytes, {
+              isPossibleNumber: true,
+            }) as string;
           }
           return {
             value,
@@ -208,10 +325,12 @@ export class Row {
         });
       });
     });
-
     return data;
   }
 
+  create(options?: CreateRowOptions): Promise<CreateRowResponse>;
+  create(options: CreateRowOptions, callback: CreateRowCallback): void;
+  create(callback: CreateRowCallback): void;
   /**
    * Create a new row in your table.
    *
@@ -228,29 +347,43 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_create_row
    */
-  create(options, callback) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
-
+  create(
+    optionsOrCallback?: CreateRowOptions | CreateRowCallback,
+    cb?: CreateRowCallback
+  ): void | Promise<CreateRowResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const entry = ({
       key: this.id,
       data: options.entry,
       method: Mutation.methods.INSERT,
     } as {}) as Entry;
     this.data = {};
-
-    this.table.mutate(entry, options.gaxOptions, (err, apiResponse) => {
-      if (err) {
-        callback(err, null, apiResponse);
-        return;
+    this.table.mutate(
+      entry,
+      options.gaxOptions as MutateOptions,
+      (err, apiResponse) => {
+        if (err) {
+          callback(err, null, apiResponse);
+          return;
+        }
+        callback(null, this, apiResponse);
       }
-
-      callback(null, this, apiResponse);
-    });
+    );
   }
 
+  createRules(
+    rules: Rule | Rule[],
+    options?: CallOptions
+  ): Promise<CreateRulesResponse>;
+  createRules(
+    rules: Rule | Rule[],
+    options: CallOptions,
+    callback: CreateRulesCallback
+  ): void;
+  createRules(rules: Rule | Rule[], callback: CreateRulesCallback): void;
   /**
    * Update a row with rules specifying how the row's contents are to be
    * transformed into writes. Rules are applied in order, meaning that earlier
@@ -269,13 +402,17 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_create_rules
    */
-  createRules(rules, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
+  createRules(
+    rules: Rule | Rule[],
+    optionsOrCallback?: CallOptions | CreateRulesCallback,
+    cb?: CreateRulesCallback
+  ): void | Promise<CreateRulesResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    if (!rules || rules.length === 0) {
+    if (!rules || (rules as Rule[]).length === 0) {
       throw new Error('At least one rule must be provided.');
     }
 
@@ -304,7 +441,7 @@ export class Row {
       rules,
     };
     this.data = {};
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.v2.IReadModifyWriteRowResponse>(
       {
         client: 'BigtableClient',
         method: 'readModifyWriteRow',
@@ -315,6 +452,9 @@ export class Row {
     );
   }
 
+  delete(options?: CallOptions): Promise<MutateResponse>;
+  delete(options: CallOptions, callback: MutateCallback): void;
+  delete(callback: MutateCallback): void;
   /**
    * Deletes all cells in the row.
    *
@@ -328,20 +468,32 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_delete_all_cells
    */
-  delete(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  delete(
+    optionsOrCallback?: CallOptions | MutateCallback,
+    cb?: MutateCallback
+  ): void | Promise<MutateResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const mutation = ({
       key: this.id,
       method: Mutation.methods.DELETE,
     } as {}) as Entry;
     this.data = {};
-    this.table.mutate(mutation, gaxOptions, callback);
+    this.table.mutate(mutation, (gaxOptions as {}) as MutateOptions, callback);
   }
 
+  deleteCells(
+    columns: string[],
+    options?: CallOptions
+  ): Promise<MutateResponse>;
+  deleteCells(
+    columns: string[],
+    options: CallOptions,
+    callback: MutateCallback
+  ): void;
+  deleteCells(columns: string[], callback: MutateCallback): void;
   /**
    * Delete specified cells from the row. See {@link Table#mutate}.
    *
@@ -356,21 +508,27 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_delete_particular_cells
    */
-  deleteCells(columns, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  deleteCells(
+    columns: string[],
+    optionsOrCallback?: CallOptions | MutateCallback,
+    cb?: MutateCallback
+  ): void | Promise<MutateResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const mutation = ({
       key: this.id,
       data: arrify(columns),
       method: Mutation.methods.DELETE,
     } as {}) as Entry;
     this.data = {};
-    this.table.mutate(mutation, gaxOptions, callback);
+    this.table.mutate(mutation, gaxOptions as MutateOptions, callback);
   }
 
+  exists(options?: CallOptions): Promise<RowExistsResponse>;
+  exists(options: CallOptions, callback: RowExistsCallback): void;
+  exists(callback: RowExistsCallback): void;
   /**
    * Check if the table row exists.
    *
@@ -384,27 +542,34 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_row_exists
    */
-  exists(gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
-    this.getMetadata(gaxOptions, err => {
+  exists(
+    optionsOrCallback?: CallOptions | RowExistsCallback,
+    cb?: RowExistsCallback
+  ): void | Promise<RowExistsResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    this.getMetadata(gaxOptions as GetRowOptions, err => {
       if (err) {
         if (err instanceof RowError) {
           callback(null, false);
           return;
         }
-
         callback(err);
         return;
       }
-
       callback(null, true);
     });
   }
 
+  filter(filter: RawFilter, config?: FilterConfig): Promise<FilterResponse>;
+  filter(
+    filter: RawFilter,
+    config: FilterConfig,
+    callback: FilterCallback
+  ): void;
+  filter(filter: RawFilter, callback: FilterCallback): void;
   /**
    * Mutates a row atomically based on the output of a filter. Depending on
    * whether or not any results are yielded, either the `onMatch` or `onNoMatch`
@@ -426,17 +591,24 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_row_filter
    */
-  filter(filter, config, callback) {
+  filter(
+    filter: RawFilter,
+    configOrCallback?: FilterConfig | FilterCallback,
+    cb?: FilterCallback
+  ): void | Promise<FilterResponse> {
+    const config = typeof configOrCallback === 'object' ? configOrCallback : {};
+    const callback =
+      typeof configOrCallback === 'function' ? configOrCallback : cb!;
     const reqOpts = {
       tableName: this.table.name,
       appProfileId: this.bigtable.appProfileId,
       rowKey: Mutation.convertToBytes(this.id),
       predicateFilter: Filter.parse(filter),
-      trueMutations: createFlatMutationsList(config.onMatch),
-      falseMutations: createFlatMutationsList(config.onNoMatch),
+      trueMutations: createFlatMutationsList(config.onMatch!),
+      falseMutations: createFlatMutationsList(config.onNoMatch!),
     };
     this.data = {};
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.v2.ICheckAndMutateRowResponse>(
       {
         client: 'BigtableClient',
         method: 'checkAndMutateRow',
@@ -449,16 +621,28 @@ export class Row {
           return;
         }
 
-        callback(null, apiResponse.predicateMatched, apiResponse);
+        callback(null, apiResponse!.predicateMatched, apiResponse);
       }
     );
 
-    function createFlatMutationsList(entries) {
-      entries = arrify(entries).map(entry => Mutation.parse(entry).mutations);
-      return entries.reduce((a, b) => a.concat(b), []);
+    function createFlatMutationsList(entries: IMutation[]) {
+      const e2 = arrify(entries).map(
+        entry => Mutation.parse(entry as Mutation).mutations!
+      );
+      return e2.reduce((a, b) => a.concat(b), []);
     }
   }
 
+  get(options?: GetRowOptions): Promise<GetRowResponse>;
+  get(columns: string[], options?: GetRowOptions): Promise<GetRowResponse>;
+  get(
+    columns: string[],
+    options: GetRowOptions,
+    callback: GetRowCallback
+  ): void;
+  get(columns: string[], callback: GetRowCallback): void;
+  get(callback: GetRowCallback): void;
+  get(options: GetRowOptions, callback: GetRowCallback): void;
   /**
    * Get the row data. See {@link Table#getRows}.
    *
@@ -476,17 +660,27 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_get_row
    */
-  get(columns, options, callback?) {
-    if (!is.array(columns)) {
-      callback = options;
-      options = columns;
-      columns = [];
-    }
-
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
+  get(
+    columnsOrOptionsOrCallback?: string[] | GetRowOptions | GetRowCallback,
+    optionsOrCallback?: GetRowOptions | GetRowCallback,
+    cb?: GetRowCallback
+  ): void | Promise<GetRowResponse> {
+    let columns = Array.isArray(columnsOrOptionsOrCallback)
+      ? columnsOrOptionsOrCallback
+      : [];
+    const options =
+      typeof columnsOrOptionsOrCallback === 'object' &&
+      !Array.isArray(columnsOrOptionsOrCallback)
+        ? columnsOrOptionsOrCallback
+        : typeof optionsOrCallback === 'object'
+        ? optionsOrCallback
+        : {};
+    const callback =
+      typeof columnsOrOptionsOrCallback === 'function'
+        ? columnsOrOptionsOrCallback
+        : typeof optionsOrCallback === 'function'
+        ? optionsOrCallback
+        : cb!;
 
     let filter;
     columns = arrify(columns);
@@ -542,10 +736,13 @@ export class Row {
       // If the user specifies column names, we'll return back the row data
       // we received. Otherwise, we'll return the row "this" in a typical
       // GrpcServiceObject#get fashion.
-      callback(null, columns.length ? row.data : this);
+      callback(null, columns.length ? ((row.data as {}) as Row) : this);
     });
   }
 
+  getMetadata(options?: GetRowOptions): Promise<GetRowMetadataResponse>;
+  getMetadata(options: GetRowOptions, callback: GetRowMetadataCallback): void;
+  getMetadata(callback: GetRowMetadataCallback): void;
   /**
    * Get the row's metadata.
    *
@@ -562,22 +759,43 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_get_row_meta
    */
-  getMetadata(options, callback) {
-    if (is.function(options)) {
-      callback = options;
-      options = {};
-    }
-
+  getMetadata(
+    optionsOrCallback?: GetRowOptions | GetRowMetadataCallback,
+    cb?: GetRowMetadataCallback
+  ): void | Promise<GetRowMetadataResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     this.get(options, (err, row) => {
       if (err) {
         callback(err);
         return;
       }
-
-      callback(null, row.metadata);
+      callback(null, row!.metadata as google.bigtable.v2.ReadRowsResponse);
     });
   }
 
+  increment(column: string, value?: number): Promise<IncrementResponse>;
+  increment(
+    column: string,
+    value: number,
+    options?: CallOptions
+  ): Promise<IncrementResponse>;
+  increment(column: string, options?: CallOptions): Promise<IncrementResponse>;
+  increment(
+    column: string,
+    value: number,
+    options: CallOptions,
+    callback: IncrementCallback
+  ): void;
+  increment(column: string, value: number, callback: IncrementCallback): void;
+  increment(
+    column: string,
+    options: CallOptions,
+    callback: IncrementCallback
+  ): void;
+  increment(column: string, callback: IncrementCallback): void;
   /**
    * Increment a specific column within the row. If the column does not
    * exist, it is automatically initialized to 0 before being incremented.
@@ -595,31 +813,33 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_row_increment
    */
-  increment(column, value, gaxOptions, callback) {
-    // increment('column', callback)
-    if (is.function(value)) {
-      callback = value;
-      value = 1;
-      gaxOptions = {};
-    }
-
-    // increment('column', value, callback)
-    if (is.function(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
-    // increment('column', { gaxOptions }, callback)
-    if (is.object(value)) {
-      callback = gaxOptions;
-      gaxOptions = value;
-      value = 1;
-    }
+  increment(
+    column: string,
+    valueOrOptionsOrCallback?: number | CallOptions | IncrementCallback,
+    optionsOrCallback?: CallOptions | IncrementCallback,
+    cb?: IncrementCallback
+  ): void | Promise<IncrementResponse> {
+    const value =
+      typeof valueOrOptionsOrCallback === 'number'
+        ? valueOrOptionsOrCallback
+        : 1;
+    const gaxOptions =
+      typeof valueOrOptionsOrCallback === 'object'
+        ? valueOrOptionsOrCallback
+        : typeof optionsOrCallback === 'object'
+        ? optionsOrCallback
+        : {};
+    const callback =
+      typeof valueOrOptionsOrCallback === 'function'
+        ? valueOrOptionsOrCallback
+        : typeof optionsOrCallback === 'function'
+        ? optionsOrCallback
+        : cb!;
 
     const reqOpts = {
       column,
       increment: value,
-    };
+    } as Rule;
 
     this.createRules(reqOpts, gaxOptions, (err, resp) => {
       if (err) {
@@ -627,13 +847,16 @@ export class Row {
         return;
       }
 
-      const data = Row.formatFamilies_(resp.row.families);
+      const data = Row.formatFamilies_(resp!.row!.families!);
       const value = dotProp.get(data, column.replace(':', '.'))[0].value;
 
       callback(null, value, resp);
     });
   }
 
+  save(entry: Entry, options?: CallOptions): Promise<MutateResponse>;
+  save(entry: Entry, options: CallOptions, callback: MutateCallback): void;
+  save(entry: Entry, callback: MutateCallback): void;
   /**
    * Update the row cells.
    *
@@ -649,19 +872,22 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_row_save
    */
-  save(entry, gaxOptions, callback) {
-    if (is.fn(gaxOptions)) {
-      callback = gaxOptions;
-      gaxOptions = {};
-    }
-
+  save(
+    entry: Entry,
+    optionsOrCallback?: CallOptions | MutateCallback,
+    cb?: MutateCallback
+  ): void | Promise<MutateResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const mutation = ({
       key: this.id,
       data: entry,
       method: Mutation.methods.INSERT,
     } as {}) as Entry;
     this.data = {};
-    this.table.mutate(mutation, gaxOptions, callback);
+    this.table.mutate(mutation, (gaxOptions as {}) as MutateOptions, callback);
   }
 }
 

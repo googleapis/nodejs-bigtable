@@ -156,7 +156,7 @@ export class Instance {
   bigtable: Bigtable;
   id: string;
   name: string;
-  metadata?: {};
+  metadata?: google.bigtable.admin.v2.IInstance;
   getTablesStream!: (options?: GetTablesOptions) => ResourceStream<Table>;
   constructor(bigtable: Bigtable, id: string) {
     this.bigtable = bigtable;

@@ -36,8 +36,12 @@ export interface ParsedColumn {
   qualifier: string | null;
 }
 export interface ConvertFromBytesOptions {
-  userOptions?: {decode?: boolean; encoding?: string};
+  userOptions?: ConvertFromBytesUserOptions;
   isPossibleNumber?: boolean;
+}
+export interface ConvertFromBytesUserOptions {
+  decode?: boolean;
+  encoding?: string;
 }
 export interface MutationConstructorObj {
   key: string;
@@ -103,9 +107,9 @@ export class Mutation {
    * @private
    */
   static convertFromBytes(
-    bytes: Bytes,
+    bytes: Buffer | string,
     options?: ConvertFromBytesOptions
-  ): Buffer | Value {
+  ): Buffer | Value | string {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
       // tslint:disable-next-line no-any

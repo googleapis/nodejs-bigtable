@@ -16,14 +16,15 @@
 
 // sample-metadata:
 //   title: Write Conditionally
-//   usage: node writeConditionally.js <instanceId>
+//   usage: node writeConditionally.js <instanceId> <tableId>
 
-function main(instanceId = 'YOUR_INSTANCE_ID') {
+function main(instanceId = 'YOUR_INSTANCE_ID', tableId = 'YOUR_TABLE_ID') {
   // [START bigtable_writes_conditional]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   // const instanceId = 'YOUR_INSTANCE_ID';
+  // const tableId = 'YOUR_TABLE_ID';
 
   const Bigtable = require('@google-cloud/bigtable');
 
@@ -31,7 +32,7 @@ function main(instanceId = 'YOUR_INSTANCE_ID') {
 
   async function writeConditionally() {
     const instance = bigtable.instance(instanceId);
-    const table = instance.table('mobile-time-series');
+    const table = instance.table(tableId);
 
     const timestamp = new Date();
     const row = table.row('phone#4c410523#20190501');
