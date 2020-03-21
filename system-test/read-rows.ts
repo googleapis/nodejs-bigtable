@@ -1,30 +1,33 @@
-/*!
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2016 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import {Bigtable} from '../src';
 import {Mutation} from '../src/mutation.js';
-const {tests} = require('../../system-test/data/read-rows-retry-test.json');
-
+const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
+  tests: Test[];
+};
+import {google} from '../protos/protos';
 import * as grpc from '@grpc/grpc-js';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
 import * as through from 'through2';
+import {EventEmitter} from 'events';
+import {Test} from './testTypes';
+import {ServiceError} from '@grpc/grpc-js';
 
-function dispatch(emitter, response) {
+function dispatch(emitter: EventEmitter, response: any) {
   const emits: any[] = [{name: 'request'}];
   if (response.row_keys) {
     emits.push.apply(emits, [
@@ -55,7 +58,7 @@ function dispatch(emitter, response) {
   }
 }
 
-function rowResponse(rowKey) {
+function rowResponse(rowKey: {}) {
   return {
     rowKey: Mutation.convertToBytes(rowKey),
     familyName: {value: 'family'},
@@ -76,13 +79,13 @@ describe('Bigtable/Table', () => {
   const TABLE = INSTANCE.table('table');
 
   describe('createReadStream', () => {
-    let clock;
-    let endCalled;
-    let error;
-    let requestedOptions;
-    let responses;
-    let rowKeysRead;
-    let stub;
+    let clock: sinon.SinonFakeTimers;
+    let endCalled: boolean;
+    let error: ServiceError | null;
+    let requestedOptions: Array<{}>;
+    let responses: Array<{}> | null;
+    let rowKeysRead: Array<Array<{}>>;
+    let stub: sinon.SinonStub;
 
     beforeEach(() => {
       clock = sinon.useFakeTimers({
@@ -102,32 +105,34 @@ describe('Bigtable/Table', () => {
       responses = null;
       rowKeysRead = [];
       requestedOptions = [];
-      stub = (sinon as any).stub(bigtable, 'request').callsFake(cfg => {
-        const reqOpts = (cfg as any).reqOpts;
-        const requestOptions: any = {};
+      stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
+        const reqOpts = cfg.reqOpts;
+        const requestOptions = {} as google.bigtable.v2.IRowSet;
         if (reqOpts.rows && reqOpts.rows.rowRanges) {
-          requestOptions.rowRanges = reqOpts.rows.rowRanges.map(range => {
-            const convertedRowRange = {};
-            Object.keys(range).forEach(
-              key => (convertedRowRange[key] = range[key].asciiSlice())
-            );
-            return convertedRowRange;
-          });
+          requestOptions.rowRanges = reqOpts.rows.rowRanges.map(
+            (range: any) => {
+              const convertedRowRange = {} as {[index: string]: string};
+              Object.keys(range).forEach(
+                key => (convertedRowRange[key] = range[key].asciiSlice())
+              );
+              return convertedRowRange;
+            }
+          );
         }
         if (reqOpts.rows && reqOpts.rows.rowKeys) {
-          requestOptions.rowKeys = reqOpts.rows.rowKeys.map(rowKeys =>
+          requestOptions.rowKeys = reqOpts.rows.rowKeys.map((rowKeys: any) =>
             rowKeys.asciiSlice()
           );
         }
         if (reqOpts.rowsLimit) {
-          requestOptions.rowsLimit = reqOpts.rowsLimit;
+          (requestOptions as any).rowsLimit = reqOpts.rowsLimit;
         }
         requestedOptions.push(requestOptions);
         rowKeysRead.push([]);
         const requestStream = through.obj();
         /* tslint:disable-next-line */
         (requestStream as any).abort = () => {};
-        dispatch(requestStream, responses.shift());
+        dispatch(requestStream, responses!.shift());
         return requestStream;
       });
     });
@@ -144,12 +149,12 @@ describe('Bigtable/Table', () => {
         TABLE.createReadStream(test.createReadStream_options)
           .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
           .on('end', () => (endCalled = true))
-          .on('error', err => (error = err));
+          .on('error', err => (error = err as ServiceError));
         clock.runAll();
 
         if (test.error) {
           assert(!endCalled, `.on('end') should not have been invoked`);
-          assert.strictEqual(error.code, test.error);
+          assert.strictEqual(error!.code, test.error);
         } else {
           assert(endCalled, `.on('end') shoud have been invoked`);
           assert.ifError(error);

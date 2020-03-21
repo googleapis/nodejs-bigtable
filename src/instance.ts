@@ -1,18 +1,16 @@
-/*!
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2016 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import {paginator, ResourceStream} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
@@ -34,7 +32,6 @@ import {
   CreateClusterResponse,
   GetClustersCallback,
   GetClustersResponse,
-  Metadata,
 } from './cluster';
 import {Family} from './family';
 import {
@@ -62,8 +59,8 @@ import {google} from '../protos/protos';
 export interface ClusterInfo {
   id?: string;
   location?: string;
-  serveNodes?: string;
-  nodes?: string;
+  serveNodes?: number;
+  nodes?: number;
   storage?: string;
   defaultStorageType?: number;
 }
@@ -92,7 +89,7 @@ export interface InstanceOptions {
    * No more than 64 labels can be associated with a given resource.
    * Keys and values must both be under 128 bytes.
    */
-  labels?: {[index: string]: string};
+  labels?: {[index: string]: any};
 
   type?: 'production' | 'development';
 
@@ -733,7 +730,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
         const clusters = resp!.clusters!.map(clusterObj => {
           const cluster = this.cluster(clusterObj.name!.split('/').pop()!);
-          cluster.metadata = clusterObj as Metadata;
+          cluster.metadata = clusterObj;
           return cluster;
         });
         callback(null, clusters, resp);

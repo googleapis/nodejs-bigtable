@@ -1,29 +1,38 @@
-/*!
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2016 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-const Bigtable = require('../src');
-const {tests} = require('../../system-test/data/mutate-rows-retry-test.json');
+import {Bigtable} from '../src';
+import {Test} from './testTypes';
+const {
+  tests,
+} = require('../../system-test/data/mutate-rows-retry-test.json') as {
+  tests: Test[];
+};
 
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as grpc from '@grpc/grpc-js';
 import * as sinon from 'sinon';
 import * as through from 'through2';
+import {EventEmitter} from 'events';
+import {ProjectIdCallback, GoogleAuth} from 'google-auth-library';
+import {PartialFailureError} from '@google-cloud/common/build/src/util';
+import {Entry} from '../src/table';
+import {CancellableStream} from 'google-gax';
+import {BigtableClient} from '../src/v2';
 
-function dispatch(emitter, response) {
+function dispatch(emitter: EventEmitter, response: any) {
   const emits: any[] = [];
   emits.push({name: 'response', arg: {code: response.code}});
   if (response.entry_codes) {
@@ -43,7 +52,7 @@ function dispatch(emitter, response) {
   }
 }
 
-function entryResponses(statusCodes) {
+function entryResponses(statusCodes: number[]) {
   return {
     entries: statusCodes.map((code, index) => ({
       index,
@@ -52,30 +61,30 @@ function entryResponses(statusCodes) {
   };
 }
 
-function getDeltas(array) {
+function getDeltas(array: number[]) {
   return array.reduce((acc, item, index) => {
     return index ? acc.concat(item - array[index - 1]) : [item];
-  }, []);
+  }, [] as number[]);
 }
 
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.api = {};
   bigtable.auth = {
-    getProjectId(callback) {
+    getProjectId(callback: ProjectIdCallback) {
       callback(null, 'project-id');
     },
-  };
-  bigtable.grpcCredentials = grpc.credentials.createInsecure();
+  } as GoogleAuth;
+  (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
 
   describe('mutate()', () => {
-    let clock;
-    let mutationBatchesInvoked;
-    let mutationCallTimes;
-    let responses;
+    let clock: sinon.SinonFakeTimers;
+    let mutationBatchesInvoked: Array<{}>;
+    let mutationCallTimes: number[];
+    let responses: any[] | null;
 
     beforeEach(() => {
       clock = sinon.useFakeTimers({
@@ -87,14 +96,14 @@ describe('Bigtable/Table', () => {
       bigtable.api.BigtableClient = {
         mutateRows: reqOpts => {
           mutationBatchesInvoked.push(
-            reqOpts.entries.map(entry => entry.rowKey.asciiSlice())
+            reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
           );
           mutationCallTimes.push(new Date().getTime());
           const emitter = through.obj();
-          dispatch(emitter, responses.shift());
-          return emitter;
+          dispatch(emitter, responses!.shift());
+          return (emitter as {}) as CancellableStream;
         },
-      };
+      } as BigtableClient;
     });
 
     afterEach(() => {
@@ -130,10 +139,14 @@ describe('Bigtable/Table', () => {
             const expectedIndices = test.errors.map(error => {
               return error.index_in_mutations_request;
             });
-            assert.deepStrictEqual(error.name, 'PartialFailureError');
-            const actualIndices = error.errors.map(error => {
-              return test.mutations_request.indexOf(error.entry);
-            });
+            assert.deepStrictEqual(error!.name, 'PartialFailureError');
+            const actualIndices = (error as PartialFailureError).errors!.map(
+              error => {
+                return test.mutations_request.indexOf(
+                  (error as {entry: Entry}).entry
+                );
+              }
+            );
             assert.deepStrictEqual(expectedIndices, actualIndices);
           } else {
             assert.ifError(error);

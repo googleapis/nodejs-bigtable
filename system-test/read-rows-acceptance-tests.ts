@@ -1,23 +1,22 @@
-/*!
- * Copyright 2017 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2017 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
+import {Test} from './testTypes';
 const testcases = require('../../system-test/read-rows-acceptance-test.json')
-  .tests;
+  .tests as Test[];
 import {PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
@@ -26,6 +25,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
 import {Bigtable} from '../src';
+import {AbortableDuplex} from '@google-cloud/common';
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
 const root = ProtoBuf.Root.fromJSON(
@@ -72,13 +72,14 @@ describe('Read Row Acceptance tests', function() {
           objectMode: true,
         });
 
-        /* tslint:disable-next-line */
-        (stream as any).abort = function() {};
+        ((stream as {}) as AbortableDuplex).abort = function() {};
 
         setImmediate(function() {
           test.chunks_base64
             .map(chunk => {
-              const cellChunk = CellChunk.decode(Buffer.from(chunk, 'base64')); //.decode64(chunk);
+              const cellChunk = CellChunk.decode(
+                Buffer.from(chunk as string, 'base64')
+              ); //.decode64(chunk);
               let readRowsResponse: any = {chunks: [cellChunk]};
               readRowsResponse = ReadRowsResponse.create(readRowsResponse);
               readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {

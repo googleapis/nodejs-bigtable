@@ -1,18 +1,16 @@
-/*!
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2016 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
@@ -40,7 +38,7 @@ import {google} from '../protos/protos';
 export interface Rule {
   column: string;
   append: string;
-  increment: number;
+  increment?: number;
 }
 export interface CreateRowOptions {
   gaxOptions?: CallOptions;
@@ -60,10 +58,14 @@ export interface Family {
     }>;
   }>;
 }
+export interface FilterConfigOption {
+  method?: string;
+  data?: string[];
+}
 export interface FilterConfig {
   gaxOptions?: CallOptions;
-  onMatch?: IMutation[];
-  onNoMatch?: IMutation[];
+  onMatch?: FilterConfigOption[];
+  onNoMatch?: FilterConfigOption[];
 }
 export interface GetRowOptions {
   /**
@@ -101,12 +103,12 @@ export type GetRowMetadataCallback = (
   apiResponse?: google.bigtable.v2.ReadRowsResponse
 ) => void;
 export type GetRowMetadataResponse = [google.bigtable.v2.ReadRowsResponse];
-export type GetRowCallback = (
+export type GetRowCallback<T = Row> = (
   err: RowError | null,
-  row?: Row,
+  row?: T,
   apiResponse?: {}
 ) => void;
-export type GetRowResponse = [Row, {}];
+export type GetRowResponse<T = Row> = [T, {}];
 export type FilterCallback = (
   err: ServiceError | null,
   matched?: boolean | null,
@@ -157,7 +159,7 @@ export class Row {
   bigtable: Bigtable;
   table: Table;
   id: string;
-  data: {[index: string]: {}};
+  data: any;
   key?: string;
   metadata?: {};
   constructor(table: Table, key: string) {
@@ -625,7 +627,7 @@ export class Row {
       }
     );
 
-    function createFlatMutationsList(entries: IMutation[]) {
+    function createFlatMutationsList(entries: FilterConfigOption[]) {
       const e2 = arrify(entries).map(
         entry => Mutation.parse(entry as Mutation).mutations!
       );
@@ -633,16 +635,19 @@ export class Row {
     }
   }
 
-  get(options?: GetRowOptions): Promise<GetRowResponse>;
-  get(columns: string[], options?: GetRowOptions): Promise<GetRowResponse>;
-  get(
+  get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
+  get<T = any>(
+    columns: string[],
+    options?: GetRowOptions
+  ): Promise<GetRowResponse<T>>;
+  get<T = any>(
     columns: string[],
     options: GetRowOptions,
-    callback: GetRowCallback
+    callback: GetRowCallback<T>
   ): void;
-  get(columns: string[], callback: GetRowCallback): void;
-  get(callback: GetRowCallback): void;
-  get(options: GetRowOptions, callback: GetRowCallback): void;
+  get<T = any>(columns: string[], callback: GetRowCallback<T>): void;
+  get(callback: GetRowCallback<Row>): void;
+  get(options: GetRowOptions, callback: GetRowCallback<Row>): void;
   /**
    * Get the row data. See {@link Table#getRows}.
    *
@@ -660,10 +665,10 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_get_row
    */
-  get(
-    columnsOrOptionsOrCallback?: string[] | GetRowOptions | GetRowCallback,
-    optionsOrCallback?: GetRowOptions | GetRowCallback,
-    cb?: GetRowCallback
+  get<T = any | Row>(
+    columnsOrOptionsOrCallback?: string[] | GetRowOptions | GetRowCallback<T>,
+    optionsOrCallback?: GetRowOptions | GetRowCallback<T>,
+    cb?: GetRowCallback<T>
   ): void | Promise<GetRowResponse> {
     let columns = Array.isArray(columnsOrOptionsOrCallback)
       ? columnsOrOptionsOrCallback
@@ -736,7 +741,11 @@ export class Row {
       // If the user specifies column names, we'll return back the row data
       // we received. Otherwise, we'll return the row "this" in a typical
       // GrpcServiceObject#get fashion.
-      callback(null, columns.length ? ((row.data as {}) as Row) : this);
+      if (columns.length > 0) {
+        callback(null, row.data);
+      } else {
+        ((callback as {}) as GetRowCallback<Row>)(null, this);
+      }
     });
   }
 
