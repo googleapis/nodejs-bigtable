@@ -89,6 +89,7 @@ export interface InstanceOptions {
    * No more than 64 labels can be associated with a given resource.
    * Keys and values must both be under 128 bytes.
    */
+  // tslint:disable-next-line no-any
   labels?: {[index: string]: any};
 
   type?: 'production' | 'development';
@@ -293,14 +294,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     const appProfile = AppProfile.formatAppProfile_(options);
 
-    const reqOpts: any = {
+    const reqOpts = {
       parent: this.name,
       appProfileId: id,
       appProfile,
-    };
+    } as google.bigtable.admin.v2.CreateAppProfileRequest;
 
     if (is.boolean(options.ignoreWarnings)) {
-      reqOpts.ignoreWarnings = options.ignoreWarnings;
+      reqOpts.ignoreWarnings = options.ignoreWarnings!;
     }
 
     this.bigtable.request(
@@ -369,29 +370,29 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       parent: this.name,
       clusterId: id,
-    };
+    } as google.bigtable.admin.v2.CreateClusterRequest;
 
     if (!is.empty(options)) {
       reqOpts.cluster = {};
     }
 
     if (options.location) {
-      reqOpts.cluster.location = Cluster.getLocation_(
+      reqOpts.cluster!.location = Cluster.getLocation_(
         this.bigtable.projectId,
         options.location
       );
     }
 
     if (options.nodes) {
-      reqOpts.cluster.serveNodes = options.nodes;
+      reqOpts.cluster!.serveNodes = options.nodes;
     }
 
     if (options.storage) {
       const storageType = Cluster.getStorageType_(options.storage);
-      reqOpts.cluster.defaultStorageType = storageType;
+      reqOpts.cluster!.defaultStorageType = storageType;
     }
 
     this.bigtable.request(
@@ -459,7 +460,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       parent: this.name,
       tableId: id,
       table: {
@@ -468,7 +469,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         // configurable.
         granularity: 0,
       },
-    };
+    } as google.bigtable.admin.v2.CreateTableRequest;
 
     if (options.splits) {
       reqOpts.initialSplits = options.splits.map(key => ({
@@ -477,6 +478,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     }
 
     if (options.families) {
+      // tslint:disable-next-line no-any
       const columnFamilies = (options.families as any[]).reduce(
         (families, family) => {
           if (typeof family === 'string') {
@@ -484,6 +486,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
               name: family,
             };
           }
+          // tslint:disable-next-line no-any
           const columnFamily: any = (families[family.name] = {});
           if (family.rule) {
             columnFamily.gcRule = Family.formatRule_(family.rule);
@@ -493,7 +496,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         {}
       );
 
-      reqOpts.table.columnFamilies = columnFamilies;
+      reqOpts.table!.columnFamilies = columnFamilies;
     }
 
     this.bigtable.request(
@@ -768,9 +771,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : callback!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
-    };
+    } as google.iam.v1.IGetIamPolicyRequest;
 
     if (
       options.requestedPolicyVersion !== null &&
@@ -942,7 +945,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     if (policy.etag !== null && policy.etag !== undefined) {
       ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
     }
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
       policy,
     };
@@ -999,17 +1002,17 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const reqOpts: any = {
+    const reqOpts = {
       instance: Object.assign({name: this.name}, metadata),
       updateMask: {
         paths: [],
       },
-    };
+    } as google.bigtable.admin.v2.IPartialUpdateInstanceRequest;
     const fieldsForMask = ['displayName', 'type', 'labels'];
 
     fieldsForMask.forEach(field => {
-      if (field in reqOpts.instance) {
-        reqOpts.updateMask.paths.push(snakeCase(field));
+      if (field in reqOpts.instance!) {
+        reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });
 
@@ -1083,7 +1086,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         ? gaxOptionsOrCallback
         : callback!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
       permissions: arrify(permissions),
     };
@@ -1124,7 +1127,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
  *   .on('data', function(table) {
  *     // table is a Table object.
  *   })
- *   .on('end', function() {
+ *   .on('end', () => {
  *     // All tables retrieved.
  *   });
  *

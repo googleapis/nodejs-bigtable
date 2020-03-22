@@ -36,6 +36,7 @@ describe('Bigtable/AppProfile', () => {
   };
 
   const APP_PROFILE_NAME = `${INSTANCE.name}/appProfiles/${APP_PROFILE_ID}`;
+  // tslint:disable-next-line variable-name
   let AppProfile;
   let appProfile;
 
@@ -94,7 +95,7 @@ describe('Bigtable/AppProfile', () => {
     it('should throw if cluster id in wrong format', () => {
       const id = `appProfiles/${APP_PROFILE_ID}`;
       assert.throws(() => {
-        new AppProfile(INSTANCE, id);
+        const a = new AppProfile(INSTANCE, id);
       }, Error);
     });
   });
@@ -233,6 +234,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should return false if error code is 5', done => {
+      // tslint:disable-next-line no-any
       const error: any = new Error('Error.');
       error.code = 5;
 
@@ -248,6 +250,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should return error if code is not 5', done => {
+      // tslint:disable-next-line no-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
 

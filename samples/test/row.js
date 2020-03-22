@@ -27,7 +27,7 @@ const rowSnippets = require('./row.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe.skip('Row Snippets', function() {
+describe.skip('Row Snippets', () => {
   before(async () => {
     try {
       await instance.create({

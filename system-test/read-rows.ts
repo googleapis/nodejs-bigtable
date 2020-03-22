@@ -27,7 +27,9 @@ import {EventEmitter} from 'events';
 import {Test} from './testTypes';
 import {ServiceError} from '@grpc/grpc-js';
 
+// tslint:disable-next-line no-any
 function dispatch(emitter: EventEmitter, response: any) {
+  // tslint:disable-next-line no-any
   const emits: any[] = [{name: 'request'}];
   if (response.row_keys) {
     emits.push.apply(emits, [
@@ -39,6 +41,7 @@ function dispatch(emitter: EventEmitter, response: any) {
     ]);
   }
   if (response.end_with_error) {
+    // tslint:disable-next-line no-any
     const error: any = new Error();
     error.code = response.end_with_error;
     emits.push({name: 'error', arg: error});
@@ -73,6 +76,7 @@ function rowResponse(rowKey: {}) {
 
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
+  // tslint:disable-next-line no-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
@@ -110,6 +114,7 @@ describe('Bigtable/Table', () => {
         const requestOptions = {} as google.bigtable.v2.IRowSet;
         if (reqOpts.rows && reqOpts.rows.rowRanges) {
           requestOptions.rowRanges = reqOpts.rows.rowRanges.map(
+            // tslint:disable-next-line no-any
             (range: any) => {
               const convertedRowRange = {} as {[index: string]: string};
               Object.keys(range).forEach(
@@ -120,11 +125,13 @@ describe('Bigtable/Table', () => {
           );
         }
         if (reqOpts.rows && reqOpts.rows.rowKeys) {
+          // tslint:disable-next-line no-any
           requestOptions.rowKeys = reqOpts.rows.rowKeys.map((rowKeys: any) =>
             rowKeys.asciiSlice()
           );
         }
         if (reqOpts.rowsLimit) {
+          // tslint:disable-next-line no-any
           (requestOptions as any).rowsLimit = reqOpts.rowsLimit;
         }
         requestedOptions.push(requestOptions);

@@ -104,20 +104,22 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
    */
   apiEndpoint?: string;
 
-  /**
-   * Internal only.
-   */
-  BigtableClient: v2.BigtableClient;
+  appProfileId?: string;
 
   /**
    * Internal only.
    */
-  BigtableInstanceAdminClient: v2.BigtableInstanceAdminClient;
+  BigtableClient?: gax.ClientOptions;
 
   /**
    * Internal only.
    */
-  BigtableTableAdminClient: v2.BigtableTableAdminClient;
+  BigtableInstanceAdminClient?: gax.ClientOptions;
+
+  /**
+   * Internal only.
+   */
+  BigtableTableAdminClient?: gax.ClientOptions;
 }
 
 /**
@@ -197,10 +199,10 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * const Bigtable = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  *
- * const callback = function(err, instance, operation) {
+ * const callback = (err, instance, operation) => {
  *   operation
  *     .on('error', console.log)
- *     .on('complete', function() {
+ *     .on('complete', () => {
  *       // `instance` is your newly created Instance object.
  *     });
  * };
@@ -283,7 +285,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   }
  * ];
  *
- * table.insert(rows, function(err) {
+ * table.insert(rows, err => {
  *   if (!err) {
  *     // Your rows were successfully inserted.
  *   }
@@ -297,7 +299,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * //-
  * table.createReadStream()
  *   .on('error', console.error)
- *   .on('data', function(row) {
+ *   .on('data', row => {
  *     // `row` is a Row object.
  *   });
  *
@@ -305,7 +307,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * // If you're not anticpating a large number of results, a callback mode
  * // is also available.
  * //-
- * const callback = function(err, rows) {
+ * const callback = (err, rows) => {
  *   // `rows` is an array of Row objects.
  * };
  *
@@ -326,7 +328,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * //-
  * const row = table.row('alincoln');
  *
- * row.get(function(err) {
+ * row.get(err => {
  *   // `row.data` is now populated.
  * });
  *
@@ -378,7 +380,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * // We can delete all of an individual row's cells using
  * // {@link Row#delete}.
  * //-
- * const callback = function(err) {
+ * const callback = err => {
  *   if (!err) {
  *     // All cells for this row were deleted successfully.
  *   }
@@ -408,7 +410,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   prefix: 'gwash'
  * };
  *
- * table.deleteRows(options, function(err) {
+ * table.deleteRows(options, err => {
  *   if (!err) {
  *     // Rows were deleted successfully.
  *   }
@@ -417,14 +419,14 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * //-
  * // If you omit the prefix, you can delete all rows in your table.
  * //-
- * table.deleteRows(function(err) {
+ * table.deleteRows(err => {
  *   if (!err) {
  *     // All rows were deleted successfully.
  *   }
  * });
  */
 export class Bigtable {
-  customEndpoint: string;
+  customEndpoint?: string;
   options: BigtableOptions;
   api: {
     [index: string]:
@@ -434,13 +436,17 @@ export class Bigtable {
   };
   auth: GoogleAuth;
   projectId: string;
-  appProfileId: string;
+  appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
+  // tslint:disable-next-line variable-name
   static AppProfile: AppProfile;
+  // tslint:disable-next-line variable-name
   static Instance: Instance;
+  // tslint:disable-next-line variable-name
   static Cluster: Cluster;
-  constructor(options: any = {}) {
+
+  constructor(options: BigtableOptions = {}) {
     // Determine what scopes are needed.
     // It is the union of the scopes on all three clients.
     const scopes: string[] = [];
@@ -486,37 +492,37 @@ export class Bigtable {
       BigtableClient: Object.assign(
         {
           servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
-          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          port: customEndpoint ? Number(customEndpointPort) : 443,
           sslCreds: customEndpoint
             ? grpc.credentials.createInsecure()
             : undefined,
         },
         options
-      ),
+      ) as gax.ClientOptions,
       BigtableInstanceAdminClient: Object.assign(
         {
           servicePath: customEndpoint
             ? customEndpointBaseUrl
             : defaultAdminBaseUrl,
-          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          port: customEndpoint ? Number(customEndpointPort) : 443,
           sslCreds: customEndpoint
             ? grpc.credentials.createInsecure()
             : undefined,
         },
         options
-      ),
+      ) as gax.ClientOptions,
       BigtableTableAdminClient: Object.assign(
         {
           servicePath: customEndpoint
             ? customEndpointBaseUrl
             : defaultAdminBaseUrl,
-          port: customEndpoint ? parseInt(customEndpointPort, 10) : 443,
+          port: customEndpoint ? Number(customEndpointPort) : 443,
           sslCreds: customEndpoint
             ? grpc.credentials.createInsecure()
             : undefined,
         },
         options
-      ),
+      ) as gax.ClientOptions,
     };
 
     this.api = {};
@@ -582,7 +588,7 @@ export class Bigtable {
    *
    *   operation
    *     .on('error', console.log)
-   *     .on('complete', function() {
+   *     .on('complete', () => {
    *       // The instance was created successfully.
    *     });
    * };
@@ -621,17 +627,17 @@ export class Bigtable {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb;
 
-    const reqOpts: any = {
+    const reqOpts = {
       parent: this.projectName,
       instanceId: id,
       instance: {
         displayName: options.displayName || id,
         labels: options.labels,
       },
-    };
+    } as google.bigtable.admin.v2.CreateInstanceRequest;
 
     if (options.type) {
-      reqOpts.instance.type = Instance.getTypeType_(options.type);
+      reqOpts.instance!.type = Instance.getTypeType_(options.type);
     }
 
     reqOpts.clusters = arrify(options.clusters!).reduce((clusters, cluster) => {
@@ -759,7 +765,9 @@ export class Bigtable {
     return new Instance(this, name);
   }
 
+  // tslint:disable-next-line no-any
   request<T = any>(config?: any): AbortableDuplex;
+  // tslint:disable-next-line no-any
   request<T = any>(config?: any, callback?: RequestCallback<T>): void;
   /**
    * Funnel all API requests through this method, to be sure we have a project ID.
@@ -770,6 +778,7 @@ export class Bigtable {
    * @param {object} config.reqOpts Request options.
    * @param {function} [callback] Callback function.
    */
+  // tslint:disable-next-line no-any
   request<T = any>(
     config: RequestOptions,
     callback?: (err: ServiceError | null, resp?: T) => void
@@ -790,16 +799,15 @@ export class Bigtable {
         let gaxClient = this.api[config.client];
         if (!gaxClient) {
           // Lazily instantiate client.
-          gaxClient = new v2[config.client](
-            (this.options[config.client] as {}) as gax.ClientOptions
-          );
+          const clientOptions = this.options[config.client]!;
+          gaxClient = new v2[config.client](clientOptions);
           this.api[config.client] = gaxClient;
         }
         let reqOpts = extend(true, {}, config.reqOpts);
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
           reqOpts = replaceProjectIdToken(reqOpts, projectId!);
         }
-        const requestFn = (gaxClient as any)[config.method!].bind(
+        const requestFn = gaxClient[config.method!].bind(
           gaxClient,
           reqOpts,
           config.gaxOpts
@@ -930,9 +938,10 @@ promisifyAll(Bigtable, {
  */
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
-// eslint-disable-next-line no-class-assign
+// tslint:disable-next-line no-any
 (Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
+    // tslint:disable-next-line no-any
     return new (target as any)(...argumentsList);
   },
 });

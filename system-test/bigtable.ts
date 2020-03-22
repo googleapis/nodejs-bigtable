@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
 import * as uuid from 'uuid';
 
@@ -700,7 +700,7 @@ describe('Bigtable', () => {
       it('should fetch individual cells of a row', async () => {
         const row = TABLE.row('alincoln');
         const [data] = await row.get(['follows:gwashington']);
-        assert.strictEqual((data as any).follows.gwashington[0].value, 1);
+        assert.strictEqual(data.follows.gwashington[0].value, 1);
       });
 
       it('should not decode the values', async () => {
@@ -934,6 +934,7 @@ describe('Bigtable', () => {
           rows.forEach(row => {
             const follows = row.data.follows;
             Object.keys(follows).forEach(column => {
+              // tslint:disable-next-line no-any
               follows[column].forEach((cell: any) => {
                 assert.deepStrictEqual(cell.labels, [filter.label]);
               });

@@ -32,7 +32,9 @@ import {Entry} from '../src/table';
 import {CancellableStream} from 'google-gax';
 import {BigtableClient} from '../src/v2';
 
+// tslint:disable-next-line no-any
 function dispatch(emitter: EventEmitter, response: any) {
+  // tslint:disable-next-line no-any
   const emits: any[] = [];
   emits.push({name: 'response', arg: {code: response.code}});
   if (response.entry_codes) {
@@ -75,6 +77,7 @@ describe('Bigtable/Table', () => {
       callback(null, 'project-id');
     },
   } as GoogleAuth;
+  // tslint:disable-next-line no-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
@@ -84,6 +87,7 @@ describe('Bigtable/Table', () => {
     let clock: sinon.SinonFakeTimers;
     let mutationBatchesInvoked: Array<{}>;
     let mutationCallTimes: number[];
+    // tslint:disable-next-line no-any
     let responses: any[] | null;
 
     beforeEach(() => {
@@ -96,6 +100,7 @@ describe('Bigtable/Table', () => {
       bigtable.api.BigtableClient = {
         mutateRows: reqOpts => {
           mutationBatchesInvoked.push(
+            // tslint:disable-next-line no-any
             reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
           );
           mutationCallTimes.push(new Date().getTime());

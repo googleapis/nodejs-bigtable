@@ -272,9 +272,9 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
 
-    const reqOpts: any = {
+    const reqOpts = {
       name: this.name,
-    };
+    } as google.bigtable.admin.v2.IDeleteAppProfileRequest;
 
     if (is.boolean(options.ignoreWarnings)) {
       reqOpts.ignoreWarnings = options.ignoreWarnings;
@@ -443,12 +443,12 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const reqOpts: any = {
+    const reqOpts = {
       appProfile: AppProfile.formatAppProfile_(metadata as AppProfileOptions),
       updateMask: {
         paths: [],
       },
-    };
+    } as google.bigtable.admin.v2.IUpdateAppProfileRequest;
     reqOpts.appProfile!.name = this.name;
     const fieldsForMask = [
       'description',
@@ -457,8 +457,8 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       'allowTransactionalWrites',
     ];
     fieldsForMask.forEach(field => {
-      if (reqOpts.appProfile[field]) {
-        reqOpts.updateMask.paths.push(snakeCase(field));
+      if (reqOpts.appProfile![field]) {
+        reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });
 

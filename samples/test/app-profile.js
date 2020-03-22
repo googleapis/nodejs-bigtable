@@ -27,7 +27,7 @@ const appProfileSnippets = require('./app-profile.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe.skip('App Profile Snippets', function() {
+describe.skip('App Profile Snippets', () => {
   before(() => {
     instance.create({
       clusters: [

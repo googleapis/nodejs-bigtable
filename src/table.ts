@@ -273,6 +273,7 @@ export interface MutateOptions {
   rawMutation?: boolean;
 }
 
+// tslint:disable-next-line no-any
 export type Entry = any;
 
 export type DeleteTableCallback = (
@@ -565,6 +566,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       throw new Error('An id is required to create a family.');
     }
 
+    // tslint:disable-next-line no-any
     const mod: any = {
       id,
       create: {},
@@ -692,12 +694,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
+      // tslint:disable-next-line no-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
-      const reqOpts: any = {
+      const reqOpts = {
         tableName: this.name,
         appProfileId: this.bigtable.appProfileId,
-      };
+      } as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
@@ -767,7 +770,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rows = {};
 
         if (rowKeys) {
-          reqOpts.rows.rowKeys = rowKeys.map(Mutation.convertToBytes);
+          reqOpts.rows.rowKeys = (rowKeys.map(
+            Mutation.convertToBytes
+          ) as {}) as Uint8Array[];
         }
 
         if (ranges.length) {
@@ -807,6 +812,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         through.obj((rowData, enc, next) => {
           if (
             chunkTransformer._destroyed ||
+            // tslint:disable-next-line no-any
             (userStream as any)._writableState.ended
           ) {
             return next();
@@ -1071,9 +1077,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : callback!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
-    };
+    } as google.iam.v1.GetIamPolicyRequest;
 
     if (
       options.requestedPolicyVersion !== null &&
@@ -1231,7 +1237,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const reqOpts = {
       name: this.name,
-      view: (Table as any).VIEWS[options.view || 'unspecified'],
+      view: Table.VIEWS[options.view || 'unspecified'],
     };
     this.bigtable.request(
       {
@@ -1325,7 +1331,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     entries = arrify<Entry>(entries).map(entry => {
-      (entry as any).method = Mutation.methods.INSERT;
+      entry.method = Mutation.methods.INSERT;
       return entry;
     });
     return this.mutate(entries, {gaxOptions}, callback);
@@ -1399,6 +1405,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         err = new common.util.PartialFailureError({
           errors: mutationErrors,
+          // tslint:disable-next-line no-any
         } as any) as ServiceError;
       }
 
@@ -1415,7 +1422,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         appProfileId: this.bigtable.appProfileId,
         entries: options.rawMutation
           ? entryBatch
-          : entryBatch.map(Mutation.parse as any),
+          : entryBatch.map(Mutation.parse),
       };
 
       const retryOpts = {
@@ -1454,6 +1461,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               pendingEntryIndices.delete(originalEntriesIndex);
             }
             const status = decorateStatus(entry.status);
+            // tslint:disable-next-line no-any
             (status as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
           });
@@ -1598,7 +1606,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     if (policy.etag !== null && policy.etag !== undefined) {
       ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
     }
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
       policy,
     };
@@ -1656,7 +1664,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         ? gaxOptionsOrCallback
         : callback!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
       permissions: arrify(permissions),
     };

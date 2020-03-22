@@ -46,19 +46,19 @@ describe('writes', async () => {
     assert.match(stdout, /Successfully wrote row .*/);
   });
 
-  it('should do a conditional write', function() {
+  it('should do a conditional write', () => {
     const stdout = execSync(
       `node writeConditionally ${INSTANCE_ID} ${TABLE_ID}`
     );
     assert.match(stdout, /Successfully updated row's os_name/);
   });
 
-  it('should do an increment', function() {
+  it('should do an increment', () => {
     const stdout = execSync(`node writeIncrement ${INSTANCE_ID} ${TABLE_ID}`);
     assert.match(stdout, /Successfully updated row .*/);
   });
 
-  it('should do a batch write', function() {
+  it('should do a batch write', () => {
     const stdout = execSync(`node writeBatch ${INSTANCE_ID} ${TABLE_ID}`);
     assert.match(stdout, /Successfully wrote 2 rows: .*/);
   });

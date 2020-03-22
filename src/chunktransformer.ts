@@ -65,11 +65,11 @@ class TransformError extends Error {
  * ROW_IN_PROGRESS: state after first valid chunk without commitRow or resetRow
  * CELL_IN_PROGRESS: state when valueSize > 0(partial cell)
  */
-export const RowStateEnum = Object.freeze({
-  NEW_ROW: 1,
-  ROW_IN_PROGRESS: 2,
-  CELL_IN_PROGRESS: 3,
-});
+export enum RowStateEnum {
+  NEW_ROW = 1,
+  ROW_IN_PROGRESS = 2,
+  CELL_IN_PROGRESS = 3,
+}
 
 /**
  * ChunkTransformer formats all incoming chunks in to row
@@ -142,6 +142,8 @@ export class ChunkTransformer extends Transform {
           break;
         case RowStateEnum.CELL_IN_PROGRESS:
           this.processCellInProgress(chunk);
+          break;
+        default:
           break;
       }
       if (this._destroyed) {
