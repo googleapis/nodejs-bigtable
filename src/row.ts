@@ -159,6 +159,7 @@ export class Row {
   bigtable: Bigtable;
   table: Table;
   id: string;
+  // tslint:disable-next-line no-any
   data: any;
   key?: string;
   metadata?: {};
@@ -257,6 +258,7 @@ export class Row {
       }
 
       return row;
+      // tslint:disable-next-line no-any
     }, {} as any);
 
     return rows;
@@ -420,6 +422,7 @@ export class Row {
 
     rules = arrify(rules).map(rule => {
       const column = Mutation.parseColumnName(rule.column);
+      // tslint:disable-next-line no-any
       const ruleData: any = {
         familyName: column.family,
         columnQualifier: Mutation.convertToBytes(column.qualifier!),
@@ -636,15 +639,18 @@ export class Row {
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
+  // tslint:disable-next-line no-any
   get<T = any>(
     columns: string[],
     options?: GetRowOptions
   ): Promise<GetRowResponse<T>>;
+  // tslint:disable-next-line no-any
   get<T = any>(
     columns: string[],
     options: GetRowOptions,
     callback: GetRowCallback<T>
   ): void;
+  // tslint:disable-next-line no-any
   get<T = any>(columns: string[], callback: GetRowCallback<T>): void;
   get(callback: GetRowCallback<Row>): void;
   get(options: GetRowOptions, callback: GetRowCallback<Row>): void;
@@ -665,6 +671,7 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_get_row
    */
+  // tslint:disable-next-line no-any
   get<T = any | Row>(
     columnsOrOptionsOrCallback?: string[] | GetRowOptions | GetRowCallback<T>,
     optionsOrCallback?: GetRowOptions | GetRowCallback<T>,
@@ -693,6 +700,7 @@ export class Row {
     // if there is column filter
     if (columns.length) {
       const filters = columns.map(Mutation.parseColumnName).map(column => {
+        // tslint:disable-next-line no-any
         const colmFilters: any = [{family: column.family}];
         if (column.qualifier) {
           colmFilters.push({column: column.qualifier});

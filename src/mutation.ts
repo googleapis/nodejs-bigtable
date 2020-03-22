@@ -208,6 +208,7 @@ export class Mutation {
     const mutations: SetCellObj[] = [];
 
     Object.keys(data).forEach(familyName => {
+      // tslint:disable-next-line no-any
       const family = (data as any)[familyName];
 
       Object.keys(family).forEach(cellName => {

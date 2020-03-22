@@ -26,7 +26,7 @@ const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtab
 
 const instanceSnippets = require('./instance.js');
 
-describe.skip('Instance Snippets', function() {
+describe.skip('Instance Snippets', () => {
   after(async () => {
     try {
       const instance = await bigtable.instance(INSTANCE_ID);
@@ -47,7 +47,7 @@ describe.skip('Instance Snippets', function() {
   //   instanceSnippets.createCluster(INSTANCE_ID, CLUSTER_ID);
   // });
 
-  // it('should create an app-profile', function(done) {
+  // it('should create an app-profile', done => {
   //   instanceSnippets.createAppProfile(INSTANCE_ID, APP_PROFILE_ID, done);
   // });
 

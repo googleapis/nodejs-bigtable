@@ -204,10 +204,10 @@ const snippets = {
       .on('error', err => {
         // Handle the error.
       })
-      .on('data', function(row) {
+      .on('data', row => {
         // `row` is a Row object.
       })
-      .on('end', function() {
+      .on('end', () => {
         // All rows retrieved.
       });
     //-

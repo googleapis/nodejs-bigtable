@@ -27,7 +27,7 @@ const tableSnippets = require('./table.js');
 
 const instance = bigtable.instance(INSTANCE_ID);
 
-describe.skip('Table Snippets', function() {
+describe.skip('Table Snippets', () => {
   before(async () => {
     try {
       await instance.create({

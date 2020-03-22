@@ -36,8 +36,8 @@ function fakeV2() {}
 let promisified = false;
 let replaceProjectIdTokenOverride;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(Class, options) {
-    if (Class.name !== 'Bigtable') {
+  promisifyAll(klass, options) {
+    if (klass.name !== 'Bigtable') {
       return;
     }
     promisified = true;
@@ -70,8 +70,8 @@ function fakeRetryRequest() {
   );
 }
 
-function createFake(Class) {
-  return class Fake extends Class {
+function createFake(klass) {
+  return class Fake extends klass {
     calledWith_: IArguments;
     constructor() {
       super(...arguments);
@@ -80,17 +80,19 @@ function createFake(Class) {
   };
 }
 
+// tslint:disable-next-line variable-name
 const FakeCluster = createFake(Cluster);
+// tslint:disable-next-line variable-name
 const FakeInstance = createFake(Instance);
 
-describe('Bigtable', function() {
+describe('Bigtable', () => {
   const PROJECT_ID = 'test-project';
   const PROJECT_ID_TOKEN = '{{projectId}}';
-
+  // tslint:disable-next-line variable-name
   let Bigtable;
   let bigtable;
 
-  before(function() {
+  before(() => {
     Bigtable = proxyquire('../src', {
       '@google-cloud/promisify': fakePromisify,
       '@google-cloud/projectify': fakeReplaceProjectIdToken,
@@ -104,11 +106,11 @@ describe('Bigtable', function() {
     });
   });
 
-  afterEach(function() {
+  afterEach(() => {
     sinon.restore();
   });
 
-  beforeEach(function() {
+  beforeEach(() => {
     googleAuthOverride = null;
     retryRequestOverride = null;
     replaceProjectIdTokenOverride = null;
@@ -116,8 +118,8 @@ describe('Bigtable', function() {
     bigtable = new Bigtable({projectId: PROJECT_ID});
   });
 
-  describe('instantiation', function() {
-    const EXPECTED_SCOPES: any[] = [];
+  describe('instantiation', () => {
+    const EXPECTED_SCOPES: string[] = [];
     const clientClasses = [
       v2.BigtableClient,
       v2.BigtableInstanceAdminClient,
@@ -132,27 +134,27 @@ describe('Bigtable', function() {
       }
     }
 
-    it('should promisify all the things', function() {
+    it('should promisify all the things', () => {
       assert(promisified);
     });
 
-    it('should work without new', function() {
+    it('should work without new', () => {
       const bigtable = Bigtable();
       assert(bigtable instanceof Bigtable);
     });
 
-    it('should initialize the API object', function() {
+    it('should initialize the API object', () => {
       assert.deepStrictEqual(bigtable.api, {});
     });
 
-    it('should cache a local google-auth-library instance', function() {
+    it('should cache a local google-auth-library instance', () => {
       const fakeGoogleAuthInstance = {};
       const options = {
         a: 'b',
         c: 'd',
       };
 
-      googleAuthOverride = function(options_) {
+      googleAuthOverride = options_ => {
         assert.deepStrictEqual(
           options_,
           Object.assign(
@@ -171,11 +173,11 @@ describe('Bigtable', function() {
       assert.strictEqual(bigtable.auth, fakeGoogleAuthInstance);
     });
 
-    it('should localize the projectId', function() {
+    it('should localize the projectId', () => {
       assert.strictEqual(bigtable.projectId, PROJECT_ID);
     });
 
-    it('should localize options', function() {
+    it('should localize options', () => {
       const options = {
         a: 'b',
         c: 'd',
@@ -218,7 +220,7 @@ describe('Bigtable', function() {
       });
     });
 
-    it('should work with the emulator', function() {
+    it('should work with the emulator', () => {
       process.env.BIGTABLE_EMULATOR_HOST = 'override:8080';
 
       const options = {
@@ -264,7 +266,7 @@ describe('Bigtable', function() {
       });
     });
 
-    it('should work with a customEndpoint', function() {
+    it('should work with a customEndpoint', () => {
       const options = {
         apiEndpoint: 'customEndpoint:9090',
         a: 'b',
@@ -306,16 +308,16 @@ describe('Bigtable', function() {
       });
     });
 
-    it('should default projectId to token', function() {
+    it('should default projectId to token', () => {
       const bigtable = new Bigtable();
       assert.strictEqual(bigtable.projectId, PROJECT_ID_TOKEN);
     });
 
-    it('should set the projectName', function() {
+    it('should set the projectName', () => {
       assert.strictEqual(bigtable.projectName, 'projects/' + PROJECT_ID);
     });
 
-    it('should set the appProfileId', function() {
+    it('should set the appProfileId', () => {
       const options = {
         appProfileId: 'app-profile-id-12345',
       };
@@ -326,11 +328,11 @@ describe('Bigtable', function() {
     });
   });
 
-  describe('createInstance', function() {
+  describe('createInstance', () => {
     const INSTANCE_ID = 'my-instance';
 
-    it('should provide the proper request options', function(done) {
-      bigtable.request = function(config) {
+    it('should provide the proper request options', done => {
+      bigtable.request = config => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createInstance');
 
@@ -346,10 +348,10 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_ID, assert.ifError);
     });
 
-    it('should accept gaxOptions', function(done) {
+    it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      bigtable.request = function(config) {
+      bigtable.request = config => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -357,12 +359,12 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_ID, {gaxOptions}, assert.ifError);
     });
 
-    it('should respect the displayName option', function(done) {
+    it('should respect the displayName option', done => {
       const options = {
         displayName: 'robocop',
       };
 
-      bigtable.request = function(config) {
+      bigtable.request = config => {
         assert.strictEqual(
           config.reqOpts.instance.displayName,
           options.displayName
@@ -373,16 +375,16 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
-    it('should respect the type option', function(done) {
+    it('should respect the type option', done => {
       const options = {type: 'development'};
       const fakeTypeType = 99;
 
-      FakeInstance.getTypeType_ = function(type) {
+      FakeInstance.getTypeType_ = type => {
         assert.strictEqual(type, options.type);
         return fakeTypeType;
       };
 
-      bigtable.request = function(config) {
+      bigtable.request = config => {
         assert.deepStrictEqual(config.reqOpts.instance.type, fakeTypeType);
         done();
       };
@@ -390,14 +392,14 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
-    it('should respect the labels option', function(done) {
+    it('should respect the labels option', done => {
       const options = {
         labels: {
           env: 'prod',
         },
       };
 
-      bigtable.request = function(config) {
+      bigtable.request = config => {
         assert.deepStrictEqual(config.reqOpts.instance.labels, options.labels);
         done();
       };
@@ -405,7 +407,7 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
-    it('should respect the clusters option', function(done) {
+    it('should respect the clusters option', done => {
       const cluster = {
         id: 'my-cluster',
         location: 'us-central1-b',
@@ -418,19 +420,19 @@ describe('Bigtable', function() {
       };
 
       const fakeLocation = 'a/b/c/d';
-      FakeCluster.getLocation_ = function(project, location) {
+      FakeCluster.getLocation_ = (project, location) => {
         assert.strictEqual(project, PROJECT_ID);
         assert.strictEqual(location, cluster.location);
         return fakeLocation;
       };
 
       const fakeStorage = 20;
-      FakeCluster.getStorageType_ = function(storage) {
+      FakeCluster.getStorageType_ = storage => {
         assert.strictEqual(storage, cluster.storage);
         return fakeStorage;
       };
 
-      bigtable.request = function(config) {
+      bigtable.request = config => {
         assert.deepStrictEqual(config.reqOpts.clusters, {
           'my-cluster': {
             location: fakeLocation,
@@ -445,14 +447,14 @@ describe('Bigtable', function() {
       bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
-    it('should return an error to the callback', function(done) {
+    it('should return an error to the callback', done => {
       const error = new Error('err');
 
-      bigtable.request = function(config, callback) {
+      bigtable.request = (config, callback) => {
         callback(error);
       };
 
-      bigtable.createInstance(INSTANCE_ID, function(err, instance, operation) {
+      bigtable.createInstance(INSTANCE_ID, (err, instance, operation) => {
         assert.strictEqual(err, error);
         assert.strictEqual(instance, undefined);
         assert.strictEqual(operation, undefined);
@@ -460,7 +462,7 @@ describe('Bigtable', function() {
       });
     });
 
-    it('should return an instance to the callback', function(done) {
+    it('should return an instance to the callback', done => {
       const response = {
         name: 'my-operation',
       };
@@ -469,29 +471,29 @@ describe('Bigtable', function() {
       const responseArg3 = {};
 
       const fakeInstance = {};
-      bigtable.instance = function(id) {
+      bigtable.instance = id => {
         assert.strictEqual(id, INSTANCE_ID);
         return fakeInstance;
       };
 
-      bigtable.request = function(config, callback) {
+      bigtable.request = (config, callback) => {
         callback(null, response, responseArg2, responseArg3);
       };
 
-      bigtable.createInstance(INSTANCE_ID, function(err, instance) {
+      bigtable.createInstance(INSTANCE_ID, (err, instance, ...args) => {
         assert.ifError(err);
         assert.strictEqual(instance, fakeInstance);
-        assert.strictEqual(arguments[2], response);
-        assert.strictEqual(arguments[3], responseArg2);
-        assert.strictEqual(arguments[4], responseArg3);
+        assert.strictEqual(args[0], response);
+        assert.strictEqual(args[1], responseArg2);
+        assert.strictEqual(args[2], responseArg3);
         done();
       });
     });
   });
 
-  describe('getInstances', function() {
-    it('should provide the proper request options', function(done) {
-      bigtable.request = function(config) {
+  describe('getInstances', () => {
+    it('should provide the proper request options', done => {
+      bigtable.request = config => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listInstances');
         assert.deepStrictEqual(config.reqOpts, {
@@ -504,10 +506,10 @@ describe('Bigtable', function() {
       bigtable.getInstances(assert.ifError);
     });
 
-    it('should accept gaxOptions', function(done) {
+    it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      bigtable.request = function(config) {
+      bigtable.request = config => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -515,20 +517,20 @@ describe('Bigtable', function() {
       bigtable.getInstances(gaxOptions, assert.ifError);
     });
 
-    it('should return an error to the callback', function(done) {
+    it('should return an error to the callback', done => {
       const error = new Error('err');
 
-      bigtable.request = function(config, callback) {
+      bigtable.request = (config, callback) => {
         callback(error);
       };
 
-      bigtable.getInstances(function(err) {
+      bigtable.getInstances(err => {
         assert.strictEqual(err, error);
         done();
       });
     });
 
-    it('should return an array of instance objects', function(done) {
+    it('should return an array of instance objects', done => {
       const response = {
         instances: [
           {
@@ -542,18 +544,18 @@ describe('Bigtable', function() {
 
       const fakeInstances = [{}, {}];
 
-      bigtable.request = function(config, callback) {
+      bigtable.request = (config, callback) => {
         callback(null, response);
       };
 
       let instanceCount = 0;
 
-      bigtable.instance = function(name) {
+      bigtable.instance = name => {
         assert.strictEqual(name, response.instances[instanceCount].name);
         return fakeInstances[instanceCount++];
       };
 
-      bigtable.getInstances(function(err, instances, apiResponse) {
+      bigtable.getInstances((err, instances, apiResponse) => {
         assert.ifError(err);
         assert.strictEqual(instances[0], fakeInstances[0]);
         assert.strictEqual(instances[0].metadata, response.instances[0]);
@@ -565,10 +567,10 @@ describe('Bigtable', function() {
     });
   });
 
-  describe('instance', function() {
+  describe('instance', () => {
     const INSTANCE_ID = 'my-instance';
 
-    it('should return an Instance object', function() {
+    it('should return an Instance object', () => {
       const instance = bigtable.instance(INSTANCE_ID);
       const args = instance.calledWith_;
 
@@ -578,7 +580,7 @@ describe('Bigtable', function() {
     });
   });
 
-  describe('request', function() {
+  describe('request', () => {
     const CONFIG = {
       client: 'client',
       method: 'method',
@@ -589,8 +591,8 @@ describe('Bigtable', function() {
       gaxOpts: {},
     };
 
-    beforeEach(function() {
-      bigtable.getProjectId_ = function(callback) {
+    beforeEach(() => {
+      bigtable.getProjectId_ = callback => {
         callback(null, PROJECT_ID);
       };
 
@@ -599,74 +601,67 @@ describe('Bigtable', function() {
       };
     });
 
-    describe('prepareGaxRequest', function() {
-      it('should get the project ID', function(done) {
-        bigtable.getProjectId_ = function() {
+    describe('prepareGaxRequest', () => {
+      it('should get the project ID', done => {
+        bigtable.getProjectId_ = () => {
           done();
         };
-
         bigtable.request(CONFIG, assert.ifError);
       });
 
-      it('should return error if getting project ID failed', function(done) {
+      it('should return error if getting project ID failed', done => {
         const error = new Error('Error.');
 
-        bigtable.getProjectId_ = function(callback) {
+        bigtable.getProjectId_ = callback => {
           callback(error);
         };
 
-        bigtable.request(CONFIG, function(err) {
+        bigtable.request(CONFIG, err => {
           assert.strictEqual(err, error);
           done();
         });
       });
 
-      it('should initiate and cache the client', function() {
+      it('should initiate and cache the client', () => {
         const fakeClient = {
           [CONFIG.method]: noop,
         };
-
+        // tslint:disable-next-line only-arrow-functions
         fakeV2[CONFIG.client] = function(options) {
           assert.strictEqual(options, bigtable.options[CONFIG.client]);
           return fakeClient;
         };
-
         bigtable.api = {};
-
         bigtable.request(CONFIG, assert.ifError);
-
         assert.strictEqual(bigtable.api[CONFIG.client], fakeClient);
       });
 
-      it('should use the cached client', function(done) {
+      it('should use the cached client', done => {
+        // tslint:disable-next-line only-arrow-functions
         fakeV2[CONFIG.client] = function() {
           done(new Error('Should not re-instantiate a GAX client.'));
         };
-
         bigtable.request(CONFIG);
         done();
       });
 
-      it('should not call replace project ID token', function(done) {
+      it('should not call replace project ID token', done => {
         replaceProjectIdTokenOverride = sinon.spy();
-
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind() {
             assert(!replaceProjectIdTokenOverride.called);
             setImmediate(done);
-
             return noop;
           },
         };
-
         bigtable.request(CONFIG, assert.ifError);
       });
     });
 
-    describe('replace projectID token', function() {
-      beforeEach(function() {
+    describe('replace projectID token', () => {
+      beforeEach(() => {
         bigtable = new Bigtable();
-        bigtable.getProjectId_ = function(callback) {
+        bigtable.getProjectId_ = callback => {
           callback(null, PROJECT_ID);
         };
 
@@ -675,10 +670,10 @@ describe('Bigtable', function() {
         };
       });
 
-      it('should replace the project ID token', function(done) {
+      it('should replace the project ID token', done => {
         const replacedReqOpts = {};
 
-        replaceProjectIdTokenOverride = function(reqOpts, projectId) {
+        replaceProjectIdTokenOverride = (reqOpts, projectId) => {
           assert.notStrictEqual(reqOpts, CONFIG.reqOpts);
           assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
           assert.strictEqual(projectId, PROJECT_ID);
@@ -697,12 +692,12 @@ describe('Bigtable', function() {
         bigtable.request(CONFIG, assert.ifError);
       });
 
-      it('should not replace token when project ID not detected', function(done) {
-        replaceProjectIdTokenOverride = function() {
+      it('should not replace token when project ID not detected', done => {
+        replaceProjectIdTokenOverride = () => {
           throw new Error('Should not have tried to replace token.');
         };
 
-        bigtable.getProjectId_ = function(callback) {
+        bigtable.getProjectId_ = callback => {
           callback(null, PROJECT_ID_TOKEN);
         };
 
@@ -718,8 +713,8 @@ describe('Bigtable', function() {
       });
     });
 
-    describe('makeRequestCallback', function() {
-      it('should prepare the request', function(done) {
+    describe('makeRequestCallback', () => {
+      it('should prepare the request', done => {
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind(gaxClient, reqOpts, gaxOpts) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
@@ -733,46 +728,46 @@ describe('Bigtable', function() {
         bigtable.request(CONFIG, assert.ifError);
       });
 
-      it('should execute callback with error', function(done) {
+      it('should execute callback with error', done => {
         const error = new Error('Error.');
 
-        bigtable.api[CONFIG.client][CONFIG.method] = function() {
-          const callback: Function = [].slice.call(arguments).pop()!;
+        bigtable.api[CONFIG.client][CONFIG.method] = (...args) => {
+          const callback: Function = [].slice.call(args).pop()!;
           callback(error);
         };
 
-        bigtable.request(CONFIG, function(err) {
+        bigtable.request(CONFIG, err => {
           assert.strictEqual(err, error);
           done();
         });
       });
 
-      it('should execute the request function', function() {
-        bigtable.api[CONFIG.client][CONFIG.method] = function(done) {
-          const callback: Function = [].slice.call(arguments).pop()!;
-          callback(null, done); // so it ends the test
+      it('should execute the request function', () => {
+        bigtable.api[CONFIG.client][CONFIG.method] = (...args) => {
+          const callback: Function = [].slice.call(args).pop()!;
+          callback(null, args[0]); // so it ends the test
         };
 
         bigtable.request(CONFIG, assert.ifError);
       });
     });
 
-    describe('makeRequestStream', function() {
+    describe('makeRequestStream', () => {
       let GAX_STREAM;
 
-      beforeEach(function() {
+      beforeEach(() => {
         GAX_STREAM = through();
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind() {
-            return function() {
+            return () => {
               return GAX_STREAM;
             };
           },
         };
       });
 
-      it('should use retry-request', function(done) {
-        retryRequestOverride = function(_, config) {
+      it('should use retry-request', done => {
+        retryRequestOverride = (_, config) => {
           assert.strictEqual(config.currentRetryAttempt, 0);
           assert.strictEqual(config.objectMode, true);
           done();
@@ -782,7 +777,7 @@ describe('Bigtable', function() {
         requestStream.emit('reading');
       });
 
-      it('should expose an abort function', function(done) {
+      it('should expose an abort function', done => {
         GAX_STREAM.cancel = done;
 
         const requestStream = bigtable.request(CONFIG);
@@ -790,7 +785,7 @@ describe('Bigtable', function() {
         requestStream.abort();
       });
 
-      it('should prepare the request once reading', function(done) {
+      it('should prepare the request once reading', done => {
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind(gaxClient, reqOpts, gaxOpts) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
@@ -799,7 +794,7 @@ describe('Bigtable', function() {
 
             setImmediate(done);
 
-            return function() {
+            return () => {
               return GAX_STREAM;
             };
           },
@@ -809,23 +804,23 @@ describe('Bigtable', function() {
         requestStream.emit('reading');
       });
 
-      it('should destroy the stream with prepare error', function(done) {
+      it('should destroy the stream with prepare error', done => {
         const error = new Error('Error.');
 
-        bigtable.getProjectId_ = function(callback) {
+        bigtable.getProjectId_ = callback => {
           callback(error);
         };
 
         const requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
 
-        requestStream.on('error', function(err) {
+        requestStream.on('error', err => {
           assert.strictEqual(err, error);
           done();
         });
       });
 
-      it('should destroy the stream with GAX error', function(done) {
+      it('should destroy the stream with GAX error', done => {
         const error = new Error('Error.');
 
         const requestStream = bigtable.request(CONFIG);
@@ -833,16 +828,16 @@ describe('Bigtable', function() {
 
         GAX_STREAM.emit('error', error);
 
-        requestStream.on('error', function(err) {
+        requestStream.on('error', err => {
           assert.strictEqual(err, error);
           done();
         });
       });
 
-      it('should re-emit request event from retry-request', function(done) {
-        retryRequestOverride = function() {
+      it('should re-emit request event from retry-request', done => {
+        retryRequestOverride = () => {
           const fakeRetryRequestStream = through.obj();
-          setImmediate(function() {
+          setImmediate(() => {
             fakeRetryRequestStream.emit('request');
           });
           return fakeRetryRequestStream;
@@ -855,8 +850,8 @@ describe('Bigtable', function() {
     });
   });
 
-  describe('getProjectId_', function() {
-    beforeEach(function() {
+  describe('getProjectId_', () => {
+    beforeEach(() => {
       bigtable.auth = {
         getProjectId(callback) {
           callback(null, PROJECT_ID);
@@ -864,62 +859,62 @@ describe('Bigtable', function() {
       };
     });
 
-    it('should return the provided project ID', function(done) {
+    it('should return the provided project ID', done => {
       const providedProjectId = 'provided-project-id';
 
-      bigtable.auth.getProjectId = function() {
+      bigtable.auth.getProjectId = () => {
         throw new Error('Auth client should not be called.');
       };
 
       bigtable.projectId = providedProjectId;
 
-      bigtable.getProjectId_(function(err, projectId) {
+      bigtable.getProjectId_((err, projectId) => {
         assert.ifError(err);
         assert.strictEqual(projectId, providedProjectId);
         done();
       });
     });
 
-    it('should return any project ID if in custom endpoint', function(done) {
-      bigtable.auth.getProjectId = function() {
+    it('should return any project ID if in custom endpoint', done => {
+      bigtable.auth.getProjectId = () => {
         throw new Error('Auth client should not be called.');
       };
 
       bigtable.projectId = PROJECT_ID_TOKEN;
       bigtable.customEndpoint = 'custom-endpoint';
 
-      bigtable.getProjectId_(function(err, projectId) {
+      bigtable.getProjectId_((err, projectId) => {
         assert.ifError(err);
         assert.strictEqual(projectId, PROJECT_ID_TOKEN);
         done();
       });
     });
 
-    it('should return error if project ID detection failed', function(done) {
+    it('should return error if project ID detection failed', done => {
       const error = new Error('Error.');
 
-      bigtable.auth.getProjectId = function(callback) {
+      bigtable.auth.getProjectId = callback => {
         callback(error);
       };
 
       bigtable.projectId = PROJECT_ID_TOKEN;
 
-      bigtable.getProjectId_(function(err) {
+      bigtable.getProjectId_(err => {
         assert.strictEqual(err, error);
         done();
       });
     });
 
-    it('should get and cache the project ID if not provided', function(done) {
+    it('should get and cache the project ID if not provided', done => {
       const detectedProjectId = 'detected-project-id';
 
-      bigtable.auth.getProjectId = function(callback) {
+      bigtable.auth.getProjectId = callback => {
         callback(null, detectedProjectId);
       };
 
       bigtable.projectId = PROJECT_ID_TOKEN;
 
-      bigtable.getProjectId_(function(err, projectId) {
+      bigtable.getProjectId_((err, projectId) => {
         assert.ifError(err);
         assert.strictEqual(projectId, detectedProjectId);
         assert.strictEqual(bigtable.projectId, detectedProjectId);
