@@ -131,7 +131,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeBatch.js <instanceId>`
+`node writeBatch.js <instanceId> <tableId>`
 
 
 -----
@@ -148,7 +148,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeConditionally.js <instanceId>`
+`node writeConditionally.js <instanceId> <tableId>`
 
 
 -----
@@ -165,7 +165,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeIncrement.js <instanceId>`
+`node writeIncrement.js <instanceId> <tableId>`
 
 
 -----
@@ -184,7 +184,7 @@ View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master
 __Usage:__
 
 
-`node writeSimple.js <instanceId>`
+`node writeSimple.js <instanceId> <tableId>`
 
 
 

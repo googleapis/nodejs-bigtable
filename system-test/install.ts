@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ import {readFileSync} from 'fs';
 import {describe, it} from 'mocha';
 
 describe('typescript consumer tests', () => {
-  it('should have correct type signature for typescript users', async () => {
+  it('should have correct type signature for typescript users', async function() {
+    this.timeout(300000);
     const options = {
       packageDir: process.cwd(), // path to your module.
       sample: {
@@ -32,9 +33,10 @@ describe('typescript consumer tests', () => {
       },
     };
     await packNTest(options); // will throw upon error.
-  }).timeout(300000);
+  });
 
-  it('should have correct type signature for javascript users', async () => {
+  it('should have correct type signature for javascript users', async function() {
+    this.timeout(300000);
     const options = {
       packageDir: process.cwd(), // path to your module.
       sample: {
@@ -45,5 +47,5 @@ describe('typescript consumer tests', () => {
       },
     };
     await packNTest(options); // will throw upon error.
-  }).timeout(300000);
+  });
 });
