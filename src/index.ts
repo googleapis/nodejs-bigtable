@@ -627,10 +627,6 @@ export class Bigtable {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb;
 
-    if (arrify(options.clusters).some(cluster => !cluster.id)) {
-      throw new Error('An id of cluster is required to create an instance.');
-    }
-    
     const reqOpts = {
       parent: this.projectName,
       instanceId: id,
@@ -645,6 +641,12 @@ export class Bigtable {
     }
 
     reqOpts.clusters = arrify(options.clusters!).reduce((clusters, cluster) => {
+      if (!cluster.id) {
+        throw new Error(
+          'A cluster was provided without an `id` property defined.'
+        );
+      }
+
       clusters[cluster.id!] = {
         location: Cluster.getLocation_(this.projectId, cluster.location!),
         serveNodes: cluster.nodes,

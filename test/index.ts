@@ -504,7 +504,7 @@ describe('Bigtable', () => {
       };
       assert.throws(() => {
         bigtable.createInstance(INSTANCE_ID, options);
-      }, /An id of cluster is required to create an instance\./);
+      }, /A cluster was provided without an `id` property defined\./);
     });
   });
 
