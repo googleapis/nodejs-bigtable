@@ -641,6 +641,12 @@ export class Bigtable {
     }
 
     reqOpts.clusters = arrify(options.clusters!).reduce((clusters, cluster) => {
+      if (!cluster.id) {
+        throw new Error(
+          'A cluster was provided without an `id` property defined.'
+        );
+      }
+
       clusters[cluster.id!] = {
         location: Cluster.getLocation_(this.projectId, cluster.location!),
         serveNodes: cluster.nodes,

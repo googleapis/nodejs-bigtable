@@ -489,6 +489,23 @@ describe('Bigtable', () => {
         done();
       });
     });
+
+    it('should throw an error if cluster id not provided.', () => {
+      const options = {
+        displayName: 'my-sweet-instance',
+        labels: {env: 'prod'},
+        clusters: [
+          {
+            nodes: 3,
+            location: 'us-central1-b',
+            storage: 'ssd',
+          },
+        ],
+      };
+      assert.throws(() => {
+        bigtable.createInstance(INSTANCE_ID, options);
+      }, /A cluster was provided without an `id` property defined\./);
+    });
   });
 
   describe('getInstances', () => {
