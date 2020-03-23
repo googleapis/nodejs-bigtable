@@ -17,9 +17,10 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from '@grpc/grpc-js';
 import {decorateStatus} from './decorateStatus';
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 import * as is from 'is';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 import * as through from 'through2';
 
@@ -135,7 +136,7 @@ export interface GetIamPolicyOptions {
   requestedPolicyVersion?: 0 | 1 | 3;
 }
 
-export interface SetIamPolicyCallback extends GetIamPolicyCallback {}
+export type SetIamPolicyCallback = GetIamPolicyCallback;
 export type SetIamPolicyResponse = GetIamPolicyResponse;
 
 /**
@@ -273,7 +274,7 @@ export interface MutateOptions {
   rawMutation?: boolean;
 }
 
-// tslint:disable-next-line no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Entry = any;
 
 export type DeleteTableCallback = (
@@ -566,7 +567,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       throw new Error('An id is required to create a family.');
     }
 
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mod: any = {
       id,
       create: {},
@@ -694,7 +695,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
       const reqOpts = {
@@ -812,7 +813,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         through.obj((rowData, enc, next) => {
           if (
             chunkTransformer._destroyed ||
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {
             return next();
@@ -1409,7 +1410,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         err = new common.util.PartialFailureError({
           errors: mutationErrors,
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any) as ServiceError;
       }
 
@@ -1465,7 +1466,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               pendingEntryIndices.delete(originalEntriesIndex);
             }
             const status = decorateStatus(entry.status);
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (status as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
           });

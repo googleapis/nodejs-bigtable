@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as assert from 'assert';
-import {describe, it, before, after} from 'mocha';
+import {describe, it, before, after, afterEach, beforeEach} from 'mocha';
 import Q from 'p-queue';
 import * as uuid from 'uuid';
 
@@ -934,7 +934,7 @@ describe('Bigtable', () => {
           rows.forEach(row => {
             const follows = row.data.follows;
             Object.keys(follows).forEach(column => {
-              // tslint:disable-next-line no-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               follows[column].forEach((cell: any) => {
                 assert.deepStrictEqual(cell.labels, [filter.label]);
               });

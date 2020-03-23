@@ -14,7 +14,7 @@
 
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, before, beforeEach, afterEach} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import {Mutation} from '../src/mutation.js';
@@ -94,9 +94,9 @@ describe('Bigtable/Row', () => {
   afterEach(() => {
     sandbox.restore();
     Object.keys(FakeMutation).forEach(spy => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((FakeMutation as any)[spy].resetHistory) {
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (FakeMutation as any)[spy].resetHistory();
       }
     });
@@ -642,7 +642,7 @@ describe('Bigtable/Row', () => {
 
     it('should read/modify/write rules', done => {
       (row.bigtable.request as Function) = (
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any,
         callback: Function
       ) => {
@@ -670,7 +670,7 @@ describe('Bigtable/Row', () => {
     it('should use an appProfileId', done => {
       const bigtableInstance = row.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (bigtableInstance.request as Function) = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
@@ -683,7 +683,7 @@ describe('Bigtable/Row', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -695,7 +695,7 @@ describe('Bigtable/Row', () => {
   describe('delete', () => {
     it('should provide the proper request options', done => {
       (row.table.mutate as Function) = (
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mutation: any,
         gaxOptions: {},
         callback: Function
@@ -733,7 +733,7 @@ describe('Bigtable/Row', () => {
 
     it('should provide the proper request options', done => {
       (row.table.mutate as Function) = (
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mutation: any,
         gaxOptions: {},
         callback: Function
@@ -850,7 +850,7 @@ describe('Bigtable/Row', () => {
         return fakeMutations;
       });
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'checkAndMutateRow');
@@ -952,7 +952,7 @@ describe('Bigtable/Row', () => {
 
   describe('get', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.strictEqual(reqOpts.keys[0], ROW_ID);
         assert.strictEqual(reqOpts.filter, undefined);
@@ -975,7 +975,7 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
@@ -1011,7 +1011,7 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
 
@@ -1035,7 +1035,7 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
@@ -1048,7 +1048,7 @@ describe('Bigtable/Row', () => {
 
     it('should respect the options object', done => {
       const keys = ['a:b'];
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const options: any = {
         filter: [
           {
@@ -1074,7 +1074,7 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
@@ -1089,7 +1089,7 @@ describe('Bigtable/Row', () => {
     it('should respect the options object with filter for multiple columns', done => {
       const keys = ['a:b', 'c:d'];
 
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const options: any = {
         filter: [
           {
@@ -1128,7 +1128,7 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 2);
@@ -1149,7 +1149,7 @@ describe('Bigtable/Row', () => {
       };
       const expectedFilter = options.filter;
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         done();
@@ -1163,7 +1163,7 @@ describe('Bigtable/Row', () => {
         decode: false,
       };
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (row.table.getRows as Function) = (reqOpts: any) => {
         assert.strictEqual(reqOpts.decode, options.decode);
         assert(!reqOpts.filter);
@@ -1389,7 +1389,7 @@ describe('Bigtable/Row', () => {
 
     it('should insert an object', done => {
       (row.table.mutate as Function) = (
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         entry: any,
         gaxOptions: {},
         callback: Function

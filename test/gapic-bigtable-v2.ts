@@ -19,6 +19,7 @@
 import * as protosTypes from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const bigtableModule = require('../src');
 
 import {PassThrough} from 'stream';
@@ -40,8 +41,12 @@ export interface Callback {
 }
 
 export class Operation {
-  constructor() {}
-  promise() {}
+  constructor() {
+    // no empty
+  }
+  promise() {
+    // no empty
+  }
 }
 function mockSimpleGrpcMethod(
   expectedRequest: {},
@@ -156,7 +161,7 @@ describe('v2.BigtableClient', () => {
       const request: protosTypes.google.bigtable.v2.IMutateRowRequest = {};
       request.tableName = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.mutateRow = mockSimpleGrpcMethod(
         request,
@@ -208,7 +213,7 @@ describe('v2.BigtableClient', () => {
       const request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest = {};
       request.tableName = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.checkAndMutateRow = mockSimpleGrpcMethod(
         request,
@@ -260,7 +265,7 @@ describe('v2.BigtableClient', () => {
       const request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest = {};
       request.tableName = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.readModifyWriteRow = mockSimpleGrpcMethod(
         request,
@@ -315,7 +320,7 @@ describe('v2.BigtableClient', () => {
       const request: protosTypes.google.bigtable.v2.IReadRowsRequest = {};
       request.tableName = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.readRows = mockServerStreamingGrpcMethod(
         request,
@@ -374,7 +379,7 @@ describe('v2.BigtableClient', () => {
       const request: protosTypes.google.bigtable.v2.ISampleRowKeysRequest = {};
       request.tableName = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.sampleRowKeys = mockServerStreamingGrpcMethod(
         request,
@@ -433,7 +438,7 @@ describe('v2.BigtableClient', () => {
       const request: protosTypes.google.bigtable.v2.IMutateRowsRequest = {};
       request.tableName = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.mutateRows = mockServerStreamingGrpcMethod(
         request,

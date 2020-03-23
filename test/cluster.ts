@@ -14,11 +14,10 @@
 
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, before, beforeEach} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import {CallOptions} from 'google-gax';
-
-// tslint:disable no-any
+import {ServiceError} from '@grpc/grpc-js';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -39,8 +38,9 @@ describe('Bigtable/Cluster', () => {
   };
 
   const CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
-  // tslint:disable-next-line variable-name
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let Cluster: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cluster: any;
 
   before(() => {
@@ -88,7 +88,7 @@ describe('Bigtable/Cluster', () => {
     it('should throw if cluster id in wrong format', () => {
       const id = `clusters/${CLUSTER_ID}`;
       assert.throws(() => {
-        const c = new Cluster(INSTANCE, id);
+        new Cluster(INSTANCE, id);
       }, Error);
     });
   });
@@ -119,6 +119,7 @@ describe('Bigtable/Cluster', () => {
   });
 
   describe('getStorageType_', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const types: any = {
       unspecified: 0,
       ssd: 1,
@@ -173,30 +174,26 @@ describe('Bigtable/Cluster', () => {
 
   describe('delete', () => {
     it('should make the correct request', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteCluster');
-
         assert.deepStrictEqual(config.reqOpts, {
           name: cluster.name,
         });
-
         assert.deepStrictEqual(config.gaxOpts, {});
-
         callback(); // done()
       };
-
       cluster.delete(done);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
-
       cluster.delete(gaxOptions, assert.ifError);
     });
   });
@@ -207,30 +204,25 @@ describe('Bigtable/Cluster', () => {
         assert.deepStrictEqual(gaxOptions, {});
         done();
       };
-
       cluster.exists(assert.ifError);
     });
 
     it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.getMetadata = (gaxOptions_: CallOptions) => {
-        assert.strictEqual(gaxOptions, gaxOptions);
+        assert.strictEqual(gaxOptions, gaxOptions_);
         done();
       };
-
       cluster.exists(gaxOptions, assert.ifError);
     });
 
     it('should return false if error code is 5', done => {
-      // tslint:disable-next-line no-any
-      const error: any = new Error('Error.');
+      const error = new Error('Error.') as ServiceError;
       error.code = 5;
-
       cluster.getMetadata = (gaxOptions: CallOptions, callback: Function) => {
         callback(error);
       };
-
       cluster.exists((err: Error, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, false);
@@ -239,7 +231,7 @@ describe('Bigtable/Cluster', () => {
     });
 
     it('should return error if code is not 5', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
       cluster.getMetadata = (_: CallOptions, callback: Function) => {
@@ -313,6 +305,7 @@ describe('Bigtable/Cluster', () => {
 
   describe('getMetadata', () => {
     it('should make correct request', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getCluster');
@@ -327,6 +320,7 @@ describe('Bigtable/Cluster', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -348,7 +342,7 @@ describe('Bigtable/Cluster', () => {
     it('should execute callback with original arguments', done => {
       const args = [{}, {}];
       cluster.bigtable.request = (config: {}, callback: Function) => {
-        callback.apply(null, args);
+        callback(...args);
       };
       cluster.getMetadata((...argsies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argsies), args);
@@ -359,6 +353,7 @@ describe('Bigtable/Cluster', () => {
 
   describe('setMetadata', () => {
     it('should provide the proper request options', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'updateCluster');
@@ -373,7 +368,6 @@ describe('Bigtable/Cluster', () => {
       const options = {
         location: 'us-centralb-1',
       };
-
       const getLocation = Cluster.getLocation_;
       const fakeLocation = 'a/b/c/d';
 
@@ -382,7 +376,7 @@ describe('Bigtable/Cluster', () => {
         assert.strictEqual(location, options.location);
         return fakeLocation;
       };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.location, fakeLocation);
         Cluster.getLocation_ = getLocation;
@@ -396,12 +390,11 @@ describe('Bigtable/Cluster', () => {
       const options = {
         nodes: 3,
       };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
         done();
       };
-
       cluster.setMetadata(options, assert.ifError);
     });
 
@@ -417,13 +410,12 @@ describe('Bigtable/Cluster', () => {
         assert.strictEqual(storage, options.storage);
         return fakeStorageType;
       };
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.defaultStorageType, fakeStorageType);
         Cluster.getStorageType_ = getStorageType;
         done();
       };
-
       cluster.setMetadata(options, assert.ifError);
     });
 
@@ -431,7 +423,7 @@ describe('Bigtable/Cluster', () => {
       const args = [{}, {}];
 
       cluster.bigtable.request = (config: {}, callback: Function) => {
-        callback.apply(null, args);
+        callback(...args);
       };
 
       cluster.setMetadata({}, (...argsies: Array<{}>) => {

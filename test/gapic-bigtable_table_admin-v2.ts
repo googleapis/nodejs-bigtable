@@ -19,6 +19,7 @@
 import * as protosTypes from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const bigtabletableadminModule = require('../src');
 
 const FAKE_STATUS_CODE = 1;
@@ -38,8 +39,12 @@ export interface Callback {
 }
 
 export class Operation {
-  constructor() {}
-  promise() {}
+  constructor() {
+    // no empty
+  }
+  promise() {
+    // no empty
+  }
 }
 function mockSimpleGrpcMethod(
   expectedRequest: {},
@@ -157,7 +162,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.ICreateTableRequest = {};
       request.parent = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.createTable = mockSimpleGrpcMethod(
         request,
@@ -209,7 +214,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.IGetTableRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.getTable = mockSimpleGrpcMethod(
         request,
@@ -261,7 +266,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.IDeleteTableRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.deleteTable = mockSimpleGrpcMethod(
         request,
@@ -313,7 +318,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.IModifyColumnFamiliesRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.modifyColumnFamilies = mockSimpleGrpcMethod(
         request,
@@ -365,7 +370,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.IDropRowRangeRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.dropRowRange = mockSimpleGrpcMethod(
         request,
@@ -417,7 +422,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.generateConsistencyToken = mockSimpleGrpcMethod(
         request,
@@ -472,7 +477,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.ICheckConsistencyRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.checkConsistency = mockSimpleGrpcMethod(
         request,
@@ -524,7 +529,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.IGetSnapshotRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.getSnapshot = mockSimpleGrpcMethod(
         request,
@@ -576,7 +581,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.IDeleteSnapshotRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.deleteSnapshot = mockSimpleGrpcMethod(
         request,
@@ -628,7 +633,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.iam.v1.IGetIamPolicyRequest = {};
       request.resource = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.getIamPolicy = mockSimpleGrpcMethod(
         request,
@@ -680,7 +685,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.iam.v1.ISetIamPolicyRequest = {};
       request.resource = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.setIamPolicy = mockSimpleGrpcMethod(
         request,
@@ -732,7 +737,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.iam.v1.ITestIamPermissionsRequest = {};
       request.resource = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.testIamPermissions = mockSimpleGrpcMethod(
         request,
@@ -791,7 +796,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest = {};
       request.parent = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.createTableFromSnapshot = mockLongRunningGrpcMethod(
         request,
@@ -858,7 +863,7 @@ describe('v2.BigtableTableAdminClient', () => {
       const request: protosTypes.google.bigtable.admin.v2.ISnapshotTableRequest = {};
       request.name = '';
       // Mock response
-      const expectedResponse = {};
+      // const expectedResponse = {};
       // Mock gRPC layer
       client._innerApiCalls.snapshotTable = mockLongRunningGrpcMethod(
         request,

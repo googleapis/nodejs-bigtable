@@ -24,8 +24,6 @@ import {
   Descriptors,
   ClientOptions,
   LROperation,
-  PaginationCallback,
-  PaginationResponse,
 } from 'google-gax';
 import * as path from 'path';
 
@@ -190,6 +188,7 @@ export class BigtableInstanceAdminClient {
     // rather than holding a request open.
     const protoFilesRoot = opts.fallback
       ? this._gaxModule.protobuf.Root.fromJSON(
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
           require('../../protos/protos.json')
         )
       : this._gaxModule.protobuf.loadSync(nodejsProtoPath);
@@ -299,7 +298,7 @@ export class BigtableInstanceAdminClient {
         ? (this._protos as protobuf.Root).lookupService(
             'google.bigtable.admin.v2.BigtableInstanceAdmin'
           )
-        : // tslint:disable-next-line no-any
+        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.bigtable.admin.v2.BigtableInstanceAdmin,
       this._opts
     ) as Promise<{[method: string]: Function}>;
@@ -334,6 +333,7 @@ export class BigtableInstanceAdminClient {
           if (this._terminated) {
             return Promise.reject('The client has already been closed.');
           }
+          // eslint-disable-next-line prefer-spread
           return stub[methodName].apply(stub, args);
         },
         (err: Error | null | undefined) => () => {

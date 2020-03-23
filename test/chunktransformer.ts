@@ -41,9 +41,9 @@ const FakeMutation = {
 };
 
 describe('Bigtable/ChunkTransformer', () => {
-  // tslint:disable-next-line variable-name no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ChunkTransformer: any;
-  // tslint:disable:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let chunkTransformer: any;
   let rows: Row[];
   before(() => {

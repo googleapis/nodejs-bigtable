@@ -202,7 +202,7 @@ export class BigtableClient {
         ? (this._protos as protobuf.Root).lookupService(
             'google.bigtable.v2.Bigtable'
           )
-        : // tslint:disable-next-line no-any
+        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.bigtable.v2.Bigtable,
       this._opts
     ) as Promise<{[method: string]: Function}>;
@@ -224,6 +224,7 @@ export class BigtableClient {
           if (this._terminated) {
             return Promise.reject('The client has already been closed.');
           }
+          // eslint-disable-next-line prefer-spread
           return stub[methodName].apply(stub, args);
         },
         (err: Error | null | undefined) => () => {

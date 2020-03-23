@@ -15,7 +15,7 @@
 import * as projectify from '@google-cloud/projectify';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, beforeEach, before, afterEach} from 'mocha';
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
@@ -24,19 +24,24 @@ import * as through from 'through2';
 import {Cluster} from '../src/cluster.js';
 import {Instance} from '../src/instance.js';
 
-const v2 = require('../src/v2');
+import * as v2 from '../src/v2';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const PKG = require('../../package.json');
 
 const sinon = sn.createSandbox();
 const {grpc} = new gax.GrpcClient();
-const noop = () => {};
+const noop = () => {
+  // empty
+};
 
-function fakeV2() {}
+function fakeV2() {
+  // empty
+}
 
 let promisified = false;
 let replaceProjectIdTokenOverride: Function | null;
 const fakePromisify = Object.assign({}, promisify, {
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   promisifyAll(klass: Function, options: any) {
     if (klass.name !== 'Bigtable') {
       return;
@@ -50,34 +55,31 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 const fakeReplaceProjectIdToken = Object.assign({}, projectify, {
-  replaceProjectIdToken(reqOpts: {}) {
+  replaceProjectIdToken(...args: Array<{}>) {
     if (replaceProjectIdTokenOverride) {
-      return replaceProjectIdTokenOverride.apply(null, arguments);
+      return replaceProjectIdTokenOverride(...args);
     }
-    return reqOpts;
+    return args[0];
   },
 });
 
 let googleAuthOverride: Function | null;
-function fakeGoogleAuth() {
-  return (googleAuthOverride || noop).apply(null, arguments);
+function fakeGoogleAuth(...args: Array<{}>) {
+  return (googleAuthOverride || noop)(...args);
 }
 
 let retryRequestOverride: Function | null;
-function fakeRetryRequest() {
-  return (retryRequestOverride || require('retry-request')).apply(
-    null,
-    arguments
-  );
+function fakeRetryRequest(...args: Array<{}>) {
+  return (retryRequestOverride || require('retry-request'))(...args);
 }
 
-// tslint:disable-next-line no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createFake(klass: any) {
   return class Fake extends klass {
-    calledWith_: IArguments;
-    constructor() {
-      super(...arguments);
-      this.calledWith_ = arguments;
+    calledWith_: Array<{}>;
+    constructor(...args: Array<{}>) {
+      super(...args);
+      this.calledWith_ = args;
     }
   };
 }
@@ -90,9 +92,9 @@ const FakeInstance = createFake(Instance);
 describe('Bigtable', () => {
   const PROJECT_ID = 'test-project';
   const PROJECT_ID_TOKEN = '{{projectId}}';
-  // tslint:disable-next-line variable-name no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let Bigtable: any;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let bigtable: any;
 
   before(() => {
@@ -335,7 +337,7 @@ describe('Bigtable', () => {
     const INSTANCE_ID = 'my-instance';
 
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createInstance');
@@ -350,7 +352,7 @@ describe('Bigtable', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -362,7 +364,7 @@ describe('Bigtable', () => {
       const options = {
         displayName: 'robocop',
       };
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.instance.displayName,
@@ -376,12 +378,12 @@ describe('Bigtable', () => {
     it('should respect the type option', done => {
       const options = {type: 'development'};
       const fakeTypeType = 99;
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       FakeInstance.getTypeType_ = (type: string) => {
         assert.strictEqual(type, options.type);
         return fakeTypeType;
       };
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.instance.type, fakeTypeType);
         done();
@@ -395,7 +397,7 @@ describe('Bigtable', () => {
           env: 'prod',
         },
       };
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.instance.labels, options.labels);
         done();
@@ -424,7 +426,7 @@ describe('Bigtable', () => {
         assert.strictEqual(storage, cluster.storage);
         return fakeStorage;
       };
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.clusters, {
           'my-cluster': {
@@ -503,7 +505,7 @@ describe('Bigtable', () => {
 
   describe('getInstances', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listInstances');
@@ -518,7 +520,7 @@ describe('Bigtable', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -578,7 +580,6 @@ describe('Bigtable', () => {
     it('should return an Instance object', () => {
       const instance = bigtable.instance(INSTANCE_ID);
       const args = instance.calledWith_;
-
       assert(instance instanceof FakeInstance);
       assert.strictEqual(args[0], bigtable);
       assert.strictEqual(args[1], INSTANCE_ID);
@@ -628,8 +629,8 @@ describe('Bigtable', () => {
         const fakeClient = {
           [CONFIG.method]: noop,
         };
-        // tslint:disable-next-line only-arrow-functions no-any
-        (fakeV2 as any)[CONFIG.client] = function(options: any) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (fakeV2 as any)[CONFIG.client] = function (options: any) {
           assert.strictEqual(options, bigtable.options[CONFIG.client]);
           return fakeClient;
         };
@@ -639,8 +640,8 @@ describe('Bigtable', () => {
       });
 
       it('should use the cached client', done => {
-        // tslint:disable-next-line only-arrow-functions no-any
-        (fakeV2 as any)[CONFIG.client] = function() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (fakeV2 as any)[CONFIG.client] = function () {
           done(new Error('Should not re-instantiate a GAX client.'));
         };
         bigtable.request(CONFIG);
@@ -673,7 +674,7 @@ describe('Bigtable', () => {
 
       it('should replace the project ID token', done => {
         const replacedReqOpts = {};
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         replaceProjectIdTokenOverride = (reqOpts: any, projectId: string) => {
           assert.notStrictEqual(reqOpts, CONFIG.reqOpts);
           assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
@@ -745,7 +746,7 @@ describe('Bigtable', () => {
     });
 
     describe('makeRequestStream', () => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let GAX_STREAM: any;
 
       beforeEach(() => {
@@ -760,7 +761,7 @@ describe('Bigtable', () => {
       });
 
       it('should use retry-request', done => {
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         retryRequestOverride = (_: {}, config: any) => {
           assert.strictEqual(config.currentRetryAttempt, 0);
           assert.strictEqual(config.objectMode, true);

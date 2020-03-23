@@ -63,10 +63,11 @@ import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
 import {ServiceError} from '@grpc/grpc-js';
 import * as v2 from './v2';
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const retryRequest = require('retry-request');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
-
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const PKG = require('../../package.json');
 
 const {grpc} = new gax.GrpcClient();
@@ -771,9 +772,9 @@ export class Bigtable {
     return new Instance(this, name);
   }
 
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(config?: any): AbortableDuplex;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(config?: any, callback?: RequestCallback<T>): void;
   /**
    * Funnel all API requests through this method, to be sure we have a project ID.
@@ -784,7 +785,7 @@ export class Bigtable {
    * @param {object} config.reqOpts Request options.
    * @param {function} [callback] Callback function.
    */
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(
     config: RequestOptions,
     callback?: (err: ServiceError | null, resp?: T) => void
@@ -813,7 +814,7 @@ export class Bigtable {
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
           reqOpts = replaceProjectIdToken(reqOpts, projectId!);
         }
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const requestFn = (gaxClient as any)[config.method!].bind(
           gaxClient,
           reqOpts,
@@ -945,10 +946,10 @@ promisifyAll(Bigtable, {
  */
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
-// tslint:disable-next-line no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return new (target as any)(...argumentsList);
   },
 });

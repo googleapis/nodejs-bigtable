@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, before, beforeEach, afterEach} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import * as fr from '../src/filter';
@@ -363,7 +363,7 @@ describe('Bigtable/Filter', () => {
       const fakeFilters = [{}, {}, {}];
 
       const spy = sandbox.stub(Filter, 'parse').returnsArg(0);
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       filter.set = (filterName, value: any) => {
         assert.strictEqual(filterName, 'interleave');
         assert.strictEqual(value.filters[0], fakeFilters[0]);
@@ -517,7 +517,7 @@ describe('Bigtable/Filter', () => {
 
     it('should create a chain filter if there are multiple', () => {
       filter.filters_ = [{}, {}];
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const filterProto = filter.toProto() as any;
       assert.strictEqual(filterProto!.chain.filters, filter.filters_);
     });
@@ -535,7 +535,7 @@ describe('Bigtable/Filter', () => {
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const bytesSpy = ((FakeMutation as any).convertToBytes = sandbox.spy(
         () => {
           return fakeConvertedValue;
@@ -546,7 +546,7 @@ describe('Bigtable/Filter', () => {
         assert.strictEqual(filterName, 'valueRegexFilter');
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value.value));
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assert((bytesSpy as any).calledWithExactly(fakeRegExValue));
         regSpy.restore();
         done();
@@ -565,7 +565,7 @@ describe('Bigtable/Filter', () => {
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const bytesSpy = ((FakeMutation.convertToBytes as any) = sandbox.spy(
         () => {
           return fakeConvertedValue;
@@ -576,7 +576,7 @@ describe('Bigtable/Filter', () => {
         assert.strictEqual(filterName, 'valueRegexFilter');
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value));
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assert((bytesSpy as any).calledWithExactly(fakeRegExValue));
         regSpy.restore();
         done();
