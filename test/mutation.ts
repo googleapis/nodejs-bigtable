@@ -15,15 +15,15 @@
 import * as assert from 'assert';
 import {describe, it, afterEach} from 'mocha';
 import * as Long from 'long';
-import * as sn from 'sinon';
+import * as sinon from 'sinon';
 
-import {IMutateRowRequest, Mutation} from '../src/mutation.js';
+import {IMutateRowRequest, Mutation, IMutation} from '../src/mutation.js';
 
-const sinon = sn.createSandbox();
+const sandbox = sinon.createSandbox();
 
 describe('Bigtable/Mutation', () => {
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
   });
 
   describe('instantiation', () => {
@@ -148,7 +148,7 @@ describe('Bigtable/Mutation', () => {
     it('should not create a new Buffer needlessly', () => {
       const message = 'Hello!';
       const encoded = Buffer.from(message);
-      const stub = sinon.stub(Buffer, 'from');
+      const stub = sandbox.stub(Buffer, 'from');
       const decoded = Mutation.convertFromBytes(encoded);
       assert.strictEqual(stub.called, false);
       assert.strictEqual(decoded.toString(), message);
@@ -193,23 +193,23 @@ describe('Bigtable/Mutation', () => {
       const timestamp = Date.now();
       const dateObj = new Date(timestamp);
       const range = Mutation.createTimeRange(dateObj, dateObj);
-
       assert.strictEqual(range.startTimestampMicros, timestamp * 1000);
       assert.strictEqual(range.endTimestampMicros, timestamp * 1000);
     });
   });
 
   describe('encodeSetCell', () => {
-    let convertCalls;
     // tslint:disable-next-line no-any
-    const fakeTime: any = new Date('2018-1-1');
+    let convertCalls: any[];
     // tslint:disable-next-line no-any
-    const realTimestamp: any = new Date();
+    const fakeTime = new Date('2018-1-1') as any;
+    // tslint:disable-next-line no-any
+    const realTimestamp = new Date() as any;
 
     beforeEach(() => {
-      sinon.stub(global, 'Date').returns(fakeTime);
+      sandbox.stub(global, 'Date').returns(fakeTime);
       convertCalls = [];
-      sinon.stub(Mutation, 'convertToBytes').callsFake(value => {
+      sandbox.stub(Mutation, 'convertToBytes').callsFake(value => {
         convertCalls.push(value);
         return value;
       });
@@ -304,29 +304,19 @@ describe('Bigtable/Mutation', () => {
   });
 
   describe('encodeDelete', () => {
-    let convert;
     // tslint:disable-next-line no-any
     let convertCalls: any[] = [];
 
-    before(() => {
-      convert = Mutation.convertToBytes;
-      Mutation.convertToBytes = value => {
-        convertCalls.push(value);
-        return value;
-      };
-    });
-
-    after(() => {
-      Mutation.convertToBytes = convert;
-    });
-
     beforeEach(() => {
       convertCalls = [];
+      sandbox.stub(Mutation, 'convertToBytes').callsFake(value => {
+        convertCalls.push(value);
+        return value;
+      });
     });
 
     it('should create a delete row mutation', () => {
       const mutation = Mutation.encodeDelete();
-
       assert.deepStrictEqual(mutation, [
         {
           deleteFromRow: {},
@@ -352,11 +342,8 @@ describe('Bigtable/Mutation', () => {
         family: 'followed',
         qualifier: null,
       };
-
-      sinon.stub(Mutation, 'parseColumnName').returns(fakeColumnName);
-
+      sandbox.stub(Mutation, 'parseColumnName').returns(fakeColumnName);
       const mutation = Mutation.encodeDelete(['follows']);
-
       assert.deepStrictEqual(mutation, [
         {
           deleteFromFamily: {
@@ -368,7 +355,6 @@ describe('Bigtable/Mutation', () => {
 
     it('should create a delete column mutation', () => {
       const mutation = Mutation.encodeDelete(['follows:gwashington']);
-
       assert.deepStrictEqual(mutation, [
         {
           deleteFromColumn: {
@@ -425,20 +411,14 @@ describe('Bigtable/Mutation', () => {
   });
 
   describe('parse', () => {
-    let toProto;
     let toProtoCalled = false;
     const fakeData = {a: 'a'} as IMutateRowRequest;
 
-    before(() => {
-      toProto = Mutation.prototype.toProto;
-      Mutation.prototype.toProto = () => {
+    beforeEach(() => {
+      sandbox.stub(Mutation.prototype, 'toProto').callsFake(() => {
         toProtoCalled = true;
         return fakeData;
-      };
-    });
-
-    after(() => {
-      Mutation.prototype.toProto = toProto;
+      });
     });
 
     it('should create a new mutation object and parse it', () => {
@@ -447,9 +427,7 @@ describe('Bigtable/Mutation', () => {
         method: 'b',
         data: 'c',
       } as Mutation;
-
       const mutation = Mutation.parse(fakeMutationData);
-
       assert.strictEqual(toProtoCalled, true);
       assert.strictEqual(mutation, fakeData);
     });
@@ -485,23 +463,14 @@ describe('Bigtable/Mutation', () => {
   });
 
   describe('toProto', () => {
-    let convert;
     // tslint:disable-next-line no-any
     let convertCalls: any[] = [];
 
-    before(() => {
-      convert = Mutation.convertToBytes;
-      Mutation.convertToBytes = value => {
+    beforeEach(() => {
+      sandbox.stub(Mutation, 'convertToBytes').callsFake(value => {
         convertCalls.push(value);
         return value;
-      };
-    });
-
-    after(() => {
-      Mutation.convertToBytes = convert;
-    });
-
-    beforeEach(() => {
+      });
       convertCalls = [];
     });
 
@@ -512,37 +481,29 @@ describe('Bigtable/Mutation', () => {
         method: 'insert',
         data: [],
       };
-
       const mutation = new Mutation(data);
-
       Mutation.encodeSetCell = _data => {
         assert.strictEqual(_data, data.data);
         return fakeEncoded;
       };
-
       const mutationProto = mutation.toProto();
-
       assert.strictEqual(mutationProto.mutations, fakeEncoded);
       assert.strictEqual(mutationProto.rowKey, data.key);
       assert.strictEqual(convertCalls[0], data.key);
     });
 
     it('should encode delete mutations when method is delete', () => {
-      const fakeEncoded = [{b: 'b'}];
+      const fakeEncoded = ([{b: 'b'}] as {}) as IMutation[];
       const data = {
         key: 'b',
         method: 'delete',
         data: [],
       };
-
-      // tslint:disable-next-line no-any
-      (Mutation as any).encodeDelete = _data => {
+      sandbox.stub(Mutation, 'encodeDelete').callsFake(_data => {
         assert.strictEqual(_data, data.data);
         return fakeEncoded;
-      };
-
+      });
       const mutation = new Mutation(data).toProto();
-
       assert.strictEqual(mutation.mutations, fakeEncoded);
       assert.strictEqual(mutation.rowKey, data.key);
       assert.strictEqual(convertCalls[0], data.key);

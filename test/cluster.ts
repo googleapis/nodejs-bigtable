@@ -16,10 +16,13 @@ import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
+import {CallOptions} from 'google-gax';
+
+// tslint:disable no-any
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass) {
+  promisifyAll(klass: Function) {
     if (klass.name === 'Cluster') {
       promisified = true;
     }
@@ -37,8 +40,8 @@ describe('Bigtable/Cluster', () => {
 
   const CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
   // tslint:disable-next-line variable-name
-  let Cluster;
-  let cluster;
+  let Cluster: any;
+  let cluster: any;
 
   before(() => {
     Cluster = proxyquire('../src/cluster.js', {
@@ -116,7 +119,7 @@ describe('Bigtable/Cluster', () => {
   });
 
   describe('getStorageType_', () => {
-    const types = {
+    const types: any = {
       unspecified: 0,
       ssd: 1,
       hdd: 2,
@@ -141,7 +144,11 @@ describe('Bigtable/Cluster', () => {
     it('should call createCluster from instance', done => {
       const options = {};
 
-      cluster.instance.createCluster = (id, options_, callback) => {
+      cluster.instance.createCluster = (
+        id: string,
+        options_: {},
+        callback: Function
+      ) => {
         assert.strictEqual(id, cluster.id);
         assert.strictEqual(options_, options);
         callback(); // done()
@@ -151,7 +158,11 @@ describe('Bigtable/Cluster', () => {
     });
 
     it('should not require options', done => {
-      cluster.instance.createCluster = (id, options, callback) => {
+      cluster.instance.createCluster = (
+        id: string,
+        options: {},
+        callback: Function
+      ) => {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
@@ -162,7 +173,7 @@ describe('Bigtable/Cluster', () => {
 
   describe('delete', () => {
     it('should make the correct request', done => {
-      cluster.bigtable.request = (config, callback) => {
+      cluster.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteCluster');
 
@@ -181,7 +192,7 @@ describe('Bigtable/Cluster', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      cluster.bigtable.request = config => {
+      cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -192,7 +203,7 @@ describe('Bigtable/Cluster', () => {
 
   describe('exists', () => {
     it('should not require gaxOptions', done => {
-      cluster.getMetadata = gaxOptions => {
+      cluster.getMetadata = (gaxOptions: CallOptions) => {
         assert.deepStrictEqual(gaxOptions, {});
         done();
       };
@@ -203,8 +214,8 @@ describe('Bigtable/Cluster', () => {
     it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
 
-      cluster.getMetadata = gaxOptions_ => {
-        assert.strictEqual(gaxOptions_, gaxOptions);
+      cluster.getMetadata = (gaxOptions_: CallOptions) => {
+        assert.strictEqual(gaxOptions, gaxOptions);
         done();
       };
 
@@ -216,11 +227,11 @@ describe('Bigtable/Cluster', () => {
       const error: any = new Error('Error.');
       error.code = 5;
 
-      cluster.getMetadata = (gaxOptions, callback) => {
+      cluster.getMetadata = (gaxOptions: CallOptions, callback: Function) => {
         callback(error);
       };
 
-      cluster.exists((err, exists) => {
+      cluster.exists((err: Error, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, false);
         done();
@@ -231,23 +242,20 @@ describe('Bigtable/Cluster', () => {
       // tslint:disable-next-line no-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
-
-      cluster.getMetadata = (gaxOptions, callback) => {
+      cluster.getMetadata = (_: CallOptions, callback: Function) => {
         callback(error);
       };
-
-      cluster.exists(err => {
+      cluster.exists((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
     });
 
     it('should return true if no error', done => {
-      cluster.getMetadata = (gaxOptions, callback) => {
+      cluster.getMetadata = (gaxOptions: CallOptions, callback: Function) => {
         callback(null, {});
       };
-
-      cluster.exists((err, exists) => {
+      cluster.exists((err: Error, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, true);
         done();
@@ -258,17 +266,15 @@ describe('Bigtable/Cluster', () => {
   describe('get', () => {
     it('should call getMetadata', done => {
       const gaxOptions = {};
-
-      cluster.getMetadata = gaxOptions_ => {
+      cluster.getMetadata = (gaxOptions_: {}) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       };
-
       cluster.get(gaxOptions, assert.ifError);
     });
 
     it('should not require gaxOptions', done => {
-      cluster.getMetadata = gaxOptions => {
+      cluster.getMetadata = (gaxOptions: CallOptions) => {
         assert.deepStrictEqual(gaxOptions, {});
         done();
       };
@@ -279,11 +285,11 @@ describe('Bigtable/Cluster', () => {
     it('should return an error from getMetadata', done => {
       const error = new Error('Error.');
 
-      cluster.getMetadata = (gaxOptions, callback) => {
+      cluster.getMetadata = (gaxOptions: CallOptions, callback: Function) => {
         callback(error);
       };
 
-      cluster.get(err => {
+      cluster.get((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -292,11 +298,11 @@ describe('Bigtable/Cluster', () => {
     it('should return self and API response', done => {
       const metadata = {};
 
-      cluster.getMetadata = (gaxOptions, callback) => {
+      cluster.getMetadata = (gaxOptions: CallOptions, callback: Function) => {
         callback(null, metadata);
       };
 
-      cluster.get((err, cluster_, metadata_) => {
+      cluster.get((err: Error, cluster_: {}, metadata_: {}) => {
         assert.ifError(err);
         assert.strictEqual(cluster_, cluster);
         assert.strictEqual(metadata_, metadata);
@@ -307,40 +313,32 @@ describe('Bigtable/Cluster', () => {
 
   describe('getMetadata', () => {
     it('should make correct request', done => {
-      cluster.bigtable.request = config => {
+      cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getCluster');
-
         assert.deepStrictEqual(config.reqOpts, {
           name: cluster.name,
         });
-
         assert.deepStrictEqual(config.gaxOpts, {});
-
         done();
       };
-
       cluster.getMetadata(assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      cluster.bigtable.request = config => {
+      cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
-
       cluster.getMetadata(gaxOptions, assert.ifError);
     });
 
     it('should update metadata', done => {
       const metadata = {};
-
-      cluster.bigtable.request = (config, callback) => {
+      cluster.bigtable.request = (config: {}, callback: Function) => {
         callback(null, metadata);
       };
-
       cluster.getMetadata(() => {
         assert.strictEqual(cluster.metadata, metadata);
         done();
@@ -349,12 +347,10 @@ describe('Bigtable/Cluster', () => {
 
     it('should execute callback with original arguments', done => {
       const args = [{}, {}];
-
-      cluster.bigtable.request = (config, callback) => {
+      cluster.bigtable.request = (config: {}, callback: Function) => {
         callback.apply(null, args);
       };
-
-      cluster.getMetadata((...argsies) => {
+      cluster.getMetadata((...argsies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
       });
@@ -363,7 +359,7 @@ describe('Bigtable/Cluster', () => {
 
   describe('setMetadata', () => {
     it('should provide the proper request options', done => {
-      cluster.bigtable.request = (config, callback) => {
+      cluster.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'updateCluster');
         assert.strictEqual(config.reqOpts.name, CLUSTER_NAME);
@@ -381,13 +377,13 @@ describe('Bigtable/Cluster', () => {
       const getLocation = Cluster.getLocation_;
       const fakeLocation = 'a/b/c/d';
 
-      Cluster.getLocation_ = (project, location) => {
+      Cluster.getLocation_ = (project: string, location: string) => {
         assert.strictEqual(project, PROJECT_ID);
         assert.strictEqual(location, options.location);
         return fakeLocation;
       };
 
-      cluster.bigtable.request = config => {
+      cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.location, fakeLocation);
         Cluster.getLocation_ = getLocation;
         done();
@@ -401,7 +397,7 @@ describe('Bigtable/Cluster', () => {
         nodes: 3,
       };
 
-      cluster.bigtable.request = config => {
+      cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
         done();
       };
@@ -417,12 +413,12 @@ describe('Bigtable/Cluster', () => {
       const getStorageType = Cluster.getStorageType_;
       const fakeStorageType = 'a';
 
-      Cluster.getStorageType_ = storage => {
+      Cluster.getStorageType_ = (storage: {}) => {
         assert.strictEqual(storage, options.storage);
         return fakeStorageType;
       };
 
-      cluster.bigtable.request = config => {
+      cluster.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.defaultStorageType, fakeStorageType);
         Cluster.getStorageType_ = getStorageType;
         done();
@@ -434,11 +430,11 @@ describe('Bigtable/Cluster', () => {
     it('should execute callback with all arguments', done => {
       const args = [{}, {}];
 
-      cluster.bigtable.request = (config, callback) => {
+      cluster.bigtable.request = (config: {}, callback: Function) => {
         callback.apply(null, args);
       };
 
-      cluster.setMetadata({}, (...argsies) => {
+      cluster.setMetadata({}, (...argsies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
       });

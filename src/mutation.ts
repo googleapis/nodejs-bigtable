@@ -23,7 +23,8 @@ export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
 export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
 
 export type Bytes = string | Buffer;
-export type Data = Value | Value[] | MutationSettingsObj;
+// tslint:disable-next-line:no-any
+export type Data = any;
 export interface JsonObj {
   [k: string]: string | JsonObj;
 }
@@ -158,7 +159,7 @@ export class Mutation {
    * @returns {object}
    * @private
    */
-  static createTimeRange(start: Date, end: Date): TimeRange {
+  static createTimeRange(start: Date | number, end: Date | number): TimeRange {
     const range: TimeRange = {};
 
     if (is.date(start)) {

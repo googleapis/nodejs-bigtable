@@ -35,7 +35,8 @@ const noop = () => {};
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass, options) {
+  // tslint:disable-next-line:no-any
+  promisifyAll(klass: Function, options: any) {
     if (klass.name !== 'Table') {
       return;
     }
@@ -44,7 +45,8 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 
-function createFake(klass) {
+// tslint:disable-next-line:no-any
+function createFake(klass: any) {
   return class Fake extends klass {
     calledWith_: IArguments;
     constructor() {

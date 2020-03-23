@@ -13,13 +13,14 @@
 // limitations under the License.
 
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, before, beforeEach, afterEach} from 'mocha';
 import * as Long from 'long';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 
 import {RowStateEnum} from '../src/chunktransformer.js';
 import {Mutation} from '../src/mutation.js';
+import {Row} from '../src/row.js';
 
 const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
@@ -40,10 +41,11 @@ const FakeMutation = {
 };
 
 describe('Bigtable/ChunkTransformer', () => {
-  // tslint:disable-next-line variable-name
-  let ChunkTransformer;
-  let chunkTransformer;
-  let rows;
+  // tslint:disable-next-line variable-name no-any
+  let ChunkTransformer: any;
+  // tslint:disable:no-any
+  let chunkTransformer: any;
+  let rows: Row[];
   before(() => {
     ChunkTransformer = proxyquire('../src/chunktransformer.js', {
       './mutation.js': {Mutation: FakeMutation},
@@ -52,7 +54,7 @@ describe('Bigtable/ChunkTransformer', () => {
   beforeEach(() => {
     chunkTransformer = new ChunkTransformer();
     rows = [];
-    chunkTransformer.push = row => {
+    chunkTransformer.push = (row: Row) => {
       rows.push(row);
     };
   });
@@ -97,10 +99,10 @@ describe('Bigtable/ChunkTransformer', () => {
     });
   });
   describe('processNewRow', () => {
-    let processNewRowSpy;
-    let resetSpy;
-    let commitSpy;
-    let destroySpy;
+    let processNewRowSpy: sn.SinonSpy;
+    let resetSpy: sn.SinonSpy;
+    let commitSpy: sn.SinonSpy;
+    let destroySpy: sn.SinonSpy;
     beforeEach(() => {
       processNewRowSpy = sinon.spy(chunkTransformer, 'processNewRow');
       resetSpy = sinon.spy(chunkTransformer, 'reset');
@@ -290,10 +292,10 @@ describe('Bigtable/ChunkTransformer', () => {
     });
   });
   describe('processRowInProgress', () => {
-    let processRowInProgressSpy;
-    let resetSpy;
-    let commitSpy;
-    let destroySpy;
+    let processRowInProgressSpy: sn.SinonSpy;
+    let resetSpy: sn.SinonSpy;
+    let commitSpy: sn.SinonSpy;
+    let destroySpy: sn.SinonSpy;
     beforeEach(() => {
       processRowInProgressSpy = sinon.spy(
         chunkTransformer,
@@ -668,10 +670,10 @@ describe('Bigtable/ChunkTransformer', () => {
     });
   });
   describe('processCellInProgress', () => {
-    let processCellInProgressSpy;
-    let resetSpy;
-    let commitSpy;
-    let destroySpy;
+    let processCellInProgressSpy: sn.SinonSpy;
+    let resetSpy: sn.SinonSpy;
+    let commitSpy: sn.SinonSpy;
+    let destroySpy: sn.SinonSpy;
     beforeEach(() => {
       processCellInProgressSpy = sinon.spy(
         chunkTransformer,
@@ -914,9 +916,9 @@ describe('Bigtable/ChunkTransformer', () => {
     });
   });
   describe('_flush', () => {
-    let _flushSpy;
-    let callback;
-    let destroySpy;
+    let _flushSpy: sn.SinonSpy;
+    let callback: sn.SinonSpy;
+    let destroySpy: sn.SinonSpy;
     beforeEach(() => {
       _flushSpy = sinon.spy(chunkTransformer, '_flush');
       callback = sinon.spy();
@@ -939,10 +941,10 @@ describe('Bigtable/ChunkTransformer', () => {
     });
   });
   describe('_transform', () => {
-    let callback;
-    let processNewRowSpy;
-    let processRowInProgressSpy;
-    let processCellInProgressSpy;
+    let callback: sn.SinonSpy;
+    let processNewRowSpy: sn.SinonSpy;
+    let processRowInProgressSpy: sn.SinonSpy;
+    let processCellInProgressSpy: sn.SinonSpy;
     beforeEach(() => {
       callback = sinon.spy();
       processNewRowSpy = sinon.spy(chunkTransformer, 'processNewRow');
@@ -1062,7 +1064,7 @@ describe('Bigtable/ChunkTransformer', () => {
     });
   });
   describe('commit', () => {
-    let resetSpy;
+    let resetSpy: sn.SinonSpy;
     beforeEach(() => {
       resetSpy = sinon.spy(chunkTransformer, 'reset');
     });
@@ -1116,7 +1118,7 @@ describe('Bigtable/ChunkTransformer', () => {
     });
   });
   describe('moveToNextState', () => {
-    let commitSpy;
+    let commitSpy: sn.SinonSpy;
     beforeEach(() => {
       commitSpy = sinon.spy(chunkTransformer, 'commit');
     });
@@ -1200,7 +1202,7 @@ describe('Bigtable/ChunkTransformer', () => {
   describe('destroy', () => {
     it('should emit error when destroy is called with error', done => {
       const error = new Error('destroy error');
-      chunkTransformer.on('error', err => {
+      chunkTransformer.on('error', (err: Error) => {
         assert.strictEqual(err, error, 'did not emit error');
         done();
       });

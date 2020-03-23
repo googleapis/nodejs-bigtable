@@ -187,16 +187,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * Instance.getTypeType_('production');
    * // 1
    */
-  static getTypeType_(type: string): number {
+  static getTypeType_(type?: string): number {
     const types = {
       unspecified: 0,
       production: 1,
       development: 2,
     } as {[index: string]: number};
-    if (is.string(type)) {
+    if (typeof type === 'string') {
       type = type.toLowerCase();
     }
-    return types[type] || types.unspecified;
+    return types[type!] || types.unspecified;
   }
 
   /**
