@@ -813,7 +813,8 @@ export class Bigtable {
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
           reqOpts = replaceProjectIdToken(reqOpts, projectId!);
         }
-        const requestFn = gaxClient[config.method!].bind(
+        // tslint:disable-next-line:no-any
+        const requestFn = (gaxClient as any)[config.method!].bind(
           gaxClient,
           reqOpts,
           config.gaxOpts

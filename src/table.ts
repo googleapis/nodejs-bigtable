@@ -1330,7 +1330,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    entries = arrify<Entry>(entries).map(entry => {
+    entries = arrify<Entry>(entries).map((entry: Entry) => {
       entry.method = Mutation.methods.INSERT;
       return entry;
     });
@@ -1385,8 +1385,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let numRequestsMade = 0;
 
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
-    const pendingEntryIndices = new Set(entries.map((entry, index) => index));
-    const entryToIndex = new Map(entries.map((entry, index) => [entry, index]));
+    const pendingEntryIndices = new Set(
+      entries.map((entry: Entry, index: number) => index)
+    );
+    const entryToIndex = new Map(
+      entries.map((entry: Entry, index: number) => [entry, index])
+    );
     const mutationErrorsByEntryIndex = new Map();
 
     const onBatchResponse = (err: ServiceError | null) => {
@@ -1413,7 +1417,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     const makeNextBatchRequest = () => {
-      const entryBatch = entries.filter((entry, index) => {
+      const entryBatch = entries.filter((entry: Entry, index: number) => {
         return pendingEntryIndices.has(index);
       });
 
@@ -1858,7 +1862,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     schema: 2,
     replication: 3,
     full: 4,
-  };
+  } as {[index: string]: number};
 }
 
 /*! Developer Documentation
