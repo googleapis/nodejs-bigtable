@@ -583,8 +583,8 @@ describe('Bigtable/Instance', () => {
 
   describe('delete', () => {
     it('should make the correct request', done => {
-      // tslint:disable-next-line:no-any
       (instance.bigtable.request as Function) = (
+        // tslint:disable-next-line:no-any
         config: any,
         callback: Function
       ) => {
@@ -1095,8 +1095,8 @@ describe('Bigtable/Instance', () => {
         instance: {name: instance.name, displayName: 'updateDisplayName'},
         updateMask: {paths: ['display_name']},
       };
-      // tslint:disable-next-line:no-any
       (instance.bigtable.request as Function) = (
+        // tslint:disable-next-line:no-any
         config: any,
         callback: Function
       ) => {

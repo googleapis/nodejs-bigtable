@@ -641,8 +641,8 @@ describe('Bigtable/Row', () => {
     });
 
     it('should read/modify/write rules', done => {
-      // tslint:disable-next-line:no-any
       (row.bigtable.request as Function) = (
+        // tslint:disable-next-line:no-any
         config: any,
         callback: Function
       ) => {
@@ -694,8 +694,8 @@ describe('Bigtable/Row', () => {
 
   describe('delete', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
       (row.table.mutate as Function) = (
+        // tslint:disable-next-line:no-any
         mutation: any,
         gaxOptions: {},
         callback: Function
@@ -732,8 +732,8 @@ describe('Bigtable/Row', () => {
     const columns = ['a:b', 'c'];
 
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
       (row.table.mutate as Function) = (
+        // tslint:disable-next-line:no-any
         mutation: any,
         gaxOptions: {},
         callback: Function
@@ -1388,8 +1388,8 @@ describe('Bigtable/Row', () => {
     };
 
     it('should insert an object', done => {
-      // tslint:disable-next-line:no-any
       (row.table.mutate as Function) = (
+        // tslint:disable-next-line:no-any
         entry: any,
         gaxOptions: {},
         callback: Function
