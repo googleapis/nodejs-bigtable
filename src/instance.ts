@@ -1,18 +1,16 @@
-/*!
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2016 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import {paginator, ResourceStream} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
@@ -34,7 +32,6 @@ import {
   CreateClusterResponse,
   GetClustersCallback,
   GetClustersResponse,
-  Metadata,
 } from './cluster';
 import {Family} from './family';
 import {
@@ -62,8 +59,8 @@ import {google} from '../protos/protos';
 export interface ClusterInfo {
   id?: string;
   location?: string;
-  serveNodes?: string;
-  nodes?: string;
+  serveNodes?: number;
+  nodes?: number;
   storage?: string;
   defaultStorageType?: number;
 }
@@ -92,7 +89,8 @@ export interface InstanceOptions {
    * No more than 64 labels can be associated with a given resource.
    * Keys and values must both be under 128 bytes.
    */
-  labels?: {[index: string]: string};
+  // tslint:disable-next-line no-any
+  labels?: {[index: string]: any};
 
   type?: 'production' | 'development';
 
@@ -296,14 +294,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     const appProfile = AppProfile.formatAppProfile_(options);
 
-    const reqOpts: any = {
+    const reqOpts = {
       parent: this.name,
       appProfileId: id,
       appProfile,
-    };
+    } as google.bigtable.admin.v2.CreateAppProfileRequest;
 
     if (is.boolean(options.ignoreWarnings)) {
-      reqOpts.ignoreWarnings = options.ignoreWarnings;
+      reqOpts.ignoreWarnings = options.ignoreWarnings!;
     }
 
     this.bigtable.request(
@@ -372,29 +370,29 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       parent: this.name,
       clusterId: id,
-    };
+    } as google.bigtable.admin.v2.CreateClusterRequest;
 
     if (!is.empty(options)) {
       reqOpts.cluster = {};
     }
 
     if (options.location) {
-      reqOpts.cluster.location = Cluster.getLocation_(
+      reqOpts.cluster!.location = Cluster.getLocation_(
         this.bigtable.projectId,
         options.location
       );
     }
 
     if (options.nodes) {
-      reqOpts.cluster.serveNodes = options.nodes;
+      reqOpts.cluster!.serveNodes = options.nodes;
     }
 
     if (options.storage) {
       const storageType = Cluster.getStorageType_(options.storage);
-      reqOpts.cluster.defaultStorageType = storageType;
+      reqOpts.cluster!.defaultStorageType = storageType;
     }
 
     this.bigtable.request(
@@ -462,7 +460,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       parent: this.name,
       tableId: id,
       table: {
@@ -471,7 +469,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         // configurable.
         granularity: 0,
       },
-    };
+    } as google.bigtable.admin.v2.CreateTableRequest;
 
     if (options.splits) {
       reqOpts.initialSplits = options.splits.map(key => ({
@@ -480,6 +478,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     }
 
     if (options.families) {
+      // tslint:disable-next-line no-any
       const columnFamilies = (options.families as any[]).reduce(
         (families, family) => {
           if (typeof family === 'string') {
@@ -487,6 +486,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
               name: family,
             };
           }
+          // tslint:disable-next-line no-any
           const columnFamily: any = (families[family.name] = {});
           if (family.rule) {
             columnFamily.gcRule = Family.formatRule_(family.rule);
@@ -496,7 +496,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         {}
       );
 
-      reqOpts.table.columnFamilies = columnFamilies;
+      reqOpts.table!.columnFamilies = columnFamilies;
     }
 
     this.bigtable.request(
@@ -733,7 +733,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         }
         const clusters = resp!.clusters!.map(clusterObj => {
           const cluster = this.cluster(clusterObj.name!.split('/').pop()!);
-          cluster.metadata = clusterObj as Metadata;
+          cluster.metadata = clusterObj;
           return cluster;
         });
         callback(null, clusters, resp);
@@ -771,9 +771,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : callback!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
-    };
+    } as google.iam.v1.IGetIamPolicyRequest;
 
     if (
       options.requestedPolicyVersion !== null &&
@@ -945,7 +945,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     if (policy.etag !== null && policy.etag !== undefined) {
       ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
     }
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
       policy,
     };
@@ -1002,17 +1002,17 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const reqOpts: any = {
+    const reqOpts = {
       instance: Object.assign({name: this.name}, metadata),
       updateMask: {
         paths: [],
       },
-    };
+    } as google.bigtable.admin.v2.IPartialUpdateInstanceRequest;
     const fieldsForMask = ['displayName', 'type', 'labels'];
 
     fieldsForMask.forEach(field => {
-      if (field in reqOpts.instance) {
-        reqOpts.updateMask.paths.push(snakeCase(field));
+      if (field in reqOpts.instance!) {
+        reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });
 
@@ -1086,7 +1086,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         ? gaxOptionsOrCallback
         : callback!;
 
-    const reqOpts: any = {
+    const reqOpts = {
       resource: this.name,
       permissions: arrify(permissions),
     };
@@ -1127,7 +1127,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
  *   .on('data', function(table) {
  *     // table is a Table object.
  *   })
- *   .on('end', function() {
+ *   .on('end', () => {
  *     // All tables retrieved.
  *   });
  *

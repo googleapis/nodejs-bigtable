@@ -1,18 +1,16 @@
-/*!
- * Copyright 2018 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import {promisifyAll} from '@google-cloud/promisify';
 import * as is from 'is';
@@ -274,9 +272,9 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
 
-    const reqOpts: any = {
+    const reqOpts = {
       name: this.name,
-    };
+    } as google.bigtable.admin.v2.IDeleteAppProfileRequest;
 
     if (is.boolean(options.ignoreWarnings)) {
       reqOpts.ignoreWarnings = options.ignoreWarnings;
@@ -445,12 +443,12 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const reqOpts: any = {
+    const reqOpts = {
       appProfile: AppProfile.formatAppProfile_(metadata as AppProfileOptions),
       updateMask: {
         paths: [],
       },
-    };
+    } as google.bigtable.admin.v2.IUpdateAppProfileRequest;
     reqOpts.appProfile!.name = this.name;
     const fieldsForMask = [
       'description',
@@ -459,8 +457,8 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       'allowTransactionalWrites',
     ];
     fieldsForMask.forEach(field => {
-      if (reqOpts.appProfile[field]) {
-        reqOpts.updateMask.paths.push(snakeCase(field));
+      if (reqOpts.appProfile![field]) {
+        reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });
 

@@ -1,20 +1,18 @@
-/*!
- * Copyright 2018 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-import {Transform, TransformOptions} from 'stream';
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
+import {Transform, TransformOptions} from 'stream';
 import {Bytes, Mutation} from './mutation';
 
 export type Value = string | number | boolean | Uint8Array;
@@ -67,11 +65,11 @@ class TransformError extends Error {
  * ROW_IN_PROGRESS: state after first valid chunk without commitRow or resetRow
  * CELL_IN_PROGRESS: state when valueSize > 0(partial cell)
  */
-export const RowStateEnum = Object.freeze({
-  NEW_ROW: 1,
-  ROW_IN_PROGRESS: 2,
-  CELL_IN_PROGRESS: 3,
-});
+export enum RowStateEnum {
+  NEW_ROW = 1,
+  ROW_IN_PROGRESS = 2,
+  CELL_IN_PROGRESS = 3,
+}
 
 /**
  * ChunkTransformer formats all incoming chunks in to row
@@ -144,6 +142,8 @@ export class ChunkTransformer extends Transform {
           break;
         case RowStateEnum.CELL_IN_PROGRESS:
           this.processCellInProgress(chunk);
+          break;
+        default:
           break;
       }
       if (this._destroyed) {

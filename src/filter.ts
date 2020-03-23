@@ -1,18 +1,16 @@
-/*!
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2016 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import arrify = require('arrify');
 import * as escapeStringRegexp from 'escape-string-regexp';
@@ -49,9 +47,8 @@ export interface Time {
   end: Date;
 }
 
-export interface RawFilter {
-  [index: string]: {};
-}
+// tslint:disable-next-line no-any
+export type RawFilter = any;
 
 export interface Condition {
   pass: {};
@@ -259,7 +256,8 @@ export class Filter {
       [index: string]: Function;
     }
     const filter = new Filter();
-    arrify(filters).forEach(filterObj => {
+    // tslint:disable-next-line no-any
+    arrify(filters).forEach((filterObj: any) => {
       const key = Object.keys(filterObj)[0];
       if (typeof ((filter as {}) as Fn)[key] !== 'function') {
         throw new FilterError(key);
@@ -438,6 +436,7 @@ export class Filter {
     }
 
     if (col.start || col.end) {
+      // tslint:disable-next-line no-any
       const range: any = Filter.createRange(col.start!, col.end!, 'Qualifier');
 
       range.familyName = col.family;

@@ -1,21 +1,19 @@
-/*!
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2016 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
 import * as uuid from 'uuid';
 
@@ -24,13 +22,14 @@ import {AppProfile} from '../src/app-profile.js';
 import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
-import {Table, Policy} from '../src/table.js';
+import {Table} from '../src/table.js';
+import {RawFilter} from '../src/filter';
 
 const PREFIX = 'gcloud-tests-';
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
-  const INSTANCE: any = bigtable.instance(generateId('instance'));
+  const INSTANCE = bigtable.instance(generateId('instance'));
   const TABLE = INSTANCE.table(generateId('table'));
   const APP_PROFILE_ID = generateId('appProfile');
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
@@ -60,11 +59,11 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    const [instances] = await (bigtable as any).getInstances();
+    const [instances] = await bigtable.getInstances();
     const testInstances = instances
       .filter(i => i.id.match(PREFIX))
       .filter(i => {
-        const timeCreated = i.metadata.labels.time_created;
+        const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
         // Only delete stale resources.
         const oneHourAgo = new Date(Date.now() - 3600000);
         return !timeCreated || timeCreated <= oneHourAgo;
@@ -79,7 +78,7 @@ describe('Bigtable', () => {
 
   describe('instances', () => {
     it('should get a list of instances', async () => {
-      const [instances] = await (bigtable as any).getInstances();
+      const [instances] = await bigtable.getInstances();
       assert(instances.length > 0);
     });
 
@@ -90,7 +89,7 @@ describe('Bigtable', () => {
 
     it('should check if an instance does not exist', async () => {
       const instance = bigtable.instance('fake-instance');
-      const [exists] = await (instance as any).exists();
+      const [exists] = await instance.exists();
       assert.strictEqual(exists, false);
     });
 
@@ -129,7 +128,7 @@ describe('Bigtable', () => {
     it('should set Iam Policy on the instance', async () => {
       const instance = bigtable.instance(generateId('instance'));
       const clusteId = generateId('cluster');
-      const [, operation] = await (instance as any).create({
+      const [, operation] = await instance.create({
         clusters: [
           {
             id: clusteId,
@@ -147,7 +146,7 @@ describe('Bigtable', () => {
       const [updatedPolicy] = await instance.setIamPolicy(policy);
       assert.notStrictEqual(updatedPolicy, null);
 
-      await (instance as any).delete();
+      await instance.delete();
     });
   });
 
@@ -199,10 +198,10 @@ describe('Bigtable', () => {
       await APP_PROFILE.setMetadata(options);
       const [updatedAppProfile] = await APP_PROFILE.get();
       assert.strictEqual(
-        updatedAppProfile.metadata.description,
+        updatedAppProfile.metadata!.description,
         options.description
       );
-      assert.deepStrictEqual(updatedAppProfile.metadata.singleClusterRouting, {
+      assert.deepStrictEqual(updatedAppProfile.metadata!.singleClusterRouting, {
         clusterId: CLUSTER_ID,
         allowTransactionalWrites: true,
       });
@@ -210,7 +209,7 @@ describe('Bigtable', () => {
   });
 
   describe('clusters', () => {
-    let CLUSTER;
+    let CLUSTER: Cluster;
 
     beforeEach(() => {
       CLUSTER = INSTANCE.cluster(CLUSTER_ID);
@@ -254,7 +253,7 @@ describe('Bigtable', () => {
     });
 
     it('should retrieve a list of tables in stream mode', done => {
-      const tables: any[] = [];
+      const tables: Table[] = [];
       INSTANCE.getTablesStream()
         .on('error', done)
         .on('data', table => {
@@ -330,7 +329,7 @@ describe('Bigtable', () => {
         families: ['test'],
       };
       const [table] = await INSTANCE.createTable(name, options);
-      assert(table.metadata.columnFamilies.test);
+      assert(table.metadata!.columnFamilies!.test);
     });
 
     it('should create a table if autoCreate is true', async () => {
@@ -348,7 +347,7 @@ describe('Bigtable', () => {
 
     it('should return error for checkConsistency of invalid token', done => {
       TABLE.checkConsistency('dummy-token', err => {
-        assert.strictEqual(err.code, 3);
+        assert.strictEqual(err!.code, 3);
         done();
       });
     });
@@ -375,7 +374,7 @@ describe('Bigtable', () => {
 
   describe('column families', () => {
     const FAMILY_ID = 'presidents';
-    let FAMILY;
+    let FAMILY: Family;
 
     before(async () => {
       FAMILY = TABLE.family(FAMILY_ID);
@@ -466,16 +465,16 @@ describe('Bigtable', () => {
     });
 
     it('should update a column family', async () => {
-      const rule: any = {
+      const rule = {
         age: {
           seconds: 10000,
           nanos: 10000,
         },
       };
       const [metadata] = await FAMILY.setMetadata({rule});
-      const maxAge = metadata.gcRule.maxAge;
-      assert.strictEqual(maxAge.seconds, rule.age.seconds.toString());
-      assert.strictEqual(maxAge.nanas, rule.age.nanas);
+      const maxAge = metadata.gcRule!.maxAge;
+      assert.strictEqual(maxAge!.seconds, rule.age.seconds.toString());
+      assert.strictEqual(maxAge!.nanos, rule.age.nanos);
     });
 
     it('should delete a column family', async () => {
@@ -617,7 +616,7 @@ describe('Bigtable', () => {
 
       it('should check and mutate a row', async () => {
         const row = TABLE.row('gwashington');
-        const filter = {
+        const filter: RawFilter = {
           family: 'follows',
           value: 'alincoln',
         };
@@ -640,7 +639,7 @@ describe('Bigtable', () => {
       });
 
       it('should get rows via stream', done => {
-        const rows: any = [];
+        const rows: Row[] = [];
         TABLE.createReadStream()
           .on('error', done)
           .on('data', row => {
@@ -654,7 +653,7 @@ describe('Bigtable', () => {
       });
 
       it('should should cancel request if stream ended early', done => {
-        const rows: any = [];
+        const rows: Row[] = [];
         const stream = TABLE.createReadStream()
           .on('error', done)
           .on('data', row => {
@@ -722,10 +721,10 @@ describe('Bigtable', () => {
       });
 
       it('should get sample row keys via stream', done => {
-        const keys: any = [];
+        const keys: string[] = [];
         TABLE.sampleRowKeysStream()
           .on('error', done)
-          .on('data', rowKey => {
+          .on('data', (rowKey: string) => {
             keys.push(rowKey);
           })
           .on('end', () => {
@@ -764,7 +763,7 @@ describe('Bigtable', () => {
           },
         ];
         await TABLE.insert(entries);
-        const rows: any = [];
+        const rows: Row[] = [];
         await new Promise((resolve, reject) => {
           const stream = TABLE.createReadStream()
             .on('error', reject)
@@ -935,7 +934,8 @@ describe('Bigtable', () => {
           rows.forEach(row => {
             const follows = row.data.follows;
             Object.keys(follows).forEach(column => {
-              follows[column].forEach(cell => {
+              // tslint:disable-next-line no-any
+              follows[column].forEach((cell: any) => {
                 assert.deepStrictEqual(cell.labels, [filter.label]);
               });
             });
@@ -1092,6 +1092,6 @@ describe('Bigtable', () => {
   });
 });
 
-function generateId(resourceType) {
+function generateId(resourceType: string) {
   return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
 }
