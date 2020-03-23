@@ -10,7 +10,7 @@
     "document-snippets/*.js"
   ],
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "dependencies": {
     "@google-cloud/bigtable": "^2.3.2",
