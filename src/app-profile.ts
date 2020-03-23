@@ -461,7 +461,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       'allowTransactionalWrites',
     ];
     fieldsForMask.forEach(field => {
-      if (reqOpts.appProfile![field]) {
+      if ((reqOpts.appProfile as {[index: string]: string})![field]) {
         reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });

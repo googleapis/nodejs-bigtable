@@ -18,6 +18,7 @@
   "license": "Apache-2.0",
   "author": "Google Inc.",
   "main": "build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "files": [
     "build/protos",
     "build/src",

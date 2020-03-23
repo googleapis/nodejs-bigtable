@@ -18,17 +18,20 @@ import {describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
-import {PassThrough} from 'stream';
+import {PassThrough, Readable, Writable, Duplex} from 'stream';
 import * as through from 'through2';
 import {ServiceError} from '@grpc/grpc-js';
 import {DecoratedStatus} from '../src/decorateStatus';
 
+import * as inst from '../src/instance';
 import {ChunkTransformer} from '../src/chunktransformer.js';
 import {Family} from '../src/family.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 import * as tblTypes from '../src/table';
 import * as ds from '../src/decorateStatus.js';
+import {Bigtable} from '../src';
+import {EventEmitter} from 'events';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -69,7 +72,11 @@ FakeRow.formatChunks_ = sinon.spy(chunks => {
 
 // tslint:disable-next-line variable-name
 const FakeChunkTransformer = createFake(ChunkTransformer);
-FakeChunkTransformer.prototype._transform = function(rows, enc, next) {
+FakeChunkTransformer.prototype._transform = function(
+  rows: Row[],
+  enc: {},
+  next: Function
+) {
   rows.forEach(row => this.push(row));
   next();
 };
@@ -93,15 +100,15 @@ const FakeFilter = {
   parse: sinon.spy(value => {
     return value;
   }),
-  createRange: (...args) => {
+  createRange: (...args: Array<{}>) => {
     return {};
   },
 };
 
 describe('Bigtable/Table', () => {
   const TABLE_ID = 'my-table';
-  let INSTANCE;
-  let TABLE_NAME;
+  let INSTANCE: inst.Instance;
+  let TABLE_NAME: string;
 
   // tslint:disable-next-line variable-name
   let Table: typeof tblTypes.Table;
@@ -122,20 +129,21 @@ describe('Bigtable/Table', () => {
 
   beforeEach(() => {
     INSTANCE = {
-      bigtable: {},
+      bigtable: {} as Bigtable,
       name: 'a/b/c/d',
-    };
+    } as inst.Instance;
     TABLE_NAME = INSTANCE.name + '/tables/' + TABLE_ID;
     table = new Table(INSTANCE, TABLE_ID);
   });
 
   afterEach(() => {
     Object.keys(FakeMutation).forEach(spy => {
-      if (FakeMutation[spy].reset) {
-        FakeMutation[spy].resetHistory();
+      // tslint:disable-next-line:no-any
+      if ((FakeMutation as any)[spy].reset) {
+        // tslint:disable-next-line:no-any
+        (FakeMutation as any)[spy].resetHistory();
       }
     });
-
     FakeFilter.parse.resetHistory();
     sandbox.restore();
   });
@@ -204,7 +212,11 @@ describe('Bigtable/Table', () => {
     it('should call createTable from instance', done => {
       const options = {};
 
-      table.instance.createTable = (id, options_, callback) => {
+      table.instance.createTable = (
+        id: string,
+        options_: {},
+        callback: Function
+      ) => {
         assert.strictEqual(id, table.id);
         assert.strictEqual(options_, options);
         callback(); // done()
@@ -214,7 +226,11 @@ describe('Bigtable/Table', () => {
     });
 
     it('should not require options', done => {
-      table.instance.createTable = (id, options, callback) => {
+      table.instance.createTable = (
+        id: string,
+        options: {},
+        callback: Function
+      ) => {
         assert.deepStrictEqual(options, {});
         callback(); // done()
       };
@@ -297,7 +313,8 @@ describe('Bigtable/Table', () => {
     });
 
     it('should provide the proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'modifyColumnFamilies');
 
@@ -319,7 +336,8 @@ describe('Bigtable/Table', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -340,7 +358,8 @@ describe('Bigtable/Table', () => {
         return convertedRule;
       }));
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         const modification = config.reqOpts.modifications[0];
 
         assert.strictEqual(modification.create.gcRule, convertedRule);
@@ -356,17 +375,18 @@ describe('Bigtable/Table', () => {
     it('should return an error to the callback', done => {
       const error = new Error('err');
       const response = {};
-
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(error, response);
       };
-
-      table.createFamily(COLUMN_ID, (err, family, apiResponse) => {
-        assert.strictEqual(error, err);
-        assert.strictEqual(family, null);
-        assert.strictEqual(response, apiResponse);
-        done();
-      });
+      table.createFamily(
+        COLUMN_ID,
+        (err: Error, family: Family, apiResponse: {}) => {
+          assert.strictEqual(error, err);
+          assert.strictEqual(family, null);
+          assert.strictEqual(response, apiResponse);
+          done();
+        }
+      );
     });
 
     it('should return a Family object', done => {
@@ -374,29 +394,30 @@ describe('Bigtable/Table', () => {
         name: 'response-family-name',
       };
       const fakeFamily = {} as Family;
-
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(null, response);
       };
-
       sandbox.stub(table, 'family').callsFake(id => {
         assert.strictEqual(id, FAMILY_ID);
         return fakeFamily;
       });
-
-      table.createFamily(FAMILY_ID, (err, family, apiResponse) => {
-        assert.ifError(err);
-        assert.strictEqual(family, fakeFamily);
-        assert.strictEqual(family.metadata, response);
-        assert.strictEqual(apiResponse, response);
-        done();
-      });
+      table.createFamily(
+        FAMILY_ID,
+        (err: Error, family: Family, apiResponse: {}) => {
+          assert.ifError(err);
+          assert.strictEqual(family, fakeFamily);
+          assert.strictEqual(family.metadata, response);
+          assert.strictEqual(apiResponse, response);
+          done();
+        }
+      );
     });
   });
 
   describe('createReadStream', () => {
     it('should provide the proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'readRows');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
@@ -410,20 +431,20 @@ describe('Bigtable/Table', () => {
     it('should use an appProfileId', done => {
       const bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-
-      bigtableInstance.request = config => {
+      // tslint:disable-next-line:no-any
+      bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
           bigtableInstance.appProfileId
         );
         done();
       };
-
       table.createReadStream();
     });
 
     it('should abort request on end', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         const requestStream = new PassThrough({
           objectMode: true,
         });
@@ -443,7 +464,8 @@ describe('Bigtable/Table', () => {
       it('should accept gaxOptions', done => {
         const gaxOptions = {};
 
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           assert.strictEqual(config.gaxOpts, gaxOptions);
           done();
         };
@@ -466,7 +488,8 @@ describe('Bigtable/Table', () => {
           return fakeRange;
         }));
 
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.rows.rowRanges[0], fakeRange);
           assert.strictEqual(formatSpy.callCount, 1);
           assert.deepStrictEqual(formatSpy.getCall(0).args, [
@@ -491,7 +514,8 @@ describe('Bigtable/Table', () => {
           return convertedKeys[keyIndex];
         }));
 
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.rows.rowKeys, convertedKeys);
           assert.strictEqual(convertSpy.callCount, 2);
           assert.strictEqual(convertSpy.getCall(0).args[0], options.keys[0]);
@@ -529,9 +553,10 @@ describe('Bigtable/Table', () => {
 
         const formatSpy = (FakeFilter.createRange = sinon.spy(() => {
           return fakeRanges[formatSpy.callCount - 1];
-        }));
+        })) as sinon.SinonSpy;
 
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.rows.rowRanges, fakeRanges);
           assert.strictEqual(formatSpy.callCount, 2);
           assert.deepStrictEqual(formatSpy.getCall(0).args, [
@@ -546,7 +571,6 @@ describe('Bigtable/Table', () => {
           ]);
           done();
         };
-
         table.createReadStream(options);
       });
 
@@ -554,14 +578,13 @@ describe('Bigtable/Table', () => {
         const options = {
           filter: [{}],
         };
-
         const fakeFilter = {};
         // tslint:disable-next-line no-any
         const parseSpy = ((FakeFilter as any).parse = sinon.spy(() => {
           return fakeFilter;
         }));
-
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           assert.strictEqual(config.reqOpts.filter, fakeFilter);
           assert.strictEqual(parseSpy.callCount, 1);
           assert.strictEqual(
@@ -571,7 +594,6 @@ describe('Bigtable/Table', () => {
           );
           done();
         };
-
         table.createReadStream(options);
       });
 
@@ -579,12 +601,11 @@ describe('Bigtable/Table', () => {
         const options = {
           limit: 10,
         };
-
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           assert.strictEqual(config.reqOpts.rowsLimit, options.limit);
           done();
         };
-
         table.createReadStream(options);
       });
 
@@ -702,7 +723,8 @@ describe('Bigtable/Table', () => {
             .stub(FakeFilter, 'createRange')
             .returns(fakeRange);
 
-          table.bigtable.request = config => {
+          // tslint:disable-next-line:no-any
+          table.bigtable.request = (config: any) => {
             assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
             assert.deepStrictEqual(config.reqOpts.rows.rowRanges, [fakeRange]);
 
@@ -739,7 +761,8 @@ describe('Bigtable/Table', () => {
               return ranges[callIndex];
             });
 
-          table.bigtable.request = config => {
+          // tslint:disable-next-line:no-any
+          table.bigtable.request = (config: any) => {
             assert.strictEqual(prefixSpy.callCount, 2);
 
             prefixes.forEach((prefix, i) => {
@@ -790,14 +813,14 @@ describe('Bigtable/Table', () => {
           return {} as Row;
         });
         FakeChunkTransformer.prototype._transform = function(
-          chunks,
-          enc,
-          next
+          chunks: Array<{}>,
+          enc: {},
+          next: Function
         ) {
           formattedRows.forEach(row => this.push(row));
           next();
         };
-        FakeChunkTransformer.prototype._flush = cb => {
+        FakeChunkTransformer.prototype._flush = (cb: Function) => {
           cb();
         };
 
@@ -824,32 +847,27 @@ describe('Bigtable/Table', () => {
         table
           .createReadStream()
           .on('error', done)
-          .on('data', row => {
+          .on('data', (row: Row) => {
             rows.push(row);
           })
           .on('end', () => {
             const rowSpy = table.row;
-
             assert.strictEqual(rows.length, formattedRows.length);
             assert.strictEqual(rowSpy.callCount, formattedRows.length);
-
             assert.strictEqual(rowSpy.getCall(0).args[0], formattedRows[0].key);
             assert.strictEqual(rows[0].data, formattedRows[0].data);
-
             assert.strictEqual(rowSpy.getCall(1).args[0], formattedRows[1].key);
             assert.strictEqual(rows[1].data, formattedRows[1].data);
-
             done();
           });
       });
 
       it('should allow a stream to end early', done => {
         const rows: Row[] = [];
-
         const stream = table
           .createReadStream()
           .on('error', noop)
-          .on('data', row => {
+          .on('data', (row: Row) => {
             rows.push(row);
             stream.end();
           })
@@ -907,7 +925,7 @@ describe('Bigtable/Table', () => {
         };
         table
           .createReadStream()
-          .on('error', err => {
+          .on('error', (err: Error) => {
             assert.strictEqual(error, err);
             done();
           })
@@ -926,12 +944,16 @@ describe('Bigtable/Table', () => {
 
           return stream;
         };
-        FakeChunkTransformer.prototype._transform = (chunks, enc, next) => {
+        FakeChunkTransformer.prototype._transform = (
+          chunks: {},
+          enc: {},
+          next: Function
+        ) => {
           next(error);
         };
         table
           .createReadStream()
-          .on('error', err => {
+          .on('error', (err: Error) => {
             assert.strictEqual(error, err);
             done();
           })
@@ -949,12 +971,12 @@ describe('Bigtable/Table', () => {
 
           return stream;
         };
-        FakeChunkTransformer.prototype._flush = next => {
+        FakeChunkTransformer.prototype._flush = (next: Function) => {
           next(error);
         };
         table
           .createReadStream()
-          .on('error', err => {
+          .on('error', (err: Error) => {
             assert.strictEqual(error, err);
             done();
           })
@@ -963,25 +985,30 @@ describe('Bigtable/Table', () => {
     });
 
     describe('retries', () => {
-      let callCreateReadStream;
-      let emitters; // = [stream => { stream.push([{ key: 'a' }]);
+      let callCreateReadStream: Function;
+      let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
       // stream.end(); }, ...];
-      let makeRetryableError;
-      let reqOptsCalls;
-      let setTimeoutSpy;
+      let makeRetryableError: Function;
+      // tslint:disable-next-line:no-any
+      let reqOptsCalls: any[];
+      let setTimeoutSpy: sinon.SinonSpy;
 
       beforeEach(() => {
-        FakeChunkTransformer.prototype._transform = function(rows, enc, next) {
+        FakeChunkTransformer.prototype._transform = function(
+          rows: Row[],
+          enc: {},
+          next: Function
+        ) {
           rows.forEach(row => this.push(row));
           this.lastRowKey = rows[rows.length - 1].key;
           next();
         };
 
-        FakeChunkTransformer.prototype._flush = cb => {
+        FakeChunkTransformer.prototype._flush = (cb: Function) => {
           cb();
         };
 
-        callCreateReadStream = (options, verify) => {
+        callCreateReadStream = (options: {}, verify: Function) => {
           table
             .createReadStream(options)
             .on('end', verify)
@@ -998,21 +1025,24 @@ describe('Bigtable/Table', () => {
         };
 
         sandbox.stub(FakeFilter, 'createRange').callsFake((start, end) => {
-          // tslint:disable-next-line no-any
+          // tslint:disable-next-line:no-any
           const range: any = {};
           if (start) {
-            range.start = start.value || start;
+            // tslint:disable-next-line:no-any
+            range.start = (start as any).value || start;
             range.startInclusive =
-              typeof start === 'object' ? start.inclusive : true;
+              // tslint:disable-next-line:no-any
+              typeof start === 'object' ? (start as any).inclusive : true;
           }
           if (end) {
-            range.end = end.value || end;
+            // tslint:disable-next-line:no-any
+            range.end = (end as any).value || end;
           }
           return range;
         });
 
         // tslint:disable-next-line no-any
-        (FakeMutation as any).convertToBytes = value => {
+        (FakeMutation as any).convertToBytes = (value: {}) => {
           return Buffer.from(value);
         };
 
@@ -1022,7 +1052,8 @@ describe('Bigtable/Table', () => {
           .stub(global, 'setTimeout')
           .callsFake(fn => (fn as Function)());
 
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           reqOptsCalls.push(config.reqOpts);
 
           const stream = new PassThrough({
@@ -1034,9 +1065,9 @@ describe('Bigtable/Table', () => {
 
           setImmediate(() => {
             stream.emit('request');
-            emitters.shift()(stream);
+            // tslint:disable-next-line:no-any
+            (emitters!.shift() as any)(stream);
           });
-
           return stream;
         };
       });
@@ -1049,13 +1080,13 @@ describe('Bigtable/Table', () => {
 
       it('should do a retry the stream is interrupted', done => {
         emitters = [
-          stream => {
+          (((stream: Writable) => {
             stream.emit('error', makeRetryableError());
             stream.end();
-          },
-          stream => {
+          }) as {}) as EventEmitter,
+          (((stream: Writable) => {
             stream.end();
-          },
+          }) as {}) as EventEmitter,
         ];
         callCreateReadStream(null, () => {
           assert.strictEqual(reqOptsCalls.length, 2);
@@ -1065,14 +1096,14 @@ describe('Bigtable/Table', () => {
 
       it('should not retry CANCELLED errors', done => {
         emitters = [
-          stream => {
+          (((stream: Writable) => {
             const cancelledError = new Error(
               'do not retry me!'
             ) as ServiceError;
             cancelledError.code = 1;
             stream.emit('error', cancelledError);
             stream.end();
-          },
+          }) as {}) as EventEmitter,
         ];
         callCreateReadStream(null, () => {
           assert.strictEqual(reqOptsCalls.length, 1);
@@ -1082,13 +1113,14 @@ describe('Bigtable/Table', () => {
 
       it('should have a range which starts after the last read key', done => {
         emitters = [
-          stream => {
+          // tslint:disable-next-line:no-any
+          (((stream: any) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          },
-          stream => {
+          }) as {}) as EventEmitter,
+          (((stream: Writable) => {
             stream.end();
-          },
+          }) as {}) as EventEmitter,
         ];
 
         callCreateReadStream(null, () => {
@@ -1102,13 +1134,13 @@ describe('Bigtable/Table', () => {
 
       it('should move the active range start to after the last read key', done => {
         emitters = [
-          stream => {
+          (((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          },
-          stream => {
+          }) as {}) as EventEmitter,
+          (((stream: Writable) => {
             stream.end();
-          },
+          }) as {}) as EventEmitter,
         ];
 
         callCreateReadStream({ranges: [{start: 'a'}]}, () => {
@@ -1124,15 +1156,15 @@ describe('Bigtable/Table', () => {
 
       it('should remove ranges which were already read', done => {
         emitters = [
-          stream => {
+          (((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
             stream.emit('error', makeRetryableError());
-          },
-          stream => {
+          }) as {}) as EventEmitter,
+          (((stream: Duplex) => {
             stream.push([{key: 'c'}]);
             stream.end();
-          },
+          }) as {}) as EventEmitter,
         ];
 
         const options = {
@@ -1156,13 +1188,13 @@ describe('Bigtable/Table', () => {
 
       it('should remove the keys which were already read', done => {
         emitters = [
-          stream => {
+          (((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          },
-          stream => {
+          }) as {}) as EventEmitter,
+          (((stream: Duplex) => {
             stream.end([{key: 'c'}]);
-          },
+          }) as {}) as EventEmitter,
         ];
 
         callCreateReadStream({keys: ['a', 'b']}, () => {
@@ -1174,14 +1206,14 @@ describe('Bigtable/Table', () => {
 
       it('should remove `keys` if they were all read', done => {
         emitters = [
-          stream => {
+          (((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          },
-          stream => {
+          }) as {}) as EventEmitter,
+          (((stream: Duplex) => {
             stream.push([{key: 'c'}]);
             stream.end();
-          },
+          }) as {}) as EventEmitter,
         ];
 
         callCreateReadStream({keys: ['a']}, () => {
@@ -1195,7 +1227,8 @@ describe('Bigtable/Table', () => {
 
   describe('delete', () => {
     it('should make the correct request', done => {
-      table.bigtable.request = (config, callback) => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'deleteTable');
 
@@ -1214,7 +1247,8 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -1227,7 +1261,8 @@ describe('Bigtable/Table', () => {
     const prefix = 'a';
 
     it('should provide the proper request options', done => {
-      table.bigtable.request = (config, callback) => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'dropRowRange');
         assert.strictEqual(config.reqOpts.name, TABLE_NAME);
@@ -1241,7 +1276,8 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -1256,7 +1292,8 @@ describe('Bigtable/Table', () => {
         () => fakePrefix
       ));
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.rowKeyPrefix, fakePrefix);
         assert.strictEqual(spy.callCount, 1);
         // tslint:disable-next-line no-any
@@ -1276,7 +1313,8 @@ describe('Bigtable/Table', () => {
 
   describe('exists', () => {
     it('should not require gaxOptions', done => {
-      table.getMetadata = options_ => {
+      // tslint:disable-next-line:no-any
+      table.getMetadata = (options_: any) => {
         assert.deepStrictEqual(options_.gaxOptions, {});
         done();
       };
@@ -1285,7 +1323,8 @@ describe('Bigtable/Table', () => {
 
     it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
-      table.getMetadata = options_ => {
+      // tslint:disable-next-line:no-any
+      table.getMetadata = (options_: any) => {
         assert.strictEqual(options_.gaxOptions, gaxOptions);
         done();
       };
@@ -1294,7 +1333,8 @@ describe('Bigtable/Table', () => {
 
     it('should pass view = name to getMetadata', done => {
       const gaxOptions = {};
-      table.getMetadata = options_ => {
+      // tslint:disable-next-line:no-any
+      table.getMetadata = (options_: any) => {
         assert.strictEqual(options_.view, 'name');
         done();
       };
@@ -1304,10 +1344,10 @@ describe('Bigtable/Table', () => {
     it('should return false if error code is 5', done => {
       const error = new Error('Error.') as ServiceError;
       error.code = 5;
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
-      table.exists((err, exists) => {
+      table.exists((err: Error, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, false);
         done();
@@ -1318,20 +1358,20 @@ describe('Bigtable/Table', () => {
       // tslint:disable-next-line no-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
-      table.exists(err => {
+      table.exists((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
     });
 
     it('should return true if no error', done => {
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(null, {});
       };
-      table.exists((err, exists) => {
+      table.exists((err: Error, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, true);
         done();
@@ -1361,7 +1401,8 @@ describe('Bigtable/Table', () => {
       const options = {
         gaxOptions: {},
       };
-      table.getMetadata = options_ => {
+      // tslint:disable-next-line:no-any
+      table.getMetadata = (options_: any) => {
         assert.strictEqual(options_.gaxOptions, options.gaxOptions);
         done();
       };
@@ -1369,7 +1410,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should not require an options object', done => {
-      table.getMetadata = options => {
+      table.getMetadata = (options: {}) => {
         assert.deepStrictEqual(options, {gaxOptions: undefined});
         done();
       };
@@ -1385,11 +1426,12 @@ describe('Bigtable/Table', () => {
         gaxOptions: {},
       };
 
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
 
-      table.create = (options_, callback) => {
+      // tslint:disable-next-line:no-any
+      table.create = (options_: any, callback: Function) => {
         assert.strictEqual(options_.gaxOptions, options.gaxOptions);
         callback(); // done()
       };
@@ -1406,7 +1448,7 @@ describe('Bigtable/Table', () => {
         autoCreate: true,
       };
 
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
 
@@ -1414,7 +1456,7 @@ describe('Bigtable/Table', () => {
         throw new Error('Should not create.');
       };
 
-      table.get(options, err => {
+      table.get(options, (err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -1424,7 +1466,7 @@ describe('Bigtable/Table', () => {
       const error = new Error('Error.') as ServiceError;
       error.code = 5;
 
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
 
@@ -1432,7 +1474,7 @@ describe('Bigtable/Table', () => {
         throw new Error('Should not create.');
       };
 
-      table.get(err => {
+      table.get((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -1440,12 +1482,10 @@ describe('Bigtable/Table', () => {
 
     it('should return an error from getMetadata', done => {
       const error = new Error('Error.');
-
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
-
-      table.get(err => {
+      table.get((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -1453,12 +1493,10 @@ describe('Bigtable/Table', () => {
 
     it('should return self and API response', done => {
       const apiResponse = {};
-
-      table.getMetadata = (gaxOptions, callback) => {
+      table.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(null, apiResponse);
       };
-
-      table.get((err, table_, apiResponse_) => {
+      table.get((err: Error, table_: {}, apiResponse_: {}) => {
         assert.ifError(err);
         assert.strictEqual(table_, table);
         assert.strictEqual(apiResponse_, apiResponse);
@@ -1469,7 +1507,8 @@ describe('Bigtable/Table', () => {
 
   describe('getIamPolicy', () => {
     it('should provide the proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getIamPolicy');
         assert.strictEqual(config.reqOpts.resource, table.name);
@@ -1485,7 +1524,8 @@ describe('Bigtable/Table', () => {
       const gaxOptions = {};
       const options = {gaxOptions, requestedPolicyVersion};
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         assert.strictEqual(
           config.reqOpts.options.requestedPolicyVersion,
@@ -1498,17 +1538,17 @@ describe('Bigtable/Table', () => {
 
     it('should return error', done => {
       const error = new Error('error');
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
-      table.getIamPolicy(err => {
+      table.getIamPolicy((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
     });
 
     it('should call decodePolicyEtag', () => {
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(null, {});
       };
       const spy = sandbox.stub(Table, 'decodePolicyEtag');
@@ -1522,7 +1562,8 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.getMetadata = options => {
+      // tslint:disable-next-line:no-any
+      table.getMetadata = (options: any) => {
         assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
       };
@@ -1533,12 +1574,10 @@ describe('Bigtable/Table', () => {
     it('should return an error to the callback', done => {
       const error = new Error('err');
       const response = {};
-
-      table.getMetadata = (options, callback) => {
+      table.getMetadata = (options: {}, callback: Function) => {
         callback(error, response);
       };
-
-      table.getReplicationStates(err => {
+      table.getReplicationStates((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -1551,29 +1590,27 @@ describe('Bigtable/Table', () => {
           cluster2: 'INITIALIZING',
         },
       };
-
-      table.getMetadata = (options, callback) => {
+      table.getMetadata = (options: {}, callback: Function) => {
         callback(null, response);
       };
-
-      table.getReplicationStates((err, clusterStates) => {
-        assert.ifError(err);
-
-        assert(clusterStates instanceof Map);
-        assert.strictEqual(clusterStates.size, 2);
-        assert.strictEqual(clusterStates.get('cluster1'), 'READY');
-        assert.strictEqual(clusterStates.get('cluster2'), 'INITIALIZING');
-
-        done();
-      });
+      table.getReplicationStates(
+        (err: Error, clusterStates: Map<string, string>) => {
+          assert.ifError(err);
+          assert(clusterStates instanceof Map);
+          assert.strictEqual(clusterStates.size, 2);
+          assert.strictEqual(clusterStates.get('cluster1'), 'READY');
+          assert.strictEqual(clusterStates.get('cluster2'), 'INITIALIZING');
+          done();
+        }
+      );
     });
   });
 
   describe('getFamilies', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      table.getMetadata = options => {
+      // tslint:disable-next-line:no-any
+      table.getMetadata = (options: any) => {
         assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
       };
@@ -1584,12 +1621,10 @@ describe('Bigtable/Table', () => {
     it('should return an error to the callback', done => {
       const error = new Error('err');
       const response = {};
-
-      table.getMetadata = (options, callback) => {
+      table.getMetadata = (options: {}, callback: Function) => {
         callback(error, response);
       };
-
-      table.getFamilies(err => {
+      table.getFamilies((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -1608,24 +1643,19 @@ describe('Bigtable/Table', () => {
 
       const fakeFamily = {} as Family;
 
-      table.getMetadata = (options, callback) => {
+      table.getMetadata = (options: {}, callback: Function) => {
         callback(null, response);
       };
-
       sandbox.stub(table, 'family').callsFake(id => {
         assert.strictEqual(id, 'test');
         return fakeFamily;
       });
-
-      table.getFamilies((err, families, apiResponse) => {
+      table.getFamilies((err: Error, families: Family[], apiResponse: {}) => {
         assert.ifError(err);
-
         const family = families[0];
         assert.strictEqual(family, fakeFamily);
         assert.strictEqual(family.metadata, metadata);
-
         assert.strictEqual(apiResponse, response.columnFamilies);
-
         done();
       });
     });
@@ -1635,11 +1665,11 @@ describe('Bigtable/Table', () => {
     it('should return the error to the callback', done => {
       const error = new Error('err');
 
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
 
-      table.waitForReplication(err => {
+      table.waitForReplication((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -1648,11 +1678,11 @@ describe('Bigtable/Table', () => {
     it('should call checkConsistency', done => {
       const consistencyToken = 'sample-token12345';
 
-      table.generateConsistencyToken = callback => {
+      table.generateConsistencyToken = (callback: Function) => {
         callback(null, consistencyToken);
       };
 
-      table.checkConsistency = (token, callback) => {
+      table.checkConsistency = (token: string, callback: Function) => {
         assert.strictEqual(token, consistencyToken);
         callback(null, true);
       };
@@ -1661,10 +1691,10 @@ describe('Bigtable/Table', () => {
     });
 
     describe('retries', () => {
-      let clock;
-      let setTimeoutSpy;
-      let clearTimeoutSpy;
-      let checkConsistencySpy;
+      let clock: sinon.SinonFakeTimers;
+      let setTimeoutSpy: sinon.SinonSpy;
+      let clearTimeoutSpy: sinon.SinonSpy;
+      let checkConsistencySpy: sinon.SinonSpy;
       // tslint:disable-next-line no-any
       let responses: any[] = [];
 
@@ -1676,7 +1706,7 @@ describe('Bigtable/Table', () => {
         clearTimeoutSpy = sinon.spy(global, 'clearTimeout');
         checkConsistencySpy = sinon.spy(table, 'checkConsistency');
 
-        table.bigtable.request = (config, callback) => {
+        table.bigtable.request = (config: {}, callback: Function) => {
           responses.shift()(config, callback);
         };
       });
@@ -1687,12 +1717,13 @@ describe('Bigtable/Table', () => {
 
       it('should return true if token is consistent', done => {
         responses = [
-          (config, callback) =>
+          (config: {}, callback: Function) =>
             callback(null, {consistencyToken: 'sample-token12345'}),
-          (config, callback) => callback(null, {consistent: true}),
+          (config: {}, callback: Function) =>
+            callback(null, {consistent: true}),
         ];
 
-        table.waitForReplication((err, res) => {
+        table.waitForReplication((err: Error, res: {}) => {
           // Checks that a 10 minute timer was set.
           setTimeoutSpy.calledWith(sinon.match.func, 10 * 60 * 1000);
 
@@ -1712,13 +1743,15 @@ describe('Bigtable/Table', () => {
 
       it('should retry checkConsistency', done => {
         responses = [
-          (config, callback) =>
+          (config: {}, callback: Function) =>
             callback(null, {consistencyToken: 'sample-token12345'}),
-          (config, callback) => callback(null, {consistent: false}),
-          (config, callback) => callback(null, {consistent: true}),
+          (config: {}, callback: Function) =>
+            callback(null, {consistent: false}),
+          (config: {}, callback: Function) =>
+            callback(null, {consistent: true}),
         ];
 
-        table.waitForReplication((err, response) => {
+        table.waitForReplication((err: Error, response: {}) => {
           // Checks that a 10 minute timer was set.
           setTimeoutSpy.calledWith(sinon.match.func, 10 * 60 * 1000);
 
@@ -1742,7 +1775,8 @@ describe('Bigtable/Table', () => {
       });
 
       it('should return false after 10 min if inconsistency repeats', done => {
-        table.bigtable.request = (config, callback) => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any, callback: Function) => {
           if (config.method === 'generateConsistencyToken') {
             return callback(null, {consistencyToken: 'sample-token12345'});
           }
@@ -1751,7 +1785,7 @@ describe('Bigtable/Table', () => {
           }
         };
 
-        table.waitForReplication((err, response) => {
+        table.waitForReplication((err: Error, response: {}) => {
           assert.ifError(err);
           assert.ok(setTimeoutSpy.called);
           assert.strictEqual(response, false);
@@ -1765,12 +1799,12 @@ describe('Bigtable/Table', () => {
         const error = new Error('consistency-check error');
 
         responses = [
-          (config, callback) =>
+          (config: {}, callback: Function) =>
             callback(null, {consistencyToken: 'sample-token12345'}),
-          (config, callback) => callback(error),
+          (config: {}, callback: Function) => callback(error),
         ];
 
-        table.waitForReplication((err, res) => {
+        table.waitForReplication((err: Error, res: {}) => {
           assert.ok(clearTimeoutSpy.called);
           assert.strictEqual(checkConsistencySpy.callCount, 1);
           assert.strictEqual(err, error);
@@ -1783,7 +1817,8 @@ describe('Bigtable/Table', () => {
 
   describe('generateConsistencyToken', () => {
     it('should provide proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'generateConsistencyToken');
         assert.strictEqual(config.reqOpts.name, table.name);
@@ -1798,11 +1833,11 @@ describe('Bigtable/Table', () => {
         consistencyToken: cToken,
       };
 
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(null, response);
       };
 
-      table.generateConsistencyToken((err, token) => {
+      table.generateConsistencyToken((err: Error, token: string) => {
         assert.ifError(err);
         assert.strictEqual(token, cToken);
         done();
@@ -1811,11 +1846,11 @@ describe('Bigtable/Table', () => {
 
     it('should return error', done => {
       const error = new Error('err');
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
 
-      table.generateConsistencyToken(err => {
+      table.generateConsistencyToken((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -1826,7 +1861,8 @@ describe('Bigtable/Table', () => {
     it('should provide the proper request options', done => {
       const cToken = 'consistency-token-123';
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'checkConsistency');
         assert.strictEqual(config.reqOpts.name, table.name);
@@ -1841,11 +1877,11 @@ describe('Bigtable/Table', () => {
       const error = new Error('err');
 
       it('should return the error to the callback', done => {
-        table.bigtable.request = (config, callback) => {
+        table.bigtable.request = (config: {}, callback: Function) => {
           callback(error);
         };
 
-        table.checkConsistency('cToken', err => {
+        table.checkConsistency('cToken', (err: Error) => {
           assert.strictEqual(err, error);
           done();
         });
@@ -1854,11 +1890,11 @@ describe('Bigtable/Table', () => {
 
     describe('success', () => {
       it('should return true if consistent', done => {
-        table.bigtable.request = (config, callback) => {
+        table.bigtable.request = (config: {}, callback: Function) => {
           callback(null, {consistent: true});
         };
 
-        table.checkConsistency('', (err, resp) => {
+        table.checkConsistency('', (err: Error, resp: {}) => {
           assert.ifError(err);
           assert.strictEqual(resp, true);
           done();
@@ -1866,10 +1902,10 @@ describe('Bigtable/Table', () => {
       });
 
       it('should return false if not consistent', done => {
-        table.bigtable.request = (config, callback) => {
+        table.bigtable.request = (config: {}, callback: Function) => {
           callback(null, {consistent: false});
         };
-        table.checkConsistency('', (err, resp) => {
+        table.checkConsistency('', (err: Error, resp: {}) => {
           assert.ifError(err);
           assert.strictEqual(resp, false);
           done();
@@ -1884,14 +1920,15 @@ describe('Bigtable/Table', () => {
       name: 1,
       schema: 2,
       full: 4,
-    };
+    } as {[index: string]: number};
     beforeEach(() => {
       // tslint:disable-next-line no-any
       (Table as any).VIEWS = views;
     });
 
     it('should provide the proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getTable');
 
@@ -1911,7 +1948,8 @@ describe('Bigtable/Table', () => {
         gaxOptions: {},
       };
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, options.gaxOptions);
         done();
       };
@@ -1924,24 +1962,21 @@ describe('Bigtable/Table', () => {
         const options = {
           view,
         };
-
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           assert.strictEqual(config.reqOpts.view, views[view]);
           done();
         };
-
         table.getMetadata(options, assert.ifError);
       });
     });
 
     it('should update the metadata', done => {
       const response = {};
-
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(null, response);
       };
-
-      table.getMetadata((err, metadata) => {
+      table.getMetadata((err: Error, metadata: {}) => {
         assert.ifError(err);
         assert.strictEqual(metadata, response);
         assert.strictEqual(table.metadata, response);
@@ -1951,12 +1986,10 @@ describe('Bigtable/Table', () => {
 
     it('should execute callback with original arguments', done => {
       const args = [{}, {}, {}];
-
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback.apply(null, args);
       };
-
-      table.getMetadata((...args) => {
+      table.getMetadata((...args: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(args), args);
         done();
       });
@@ -1991,7 +2024,7 @@ describe('Bigtable/Table', () => {
       it('should return the rows to the callback', done => {
         const options = {};
 
-        table.getRows(options, (err, rows) => {
+        table.getRows(options, (err: Error, rows: Row[]) => {
           assert.ifError(err);
           assert.deepStrictEqual(rows, fakeRows);
 
@@ -2003,7 +2036,7 @@ describe('Bigtable/Table', () => {
       });
 
       it('should optionally accept options', done => {
-        table.getRows((err, rows) => {
+        table.getRows((err: Error, rows: Row[]) => {
           assert.ifError(err);
           assert.deepStrictEqual(rows, fakeRows);
           done();
@@ -2029,7 +2062,7 @@ describe('Bigtable/Table', () => {
       });
 
       it('should return the error to the callback', done => {
-        table.getRows(err => {
+        table.getRows((err: Error) => {
           assert.strictEqual(err, error);
           done();
         });
@@ -2050,7 +2083,7 @@ describe('Bigtable/Table', () => {
         },
       ];
 
-      table.mutate = (entries, options, callback) => {
+      table.mutate = (entries: Array<{}>, options: {}, callback: Function) => {
         assert.deepStrictEqual(entries[0], {
           key: fakeEntries[0].key,
           data: fakeEntries[0].data,
@@ -2071,12 +2104,11 @@ describe('Bigtable/Table', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      table.mutate = (entries, options) => {
+      // tslint:disable-next-line:no-any
+      table.mutate = (entries: {}, options: any) => {
         assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
       };
-
       table.insert([], gaxOptions, assert.ifError);
     });
   });
@@ -2084,7 +2116,7 @@ describe('Bigtable/Table', () => {
   describe('mutate', () => {
     const entries = [{}, {}];
     const fakeEntries = [{}, {}];
-    let parseSpy;
+    let parseSpy: sinon.SinonSpy;
 
     beforeEach(() => {
       parseSpy = FakeMutation.parse = sinon.spy(value => {
@@ -2096,7 +2128,8 @@ describe('Bigtable/Table', () => {
     it('should provide the proper request options', done => {
       const stream = through.obj();
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'mutateRows');
 
@@ -2119,7 +2152,8 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -2129,15 +2163,14 @@ describe('Bigtable/Table', () => {
     it('should use an appProfileId', done => {
       const bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-
-      bigtableInstance.request = config => {
+      // tslint:disable-next-line:no-any
+      bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
           bigtableInstance.appProfileId
         );
         done();
       };
-
       table.mutate(done);
     });
 
@@ -2146,7 +2179,6 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(FakeMutation.parse.called, true);
         done();
       };
-
       table.mutate(entries, done);
     });
 
@@ -2155,7 +2187,6 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(FakeMutation.parse.called, false);
         done();
       };
-
       table.mutate(entries, {rawMutation: true}, done);
     });
 
@@ -2178,7 +2209,7 @@ describe('Bigtable/Table', () => {
         });
 
         it('should return error', done => {
-          table.mutate(entries, err => {
+          table.mutate(entries, (err: Error) => {
             assert.strictEqual(err, error);
             done();
           });
@@ -2205,7 +2236,7 @@ describe('Bigtable/Table', () => {
 
         it('should return the error to the callback', done => {
           table.maxRetries = 0;
-          table.mutate(entries, err => {
+          table.mutate(entries, (err: Error) => {
             assert.strictEqual(err, error);
             done();
           });
@@ -2251,10 +2282,10 @@ describe('Bigtable/Table', () => {
         });
 
         it('should return a PartialFailureError', done => {
-          table.mutate(entries, err => {
+          table.mutate(entries, (err: Error) => {
             assert.strictEqual(err.name, 'PartialFailureError');
-
-            assert.deepStrictEqual(err.errors, [
+            // tslint:disable-next-line:no-any
+            assert.deepStrictEqual((err as any).errors, [
               Object.assign(
                 {
                   entry: entries[0],
@@ -2312,8 +2343,10 @@ describe('Bigtable/Table', () => {
     });
 
     describe('retries', () => {
-      let fakeStatuses;
-      let entryRequests;
+      // tslint:disable-next-line:no-any
+      let fakeStatuses: any;
+      // tslint:disable-next-line:no-any
+      let entryRequests: any;
 
       beforeEach(() => {
         entryRequests = [];
@@ -2342,7 +2375,8 @@ describe('Bigtable/Table', () => {
           ],
         ];
         sandbox.stub(ds, 'decorateStatus').returns({} as DecoratedStatus);
-        table.bigtable.request = config => {
+        // tslint:disable-next-line:no-any
+        table.bigtable.request = (config: any) => {
           entryRequests.push(config.reqOpts.entries);
           const stream = new PassThrough({
             objectMode: true,
@@ -2395,7 +2429,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.sampleRowKeysStream = gaxOptions_ => {
+      table.sampleRowKeysStream = (gaxOptions_: {}) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       };
@@ -2434,7 +2468,7 @@ describe('Bigtable/Table', () => {
       });
 
       it('should return the keys to the callback', done => {
-        table.sampleRowKeys((err, keys) => {
+        table.sampleRowKeys((err: Error, keys: {}) => {
           assert.ifError(err);
           assert.deepStrictEqual(keys, fakeKeys);
           done();
@@ -2460,7 +2494,7 @@ describe('Bigtable/Table', () => {
       });
 
       it('should return the error to the callback', done => {
-        table.sampleRowKeys(err => {
+        table.sampleRowKeys((err: Error) => {
           assert.strictEqual(err, error);
           done();
         });
@@ -2470,7 +2504,8 @@ describe('Bigtable/Table', () => {
 
   describe('sampleRowKeysStream', () => {
     it('should provide the proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'sampleRowKeys');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
@@ -2489,8 +2524,8 @@ describe('Bigtable/Table', () => {
     it('should use an appProfileId', done => {
       const bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-
-      bigtableInstance.request = config => {
+      // tslint:disable-next-line:no-any
+      bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
           bigtableInstance.appProfileId
@@ -2504,7 +2539,8 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
 
         setImmediate(done);
@@ -2554,7 +2590,7 @@ describe('Bigtable/Table', () => {
         table
           .sampleRowKeysStream()
           .on('error', done)
-          .on('data', key => {
+          .on('data', (key: {}) => {
             keys.push(key);
           })
           .on('end', () => {
@@ -2587,7 +2623,7 @@ describe('Bigtable/Table', () => {
       it('should emit an error event', done => {
         table
           .sampleRowKeysStream()
-          .on('error', err => {
+          .on('error', (err: Error) => {
             assert.strictEqual(err, error);
             done();
           })
@@ -2599,7 +2635,8 @@ describe('Bigtable/Table', () => {
   describe('setIamPolicy', () => {
     const policy = {};
     it('should provide the proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'setIamPolicy');
         assert.strictEqual(config.reqOpts.resource, table.name);
@@ -2613,7 +2650,8 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -2635,7 +2673,8 @@ describe('Bigtable/Table', () => {
         ],
       };
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.policy, policy);
         done();
       };
@@ -2644,7 +2683,8 @@ describe('Bigtable/Table', () => {
 
     it('should encode policy etag', done => {
       const policy = {etag: 'ABS'};
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.policy.etag,
           Buffer.from(policy.etag)
@@ -2656,17 +2696,17 @@ describe('Bigtable/Table', () => {
 
     it('should return error', done => {
       const error = new Error('error');
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
-      table.setIamPolicy(policy, err => {
+      table.setIamPolicy(policy, (err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
     });
 
     it('should call decodePolicyEtag', () => {
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(null, {});
       };
       const spy = sandbox.stub(Table, 'decodePolicyEtag');
@@ -2678,7 +2718,8 @@ describe('Bigtable/Table', () => {
   describe('testIamPermissions', () => {
     const permissions = 'bigtable.tables.get';
     it('should provide the proper request options', done => {
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'testIamPermissions');
         assert.strictEqual(config.reqOpts.resource, table.name);
@@ -2691,7 +2732,8 @@ describe('Bigtable/Table', () => {
 
     it('should accept permissions as array', done => {
       const permissions = [`bigtable.tables.get`, `bigtable.tables.list`];
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.permissions, permissions);
         done();
       };
@@ -2700,7 +2742,8 @@ describe('Bigtable/Table', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -2709,24 +2752,27 @@ describe('Bigtable/Table', () => {
 
     it('should unpack permissions from resp object', done => {
       const testPermissions = [`bigtable.tables.get`, `bigtable.tables.list`];
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(null, {permissions: testPermissions});
       };
-      table.testIamPermissions(testPermissions, (err, permissions) => {
-        assert.ifError(err);
-        assert.strictEqual(Array.isArray(permissions), true);
-        assert.deepStrictEqual(permissions, testPermissions);
-        done();
-      });
+      table.testIamPermissions(
+        testPermissions,
+        (err: Error, permissions: {}) => {
+          assert.ifError(err);
+          assert.strictEqual(Array.isArray(permissions), true);
+          assert.deepStrictEqual(permissions, testPermissions);
+          done();
+        }
+      );
     });
 
     it('should return error', done => {
       const permission = 'bigtable.tables.get';
       const error = new Error('error');
-      table.bigtable.request = (config, callback) => {
+      table.bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
-      table.testIamPermissions(permission, (err, resp) => {
+      table.testIamPermissions(permission, (err: Error, resp: {}) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -2745,7 +2791,8 @@ describe('Bigtable/Table', () => {
 
   describe('truncate', () => {
     it('should provide the proper request options', done => {
-      table.bigtable.request = (config, callback) => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'dropRowRange');
         assert.strictEqual(config.reqOpts.name, TABLE_NAME);
@@ -2760,7 +2807,8 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      table.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
