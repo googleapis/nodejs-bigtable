@@ -15,24 +15,26 @@
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
-const sn = require('sinon');
+import * as sinon from 'sinon';
+import * as fr from '../src/filter';
+import {Row} from '../src/row';
 
-const sinon = sn.createSandbox();
+const sandbox = sinon.createSandbox();
 
 // tslint:disable-next-line variable-name
 const FakeMutation = {
-  convertToBytes: sinon.spy(value => {
+  convertToBytes: sandbox.spy(value => {
     return value;
   }),
-  createTimeRange: sinon.stub(),
+  createTimeRange: sandbox.stub(),
 };
 
 describe('Bigtable/Filter', () => {
   // tslint:disable-next-line variable-name
-  let Filter;
+  let Filter: typeof fr.Filter;
   // tslint:disable-next-line variable-name
-  let FilterError;
-  let filter;
+  let FilterError: typeof fr.FilterError;
+  let filter: fr.Filter;
 
   before(() => {
     // tslint:disable-next-line variable-name
@@ -48,7 +50,7 @@ describe('Bigtable/Filter', () => {
   });
 
   afterEach(() => {
-    sinon.restore();
+    sandbox.restore();
   });
 
   describe('instantiation', () => {
@@ -72,20 +74,17 @@ describe('Bigtable/Filter', () => {
     it('should convert an Array of buffers to a single string', () => {
       const faces = [Buffer.from('.|.'), Buffer.from('=|=')];
       const str = Filter.convertToRegExpString(faces);
-
       assert.strictEqual(str, '(\\.\\|\\.|=\\|=)');
     });
 
     it('should not do anything to a string', () => {
       const str1 = 'hello';
       const str2 = Filter.convertToRegExpString(str1);
-
       assert.strictEqual(str1, str2);
     });
 
     it('should convert a number to a string', () => {
       const str = Filter.convertToRegExpString(1);
-
       assert.strictEqual(str, '1');
     });
 
@@ -93,7 +92,6 @@ describe('Bigtable/Filter', () => {
       const str1 = 'hello';
       const buffer = Buffer.from(str1);
       const str2 = Filter.convertToRegExpString(buffer);
-
       assert.deepStrictEqual(buffer, str2);
     });
 
@@ -101,27 +99,23 @@ describe('Bigtable/Filter', () => {
       const str1 = 'æ';
       const buffer = Buffer.from('æ', 'binary');
       const str2 = Filter.convertToRegExpString(buffer).toString('binary');
-
       assert.strictEqual(str1, str2);
     });
 
     it('should throw an error for unknown types', () => {
       const errorReg = /Can't convert to RegExp String from unknown type\./;
-
       assert.throws(() => {
-        Filter.convertToRegExpString(true);
+        Filter.convertToRegExpString((true as {}) as string);
       }, errorReg);
     });
   });
 
   describe('createRange', () => {
     it('should create a range object', () => {
-      const start = 'a';
-      const end = 'b';
+      const start = 'a' as fr.BoundData;
+      const end = 'b' as fr.BoundData;
       const key = 'Key';
-
       const range = Filter.createRange(start, end, key);
-
       assert.deepStrictEqual(range, {
         startKeyClosed: start,
         endKeyClosed: end,
@@ -129,11 +123,9 @@ describe('Bigtable/Filter', () => {
     });
 
     it('should only create start bound', () => {
-      const start = 'a';
+      const start = 'a' as fr.BoundData;
       const key = 'Key';
-
       const range = Filter.createRange(start, null, key);
-
       assert(FakeMutation.convertToBytes.calledWithExactly(start));
       assert.deepStrictEqual(range, {
         startKeyClosed: start,
@@ -141,11 +133,9 @@ describe('Bigtable/Filter', () => {
     });
 
     it('should only create an end bound', () => {
-      const end = 'b';
+      const end = 'b' as fr.BoundData;
       const key = 'Key';
-
       const range = Filter.createRange(null, end, key);
-
       assert(FakeMutation.convertToBytes.calledWithExactly(end));
       assert.deepStrictEqual(range, {
         endKeyClosed: end,
@@ -176,9 +166,8 @@ describe('Bigtable/Filter', () => {
 
   describe('parse', () => {
     it('should call each individual filter method', () => {
-      sinon.spy(Filter.prototype, 'row');
-      sinon.spy(Filter.prototype, 'value');
-
+      sandbox.spy(Filter.prototype, 'row');
+      sandbox.spy(Filter.prototype, 'value');
       const fakeFilter = [
         {
           row: 'a',
@@ -187,14 +176,14 @@ describe('Bigtable/Filter', () => {
           value: 'b',
         },
       ];
-
       Filter.parse(fakeFilter);
-
-      assert.strictEqual(Filter.prototype.row.callCount, 1);
-      assert(Filter.prototype.row.calledWithExactly('a'));
-
-      assert.strictEqual(Filter.prototype.value.callCount, 1);
-      assert(Filter.prototype.value.calledWithExactly('b'));
+      assert.strictEqual((Filter.prototype.row as sinon.SinonSpy).callCount, 1);
+      assert((Filter.prototype.row as sinon.SinonSpy).calledWithExactly('a'));
+      assert.strictEqual(
+        (Filter.prototype.value as sinon.SinonSpy).callCount,
+        1
+      );
+      assert((Filter.prototype.value as sinon.SinonSpy).calledWithExactly('b'));
     });
 
     it('should throw an error for unknown filters', () => {
@@ -214,10 +203,13 @@ describe('Bigtable/Filter', () => {
           column: 'a',
         },
       ];
-      const stub = sinon.stub(Filter.prototype, 'toProto').returns(fakeProto);
+      const stub = sandbox.stub(Filter.prototype, 'toProto').returns(fakeProto);
       const parsedFilter = Filter.parse(fakeFilter);
       assert.strictEqual(parsedFilter, fakeProto);
-      assert.strictEqual(Filter.prototype.toProto.callCount, 1);
+      assert.strictEqual(
+        (Filter.prototype.toProto as sinon.SinonSpy).callCount,
+        1
+      );
       stub.restore();
     });
   });
@@ -250,7 +242,7 @@ describe('Bigtable/Filter', () => {
         name: 'fake-column',
       };
 
-      const spy = sinon.stub(Filter, 'convertToRegExpString').returnsArg(0);
+      const spy = sandbox.stub(Filter, 'convertToRegExpString').returnsArg(0);
 
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'columnQualifierRegexFilter');
@@ -311,12 +303,10 @@ describe('Bigtable/Filter', () => {
         b: 'b',
       };
       const column = {
-        start: 'a',
-        end: 'b',
+        start: 'a' as fr.BoundData,
+        end: 'b' as fr.BoundData,
       };
-
-      const spy = sinon.stub(Filter, 'createRange').returns(fakeRange);
-
+      const spy = sandbox.stub(Filter, 'createRange').returns(fakeRange);
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'columnRangeFilter');
         assert.strictEqual(value, fakeRange);
@@ -324,7 +314,6 @@ describe('Bigtable/Filter', () => {
         spy.restore();
         done();
       };
-
       filter.column(column);
     });
   });
@@ -336,9 +325,7 @@ describe('Bigtable/Filter', () => {
         pass: {b: 'b'},
         fail: {c: 'c'},
       };
-
-      const spy = sinon.stub(Filter, 'parse').returnsArg(0);
-
+      const spy = sandbox.stub(Filter, 'parse').returnsArg(0);
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'condition');
         assert.deepStrictEqual(value, {
@@ -346,16 +333,12 @@ describe('Bigtable/Filter', () => {
           trueFilter: condition.pass,
           falseFilter: condition.fail,
         });
-
         assert.strictEqual(spy.getCall(0).args[0], condition.test);
         assert.strictEqual(spy.getCall(1).args[0], condition.pass);
         assert.strictEqual(spy.getCall(2).args[0], condition.fail);
-
         spy.restore();
-
         done();
       };
-
       filter.condition(condition);
     });
   });
@@ -363,9 +346,7 @@ describe('Bigtable/Filter', () => {
   describe('family', () => {
     it('should create a family name regex filter', done => {
       const familyName = 'fake-family';
-
-      const spy = sinon.stub(Filter, 'convertToRegExpString').returnsArg(0);
-
+      const spy = sandbox.stub(Filter, 'convertToRegExpString').returnsArg(0);
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'familyNameRegexFilter');
         assert.strictEqual(value, familyName);
@@ -373,7 +354,6 @@ describe('Bigtable/Filter', () => {
         spy.restore();
         done();
       };
-
       filter.family(familyName);
     });
   });
@@ -382,9 +362,9 @@ describe('Bigtable/Filter', () => {
     it('should create an interleave filter', done => {
       const fakeFilters = [{}, {}, {}];
 
-      const spy = sinon.stub(Filter, 'parse').returnsArg(0);
-
-      filter.set = (filterName, value) => {
+      const spy = sandbox.stub(Filter, 'parse').returnsArg(0);
+      // tslint:disable-next-line no-any
+      filter.set = (filterName, value: any) => {
         assert.strictEqual(filterName, 'interleave');
         assert.strictEqual(value.filters[0], fakeFilters[0]);
         assert.strictEqual(value.filters[1], fakeFilters[1]);
@@ -421,7 +401,7 @@ describe('Bigtable/Filter', () => {
       };
       const convertedKey = 'abcd';
 
-      const spy = sinon
+      const spy = sandbox
         .stub(Filter, 'convertToRegExpString')
         .returns(convertedKey);
 
@@ -439,13 +419,11 @@ describe('Bigtable/Filter', () => {
 
     it('should accept the short-hand version of row key', done => {
       const rowKey = 'gwashington';
-
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'rowKeyRegexFilter');
         assert.strictEqual(value, rowKey);
         done();
       };
-
       filter.row(rowKey);
     });
 
@@ -453,27 +431,23 @@ describe('Bigtable/Filter', () => {
       const row = {
         sample: 10,
       };
-
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'rowSampleFilter');
         assert.strictEqual(value, row.sample);
         done();
       };
-
-      filter.row(row);
+      filter.row((row as {}) as Row);
     });
 
     it('should set the cells per row offset filter', done => {
       const row = {
         cellOffset: 10,
       };
-
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'cellsPerRowOffsetFilter');
         assert.strictEqual(value, row.cellOffset);
         done();
       };
-
       filter.row(row);
     });
 
@@ -481,13 +455,11 @@ describe('Bigtable/Filter', () => {
       const row = {
         cellLimit: 10,
       };
-
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'cellsPerRowLimitFilter');
         assert.strictEqual(value, row.cellLimit);
         done();
       };
-
       filter.row(row);
     });
   });
@@ -496,9 +468,7 @@ describe('Bigtable/Filter', () => {
     it('should create a filter object', () => {
       const key = 'notARealFilter';
       const value = {a: 'b'};
-
       filter.set(key, value);
-
       assert.strictEqual(filter.filters_[0][key], value);
     });
   });
@@ -506,13 +476,11 @@ describe('Bigtable/Filter', () => {
   describe('sink', () => {
     it('should set the sink filter', done => {
       const sink = true;
-
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'sink');
         assert.strictEqual(value, sink);
         done();
       };
-
       filter.sink(sink);
     });
   });
@@ -523,16 +491,13 @@ describe('Bigtable/Filter', () => {
         start: 10,
         end: 10,
       };
-
       const spy = FakeMutation.createTimeRange.returns(fakeTimeRange);
-
       filter.set = (filterName, value) => {
         assert.strictEqual(filterName, 'timestampRangeFilter');
         assert.strictEqual(value, fakeTimeRange);
         assert(spy.calledWithExactly(fakeTimeRange.start, fakeTimeRange.end));
         done();
       };
-
       filter.time(fakeTimeRange);
     });
   });
@@ -541,24 +506,20 @@ describe('Bigtable/Filter', () => {
     it('should return null when no filters are present', () => {
       const filter = new Filter();
       const filterProto = filter.toProto();
-
       assert.strictEqual(filterProto, null);
     });
 
     it('should return a plain filter if there is only 1', () => {
       filter.filters_ = [{}];
-
       const filterProto = filter.toProto();
-
       assert.strictEqual(filterProto, filter.filters_[0]);
     });
 
     it('should create a chain filter if there are multiple', () => {
       filter.filters_ = [{}, {}];
-
-      const filterProto = filter.toProto();
-
-      assert.strictEqual(filterProto.chain.filters, filter.filters_);
+      // tslint:disable-next-line no-any
+      const filterProto = filter.toProto() as any;
+      assert.strictEqual(filterProto!.chain.filters, filter.filters_);
     });
   });
 
@@ -570,19 +531,23 @@ describe('Bigtable/Filter', () => {
       const fakeRegExValue = 'abcd';
       const fakeConvertedValue = 'dcba';
 
-      const regSpy = sinon
+      const regSpy = sandbox
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      const bytesSpy = (FakeMutation.convertToBytes = sinon.spy(() => {
-        return fakeConvertedValue;
-      }));
+      // tslint:disable-next-line no-any
+      const bytesSpy = ((FakeMutation as any).convertToBytes = sandbox.spy(
+        () => {
+          return fakeConvertedValue;
+        }
+      ));
 
       filter.set = (filterName, val) => {
         assert.strictEqual(filterName, 'valueRegexFilter');
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value.value));
-        assert(bytesSpy.calledWithExactly(fakeRegExValue));
+        // tslint:disable-next-line no-any
+        assert((bytesSpy as any).calledWithExactly(fakeRegExValue));
         regSpy.restore();
         done();
       };
@@ -596,19 +561,23 @@ describe('Bigtable/Filter', () => {
       const fakeRegExValue = 'abcd';
       const fakeConvertedValue = 'dcba';
 
-      const regSpy = sinon
+      const regSpy = sandbox
         .stub(Filter, 'convertToRegExpString')
         .returns(fakeRegExValue);
 
-      const bytesSpy = (FakeMutation.convertToBytes = sinon.spy(() => {
-        return fakeConvertedValue;
-      }));
+      // tslint:disable-next-line no-any
+      const bytesSpy = ((FakeMutation.convertToBytes as any) = sandbox.spy(
+        () => {
+          return fakeConvertedValue;
+        }
+      ));
 
       filter.set = (filterName, val) => {
         assert.strictEqual(filterName, 'valueRegexFilter');
         assert.strictEqual(fakeConvertedValue, val);
         assert(regSpy.calledWithExactly(value));
-        assert(bytesSpy.calledWithExactly(fakeRegExValue));
+        // tslint:disable-next-line no-any
+        assert((bytesSpy as any).calledWithExactly(fakeRegExValue));
         regSpy.restore();
         done();
       };
@@ -622,12 +591,10 @@ describe('Bigtable/Filter', () => {
         b: 'b',
       };
       const value = {
-        start: 'a',
-        end: 'b',
+        start: 'a' as fr.BoundData,
+        end: 'b' as fr.BoundData,
       };
-
-      const spy = sinon.stub(Filter, 'createRange').returns(fakeRange);
-
+      const spy = sandbox.stub(Filter, 'createRange').returns(fakeRange);
       filter.set = (filterName, val) => {
         assert.strictEqual(filterName, 'valueRangeFilter');
         assert.strictEqual(val, fakeRange);
@@ -635,7 +602,6 @@ describe('Bigtable/Filter', () => {
         spy.restore();
         done();
       };
-
       filter.value(value);
     });
 
@@ -643,13 +609,11 @@ describe('Bigtable/Filter', () => {
       const value = {
         strip: true,
       };
-
       filter.set = (filterName, val) => {
         assert.strictEqual(filterName, 'stripValueTransformer');
         assert.strictEqual(val, value.strip);
         done();
       };
-
       filter.value(value);
     });
   });

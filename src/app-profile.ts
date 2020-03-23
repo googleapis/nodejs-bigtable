@@ -67,9 +67,13 @@ export interface DeleteAppProfileOptions {
 
 export type CreateAppProfileCallback = (
   err: ServiceError | null,
-  appProfile?: AppProfile
+  appProfile?: AppProfile,
+  apiResponse?: google.bigtable.admin.v2.IAppProfile
 ) => void;
-export type CreateAppProfileResponse = [AppProfile];
+export type CreateAppProfileResponse = [
+  AppProfile,
+  google.bigtable.admin.v2.IAppProfile
+];
 export type DeleteAppProfileCallback = (
   err: ServiceError | null,
   apiResponse?: google.protobuf.Empty

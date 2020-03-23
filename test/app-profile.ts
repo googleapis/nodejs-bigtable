@@ -14,12 +14,15 @@
 
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {describe, it, before, beforeEach} from 'mocha';
 import * as proxyquire from 'proxyquire';
+import {CallOptions} from 'google-gax';
+
+/* tslint:disable:no-any */
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass) {
+  promisifyAll(klass: Function) {
     if (klass.name === 'AppProfile') {
       promisified = true;
     }
@@ -37,13 +40,13 @@ describe('Bigtable/AppProfile', () => {
 
   const APP_PROFILE_NAME = `${INSTANCE.name}/appProfiles/${APP_PROFILE_ID}`;
   // tslint:disable-next-line variable-name
-  let AppProfile;
-  let appProfile;
+  let AppProfile: any;
+  let appProfile: any;
 
   class FakeCluster {
-    instance;
-    id;
-    constructor(instance, id) {
+    instance: any;
+    id: any;
+    constructor(instance: any, id: any) {
       this.instance = instance;
       this.id = id;
     }
@@ -156,7 +159,11 @@ describe('Bigtable/AppProfile', () => {
     it('should call createAppProfile from instance', done => {
       const options = {};
 
-      appProfile.instance.createAppProfile = (id, options_, callback) => {
+      appProfile.instance.createAppProfile = (
+        id: any,
+        options_: any,
+        callback: any
+      ) => {
         assert.strictEqual(id, appProfile.id);
         assert.strictEqual(options_, options);
         callback();
@@ -166,7 +173,11 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should not require options', done => {
-      appProfile.instance.createAppProfile = (id, options, callback) => {
+      appProfile.instance.createAppProfile = (
+        id: any,
+        options: any,
+        callback: any
+      ) => {
         assert.deepStrictEqual(options, {});
         callback();
       };
@@ -177,7 +188,7 @@ describe('Bigtable/AppProfile', () => {
 
   describe('delete', () => {
     it('should make the correct request', done => {
-      appProfile.bigtable.request = (config, callback) => {
+      appProfile.bigtable.request = (config: any, callback: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'deleteAppProfile');
 
@@ -194,7 +205,7 @@ describe('Bigtable/AppProfile', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      appProfile.bigtable.request = config => {
+      appProfile.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -203,7 +214,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should accept ignoreWarnings', done => {
-      appProfile.bigtable.request = config => {
+      appProfile.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.ignoreWarnings, true);
         done();
       };
@@ -214,7 +225,7 @@ describe('Bigtable/AppProfile', () => {
 
   describe('exists', () => {
     it('should not require gaxOptions', done => {
-      appProfile.getMetadata = gaxOptions => {
+      appProfile.getMetadata = (gaxOptions: CallOptions) => {
         assert.deepStrictEqual(gaxOptions, {});
         done();
       };
@@ -225,7 +236,7 @@ describe('Bigtable/AppProfile', () => {
     it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
 
-      appProfile.getMetadata = gaxOptions_ => {
+      appProfile.getMetadata = (gaxOptions_: CallOptions) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       };
@@ -238,11 +249,14 @@ describe('Bigtable/AppProfile', () => {
       const error: any = new Error('Error.');
       error.code = 5;
 
-      appProfile.getMetadata = (gaxOptions, callback) => {
+      appProfile.getMetadata = (
+        gaxOptions: CallOptions,
+        callback: Function
+      ) => {
         callback(error);
       };
 
-      appProfile.exists((err, exists) => {
+      appProfile.exists((err: Error, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, false);
         done();
@@ -254,22 +268,28 @@ describe('Bigtable/AppProfile', () => {
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
-      appProfile.getMetadata = (gaxOptions, callback) => {
+      appProfile.getMetadata = (
+        gaxOptions: CallOptions,
+        callback: Function
+      ) => {
         callback(error);
       };
 
-      appProfile.exists(err => {
+      appProfile.exists((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
     });
 
     it('should return true if no error', done => {
-      appProfile.getMetadata = (gaxOptions, callback) => {
+      appProfile.getMetadata = (
+        gaxOptions: CallOptions,
+        callback: Function
+      ) => {
         callback(null, {});
       };
 
-      appProfile.exists((err, exists) => {
+      appProfile.exists((err: Error, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, true);
         done();
@@ -281,7 +301,7 @@ describe('Bigtable/AppProfile', () => {
     it('should call getMetadata', done => {
       const gaxOptions = {};
 
-      appProfile.getMetadata = gaxOptions_ => {
+      appProfile.getMetadata = (gaxOptions_: CallOptions) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       };
@@ -290,7 +310,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should not require gaxOptions', done => {
-      appProfile.getMetadata = gaxOptions => {
+      appProfile.getMetadata = (gaxOptions: CallOptions) => {
         assert.deepStrictEqual(gaxOptions, {});
         done();
       };
@@ -301,11 +321,14 @@ describe('Bigtable/AppProfile', () => {
     it('should return an error from getMetadata', done => {
       const error = new Error('Error.');
 
-      appProfile.getMetadata = (gaxOptions, callback) => {
+      appProfile.getMetadata = (
+        gaxOptions: CallOptions,
+        callback: Function
+      ) => {
         callback(error);
       };
 
-      appProfile.get(err => {
+      appProfile.get((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -314,11 +337,14 @@ describe('Bigtable/AppProfile', () => {
     it('should return self and API response', done => {
       const metadata = {};
 
-      appProfile.getMetadata = (gaxOptions, callback) => {
+      appProfile.getMetadata = (
+        gaxOptions: CallOptions,
+        callback: Function
+      ) => {
         callback(null, metadata);
       };
 
-      appProfile.get((err, appProfile_, metadata_) => {
+      appProfile.get((err: Error, appProfile_: {}, metadata_: {}) => {
         assert.ifError(err);
         assert.strictEqual(appProfile_, appProfile);
         assert.strictEqual(metadata_, metadata);
@@ -329,7 +355,7 @@ describe('Bigtable/AppProfile', () => {
 
   describe('getMetadata', () => {
     it('should make correct request', done => {
-      appProfile.bigtable.request = config => {
+      appProfile.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getAppProfile');
 
@@ -348,7 +374,7 @@ describe('Bigtable/AppProfile', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      appProfile.bigtable.request = config => {
+      appProfile.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -359,7 +385,7 @@ describe('Bigtable/AppProfile', () => {
     it('should update metadata', done => {
       const metadata = {};
 
-      appProfile.bigtable.request = (config, callback) => {
+      appProfile.bigtable.request = (config: {}, callback: Function) => {
         callback(null, metadata);
       };
 
@@ -372,11 +398,11 @@ describe('Bigtable/AppProfile', () => {
     it('should execute callback with original arguments', done => {
       const args = [{}, {}, {}];
 
-      appProfile.bigtable.request = (config, callback) => {
+      appProfile.bigtable.request = (config: {}, callback: Function) => {
         callback.apply(null, args);
       };
 
-      appProfile.getMetadata((...argies) => {
+      appProfile.getMetadata((...argies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argies), args);
         done();
       });
@@ -385,7 +411,7 @@ describe('Bigtable/AppProfile', () => {
 
   describe('setMetadata', () => {
     it('should provide the proper request options', done => {
-      appProfile.bigtable.request = (config, callback) => {
+      appProfile.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'updateAppProfile');
         assert.strictEqual(config.reqOpts.appProfile.name, APP_PROFILE_NAME);
@@ -398,7 +424,7 @@ describe('Bigtable/AppProfile', () => {
     it('should respect the description option', done => {
       const options = {description: 'my-description'};
 
-      appProfile.bigtable.request = config => {
+      appProfile.bigtable.request = (config: any) => {
         assert(
           config.reqOpts.updateMask.paths.indexOf('description') !== -1,
           `updateMask does not should include 'description'`
@@ -416,7 +442,7 @@ describe('Bigtable/AppProfile', () => {
     it('should respect the ignoreWarnings option', done => {
       const options = {ignoreWarnings: true};
 
-      appProfile.bigtable.request = config => {
+      appProfile.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.ignoreWarnings, true);
         done();
       };
@@ -431,7 +457,7 @@ describe('Bigtable/AppProfile', () => {
       it(`has an 'any' value`, done => {
         const options = {routing: 'any'};
 
-        appProfile.bigtable.request = config => {
+        appProfile.bigtable.request = (config: any) => {
           assert(
             config.reqOpts.updateMask.paths.indexOf(
               'multi_cluster_routing_use_any'
@@ -451,7 +477,7 @@ describe('Bigtable/AppProfile', () => {
       it(`has a cluster value`, done => {
         const options = {routing: cluster};
 
-        appProfile.bigtable.request = config => {
+        appProfile.bigtable.request = (config: any) => {
           assert(
             config.reqOpts.updateMask.paths.indexOf(
               'single_cluster_routing'
@@ -471,10 +497,10 @@ describe('Bigtable/AppProfile', () => {
 
     it('should execute callback with all arguments', done => {
       const args = [{}, {}, {}];
-      appProfile.bigtable.request = (config, callback) => {
+      appProfile.bigtable.request = (config: {}, callback: Function) => {
         callback.apply(null, args);
       };
-      appProfile.setMetadata({}, (...argies) => {
+      appProfile.setMetadata({}, (...argies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argies), args);
         done();
       });

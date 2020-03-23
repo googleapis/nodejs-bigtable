@@ -46,7 +46,7 @@ export type ApiResponse = [IOperation];
 export type CreateClusterResponse = [ICluster, GaxOperation, IOperation];
 export type BooleanResponse = [boolean];
 export type GetClusterResponse = [ICluster, IOperation];
-export type GetClustersResponse = [ICluster[], IOperation];
+export type GetClustersResponse = [Cluster[], IOperation];
 export type GetClusterMetadataResponse = [ICluster, IOperation];
 export type SetClusterMetadataResponse = [Operation, google.protobuf.Empty];
 
@@ -56,7 +56,7 @@ export type ExistsClusterCallback = GenericCallback<boolean>;
 export type GetClusterCallback = GenericClusterCallback<ICluster>;
 export type GetClustersCallback = (
   err: ServiceError | null,
-  clusters?: ICluster[],
+  clusters?: Cluster[],
   apiResponse?: google.bigtable.admin.v2.IListClustersResponse
 ) => void;
 export type SetClusterMetadataCallback = GenericOperationCallback<

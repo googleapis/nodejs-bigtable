@@ -34,9 +34,10 @@ const noop = () => {};
 function fakeV2() {}
 
 let promisified = false;
-let replaceProjectIdTokenOverride;
+let replaceProjectIdTokenOverride: Function | null;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass, options) {
+  // tslint:disable-next-line no-any
+  promisifyAll(klass: Function, options: any) {
     if (klass.name !== 'Bigtable') {
       return;
     }
@@ -49,7 +50,7 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 const fakeReplaceProjectIdToken = Object.assign({}, projectify, {
-  replaceProjectIdToken(reqOpts) {
+  replaceProjectIdToken(reqOpts: {}) {
     if (replaceProjectIdTokenOverride) {
       return replaceProjectIdTokenOverride.apply(null, arguments);
     }
@@ -57,12 +58,12 @@ const fakeReplaceProjectIdToken = Object.assign({}, projectify, {
   },
 });
 
-let googleAuthOverride;
+let googleAuthOverride: Function | null;
 function fakeGoogleAuth() {
   return (googleAuthOverride || noop).apply(null, arguments);
 }
 
-let retryRequestOverride;
+let retryRequestOverride: Function | null;
 function fakeRetryRequest() {
   return (retryRequestOverride || require('retry-request')).apply(
     null,
@@ -70,7 +71,8 @@ function fakeRetryRequest() {
   );
 }
 
-function createFake(klass) {
+// tslint:disable-next-line no-any
+function createFake(klass: any) {
   return class Fake extends klass {
     calledWith_: IArguments;
     constructor() {
@@ -88,9 +90,10 @@ const FakeInstance = createFake(Instance);
 describe('Bigtable', () => {
   const PROJECT_ID = 'test-project';
   const PROJECT_ID_TOKEN = '{{projectId}}';
-  // tslint:disable-next-line variable-name
-  let Bigtable;
-  let bigtable;
+  // tslint:disable-next-line variable-name no-any
+  let Bigtable: any;
+  // tslint:disable-next-line no-any
+  let bigtable: any;
 
   before(() => {
     Bigtable = proxyquire('../src', {
@@ -154,7 +157,7 @@ describe('Bigtable', () => {
         c: 'd',
       };
 
-      googleAuthOverride = options_ => {
+      googleAuthOverride = (options_: {}) => {
         assert.deepStrictEqual(
           options_,
           Object.assign(
@@ -332,30 +335,26 @@ describe('Bigtable', () => {
     const INSTANCE_ID = 'my-instance';
 
     it('should provide the proper request options', done => {
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createInstance');
-
         assert.strictEqual(config.reqOpts.parent, bigtable.projectName);
         assert.strictEqual(config.reqOpts.instanceId, INSTANCE_ID);
         assert.strictEqual(config.reqOpts.instance.displayName, INSTANCE_ID);
-
         assert.strictEqual(config.gaxOpts, undefined);
-
         done();
       };
-
       bigtable.createInstance(INSTANCE_ID, assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
-
       bigtable.createInstance(INSTANCE_ID, {gaxOptions}, assert.ifError);
     });
 
@@ -363,32 +362,30 @@ describe('Bigtable', () => {
       const options = {
         displayName: 'robocop',
       };
-
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.instance.displayName,
           options.displayName
         );
         done();
       };
-
       bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
     it('should respect the type option', done => {
       const options = {type: 'development'};
       const fakeTypeType = 99;
-
-      FakeInstance.getTypeType_ = type => {
+      // tslint:disable-next-line no-any
+      FakeInstance.getTypeType_ = (type: string) => {
         assert.strictEqual(type, options.type);
         return fakeTypeType;
       };
-
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.instance.type, fakeTypeType);
         done();
       };
-
       bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
@@ -398,12 +395,11 @@ describe('Bigtable', () => {
           env: 'prod',
         },
       };
-
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.instance.labels, options.labels);
         done();
       };
-
       bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
@@ -414,25 +410,22 @@ describe('Bigtable', () => {
         nodes: 3,
         storage: 'ssd',
       };
-
       const options = {
         clusters: [cluster],
       };
-
       const fakeLocation = 'a/b/c/d';
-      FakeCluster.getLocation_ = (project, location) => {
+      FakeCluster.getLocation_ = (project: string, location: string) => {
         assert.strictEqual(project, PROJECT_ID);
         assert.strictEqual(location, cluster.location);
         return fakeLocation;
       };
-
       const fakeStorage = 20;
-      FakeCluster.getStorageType_ = storage => {
+      FakeCluster.getStorageType_ = (storage: {}) => {
         assert.strictEqual(storage, cluster.storage);
         return fakeStorage;
       };
-
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.clusters, {
           'my-cluster': {
             location: fakeLocation,
@@ -449,45 +442,45 @@ describe('Bigtable', () => {
 
     it('should return an error to the callback', done => {
       const error = new Error('err');
-
-      bigtable.request = (config, callback) => {
+      bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
-
-      bigtable.createInstance(INSTANCE_ID, (err, instance, operation) => {
-        assert.strictEqual(err, error);
-        assert.strictEqual(instance, undefined);
-        assert.strictEqual(operation, undefined);
-        done();
-      });
+      bigtable.createInstance(
+        INSTANCE_ID,
+        (err: Error, instance: Instance, operation: gax.Operation) => {
+          assert.strictEqual(err, error);
+          assert.strictEqual(instance, undefined);
+          assert.strictEqual(operation, undefined);
+          done();
+        }
+      );
     });
 
     it('should return an instance to the callback', done => {
       const response = {
         name: 'my-operation',
       };
-
       const responseArg2 = {};
       const responseArg3 = {};
-
       const fakeInstance = {};
-      bigtable.instance = id => {
+      bigtable.instance = (id: string) => {
         assert.strictEqual(id, INSTANCE_ID);
         return fakeInstance;
       };
-
-      bigtable.request = (config, callback) => {
+      bigtable.request = (config: {}, callback: Function) => {
         callback(null, response, responseArg2, responseArg3);
       };
-
-      bigtable.createInstance(INSTANCE_ID, (err, instance, ...args) => {
-        assert.ifError(err);
-        assert.strictEqual(instance, fakeInstance);
-        assert.strictEqual(args[0], response);
-        assert.strictEqual(args[1], responseArg2);
-        assert.strictEqual(args[2], responseArg3);
-        done();
-      });
+      bigtable.createInstance(
+        INSTANCE_ID,
+        (err: Error, instance: Instance, ...args: Array<{}>) => {
+          assert.ifError(err);
+          assert.strictEqual(instance, fakeInstance);
+          assert.strictEqual(args[0], response);
+          assert.strictEqual(args[1], responseArg2);
+          assert.strictEqual(args[2], responseArg3);
+          done();
+        }
+      );
     });
 
     it('should throw an error if cluster id not provided.', () => {
@@ -510,7 +503,8 @@ describe('Bigtable', () => {
 
   describe('getInstances', () => {
     it('should provide the proper request options', done => {
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listInstances');
         assert.deepStrictEqual(config.reqOpts, {
@@ -519,29 +513,25 @@ describe('Bigtable', () => {
         assert.deepStrictEqual(config.gaxOpts, {});
         done();
       };
-
       bigtable.getInstances(assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      bigtable.request = config => {
+      // tslint:disable-next-line no-any
+      bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
-
       bigtable.getInstances(gaxOptions, assert.ifError);
     });
 
     it('should return an error to the callback', done => {
       const error = new Error('err');
-
-      bigtable.request = (config, callback) => {
+      bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
-
-      bigtable.getInstances(err => {
+      bigtable.getInstances((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -558,29 +548,27 @@ describe('Bigtable', () => {
           },
         ],
       };
-
       const fakeInstances = [{}, {}];
-
-      bigtable.request = (config, callback) => {
+      bigtable.request = (config: {}, callback: Function) => {
         callback(null, response);
       };
-
       let instanceCount = 0;
-
-      bigtable.instance = name => {
+      bigtable.instance = (name: string) => {
         assert.strictEqual(name, response.instances[instanceCount].name);
         return fakeInstances[instanceCount++];
       };
 
-      bigtable.getInstances((err, instances, apiResponse) => {
-        assert.ifError(err);
-        assert.strictEqual(instances[0], fakeInstances[0]);
-        assert.strictEqual(instances[0].metadata, response.instances[0]);
-        assert.strictEqual(instances[1], fakeInstances[1]);
-        assert.strictEqual(instances[1].metadata, response.instances[1]);
-        assert.strictEqual(apiResponse, response);
-        done();
-      });
+      bigtable.getInstances(
+        (err: Error, instances: Instance[], apiResponse: {}) => {
+          assert.ifError(err);
+          assert.strictEqual(instances[0], fakeInstances[0]);
+          assert.strictEqual(instances[0].metadata, response.instances[0]);
+          assert.strictEqual(instances[1], fakeInstances[1]);
+          assert.strictEqual(instances[1].metadata, response.instances[1]);
+          assert.strictEqual(apiResponse, response);
+          done();
+        }
+      );
     });
   });
 
@@ -609,10 +597,9 @@ describe('Bigtable', () => {
     };
 
     beforeEach(() => {
-      bigtable.getProjectId_ = callback => {
+      bigtable.getProjectId_ = (callback: Function) => {
         callback(null, PROJECT_ID);
       };
-
       bigtable.api[CONFIG.client] = {
         [CONFIG.method]: noop,
       };
@@ -628,12 +615,10 @@ describe('Bigtable', () => {
 
       it('should return error if getting project ID failed', done => {
         const error = new Error('Error.');
-
-        bigtable.getProjectId_ = callback => {
+        bigtable.getProjectId_ = (callback: Function) => {
           callback(error);
         };
-
-        bigtable.request(CONFIG, err => {
+        bigtable.request(CONFIG, (err: Error) => {
           assert.strictEqual(err, error);
           done();
         });
@@ -643,8 +628,8 @@ describe('Bigtable', () => {
         const fakeClient = {
           [CONFIG.method]: noop,
         };
-        // tslint:disable-next-line only-arrow-functions
-        fakeV2[CONFIG.client] = function(options) {
+        // tslint:disable-next-line only-arrow-functions no-any
+        (fakeV2 as any)[CONFIG.client] = function(options: any) {
           assert.strictEqual(options, bigtable.options[CONFIG.client]);
           return fakeClient;
         };
@@ -654,8 +639,8 @@ describe('Bigtable', () => {
       });
 
       it('should use the cached client', done => {
-        // tslint:disable-next-line only-arrow-functions
-        fakeV2[CONFIG.client] = function() {
+        // tslint:disable-next-line only-arrow-functions no-any
+        (fakeV2 as any)[CONFIG.client] = function() {
           done(new Error('Should not re-instantiate a GAX client.'));
         };
         bigtable.request(CONFIG);
@@ -666,7 +651,7 @@ describe('Bigtable', () => {
         replaceProjectIdTokenOverride = sinon.spy();
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind() {
-            assert(!replaceProjectIdTokenOverride.called);
+            assert(!(replaceProjectIdTokenOverride as sn.SinonSpy).called);
             setImmediate(done);
             return noop;
           },
@@ -678,10 +663,9 @@ describe('Bigtable', () => {
     describe('replace projectID token', () => {
       beforeEach(() => {
         bigtable = new Bigtable();
-        bigtable.getProjectId_ = callback => {
+        bigtable.getProjectId_ = (callback: Function) => {
           callback(null, PROJECT_ID);
         };
-
         bigtable.api[CONFIG.client] = {
           [CONFIG.method]: noop,
         };
@@ -689,23 +673,20 @@ describe('Bigtable', () => {
 
       it('should replace the project ID token', done => {
         const replacedReqOpts = {};
-
-        replaceProjectIdTokenOverride = (reqOpts, projectId) => {
+        // tslint:disable-next-line no-any
+        replaceProjectIdTokenOverride = (reqOpts: any, projectId: string) => {
           assert.notStrictEqual(reqOpts, CONFIG.reqOpts);
           assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
           assert.strictEqual(projectId, PROJECT_ID);
-
           return replacedReqOpts;
         };
-
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind(gaxClient, reqOpts) {
+          bind(gaxClient: {}, reqOpts: {}) {
             assert.strictEqual(reqOpts, replacedReqOpts);
             setImmediate(done);
             return noop;
           },
         };
-
         bigtable.request(CONFIG, assert.ifError);
       });
 
@@ -713,19 +694,16 @@ describe('Bigtable', () => {
         replaceProjectIdTokenOverride = () => {
           throw new Error('Should not have tried to replace token.');
         };
-
-        bigtable.getProjectId_ = callback => {
+        bigtable.getProjectId_ = (callback: Function) => {
           callback(null, PROJECT_ID_TOKEN);
         };
-
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind(gaxClient, reqOpts) {
+          bind(gaxClient: {}, reqOpts: {}) {
             assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             setImmediate(done);
             return noop;
           },
         };
-
         bigtable.request(CONFIG, assert.ifError);
       });
     });
@@ -733,7 +711,7 @@ describe('Bigtable', () => {
     describe('makeRequestCallback', () => {
       it('should prepare the request', done => {
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind(gaxClient, reqOpts, gaxOpts) {
+          bind(gaxClient: {}, reqOpts: {}, gaxOpts: {}) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
             assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             assert.strictEqual(gaxOpts, CONFIG.gaxOpts);
@@ -747,30 +725,28 @@ describe('Bigtable', () => {
 
       it('should execute callback with error', done => {
         const error = new Error('Error.');
-
-        bigtable.api[CONFIG.client][CONFIG.method] = (...args) => {
+        bigtable.api[CONFIG.client][CONFIG.method] = (...args: Array<{}>) => {
           const callback: Function = [].slice.call(args).pop()!;
           callback(error);
         };
-
-        bigtable.request(CONFIG, err => {
+        bigtable.request(CONFIG, (err: Error) => {
           assert.strictEqual(err, error);
           done();
         });
       });
 
       it('should execute the request function', () => {
-        bigtable.api[CONFIG.client][CONFIG.method] = (...args) => {
+        bigtable.api[CONFIG.client][CONFIG.method] = (...args: Array<{}>) => {
           const callback: Function = [].slice.call(args).pop()!;
           callback(null, args[0]); // so it ends the test
         };
-
         bigtable.request(CONFIG, assert.ifError);
       });
     });
 
     describe('makeRequestStream', () => {
-      let GAX_STREAM;
+      // tslint:disable-next-line no-any
+      let GAX_STREAM: any;
 
       beforeEach(() => {
         GAX_STREAM = through();
@@ -784,7 +760,8 @@ describe('Bigtable', () => {
       });
 
       it('should use retry-request', done => {
-        retryRequestOverride = (_, config) => {
+        // tslint:disable-next-line no-any
+        retryRequestOverride = (_: {}, config: any) => {
           assert.strictEqual(config.currentRetryAttempt, 0);
           assert.strictEqual(config.objectMode, true);
           done();
@@ -804,13 +781,11 @@ describe('Bigtable', () => {
 
       it('should prepare the request once reading', done => {
         bigtable.api[CONFIG.client][CONFIG.method] = {
-          bind(gaxClient, reqOpts, gaxOpts) {
+          bind(gaxClient: {}, reqOpts: {}, gaxOpts: {}) {
             assert.strictEqual(gaxClient, bigtable.api[CONFIG.client]);
             assert.deepStrictEqual(reqOpts, CONFIG.reqOpts);
             assert.strictEqual(gaxOpts, CONFIG.gaxOpts);
-
             setImmediate(done);
-
             return () => {
               return GAX_STREAM;
             };
@@ -823,15 +798,12 @@ describe('Bigtable', () => {
 
       it('should destroy the stream with prepare error', done => {
         const error = new Error('Error.');
-
-        bigtable.getProjectId_ = callback => {
+        bigtable.getProjectId_ = (callback: Function) => {
           callback(error);
         };
-
         const requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
-
-        requestStream.on('error', err => {
+        requestStream.on('error', (err: Error) => {
           assert.strictEqual(err, error);
           done();
         });
@@ -839,13 +811,10 @@ describe('Bigtable', () => {
 
       it('should destroy the stream with GAX error', done => {
         const error = new Error('Error.');
-
         const requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
-
         GAX_STREAM.emit('error', error);
-
-        requestStream.on('error', err => {
+        requestStream.on('error', (err: Error) => {
           assert.strictEqual(err, error);
           done();
         });
@@ -870,7 +839,7 @@ describe('Bigtable', () => {
   describe('getProjectId_', () => {
     beforeEach(() => {
       bigtable.auth = {
-        getProjectId(callback) {
+        getProjectId(callback: Function) {
           callback(null, PROJECT_ID);
         },
       };
@@ -878,14 +847,11 @@ describe('Bigtable', () => {
 
     it('should return the provided project ID', done => {
       const providedProjectId = 'provided-project-id';
-
       bigtable.auth.getProjectId = () => {
         throw new Error('Auth client should not be called.');
       };
-
       bigtable.projectId = providedProjectId;
-
-      bigtable.getProjectId_((err, projectId) => {
+      bigtable.getProjectId_((err: Error, projectId: string) => {
         assert.ifError(err);
         assert.strictEqual(projectId, providedProjectId);
         done();
@@ -896,11 +862,9 @@ describe('Bigtable', () => {
       bigtable.auth.getProjectId = () => {
         throw new Error('Auth client should not be called.');
       };
-
       bigtable.projectId = PROJECT_ID_TOKEN;
       bigtable.customEndpoint = 'custom-endpoint';
-
-      bigtable.getProjectId_((err, projectId) => {
+      bigtable.getProjectId_((err: Error, projectId: string) => {
         assert.ifError(err);
         assert.strictEqual(projectId, PROJECT_ID_TOKEN);
         done();
@@ -909,14 +873,11 @@ describe('Bigtable', () => {
 
     it('should return error if project ID detection failed', done => {
       const error = new Error('Error.');
-
-      bigtable.auth.getProjectId = callback => {
+      bigtable.auth.getProjectId = (callback: Function) => {
         callback(error);
       };
-
       bigtable.projectId = PROJECT_ID_TOKEN;
-
-      bigtable.getProjectId_(err => {
+      bigtable.getProjectId_((err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -924,14 +885,11 @@ describe('Bigtable', () => {
 
     it('should get and cache the project ID if not provided', done => {
       const detectedProjectId = 'detected-project-id';
-
-      bigtable.auth.getProjectId = callback => {
+      bigtable.auth.getProjectId = (callback: Function) => {
         callback(null, detectedProjectId);
       };
-
       bigtable.projectId = PROJECT_ID_TOKEN;
-
-      bigtable.getProjectId_((err, projectId) => {
+      bigtable.getProjectId_((err: Error, projectId: string) => {
         assert.ifError(err);
         assert.strictEqual(projectId, detectedProjectId);
         assert.strictEqual(bigtable.projectId, detectedProjectId);
