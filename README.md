@@ -55,26 +55,26 @@ npm install @google-cloud/bigtable
 ### Using the client library
 
 ```javascript
-  // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
+// Imports the Google Cloud client library
+const Bigtable = require('@google-cloud/bigtable');
 
-  const bigtable = Bigtable();
+const bigtable = Bigtable();
 
-  async function quickstart() {
-    // Connect to an existing instance:my-bigtable-instance
-    const instance = bigtable.instance(INSTANCE_ID);
+async function quickstart() {
+  // Connect to an existing instance:my-bigtable-instance
+  const instance = bigtable.instance(INSTANCE_ID);
 
-    // Connect to an existing table:my-table
-    const table = instance.table(TABLE_ID);
+  // Connect to an existing table:my-table
+  const table = instance.table(TABLE_ID);
 
-    // Read a row from my-table using a row key
-    const [singleRow] = await table.row('r1').get();
+  // Read a row from my-table using a row key
+  const [singleRow] = await table.row('r1').get();
 
-    // Print the row key and data (column value, labels, timestamp)
-    const rowData = JSON.stringify(singleRow.data, null, 4);
-    console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
-  }
-  quickstart();
+  // Print the row key and data (column value, labels, timestamp)
+  const rowData = JSON.stringify(singleRow.data, null, 4);
+  console.log(`Row key: ${singleRow.id}\nData: ${rowData}`);
+}
+quickstart();
 
 ```
 
@@ -101,6 +101,27 @@ has instructions for running the samples.
 
 The [Cloud Bigtable Node.js Client API Reference][client-docs] documentation
 also contains samples.
+
+## Supported Node.js Versions
+
+Our client libraries follow the [Node.js release schedule](https://nodejs.org/en/about/releases/).
+Libraries are compatible with all current _active_ and _maintenance_ versions of
+Node.js.
+
+Client libraries targetting some end-of-life versions of Node.js are available, and
+can be installed via npm [dist-tags](https://docs.npmjs.com/cli/dist-tag).
+The dist-tags follow the naming convention `legacy-(version)`.
+
+_Legacy Node.js versions are supported as a best effort:_
+
+* Legacy versions will not be tested in continuous integration.
+* Some security patches may not be able to be backported.
+* Dependencies will not be kept up-to-date, and features will not be backported.
+
+#### Legacy tags available
+
+* `legacy-8`: install client libraries from this dist-tag for versions
+  compatible with Node.js 8.
 
 ## Versioning
 
