@@ -43,8 +43,8 @@ export interface BoundData {
 }
 
 export interface Time {
-  start: Date;
-  end: Date;
+  start: Date | number;
+  end: Date | number;
 }
 
 // tslint:disable-next-line no-any
@@ -136,7 +136,15 @@ export class Filter {
    * // => '(a|b|c)'
    */
   static convertToRegExpString(
-    regex: RegExp | string | string[] | Buffer | number
+    regex:
+      | RegExp
+      | RegExp[]
+      | string
+      | string[]
+      | Buffer
+      | Buffer[]
+      | number
+      | number[]
   ): string | Buffer {
     if (is.regexp(regex)) {
       return regex.toString().replace(/^\/|\/$/g, '');
@@ -199,7 +207,11 @@ export class Filter {
    * //   startTest2Exclusive: 'value3'
    * // }
    */
-  static createRange(start: BoundData, end: BoundData, key: string) {
+  static createRange(
+    start: BoundData | null,
+    end: BoundData | null,
+    key: string
+  ) {
     const range = {};
 
     if (start) {
@@ -521,7 +533,17 @@ export class Filter {
    *   }
    * ];
    */
-  family(family: RegExp): void {
+  family(
+    family:
+      | RegExp
+      | string
+      | number
+      | Buffer
+      | RegExp[]
+      | string[]
+      | number[]
+      | Buffer[]
+  ): void {
     const f = Filter.convertToRegExpString(family);
     this.set('familyNameRegexFilter', f);
   }

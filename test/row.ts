@@ -16,15 +16,17 @@ import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import {describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
-
-const sn = require('sinon');
+import * as sinon from 'sinon';
 import {Mutation} from '../src/mutation.js';
+import * as rw from '../src/row';
+import {Table, Entry} from '../src/table.js';
+import {Chunk} from '../src/chunktransformer.js';
 
-const sinon = sn.createSandbox();
+const sandbox = sinon.createSandbox();
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass) {
+  promisifyAll(klass: Function) {
     if (klass.name === 'Row') {
       promisified = true;
     }
@@ -36,24 +38,24 @@ const CONVERTED_ROW_ID = 'my-converted-row';
 const TABLE = {
   bigtable: {},
   name: '/projects/project/instances/my-instance/tables/my-table',
-};
+} as Table;
 
 // tslint:disable-next-line variable-name
 const FakeMutation = {
   methods: Mutation.methods,
-  convertToBytes: sinon.spy(value => {
+  convertToBytes: sandbox.spy(value => {
     if (value === ROW_ID) {
       return CONVERTED_ROW_ID;
     }
     return value;
   }),
-  convertFromBytes: sinon.spy(value => {
+  convertFromBytes: sandbox.spy(value => {
     return value;
   }),
-  parseColumnName: sinon.spy(column => {
+  parseColumnName: sandbox.spy(column => {
     return Mutation.parseColumnName(column);
   }),
-  parse: sinon.spy(entry => {
+  parse: sandbox.spy(entry => {
     return {
       mutations: entry,
     };
@@ -62,17 +64,17 @@ const FakeMutation = {
 
 // tslint:disable-next-line variable-name
 const FakeFilter = {
-  parse: sinon.spy(filter => {
+  parse: sandbox.spy(filter => {
     return filter;
   }),
 };
 
 describe('Bigtable/Row', () => {
   // tslint:disable-next-line variable-name
-  let Row;
+  let Row: typeof rw.Row;
   // tslint:disable-next-line variable-name
-  let RowError;
-  let row;
+  let RowError: typeof rw.RowError;
+  let row: rw.Row;
 
   before(() => {
     // tslint:disable-next-line variable-name
@@ -90,9 +92,12 @@ describe('Bigtable/Row', () => {
   });
 
   afterEach(() => {
+    sandbox.restore();
     Object.keys(FakeMutation).forEach(spy => {
-      if (FakeMutation[spy].resetHistory) {
-        FakeMutation[spy].resetHistory();
+      // tslint:disable-next-line:no-any
+      if ((FakeMutation as any)[spy].resetHistory) {
+        // tslint:disable-next-line:no-any
+        (FakeMutation as any)[spy].resetHistory();
       }
     });
   });
@@ -124,7 +129,7 @@ describe('Bigtable/Row', () => {
 
     beforeEach(() => {
       convert = FakeMutation.convertFromBytes;
-      FakeMutation.convertFromBytes = sinon.spy(val => {
+      FakeMutation.convertFromBytes = sandbox.spy(val => {
         return val.replace('unconverted', 'converted');
       });
     });
@@ -154,7 +159,7 @@ describe('Bigtable/Row', () => {
         {
           commitRow: true,
         },
-      ];
+      ] as Chunk[];
 
       const rows = Row.formatChunks_(chunks);
 
@@ -178,7 +183,7 @@ describe('Bigtable/Row', () => {
     });
 
     it('should inherit the row key', () => {
-      const chunks = [
+      const chunks = ([
         {
           rowKey: 'unconvertedKey',
         },
@@ -199,7 +204,7 @@ describe('Bigtable/Row', () => {
           },
           commitRow: true,
         },
-      ];
+      ] as {}) as Chunk[];
 
       const rows = Row.formatChunks_(chunks);
 
@@ -240,7 +245,7 @@ describe('Bigtable/Row', () => {
         {
           commitRow: true,
         },
-      ];
+      ] as Chunk[];
 
       const rows = Row.formatChunks_(chunks);
 
@@ -286,7 +291,7 @@ describe('Bigtable/Row', () => {
         {
           commitRow: true,
         },
-      ];
+      ] as Chunk[];
 
       const rows = Row.formatChunks_(chunks);
 
@@ -320,10 +325,12 @@ describe('Bigtable/Row', () => {
         decode: false,
       };
 
-      FakeMutation.convertFromBytes = sinon.spy((val, options) => {
-        assert.deepStrictEqual(options, {userOptions: formatOptions});
-        return val.replace('unconverted', 'converted');
-      });
+      (FakeMutation.convertFromBytes as Function) = sandbox.spy(
+        (val, options) => {
+          assert.deepStrictEqual(options, {userOptions: formatOptions});
+          return val.replace('unconverted', 'converted');
+        }
+      );
 
       const timestamp1 = 123;
       const timestamp2 = 345;
@@ -353,7 +360,7 @@ describe('Bigtable/Row', () => {
         {
           commitRow: true,
         },
-      ];
+      ] as Chunk[];
 
       const rows = Row.formatChunks_(chunks, formatOptions);
 
@@ -385,7 +392,9 @@ describe('Bigtable/Row', () => {
       // 1 === qualifier
       // 2 === value
       const args = FakeMutation.convertFromBytes.getCall(2).args;
-      assert.deepStrictEqual(args[1], {userOptions: formatOptions});
+      assert.deepStrictEqual((args as string[])[1], {
+        userOptions: formatOptions,
+      });
     });
 
     it('should use the encoding scheme provided', () => {
@@ -393,10 +402,12 @@ describe('Bigtable/Row', () => {
         encoding: 'binary',
       };
 
-      FakeMutation.convertFromBytes = sinon.spy((val, options) => {
-        assert.deepStrictEqual(options, {userOptions: formatOptions});
-        return val.toString(formatOptions.encoding);
-      });
+      (FakeMutation.convertFromBytes as Function) = sandbox.spy(
+        (val, options) => {
+          assert.deepStrictEqual(options, {userOptions: formatOptions});
+          return val.toString(formatOptions.encoding);
+        }
+      );
 
       const chunks = [
         {
@@ -413,7 +424,7 @@ describe('Bigtable/Row', () => {
           timestampMicros: 123,
           commitRow: true,
         },
-      ];
+      ] as Chunk[];
 
       const rows = Row.formatChunks_(chunks, formatOptions);
 
@@ -438,12 +449,12 @@ describe('Bigtable/Row', () => {
       // 0 === row key
       // 1 === qualifier
       // 2 === value
-      const args = FakeMutation.convertFromBytes.getCall(2).args;
+      const args: string[] = FakeMutation.convertFromBytes.getCall(2).args;
       assert.deepStrictEqual(args[1], {userOptions: formatOptions});
     });
 
     it('should discard old data when reset row is found', () => {
-      const chunks = [
+      const chunks = ([
         {
           rowKey: 'unconvertedKey',
           familyName: {
@@ -476,7 +487,7 @@ describe('Bigtable/Row', () => {
         {
           commitRow: true,
         },
-      ];
+      ] as {}) as Chunk[];
 
       const rows = Row.formatChunks_(chunks);
 
@@ -536,7 +547,6 @@ describe('Bigtable/Row', () => {
     it('should format the families into a user-friendly format', () => {
       const formatted = Row.formatFamilies_(families);
       assert.deepStrictEqual(formatted, formattedRowData);
-
       const convertStpy = FakeMutation.convertFromBytes;
       assert.strictEqual(convertStpy.callCount, 2);
       assert.strictEqual(convertStpy.getCall(0).args[0], 'test-column');
@@ -547,9 +557,7 @@ describe('Bigtable/Row', () => {
       const formatted = Row.formatFamilies_(families, {
         decode: false,
       });
-
       assert.deepStrictEqual(formatted, formattedRowData);
-
       const convertStpy = FakeMutation.convertFromBytes;
       assert.strictEqual(convertStpy.callCount, 1);
       assert.strictEqual(convertStpy.getCall(0).args[0], 'test-column');
@@ -558,14 +566,13 @@ describe('Bigtable/Row', () => {
 
   describe('create', () => {
     it('should provide the proper request options', done => {
-      row.table.mutate = (entry, gaxOptions) => {
+      (row.table.mutate as Function) = (entry: Entry, gaxOptions: {}) => {
         assert.strictEqual(entry.key, row.id);
         assert.strictEqual(entry.data, undefined);
         assert.strictEqual(entry.method, Mutation.methods.INSERT);
         assert.strictEqual(gaxOptions, undefined);
         done();
       };
-
       row.create(assert.ifError);
     });
 
@@ -576,12 +583,10 @@ describe('Bigtable/Row', () => {
           b: 'b',
         },
       };
-
-      row.table.mutate = entry => {
+      (row.table.mutate as Function) = (entry: Entry) => {
         assert.strictEqual(entry.data, options.entry);
         done();
       };
-
       row.create(options, assert.ifError);
     });
 
@@ -589,23 +594,17 @@ describe('Bigtable/Row', () => {
       const options = {
         gaxOptions: {},
       };
-
-      row.table.mutate = (entry, gaxOptions) => {
+      (row.table.mutate as Function) = (entry: Entry, gaxOptions: {}) => {
         assert.strictEqual(gaxOptions, options.gaxOptions);
         done();
       };
-
       row.create(options, assert.ifError);
     });
 
     it('should return an error to the callback', done => {
       const err = new Error('err');
       const response = {};
-
-      row.table.mutate = (entry, gaxOptions, callback) => {
-        callback(err, response);
-      };
-
+      sandbox.stub(row.table, 'mutate').callsArgWith(2, err, response);
       row.create((err_, row, apiResponse) => {
         assert.strictEqual(err, err_);
         assert.strictEqual(row, null);
@@ -616,11 +615,7 @@ describe('Bigtable/Row', () => {
 
     it('should return the Row instance', done => {
       const response = {};
-
-      row.table.mutate = (entry, gaxOptions, callback) => {
-        callback(null, response);
-      };
-
+      sandbox.stub(row.table, 'mutate').callsArgWith(2, null, response);
       row.create((err, row_, apiResponse) => {
         assert.ifError(err);
         assert.strictEqual(row, row_);
@@ -641,18 +636,20 @@ describe('Bigtable/Row', () => {
 
     it('should throw if a rule is not provided', () => {
       assert.throws(() => {
-        row.createRules();
+        (row.createRules as Function)();
       }, /At least one rule must be provided\./);
     });
 
     it('should read/modify/write rules', done => {
-      row.bigtable.request = (config, callback) => {
+      (row.bigtable.request as Function) = (
+        // tslint:disable-next-line:no-any
+        config: any,
+        callback: Function
+      ) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'readModifyWriteRow');
-
         assert.strictEqual(config.reqOpts.tableName, TABLE.name);
         assert.strictEqual(config.reqOpts.rowKey, CONVERTED_ROW_ID);
-
         assert.deepStrictEqual(config.reqOpts.rules, [
           {
             familyName: 'a',
@@ -661,76 +658,71 @@ describe('Bigtable/Row', () => {
             incrementAmount: 1,
           },
         ]);
-
         const spy = FakeMutation.convertToBytes;
-
         assert.strictEqual(spy.getCall(0).args[0], 'b');
         assert.strictEqual(spy.getCall(1).args[0], 'c');
         assert.strictEqual(spy.getCall(2).args[0], ROW_ID);
-
         callback(); // done()
       };
-
       row.createRules(rules, done);
     });
 
     it('should use an appProfileId', done => {
       const bigtableInstance = row.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-
-      bigtableInstance.request = config => {
+      // tslint:disable-next-line:no-any
+      (bigtableInstance.request as Function) = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
           bigtableInstance.appProfileId
         );
         done();
       };
-
       row.createRules(rules, assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      row.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      (row.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
-
       row.createRules(rules, gaxOptions, assert.ifError);
     });
   });
 
   describe('delete', () => {
     it('should provide the proper request options', done => {
-      row.table.mutate = (mutation, gaxOptions, callback) => {
+      (row.table.mutate as Function) = (
+        // tslint:disable-next-line:no-any
+        mutation: any,
+        gaxOptions: {},
+        callback: Function
+      ) => {
         assert.strictEqual(mutation.key, ROW_ID);
         assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
         assert.deepStrictEqual(gaxOptions, {});
         callback(); // done()
       };
-
       row.delete(done);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      row.table.mutate = (mutation, gaxOptions_) => {
+      (row.table.mutate as Function) = (mutation: {}, gaxOptions_: {}) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       };
-
       row.delete(gaxOptions, done);
     });
 
     it('should remove existing data', done => {
       const gaxOptions = {};
-      row.table.mutate = (mutation, gaxOptions_) => {
+      (row.table.mutate as Function) = (mutation: {}, gaxOptions_: {}) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       };
-
       row.delete(gaxOptions, done);
       assert.strictEqual(row.data, undefined);
     });
@@ -740,33 +732,32 @@ describe('Bigtable/Row', () => {
     const columns = ['a:b', 'c'];
 
     it('should provide the proper request options', done => {
-      row.table.mutate = (mutation, gaxOptions, callback) => {
+      (row.table.mutate as Function) = (
+        // tslint:disable-next-line:no-any
+        mutation: any,
+        gaxOptions: {},
+        callback: Function
+      ) => {
         assert.strictEqual(mutation.key, ROW_ID);
         assert.strictEqual(mutation.data, columns);
         assert.strictEqual(mutation.method, FakeMutation.methods.DELETE);
         assert.deepStrictEqual(gaxOptions, {});
         callback(); // done()
       };
-
       row.deleteCells(columns, done);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      row.table.mutate = (mutation, gaxOptions_) => {
+      sandbox.stub(row.table, 'mutate').callsFake((mutation, gaxOptions_) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      };
-
+      });
       row.deleteCells(columns, gaxOptions, done);
     });
 
     it('should remove existing data', done => {
-      row.table.mutate = (mutation, gaxOptions, callback) => {
-        callback(); // done()
-      };
-
+      sandbox.stub(row.table, 'mutate').callsArg(2);
       row.deleteCells(columns, done);
       assert.strictEqual(row.data, undefined);
     });
@@ -774,32 +765,25 @@ describe('Bigtable/Row', () => {
 
   describe('exists', () => {
     it('should not require gaxOptions', done => {
-      row.getMetadata = gaxOptions => {
+      sandbox.stub(row, 'getMetadata').callsFake(gaxOptions => {
         assert.deepStrictEqual(gaxOptions, {});
         done();
-      };
-
+      });
       row.exists(assert.ifError);
     });
 
     it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
-
-      row.getMetadata = gaxOptions_ => {
+      sandbox.stub(row, 'getMetadata').callsFake(gaxOptions_ => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      };
-
+      });
       row.exists(gaxOptions, assert.ifError);
     });
 
     it('should return false if error is RowError', done => {
       const error = new RowError('Error.');
-
-      row.getMetadata = (gaxOptions, callback) => {
-        callback(error);
-      };
-
+      sandbox.stub(row, 'getMetadata').callsArgWith(1, error);
       row.exists((err, exists) => {
         assert.ifError(err);
         assert.strictEqual(exists, false);
@@ -809,11 +793,7 @@ describe('Bigtable/Row', () => {
 
     it('should return error if not RowError', done => {
       const error = new Error('Error.');
-
-      row.getMetadata = (gaxOptions, callback) => {
-        callback(error);
-      };
-
+      sandbox.stub(row, 'getMetadata').callsArgWith(1, error);
       row.exists(err => {
         assert.strictEqual(err, error);
         done();
@@ -821,10 +801,7 @@ describe('Bigtable/Row', () => {
     });
 
     it('should return true if no error', done => {
-      row.getMetadata = (gaxOptions, callback) => {
-        callback(null, {});
-      };
-
+      sandbox.stub(row, 'getMetadata').callsArgWith(1, null, {});
       row.exists((err, exists) => {
         assert.ifError(err);
         assert.strictEqual(exists, true);
@@ -834,22 +811,22 @@ describe('Bigtable/Row', () => {
   });
 
   describe('filter', () => {
-    const mutations = [
+    const mutations = ([
       {
         method: 'insert',
         data: {
           a: 'a',
         },
       },
-    ];
+    ] as {}) as rw.FilterConfigOption[];
 
-    const fakeMutations = {
+    const fakeMutations = ({
       mutations: [
         {
           a: 'b',
         },
       ],
-    };
+    } as {}) as {mutations: rw.FilterConfigOption};
 
     beforeEach(() => {
       FakeMutation.parse.resetHistory();
@@ -865,15 +842,16 @@ describe('Bigtable/Row', () => {
         column: 'b',
       };
 
-      FakeFilter.parse = sinon.spy(() => {
+      (FakeFilter.parse as Function) = sandbox.spy(() => {
         return fakeParsedFilter;
       });
 
-      FakeMutation.parse = sinon.spy(() => {
+      (FakeMutation.parse as Function) = sandbox.spy(() => {
         return fakeMutations;
       });
 
-      row.bigtable.request = config => {
+      // tslint:disable-next-line:no-any
+      (row.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'checkAndMutateRow');
         assert.strictEqual(config.reqOpts.tableName, TABLE.name);
@@ -892,14 +870,11 @@ describe('Bigtable/Row', () => {
         );
 
         assert.strictEqual(config.gaxOpts, undefined);
-
         assert.strictEqual(FakeMutation.parse.callCount, 2);
         assert.strictEqual(FakeMutation.parse.getCall(0).args[0], mutations[0]);
         assert.strictEqual(FakeMutation.parse.getCall(1).args[0], mutations[0]);
-
         assert.strictEqual(FakeFilter.parse.callCount, 1);
         assert(FakeFilter.parse.calledWithExactly(filter));
-
         done();
       };
 
@@ -918,12 +893,10 @@ describe('Bigtable/Row', () => {
         column: 'a',
       };
       const gaxOptions = {};
-
-      row.bigtable.request = config => {
+      sandbox.stub(row.bigtable, 'request').callsFake(config => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
-      };
-
+      });
       row.filter(filter, {gaxOptions}, assert.ifError);
     });
 
@@ -931,58 +904,56 @@ describe('Bigtable/Row', () => {
       const filter = {
         column: 'a',
       };
-
       const bigtableInstance = row.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-
-      bigtableInstance.request = config => {
+      sandbox.stub(bigtableInstance, 'request').callsFake(config => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
           bigtableInstance.appProfileId
         );
         done();
-      };
-
+      });
       row.filter(filter, assert.ifError);
     });
 
     it('should return an error to the callback', done => {
       const err = new Error('err');
       const response = {};
-
-      row.bigtable.request = (config, callback) => {
-        callback(err, response);
-      };
-
-      row.filter({}, mutations, (err_, matched, apiResponse) => {
-        assert.strictEqual(err, err_);
-        assert.strictEqual(matched, null);
-        assert.strictEqual(response, apiResponse);
-        done();
-      });
+      sandbox.stub(row.bigtable, 'request').callsArgWith(1, err, response);
+      (row.filter as Function)(
+        {},
+        mutations,
+        (err_: Error, matched: boolean, apiResponse: {}) => {
+          assert.strictEqual(err, err_);
+          assert.strictEqual(matched, null);
+          assert.strictEqual(response, apiResponse);
+          done();
+        }
+      );
     });
 
     it('should return a matched flag', done => {
       const response = {
         predicateMatched: true,
       };
-
-      row.bigtable.request = (config, callback) => {
-        callback(null, response);
-      };
-
-      row.filter({}, mutations, (err, matched, apiResponse) => {
-        assert.ifError(err);
-        assert(matched);
-        assert.strictEqual(response, apiResponse);
-        done();
-      });
+      sandbox.stub(row.bigtable, 'request').callsArgWith(1, null, response);
+      (row.filter as Function)(
+        {},
+        mutations,
+        (err: Error, matched: boolean, apiResponse: {}) => {
+          assert.ifError(err);
+          assert(matched);
+          assert.strictEqual(response, apiResponse);
+          done();
+        }
+      );
     });
   });
 
   describe('get', () => {
     it('should provide the proper request options', done => {
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.strictEqual(reqOpts.keys[0], ROW_ID);
         assert.strictEqual(reqOpts.filter, undefined);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 0);
@@ -1004,13 +975,13 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
         done();
       };
-
       row.get(keys, assert.ifError);
     });
 
@@ -1040,7 +1011,8 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
 
         const spy = FakeMutation.parseColumnName;
@@ -1063,7 +1035,8 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
@@ -1101,7 +1074,8 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 1);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
@@ -1154,7 +1128,8 @@ describe('Bigtable/Row', () => {
         },
       ];
 
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         assert.strictEqual(FakeMutation.parseColumnName.callCount, 2);
         assert(FakeMutation.parseColumnName.calledWith(keys[0]));
@@ -1166,7 +1141,7 @@ describe('Bigtable/Row', () => {
     });
 
     it('should respect filter in options object', done => {
-      const keys = [];
+      const keys = [] as string[];
 
       const options = {
         decode: false,
@@ -1174,7 +1149,8 @@ describe('Bigtable/Row', () => {
       };
       const expectedFilter = options.filter;
 
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.deepStrictEqual(reqOpts.filter, expectedFilter);
         done();
       };
@@ -1187,7 +1163,8 @@ describe('Bigtable/Row', () => {
         decode: false,
       };
 
-      row.table.getRows = reqOpts => {
+      // tslint:disable-next-line:no-any
+      (row.table.getRows as Function) = (reqOpts: any) => {
         assert.strictEqual(reqOpts.decode, options.decode);
         assert(!reqOpts.filter);
         done();
@@ -1198,11 +1175,7 @@ describe('Bigtable/Row', () => {
 
     it('should return an error to the callback', done => {
       const error = new Error('err');
-
-      row.table.getRows = (r, callback) => {
-        callback(error);
-      };
-
+      sandbox.stub(row.table, 'getRows').callsArgWith(1, error);
       row.get((err, row) => {
         assert.strictEqual(error, err);
         assert.strictEqual(row, undefined);
@@ -1211,13 +1184,10 @@ describe('Bigtable/Row', () => {
     });
 
     it('should return a custom error if the row is not found', done => {
-      row.table.getRows = (r, callback) => {
-        callback(null, []);
-      };
-
+      sandbox.stub(row.table, 'getRows').callsArgWith(1, null, []);
       row.get((err, row_) => {
         assert(err instanceof RowError);
-        assert.strictEqual(err.message, 'Unknown row: ' + row.id + '.');
+        assert.strictEqual(err!.message, 'Unknown row: ' + row.id + '.');
         assert.deepStrictEqual(row_, undefined);
         done();
       });
@@ -1225,16 +1195,11 @@ describe('Bigtable/Row', () => {
 
     it('should update the row data upon success', done => {
       const fakeRow = new Row(TABLE, ROW_ID);
-
       fakeRow.data = {
         a: 'a',
         b: 'b',
       };
-
-      row.table.getRows = (r, callback) => {
-        callback(null, [fakeRow]);
-      };
-
+      sandbox.stub(row.table, 'getRows').callsArgWith(1, null, [fakeRow]);
       row.get((err, row_) => {
         assert.ifError(err);
         assert.strictEqual(row_, row);
@@ -1256,11 +1221,7 @@ describe('Bigtable/Row', () => {
       row.data = {
         c: 'c',
       };
-
-      row.table.getRows = (r, callback) => {
-        callback(null, [fakeRow]);
-      };
-
+      sandbox.stub(row.table, 'getRows').callsArgWith(1, null, [fakeRow]);
       row.get(keys, (err, data) => {
         assert.ifError(err);
         assert.deepStrictEqual(Object.keys(data), keys);
@@ -1272,11 +1233,7 @@ describe('Bigtable/Row', () => {
   describe('getMetadata', () => {
     it('should return an error to the callback', done => {
       const error = new Error('err');
-
-      row.get = (options, callback) => {
-        callback(error);
-      };
-
+      sandbox.stub(row, 'get').callsArgWith(1, error);
       row.getMetadata((err, metadata) => {
         assert.strictEqual(error, err);
         assert.strictEqual(metadata, undefined);
@@ -1289,13 +1246,8 @@ describe('Bigtable/Row', () => {
         a: 'a',
         b: 'b',
       };
-
-      row.get = (options, callback) => {
-        callback(null, row);
-      };
-
+      sandbox.stub(row, 'get').callsArgWith(1, null, row);
       row.metadata = fakeMetadata;
-
       row.getMetadata((err, metadata) => {
         assert.ifError(err);
         assert.strictEqual(metadata, fakeMetadata);
@@ -1308,14 +1260,11 @@ describe('Bigtable/Row', () => {
       const fakeOptions = {
         decode: false,
       };
-
-      row.get = (options, callback) => {
+      (row.get as Function) = (options: {}, callback: Function) => {
         assert.strictEqual(options, fakeOptions);
         callback(null, row);
       };
-
       row.metadata = fakeMetadata;
-
       row.getMetadata(fakeOptions, (err, metadata) => {
         assert.ifError(err);
         assert.strictEqual(metadata, fakeMetadata);
@@ -1326,10 +1275,10 @@ describe('Bigtable/Row', () => {
 
   describe('increment', () => {
     const COLUMN_NAME = 'a:b';
-    let formatFamiliesSpy;
+    let formatFamiliesSpy: sinon.SinonSpy;
 
     beforeEach(() => {
-      formatFamiliesSpy = sinon.stub(Row, 'formatFamilies_').returns({
+      formatFamiliesSpy = sandbox.stub(Row, 'formatFamilies_').returns({
         a: {
           b: [
             {
@@ -1345,59 +1294,48 @@ describe('Bigtable/Row', () => {
     });
 
     it('should provide the proper request options', done => {
-      row.createRules = (reqOpts, gaxOptions) => {
-        assert.strictEqual(reqOpts.column, COLUMN_NAME);
-        assert.strictEqual(reqOpts.increment, 1);
+      sandbox.stub(row, 'createRules').callsFake((reqOpts, gaxOptions) => {
+        assert.strictEqual((reqOpts as rw.Rule).column, COLUMN_NAME);
+        assert.strictEqual((reqOpts as rw.Rule).increment, 1);
         assert.deepStrictEqual(gaxOptions, {});
         done();
-      };
-
+      });
       row.increment(COLUMN_NAME, assert.ifError);
     });
 
     it('should optionally accept an increment amount', done => {
       const increment = 10;
-
-      row.createRules = reqOpts => {
-        assert.strictEqual(reqOpts.increment, increment);
+      sandbox.stub(row, 'createRules').callsFake(reqOpts => {
+        assert.strictEqual((reqOpts as rw.Rule).increment, increment);
         done();
-      };
-
+      });
       row.increment(COLUMN_NAME, increment, assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      row.createRules = (reqOpts, gaxOptions_) => {
+      sandbox.stub(row, 'createRules').callsFake((reqOpts, gaxOptions_) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      };
-
+      });
       row.increment(COLUMN_NAME, gaxOptions, assert.ifError);
     });
 
     it('should accept increment amount and gaxOptions', done => {
       const increment = 10;
       const gaxOptions = {};
-
-      row.createRules = (reqOpts, gaxOptions_) => {
-        assert.strictEqual(reqOpts.increment, increment);
+      sandbox.stub(row, 'createRules').callsFake((reqOpts, gaxOptions_) => {
+        assert.strictEqual((reqOpts as rw.Rule).increment, increment);
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      };
-
+      });
       row.increment(COLUMN_NAME, increment, gaxOptions, assert.ifError);
     });
 
     it('should return an error to the callback', done => {
       const error = new Error('err');
       const response = {};
-
-      row.createRules = (r, gaxOptions, callback) => {
-        callback(error, response);
-      };
-
+      sandbox.stub(row, 'createRules').callsArgWith(2, error, response);
       row.increment(COLUMN_NAME, (err, value, apiResponse) => {
         assert.strictEqual(err, error);
         assert.strictEqual(value, null);
@@ -1430,10 +1368,7 @@ describe('Bigtable/Row', () => {
         },
       };
 
-      row.createRules = (r, gaxOptions, callback) => {
-        callback(null, response);
-      };
-
+      sandbox.stub(row, 'createRules').callsArgWith(2, null, response);
       row.increment(COLUMN_NAME, (err, value, apiResponse) => {
         assert.ifError(err);
         assert.strictEqual(value, fakeValue);
@@ -1453,32 +1388,33 @@ describe('Bigtable/Row', () => {
     };
 
     it('should insert an object', done => {
-      row.table.mutate = (entry, gaxOptions, callback) => {
+      (row.table.mutate as Function) = (
+        // tslint:disable-next-line:no-any
+        entry: any,
+        gaxOptions: {},
+        callback: Function
+      ) => {
         assert.strictEqual(entry.data, data);
         callback(); // done()
       };
-
       row.save(data, done);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-
-      row.table.mutate = (entry, gaxOptions_) => {
+      sandbox.stub(row.table, 'mutate').callsFake((entry, gaxOptions_) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      };
-
+      });
       row.save(data, gaxOptions, assert.ifError);
     });
 
     it('should remove existing data', done => {
       const gaxOptions = {};
-      row.table.mutate = (entry, gaxOptions_) => {
+      sandbox.stub(row.table, 'mutate').callsFake((entry, gaxOptions_) => {
         assert.strictEqual(gaxOptions_, gaxOptions);
         done();
-      };
-
+      });
       row.save(data, gaxOptions, assert.ifError);
       assert.strictEqual(row.data, undefined);
     });

@@ -67,9 +67,13 @@ export interface DeleteAppProfileOptions {
 
 export type CreateAppProfileCallback = (
   err: ServiceError | null,
-  appProfile?: AppProfile
+  appProfile?: AppProfile,
+  apiResponse?: google.bigtable.admin.v2.IAppProfile
 ) => void;
-export type CreateAppProfileResponse = [AppProfile];
+export type CreateAppProfileResponse = [
+  AppProfile,
+  google.bigtable.admin.v2.IAppProfile
+];
 export type DeleteAppProfileCallback = (
   err: ServiceError | null,
   apiResponse?: google.protobuf.Empty
@@ -457,7 +461,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       'allowTransactionalWrites',
     ];
     fieldsForMask.forEach(field => {
-      if (reqOpts.appProfile![field]) {
+      if ((reqOpts.appProfile as {[index: string]: string})![field]) {
         reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });

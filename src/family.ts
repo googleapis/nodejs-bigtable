@@ -34,7 +34,7 @@ export interface InstanceCallback<I, R> {
 }
 
 export interface GcRule {
-  age?: google.protobuf.IDuration;
+  age?: google.protobuf.IDuration | number;
   versions?: number;
   rule?: GcRule;
   union?: boolean;
@@ -166,7 +166,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
 
     if (ruleObj.age) {
       rules.push({
-        maxAge: ruleObj.age,
+        maxAge: ruleObj.age as google.protobuf.IDuration,
       });
     }
 

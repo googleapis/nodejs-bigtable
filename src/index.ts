@@ -641,6 +641,12 @@ export class Bigtable {
     }
 
     reqOpts.clusters = arrify(options.clusters!).reduce((clusters, cluster) => {
+      if (!cluster.id) {
+        throw new Error(
+          'A cluster was provided without an `id` property defined.'
+        );
+      }
+
       clusters[cluster.id!] = {
         location: Cluster.getLocation_(this.projectId, cluster.location!),
         serveNodes: cluster.nodes,
@@ -807,7 +813,8 @@ export class Bigtable {
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
           reqOpts = replaceProjectIdToken(reqOpts, projectId!);
         }
-        const requestFn = gaxClient[config.method!].bind(
+        // tslint:disable-next-line:no-any
+        const requestFn = (gaxClient as any)[config.method!].bind(
           gaxClient,
           reqOpts,
           config.gaxOpts

@@ -3,10 +3,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "build",
-    "noImplicitAny": false,
     "resolveJsonModule": true,
     "lib": [
-      "es2016",
+      "es2018",
       "dom"
     ]
   },

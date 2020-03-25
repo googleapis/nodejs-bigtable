@@ -199,7 +199,7 @@ export class Row {
    * //   }
    * // }
    */
-  static formatChunks_(chunks: Chunk[], options: ConvertFromBytesUserOptions) {
+  static formatChunks_(chunks: Chunk[], options?: ConvertFromBytesUserOptions) {
     const rows: Row[] = [];
     let familyName: string | null;
     let qualifierName: string | null;
