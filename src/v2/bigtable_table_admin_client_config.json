@@ -94,6 +94,30 @@
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
+        "CreateBackup": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "GetBackup": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "UpdateBackup": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "DeleteBackup": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "ListBackups": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "RestoreTable": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
         "GetIamPolicy": {
           "timeout_millis": 60000,
           "retry_codes_name": "idempotent",
