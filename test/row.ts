@@ -814,7 +814,12 @@ describe('Bigtable/Row', () => {
       } as CallOptions;
 
       sandbox.stub(row, 'getMetadata').callsFake(gaxOptions_ => {
-        assert('testProperty' in gaxOptions_);
+        assert.strictEqual(
+          // tslint:disable-next-line no-any
+          (gaxOptions_ as any).testProperty,
+          // tslint:disable-next-line no-any
+          (gaxOptions as any).testProperty
+        );
         done();
       });
 
