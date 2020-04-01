@@ -160,10 +160,10 @@ describe('Bigtable/Table', () => {
         clock.runAll();
 
         if (test.error) {
-          assert(!endCalled, `.on('end') should not have been invoked`);
+          assert(!endCalled, ".on('end') should not have been invoked");
           assert.strictEqual(error!.code, test.error);
         } else {
-          assert(endCalled, `.on('end') shoud have been invoked`);
+          assert(endCalled, ".on('end') shoud have been invoked");
           assert.ifError(error);
         }
         assert.deepStrictEqual(rowKeysRead, test.row_keys_read);

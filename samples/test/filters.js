@@ -14,7 +14,7 @@
 
 'use strict';
 
-const uuid = require(`uuid`);
+const uuid = require('uuid');
 const snapshot = require('snap-shot-it');
 const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
@@ -23,7 +23,7 @@ const {Bigtable} = require('@google-cloud/bigtable');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 
-const INSTANCE_ID = `nodejs-bigtable-samples-keepme`;
+const INSTANCE_ID = 'nodejs-bigtable-samples-keepme';
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('filters', async () => {
@@ -284,7 +284,7 @@ describe('filters', async () => {
     const stdout = execSync(
       `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterBlockAll`
     );
-    const result = ``;
+    const result = '';
     assert.equal(stdout, result);
   });
 

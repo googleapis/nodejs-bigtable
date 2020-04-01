@@ -17,16 +17,10 @@
 // ** All changes to this file may be overwritten. **
 
 import * as gax from 'google-gax';
-import {
-  APICallback,
-  Callback,
-  CallOptions,
-  Descriptors,
-  ClientOptions,
-} from 'google-gax';
+import {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
 import * as path from 'path';
 
-import * as protosTypes from '../../protos/protos';
+import * as protos from '../../protos/protos';
 import * as gapicConfig from './bigtable_client_config.json';
 
 const version = require('../../../package.json').version;
@@ -37,14 +31,6 @@ const version = require('../../../package.json').version;
  * @memberof v2
  */
 export class BigtableClient {
-  private _descriptors: Descriptors = {
-    page: {},
-    stream: {},
-    longrunning: {},
-    batching: {},
-  };
-  private _innerApiCalls: {[name: string]: Function};
-  private _pathTemplates: {[name: string]: gax.PathTemplate};
   private _terminated = false;
   private _opts: ClientOptions;
   private _gaxModule: typeof gax | typeof gax.fallback;
@@ -52,6 +38,14 @@ export class BigtableClient {
   private _protos: {};
   private _defaults: {[method: string]: gax.CallSettings};
   auth: gax.GoogleAuth;
+  descriptors: Descriptors = {
+    page: {},
+    stream: {},
+    longrunning: {},
+    batching: {},
+  };
+  innerApiCalls: {[name: string]: Function};
+  pathTemplates: {[name: string]: gax.PathTemplate};
   bigtableStub?: Promise<{[name: string]: Function}>;
 
   /**
@@ -143,13 +137,16 @@ export class BigtableClient {
       'protos.json'
     );
     this._protos = this._gaxGrpc.loadProto(
-      opts.fallback ? require('../../protos/protos.json') : nodejsProtoPath
+      opts.fallback
+        ? // eslint-disable-next-line @typescript-eslint/no-var-requires
+          require('../../protos/protos.json')
+        : nodejsProtoPath
     );
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
     // Create useful helper objects for these.
-    this._pathTemplates = {
+    this.pathTemplates = {
       tablePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/tables/{table}'
       ),
@@ -157,7 +154,7 @@ export class BigtableClient {
 
     // Some of the methods on this service provide streaming responses.
     // Provide descriptors for these.
-    this._descriptors.stream = {
+    this.descriptors.stream = {
       readRows: new this._gaxModule.StreamDescriptor(
         gax.StreamType.SERVER_STREAMING
       ),
@@ -180,7 +177,7 @@ export class BigtableClient {
     // Set up a dictionary of "inner API calls"; the core implementation
     // of calling the API is handled in `google-gax`, with this code
     // merely providing the destination and request information.
-    this._innerApiCalls = {};
+    this.innerApiCalls = {};
   }
 
   /**
@@ -207,7 +204,7 @@ export class BigtableClient {
         ? (this._protos as protobuf.Root).lookupService(
             'google.bigtable.v2.Bigtable'
           )
-        : // tslint:disable-next-line no-any
+        : // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.bigtable.v2.Bigtable,
       this._opts
     ) as Promise<{[method: string]: Function}>;
@@ -222,9 +219,8 @@ export class BigtableClient {
       'checkAndMutateRow',
       'readModifyWriteRow',
     ];
-
     for (const methodName of bigtableStubMethods) {
-      const innerCallPromise = this.bigtableStub.then(
+      const callPromise = this.bigtableStub.then(
         stub => (...args: Array<{}>) => {
           if (this._terminated) {
             return Promise.reject('The client has already been closed.');
@@ -238,20 +234,14 @@ export class BigtableClient {
       );
 
       const apiCall = this._gaxModule.createApiCall(
-        innerCallPromise,
+        callPromise,
         this._defaults[methodName],
-        this._descriptors.page[methodName] ||
-          this._descriptors.stream[methodName] ||
-          this._descriptors.longrunning[methodName]
+        this.descriptors.page[methodName] ||
+          this.descriptors.stream[methodName] ||
+          this.descriptors.longrunning[methodName]
       );
 
-      this._innerApiCalls[methodName] = (
-        argument: {},
-        callOptions?: CallOptions,
-        callback?: APICallback
-      ) => {
-        return apiCall(argument, callOptions, callback);
-      };
+      this.innerApiCalls[methodName] = apiCall;
     }
 
     return this.bigtableStub;
@@ -315,22 +305,30 @@ export class BigtableClient {
   // -- Service calls --
   // -------------------
   mutateRow(
-    request: protosTypes.google.bigtable.v2.IMutateRowRequest,
+    request: protos.google.bigtable.v2.IMutateRowRequest,
     options?: gax.CallOptions
   ): Promise<
     [
-      protosTypes.google.bigtable.v2.IMutateRowResponse,
-      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
+      protos.google.bigtable.v2.IMutateRowResponse,
+      protos.google.bigtable.v2.IMutateRowRequest | undefined,
       {} | undefined
     ]
   >;
   mutateRow(
-    request: protosTypes.google.bigtable.v2.IMutateRowRequest,
+    request: protos.google.bigtable.v2.IMutateRowRequest,
     options: gax.CallOptions,
     callback: Callback<
-      protosTypes.google.bigtable.v2.IMutateRowResponse,
-      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
-      {} | undefined
+      protos.google.bigtable.v2.IMutateRowResponse,
+      protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  mutateRow(
+    request: protos.google.bigtable.v2.IMutateRowRequest,
+    callback: Callback<
+      protos.google.bigtable.v2.IMutateRowResponse,
+      protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
+      {} | null | undefined
     >
   ): void;
   /**
@@ -359,23 +357,23 @@ export class BigtableClient {
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    */
   mutateRow(
-    request: protosTypes.google.bigtable.v2.IMutateRowRequest,
+    request: protos.google.bigtable.v2.IMutateRowRequest,
     optionsOrCallback?:
       | gax.CallOptions
       | Callback<
-          protosTypes.google.bigtable.v2.IMutateRowResponse,
-          protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
-          {} | undefined
+          protos.google.bigtable.v2.IMutateRowResponse,
+          protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
+          {} | null | undefined
         >,
     callback?: Callback<
-      protosTypes.google.bigtable.v2.IMutateRowResponse,
-      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
-      {} | undefined
+      protos.google.bigtable.v2.IMutateRowResponse,
+      protos.google.bigtable.v2.IMutateRowRequest | null | undefined,
+      {} | null | undefined
     >
   ): Promise<
     [
-      protosTypes.google.bigtable.v2.IMutateRowResponse,
-      protosTypes.google.bigtable.v2.IMutateRowRequest | undefined,
+      protos.google.bigtable.v2.IMutateRowResponse,
+      protos.google.bigtable.v2.IMutateRowRequest | undefined,
       {} | undefined
     ]
   > | void {
@@ -396,25 +394,33 @@ export class BigtableClient {
       table_name: request.tableName || '',
     });
     this.initialize();
-    return this._innerApiCalls.mutateRow(request, options, callback);
+    return this.innerApiCalls.mutateRow(request, options, callback);
   }
   checkAndMutateRow(
-    request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
+    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     options?: gax.CallOptions
   ): Promise<
     [
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
       {} | undefined
     ]
   >;
   checkAndMutateRow(
-    request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
+    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     options: gax.CallOptions,
     callback: Callback<
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
-      {} | undefined
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  checkAndMutateRow(
+    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    callback: Callback<
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
+      {} | null | undefined
     >
   ): void;
   /**
@@ -456,23 +462,25 @@ export class BigtableClient {
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    */
   checkAndMutateRow(
-    request: protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest,
+    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     optionsOrCallback?:
       | gax.CallOptions
       | Callback<
-          protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-          protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
-          {} | undefined
+          protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+          | protos.google.bigtable.v2.ICheckAndMutateRowRequest
+          | null
+          | undefined,
+          {} | null | undefined
         >,
     callback?: Callback<
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
-      {} | undefined
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
+      {} | null | undefined
     >
   ): Promise<
     [
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowResponse,
-      protosTypes.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
       {} | undefined
     ]
   > | void {
@@ -493,25 +501,33 @@ export class BigtableClient {
       table_name: request.tableName || '',
     });
     this.initialize();
-    return this._innerApiCalls.checkAndMutateRow(request, options, callback);
+    return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
   readModifyWriteRow(
-    request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
+    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     options?: gax.CallOptions
   ): Promise<
     [
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
       {} | undefined
     ]
   >;
   readModifyWriteRow(
-    request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
+    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     options: gax.CallOptions,
     callback: Callback<
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
-      {} | undefined
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  readModifyWriteRow(
+    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    callback: Callback<
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
+      {} | null | undefined
     >
   ): void;
   /**
@@ -544,23 +560,25 @@ export class BigtableClient {
    *   The promise has a method named "cancel" which cancels the ongoing API call.
    */
   readModifyWriteRow(
-    request: protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest,
+    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     optionsOrCallback?:
       | gax.CallOptions
       | Callback<
-          protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-          protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
-          {} | undefined
+          protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+          | protos.google.bigtable.v2.IReadModifyWriteRowRequest
+          | null
+          | undefined,
+          {} | null | undefined
         >,
     callback?: Callback<
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
-      {} | undefined
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
+      {} | null | undefined
     >
   ): Promise<
     [
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowResponse,
-      protosTypes.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
       {} | undefined
     ]
   > | void {
@@ -581,7 +599,7 @@ export class BigtableClient {
       table_name: request.tableName || '',
     });
     this.initialize();
-    return this._innerApiCalls.readModifyWriteRow(request, options, callback);
+    return this.innerApiCalls.readModifyWriteRow(request, options, callback);
   }
 
   /**
@@ -614,7 +632,7 @@ export class BigtableClient {
    *   An object stream which emits [ReadRowsResponse]{@link google.bigtable.v2.ReadRowsResponse} on 'data' event.
    */
   readRows(
-    request?: protosTypes.google.bigtable.v2.IReadRowsRequest,
+    request?: protos.google.bigtable.v2.IReadRowsRequest,
     options?: gax.CallOptions
   ): gax.CancellableStream {
     request = request || {};
@@ -627,7 +645,7 @@ export class BigtableClient {
       table_name: request.tableName || '',
     });
     this.initialize();
-    return this._innerApiCalls.readRows(request, options);
+    return this.innerApiCalls.readRows(request, options);
   }
 
   /**
@@ -651,7 +669,7 @@ export class BigtableClient {
    *   An object stream which emits [SampleRowKeysResponse]{@link google.bigtable.v2.SampleRowKeysResponse} on 'data' event.
    */
   sampleRowKeys(
-    request?: protosTypes.google.bigtable.v2.ISampleRowKeysRequest,
+    request?: protos.google.bigtable.v2.ISampleRowKeysRequest,
     options?: gax.CallOptions
   ): gax.CancellableStream {
     request = request || {};
@@ -664,7 +682,7 @@ export class BigtableClient {
       table_name: request.tableName || '',
     });
     this.initialize();
-    return this._innerApiCalls.sampleRowKeys(request, options);
+    return this.innerApiCalls.sampleRowKeys(request, options);
   }
 
   /**
@@ -691,7 +709,7 @@ export class BigtableClient {
    *   An object stream which emits [MutateRowsResponse]{@link google.bigtable.v2.MutateRowsResponse} on 'data' event.
    */
   mutateRows(
-    request?: protosTypes.google.bigtable.v2.IMutateRowsRequest,
+    request?: protos.google.bigtable.v2.IMutateRowsRequest,
     options?: gax.CallOptions
   ): gax.CancellableStream {
     request = request || {};
@@ -704,7 +722,7 @@ export class BigtableClient {
       table_name: request.tableName || '',
     });
     this.initialize();
-    return this._innerApiCalls.mutateRows(request, options);
+    return this.innerApiCalls.mutateRows(request, options);
   }
 
   // --------------------
@@ -720,10 +738,10 @@ export class BigtableClient {
    * @returns {string} Resource name string.
    */
   tablePath(project: string, instance: string, table: string) {
-    return this._pathTemplates.tablePathTemplate.render({
-      project,
-      instance,
-      table,
+    return this.pathTemplates.tablePathTemplate.render({
+      project: project,
+      instance: instance,
+      table: table,
     });
   }
 
@@ -735,7 +753,7 @@ export class BigtableClient {
    * @returns {string} A string representing the project.
    */
   matchProjectFromTableName(tableName: string) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).project;
+    return this.pathTemplates.tablePathTemplate.match(tableName).project;
   }
 
   /**
@@ -746,7 +764,7 @@ export class BigtableClient {
    * @returns {string} A string representing the instance.
    */
   matchInstanceFromTableName(tableName: string) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).instance;
+    return this.pathTemplates.tablePathTemplate.match(tableName).instance;
   }
 
   /**
@@ -757,7 +775,7 @@ export class BigtableClient {
    * @returns {string} A string representing the table.
    */
   matchTableFromTableName(tableName: string) {
-    return this._pathTemplates.tablePathTemplate.match(tableName).table;
+    return this.pathTemplates.tablePathTemplate.match(tableName).table;
   }
 
   /**

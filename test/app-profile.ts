@@ -104,14 +104,14 @@ describe('Bigtable/AppProfile', () => {
   });
 
   describe('formatAppProfile_', () => {
-    it(`should accept an 'any' cluster routing policy`, () => {
+    it("should accept an 'any' cluster routing policy", () => {
       const formattedAppProfile = AppProfile.formatAppProfile_({
         routing: 'any',
       });
       assert.deepStrictEqual(formattedAppProfile.multiClusterRoutingUseAny, {});
     });
 
-    describe(`with a single cluster routing policy`, () => {
+    describe('with a single cluster routing policy', () => {
       const clusterId = 'my-cluster';
       const cluster = new FakeCluster(INSTANCE, clusterId);
 
@@ -134,7 +134,7 @@ describe('Bigtable/AppProfile', () => {
         });
       });
 
-      it(`should accept description`, () => {
+      it('should accept description', () => {
         const description = 'my-description';
         const formattedAppProfile = AppProfile.formatAppProfile_({
           description,
@@ -427,7 +427,7 @@ describe('Bigtable/AppProfile', () => {
       appProfile.bigtable.request = (config: any) => {
         assert(
           config.reqOpts.updateMask.paths.indexOf('description') !== -1,
-          `updateMask does not should include 'description'`
+          "updateMask does not should include 'description'"
         );
         assert.strictEqual(
           config.reqOpts.appProfile.description,
@@ -454,7 +454,7 @@ describe('Bigtable/AppProfile', () => {
       const clusterId = 'my-cluster';
       const cluster = new FakeCluster(INSTANCE, clusterId);
 
-      it(`has an 'any' value`, done => {
+      it("has an 'any' value", done => {
         const options = {routing: 'any'};
 
         appProfile.bigtable.request = (config: any) => {
@@ -462,7 +462,7 @@ describe('Bigtable/AppProfile', () => {
             config.reqOpts.updateMask.paths.indexOf(
               'multi_cluster_routing_use_any'
             ) !== -1,
-            `updateMask does not should include 'multi_cluster_routing_use_any'`
+            "updateMask does not should include 'multi_cluster_routing_use_any'"
           );
           assert.deepStrictEqual(
             config.reqOpts.appProfile.multiClusterRoutingUseAny,
@@ -474,7 +474,7 @@ describe('Bigtable/AppProfile', () => {
         appProfile.setMetadata(options, assert.ifError);
       });
 
-      it(`has a cluster value`, done => {
+      it('has a cluster value', done => {
         const options = {routing: cluster};
 
         appProfile.bigtable.request = (config: any) => {
@@ -482,7 +482,7 @@ describe('Bigtable/AppProfile', () => {
             config.reqOpts.updateMask.paths.indexOf(
               'single_cluster_routing'
             ) !== -1,
-            `updateMask does not should include 'single_cluster_routing'`
+            "updateMask does not should include 'single_cluster_routing'"
           );
           assert.deepStrictEqual(
             config.reqOpts.appProfile.singleClusterRouting,

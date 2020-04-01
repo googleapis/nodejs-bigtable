@@ -135,7 +135,7 @@ export interface GetIamPolicyOptions {
   requestedPolicyVersion?: 0 | 1 | 3;
 }
 
-export interface SetIamPolicyCallback extends GetIamPolicyCallback {}
+export type SetIamPolicyCallback = GetIamPolicyCallback;
 export type SetIamPolicyResponse = GetIamPolicyResponse;
 
 /**

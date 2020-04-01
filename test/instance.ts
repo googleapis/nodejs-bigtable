@@ -256,7 +256,7 @@ describe('Bigtable/Instance', () => {
     describe('should respect the routing option with', () => {
       const cluster = new FakeCluster({} as inst.Instance, CLUSTER_ID);
 
-      it(`an 'any' value`, done => {
+      it("an 'any' value", done => {
         const options = {
           routing: 'any',
         } as AppProfileOptions;
@@ -271,7 +271,7 @@ describe('Bigtable/Instance', () => {
         instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
       });
 
-      it(`a cluster value`, done => {
+      it('a cluster value', done => {
         const options = {routing: cluster};
         // tslint:disable-next-line:no-any
         (instance.bigtable.request as Function) = (config: any) => {
@@ -1164,7 +1164,7 @@ describe('Bigtable/Instance', () => {
     });
 
     it('should accept permissions as array', done => {
-      const permissions = [`bigtable.tables.get`, `bigtable.tables.list`];
+      const permissions = ['bigtable.tables.get', 'bigtable.tables.list'];
       // tslint:disable-next-line:no-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.permissions, permissions);
@@ -1184,7 +1184,7 @@ describe('Bigtable/Instance', () => {
     });
 
     it('should unpack permissions from resp object', done => {
-      const testPermissions = [`bigtable.tables.get`, `bigtable.tables.list`];
+      const testPermissions = ['bigtable.tables.get', 'bigtable.tables.list'];
       (instance.bigtable.request as Function) = (
         config: {},
         callback: Function
