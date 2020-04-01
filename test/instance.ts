@@ -98,7 +98,6 @@ describe('Bigtable/Instance', () => {
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
   const CLUSTER_ID = 'my-cluster';
-  // tslint:disable-next-line variable-name
   let Instance: typeof inst.Instance;
   let instance: inst.Instance;
 
@@ -217,7 +216,7 @@ describe('Bigtable/Instance', () => {
 
   describe('createAppProfile', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createAppProfile');
@@ -260,7 +259,7 @@ describe('Bigtable/Instance', () => {
         const options = {
           routing: 'any',
         } as AppProfileOptions;
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.multiClusterRoutingUseAny,
@@ -273,7 +272,7 @@ describe('Bigtable/Instance', () => {
 
       it('a cluster value', done => {
         const options = {routing: cluster};
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.singleClusterRouting,
@@ -291,7 +290,7 @@ describe('Bigtable/Instance', () => {
         routing: cluster,
         allowTransactionalWrites: true,
       };
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.appProfile.singleClusterRouting
@@ -308,7 +307,7 @@ describe('Bigtable/Instance', () => {
         routing: 'any',
         description: 'My App Profile',
       } as AppProfileOptions;
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.appProfile.description,
@@ -324,7 +323,7 @@ describe('Bigtable/Instance', () => {
         routing: 'any',
         ignoreWarnings: true,
       } as AppProfileOptions;
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.ignoreWarnings, true);
         done();
@@ -357,7 +356,7 @@ describe('Bigtable/Instance', () => {
 
   describe('createCluster', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'createCluster');
@@ -373,7 +372,7 @@ describe('Bigtable/Instance', () => {
       const options = {
         gaxOptions: {},
       } as CreateClusterOptions;
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, options.gaxOptions);
         done();
@@ -393,7 +392,7 @@ describe('Bigtable/Instance', () => {
           assert.strictEqual(location, options.location);
           return fakeLocation;
         });
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.reqOpts.cluster.location, fakeLocation);
         done();
@@ -405,7 +404,7 @@ describe('Bigtable/Instance', () => {
       const options = {
         nodes: 3,
       };
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.reqOpts.cluster.serveNodes, options.nodes);
         done();
@@ -422,7 +421,7 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(type, options.storage);
         return fakeStorageType;
       });
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(
           config.reqOpts.cluster.defaultStorageType,
@@ -467,7 +466,7 @@ describe('Bigtable/Instance', () => {
     });
 
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'createTable');
@@ -484,7 +483,7 @@ describe('Bigtable/Instance', () => {
       const options = {
         gaxOptions: {},
       };
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, options.gaxOptions);
         done();
@@ -497,7 +496,7 @@ describe('Bigtable/Instance', () => {
         splits: ['a', 'b'],
       };
       const expectedSplits = [{key: 'a'}, {key: 'b'}];
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.initialSplits, expectedSplits);
         done();
@@ -510,7 +509,7 @@ describe('Bigtable/Instance', () => {
         const options = {
           families: ['a', 'b'],
         };
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.table.columnFamilies, {
             a: {},
@@ -535,7 +534,7 @@ describe('Bigtable/Instance', () => {
           assert.strictEqual(rule, options.families[0].rule);
           return fakeRule;
         };
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.table.columnFamilies, {
             e: {
@@ -574,7 +573,7 @@ describe('Bigtable/Instance', () => {
     it('should return a Cluster object', () => {
       const cluster = instance.cluster(CLUSTER_ID);
       assert(cluster instanceof FakeCluster);
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const args = (cluster as any).calledWith_;
       assert.strictEqual(args[0], instance);
       assert.strictEqual(args[1], CLUSTER_ID);
@@ -584,7 +583,7 @@ describe('Bigtable/Instance', () => {
   describe('delete', () => {
     it('should make the correct request', done => {
       (instance.bigtable.request as Function) = (
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any,
         callback: Function
       ) => {
@@ -601,7 +600,7 @@ describe('Bigtable/Instance', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -700,7 +699,7 @@ describe('Bigtable/Instance', () => {
 
   describe('getAppProfiles', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listAppProfiles');
@@ -715,7 +714,7 @@ describe('Bigtable/Instance', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -751,7 +750,7 @@ describe('Bigtable/Instance', () => {
 
   describe('getClusters', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'listClusters');
@@ -766,7 +765,7 @@ describe('Bigtable/Instance', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -817,7 +816,7 @@ describe('Bigtable/Instance', () => {
 
   describe('getIamPolicy', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getIamPolicy');
@@ -833,7 +832,7 @@ describe('Bigtable/Instance', () => {
       const requestedPolicyVersion = 0;
       const gaxOptions = {};
       const options: GetIamPolicyOptions = {gaxOptions, requestedPolicyVersion};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         assert.strictEqual(
@@ -865,7 +864,7 @@ describe('Bigtable/Instance', () => {
 
   describe('getMetadata', () => {
     it('should make correct request', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'getInstance');
@@ -880,7 +879,7 @@ describe('Bigtable/Instance', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -924,7 +923,7 @@ describe('Bigtable/Instance', () => {
     });
 
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'listTables');
@@ -940,7 +939,7 @@ describe('Bigtable/Instance', () => {
       const options = {
         gaxOptions: {},
       };
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, options.gaxOptions);
         done();
@@ -953,7 +952,7 @@ describe('Bigtable/Instance', () => {
         const options = {
           view,
         } as GetTablesOptions;
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (instance.bigtable.request as Function) = (config: any) => {
           assert.strictEqual(config.reqOpts.view, views[view as 'unspecified']);
           done();
@@ -1003,7 +1002,7 @@ describe('Bigtable/Instance', () => {
       instance.getTables((...args) => {
         assert.strictEqual(args[0], response[0]);
         assert.strictEqual(args[2], response[2]);
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assert.strictEqual((args as any)[3], response[3]);
         done();
       });
@@ -1013,7 +1012,7 @@ describe('Bigtable/Instance', () => {
   describe('setIamPolicy', () => {
     const policy = {} as Policy;
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'setIamPolicy');
@@ -1027,7 +1026,7 @@ describe('Bigtable/Instance', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -1049,7 +1048,7 @@ describe('Bigtable/Instance', () => {
           },
         ],
       };
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.reqOpts.policy, policy);
         done();
@@ -1059,7 +1058,7 @@ describe('Bigtable/Instance', () => {
 
     it('should encode policy etag', done => {
       const policy = {etag: 'ABS'};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.policy.etag,
@@ -1096,7 +1095,7 @@ describe('Bigtable/Instance', () => {
         updateMask: {paths: ['display_name']},
       };
       (instance.bigtable.request as Function) = (
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         config: any,
         callback: Function
       ) => {
@@ -1140,7 +1139,7 @@ describe('Bigtable/Instance', () => {
 
     it('should return a table instance', () => {
       const table = instance.table(TABLE_ID);
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const args = (table as any).calledWith_;
       assert(table instanceof FakeTable);
       assert.strictEqual(args[0], instance);
@@ -1151,7 +1150,7 @@ describe('Bigtable/Instance', () => {
   describe('testIamPermissions', () => {
     const permissions = 'bigtable.tables.get';
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
         assert.strictEqual(config.method, 'testIamPermissions');
@@ -1165,7 +1164,7 @@ describe('Bigtable/Instance', () => {
 
     it('should accept permissions as array', done => {
       const permissions = ['bigtable.tables.get', 'bigtable.tables.list'];
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.permissions, permissions);
         done();
@@ -1175,7 +1174,7 @@ describe('Bigtable/Instance', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();

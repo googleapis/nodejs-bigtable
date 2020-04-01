@@ -415,11 +415,8 @@ export class Bigtable {
   appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
-  // tslint:disable-next-line variable-name
   static AppProfile: AppProfile;
-  // tslint:disable-next-line variable-name
   static Instance: Instance;
-  // tslint:disable-next-line variable-name
   static Cluster: Cluster;
 
   constructor(options: BigtableOptions = {}) {
@@ -928,7 +925,6 @@ promisifyAll(Bigtable, {
     return new (target as any)(...argumentsList);
   },
 });
-
 /**
  * The default export of the `@google-cloud/bigtable` package is the
  * {@link Bigtable} class.
@@ -958,6 +954,10 @@ promisifyAll(Bigtable, {
  * region_tag:bigtable_quickstart
  * Full quickstart example:
  */
+
+module.exports = Bigtable;
+module.exports.v2 = v2;
+module.exports.Bigtable = Bigtable;
 
 export {v2};
 export {protos};

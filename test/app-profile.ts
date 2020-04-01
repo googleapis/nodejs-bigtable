@@ -39,7 +39,6 @@ describe('Bigtable/AppProfile', () => {
   };
 
   const APP_PROFILE_NAME = `${INSTANCE.name}/appProfiles/${APP_PROFILE_ID}`;
-  // tslint:disable-next-line variable-name
   let AppProfile: any;
   let appProfile: any;
 

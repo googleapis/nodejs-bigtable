@@ -21,7 +21,6 @@ import {Row} from '../src/row';
 
 const sandbox = sinon.createSandbox();
 
-// tslint:disable-next-line variable-name
 const FakeMutation = {
   convertToBytes: sandbox.spy(value => {
     return value;
@@ -30,14 +29,11 @@ const FakeMutation = {
 };
 
 describe('Bigtable/Filter', () => {
-  // tslint:disable-next-line variable-name
   let Filter: typeof fr.Filter;
-  // tslint:disable-next-line variable-name
   let FilterError: typeof fr.FilterError;
   let filter: fr.Filter;
 
   before(() => {
-    // tslint:disable-next-line variable-name
     const Fake = proxyquire('../src/filter', {
       './mutation.js': {Mutation: FakeMutation},
     });

@@ -23,7 +23,7 @@ export type IMutateRowRequest = btTypes.bigtable.v2.IMutateRowRequest;
 export type ISetCell = btTypes.bigtable.v2.Mutation.ISetCell;
 
 export type Bytes = string | Buffer;
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Data = any;
 export interface JsonObj {
   [k: string]: string | JsonObj;

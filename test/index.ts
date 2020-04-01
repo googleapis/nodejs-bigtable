@@ -90,21 +90,21 @@ function createFake(klass: any) {
   };
 }
 
-// tslint:disable-next-line variable-name
 const FakeCluster = createFake(Cluster);
-// tslint:disable-next-line variable-name
 const FakeInstance = createFake(Instance);
 
 describe('Bigtable', () => {
   const PROJECT_ID = 'test-project';
   const PROJECT_ID_TOKEN = '{{projectId}}';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let bigtableModule: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let Bigtable: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let bigtable: any;
 
   before(() => {
-    Bigtable = proxyquire('../src', {
+    bigtableModule = proxyquire('../src', {
       '@google-cloud/promisify': fakePromisify,
       '@google-cloud/projectify': fakeReplaceProjectIdToken,
       'google-gax': {
@@ -115,6 +115,7 @@ describe('Bigtable', () => {
       './instance.js': {Instance: FakeInstance},
       './v2': fakeV2,
     });
+    Bigtable = bigtableModule.Bigtable;
   });
 
   afterEach(() => {
@@ -126,7 +127,7 @@ describe('Bigtable', () => {
     retryRequestOverride = null;
     replaceProjectIdTokenOverride = null;
     delete process.env.BIGTABLE_EMULATOR_HOST;
-    bigtable = new Bigtable({projectId: PROJECT_ID});
+    bigtable = new bigtableModule.Bigtable({projectId: PROJECT_ID});
   });
 
   describe('instantiation', () => {
@@ -145,13 +146,8 @@ describe('Bigtable', () => {
       }
     }
 
-    it.only('should promisify all the things', () => {
+    it('should promisify all the things', () => {
       assert(promisified);
-    });
-
-    it('should work without new', () => {
-      const bigtable = Bigtable();
-      assert(bigtable instanceof Bigtable);
     });
 
     it('should initialize the API object', () => {
