@@ -21,7 +21,6 @@ import {Mutation} from '../src/mutation.js';
 import * as rw from '../src/row';
 import {Table, Entry} from '../src/table.js';
 import {Chunk} from '../src/chunktransformer.js';
-import {CallOptions} from 'google-gax';
 
 const sandbox = sinon.createSandbox();
 
@@ -767,62 +766,18 @@ describe('Bigtable/Row', () => {
   describe('exists', () => {
     it('should not require gaxOptions', done => {
       sandbox.stub(row, 'getMetadata').callsFake(gaxOptions => {
-        assert.deepStrictEqual(gaxOptions, {
-          filter: [
-            {
-              row: {
-                cellLimit: 1,
-              },
-            },
-            {
-              value: {
-                strip: true,
-              },
-            },
-          ],
-        });
+        assert.deepStrictEqual(gaxOptions, {});
         done();
       });
       row.exists(assert.ifError);
     });
 
-    it('should add filter to the read row options', done => {
+    it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
       sandbox.stub(row, 'getMetadata').callsFake(gaxOptions_ => {
-        assert.deepStrictEqual(gaxOptions_, {
-          filter: [
-            {
-              row: {
-                cellLimit: 1,
-              },
-            },
-            {
-              value: {
-                strip: true,
-              },
-            },
-          ],
-        });
+        assert.strictEqual(gaxOptions_, gaxOptions);
         done();
       });
-      row.exists(gaxOptions, assert.ifError);
-    });
-
-    it('should pass gaxOptions to getMetadata', done => {
-      const gaxOptions = {
-        testProperty: true,
-      } as CallOptions;
-
-      sandbox.stub(row, 'getMetadata').callsFake(gaxOptions_ => {
-        assert.strictEqual(
-          // tslint:disable-next-line no-any
-          (gaxOptions_ as any).testProperty,
-          // tslint:disable-next-line no-any
-          (gaxOptions as any).testProperty
-        );
-        done();
-      });
-
       row.exists(gaxOptions, assert.ifError);
     });
 

@@ -555,24 +555,7 @@ export class Row {
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options = Object.assign(
-      {
-        filter: [
-          {
-            row: {
-              cellLimit: 1,
-            },
-          },
-          {
-            value: {
-              strip: true,
-            },
-          },
-        ],
-      },
-      gaxOptions
-    );
-    this.getMetadata(options as GetRowOptions, err => {
+    this.getMetadata(gaxOptions as GetRowOptions, err => {
       if (err) {
         if (err instanceof RowError) {
           callback(null, false);
