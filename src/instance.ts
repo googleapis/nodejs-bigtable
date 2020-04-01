@@ -89,7 +89,7 @@ export interface InstanceOptions {
    * No more than 64 labels can be associated with a given resource.
    * Keys and values must both be under 128 bytes.
    */
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   labels?: {[index: string]: any};
 
   type?: 'production' | 'development';
@@ -478,7 +478,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     }
 
     if (options.families) {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const columnFamilies = (options.families as any[]).reduce(
         (families, family) => {
           if (typeof family === 'string') {
@@ -486,7 +486,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
               name: family,
             };
           }
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const columnFamily: any = (families[family.name] = {});
           if (family.rule) {
             columnFamily.gcRule = Family.formatRule_(family.rule);

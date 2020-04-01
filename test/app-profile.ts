@@ -245,7 +245,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should return false if error code is 5', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 5;
 
@@ -264,7 +264,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should return error if code is not 5', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
 

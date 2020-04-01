@@ -199,11 +199,11 @@ describe('Bigtable/Mutation', () => {
   });
 
   describe('encodeSetCell', () => {
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let convertCalls: any[];
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fakeTime = new Date('2018-1-1') as any;
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const realTimestamp = new Date() as any;
 
     beforeEach(() => {
@@ -304,7 +304,7 @@ describe('Bigtable/Mutation', () => {
   });
 
   describe('encodeDelete', () => {
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let convertCalls: any[] = [];
 
     beforeEach(() => {
@@ -371,7 +371,7 @@ describe('Bigtable/Mutation', () => {
 
     it('should optionally accept a timerange for column requests', () => {
       const createTimeRange = Mutation.createTimeRange;
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const timeCalls: any[] = [];
       const fakeTimeRange = {a: 'a'};
 
@@ -463,7 +463,7 @@ describe('Bigtable/Mutation', () => {
   });
 
   describe('toProto', () => {
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let convertCalls: any[] = [];
 
     beforeEach(() => {

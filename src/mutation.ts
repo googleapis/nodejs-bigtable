@@ -111,7 +111,7 @@ export class Mutation {
   ): Buffer | Value | string {
     const buf = bytes instanceof Buffer ? bytes : Buffer.from(bytes, 'base64');
     if (options && options.isPossibleNumber && buf.length === 8) {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const num = Long.fromBytes(buf as any).toNumber();
 
       if (Number.isSafeInteger(num)) {
@@ -209,7 +209,7 @@ export class Mutation {
     const mutations: SetCellObj[] = [];
 
     Object.keys(data).forEach(familyName => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const family = (data as any)[familyName];
 
       Object.keys(family).forEach(cellName => {

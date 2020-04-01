@@ -112,7 +112,7 @@ describe('Bigtable/Table', () => {
 
   // tslint:disable-next-line variable-name
   let Table: typeof tblTypes.Table;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let table: any;
 
   before(() => {
@@ -307,7 +307,7 @@ describe('Bigtable/Table', () => {
 
     it('should throw if a id is not provided', () => {
       assert.throws(() => {
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (table as any).createFamily();
       }, /An id is required to create a family\./);
     });
@@ -364,7 +364,7 @@ describe('Bigtable/Table', () => {
 
         assert.strictEqual(modification.create.gcRule, convertedRule);
         assert.strictEqual(spy.callCount, 1);
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assert.strictEqual((spy as any).getCall(0).args[0], rule);
         done();
       };
@@ -579,7 +579,7 @@ describe('Bigtable/Table', () => {
           filter: [{}],
         };
         const fakeFilter = {};
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parseSpy = ((FakeFilter as any).parse = sinon.spy(() => {
           return fakeFilter;
         }));
@@ -588,7 +588,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(config.reqOpts.filter, fakeFilter);
           assert.strictEqual(parseSpy.callCount, 1);
           assert.strictEqual(
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (parseSpy as any).getCall(0).args[0],
             options.filter
           );
@@ -697,12 +697,12 @@ describe('Bigtable/Table', () => {
 
       describe('prefixes', () => {
         beforeEach(() => {
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (FakeFilter as any).createRange = noop;
         });
 
         afterEach(() => {
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (Table as any).createPrefixRange.restore();
         });
 
@@ -1041,7 +1041,7 @@ describe('Bigtable/Table', () => {
           return range;
         });
 
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (FakeMutation as any).convertToBytes = (value: {}) => {
           return Buffer.from(value);
         };
@@ -1287,7 +1287,7 @@ describe('Bigtable/Table', () => {
 
     it('should respect the row key prefix option', done => {
       const fakePrefix = 'b';
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const spy = ((FakeMutation as any).convertToBytes = sinon.spy(
         () => fakePrefix
       ));
@@ -1296,7 +1296,7 @@ describe('Bigtable/Table', () => {
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.rowKeyPrefix, fakePrefix);
         assert.strictEqual(spy.callCount, 1);
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assert.strictEqual((spy as any).getCall(0).args[0], prefix);
         done();
       };
@@ -1355,7 +1355,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should return error if code is not 5', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
       table.getMetadata = (gaxOptions: {}, callback: Function) => {
@@ -1440,7 +1440,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should not auto create without error code 5', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
@@ -1695,7 +1695,7 @@ describe('Bigtable/Table', () => {
       let setTimeoutSpy: sinon.SinonSpy;
       let clearTimeoutSpy: sinon.SinonSpy;
       let checkConsistencySpy: sinon.SinonSpy;
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let responses: any[] = [];
 
       beforeEach(() => {
@@ -1922,7 +1922,7 @@ describe('Bigtable/Table', () => {
       full: 4,
     } as {[index: string]: number};
     beforeEach(() => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (Table as any).VIEWS = views;
     });
 
@@ -2028,7 +2028,7 @@ describe('Bigtable/Table', () => {
           assert.ifError(err);
           assert.deepStrictEqual(rows, fakeRows);
 
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const spy = (table as any).createReadStream.getCall(0);
           assert.strictEqual(spy.args[0], options);
           done();
@@ -2584,7 +2584,7 @@ describe('Bigtable/Table', () => {
       });
 
       it('should stream key objects', done => {
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const keys: any[] = [];
 
         table

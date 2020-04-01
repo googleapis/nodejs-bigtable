@@ -815,9 +815,9 @@ describe('Bigtable/Row', () => {
 
       sandbox.stub(row, 'getMetadata').callsFake(gaxOptions_ => {
         assert.strictEqual(
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (gaxOptions_ as any).testProperty,
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (gaxOptions as any).testProperty
         );
         done();
@@ -1093,7 +1093,7 @@ describe('Bigtable/Row', () => {
 
     it('should respect the options object', done => {
       const keys = ['a:b'];
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const options: any = {
         filter: [
           {
@@ -1134,7 +1134,7 @@ describe('Bigtable/Row', () => {
     it('should respect the options object with filter for multiple columns', done => {
       const keys = ['a:b', 'c:d'];
 
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const options: any = {
         filter: [
           {

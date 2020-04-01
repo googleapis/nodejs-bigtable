@@ -36,7 +36,7 @@ const sandbox = sinon.createSandbox();
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   promisifyAll(klass: Function, options: any) {
     if (klass.name !== 'Instance') {
       return;
@@ -49,7 +49,7 @@ const fakePromisify = Object.assign({}, promisify, {
 const fakePaginator = Object.assign({}, paginator, {
   paginator: {
     extend() {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this as any).calledWith_ = arguments;
     },
     streamify(methodName: string) {
@@ -93,7 +93,7 @@ class FakeTable extends Table {
 
 describe('Bigtable/Instance', () => {
   const INSTANCE_ID = 'my-instance';
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const BIGTABLE = {projectName: 'projects/my-project'} as Bigtable;
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
@@ -121,7 +121,7 @@ describe('Bigtable/Instance', () => {
 
   describe('instantiation', () => {
     it('should extend the correct methods', () => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const args = (fakePaginator.paginator as any).calledWith_;
       assert.strictEqual(args[0], Instance);
       assert.deepStrictEqual(args[1], ['getTables']);
@@ -245,7 +245,7 @@ describe('Bigtable/Instance', () => {
         routing: 'any',
         gaxOptions: {},
       } as AppProfileOptions;
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, options.gaxOptions);
         done();
@@ -915,7 +915,7 @@ describe('Bigtable/Instance', () => {
   });
 
   describe('getTables', () => {
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const views = ((FakeTable as any).VIEWS = {
       unspecified: 0,
       name: 1,

@@ -361,7 +361,7 @@ describe('Bigtable/Family', () => {
     });
 
     it('should not auto create without a FamilyError error', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
       const options = {
