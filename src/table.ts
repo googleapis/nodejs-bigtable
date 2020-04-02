@@ -18,8 +18,10 @@ import arrify = require('arrify');
 import {ServiceError} from '@grpc/grpc-js';
 import {decorateStatus} from './decorateStatus';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 import * as is from 'is';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 import * as through from 'through2';
 

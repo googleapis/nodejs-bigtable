@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as assert from 'assert';
-import {describe, it, afterEach} from 'mocha';
+import {beforeEach, describe, it, afterEach} from 'mocha';
 import * as Long from 'long';
 import * as sinon from 'sinon';
 

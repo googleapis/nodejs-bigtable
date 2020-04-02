@@ -15,6 +15,7 @@
 import arrify = require('arrify');
 import * as escapeStringRegexp from 'escape-string-regexp';
 import * as is from 'is';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const isUtf8 = require('is-utf8');
 import {Mutation} from './mutation';
 

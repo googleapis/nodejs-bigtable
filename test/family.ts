@@ -14,7 +14,7 @@
 
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {before, beforeEach, afterEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import {google} from '../protos/protos';
@@ -94,7 +94,7 @@ describe('Bigtable/Family', () => {
     it('should throw if family id in wrong format', () => {
       const id = `/project/bad-project/instances/bad-instance/columnFamiles/${FAMILY_ID}`;
       assert.throws(() => {
-        const f = new Family(TABLE, id);
+        new Family(TABLE, id);
       }, Error);
     });
   });

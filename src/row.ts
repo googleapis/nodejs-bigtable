@@ -14,14 +14,10 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
-import {
-  Mutation,
-  ConvertFromBytesUserOptions,
-  Bytes,
-  IMutation,
-} from './mutation';
+import {Mutation, ConvertFromBytesUserOptions, Bytes} from './mutation';
 import {Bigtable} from '.';
 import {
   Table,

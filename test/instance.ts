@@ -15,7 +15,7 @@
 import * as paginator from '@google-cloud/paginator';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {before, beforeEach, afterEach, describe, it} from 'mocha';
 import * as sinon from 'sinon';
 import * as proxyquire from 'proxyquire';
 import {ServiceError} from '@grpc/grpc-js';
@@ -48,9 +48,10 @@ const fakePromisify = Object.assign({}, promisify, {
 
 const fakePaginator = Object.assign({}, paginator, {
   paginator: {
-    extend() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    extend(...args: any[]) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this as any).calledWith_ = arguments;
+      (this as any).calledWith_ = args;
     },
     streamify(methodName: string) {
       return methodName;
@@ -155,7 +156,7 @@ describe('Bigtable/Instance', () => {
     it('should throw if instance id in wrong format', () => {
       const id = `instances/${INSTANCE_ID}`;
       assert.throws(() => {
-        const i = new Instance(BIGTABLE, id);
+        new Instance(BIGTABLE, id);
       }, Error);
     });
   });
@@ -904,7 +905,7 @@ describe('Bigtable/Instance', () => {
         config: {},
         callback: Function
       ) => {
-        callback.apply(null, args);
+        callback(...args);
       };
       instance.getMetadata((...args) => {
         assert.deepStrictEqual([].slice.call(args), args);
@@ -997,7 +998,7 @@ describe('Bigtable/Instance', () => {
         config: {},
         callback: Function
       ) => {
-        callback.apply(null, response);
+        callback(...response);
       };
       instance.getTables((...args) => {
         assert.strictEqual(args[0], response[0]);
@@ -1125,7 +1126,7 @@ describe('Bigtable/Instance', () => {
         config: {},
         callback: Function
       ) => {
-        callback.apply(null, args);
+        callback(...args);
       };
       instance.setMetadata({}, (...args) => {
         assert.deepStrictEqual([].slice.call(args), args);
@@ -1202,7 +1203,7 @@ describe('Bigtable/Instance', () => {
       const permission = 'bigtable.tables.get';
       const error = new Error('error');
       sandbox.stub(instance.bigtable, 'request').callsArgWith(1, error);
-      instance.testIamPermissions(permission, (err, resp) => {
+      instance.testIamPermissions(permission, err => {
         assert.strictEqual(err, error);
         done();
       });

@@ -18,8 +18,6 @@ import {before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import {CallOptions} from 'google-gax';
 
-// tslint:disable no-any
-
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
   promisifyAll(klass: Function) {
