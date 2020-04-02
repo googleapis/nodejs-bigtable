@@ -14,14 +14,14 @@
 
 'use strict';
 
-const uuid = require(`uuid`);
+const uuid = require('uuid');
 const {describe, it, before, after} = require('mocha');
-const Bigtable = require(`@google-cloud/bigtable`);
+const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const APP_PROFILE_ID = `my-app-profile`;
+const APP_PROFILE_ID = 'my-app-profile';
 
 const appProfileSnippets = require('./app-profile.js');
 

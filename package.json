@@ -51,7 +51,7 @@
     "dot-prop": "^5.0.0",
     "escape-string-regexp": "^2.0.0",
     "extend": "^3.0.2",
-    "google-gax": "^1.14.2",
+    "google-gax": "^2.0.1",
     "is": "^3.0.1",
     "is-utf8": "^0.2.1",
     "lodash.snakecase": "^4.1.1",
@@ -63,6 +63,7 @@
     "through2": "^3.0.0"
   },
   "devDependencies": {
+    "@grpc/grpc-js": "^0.7.5",
     "@types/escape-string-regexp": "^1.0.0",
     "@types/extend": "^3.0.1",
     "@types/is": "0.0.21",
@@ -82,7 +83,8 @@
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "gts": "^1.1.2",
+    "google-auth-library": "^6.0.0",
+    "gts": "2.0.0-alpha.9",
     "jsdoc": "^3.6.3",
     "jsdoc-fresh": "^1.0.2",
     "jsdoc-region-tag": "^1.0.4",
@@ -97,9 +99,9 @@
     "power-assert": "^1.6.1",
     "prettier": "^1.19.1",
     "proxyquire": "^2.0.0",
-    "sinon": "^9.0.0",
+    "sinon": "^9.0.1",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.0",
+    "typescript": "^3.8.3",
     "uuid": "^7.0.0",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11"

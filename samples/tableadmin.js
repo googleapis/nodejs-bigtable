@@ -29,7 +29,7 @@ async function runTableOperations(instanceID, tableID) {
     console.log(`Table does not exist. Creating table ${tableID}`);
     await table.create();
   } else {
-    console.log(`Table exists.`);
+    console.log('Table exists.');
   }
 
   console.log();
@@ -228,22 +228,22 @@ async function deleteTable(instanceID, tableID) {
 require('yargs')
   .demand(1)
   .command(
-    `run`,
-    `Create a table (if does not exist) and run basic table operations.`,
+    'run',
+    'Create a table (if does not exist) and run basic table operations.',
     {},
     argv => runTableOperations(argv.instance, argv.table)
   )
   .example(
-    `node $0 run --instance [instanceID] --table [tableID]`,
-    `Create a table (if does not exist) and run basic table operations.`
+    'node $0 run --instance [instanceID] --table [tableID]',
+    'Create a table (if does not exist) and run basic table operations.'
   )
   .wrap(120)
-  .command(`delete`, `Delete table.`, {}, argv =>
+  .command('delete', 'Delete table.', {}, argv =>
     deleteTable(argv.instance, argv.table)
   )
   .example(
-    `node $0 delete --instance [instanceID] --table [tableID]`,
-    `Delete a table.`
+    'node $0 delete --instance [instanceID] --table [tableID]',
+    'Delete a table.'
   )
   .wrap(120)
   .nargs('instance', 1)
@@ -252,6 +252,6 @@ require('yargs')
   .describe('table', 'Cloud Bigtable Table ID')
   .demandOption(['instance', 'table'])
   .recommendCommands()
-  .epilogue(`For more information, see https://cloud.google.com/bigtable/docs`)
+  .epilogue('For more information, see https://cloud.google.com/bigtable/docs')
   .help()
   .strict().argv;

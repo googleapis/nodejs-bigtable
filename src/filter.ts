@@ -15,6 +15,7 @@
 import arrify = require('arrify');
 import * as escapeStringRegexp from 'escape-string-regexp';
 import * as is from 'is';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const isUtf8 = require('is-utf8');
 import {Mutation} from './mutation';
 
@@ -47,7 +48,7 @@ export interface Time {
   end: Date | number;
 }
 
-// tslint:disable-next-line no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type RawFilter = any;
 
 export interface Condition {
@@ -268,7 +269,7 @@ export class Filter {
       [index: string]: Function;
     }
     const filter = new Filter();
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     arrify(filters).forEach((filterObj: any) => {
       const key = Object.keys(filterObj)[0];
       if (typeof ((filter as {}) as Fn)[key] !== 'function') {
@@ -448,7 +449,7 @@ export class Filter {
     }
 
     if (col.start || col.end) {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const range: any = Filter.createRange(col.start!, col.end!, 'Qualifier');
 
       range.familyName = col.family;
