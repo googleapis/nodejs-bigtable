@@ -35,18 +35,16 @@ describe('Bigtable', () => {
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
   const CLUSTER_ID = generateId('cluster');
 
-  async function reapInstances(prefix?: string) {
+  async function reapInstances() {
     const [instances] = await bigtable.getInstances();
-    let testInstances = instances;
-    if (prefix) {
-      testInstances = testInstances.filter(i => i.id.match(PREFIX));
-    }
-    testInstances = testInstances.filter(i => {
-      const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
-      // Only delete stale resources.
-      const oneHourAgo = new Date(Date.now() - 3600000);
-      return !timeCreated || timeCreated <= oneHourAgo;
-    });
+    const testInstances = instances
+      .filter(i => i.id.match(PREFIX))
+      .filter(i => {
+        const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
+        // Only delete stale resources.
+        const oneHourAgo = new Date(Date.now() - 3600000);
+        return !timeCreated || timeCreated <= oneHourAgo;
+      });
     const q = new Q({concurrency: 5});
     await Promise.all(
       testInstances.map(instance => {
@@ -80,7 +78,7 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    await reapInstances(PREFIX);
+    await INSTANCE.delete().catch(console.error);
   });
 
   describe('instances', () => {
