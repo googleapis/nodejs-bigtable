@@ -15,19 +15,17 @@
 'use strict';
 
 const {assert} = require('chai');
-const {describe, it, before, after} = require('mocha');
+const {describe, it, before} = require('mocha');
 const cp = require('child_process');
 const uuid = require('uuid');
-const Bigtable = require('@google-cloud/bigtable');
+const {obtainTestInstance} = require('./util');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
-
-const INSTANCE_ID = 'nodejs-bigtable-samples-keepme';
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('writes', async () => {
-  const bigtable = Bigtable();
-  const instance = bigtable.instance(INSTANCE_ID);
+  const instance = await obtainTestInstance();
+  const INSTANCE_ID = instance.id;
   let table;
 
   before(async () => {
@@ -35,10 +33,6 @@ describe('writes', async () => {
 
     await table.create().catch(console.error);
     await table.createFamily('stats_summary').catch(console.error);
-  });
-
-  after(async () => {
-    await table.delete().catch(console.error);
   });
 
   it('should do a simple write', async () => {

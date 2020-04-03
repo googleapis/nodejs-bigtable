@@ -71,7 +71,7 @@ FakeRow.formatChunks_ = sinon.spy(chunks => {
 });
 
 const FakeChunkTransformer = createFake(ChunkTransformer);
-FakeChunkTransformer.prototype._transform = function(
+FakeChunkTransformer.prototype._transform = function (
   rows: Row[],
   enc: {},
   next: Function
@@ -808,7 +808,7 @@ describe('Bigtable/Table', () => {
         sinon.stub(table, 'row').callsFake(() => {
           return {} as Row;
         });
-        FakeChunkTransformer.prototype._transform = function(
+        FakeChunkTransformer.prototype._transform = function (
           chunks: Array<{}>,
           enc: {},
           next: Function
@@ -990,7 +990,7 @@ describe('Bigtable/Table', () => {
       let setTimeoutSpy: sinon.SinonSpy;
 
       beforeEach(() => {
-        FakeChunkTransformer.prototype._transform = function(
+        FakeChunkTransformer.prototype._transform = function (
           rows: Row[],
           enc: {},
           next: Function
@@ -1005,10 +1005,7 @@ describe('Bigtable/Table', () => {
         };
 
         callCreateReadStream = (options: {}, verify: Function) => {
-          table
-            .createReadStream(options)
-            .on('end', verify)
-            .resume(); // The stream starts paused unless it has a `.data()`
+          table.createReadStream(options).on('end', verify).resume(); // The stream starts paused unless it has a `.data()`
           // callback.
         };
 
