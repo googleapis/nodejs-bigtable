@@ -63,7 +63,6 @@
     "through2": "^3.0.0"
   },
   "devDependencies": {
-    "@grpc/grpc-js": "^0.7.5",
     "@types/escape-string-regexp": "^1.0.0",
     "@types/extend": "^3.0.1",
     "@types/is": "0.0.21",

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {GetRowsOptions} from '../src/table';
 
 export interface Test {

@@ -15,7 +15,7 @@
 import * as common from '@google-cloud/common';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

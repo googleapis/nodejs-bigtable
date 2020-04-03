@@ -52,7 +52,7 @@ import {
   GetTablesResponse,
 } from './table';
 import {CallOptions, Operation} from 'google-gax';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
 

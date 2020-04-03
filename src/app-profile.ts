@@ -20,7 +20,7 @@ import {Bigtable} from '.';
 import {Instance} from './instance';
 import {CallOptions} from 'google-gax';
 import {google} from '../protos/protos';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 
 export interface AppProfileOptions {
   /**
