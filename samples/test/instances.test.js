@@ -23,8 +23,8 @@ const Bigtable = require('@google-cloud/bigtable');
 const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 const bigtable = new Bigtable();
-const clusterId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const instanceId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const clusterId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const instanceId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instance = bigtable.instance(instanceId);
 
 describe('instances', () => {

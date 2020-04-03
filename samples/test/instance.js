@@ -19,10 +19,10 @@ const {describe, it, after} = require('mocha');
 const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
-const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-// const APP_PROFILE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+// const APP_PROFILE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 const instanceSnippets = require('./instance.js');
 
