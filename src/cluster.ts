@@ -83,7 +83,7 @@ export type GetClusterMetadataCallback = (
  * @param {string} id Id of the cluster.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const cluster = instance.cluster('my-cluster');

@@ -11,7 +11,7 @@
 /*eslint node/no-unsupported-features: ["error", {version: 8}]*/
 
 // [START bigtable_hw_imports]
-const Bigtable = require('@google-cloud/bigtable');
+const {Bigtable} = require('@google-cloud/bigtable');
 // [END bigtable_hw_imports]
 
 const TABLE_ID = 'Hello-Bigtable';

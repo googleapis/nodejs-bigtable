@@ -125,7 +125,7 @@ export type SetAppProfileMetadataResponse = [google.protobuf.Empty];
  * @param {string} name Name of the app profile.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const appProfile = instance.appProfile('my-app-profile');

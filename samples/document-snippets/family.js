@@ -15,7 +15,7 @@
 const snippets = {
   createColmFamily: (instanceId, tableId, familyId) => {
     // [START bigtable_create_family]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -34,7 +34,7 @@ const snippets = {
   },
   existsFamily: (instanceId, tableId, familyId) => {
     // [START bigtable_exists_family]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -52,7 +52,7 @@ const snippets = {
   },
   getFamily: (instanceId, tableId, familyId) => {
     // [START bigtable_get_family]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -71,7 +71,7 @@ const snippets = {
   },
   getMetadata: (instanceId, tableId, familyId) => {
     // [START bigtable_get_family_meta]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -90,7 +90,7 @@ const snippets = {
   },
   setMetadata: (instanceId, tableId, familyId) => {
     // [START bigtable_set_family_meta]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -115,7 +115,7 @@ const snippets = {
   },
   delFamily: (instanceId, tableId, familyId) => {
     // [START bigtable_del_family]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);

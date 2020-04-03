@@ -15,7 +15,7 @@
 const snippets = {
   createInstance: (instanceId, clusterId) => {
     // [START bigtable_create_instance]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -60,7 +60,7 @@ const snippets = {
 
   createCluster: (instanceId, clusterId) => {
     // [START bigtable_create_cluster]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -88,7 +88,7 @@ const snippets = {
 
   createAppProfile: (instanceId, clusterId, appProfileId, callback) => {
     // [START bigtable_create_app_profile]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -112,7 +112,7 @@ const snippets = {
 
   createTable: (instanceId, tableId) => {
     // [START bigtable_create_table]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -154,7 +154,7 @@ const snippets = {
 
   existsInstance: instanceId => {
     // [START bigtable_exists_instance]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -171,7 +171,7 @@ const snippets = {
 
   getInstance: instanceId => {
     // [START bigtable_get_instance]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -189,7 +189,7 @@ const snippets = {
 
   getClusters: instanceId => {
     // [START bigtable_get_clusters]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -206,7 +206,7 @@ const snippets = {
 
   getIamPolicy: instanceId => {
     // [START bigtable_get_instance_Iam_policy]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -223,7 +223,7 @@ const snippets = {
 
   setIamPolicy: instanceId => {
     // [START bigtable_set_instance_Iam_policy]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -249,7 +249,7 @@ const snippets = {
 
   testIamPermissions: instanceId => {
     // [START bigtable_test_instance_Iam_permissions]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -267,7 +267,7 @@ const snippets = {
 
   getAppProfiles: instanceId => {
     // [START bigtable_get_app_profiles]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -284,7 +284,7 @@ const snippets = {
 
   getMetadata: instanceId => {
     // [START bigtable_get_instance_metadata]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -301,7 +301,7 @@ const snippets = {
 
   getTables: instanceId => {
     // [START bigtable_get_tables]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -327,7 +327,7 @@ const snippets = {
 
   updateInstance: instanceId => {
     // [START bigtable_set_meta_data]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
@@ -348,7 +348,7 @@ const snippets = {
 
   delInstance: instanceId => {
     // [START bigtable_del_instance]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
 
