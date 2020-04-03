@@ -15,7 +15,7 @@
 const snippets = {
   create: (instanceId, clusterId) => {
     // [START bigtable_create_cluster]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -35,7 +35,7 @@ const snippets = {
 
   delete: (instanceId, clusterId) => {
     // [START bigtable_delete_cluster]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -53,7 +53,7 @@ const snippets = {
 
   exists: (instanceId, clusterId) => {
     // [START bigtable_exists_cluster]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -71,7 +71,7 @@ const snippets = {
 
   get: (instanceId, clusterId) => {
     // [START bigtable_get_cluster]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -90,7 +90,7 @@ const snippets = {
 
   getMeta: (instanceId, clusterId) => {
     // [START bigtable_cluster_get_meta]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);
@@ -109,7 +109,7 @@ const snippets = {
 
   setMeta: (instanceId, clusterId) => {
     // [START bigtable_cluster_set_meta]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const cluster = instance.cluster(clusterId);

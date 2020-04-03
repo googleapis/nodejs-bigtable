@@ -145,7 +145,7 @@ export type SetInstanceMetadataResponse = [google.protobuf.Empty];
  * @param {string} id Id of the instance.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  */
@@ -1039,7 +1039,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @returns {Table}
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('presidents');
@@ -1118,7 +1118,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
  * @returns {stream}
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  *

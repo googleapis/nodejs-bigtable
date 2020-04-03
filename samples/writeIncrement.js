@@ -26,9 +26,9 @@ function main(instanceId = 'YOUR_INSTANCE_ID', tableId = 'YOUR_TABLE_ID') {
   // const instanceId = 'YOUR_INSTANCE_ID';
   // const tableId = 'YOUR_TABLE_ID';
 
-  const Bigtable = require('@google-cloud/bigtable');
+  const {Bigtable} = require('@google-cloud/bigtable');
 
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
 
   async function writeIncrement() {
     const instance = bigtable.instance(instanceId);

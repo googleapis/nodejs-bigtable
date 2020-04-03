@@ -13,10 +13,10 @@
 // limitations under the License.
 
 // Imports the Google Cloud client library
-const Bigtable = require('@google-cloud/bigtable');
+const {Bigtable} = require('@google-cloud/bigtable');
 
 async function runTableOperations(instanceID, tableID) {
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
   const instance = bigtable.instance(instanceID);
   const table = instance.table(tableID);
 

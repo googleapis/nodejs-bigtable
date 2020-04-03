@@ -27,6 +27,7 @@
   "scripts": {
     "compile": "tsc -p . && cp -r proto* build/",
     "compile-protos": "compileProtos src",
+    "predocs": "npm run compile",
     "docs": "jsdoc -c .jsdoc.js",
     "predocs-test": "npm run docs",
     "docs-test": "linkinator docs",

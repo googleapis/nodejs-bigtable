@@ -38,7 +38,7 @@ function main(
   // [START bigtable_filters_composing_interleave]
   // [START bigtable_filters_composing_condition]
   const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
 
   /**
    * TODO(developer): Uncomment these variables before running the sample.
