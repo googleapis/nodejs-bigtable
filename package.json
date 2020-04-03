@@ -45,7 +45,7 @@
     "@google-cloud/common": "^2.2.2",
     "@google-cloud/paginator": "^2.0.0",
     "@google-cloud/projectify": "^2.0.0",
-    "@google-cloud/promisify": "^1.0.0",
+    "@google-cloud/promisify": "^2.0.0",
     "arrify": "^2.0.0",
     "concat-stream": "^2.0.0",
     "dot-prop": "^5.0.0",
