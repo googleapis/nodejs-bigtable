@@ -22,7 +22,7 @@
 function main(instanceId = 'YOUR_INSTANCE_ID', tableId = 'YOUR_TABLE_ID') {
   // [START bigtable_writes_simple]
   const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
 
   async function writeSimple() {
     /**

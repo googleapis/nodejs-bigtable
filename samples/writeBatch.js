@@ -28,7 +28,7 @@ function main(instanceId = 'YOUR_INSTANCE_ID', tableId = 'YOUR_TABLE_ID') {
 
   const {Bigtable} = require('@google-cloud/bigtable');
 
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
 
   async function writeBatch() {
     const instance = bigtable.instance(instanceId);
