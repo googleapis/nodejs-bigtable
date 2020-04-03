@@ -20,7 +20,7 @@ import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
 import {PassThrough, Writable, Duplex} from 'stream';
 import * as through from 'through2';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {DecoratedStatus} from '../src/decorateStatus';
 
 import * as inst from '../src/instance';

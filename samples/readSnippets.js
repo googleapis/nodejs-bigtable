@@ -27,7 +27,7 @@ async function main(
   // [START bigtable_reads_prefix]
   // [START bigtable_reads_filter]
   const {Bigtable} = require('@google-cloud/bigtable');
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
 
   /**
    * TODO(developer): Uncomment these variables before running the sample.

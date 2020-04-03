@@ -133,7 +133,7 @@ export class Filter {
    * @returns {string}
    *
    * @example
-   * var regexString = Filter.convertToRegExpString(['a', 'b', 'c']);
+   * const regexString = Filter.convertToRegExpString(['a', 'b', 'c']);
    * // => '(a|b|c)'
    */
   static convertToRegExpString(
@@ -185,10 +185,10 @@ export class Filter {
    * @returns {object}
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const Filter = Bigtable.Filter;
    *
-   * var range = Filter.createRange('value1', 'value2', 'Test');
+   * const range = Filter.createRange('value1', 'value2', 'Test');
    * // {
    * //   startTestInclusive: new Buffer('value1'),
    * //   endTestExclusive: new Buffer('value2')
@@ -198,12 +198,12 @@ export class Filter {
    * // It's also possible to pass in objects to specify inclusive/exclusive
    * // bounds.
    * //-
-   * var upperBound = {
+   * const upperBound = {
    *   value: 'value3',
    *   inclusive: false
    * };
    *
-   * var range = Filter.createRange(upperBound, null, 'Test2');
+   * const range = Filter.createRange(upperBound, null, 'Test2');
    * // => {
    * //   startTest2Exclusive: 'value3'
    * // }
@@ -244,7 +244,7 @@ export class Filter {
    * @returns {object}
    *
    * @example
-   * var filter = Filter.parse([
+   * const filter = Filter.parse([
    *   {
    *     family: 'my-family',
    *   }, {
@@ -292,7 +292,7 @@ export class Filter {
    * // Matches all cells, regardless of input. Functionally equivalent to
    * // leaving `filter` unset, but included for completeness.
    * //-
-   * var filter = {
+   * const filter = {
    *   all: true
    * };
    *
@@ -300,7 +300,7 @@ export class Filter {
    * // Does not match any cells, regardless of input. Useful for temporarily
    * // disabling just part of a filter.
    * //-
-   * var filter = {
+   * const filter = {
    *   all: false
    * };
    */
@@ -324,7 +324,7 @@ export class Filter {
    * // Using the following filter, we would retrieve the `tjefferson` and
    * // `gwashington` columns.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     column: /[a-z]+on$/
    *   }
@@ -334,7 +334,7 @@ export class Filter {
    * // You can also provide a string (optionally containing regexp characters)
    * // for simple column filters.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     column: 'gwashington'
    *   }
@@ -344,7 +344,7 @@ export class Filter {
    * // Or you can provide an array of strings if you wish to match against
    * // multiple columns.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     column: [
    *       'gwashington',
@@ -357,7 +357,7 @@ export class Filter {
    * // If you wish to use additional column filters, consider using the following
    * // syntax.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     column: {
    *       name: 'gwashington'
@@ -377,7 +377,7 @@ export class Filter {
    * // {@link Filter#interleave} filter, each copy of the cell is
    * // counted separately.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     column: {
    *       cellLimit: 2
@@ -396,7 +396,7 @@ export class Filter {
    * // When the `start` bound is omitted it is interpreted as an empty string.
    * // When the `end` bound is omitted it is interpreted as Infinity.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     column: {
    *       family: 'follows',
@@ -411,7 +411,7 @@ export class Filter {
    * // override these by providing an object explicity stating whether or not it
    * // is `inclusive`.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     column: {
    *       family: 'follows',
@@ -475,7 +475,7 @@ export class Filter {
    * // `gwashington` data. If he does not, we'll instead return all of the
    * // `tjefferson` data.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     condition: {
    *       // If `test` outputs any cells, then `pass` will be evaluated on the
@@ -528,7 +528,7 @@ export class Filter {
    * @param {regex} family Expression to filter family
    *
    * @example
-   * var filter = [
+   * const filter = [
    *   {
    *     family: 'follows'
    *   }
@@ -564,7 +564,7 @@ export class Filter {
    * // results for entries that were either created between December 17th, 2015
    * // and March 22nd, 2016 or entries that have data for `follows:tjefferson`.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     interleave: [
    *       [
@@ -610,7 +610,7 @@ export class Filter {
    * may be relaxed in the future.
    *
    * @example
-   * var filter = {
+   * const filter = {
    *   label: 'my-label'
    * };
    */
@@ -636,7 +636,7 @@ export class Filter {
    * // row keys ending with the letters "on", which would then yield
    * // `gwashington` and `tjefferson`.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     row: /[a-z]+on$/
    *   }
@@ -646,7 +646,7 @@ export class Filter {
    * // You can also provide a string (optionally containing regexp characters)
    * // for simple key filters.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     row: 'gwashington'
    *   }
@@ -656,7 +656,7 @@ export class Filter {
    * // Or you can provide an array of strings if you wish to match against
    * // multiple keys.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     row: [
    *       'gwashington',
@@ -669,7 +669,7 @@ export class Filter {
    * // If you wish to use additional row filters, consider using the following
    * // syntax.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     row: {
    *       key: 'gwashington'
@@ -683,7 +683,7 @@ export class Filter {
    * // Matches all cells from a row with probability p, and matches no cells
    * // from the row with probability 1-p.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     row: {
    *       sample: 1
@@ -699,7 +699,7 @@ export class Filter {
    * // {@link Filter#interleave}, each copy of the cell is counted
    * // separately.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     row: {
    *       cellOffset: 2
@@ -715,7 +715,7 @@ export class Filter {
    * // {@link Filter#interleave}, each copy of the cell is counted
    * // separately.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     row: {
    *       cellLimit: 4
@@ -782,7 +782,7 @@ export class Filter {
    * // present in the final result, despite being excluded by the qualifier
    * // filter
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     family: 'follows'
    *   },
@@ -827,7 +827,7 @@ export class Filter {
    * @param {object} time Start and End time Object
    *
    * @example
-   * var filter = [
+   * const filter = [
    *   {
    *     time: {
    *       start: new Date('December 17, 2006 03:24:00'),
@@ -871,7 +871,7 @@ export class Filter {
    * @param {?string|string[]|object} value Value to filter cells
    *
    * @example
-   * var filter = [
+   * const filter = [
    *   {
    *     value: /[0-9]/
    *   }
@@ -881,7 +881,7 @@ export class Filter {
    * // You can also provide a string (optionally containing regexp characters)
    * // for value filters.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     value: '1'
    *   }
@@ -891,7 +891,7 @@ export class Filter {
    * // You can also provide an array of strings if you wish to match against
    * // multiple values.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     value: ['1', '9']
    *   }
@@ -901,8 +901,8 @@ export class Filter {
    * // Or you can provide a Buffer or an array of Buffers if you wish to match
    * // against specfic binary value(s).
    * //-
-   * var userInputedFaces = [Buffer.from('.|.'), Buffer.from(':-)')];
-   * var filter = [
+   * const userInputedFaces = [Buffer.from('.|.'), Buffer.from(':-)')];
+   * const filter = [
    *   {
    *     value: userInputedFaces
    *   }
@@ -916,7 +916,7 @@ export class Filter {
    * // When the `start` bound is omitted it is interpreted as an empty string.
    * // When the `end` bound is omitted it is interpreted as Infinity.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     value: {
    *       start: '1',
@@ -930,7 +930,7 @@ export class Filter {
    * // override these by providing an object explicity stating whether or not it
    * // is `inclusive`.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     value: {
    *       start: {
@@ -950,7 +950,7 @@ export class Filter {
    * //
    * // Replaces each cell's value with an emtpy string.
    * //-
-   * var filter = [
+   * const filter = [
    *   {
    *     value: {
    *       strip: true

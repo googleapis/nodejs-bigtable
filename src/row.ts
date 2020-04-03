@@ -28,7 +28,7 @@ import {
 } from './table';
 import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 
 export interface Rule {
@@ -145,7 +145,7 @@ export class RowError extends Error {
  * @param {string} key The key for this row.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
@@ -269,7 +269,7 @@ export class Row {
    * @param {object} [options] Formatting options.
    *
    * @example
-   * var families = [
+   * const families = [
    *   {
    *     name: 'follows',
    *     columns: [

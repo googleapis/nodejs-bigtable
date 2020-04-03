@@ -15,10 +15,10 @@
 'use strict';
 
 // Imports the Google Cloud client library
-const Bigtable = require('@google-cloud/bigtable');
+const {Bigtable} = require('@google-cloud/bigtable');
 
 async function runInstanceOperations(instanceID, clusterID) {
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
   const instance = bigtable.instance(instanceID);
 
   console.log('Check Instance Exists');

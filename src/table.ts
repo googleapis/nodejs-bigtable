@@ -15,7 +15,7 @@
 import * as common from '@google-cloud/common';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -375,7 +375,7 @@ export interface PrefixRange {
  * @param {string} id Unique identifier of the table.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
@@ -452,7 +452,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {object} range
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('prezzy');
@@ -1166,7 +1166,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('prezzy');
@@ -1179,8 +1179,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * // If the callback is omitted, we'll return a Promise.
    * //-
    * table.getReplicationStates().then(function(data) {
-   *   var clusterStates = data[0];
-   *   var apiResponse = data[1];
+   *   const clusterStates = data[0];
+   *   const apiResponse = data[1];
    * });
    */
   getReplicationStates(
@@ -1487,7 +1487,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {Row}
    *
    * @example
-   * var row = table.row('lincoln');
+   * const row = table.row('lincoln');
    */
   row(key: string): Row {
     if (!key) {
@@ -1711,7 +1711,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * // If the callback is omitted, we'll return a Promise.
    * //-
    * table.truncate().then(function(data) {
-   *   var apiResponse = data[0];
+   *   const apiResponse = data[0];
    * });
    */
   truncate(

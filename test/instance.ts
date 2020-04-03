@@ -18,7 +18,7 @@ import * as assert from 'assert';
 import {before, beforeEach, afterEach, describe, it} from 'mocha';
 import * as sinon from 'sinon';
 import * as proxyquire from 'proxyquire';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
 import {AppProfile, AppProfileOptions} from '../src/app-profile';

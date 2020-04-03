@@ -24,9 +24,9 @@ async function main(
 ) {
   // [START bigtable_quickstart]
   // Imports the Google Cloud client library
-  const Bigtable = require('@google-cloud/bigtable');
+  const {Bigtable} = require('@google-cloud/bigtable');
 
-  const bigtable = Bigtable();
+  const bigtable = new Bigtable();
 
   async function quickstart() {
     // Connect to an existing instance:my-bigtable-instance

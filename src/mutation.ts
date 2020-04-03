@@ -74,7 +74,7 @@ export interface ValueObj {
  * @param {object} mutation
  *
  * @example
- * var mutation = new Mutation({
+ * const mutation = new Mutation({
  *   key: 'gwashington',
  *   method: 'insert',
  *   data: {
