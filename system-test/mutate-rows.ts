@@ -22,15 +22,16 @@ const {
 
 import * as assert from 'assert';
 import {afterEach, beforeEach, describe, it} from 'mocha';
-import * as grpc from '@grpc/grpc-js';
 import * as sinon from 'sinon';
 import * as through from 'through2';
 import {EventEmitter} from 'events';
 import {ProjectIdCallback, GoogleAuth} from 'google-auth-library';
 import {PartialFailureError} from '@google-cloud/common/build/src/util';
 import {Entry} from '../src/table';
-import {CancellableStream} from 'google-gax';
+import {CancellableStream, GrpcClient} from 'google-gax';
 import {BigtableClient} from '../src/v2';
+
+const {grpc} = new GrpcClient();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dispatch(emitter: EventEmitter, response: any) {

@@ -18,14 +18,15 @@ const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: Test[];
 };
 import {google} from '../protos/protos';
-import * as grpc from '@grpc/grpc-js';
 import * as assert from 'assert';
 import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
 import * as through from 'through2';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError, GrpcClient} from 'google-gax';
+
+const {grpc} = new GrpcClient();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dispatch(emitter: EventEmitter, response: any) {

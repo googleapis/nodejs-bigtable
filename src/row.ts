@@ -28,7 +28,7 @@ import {
 } from './table';
 import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 
 export interface Rule {

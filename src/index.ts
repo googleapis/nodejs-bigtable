@@ -34,7 +34,7 @@ import {
 } from './instance';
 import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
