@@ -19,9 +19,9 @@ const {describe, it, before, after} = require('mocha');
 const Bigtable = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
-const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const INSTANCE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const CLUSTER_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const TABLE_ID = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 const tableSnippets = require('./table.js');
 
@@ -46,7 +46,11 @@ describe.skip('Table Snippets', () => {
   });
 
   after(async () => {
-    await instance.delete().catch(console.error);
+    try {
+      await instance.delete();
+    } catch (err) {
+      // Handle the error.
+    }
   });
 
   it('should create a table', () => {

@@ -633,7 +633,7 @@ describe('Bigtable', () => {
           [CONFIG.method]: noop,
         };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (fakeV2 as any)[CONFIG.client] = function (options: any) {
+        (fakeV2 as any)[CONFIG.client] = function(options: any) {
           assert.strictEqual(options, bigtable.options[CONFIG.client]);
           return fakeClient;
         };
@@ -644,7 +644,7 @@ describe('Bigtable', () => {
 
       it('should use the cached client', done => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (fakeV2 as any)[CONFIG.client] = function () {
+        (fakeV2 as any)[CONFIG.client] = function() {
           done(new Error('Should not re-instantiate a GAX client.'));
         };
         bigtable.request(CONFIG);
