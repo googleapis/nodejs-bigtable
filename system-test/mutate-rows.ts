@@ -23,13 +23,13 @@ const {
 import * as assert from 'assert';
 import {afterEach, beforeEach, describe, it} from 'mocha';
 import * as sinon from 'sinon';
-import * as through from 'through2';
 import {EventEmitter} from 'events';
 import {ProjectIdCallback, GoogleAuth} from 'google-auth-library';
 import {PartialFailureError} from '@google-cloud/common/build/src/util';
 import {Entry} from '../src/table';
 import {CancellableStream, GrpcClient} from 'google-gax';
 import {BigtableClient} from '../src/v2';
+import {PassThrough} from 'stream';
 
 const {grpc} = new GrpcClient();
 
@@ -105,7 +105,7 @@ describe('Bigtable/Table', () => {
             reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
           );
           mutationCallTimes.push(new Date().getTime());
-          const emitter = through.obj();
+          const emitter = new PassThrough({objectMode: true});
           dispatch(emitter, responses!.shift());
           return (emitter as {}) as CancellableStream;
         },

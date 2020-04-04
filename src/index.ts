@@ -18,7 +18,6 @@ import arrify = require('arrify');
 import * as extend from 'extend';
 import {GoogleAuth, CallOptions} from 'google-gax';
 import * as gax from 'google-gax';
-import * as through from 'through2';
 import * as protos from '../protos/protos';
 import {AbortableDuplex} from '@google-cloud/common';
 
@@ -36,6 +35,7 @@ import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
+import {PassThrough} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const retryRequest = require('retry-request');
@@ -748,7 +748,7 @@ export class Bigtable {
     };
 
     if (isStreamMode) {
-      stream = streamEvents(through.obj());
+      stream = streamEvents(new PassThrough({objectMode: true}));
 
       stream.abort = () => {
         if (gaxStream && gaxStream.cancel) {

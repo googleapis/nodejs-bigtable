@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {Transform, PassThrough} from 'stream';
 import * as common from '@google-cloud/common';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
@@ -23,7 +24,6 @@ const concat = require('concat-stream');
 import * as is from 'is';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
-import * as through from 'through2';
 
 import {
   Family,
@@ -683,7 +683,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowsLimit = options.limit;
     }
 
-    const userStream = through.obj();
+    const userStream = new PassThrough({objectMode: true});
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
       if (activeRequestStream) {
@@ -811,19 +811,22 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const rowStream: Duplex = pumpify.obj([
         requestStream,
         chunkTransformer,
-        through.obj((rowData, enc, next) => {
-          if (
-            chunkTransformer._destroyed ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (userStream as any)._writableState.ended
-          ) {
-            return next();
-          }
-          numRequestsMade = 0;
-          rowsRead++;
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
+        new Transform({
+          objectMode: true,
+          transform: (rowData, enc, next) => {
+            if (
+              chunkTransformer._destroyed ||
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (userStream as any)._writableState.ended
+            ) {
+              return next();
+            }
+            numRequestsMade = 0;
+            rowsRead++;
+            const row = this.row(rowData.key);
+            row.data = rowData.data;
+            next(null, row);
+          },
         }),
       ]);
 
@@ -1568,11 +1571,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts,
         gaxOpts: gaxOptions,
       }),
-      through.obj((key, enc, next) => {
-        next(null, {
-          key: key.rowKey,
-          offset: key.offsetBytes,
-        });
+      new Transform({
+        objectMode: true,
+        transform: (key, enc, next) => {
+          next(null, {
+            key: key.rowKey,
+            offset: key.offsetBytes,
+          });
+        },
       }),
     ]);
   }

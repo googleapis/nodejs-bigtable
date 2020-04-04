@@ -19,7 +19,6 @@ import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
 import {PassThrough, Writable, Duplex} from 'stream';
-import * as through from 'through2';
 import {ServiceError} from 'google-gax';
 import {DecoratedStatus} from '../src/decorateStatus';
 
@@ -2121,7 +2120,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should provide the proper request options', done => {
-      const stream = through.obj();
+      const stream = new PassThrough({objectMode: true});
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
@@ -2258,14 +2257,11 @@ describe('Bigtable/Table', () => {
 
         beforeEach(() => {
           table.bigtable.request = () => {
-            const stream = through.obj();
-
+            const stream = new PassThrough({objectMode: true});
             stream.push({entries: fakeStatuses});
-
             setImmediate(() => {
               stream.end();
             });
-
             return stream;
           };
 
