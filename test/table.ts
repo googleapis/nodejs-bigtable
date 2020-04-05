@@ -16,7 +16,6 @@ import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import {afterEach, before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
-import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
 import {PassThrough, Writable, Duplex} from 'stream';
 import * as through from 'through2';
@@ -117,7 +116,6 @@ describe('Bigtable/Table', () => {
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
       './filter.js': {Filter: FakeFilter},
-      pumpify,
       './row.js': {Row: FakeRow},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
     }).Table;

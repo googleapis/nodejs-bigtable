@@ -21,8 +21,6 @@ import {decorateStatus} from './decorateStatus';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 import * as is from 'is';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pumpify = require('pumpify');
 import * as through from 'through2';
 
 import {
@@ -40,7 +38,7 @@ import {CallOptions} from 'google-gax';
 import {Bigtable} from '.';
 import {Instance} from './instance';
 import {google} from '../protos/protos';
-import {Duplex} from 'stream';
+import {pipeline} from 'stream';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -808,7 +806,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      const rowStream: Duplex = pumpify.obj([
+      const rowStream = pipeline(
         requestStream,
         chunkTransformer,
         through.obj((rowData, enc, next) => {
@@ -825,7 +823,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           row.data = rowData.data;
           next(null, row);
         }),
-      ]);
+        () => {
+          // rely on downstream consumers reacting to the `err` event
+        }
+      );
 
       rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -1561,7 +1562,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       appProfileId: this.bigtable.appProfileId,
     };
 
-    return pumpify.obj([
+    return pipeline(
       this.bigtable.request({
         client: 'BigtableClient',
         method: 'sampleRowKeys',
@@ -1574,7 +1575,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           offset: key.offsetBytes,
         });
       }),
-    ]);
+      () => {
+        // rely on downstream consumers handling the `err` event
+      }
+    );
   }
 
   setIamPolicy(
