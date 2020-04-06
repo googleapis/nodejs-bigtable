@@ -348,7 +348,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.getInstance(request);
       }, expectedError);
       assert(
@@ -468,7 +468,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.listInstances(request);
       }, expectedError);
       assert(
@@ -588,7 +588,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.updateInstance(request);
       }, expectedError);
       assert(
@@ -708,7 +708,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.deleteInstance(request);
       }, expectedError);
       assert(
@@ -828,7 +828,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.getCluster(request);
       }, expectedError);
       assert(
@@ -948,7 +948,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.listClusters(request);
       }, expectedError);
       assert(
@@ -1068,7 +1068,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.deleteCluster(request);
       }, expectedError);
       assert(
@@ -1188,7 +1188,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.createAppProfile(request);
       }, expectedError);
       assert(
@@ -1308,7 +1308,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.getAppProfile(request);
       }, expectedError);
       assert(
@@ -1428,7 +1428,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.deleteAppProfile(request);
       }, expectedError);
       assert(
@@ -1548,7 +1548,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.getIamPolicy(request);
       }, expectedError);
       assert(
@@ -1668,7 +1668,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.setIamPolicy(request);
       }, expectedError);
       assert(
@@ -1790,7 +1790,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.testIamPermissions(request);
       }, expectedError);
       assert(
@@ -1920,7 +1920,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.createInstance(request);
       }, expectedError);
       assert(
@@ -1957,7 +1957,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.createInstance(request);
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await operation.promise();
       }, expectedError);
       assert(
@@ -2090,7 +2090,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.partialUpdateInstance(request);
       }, expectedError);
       assert(
@@ -2128,7 +2128,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.partialUpdateInstance(request);
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await operation.promise();
       }, expectedError);
       assert(
@@ -2258,7 +2258,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.createCluster(request);
       }, expectedError);
       assert(
@@ -2295,7 +2295,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.createCluster(request);
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await operation.promise();
       }, expectedError);
       assert(
@@ -2425,7 +2425,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.updateCluster(request);
       }, expectedError);
       assert(
@@ -2462,7 +2462,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.updateCluster(request);
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await operation.promise();
       }, expectedError);
       assert(
@@ -2595,7 +2595,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.updateAppProfile(request);
       }, expectedError);
       assert(
@@ -2633,7 +2633,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.updateAppProfile(request);
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await operation.promise();
       }, expectedError);
       assert(
@@ -2757,7 +2757,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.listAppProfiles(request);
       }, expectedError);
       assert(
@@ -2854,7 +2854,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
           reject(err);
         });
       });
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await promise;
       }, expectedError);
       assert(
@@ -2931,7 +2931,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const iterable = client.listAppProfilesAsync(request);
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         const responses: protos.google.bigtable.admin.v2.IAppProfile[] = [];
         for await (const resource of iterable) {
           responses.push(resource!);

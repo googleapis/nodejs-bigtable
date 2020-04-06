@@ -254,7 +254,7 @@ describe('v2.BigtableClient', () => {
       };
       const expectedError = new Error('expected');
       client.innerApiCalls.mutateRow = stubSimpleCall(undefined, expectedError);
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.mutateRow(request);
       }, expectedError);
       assert(
@@ -368,7 +368,7 @@ describe('v2.BigtableClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.checkAndMutateRow(request);
       }, expectedError);
       assert(
@@ -484,7 +484,7 @@ describe('v2.BigtableClient', () => {
         undefined,
         expectedError
       );
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await client.readModifyWriteRow(request);
       }, expectedError);
       assert(
@@ -574,7 +574,7 @@ describe('v2.BigtableClient', () => {
           reject(err);
         });
       });
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await promise;
       }, expectedError);
       assert(
@@ -666,7 +666,7 @@ describe('v2.BigtableClient', () => {
           reject(err);
         });
       });
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await promise;
       }, expectedError);
       assert(
@@ -758,7 +758,7 @@ describe('v2.BigtableClient', () => {
           reject(err);
         });
       });
-      assert.rejects(async () => {
+      await assert.rejects(async () => {
         await promise;
       }, expectedError);
       assert(
