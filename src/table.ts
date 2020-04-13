@@ -834,6 +834,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           userStream.end();
           return;
         }
+        
+
         rowStream.unpipe(userStream);
         if (
           numRequestsMade <= maxRetries &&
@@ -842,6 +844,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           makeNewRequest();
         } else {
           userStream.emit('error', error);
+          throw "Unexpected error code: " + error.code
+
         }
       });
       rowStream.pipe(userStream);
