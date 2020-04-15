@@ -683,9 +683,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowsLimit = options.limit;
     }
 
-    const userStream = through.obj((rowData, enc, next) => {
-      next(null, rowData);
-    });
+    const userStream = through.obj();
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
       rowStream.unpipe(userStream);
