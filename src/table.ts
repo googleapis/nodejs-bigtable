@@ -17,6 +17,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
+import {PassThrough} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
@@ -683,9 +684,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowsLimit = options.limit;
     }
 
-    const userStream = through.obj();
+    const userStream = new PassThrough({objectMode: true});
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
+      rowStream?.unpipe(userStream);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
@@ -693,6 +695,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
@@ -808,7 +811,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      const rowStream: Duplex = pumpify.obj([
+      rowStream = pumpify.obj([
         requestStream,
         chunkTransformer,
         through.obj((rowData, enc, next) => {
