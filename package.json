@@ -89,7 +89,7 @@
     "mocha": "^7.1.0",
     "mv": "^2.1.1",
     "npc": "0.0.1",
-    "null-loader": "^3.0.0",
+    "null-loader": "^4.0.0",
     "p-queue": "^6.0.2",
     "pack-n-play": "^1.0.0-2",
     "proxyquire": "^2.0.0",
