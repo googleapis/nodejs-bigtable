@@ -683,9 +683,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowsLimit = options.limit;
     }
 
-    const userStream = through.obj();
+    const userStream = through.obj((rowData, enc, next) => {
+      next(null, rowData);
+    });
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
+      rowStream.unpipe(userStream);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
@@ -693,6 +696,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
@@ -808,7 +812,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      const rowStream: Duplex = pumpify.obj([
+      rowStream = pumpify.obj([
         requestStream,
         chunkTransformer,
         through.obj((rowData, enc, next) => {
