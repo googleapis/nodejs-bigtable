@@ -29,7 +29,7 @@ import {PartialFailureError} from '@google-cloud/common/build/src/util';
 import {Entry} from '../src/table';
 import {CancellableStream, GrpcClient} from 'google-gax';
 import {BigtableClient} from '../src/v2';
-import { PassThrough } from 'stream';
+import {PassThrough} from 'stream';
 
 const {grpc} = new GrpcClient();
 
