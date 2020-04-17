@@ -17,7 +17,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
-import {PassThrough} from 'stream';
+import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
@@ -1564,6 +1564,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       appProfileId: this.bigtable.appProfileId,
     };
 
+    var transform = new Transform( { objectMode: true } )
+    transform._transform = (key, enc, next) => {
+        next(null, {
+          key: key.rowKey,
+          offset: key.offsetBytes,
+        });
+      };
+
     return pumpify.obj([
       this.bigtable.request({
         client: 'BigtableClient',
@@ -1571,12 +1579,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts,
         gaxOpts: gaxOptions,
       }),
-      through.obj((key, enc, next) => {
-        next(null, {
-          key: key.rowKey,
-          offset: key.offsetBytes,
-        });
-      }),
+      transform,
     ]);
   }
 
