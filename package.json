@@ -33,7 +33,7 @@
     "docs-test": "linkinator docs",
     "fix": "gts fix",
     "prelint": "cd samples; npm link ../; npm install",
-    "lint": "gts fix",
+    "lint": "gts check",
     "prepare": "npm run compile",
     "samples-test": "cd samples/ && npm link ../ && npm install && npm test && cd ../",
     "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
