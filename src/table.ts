@@ -811,23 +811,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
+      var transform = through.obj((rowData, enc, next) => {
+        if (
+          chunkTransformer._destroyed ||
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (userStream as any)._writableState.ended
+        ) {
+          return next();
+        }
+        numRequestsMade = 0;
+        rowsRead++;
+        const row = this.row(rowData.key);
+        row.data = rowData.data;
+        next(null, row);
+      })
+
       rowStream = pumpify.obj([
         requestStream,
         chunkTransformer,
-        through.obj((rowData, enc, next) => {
-          if (
-            chunkTransformer._destroyed ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (userStream as any)._writableState.ended
-          ) {
-            return next();
-          }
-          numRequestsMade = 0;
-          rowsRead++;
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
-        }),
+        transform,
       ]);
 
       rowStream.on('error', (error: ServiceError) => {
