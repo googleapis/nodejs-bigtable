@@ -19,10 +19,10 @@ import {afterEach, before, beforeEach, describe, it} from 'mocha';
 import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
-import * as through from 'through2';
 
 import {Cluster} from '../src/cluster.js';
 import {Instance} from '../src/instance.js';
+import {PassThrough} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const v2 = require('../src/v2');
@@ -753,7 +753,7 @@ describe('Bigtable', () => {
       let GAX_STREAM: any;
 
       beforeEach(() => {
-        GAX_STREAM = through();
+        GAX_STREAM = new PassThrough();
         bigtable.api[CONFIG.client][CONFIG.method] = {
           bind() {
             return () => {
@@ -826,7 +826,7 @@ describe('Bigtable', () => {
 
       it('should re-emit request event from retry-request', done => {
         retryRequestOverride = () => {
-          const fakeRetryRequestStream = through.obj();
+          const fakeRetryRequestStream = new PassThrough({objectMode: true});
           setImmediate(() => {
             fakeRetryRequestStream.emit('request');
           });

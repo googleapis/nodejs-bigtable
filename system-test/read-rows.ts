@@ -21,10 +21,10 @@ import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
-import * as through from 'through2';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
 import {ServiceError, GrpcClient} from 'google-gax';
+import {PassThrough} from 'stream';
 
 const {grpc} = new GrpcClient();
 
@@ -137,7 +137,7 @@ describe('Bigtable/Table', () => {
         }
         requestedOptions.push(requestOptions);
         rowKeysRead.push([]);
-        const requestStream = through.obj();
+        const requestStream = new PassThrough({objectMode: true});
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (requestStream as any).abort = () => {};
         dispatch(requestStream, responses!.shift());
