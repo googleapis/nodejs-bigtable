@@ -24,9 +24,8 @@ import * as assert from 'assert';
 import {afterEach, beforeEach, describe, it} from 'mocha';
 import * as sinon from 'sinon';
 import {EventEmitter} from 'events';
-import {ProjectIdCallback, GoogleAuth} from 'google-auth-library';
 import {Entry, PartialFailureError} from '../src/table';
-import {CancellableStream, GrpcClient} from 'google-gax';
+import {CancellableStream, GrpcClient, GoogleAuth} from 'google-gax';
 import {BigtableClient} from '../src/v2';
 import {PassThrough} from 'stream';
 
@@ -73,7 +72,7 @@ describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.api = {};
   bigtable.auth = {
-    getProjectId(callback: ProjectIdCallback) {
+    getProjectId(callback: Function) {
       callback(null, 'project-id');
     },
   } as GoogleAuth;
