@@ -24,8 +24,7 @@ import * as ProtoBuf from 'protobufjs';
 import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
-import {Bigtable} from '../src';
-import {AbortableDuplex} from '@google-cloud/common';
+import {Bigtable, AbortableDuplex} from '../src';
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
 const root = ProtoBuf.Root.fromJSON(
