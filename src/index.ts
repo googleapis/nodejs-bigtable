@@ -19,7 +19,6 @@ import * as extend from 'extend';
 import {GoogleAuth, CallOptions} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
-import {AbortableDuplex} from '@google-cloud/common';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -35,7 +34,7 @@ import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
-import {PassThrough} from 'stream';
+import {PassThrough, Duplex} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const retryRequest = require('retry-request');
@@ -72,6 +71,10 @@ export interface RequestOptions {
   retryOpts?: {};
   gaxOpts?: {};
   method?: string;
+}
+
+export interface AbortableDuplex extends Duplex {
+  abort(): void;
 }
 
 export interface BigtableOptions extends gax.GoogleAuthOptions {
@@ -1093,6 +1096,7 @@ export {
   MutateCallback,
   MutateOptions,
   MutateResponse,
+  PartialFailureError,
   Policy,
   PolicyBinding,
   PrefixRange,
