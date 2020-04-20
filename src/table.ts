@@ -811,7 +811,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      var transform = through.obj((rowData, enc, next) => {
+      const transform = through.obj((rowData: any, _: any, next: any) => {
         if (
           chunkTransformer._destroyed ||
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -824,13 +824,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         const row = this.row(rowData.key);
         row.data = rowData.data;
         next(null, row);
-      })
+      });
 
-      rowStream = pumpify.obj([
-        requestStream,
-        chunkTransformer,
-        transform,
-      ]);
+      rowStream = pumpify.obj([requestStream, chunkTransformer, transform]);
 
       rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -1566,13 +1562,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       appProfileId: this.bigtable.appProfileId,
     };
 
-    var transform = new Transform( { objectMode: true } )
+    const transform = new Transform({objectMode: true});
     transform._transform = (key, enc, next) => {
-        next(null, {
-          key: key.rowKey,
-          offset: key.offsetBytes,
-        });
-      };
+      next(null, {
+        key: key.rowKey,
+        offset: key.offsetBytes,
+      });
+    };
 
     return pumpify.obj([
       this.bigtable.request({
