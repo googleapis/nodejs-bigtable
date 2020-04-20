@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as common from '@google-cloud/common';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
@@ -38,7 +37,7 @@ import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
-import {Bigtable} from '.';
+import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
@@ -353,12 +352,12 @@ export type GetRowsCallback = (
 ) => void;
 export type GetRowsResponse = [Row[], google.bigtable.v2.ReadRowsResponse];
 export type InsertRowsCallback = (
-  err: ServiceError | null,
+  err: ServiceError | PartialFailureError | null,
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type InsertRowsResponse = [google.protobuf.Empty];
 export type MutateCallback = (
-  err: ServiceError | null,
+  err: ServiceError | PartialFailureError | null,
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type MutateResponse = [google.protobuf.Empty];
@@ -632,7 +631,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   createReadStream(opts?: GetRowsOptions) {
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
-    let activeRequestStream: common.AbortableDuplex;
+    let activeRequestStream: AbortableDuplex;
     let rowKeys: string[] | null;
     const ranges = options.ranges || [];
     let filter: {} | null;
@@ -1384,7 +1383,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const entries = (arrify(entriesRaw) as Entry[]).reduce(
+    const entries: Entry[] = (arrify(entriesRaw) as Entry[]).reduce(
       (a, b) => a.concat(b),
       []
     );
@@ -1400,10 +1399,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
     const mutationErrorsByEntryIndex = new Map();
 
-    const onBatchResponse = (err: ServiceError | null) => {
+    const onBatchResponse = (
+      err: ServiceError | PartialFailureError | null
+    ) => {
       if (err) {
-        // The error happened before a request was even made, don't
-        // retry.
+        // The error happened before a request was even made, don't retry.
         callback(err);
         return;
       }
@@ -1414,10 +1414,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       if (mutationErrorsByEntryIndex.size !== 0) {
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        err = new common.util.PartialFailureError({
-          errors: mutationErrors,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any) as ServiceError;
+        err = new PartialFailureError(mutationErrors);
       }
 
       callback(err);
@@ -1441,7 +1438,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       this.bigtable
-        .request({
+        .request<google.bigtable.v2.MutateRowsResponse>({
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
@@ -1883,3 +1880,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
+
+export interface GoogleInnerError {
+  reason?: string;
+  message?: string;
+}
+
+export class PartialFailureError extends Error {
+  errors?: GoogleInnerError[];
+  constructor(errors: GoogleInnerError[]) {
+    super();
+    this.errors = errors;
+    this.name = 'PartialFailureError';
+    let messages = errors.map(e => e.message);
+    if (messages.length > 1) {
+      messages = messages.map((message, i) => `    ${i + 1}. ${message}`);
+      messages.unshift(
+        'Multiple errors occurred during the request. Please see the `errors` array for complete details.\n'
+      );
+      messages.push('\n');
+    }
+    this.message = messages.join('\n');
+  }
+}

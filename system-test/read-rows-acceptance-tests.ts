@@ -20,15 +20,14 @@ const testcases = require('../../system-test/read-rows-acceptance-test.json')
 import {PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
-import * as ProtoBuf from 'protobufjs';
+import {protobuf} from 'google-gax';
 import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
-import {Bigtable} from '../src';
-import {AbortableDuplex} from '@google-cloud/common';
+import {Bigtable, AbortableDuplex} from '../src';
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
-const root = ProtoBuf.Root.fromJSON(
+const root = protobuf.Root.fromJSON(
   JSON.parse(fs.readFileSync(protosJson).toString())
 );
 const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');

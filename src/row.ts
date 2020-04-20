@@ -25,6 +25,7 @@ import {
   MutateCallback,
   MutateResponse,
   MutateOptions,
+  PartialFailureError,
 } from './table';
 import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
@@ -89,7 +90,7 @@ export type CreateRulesResponse = [
   google.bigtable.v2.IReadModifyWriteRowResponse
 ];
 export type CreateRowCallback = (
-  err: ServiceError | null,
+  err: ServiceError | PartialFailureError | null,
   row?: Row | null,
   apiResponse?: google.protobuf.Empty
 ) => void;
