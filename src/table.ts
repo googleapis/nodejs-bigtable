@@ -40,6 +40,7 @@ import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
+import * as through from 'through2';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -809,11 +810,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      const transform = new Transform( { objectMode: true })
-      transform._transform = (rowData:any, _:any, next:any) => {
+      // TODO: These lines are the changes that cause test failures.
+      // const transform = new Transform({objectMode: true});
+      // transform._transform = (rowData, _, next) => {
+      const transform = through.obj((rowData, _, next) => {
         if (
           chunkTransformer._destroyed ||
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           !userStream.writable
         ) {
           return next();
@@ -823,18 +825,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         const row = this.row(rowData.key);
         row.data = rowData.data;
         next(null, row);
-      };
+      });
+      //};
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, transform]);
 
       rowStream.on('error', (error: ServiceError) => {
+        rowStream.unpipe(userStream);
         if (IGNORED_STATUS_CODES.has(error.code)) {
           // We ignore the `cancelled` "error", since we are the ones who cause
           // it when the user calls `.abort()`.
           userStream.end();
           return;
         }
-        rowStream.unpipe(userStream);
         if (
           numRequestsMade <= maxRetries &&
           RETRYABLE_STATUS_CODES.has(error.code)
