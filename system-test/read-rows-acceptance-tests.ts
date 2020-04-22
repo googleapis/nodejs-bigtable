@@ -17,7 +17,7 @@ import {describe, it} from 'mocha';
 import {Test} from './testTypes';
 const testcases = require('../../system-test/read-rows-acceptance-test.json')
   .tests as Test[];
-import {Readable} from 'stream';
+import {PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
 import {protobuf} from 'google-gax';
@@ -25,6 +25,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
 import {Bigtable, AbortableDuplex} from '../src';
+const streamEvents = require('stream-events');
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
 const root = protobuf.Root.fromJSON(
@@ -69,9 +70,9 @@ describe('Read Row Acceptance tests', () => {
       table.bigtable = {} as Bigtable;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (table.bigtable.request as any) = () => {
-        var stream =  new Readable({
-          objectMode: true,
-          read: function(size) {
+        var stream = streamEvents(new PassThrough({objectMode: true}));
+
+        const mocked_stream = function(size:number) {
             test.chunks_base64
             .forEach((value, index, array) => {
               const chunk = value;
@@ -90,8 +91,8 @@ describe('Read Row Acceptance tests', () => {
             })
             stream.emit('end');
           }
-        });
-        ((stream as {}) as AbortableDuplex).abort = () => {};
+        stream.abort = () => {};
+        stream.once('reading', mocked_stream);
 
         return stream;
       };

@@ -40,7 +40,6 @@ import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
-import * as through from 'through2';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
