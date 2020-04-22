@@ -811,10 +811,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const transform = new Transform({objectMode: true});
       transform._transform = (rowData, _, next) => {
-        if (
-          chunkTransformer._destroyed ||
-          !userStream.writable
-        ) {
+        if (chunkTransformer._destroyed || !userStream.writable) {
           return next();
         }
         numRequestsMade = 0;
@@ -824,7 +821,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         next(null, row);
       };
 
-      rowStream = pumpify.obj([activeRequestStream, chunkTransformer, transform]);
+      rowStream = pumpify.obj([
+        activeRequestStream,
+        chunkTransformer,
+        transform,
+      ]);
 
       rowStream.on('error', (error: ServiceError) => {
         rowStream.unpipe(userStream);
