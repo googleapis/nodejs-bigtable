@@ -77,7 +77,7 @@ describe('Read Row Acceptance tests', () => {
               const chunk = value;
               const cellChunk = CellChunk.decode(
                 Buffer.from(chunk as string, 'base64')
-              ); //.decode64(chunk);
+              );
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               let readRowsResponse: any = {chunks: [cellChunk]};
               readRowsResponse = ReadRowsResponse.create(readRowsResponse);
@@ -86,9 +86,9 @@ describe('Read Row Acceptance tests', () => {
                 longs: String,
                 oneofs: true,
               });
-              stream.push(readRowsResponse);
+              stream.emit('data', readRowsResponse);
             })
-            stream.push(null);
+            stream.emit('end');
           }
         });
         ((stream as {}) as AbortableDuplex).abort = () => {};

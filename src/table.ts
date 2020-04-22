@@ -808,12 +808,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       activeRequestStream = requestStream!;
 
-      requestStream!.on('request', () => numRequestsMade++);
+      activeRequestStream.on('request', () => numRequestsMade++);
 
-      // TODO: These lines are the changes that cause test failures.
-      // const transform = new Transform({objectMode: true});
-      // transform._transform = (rowData, _, next) => {
-      const transform = through.obj((rowData, _, next) => {
+      const transform = new Transform({objectMode: true});
+      transform._transform = (rowData, _, next) => {
         if (
           chunkTransformer._destroyed ||
           !userStream.writable
@@ -825,10 +823,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         const row = this.row(rowData.key);
         row.data = rowData.data;
         next(null, row);
-      });
-      //};
+      };
 
-      rowStream = pumpify.obj([requestStream, chunkTransformer, transform]);
+      rowStream = pumpify.obj([activeRequestStream, chunkTransformer, transform]);
 
       rowStream.on('error', (error: ServiceError) => {
         rowStream.unpipe(userStream);
