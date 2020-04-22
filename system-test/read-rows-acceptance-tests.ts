@@ -17,7 +17,7 @@ import {describe, it} from 'mocha';
 import {Test} from './testTypes';
 const testcases = require('../../system-test/read-rows-acceptance-test.json')
   .tests as Test[];
-import {PassThrough} from 'stream';
+import {Readable} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
 import {protobuf} from 'google-gax';
@@ -69,15 +69,12 @@ describe('Read Row Acceptance tests', () => {
       table.bigtable = {} as Bigtable;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (table.bigtable.request as any) = () => {
-        const stream = new PassThrough({
+        var stream =  new Readable({
           objectMode: true,
-        });
-
-        ((stream as {}) as AbortableDuplex).abort = () => {};
-
-        setImmediate(() => {
-          test.chunks_base64
-            .map(chunk => {
+          read: function(size) {
+            test.chunks_base64
+            .forEach((value, index, array) => {
+              const chunk = value;
               const cellChunk = CellChunk.decode(
                 Buffer.from(chunk as string, 'base64')
               ); //.decode64(chunk);
@@ -89,11 +86,12 @@ describe('Read Row Acceptance tests', () => {
                 longs: String,
                 oneofs: true,
               });
-              return readRowsResponse;
+              stream.push(readRowsResponse);
             })
-            .forEach(readRowsResponse => stream.push(readRowsResponse));
-          stream.push(null);
+            stream.push(null);
+          }
         });
+        ((stream as {}) as AbortableDuplex).abort = () => {};
 
         return stream;
       };
