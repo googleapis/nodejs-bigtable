@@ -49,14 +49,14 @@ const {grpc} = new gax.GrpcClient();
 export interface GetInstancesCallback {
   (
     err: ServiceError | null,
-    result?: Instance[] | null,
-    nextQuery?: {} | null,
-    response?: google.bigtable.admin.v2.IListInstancesResponse | null
+    result?: Instance[],
+    failedLocations?: string[],
+    response?: google.bigtable.admin.v2.IListInstancesResponse
   ): void;
 }
 export type GetInstancesResponse = [
   Instance[],
-  {} | null,
+  string[],
   google.bigtable.admin.v2.IListInstancesResponse
 ];
 
@@ -632,19 +632,6 @@ export class Bigtable {
    *   }
    * });
    *
-   * @example <caption>To control how many API requests are made and page
-   * through the results manually, set `autoPaginate` to `false`.</caption>
-   * function callback(err, instances, nextQuery, apiResponse) {
-   *   if (nextQuery) {
-   *     // More results exist.
-   *     bigtable.getInstances(nextQuery, callback);
-   *   }
-   * }
-   *
-   * bigtable.getInstances({
-   *   autoPaginate: false
-   * }, callback);
-   *
    * @example <caption>If the callback is omitted, we'll return a Promise.
    * </caption>
    * bigtable.getInstances().then(function(data) {
@@ -683,7 +670,7 @@ export class Bigtable {
           instance.metadata = instanceData;
           return instance;
         });
-        callback!(null, instances, resp);
+        callback!(null, instances, resp.failedLocations, resp);
       }
     );
   }
