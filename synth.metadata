@@ -4,7 +4,7 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/nodejs-bigtable.git",
-        "sha": "61f352230d490a348c60d11a0fa037441a0b910f"
+        "sha": "e08a191d12bd680576f7aa09f2d316f1418d49e1"
       }
     },
     {

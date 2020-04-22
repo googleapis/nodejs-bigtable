@@ -627,11 +627,30 @@ export class BigtableInstanceAdminClient {
    *
    * @param {Object} request
    *   The request object that will be sent.
-   * @param {} request.
-   * @param {} request.
-   * @param {} request.
-   * @param {} request.
-   * @param {} request.
+   * @param {string} request.name
+   *   The unique name of the instance. Values are of the form
+   *   `projects/{project}/instances/{@link a-z0-9\\-|a-z}+[a-z0-9]`.
+   * @param {string} request.displayName
+   *   Required. The descriptive name for this instance as it appears in UIs.
+   *   Can be changed at any time, but should be kept globally unique
+   *   to avoid confusion.
+   * @param {google.bigtable.admin.v2.Instance.State} request.state
+   *   (`OutputOnly`)
+   *   The current state of the instance.
+   * @param {google.bigtable.admin.v2.Instance.Type} request.type
+   *   The type of the instance. Defaults to `PRODUCTION`.
+   * @param {number[]} request.labels
+   *   Labels are a flexible and lightweight mechanism for organizing cloud
+   *   resources into groups that reflect a customer's organizational needs and
+   *   deployment strategies. They can be used to filter resources and aggregate
+   *   metrics.
+   *
+   *   * Label keys must be between 1 and 63 characters long and must conform to
+   *     the regular expression: `{@link \p{Ll}\p{Lo}\p{N}_-|\p{Ll}\p{Lo}}{0,62}`.
+   *   * Label values must be between 0 and 63 characters long and must conform to
+   *     the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
+   *   * No more than 64 labels can be associated with a given resource.
+   *   * Keys and values must both be under 128 bytes.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1318,8 +1337,12 @@ export class BigtableInstanceAdminClient {
    *
    * @param {Object} request
    *   The request object that will be sent.
-   * @param {} request.
-   * @param {} request.
+   * @param {string} request.resource
+   *   REQUIRED: The resource for which the policy is being requested.
+   *   See the operation documentation for the appropriate value for this field.
+   * @param {google.iam.v1.GetPolicyOptions} request.options
+   *   OPTIONAL: A `GetPolicyOptions` object for specifying options to
+   *   `GetIamPolicy`. This field is only used by Cloud IAM.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1399,8 +1422,14 @@ export class BigtableInstanceAdminClient {
    *
    * @param {Object} request
    *   The request object that will be sent.
-   * @param {} request.
-   * @param {} request.
+   * @param {string} request.resource
+   *   REQUIRED: The resource for which the policy is being specified.
+   *   See the operation documentation for the appropriate value for this field.
+   * @param {google.iam.v1.Policy} request.policy
+   *   REQUIRED: The complete policy to be applied to the `resource`. The size of
+   *   the policy is limited to a few 10s of KB. An empty policy is a
+   *   valid policy but certain Cloud Platform services (such as Projects)
+   *   might reject them.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1479,8 +1508,14 @@ export class BigtableInstanceAdminClient {
    *
    * @param {Object} request
    *   The request object that will be sent.
-   * @param {} request.
-   * @param {} request.
+   * @param {string} request.resource
+   *   REQUIRED: The resource for which the policy detail is being requested.
+   *   See the operation documentation for the appropriate value for this field.
+   * @param {string[]} request.permissions
+   *   The set of permissions to check for the `resource`. Permissions with
+   *   wildcards (such as '*' or 'storage.*') are not allowed. For more
+   *   information see
+   *   [IAM Overview](https://cloud.google.com/iam/docs/overview#permissions).
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1890,11 +1925,24 @@ export class BigtableInstanceAdminClient {
    *
    * @param {Object} request
    *   The request object that will be sent.
-   * @param {} request.
-   * @param {} request.
-   * @param {} request.
-   * @param {} request.
-   * @param {} request.
+   * @param {string} request.name
+   *   The unique name of the cluster. Values are of the form
+   *   `projects/{project}/instances/{instance}/clusters/{@link -a-z0-9|a-z}*`.
+   * @param {string} request.location
+   *   (`CreationOnly`)
+   *   The location where this cluster's nodes and storage reside. For best
+   *   performance, clients should be located as close as possible to this
+   *   cluster. Currently only zones are supported, so values should be of the
+   *   form `projects/{project}/locations/{zone}`.
+   * @param {google.bigtable.admin.v2.Cluster.State} request.state
+   *   The current state of the cluster.
+   * @param {number} request.serveNodes
+   *   Required. The number of nodes allocated to this cluster. More nodes enable
+   *   higher throughput and more consistent performance.
+   * @param {google.bigtable.admin.v2.StorageType} request.defaultStorageType
+   *   (`CreationOnly`)
+   *   The type of storage used by this cluster to serve its
+   *   parent instance's tables, unless explicitly overridden.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
