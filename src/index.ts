@@ -27,7 +27,6 @@ import {
   InstanceOptions,
   CreateInstanceCallback,
   CreateInstanceResponse,
-  ClusterInfo,
   IInstance,
 } from './instance';
 import {shouldRetryRequest} from './decorateStatus';
@@ -462,14 +461,13 @@ export class Bigtable {
 
   createInstance(
     id: string,
-    options?: InstanceOptions
+    options: InstanceOptions
   ): Promise<CreateInstanceResponse>;
   createInstance(
     id: string,
     options: InstanceOptions,
     callback: CreateInstanceCallback
   ): void;
-  createInstance(id: string, callback: CreateInstanceCallback): void;
   /**
    * Create a Cloud Bigtable instance.
    *
@@ -546,14 +544,9 @@ export class Bigtable {
    */
   createInstance(
     id: string,
-    optionsOrCallback?: InstanceOptions | CreateInstanceCallback,
-    cb?: CreateInstanceCallback
+    options: InstanceOptions,
+    callback?: CreateInstanceCallback
   ): void | Promise<CreateInstanceResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb;
-
     const reqOpts = {
       parent: this.projectName,
       instanceId: id,
@@ -567,7 +560,7 @@ export class Bigtable {
       reqOpts.instance!.type = Instance.getTypeType_(options.type);
     }
 
-    reqOpts.clusters = arrify(options.clusters!).reduce((clusters, cluster) => {
+    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
       if (!cluster.id) {
         throw new Error(
           'A cluster was provided without an `id` property defined.'
@@ -581,7 +574,7 @@ export class Bigtable {
       };
 
       return clusters;
-    }, {} as {[index: string]: ClusterInfo});
+    }, {} as {[index: string]: google.bigtable.admin.v2.ICluster});
 
     this.request(
       {

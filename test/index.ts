@@ -451,6 +451,7 @@ describe('Bigtable', () => {
       };
       bigtable.createInstance(
         INSTANCE_ID,
+        {},
         (err: Error, instance: Instance, operation: gax.Operation) => {
           assert.strictEqual(err, error);
           assert.strictEqual(instance, undefined);
@@ -476,6 +477,7 @@ describe('Bigtable', () => {
       };
       bigtable.createInstance(
         INSTANCE_ID,
+        {},
         (err: Error, instance: Instance, ...args: Array<{}>) => {
           assert.ifError(err);
           assert.strictEqual(instance, fakeInstance);

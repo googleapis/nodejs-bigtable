@@ -95,7 +95,10 @@ class FakeTable extends Table {
 describe('Bigtable/Instance', () => {
   const INSTANCE_ID = 'my-instance';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const BIGTABLE = {projectName: 'projects/my-project'} as Bigtable;
+  const BIGTABLE = {
+    projectName: 'projects/my-project',
+    projectId: 'my-project',
+  } as Bigtable;
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
   const CLUSTER_ID = 'my-cluster';
@@ -200,18 +203,6 @@ describe('Bigtable/Instance', () => {
         callback(); // done()
       };
       instance.create(options, done);
-    });
-
-    it('should not require options', done => {
-      (instance.bigtable.createInstance as Function) = (
-        id: string,
-        options: {},
-        callback: Function
-      ) => {
-        assert.deepStrictEqual(options, {});
-        callback(); // done()
-      };
-      instance.create(done);
     });
   });
 
@@ -404,6 +395,7 @@ describe('Bigtable/Instance', () => {
     it('should respect the nodes option', done => {
       const options = {
         nodes: 3,
+        location: 'us-central1-c',
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {

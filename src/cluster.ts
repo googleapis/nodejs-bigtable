@@ -59,15 +59,20 @@ export type GetClustersCallback = (
   clusters?: Cluster[],
   apiResponse?: google.bigtable.admin.v2.IListClustersResponse
 ) => void;
+export interface SetClusterMetadataOptions {
+  nodes: number;
+}
 export type SetClusterMetadataCallback = GenericOperationCallback<
   Operation | null | undefined
 >;
-
-export interface CreateClusterOptions {
-  gaxOptions?: CallOptions;
-  location?: string;
+export interface BasicClusterConfig {
+  location: string;
   nodes: number;
   storage?: string;
+}
+
+export interface CreateClusterOptions extends BasicClusterConfig {
+  gaxOptions?: CallOptions;
 }
 export type GetClusterMetadataCallback = (
   err: ServiceError | null,
@@ -367,18 +372,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
   }
 
   setMetadata(
-    metadata: CreateClusterOptions
+    metadata: SetClusterMetadataOptions,
+    gaxOptions?: CallOptions
   ): Promise<SetClusterMetadataResponse>;
   setMetadata(
-    metadata: CreateClusterOptions,
-    gaxOptions: CallOptions
-  ): Promise<SetClusterMetadataResponse>;
-  setMetadata(
-    metadata: CreateClusterOptions,
+    metadata: SetClusterMetadataOptions,
     callback: SetClusterMetadataCallback
   ): void;
   setMetadata(
-    metadata: CreateClusterOptions,
+    metadata: SetClusterMetadataOptions,
     gaxOptions: CallOptions,
     callback: SetClusterMetadataCallback
   ): void;
@@ -399,7 +401,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_cluster_set_meta
    */
   setMetadata(
-    metadata: CreateClusterOptions,
+    metadata: SetClusterMetadataOptions,
     gaxOptionsOrCallback?: CallOptions | SetClusterMetadataCallback,
     cb?: SetClusterMetadataCallback
   ): void | Promise<SetClusterMetadataResponse> {
@@ -412,22 +414,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
     const reqOpts: ICluster = {
       name: this.name,
+      serveNodes: metadata.nodes,
     };
-
-    if (metadata.location) {
-      reqOpts.location = Cluster.getLocation_(
-        this.bigtable.projectId,
-        metadata.location
-      );
-    }
-
-    if (metadata.nodes) {
-      reqOpts.serveNodes = metadata.nodes;
-    }
-
-    if (metadata.storage) {
-      reqOpts.defaultStorageType = Cluster.getStorageType_(metadata.storage);
-    }
 
     this.bigtable.request<Operation>(
       {
