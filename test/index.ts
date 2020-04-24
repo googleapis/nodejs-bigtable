@@ -150,6 +150,11 @@ describe('Bigtable', () => {
       assert(promisified);
     });
 
+    it('should work without new', () => {
+      const bigtable = Bigtable();
+      assert(bigtable instanceof Bigtable);
+    });
+
     it('should initialize the API object', () => {
       assert.deepStrictEqual(bigtable.api, {});
     });

@@ -388,6 +388,22 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata(options, assert.ifError);
     });
 
+    it('should respect the gaxOptions', done => {
+      const options = {
+        nodes: 3,
+      };
+      const gaxOptions = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      cluster.setMetadata(options, gaxOptions, assert.ifError);
+    });
+
     it('should execute callback with all arguments', done => {
       const args = [{}, {}];
 

@@ -1100,6 +1100,16 @@ describe('Bigtable/Instance', () => {
       instance.setMetadata(metadata, done);
     });
 
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      instance.setMetadata({}, gaxOptions, assert.ifError);
+    });
+
     it('should update metadata property with API response', done => {
       const response = {};
       sandbox

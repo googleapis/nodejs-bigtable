@@ -408,7 +408,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
-      typeof gaxOptionsOrCallback === 'object' && gaxOptionsOrCallback
+      typeof gaxOptionsOrCallback === 'object'
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
 
