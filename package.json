@@ -40,7 +40,9 @@
     "presystem-test": "npm run compile",
     "system-test": "mocha build/system-test --timeout 600000",
     "pretest": "npm run compile",
-    "test": "c8 mocha build/test"
+    "test": "c8 mocha build/test",
+    "clean": "gts clean",
+    "precompile": "gts clean"
   },
   "dependencies": {
     "@google-cloud/paginator": "^3.0.0",
@@ -49,7 +51,7 @@
     "arrify": "^2.0.0",
     "concat-stream": "^2.0.0",
     "dot-prop": "^5.0.0",
-    "escape-string-regexp": "^3.0.0",
+    "escape-string-regexp": "^4.0.0",
     "extend": "^3.0.2",
     "google-gax": "^2.1.0",
     "is": "^3.0.1",
