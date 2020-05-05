@@ -25,7 +25,7 @@ import * as bigtabletableadminModule from '../src';
 
 import {PassThrough} from 'stream';
 
-import {protobuf, LROperation} from 'google-gax';
+import {protobuf, LROperation, operationsProtos} from 'google-gax';
 
 function generateSampleMessage<T extends object>(instance: T) {
   const filledObject = (instance.constructor as typeof protobuf.Message).toObject(
@@ -331,9 +331,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.createTable(request);
-      }, expectedError);
+      await assert.rejects(client.createTable(request), expectedError);
       assert(
         (client.innerApiCalls.createTable as SinonStub)
           .getCall(0)
@@ -442,9 +440,7 @@ describe('v2.BigtableTableAdminClient', () => {
       };
       const expectedError = new Error('expected');
       client.innerApiCalls.getTable = stubSimpleCall(undefined, expectedError);
-      await assert.rejects(async () => {
-        await client.getTable(request);
-      }, expectedError);
+      await assert.rejects(client.getTable(request), expectedError);
       assert(
         (client.innerApiCalls.getTable as SinonStub)
           .getCall(0)
@@ -556,9 +552,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.deleteTable(request);
-      }, expectedError);
+      await assert.rejects(client.deleteTable(request), expectedError);
       assert(
         (client.innerApiCalls.deleteTable as SinonStub)
           .getCall(0)
@@ -672,9 +666,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.modifyColumnFamilies(request);
-      }, expectedError);
+      await assert.rejects(client.modifyColumnFamilies(request), expectedError);
       assert(
         (client.innerApiCalls.modifyColumnFamilies as SinonStub)
           .getCall(0)
@@ -786,9 +778,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.dropRowRange(request);
-      }, expectedError);
+      await assert.rejects(client.dropRowRange(request), expectedError);
       assert(
         (client.innerApiCalls.dropRowRange as SinonStub)
           .getCall(0)
@@ -902,9 +892,10 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.generateConsistencyToken(request);
-      }, expectedError);
+      await assert.rejects(
+        client.generateConsistencyToken(request),
+        expectedError
+      );
       assert(
         (client.innerApiCalls.generateConsistencyToken as SinonStub)
           .getCall(0)
@@ -1016,9 +1007,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.checkConsistency(request);
-      }, expectedError);
+      await assert.rejects(client.checkConsistency(request), expectedError);
       assert(
         (client.innerApiCalls.checkConsistency as SinonStub)
           .getCall(0)
@@ -1130,9 +1119,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.getSnapshot(request);
-      }, expectedError);
+      await assert.rejects(client.getSnapshot(request), expectedError);
       assert(
         (client.innerApiCalls.getSnapshot as SinonStub)
           .getCall(0)
@@ -1244,9 +1231,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.deleteSnapshot(request);
-      }, expectedError);
+      await assert.rejects(client.deleteSnapshot(request), expectedError);
       assert(
         (client.innerApiCalls.deleteSnapshot as SinonStub)
           .getCall(0)
@@ -1355,9 +1340,7 @@ describe('v2.BigtableTableAdminClient', () => {
       };
       const expectedError = new Error('expected');
       client.innerApiCalls.getBackup = stubSimpleCall(undefined, expectedError);
-      await assert.rejects(async () => {
-        await client.getBackup(request);
-      }, expectedError);
+      await assert.rejects(client.getBackup(request), expectedError);
       assert(
         (client.innerApiCalls.getBackup as SinonStub)
           .getCall(0)
@@ -1472,9 +1455,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.updateBackup(request);
-      }, expectedError);
+      await assert.rejects(client.updateBackup(request), expectedError);
       assert(
         (client.innerApiCalls.updateBackup as SinonStub)
           .getCall(0)
@@ -1586,9 +1567,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.deleteBackup(request);
-      }, expectedError);
+      await assert.rejects(client.deleteBackup(request), expectedError);
       assert(
         (client.innerApiCalls.deleteBackup as SinonStub)
           .getCall(0)
@@ -1700,9 +1679,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.getIamPolicy(request);
-      }, expectedError);
+      await assert.rejects(client.getIamPolicy(request), expectedError);
       assert(
         (client.innerApiCalls.getIamPolicy as SinonStub)
           .getCall(0)
@@ -1814,9 +1791,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.setIamPolicy(request);
-      }, expectedError);
+      await assert.rejects(client.setIamPolicy(request), expectedError);
       assert(
         (client.innerApiCalls.setIamPolicy as SinonStub)
           .getCall(0)
@@ -1930,9 +1905,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.testIamPermissions(request);
-      }, expectedError);
+      await assert.rejects(client.testIamPermissions(request), expectedError);
       assert(
         (client.innerApiCalls.testIamPermissions as SinonStub)
           .getCall(0)
@@ -2054,9 +2027,10 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.createTableFromSnapshot(request);
-      }, expectedError);
+      await assert.rejects(
+        client.createTableFromSnapshot(request),
+        expectedError
+      );
       assert(
         (client.innerApiCalls.createTableFromSnapshot as SinonStub)
           .getCall(0)
@@ -2089,14 +2063,53 @@ describe('v2.BigtableTableAdminClient', () => {
         expectedError
       );
       const [operation] = await client.createTableFromSnapshot(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.createTableFromSnapshot as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkCreateTableFromSnapshotProgress without error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkCreateTableFromSnapshotProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkCreateTableFromSnapshotProgress with error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkCreateTableFromSnapshotProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2213,9 +2226,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.snapshotTable(request);
-      }, expectedError);
+      await assert.rejects(client.snapshotTable(request), expectedError);
       assert(
         (client.innerApiCalls.snapshotTable as SinonStub)
           .getCall(0)
@@ -2248,14 +2259,53 @@ describe('v2.BigtableTableAdminClient', () => {
         expectedError
       );
       const [operation] = await client.snapshotTable(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.snapshotTable as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkSnapshotTableProgress without error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkSnapshotTableProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkSnapshotTableProgress with error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkSnapshotTableProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2370,9 +2420,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.createBackup(request);
-      }, expectedError);
+      await assert.rejects(client.createBackup(request), expectedError);
       assert(
         (client.innerApiCalls.createBackup as SinonStub)
           .getCall(0)
@@ -2405,14 +2453,50 @@ describe('v2.BigtableTableAdminClient', () => {
         expectedError
       );
       const [operation] = await client.createBackup(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.createBackup as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkCreateBackupProgress without error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkCreateBackupProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkCreateBackupProgress with error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(client.checkCreateBackupProgress(''), expectedError);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2527,9 +2611,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.restoreTable(request);
-      }, expectedError);
+      await assert.rejects(client.restoreTable(request), expectedError);
       assert(
         (client.innerApiCalls.restoreTable as SinonStub)
           .getCall(0)
@@ -2562,14 +2644,50 @@ describe('v2.BigtableTableAdminClient', () => {
         expectedError
       );
       const [operation] = await client.restoreTable(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.restoreTable as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkRestoreTableProgress without error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkRestoreTableProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkRestoreTableProgress with error', async () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(client.checkRestoreTableProgress(''), expectedError);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2680,9 +2798,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.listTables(request);
-      }, expectedError);
+      await assert.rejects(client.listTables(request), expectedError);
       assert(
         (client.innerApiCalls.listTables as SinonStub)
           .getCall(0)
@@ -2766,9 +2882,7 @@ describe('v2.BigtableTableAdminClient', () => {
           reject(err);
         });
       });
-      await assert.rejects(async () => {
-        await promise;
-      }, expectedError);
+      await assert.rejects(promise, expectedError);
       assert(
         (client.descriptors.page.listTables.createStream as SinonStub)
           .getCall(0)
@@ -2966,9 +3080,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.listSnapshots(request);
-      }, expectedError);
+      await assert.rejects(client.listSnapshots(request), expectedError);
       assert(
         (client.innerApiCalls.listSnapshots as SinonStub)
           .getCall(0)
@@ -3059,9 +3171,7 @@ describe('v2.BigtableTableAdminClient', () => {
           reject(err);
         });
       });
-      await assert.rejects(async () => {
-        await promise;
-      }, expectedError);
+      await assert.rejects(promise, expectedError);
       assert(
         (client.descriptors.page.listSnapshots.createStream as SinonStub)
           .getCall(0)
@@ -3260,9 +3370,7 @@ describe('v2.BigtableTableAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.listBackups(request);
-      }, expectedError);
+      await assert.rejects(client.listBackups(request), expectedError);
       assert(
         (client.innerApiCalls.listBackups as SinonStub)
           .getCall(0)
@@ -3352,9 +3460,7 @@ describe('v2.BigtableTableAdminClient', () => {
           reject(err);
         });
       });
-      await assert.rejects(async () => {
-        await promise;
-      }, expectedError);
+      await assert.rejects(promise, expectedError);
       assert(
         (client.descriptors.page.listBackups.createStream as SinonStub)
           .getCall(0)
