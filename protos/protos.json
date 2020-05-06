@@ -878,14 +878,16 @@
                             "(google.api.http).post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups",
                             "(google.api.http).body": "backup",
                             "(google.longrunning.operation_info).response_type": "Backup",
-                            "(google.longrunning.operation_info).metadata_type": "CreateBackupMetadata"
+                            "(google.longrunning.operation_info).metadata_type": "CreateBackupMetadata",
+                            "(google.api.method_signature)": "parent,backup_id,backup"
                           }
                         },
                         "GetBackup": {
                           "requestType": "GetBackupRequest",
                           "responseType": "Backup",
                           "options": {
-                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*/backups/*}"
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/clusters/*/backups/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "UpdateBackup": {
@@ -893,21 +895,24 @@
                           "responseType": "Backup",
                           "options": {
                             "(google.api.http).patch": "/v2/{backup.name=projects/*/instances/*/clusters/*/backups/*}",
-                            "(google.api.http).body": "backup"
+                            "(google.api.http).body": "backup",
+                            "(google.api.method_signature)": "backup,update_mask"
                           }
                         },
                         "DeleteBackup": {
                           "requestType": "DeleteBackupRequest",
                           "responseType": "google.protobuf.Empty",
                           "options": {
-                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/backups/*}"
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/clusters/*/backups/*}",
+                            "(google.api.method_signature)": "name"
                           }
                         },
                         "ListBackups": {
                           "requestType": "ListBackupsRequest",
                           "responseType": "ListBackupsResponse",
                           "options": {
-                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/backups"
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/backups",
+                            "(google.api.method_signature)": "parent"
                           }
                         },
                         "RestoreTable": {
