@@ -32,7 +32,7 @@ import {Transform} from 'stream';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import * as protos from '../../protos/protos';
 import * as gapicConfig from './bigtable_table_admin_client_config.json';
-
+import {operationsProtos} from 'google-gax';
 const version = require('../../../package.json').version;
 
 /**
@@ -1903,6 +1903,42 @@ export class BigtableTableAdminClient {
       callback
     );
   }
+  /**
+   * Check the status of the long running operation returned by the createTableFromSnapshot() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkCreateTableFromSnapshotProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkCreateTableFromSnapshotProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Table,
+      protos.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.createTableFromSnapshot,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Table,
+      protos.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata
+    >;
+  }
   snapshotTable(
     request: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
     options?: gax.CallOptions
@@ -2026,6 +2062,42 @@ export class BigtableTableAdminClient {
     this.initialize();
     return this.innerApiCalls.snapshotTable(request, options, callback);
   }
+  /**
+   * Check the status of the long running operation returned by the snapshotTable() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkSnapshotTableProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkSnapshotTableProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Snapshot,
+      protos.google.bigtable.admin.v2.SnapshotTableMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.snapshotTable,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Snapshot,
+      protos.google.bigtable.admin.v2.SnapshotTableMetadata
+    >;
+  }
   createBackup(
     request: protos.google.bigtable.admin.v2.ICreateBackupRequest,
     options?: gax.CallOptions
@@ -2142,6 +2214,42 @@ export class BigtableTableAdminClient {
     this.initialize();
     return this.innerApiCalls.createBackup(request, options, callback);
   }
+  /**
+   * Check the status of the long running operation returned by the createBackup() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkCreateBackupProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkCreateBackupProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Backup,
+      protos.google.bigtable.admin.v2.CreateBackupMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.createBackup,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Backup,
+      protos.google.bigtable.admin.v2.CreateBackupMetadata
+    >;
+  }
   restoreTable(
     request: protos.google.bigtable.admin.v2.IRestoreTableRequest,
     options?: gax.CallOptions
@@ -2256,6 +2364,42 @@ export class BigtableTableAdminClient {
     });
     this.initialize();
     return this.innerApiCalls.restoreTable(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by the restoreTable() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkRestoreTableProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkRestoreTableProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Table,
+      protos.google.bigtable.admin.v2.RestoreTableMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.restoreTable,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Table,
+      protos.google.bigtable.admin.v2.RestoreTableMetadata
+    >;
   }
   listTables(
     request: protos.google.bigtable.admin.v2.IListTablesRequest,

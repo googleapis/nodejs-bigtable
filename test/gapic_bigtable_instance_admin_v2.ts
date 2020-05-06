@@ -25,7 +25,7 @@ import * as bigtableinstanceadminModule from '../src';
 
 import {PassThrough} from 'stream';
 
-import {protobuf, LROperation} from 'google-gax';
+import {protobuf, LROperation, operationsProtos} from 'google-gax';
 
 function generateSampleMessage<T extends object>(instance: T) {
   const filledObject = (instance.constructor as typeof protobuf.Message).toObject(
@@ -348,9 +348,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.getInstance(request);
-      }, expectedError);
+      await assert.rejects(client.getInstance(request), expectedError);
       assert(
         (client.innerApiCalls.getInstance as SinonStub)
           .getCall(0)
@@ -468,9 +466,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.listInstances(request);
-      }, expectedError);
+      await assert.rejects(client.listInstances(request), expectedError);
       assert(
         (client.innerApiCalls.listInstances as SinonStub)
           .getCall(0)
@@ -588,9 +584,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.updateInstance(request);
-      }, expectedError);
+      await assert.rejects(client.updateInstance(request), expectedError);
       assert(
         (client.innerApiCalls.updateInstance as SinonStub)
           .getCall(0)
@@ -708,9 +702,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.deleteInstance(request);
-      }, expectedError);
+      await assert.rejects(client.deleteInstance(request), expectedError);
       assert(
         (client.innerApiCalls.deleteInstance as SinonStub)
           .getCall(0)
@@ -828,9 +820,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.getCluster(request);
-      }, expectedError);
+      await assert.rejects(client.getCluster(request), expectedError);
       assert(
         (client.innerApiCalls.getCluster as SinonStub)
           .getCall(0)
@@ -948,9 +938,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.listClusters(request);
-      }, expectedError);
+      await assert.rejects(client.listClusters(request), expectedError);
       assert(
         (client.innerApiCalls.listClusters as SinonStub)
           .getCall(0)
@@ -1068,9 +1056,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.deleteCluster(request);
-      }, expectedError);
+      await assert.rejects(client.deleteCluster(request), expectedError);
       assert(
         (client.innerApiCalls.deleteCluster as SinonStub)
           .getCall(0)
@@ -1188,9 +1174,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.createAppProfile(request);
-      }, expectedError);
+      await assert.rejects(client.createAppProfile(request), expectedError);
       assert(
         (client.innerApiCalls.createAppProfile as SinonStub)
           .getCall(0)
@@ -1308,9 +1292,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.getAppProfile(request);
-      }, expectedError);
+      await assert.rejects(client.getAppProfile(request), expectedError);
       assert(
         (client.innerApiCalls.getAppProfile as SinonStub)
           .getCall(0)
@@ -1428,9 +1410,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.deleteAppProfile(request);
-      }, expectedError);
+      await assert.rejects(client.deleteAppProfile(request), expectedError);
       assert(
         (client.innerApiCalls.deleteAppProfile as SinonStub)
           .getCall(0)
@@ -1548,9 +1528,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.getIamPolicy(request);
-      }, expectedError);
+      await assert.rejects(client.getIamPolicy(request), expectedError);
       assert(
         (client.innerApiCalls.getIamPolicy as SinonStub)
           .getCall(0)
@@ -1668,9 +1646,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.setIamPolicy(request);
-      }, expectedError);
+      await assert.rejects(client.setIamPolicy(request), expectedError);
       assert(
         (client.innerApiCalls.setIamPolicy as SinonStub)
           .getCall(0)
@@ -1790,9 +1766,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.testIamPermissions(request);
-      }, expectedError);
+      await assert.rejects(client.testIamPermissions(request), expectedError);
       assert(
         (client.innerApiCalls.testIamPermissions as SinonStub)
           .getCall(0)
@@ -1920,9 +1894,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.createInstance(request);
-      }, expectedError);
+      await assert.rejects(client.createInstance(request), expectedError);
       assert(
         (client.innerApiCalls.createInstance as SinonStub)
           .getCall(0)
@@ -1957,14 +1929,57 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.createInstance(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.createInstance as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkCreateInstanceProgress without error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkCreateInstanceProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkCreateInstanceProgress with error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkCreateInstanceProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2090,9 +2105,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.partialUpdateInstance(request);
-      }, expectedError);
+      await assert.rejects(
+        client.partialUpdateInstance(request),
+        expectedError
+      );
       assert(
         (client.innerApiCalls.partialUpdateInstance as SinonStub)
           .getCall(0)
@@ -2128,14 +2144,57 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.partialUpdateInstance(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.partialUpdateInstance as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkPartialUpdateInstanceProgress without error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkPartialUpdateInstanceProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkPartialUpdateInstanceProgress with error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkPartialUpdateInstanceProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2258,9 +2317,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.createCluster(request);
-      }, expectedError);
+      await assert.rejects(client.createCluster(request), expectedError);
       assert(
         (client.innerApiCalls.createCluster as SinonStub)
           .getCall(0)
@@ -2295,14 +2352,57 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.createCluster(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.createCluster as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkCreateClusterProgress without error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkCreateClusterProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkCreateClusterProgress with error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkCreateClusterProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2425,9 +2525,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.updateCluster(request);
-      }, expectedError);
+      await assert.rejects(client.updateCluster(request), expectedError);
       assert(
         (client.innerApiCalls.updateCluster as SinonStub)
           .getCall(0)
@@ -2462,14 +2560,57 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.updateCluster(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.updateCluster as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkUpdateClusterProgress without error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkUpdateClusterProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkUpdateClusterProgress with error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkUpdateClusterProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2595,9 +2736,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.updateAppProfile(request);
-      }, expectedError);
+      await assert.rejects(client.updateAppProfile(request), expectedError);
       assert(
         (client.innerApiCalls.updateAppProfile as SinonStub)
           .getCall(0)
@@ -2633,14 +2772,57 @@ describe('v2.BigtableInstanceAdminClient', () => {
         expectedError
       );
       const [operation] = await client.updateAppProfile(request);
-      await assert.rejects(async () => {
-        await operation.promise();
-      }, expectedError);
+      await assert.rejects(operation.promise(), expectedError);
       assert(
         (client.innerApiCalls.updateAppProfile as SinonStub)
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes checkUpdateAppProfileProgress without error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkUpdateAppProfileProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkUpdateAppProfileProgress with error', async () => {
+      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
+        {
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        }
+      );
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkUpdateAppProfileProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
     });
   });
 
@@ -2757,9 +2939,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.listAppProfiles(request);
-      }, expectedError);
+      await assert.rejects(client.listAppProfiles(request), expectedError);
       assert(
         (client.innerApiCalls.listAppProfiles as SinonStub)
           .getCall(0)
@@ -2854,9 +3034,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
           reject(err);
         });
       });
-      await assert.rejects(async () => {
-        await promise;
-      }, expectedError);
+      await assert.rejects(promise, expectedError);
       assert(
         (client.descriptors.page.listAppProfiles.createStream as SinonStub)
           .getCall(0)

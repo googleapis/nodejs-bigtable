@@ -32,7 +32,7 @@ import {Transform} from 'stream';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import * as protos from '../../protos/protos';
 import * as gapicConfig from './bigtable_instance_admin_client_config.json';
-
+import {operationsProtos} from 'google-gax';
 const version = require('../../../package.json').version;
 
 /**
@@ -1675,6 +1675,42 @@ export class BigtableInstanceAdminClient {
     this.initialize();
     return this.innerApiCalls.createInstance(request, options, callback);
   }
+  /**
+   * Check the status of the long running operation returned by the createInstance() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkCreateInstanceProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkCreateInstanceProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Instance,
+      protos.google.bigtable.admin.v2.CreateInstanceMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.createInstance,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Instance,
+      protos.google.bigtable.admin.v2.CreateInstanceMetadata
+    >;
+  }
   partialUpdateInstance(
     request: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
     options?: gax.CallOptions
@@ -1776,6 +1812,42 @@ export class BigtableInstanceAdminClient {
     });
     this.initialize();
     return this.innerApiCalls.partialUpdateInstance(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by the partialUpdateInstance() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkPartialUpdateInstanceProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkPartialUpdateInstanceProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Instance,
+      protos.google.bigtable.admin.v2.UpdateInstanceMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.partialUpdateInstance,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Instance,
+      protos.google.bigtable.admin.v2.UpdateInstanceMetadata
+    >;
   }
   createCluster(
     request: protos.google.bigtable.admin.v2.ICreateClusterRequest,
@@ -1883,6 +1955,42 @@ export class BigtableInstanceAdminClient {
     });
     this.initialize();
     return this.innerApiCalls.createCluster(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by the createCluster() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkCreateClusterProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkCreateClusterProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Cluster,
+      protos.google.bigtable.admin.v2.CreateClusterMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.createCluster,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Cluster,
+      protos.google.bigtable.admin.v2.CreateClusterMetadata
+    >;
   }
   updateCluster(
     request: protos.google.bigtable.admin.v2.ICluster,
@@ -1998,6 +2106,42 @@ export class BigtableInstanceAdminClient {
     this.initialize();
     return this.innerApiCalls.updateCluster(request, options, callback);
   }
+  /**
+   * Check the status of the long running operation returned by the updateCluster() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkUpdateClusterProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkUpdateClusterProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Cluster,
+      protos.google.bigtable.admin.v2.UpdateClusterMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.updateCluster,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Cluster,
+      protos.google.bigtable.admin.v2.UpdateClusterMetadata
+    >;
+  }
   updateAppProfile(
     request: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
     options?: gax.CallOptions
@@ -2100,6 +2244,42 @@ export class BigtableInstanceAdminClient {
     });
     this.initialize();
     return this.innerApiCalls.updateAppProfile(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by the updateAppProfile() method.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *
+   * @example:
+   *   const decodedOperation = await checkUpdateAppProfileProgress(name);
+   *   console.log(decodedOperation.result);
+   *   console.log(decodedOperation.done);
+   *   console.log(decodedOperation.metadata);
+   *
+   */
+  async checkUpdateAppProfileProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.AppProfile,
+      protos.google.bigtable.admin.v2.UpdateAppProfileMetadata
+    >
+  > {
+    const request = new operationsProtos.google.longrunning.GetOperationRequest(
+      {name}
+    );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new gax.Operation(
+      operation,
+      this.descriptors.longrunning.updateAppProfile,
+      gax.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.AppProfile,
+      protos.google.bigtable.admin.v2.UpdateAppProfileMetadata
+    >;
   }
   listAppProfiles(
     request: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
