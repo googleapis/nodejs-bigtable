@@ -29,7 +29,9 @@ async function main(
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = Bigtable();
 
-  // TODO(developer): Uncomment these variables before running the sample
+  /**
+   * TODO(developer): Uncomment these variables before running the sample
+   */
 
   // const instanceId = 'YOUR_INSTANCE_ID';
   // const tableId = 'YOUR_TABLE_ID';
