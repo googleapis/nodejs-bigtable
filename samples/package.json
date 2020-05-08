@@ -6,6 +6,7 @@
   "repository": "googleapis/nodejs-bigtable",
   "files": [
     "*.js",
+    "functions/*.js",
     "hello-world/*.js",
     "document-snippets/*.js"
   ],

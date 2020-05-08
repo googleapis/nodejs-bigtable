@@ -29,9 +29,8 @@ async function main(
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = Bigtable();
 
-  /**
-   * TODO(developer): Uncomment these variables before running the sample.
-   */
+  // TODO(developer): Uncomment these variables before running the sample
+
   // const instanceId = 'YOUR_INSTANCE_ID';
   // const tableId = 'YOUR_TABLE_ID';
   const instance = bigtable.instance(instanceId);
@@ -44,8 +43,8 @@ async function main(
   // [END bigtable_reads_prefix]
   // [END bigtable_reads_filter]
   switch (readType) {
-    // [START bigtable_reads_row]
     case 'readRow': {
+      // [START bigtable_reads_row]
       const rowkey = 'phone#4c410523#20190501';
 
       const [row] = await table.row(rowkey).get();
@@ -54,8 +53,8 @@ async function main(
       break;
     }
 
-    // [START bigtable_reads_row_partial]
     case 'readRowPartial': {
+      // [START bigtable_reads_row_partial]
       const COLUMN_FAMILY = 'stats_summary';
       const COLUMN_QUALIFIER = 'os_build';
       const rowkey = 'phone#4c410523#20190501';
@@ -69,8 +68,8 @@ async function main(
       break;
     }
 
-    // [START bigtable_reads_rows]
     case 'readRows': {
+      // [START bigtable_reads_rows]
       const rowKeys = ['phone#4c410523#20190501', 'phone#4c410523#20190502'];
       const [rows] = await table.getRows({keys: rowKeys});
       rows.forEach(row => printRow(row.id, row.data));
@@ -78,8 +77,8 @@ async function main(
       break;
     }
 
-    // [START bigtable_reads_row_range]
     case 'readRowRange': {
+      // [START bigtable_reads_row_range]
       const start = 'phone#4c410523#20190501';
       const end = 'phone#4c410523#201906201';
 
@@ -100,8 +99,8 @@ async function main(
       break;
     }
 
-    // [START bigtable_reads_row_ranges]
     case 'readRowRanges': {
+      // [START bigtable_reads_row_ranges]
       await table
         .createReadStream({
           ranges: [
@@ -127,8 +126,8 @@ async function main(
       break;
     }
 
-    // [START bigtable_reads_prefix]
     case 'readPrefix': {
+      // [START bigtable_reads_prefix]
       const prefix = 'phone#';
 
       await table
@@ -147,8 +146,8 @@ async function main(
       break;
     }
 
-    // [START bigtable_reads_filter]
     case 'readFilter': {
+      // [START bigtable_reads_filter]
       const filter = {
         value: /PQ2A.*$/,
       };
