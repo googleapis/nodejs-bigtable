@@ -19,19 +19,18 @@ const {execSync} = require('child_process');
 const path = require('path');
 const requestRetry = require('requestretry');
 const uuid = require('uuid');
-const {Bigtable} = require('@google-cloud/bigtable');
+const {obtainTestInstance} = require('./util');
 const {describe, it, before, after} = require('mocha');
 
 const PORT = 9010;
 const BASE_URL = `http://localhost:${PORT}`;
 const cwd = path.join(__dirname, '..');
 
-const INSTANCE_ID = 'nodejs-bigtable-samples-keepme';
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('functions', async () => {
-  const bigtable = Bigtable();
-  const instance = bigtable.instance(INSTANCE_ID);
+  const instance = await obtainTestInstance();
+  const INSTANCE_ID = instance.id;
   let table;
   const TIMESTAMP = new Date(2019, 5, 1);
   TIMESTAMP.setUTCHours(0);
@@ -156,7 +155,6 @@ describe('functions', async () => {
   after(async () => {
     // Wait for the functions framework to stop
     await ffProc;
-    await table.delete().catch(console.error);
   });
 
   it('should read one row', async () => {
