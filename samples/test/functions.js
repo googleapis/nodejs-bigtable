@@ -15,7 +15,7 @@
 'use strict';
 
 const assert = require('assert');
-const execPromise = require('child-process-promise').exec;
+const {execSync} = require('child_process');
 const path = require('path');
 const requestRetry = require('requestretry');
 const uuid = require('uuid');
@@ -147,7 +147,7 @@ describe('functions', async () => {
     // Run the functions-framework instance to host functions locally
     // exec's 'timeout' param won't kill children of "shim" /bin/sh process
     // Workaround: include "& sleep <TIMEOUT>; kill $!" in executed command
-    ffProc = execPromise(
+    ffProc = execSync(
       `functions-framework --target=readRows --signature-type=http --port ${PORT} & sleep 2; kill $!`,
       {shell: true, cwd}
     );
