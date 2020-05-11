@@ -26,7 +26,7 @@ const PORT = 9010;
 const BASE_URL = `http://localhost:${PORT}`;
 const cwd = path.join(__dirname, '..');
 
-const INSTANCE_ID = `nodejs-bigtable-samples-keepme`;
+const INSTANCE_ID = 'nodejs-bigtable-samples-keepme';
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('functions', async () => {
