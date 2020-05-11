@@ -12,42 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * @namespace google
- */
-/**
- * @namespace google.bigtable
- */
-/**
- * @namespace google.bigtable.v2
- */
-/**
- * @namespace google.bigtable.admin.v2
- */
-/**
- * @namespace google.iam.v1
- */
-/**
- * @namespace google.rpc
- */
-/**
- * @namespace google.protobuf
- */
-/**
- * @namespace google.type
- */
-/**
- * @namespace google.longrunning
- */
 import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
 import {GoogleAuth, CallOptions} from 'google-gax';
 import * as gax from 'google-gax';
-import * as through from 'through2';
 import * as protos from '../protos/protos';
-import {AbortableDuplex} from '@google-cloud/common';
 
 import {AppProfile} from './app-profile';
 import {Cluster} from './cluster';
@@ -61,12 +32,16 @@ import {
 } from './instance';
 import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
+import {PassThrough, Duplex} from 'stream';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const retryRequest = require('retry-request');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const PKG = require('../../package.json');
 
 const {grpc} = new gax.GrpcClient();
@@ -96,6 +71,10 @@ export interface RequestOptions {
   retryOpts?: {};
   gaxOpts?: {};
   method?: string;
+}
+
+export interface AbortableDuplex extends Duplex {
+  abort(): void;
 }
 
 export interface BigtableOptions extends gax.GoogleAuthOptions {
@@ -160,43 +139,32 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * @class
  * @param {ClientConfig} [options] Configuration options.
  *
- * @example <caption>Create a client that uses <a
- * href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application
- * Default Credentials (ADC)</a>:</caption> const Bigtable =
- * require('@google-cloud/bigtable'); const bigtable = new Bigtable();
+ * @example <caption>Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:</caption>
+ * const {Bigtable} = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
  *
- * @example <caption>Create a client with <a
- * href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit
- * credentials</a>:</caption> const Bigtable =
- * require('@google-cloud/bigtable'); const bigtable = new Bigtable({ projectId:
- * 'your-project-id', keyFilename: '/path/to/keyfile.json'
+ * @example <caption>Create a client with <a href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit credentials</a>:</caption>
+ * const {Bigtable} = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable({
+ *   projectId: 'your-project-id',
+ *   keyFilename: '/path/to/keyfile.json'
  * });
  *
- * @example
- * //<h4> The Bigtable Emulator</h4>
- * //
- * // Make sure you have the <a href="https://cloud.google.com/sdk/downloads">
- * // gcloud SDK installed</a>, then run:
- * //
- * // <pre>
- * //   $ gcloud beta emulators bigtable start
- * // </pre>
- * //
+ * @example <caption>The Bigtable Emulator</caption>
+ * // Make sure you have the <a href="https://cloud.google.com/sdk/downloads"> gcloud SDK installed</a>, then run:
+ * $ gcloud beta emulators bigtable start
+ *
  * // Before running your Node.js app, set the environment variables that this
  * // library will look for to connect to the emulator:
- * //
- * // <pre>
- * //   $ $(gcloud beta emulators bigtable env-init)
- * // </pre>
- * //-
  *
- * //-
- * // <h4>Creating a Bigtable Instance and Cluster</h4>
- * //
+ * $ $(gcloud beta emulators bigtable env-init)
+ *
+ * @example <caption>Creating a Bigtable Instance and Cluster</caption>
+ *
  * // Before you create your table, you first need to create a Bigtable Instance
  * // and cluster for the table to be served from.
- * //-
- * const Bigtable = require('@google-cloud/bigtable');
+ *
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  *
  * const callback = (err, instance, operation) => {
@@ -219,51 +187,39 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   ]
  * }, callback);
  *
- * //-
  * // This can also be done from either the Google Cloud Platform Console or the
  * // `gcloud` cli tool. Please refer to the
  * // <a href="https://cloud.google.com/bigtable/docs/creating-instance">
  * // official Bigtable documentation</a> for more information.
- * //-
  *
- * //-
- * // <h4>Creating Tables</h4>
- * //
+ * @example <caption>Creating Tables</caption>
  * // After creating your instance and enabling the Bigtable APIs, you are now
  * // ready to create your table with {@link Instance#createTable}.
- * //-
  * instance.createTable('prezzy', function(err, table) {
  *   // `table` is your newly created Table object.
  * });
  *
- * //-
- * // <h4>Creating Column Families</h4>
- * //
+ * @example <caption>Creating Column Families</caption>
  * // Column families are used to group together various pieces of data within
  * // your table. You can think of column families as a mechanism to categorize
  * // all of your data.
  * //
  * // We can create a column family with {@link Table#createFamily}.
- * //-
  * const table = instance.table('prezzy');
  *
  * table.createFamily('follows', function(err, family) {
  *   // `family` is your newly created Family object.
  * });
  *
- * //-
  * // It is also possible to create your column families when creating a new
  * // table.
- * //-
  * const options = {
  *   families: ['follows']
  * };
  *
  * instance.createTable('prezzy', options, function(err, table) {});
  *
- * //-
- * // <h4>Creating Rows</h4>
- * //
+ * @example <caption>Creating Rows</caption>
  * // New rows can be created within your table using
  * // {@link Table#insert}. You must provide a unique key for each row
  * // to be inserted, this key can then be used to retrieve your row at a later
@@ -273,7 +229,6 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * // and a column qualifier. In the example below `follows` is the column
  * // family and `tjefferson` is the column qualifier. Together they could be
  * // referred to as `follows:tjefferson`.
- * //-
  * const rows = [
  *   {
  *     key: 'wmckinley',
@@ -291,31 +246,24 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   }
  * });
  *
- * //-
- * // <h4>Retrieving Rows</h4>
- * //
+ * @example <caption>Retrieving Rows</caption>
  * // If you're anticipating a large number of rows to be returned, we suggest
  * // using the {@link Table#getRows} streaming API.
- * //-
  * table.createReadStream()
  *   .on('error', console.error)
  *   .on('data', row => {
  *     // `row` is a Row object.
  *   });
  *
- * //-
  * // If you're not anticpating a large number of results, a callback mode
  * // is also available.
- * //-
  * const callback = (err, rows) => {
  *   // `rows` is an array of Row objects.
  * };
  *
  * table.getRows(callback);
  *
- * //-
  * // A range of rows can be retrieved by providing `start` and `end` row keys.
- * //-
  * const options = {
  *   start: 'gwashington',
  *   end: 'wmckinley'
@@ -323,18 +271,14 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * table.getRows(options, callback);
  *
- * //-
  * // Retrieve an individual row with {@link Row#get}.
- * //-
  * const row = table.row('alincoln');
  *
  * row.get(err => {
  *   // `row.data` is now populated.
  * });
  *
- * //-
- * // <h4>Accessing Row Data</h4>
- * //
+ * @example <caption>Accessing Row Data</caption>
  * // When retrieving rows, upon success the `row.data` property will be
  * // populated by an object. That object will contain additional objects
  * // for each family in your table that the row has data for.
@@ -342,26 +286,23 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * // By default, when retrieving rows, each column qualifier will provide you
  * // with all previous versions of the data. So your `row.data` object could
  * // resemble the following.
- * //-
- * // {
- * //   follows: {
- * //     wmckinley: [
- * //       {
- * //         value: 1,
- * //         timestamp: 1466017315951
- * //       }, {
- * //         value: 2,
- * //         timestamp: 1458619200000
- * //       }
- * //     ]
- * //   }
- * // }
+ * {
+ *   follows: {
+ *     wmckinley: [
+ *       {
+ *         value: 1,
+ *         timestamp: 1466017315951
+ *       }, {
+ *         value: 2,
+ *         timestamp: 1458619200000
+ *       }
+ *     ]
+ *   }
+ * }
  *
- * //-
  * // The `timestamp` field can be used to order cells from newest to oldest.
  * // If you only wish to retrieve the most recent version of the data, you
  * // can specify the number of cells with a {@link Filter} object.
- * //-
  * const filter = [
  *   {
  *     column: {
@@ -374,12 +315,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   filter: filter
  * }, callback);
  *
- * //-
- * // <h4>Deleting Row Data</h4>
- * //
- * // We can delete all of an individual row's cells using
- * // {@link Row#delete}.
- * //-
+ * @example <caption>Deleting Row Data</caption>
+ * // We can delete all of an individual row's cells using {@link Row#delete}.
  * const callback = err => {
  *   if (!err) {
  *     // All cells for this row were deleted successfully.
@@ -388,10 +325,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * row.delete(callback);
  *
- * //-
  * // To delete a specific set of cells, we can provide an array of
  * // column families and qualifiers.
- * //-
  * const cells = [
  *   'follows:gwashington',
  *   'traits'
@@ -399,13 +334,10 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * row.delete(cells, callback);
  *
- * //-
- * // <h4>Deleting Rows</h4>
- * //
+ * @example <caption>Deleting Rows</caption>
  * // If you wish to delete multiple rows entirely, we can do so with
  * // {@link Table#deleteRows}. You can provide this method with a
  * // row key prefix.
- * //-
  * const options = {
  *   prefix: 'gwash'
  * };
@@ -416,9 +348,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   }
  * });
  *
- * //-
  * // If you omit the prefix, you can delete all rows in your table.
- * //-
  * table.deleteRows(err => {
  *   if (!err) {
  *     // All rows were deleted successfully.
@@ -439,11 +369,8 @@ export class Bigtable {
   appProfileId?: string;
   projectName: string;
   shouldReplaceProjectIdToken: boolean;
-  // tslint:disable-next-line variable-name
   static AppProfile: AppProfile;
-  // tslint:disable-next-line variable-name
   static Instance: Instance;
-  // tslint:disable-next-line variable-name
   static Cluster: Cluster;
 
   constructor(options: BigtableOptions = {}) {
@@ -578,7 +505,7 @@ export class Bigtable {
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    *
    * const callback = function(err, instance, operation, apiResponse) {
@@ -696,7 +623,7 @@ export class Bigtable {
    * @returns {Promise<GetInstancesResponse>}
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    *
    * bigtable.getInstances(function(err, instances) {
@@ -771,9 +698,9 @@ export class Bigtable {
     return new Instance(this, name);
   }
 
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(config?: any): AbortableDuplex;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(config?: any, callback?: RequestCallback<T>): void;
   /**
    * Funnel all API requests through this method, to be sure we have a project ID.
@@ -784,7 +711,7 @@ export class Bigtable {
    * @param {object} config.reqOpts Request options.
    * @param {function} [callback] Callback function.
    */
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(
     config: RequestOptions,
     callback?: (err: ServiceError | null, resp?: T) => void
@@ -813,7 +740,7 @@ export class Bigtable {
         if (this.shouldReplaceProjectIdToken && projectId !== '{{projectId}}') {
           reqOpts = replaceProjectIdToken(reqOpts, projectId!);
         }
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const requestFn = (gaxClient as any)[config.method!].bind(
           gaxClient,
           reqOpts,
@@ -824,8 +751,7 @@ export class Bigtable {
     };
 
     if (isStreamMode) {
-      stream = streamEvents(through.obj());
-
+      stream = streamEvents(new PassThrough({objectMode: true}));
       stream.abort = () => {
         if (gaxStream && gaxStream.cancel) {
           gaxStream.cancel();
@@ -945,14 +871,13 @@ promisifyAll(Bigtable, {
  */
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
-// tslint:disable-next-line no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return new (target as any)(...argumentsList);
   },
 });
-
 /**
  * The default export of the `@google-cloud/bigtable` package is the
  * {@link Bigtable} class.
@@ -967,7 +892,7 @@ promisifyAll(Bigtable, {
  * npm install --save @google-cloud/bigtable
  *
  * @example <caption>Import the client library</caption>
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  *
  * @example <caption>Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:</caption>
  * const bigtable = new Bigtable();
@@ -986,4 +911,206 @@ promisifyAll(Bigtable, {
 module.exports = Bigtable;
 module.exports.v2 = v2;
 module.exports.Bigtable = Bigtable;
+
+export {v2};
 export {protos};
+export {
+  AppProfile,
+  AppProfileExistsCallback,
+  AppProfileExistsResponse,
+  AppProfileOptions,
+  CreateAppProfileCallback,
+  CreateAppProfileResponse,
+  DeleteAppProfileCallback,
+  DeleteAppProfileOptions,
+  DeleteAppProfileResponse,
+  GetAppProfileCallback,
+  GetAppProfileMetadataCallback,
+  GetAppProfileMetadataResponse,
+  GetAppProfileResponse,
+  GetAppProfilesCallback,
+  GetAppProfilesResponse,
+  SetAppProfileMetadataCallback,
+  SetAppProfileMetadataResponse,
+} from './app-profile';
+export {
+  Chunk,
+  ChunkTransformer,
+  Data,
+  Qualifier,
+  RowStateEnum,
+  TransformErrorProps,
+  Value,
+} from './chunktransformer';
+export {
+  Cluster,
+  ICluster,
+  IOperation,
+  ApiResponse,
+  BooleanResponse,
+  CreateClusterCallback,
+  CreateClusterOptions,
+  CreateClusterResponse,
+  DeleteClusterCallback,
+  ExistsClusterCallback,
+  GenericCallback,
+  GenericClusterCallback,
+  GenericOperationCallback,
+  GetClusterCallback,
+  GetClusterMetadataCallback,
+  GetClusterMetadataResponse,
+  GetClusterResponse,
+  GetClustersCallback,
+  GetClustersResponse,
+  IEmpty,
+  SetClusterMetadataCallback,
+  SetClusterMetadataResponse,
+} from './cluster';
+export {
+  CreateFamilyCallback,
+  CreateFamilyOptions,
+  FamilyError,
+  GcRule,
+  IGcRule,
+  ITable,
+  CreateFamilyResponse,
+  DeleteFamilyCallback,
+  DeleteFamilyResponse,
+  Family,
+  FamilyExistsCallback,
+  FamilyExistsResponse,
+  GetFamilyCallback,
+  GetFamilyMetadataCallback,
+  GetFamilyMetadataResponse,
+  GetFamilyOptions,
+  GetFamilyResponse,
+  IColumnFamily,
+  IModification,
+  InstanceCallback,
+  SetFamilyMetadataCallback,
+  SetFamilyMetadataOptions,
+  SetFamilyMetadataResponse,
+} from './family';
+export {
+  RawFilter,
+  BoundData,
+  Column,
+  Condition,
+  Filter,
+  FilterError,
+  Time,
+  ValueFilter,
+} from './filter';
+export {
+  ClusterInfo,
+  CreateInstanceCallback,
+  Instance,
+  InstanceOptions,
+  CreateInstanceResponse,
+  DeleteInstanceCallback,
+  DeleteInstanceResponse,
+  GetInstanceCallback,
+  GetInstanceMetadataCallback,
+  GetInstanceMetadataResponse,
+  GetInstanceResponse,
+  IInstance,
+  InstanceExistsCallback,
+  InstanceExistsResponse,
+  SetInstanceMetadataCallback,
+  SetInstanceMetadataResponse,
+} from './instance';
+export {
+  IMutation,
+  Bytes,
+  ConvertFromBytesOptions,
+  ConvertFromBytesUserOptions,
+  IMutateRowRequest,
+  ISetCell,
+  JsonObj,
+  Mutation,
+  MutationConstructorObj,
+  MutationSettingsObj,
+  ParsedColumn,
+  SetCellObj,
+  TimeRange,
+  ValueObj,
+} from './mutation';
+export {
+  GetRowCallback,
+  IncrementResponse,
+  Rule,
+  CreateRowCallback,
+  CreateRowOptions,
+  CreateRowResponse,
+  CreateRulesCallback,
+  CreateRulesResponse,
+  FilterCallback,
+  FilterConfig,
+  FilterConfigOption,
+  FilterResponse,
+  FormatFamiliesOptions,
+  GetRowMetadataCallback,
+  GetRowMetadataResponse,
+  GetRowOptions,
+  GetRowResponse,
+  IncrementCallback,
+  Row,
+  RowError,
+  RowExistsCallback,
+  RowExistsResponse,
+} from './row';
+export {
+  GetIamPolicyOptions,
+  GetRowsOptions,
+  GetTablesOptions,
+  CheckConsistencyCallback,
+  CheckConsistencyResponse,
+  CreateTableCallback,
+  CreateTableOptions,
+  CreateTableResponse,
+  DeleteRowsCallback,
+  DeleteRowsResponse,
+  DeleteTableCallback,
+  DeleteTableResponse,
+  Entry,
+  GenerateConsistencyTokenCallback,
+  GenerateConsistencyTokenResponse,
+  GetFamiliesCallback,
+  GetFamiliesResponse,
+  GetIamPolicyCallback,
+  GetIamPolicyResponse,
+  GetMetadataCallback,
+  GetMetadataOptions,
+  GetMetadataResponse,
+  GetReplicationStatesCallback,
+  GetReplicationStatesResponse,
+  GetRowsCallback,
+  GetRowsResponse,
+  GetTableCallback,
+  GetTableOptions,
+  GetTableResponse,
+  GetTablesCallback,
+  GetTablesResponse,
+  InsertRowsCallback,
+  InsertRowsResponse,
+  MutateCallback,
+  MutateOptions,
+  MutateResponse,
+  PartialFailureError,
+  Policy,
+  PolicyBinding,
+  PrefixRange,
+  SampleRowKeysCallback,
+  SampleRowsKeysResponse,
+  SetIamPolicyCallback,
+  SetIamPolicyResponse,
+  Table,
+  TableExistsCallback,
+  TableExistsResponse,
+  TestIamPermissionsCallback,
+  TestIamPermissionsResponse,
+  TruncateCallback,
+  TruncateResponse,
+  WaitForReplicationCallback,
+  WaitForReplicationResponse,
+} from './table';

@@ -14,7 +14,7 @@
 
 const snippets = {
   createRow: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -34,7 +34,7 @@ const snippets = {
   },
 
   createRules: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -57,7 +57,7 @@ const snippets = {
     // If the targeted cell is unset, it will be treated as a containing an
     // empty string.
     //
-    // var rules = [
+    // const rules = [
     //   {
     //     column: 'follows:alincoln',
     //     append: ' Honest Abe!',
@@ -76,7 +76,7 @@ const snippets = {
   },
 
   deleteAllCells: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -95,7 +95,7 @@ const snippets = {
   },
 
   deleteCells: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -123,7 +123,7 @@ const snippets = {
   },
 
   exists: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -143,7 +143,7 @@ const snippets = {
   },
 
   filter: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -190,7 +190,7 @@ const snippets = {
   },
 
   get: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -227,7 +227,7 @@ const snippets = {
   },
 
   getMetadata: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -248,7 +248,7 @@ const snippets = {
   },
 
   increment: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -284,7 +284,7 @@ const snippets = {
   },
 
   save: (instanceId, tableId) => {
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);

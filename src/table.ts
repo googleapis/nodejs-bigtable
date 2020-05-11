@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as common from '@google-cloud/common';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
+import {PassThrough} from 'stream';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 import * as is from 'is';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 import * as through from 'through2';
 
@@ -35,7 +37,7 @@ import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
-import {Bigtable} from '.';
+import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
@@ -135,7 +137,7 @@ export interface GetIamPolicyOptions {
   requestedPolicyVersion?: 0 | 1 | 3;
 }
 
-export interface SetIamPolicyCallback extends GetIamPolicyCallback {}
+export type SetIamPolicyCallback = GetIamPolicyCallback;
 export type SetIamPolicyResponse = GetIamPolicyResponse;
 
 /**
@@ -273,7 +275,7 @@ export interface MutateOptions {
   rawMutation?: boolean;
 }
 
-// tslint:disable-next-line no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Entry = any;
 
 export type DeleteTableCallback = (
@@ -350,12 +352,12 @@ export type GetRowsCallback = (
 ) => void;
 export type GetRowsResponse = [Row[], google.bigtable.v2.ReadRowsResponse];
 export type InsertRowsCallback = (
-  err: ServiceError | null,
+  err: ServiceError | PartialFailureError | null,
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type InsertRowsResponse = [google.protobuf.Empty];
 export type MutateCallback = (
-  err: ServiceError | null,
+  err: ServiceError | PartialFailureError | null,
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type MutateResponse = [google.protobuf.Empty];
@@ -373,7 +375,7 @@ export interface PrefixRange {
  * @param {string} id Unique identifier of the table.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
@@ -450,7 +452,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {object} range
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('prezzy');
@@ -566,7 +568,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       throw new Error('An id is required to create a family.');
     }
 
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const mod: any = {
       id,
       create: {},
@@ -629,7 +631,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   createReadStream(opts?: GetRowsOptions) {
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
-    let activeRequestStream: common.AbortableDuplex;
+    let activeRequestStream: AbortableDuplex;
     let rowKeys: string[] | null;
     const ranges = options.ranges || [];
     let filter: {} | null;
@@ -681,9 +683,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowsLimit = options.limit;
     }
 
-    const userStream = through.obj();
+    const userStream = new PassThrough({objectMode: true});
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
+      rowStream?.unpipe(userStream);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
@@ -691,10 +694,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
 
     const makeNewRequest = () => {
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
       const reqOpts = {
@@ -806,13 +810,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      const rowStream: Duplex = pumpify.obj([
+      rowStream = pumpify.obj([
         requestStream,
         chunkTransformer,
         through.obj((rowData, enc, next) => {
           if (
             chunkTransformer._destroyed ||
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {
             return next();
@@ -1164,7 +1168,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('prezzy');
@@ -1177,8 +1181,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * // If the callback is omitted, we'll return a Promise.
    * //-
    * table.getReplicationStates().then(function(data) {
-   *   var clusterStates = data[0];
-   *   var apiResponse = data[1];
+   *   const clusterStates = data[0];
+   *   const apiResponse = data[1];
    * });
    */
   getReplicationStates(
@@ -1377,7 +1381,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const entries = (arrify(entriesRaw) as Entry[]).reduce(
+    const entries: Entry[] = (arrify(entriesRaw) as Entry[]).reduce(
       (a, b) => a.concat(b),
       []
     );
@@ -1393,10 +1397,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
     const mutationErrorsByEntryIndex = new Map();
 
-    const onBatchResponse = (err: ServiceError | null) => {
+    const onBatchResponse = (
+      err: ServiceError | PartialFailureError | null
+    ) => {
       if (err) {
-        // The error happened before a request was even made, don't
-        // retry.
+        // The error happened before a request was even made, don't retry.
         callback(err);
         return;
       }
@@ -1407,10 +1412,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       if (mutationErrorsByEntryIndex.size !== 0) {
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        err = new common.util.PartialFailureError({
-          errors: mutationErrors,
-          // tslint:disable-next-line no-any
-        } as any) as ServiceError;
+        err = new PartialFailureError(mutationErrors);
       }
 
       callback(err);
@@ -1434,7 +1436,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       this.bigtable
-        .request({
+        .request<google.bigtable.v2.MutateRowsResponse>({
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
@@ -1465,7 +1467,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               pendingEntryIndices.delete(originalEntriesIndex);
             }
             const status = decorateStatus(entry.status);
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (status as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
           });
@@ -1485,7 +1487,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {Row}
    *
    * @example
-   * var row = table.row('lincoln');
+   * const row = table.row('lincoln');
    */
   row(key: string): Row {
     if (!key) {
@@ -1709,7 +1711,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * // If the callback is omitted, we'll return a Promise.
    * //-
    * table.truncate().then(function(data) {
-   *   var apiResponse = data[0];
+   *   const apiResponse = data[0];
    * });
    */
   truncate(
@@ -1873,3 +1875,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
+
+export interface GoogleInnerError {
+  reason?: string;
+  message?: string;
+}
+
+export class PartialFailureError extends Error {
+  errors?: GoogleInnerError[];
+  constructor(errors: GoogleInnerError[]) {
+    super();
+    this.errors = errors;
+    this.name = 'PartialFailureError';
+    let messages = errors.map(e => e.message);
+    if (messages.length > 1) {
+      messages = messages.map((message, i) => `    ${i + 1}. ${message}`);
+      messages.unshift(
+        'Multiple errors occurred during the request. Please see the `errors` array for complete details.\n'
+      );
+      messages.push('\n');
+    }
+    this.message = messages.join('\n');
+  }
+}

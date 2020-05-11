@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as assert from 'assert';
-import {describe, it, before, after} from 'mocha';
+import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
 import * as uuid from 'uuid';
 
@@ -35,7 +35,26 @@ describe('Bigtable', () => {
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
   const CLUSTER_ID = generateId('cluster');
 
+  async function reapInstances() {
+    const [instances] = await bigtable.getInstances();
+    const testInstances = instances
+      .filter(i => i.id.match(PREFIX))
+      .filter(i => {
+        const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
+        // Only delete stale resources.
+        const oneHourAgo = new Date(Date.now() - 3600000);
+        return !timeCreated || timeCreated <= oneHourAgo;
+      });
+    const q = new Q({concurrency: 5});
+    await Promise.all(
+      testInstances.map(instance => {
+        q.add(() => instance.delete());
+      })
+    );
+  }
+
   before(async () => {
+    await reapInstances();
     const [, operation] = await INSTANCE.create({
       clusters: [
         {
@@ -59,21 +78,7 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    const [instances] = await bigtable.getInstances();
-    const testInstances = instances
-      .filter(i => i.id.match(PREFIX))
-      .filter(i => {
-        const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
-        // Only delete stale resources.
-        const oneHourAgo = new Date(Date.now() - 3600000);
-        return !timeCreated || timeCreated <= oneHourAgo;
-      });
-    const q = new Q({concurrency: 5});
-    await Promise.all(
-      testInstances.map(instance => {
-        q.add(() => instance.delete());
-      })
-    );
+    await INSTANCE.delete().catch(console.error);
   });
 
   describe('instances', () => {
@@ -934,7 +939,7 @@ describe('Bigtable', () => {
           rows.forEach(row => {
             const follows = row.data.follows;
             Object.keys(follows).forEach(column => {
-              // tslint:disable-next-line no-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               follows[column].forEach((cell: any) => {
                 assert.deepStrictEqual(cell.labels, [filter.label]);
               });

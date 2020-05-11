@@ -21,20 +21,19 @@ const {
 };
 
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
-import * as grpc from '@grpc/grpc-js';
+import {afterEach, beforeEach, describe, it} from 'mocha';
 import * as sinon from 'sinon';
-import * as through from 'through2';
 import {EventEmitter} from 'events';
-import {ProjectIdCallback, GoogleAuth} from 'google-auth-library';
-import {PartialFailureError} from '@google-cloud/common/build/src/util';
-import {Entry} from '../src/table';
-import {CancellableStream} from 'google-gax';
+import {Entry, PartialFailureError} from '../src/table';
+import {CancellableStream, GrpcClient, GoogleAuth} from 'google-gax';
 import {BigtableClient} from '../src/v2';
+import {PassThrough} from 'stream';
 
-// tslint:disable-next-line no-any
+const {grpc} = new GrpcClient();
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dispatch(emitter: EventEmitter, response: any) {
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const emits: any[] = [];
   emits.push({name: 'response', arg: {code: response.code}});
   if (response.entry_codes) {
@@ -73,11 +72,11 @@ describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.api = {};
   bigtable.auth = {
-    getProjectId(callback: ProjectIdCallback) {
+    getProjectId(callback: Function) {
       callback(null, 'project-id');
     },
   } as GoogleAuth;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
@@ -87,7 +86,7 @@ describe('Bigtable/Table', () => {
     let clock: sinon.SinonFakeTimers;
     let mutationBatchesInvoked: Array<{}>;
     let mutationCallTimes: number[];
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let responses: any[] | null;
 
     beforeEach(() => {
@@ -100,11 +99,11 @@ describe('Bigtable/Table', () => {
       bigtable.api.BigtableClient = {
         mutateRows: reqOpts => {
           mutationBatchesInvoked.push(
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
           );
           mutationCallTimes.push(new Date().getTime());
-          const emitter = through.obj();
+          const emitter = new PassThrough({objectMode: true});
           dispatch(emitter, responses!.shift());
           return (emitter as {}) as CancellableStream;
         },

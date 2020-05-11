@@ -14,14 +14,10 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
-import {
-  Mutation,
-  ConvertFromBytesUserOptions,
-  Bytes,
-  IMutation,
-} from './mutation';
+import {Mutation, ConvertFromBytesUserOptions, Bytes} from './mutation';
 import {Bigtable} from '.';
 import {
   Table,
@@ -29,10 +25,11 @@ import {
   MutateCallback,
   MutateResponse,
   MutateOptions,
+  PartialFailureError,
 } from './table';
 import {Chunk} from './chunktransformer';
 import {CallOptions} from 'google-gax';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {google} from '../protos/protos';
 
 export interface Rule {
@@ -93,7 +90,7 @@ export type CreateRulesResponse = [
   google.bigtable.v2.IReadModifyWriteRowResponse
 ];
 export type CreateRowCallback = (
-  err: ServiceError | null,
+  err: ServiceError | PartialFailureError | null,
   row?: Row | null,
   apiResponse?: google.protobuf.Empty
 ) => void;
@@ -149,7 +146,7 @@ export class RowError extends Error {
  * @param {string} key The key for this row.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
@@ -159,7 +156,7 @@ export class Row {
   bigtable: Bigtable;
   table: Table;
   id: string;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   key?: string;
   metadata?: {};
@@ -258,7 +255,7 @@ export class Row {
       }
 
       return row;
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, {} as any);
 
     return rows;
@@ -273,7 +270,7 @@ export class Row {
    * @param {object} [options] Formatting options.
    *
    * @example
-   * var families = [
+   * const families = [
    *   {
    *     name: 'follows',
    *     columns: [
@@ -422,7 +419,7 @@ export class Row {
 
     rules = arrify(rules).map(rule => {
       const column = Mutation.parseColumnName(rule.column);
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const ruleData: any = {
         familyName: column.family,
         columnQualifier: Mutation.convertToBytes(column.qualifier!),
@@ -656,18 +653,18 @@ export class Row {
   }
 
   get(options?: GetRowOptions): Promise<GetRowResponse<Row>>;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any>(
     columns: string[],
     options?: GetRowOptions
   ): Promise<GetRowResponse<T>>;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any>(
     columns: string[],
     options: GetRowOptions,
     callback: GetRowCallback<T>
   ): void;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any>(columns: string[], callback: GetRowCallback<T>): void;
   get(callback: GetRowCallback<Row>): void;
   get(options: GetRowOptions, callback: GetRowCallback<Row>): void;
@@ -688,7 +685,7 @@ export class Row {
    * @example <caption>include:samples/document-snippets/row.js</caption>
    * region_tag:bigtable_get_row
    */
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any | Row>(
     columnsOrOptionsOrCallback?: string[] | GetRowOptions | GetRowCallback<T>,
     optionsOrCallback?: GetRowOptions | GetRowCallback<T>,
@@ -717,7 +714,7 @@ export class Row {
     // if there is column filter
     if (columns.length) {
       const filters = columns.map(Mutation.parseColumnName).map(column => {
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const colmFilters: any = [{family: column.family}];
         if (column.qualifier) {
           colmFilters.push({column: column.qualifier});

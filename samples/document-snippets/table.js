@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-const Bigtable = require('@google-cloud/bigtable');
+const {Bigtable} = require('@google-cloud/bigtable');
 const bigtable = new Bigtable();
 
 const snippets = {
@@ -297,7 +297,7 @@ const snippets = {
 
   getIamPolicy: (instanceId, tableId) => {
     // [START bigtable_get_table_Iam_policy]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -315,7 +315,7 @@ const snippets = {
 
   setIamPolicy: (instanceId, tableId) => {
     // [START bigtable_set_table_Iam_policy]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
@@ -342,7 +342,7 @@ const snippets = {
 
   testIamPermissions: (instanceId, tableId) => {
     // [START bigtable_test_table_Iam_permissions]
-    const Bigtable = require('@google-cloud/bigtable');
+    const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);

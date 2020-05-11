@@ -18,13 +18,13 @@ const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
 const uuid = require('uuid');
 const {execSync} = require('child_process');
-const Bigtable = require('@google-cloud/bigtable');
+const {Bigtable} = require('@google-cloud/bigtable');
 
 const exec = cmd => execSync(cmd, {encoding: 'utf8'});
 
 const bigtable = new Bigtable();
-const clusterId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const instanceId = `nodejs-bigtable-samples-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const clusterId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const instanceId = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const instance = bigtable.instance(instanceId);
 
 describe('instances', () => {
@@ -43,7 +43,9 @@ describe('instances', () => {
   after(() => instance.delete());
 
   it('should list zones', () => {
-    const output = exec(`node instances.js run --instance ${instanceId}`);
+    const output = exec(
+      `node instances.js run --instance ${instanceId} --cluster ${clusterId}`
+    );
     assert.include(output, 'Instances:');
     assert.include(output, instanceId);
   });

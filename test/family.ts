@@ -14,7 +14,7 @@
 
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {before, beforeEach, afterEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as sinon from 'sinon';
 import {google} from '../protos/protos';
@@ -45,14 +45,11 @@ describe('Bigtable/Family', () => {
   } as {}) as Table;
 
   const FAMILY_NAME = `${TABLE.name}/columnFamilies/${FAMILY_ID}`;
-  // tslint:disable-next-line variable-name
   let Family: typeof fm.Family;
   let family: fm.Family;
-  // tslint:disable-next-line variable-name
   let FamilyError: typeof fm.FamilyError;
 
   before(() => {
-    // tslint:disable-next-line variable-name
     const Fake = proxyquire('../src/family.js', {
       '@google-cloud/promisify': fakePromisify,
     });
@@ -97,7 +94,7 @@ describe('Bigtable/Family', () => {
     it('should throw if family id in wrong format', () => {
       const id = `/project/bad-project/instances/bad-instance/columnFamiles/${FAMILY_ID}`;
       assert.throws(() => {
-        const f = new Family(TABLE, id);
+        new Family(TABLE, id);
       }, Error);
     });
   });
@@ -204,7 +201,7 @@ describe('Bigtable/Family', () => {
   describe('create', () => {
     it('should call createFamily from table', done => {
       const options = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (family as any).table.createFamily = (
         id: string,
         options_: {},
@@ -218,7 +215,7 @@ describe('Bigtable/Family', () => {
     });
 
     it('should not require options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (family as any).table.createFamily = (
         name: string,
         options: {},
@@ -335,7 +332,7 @@ describe('Bigtable/Family', () => {
         gaxOptions: {},
       };
       sandbox.stub(family, 'getMetadata').callsArgOnWith(1, error);
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (family as any).create = (options_: any, callback: Function) => {
         assert.strictEqual(options_.gaxOptions, options.gaxOptions);
         callback();
@@ -352,7 +349,7 @@ describe('Bigtable/Family', () => {
         },
       };
       sandbox.stub(family, 'getMetadata').callsArgWith(1, error);
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (family as any).create = (options_: {}, callback: Function) => {
         assert.deepStrictEqual(options.rule, {versions: 1});
         callback();
@@ -361,7 +358,7 @@ describe('Bigtable/Family', () => {
     });
 
     it('should not auto create without a FamilyError error', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
       const options = {

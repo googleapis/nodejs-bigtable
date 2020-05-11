@@ -14,28 +14,28 @@
 
 'use strict';
 
-const uuid = require(`uuid`);
+const uuid = require('uuid');
 const snapshot = require('snap-shot-it');
 const {assert} = require('chai');
 const {describe, it, before, after} = require('mocha');
 const cp = require('child_process');
-const {Bigtable} = require('@google-cloud/bigtable');
+const {obtainTestInstance} = require('./util');
 
 const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
-
-const INSTANCE_ID = `nodejs-bigtable-samples-keepme`;
-const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const runId = uuid.v4().split('-')[0];
+const TABLE_ID = `mobile-time-series-${runId}`;
 
 describe('filters', async () => {
-  const bigtable = Bigtable();
-  const instance = bigtable.instance(INSTANCE_ID);
   let table;
+  let INSTANCE_ID;
   const TIMESTAMP = new Date(2019, 5, 1);
   TIMESTAMP.setUTCHours(0);
   const TIMESTAMP_OLDER = new Date(2019, 4, 30);
   TIMESTAMP_OLDER.setUTCHours(0);
 
   before(async () => {
+    const instance = await obtainTestInstance();
+    INSTANCE_ID = instance.id;
     table = instance.table(TABLE_ID);
 
     await table.create().catch(console.error);
@@ -284,7 +284,7 @@ describe('filters', async () => {
     const stdout = execSync(
       `node filterSnippets ${INSTANCE_ID} ${TABLE_ID} filterBlockAll`
     );
-    const result = ``;
+    const result = '';
     assert.equal(stdout, result);
   });
 

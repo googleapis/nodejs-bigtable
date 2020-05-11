@@ -26,7 +26,6 @@ const ROW_ID = 'my-row';
 const CONVERTED_ROW_ID = 'my-converted-row';
 const sinon = sn.createSandbox();
 
-// tslint:disable-next-line variable-name
 const FakeMutation = {
   methods: Mutation.methods,
   convertToBytes: sinon.spy(value => {
@@ -41,9 +40,9 @@ const FakeMutation = {
 };
 
 describe('Bigtable/ChunkTransformer', () => {
-  // tslint:disable-next-line variable-name no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let ChunkTransformer: any;
-  // tslint:disable:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let chunkTransformer: any;
   let rows: Row[];
   before(() => {
@@ -615,7 +614,6 @@ describe('Bigtable/ChunkTransformer', () => {
       );
     });
     it('should decode numbers', () => {
-      // tslint:disable-next-line variable-name
       const RealChunkTransformer = require('../src/chunktransformer.js')
         .ChunkTransformer;
       chunkTransformer = new RealChunkTransformer({decode: true});

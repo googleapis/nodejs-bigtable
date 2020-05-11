@@ -20,20 +20,17 @@ const testcases = require('../../system-test/read-rows-acceptance-test.json')
 import {PassThrough} from 'stream';
 import {Table} from '../src/table.js';
 import {Row} from '../src/row.js';
-import * as ProtoBuf from 'protobufjs';
+import {protobuf} from 'google-gax';
 import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
-import {Bigtable} from '../src';
-import {AbortableDuplex} from '@google-cloud/common';
+import {Bigtable, AbortableDuplex} from '../src';
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
-const root = ProtoBuf.Root.fromJSON(
+const root = protobuf.Root.fromJSON(
   JSON.parse(fs.readFileSync(protosJson).toString())
 );
-// tslint:disable-next-line variable-name
 const ReadRowsResponse = root.lookupType('google.bigtable.v2.ReadRowsResponse');
-// tslint:disable-next-line variable-name
 const CellChunk = root.lookupType(
   'google.bigtable.v2.ReadRowsResponse.CellChunk'
 );
@@ -41,7 +38,7 @@ describe('Read Row Acceptance tests', () => {
   testcases.forEach(test => {
     it(test.name, done => {
       const table = new Table({id: 'xyz'} as Instance, 'my-table');
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const results: any[] = [];
       const rawResults = test.results || [];
       const errorCount = rawResults.filter(result => result.error).length;
@@ -70,7 +67,7 @@ describe('Read Row Acceptance tests', () => {
         });
 
       table.bigtable = {} as Bigtable;
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (table.bigtable.request as any) = () => {
         const stream = new PassThrough({
           objectMode: true,
@@ -84,7 +81,7 @@ describe('Read Row Acceptance tests', () => {
               const cellChunk = CellChunk.decode(
                 Buffer.from(chunk as string, 'base64')
               ); //.decode64(chunk);
-              // tslint:disable-next-line no-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               let readRowsResponse: any = {chunks: [cellChunk]};
               readRowsResponse = ReadRowsResponse.create(readRowsResponse);
               readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {
@@ -107,9 +104,9 @@ describe('Read Row Acceptance tests', () => {
         return row;
       });
 
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const errors: any[] = [];
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const rows: any[] = [];
 
       table

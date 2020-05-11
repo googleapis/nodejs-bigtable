@@ -52,7 +52,7 @@ import {
   GetTablesResponse,
 } from './table';
 import {CallOptions, Operation} from 'google-gax';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
 
@@ -89,7 +89,7 @@ export interface InstanceOptions {
    * No more than 64 labels can be associated with a given resource.
    * Keys and values must both be under 128 bytes.
    */
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   labels?: {[index: string]: any};
 
   type?: 'production' | 'development';
@@ -145,7 +145,7 @@ export type SetInstanceMetadataResponse = [google.protobuf.Empty];
  * @param {string} id Id of the instance.
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  */
@@ -478,7 +478,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     }
 
     if (options.families) {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const columnFamilies = (options.families as any[]).reduce(
         (families, family) => {
           if (typeof family === 'string') {
@@ -486,7 +486,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
               name: family,
             };
           }
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const columnFamily: any = (families[family.name] = {});
           if (family.rule) {
             columnFamily.gcRule = Family.formatRule_(family.rule);
@@ -1039,7 +1039,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @returns {Table}
    *
    * @example
-   * const Bigtable = require('@google-cloud/bigtable');
+   * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('presidents');
@@ -1118,7 +1118,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
  * @returns {stream}
  *
  * @example
- * const Bigtable = require('@google-cloud/bigtable');
+ * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  *

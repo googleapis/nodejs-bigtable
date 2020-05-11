@@ -18,18 +18,19 @@ const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: Test[];
 };
 import {google} from '../protos/protos';
-import * as grpc from '@grpc/grpc-js';
 import * as assert from 'assert';
 import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
-import * as through from 'through2';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
-import {ServiceError} from '@grpc/grpc-js';
+import {ServiceError, GrpcClient} from 'google-gax';
+import {PassThrough} from 'stream';
 
-// tslint:disable-next-line no-any
+const {grpc} = new GrpcClient();
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function dispatch(emitter: EventEmitter, response: any) {
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const emits: any[] = [{name: 'request'}];
   if (response.row_keys) {
     emits.push.apply(emits, [
@@ -41,7 +42,7 @@ function dispatch(emitter: EventEmitter, response: any) {
     ]);
   }
   if (response.end_with_error) {
-    // tslint:disable-next-line no-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const error: any = new Error();
     error.code = response.end_with_error;
     emits.push({name: 'error', arg: error});
@@ -76,7 +77,7 @@ function rowResponse(rowKey: {}) {
 
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
@@ -114,7 +115,7 @@ describe('Bigtable/Table', () => {
         const requestOptions = {} as google.bigtable.v2.IRowSet;
         if (reqOpts.rows && reqOpts.rows.rowRanges) {
           requestOptions.rowRanges = reqOpts.rows.rowRanges.map(
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (range: any) => {
               const convertedRowRange = {} as {[index: string]: string};
               Object.keys(range).forEach(
@@ -125,19 +126,19 @@ describe('Bigtable/Table', () => {
           );
         }
         if (reqOpts.rows && reqOpts.rows.rowKeys) {
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           requestOptions.rowKeys = reqOpts.rows.rowKeys.map((rowKeys: any) =>
             rowKeys.asciiSlice()
           );
         }
         if (reqOpts.rowsLimit) {
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (requestOptions as any).rowsLimit = reqOpts.rowsLimit;
         }
         requestedOptions.push(requestOptions);
         rowKeysRead.push([]);
-        const requestStream = through.obj();
-        /* tslint:disable-next-line */
+        const requestStream = new PassThrough({objectMode: true});
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (requestStream as any).abort = () => {};
         dispatch(requestStream, responses!.shift());
         return requestStream;
@@ -160,10 +161,10 @@ describe('Bigtable/Table', () => {
         clock.runAll();
 
         if (test.error) {
-          assert(!endCalled, `.on('end') should not have been invoked`);
+          assert(!endCalled, ".on('end') should not have been invoked");
           assert.strictEqual(error!.code, test.error);
         } else {
-          assert(endCalled, `.on('end') shoud have been invoked`);
+          assert(endCalled, ".on('end') shoud have been invoked");
           assert.ifError(error);
         }
         assert.deepStrictEqual(rowKeysRead, test.row_keys_read);

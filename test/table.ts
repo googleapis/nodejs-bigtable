@@ -14,13 +14,12 @@
 
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {describe, it} from 'mocha';
+import {afterEach, before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
-import {PassThrough, Readable, Writable, Duplex} from 'stream';
-import * as through from 'through2';
-import {ServiceError} from '@grpc/grpc-js';
+import {PassThrough, Writable, Duplex} from 'stream';
+import {ServiceError} from 'google-gax';
 import {DecoratedStatus} from '../src/decorateStatus';
 
 import * as inst from '../src/instance';
@@ -38,7 +37,7 @@ const noop = () => {};
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  // tslint:disable-next-line:no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   promisifyAll(klass: Function, options: any) {
     if (klass.name !== 'Table') {
       return;
@@ -48,31 +47,30 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 
-// tslint:disable-next-line:no-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createFake(klass: any) {
   return class Fake extends klass {
-    calledWith_: IArguments;
-    constructor() {
-      super(...arguments);
-      this.calledWith_ = arguments;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    calledWith_: any[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(...args: any[]) {
+      super(...args);
+      this.calledWith_ = args;
     }
   };
 }
 
-// tslint:disable-next-line variable-name
 const FakeFamily = createFake(Family);
 FakeFamily.formatRule_ = sinon.spy(rule => rule);
 
-// tslint:disable-next-line variable-name
 const FakeRow = createFake(Row);
 
 FakeRow.formatChunks_ = sinon.spy(chunks => {
   return chunks;
 });
 
-// tslint:disable-next-line variable-name
 const FakeChunkTransformer = createFake(ChunkTransformer);
-FakeChunkTransformer.prototype._transform = function(
+FakeChunkTransformer.prototype._transform = function (
   rows: Row[],
   enc: {},
   next: Function
@@ -81,7 +79,6 @@ FakeChunkTransformer.prototype._transform = function(
   next();
 };
 
-// tslint:disable-next-line variable-name
 const FakeMutation = {
   methods: Mutation.methods,
   convertToBytes: sinon.spy(value => {
@@ -95,12 +92,11 @@ const FakeMutation = {
   }),
 };
 
-// tslint:disable-next-line variable-name
 const FakeFilter = {
   parse: sinon.spy(value => {
     return value;
   }),
-  createRange: (...args: Array<{}>) => {
+  createRange: () => {
     return {};
   },
 };
@@ -110,9 +106,8 @@ describe('Bigtable/Table', () => {
   let INSTANCE: inst.Instance;
   let TABLE_NAME: string;
 
-  // tslint:disable-next-line variable-name
   let Table: typeof tblTypes.Table;
-  // tslint:disable-next-line no-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let table: any;
 
   before(() => {
@@ -138,9 +133,9 @@ describe('Bigtable/Table', () => {
 
   afterEach(() => {
     Object.keys(FakeMutation).forEach(spy => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((FakeMutation as any)[spy].reset) {
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (FakeMutation as any)[spy].resetHistory();
       }
     });
@@ -177,7 +172,7 @@ describe('Bigtable/Table', () => {
     it('should throw if table id in wrong format', () => {
       const id = `tables/${TABLE_ID}`;
       assert.throws(() => {
-        const t = new Table(INSTANCE, id);
+        new Table(INSTANCE, id);
       }, Error);
     });
   });
@@ -307,13 +302,13 @@ describe('Bigtable/Table', () => {
 
     it('should throw if a id is not provided', () => {
       assert.throws(() => {
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (table as any).createFamily();
       }, /An id is required to create a family\./);
     });
 
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'modifyColumnFamilies');
@@ -336,7 +331,7 @@ describe('Bigtable/Table', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -358,13 +353,13 @@ describe('Bigtable/Table', () => {
         return convertedRule;
       }));
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         const modification = config.reqOpts.modifications[0];
 
         assert.strictEqual(modification.create.gcRule, convertedRule);
         assert.strictEqual(spy.callCount, 1);
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assert.strictEqual((spy as any).getCall(0).args[0], rule);
         done();
       };
@@ -416,7 +411,7 @@ describe('Bigtable/Table', () => {
 
   describe('createReadStream', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'readRows');
@@ -431,7 +426,7 @@ describe('Bigtable/Table', () => {
     it('should use an appProfileId', done => {
       const bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
@@ -443,13 +438,13 @@ describe('Bigtable/Table', () => {
     });
 
     it('should abort request on end', done => {
-      // tslint:disable-next-line:no-any
-      table.bigtable.request = (config: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      table.bigtable.request = () => {
         const requestStream = new PassThrough({
           objectMode: true,
         });
 
-        /* tslint:disable-next-line */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (requestStream as any).abort = () => {
           done();
         };
@@ -464,7 +459,7 @@ describe('Bigtable/Table', () => {
       it('should accept gaxOptions', done => {
         const gaxOptions = {};
 
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           assert.strictEqual(config.gaxOpts, gaxOptions);
           done();
@@ -488,7 +483,7 @@ describe('Bigtable/Table', () => {
           return fakeRange;
         }));
 
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.rows.rowRanges[0], fakeRange);
           assert.strictEqual(formatSpy.callCount, 1);
@@ -514,7 +509,7 @@ describe('Bigtable/Table', () => {
           return convertedKeys[keyIndex];
         }));
 
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.rows.rowKeys, convertedKeys);
           assert.strictEqual(convertSpy.callCount, 2);
@@ -555,7 +550,7 @@ describe('Bigtable/Table', () => {
           return fakeRanges[formatSpy.callCount - 1];
         })) as sinon.SinonSpy;
 
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           assert.deepStrictEqual(config.reqOpts.rows.rowRanges, fakeRanges);
           assert.strictEqual(formatSpy.callCount, 2);
@@ -579,16 +574,16 @@ describe('Bigtable/Table', () => {
           filter: [{}],
         };
         const fakeFilter = {};
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const parseSpy = ((FakeFilter as any).parse = sinon.spy(() => {
           return fakeFilter;
         }));
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           assert.strictEqual(config.reqOpts.filter, fakeFilter);
           assert.strictEqual(parseSpy.callCount, 1);
           assert.strictEqual(
-            // tslint:disable-next-line no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (parseSpy as any).getCall(0).args[0],
             options.filter
           );
@@ -601,7 +596,7 @@ describe('Bigtable/Table', () => {
         const options = {
           limit: 10,
         };
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           assert.strictEqual(config.reqOpts.rowsLimit, options.limit);
           done();
@@ -697,12 +692,12 @@ describe('Bigtable/Table', () => {
 
       describe('prefixes', () => {
         beforeEach(() => {
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (FakeFilter as any).createRange = noop;
         });
 
         afterEach(() => {
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (Table as any).createPrefixRange.restore();
         });
 
@@ -723,7 +718,7 @@ describe('Bigtable/Table', () => {
             .stub(FakeFilter, 'createRange')
             .returns(fakeRange);
 
-          // tslint:disable-next-line:no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           table.bigtable.request = (config: any) => {
             assert.strictEqual(prefixSpy.getCall(0).args[0], fakePrefix);
             assert.deepStrictEqual(config.reqOpts.rows.rowRanges, [fakeRange]);
@@ -761,7 +756,7 @@ describe('Bigtable/Table', () => {
               return ranges[callIndex];
             });
 
-          // tslint:disable-next-line:no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           table.bigtable.request = (config: any) => {
             assert.strictEqual(prefixSpy.callCount, 2);
 
@@ -812,7 +807,7 @@ describe('Bigtable/Table', () => {
         sinon.stub(table, 'row').callsFake(() => {
           return {} as Row;
         });
-        FakeChunkTransformer.prototype._transform = function(
+        FakeChunkTransformer.prototype._transform = function (
           chunks: Array<{}>,
           enc: {},
           next: Function
@@ -829,7 +824,7 @@ describe('Bigtable/Table', () => {
             objectMode: true,
           });
 
-          /* tslint:disable-next-line */
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (stream as any).abort = () => {};
 
           setImmediate(() => {
@@ -989,12 +984,12 @@ describe('Bigtable/Table', () => {
       let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
       // stream.end(); }, ...];
       let makeRetryableError: Function;
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let reqOptsCalls: any[];
       let setTimeoutSpy: sinon.SinonSpy;
 
       beforeEach(() => {
-        FakeChunkTransformer.prototype._transform = function(
+        FakeChunkTransformer.prototype._transform = function (
           rows: Row[],
           enc: {},
           next: Function
@@ -1009,10 +1004,7 @@ describe('Bigtable/Table', () => {
         };
 
         callCreateReadStream = (options: {}, verify: Function) => {
-          table
-            .createReadStream(options)
-            .on('end', verify)
-            .resume(); // The stream starts paused unless it has a `.data()`
+          table.createReadStream(options).on('end', verify).resume(); // The stream starts paused unless it has a `.data()`
           // callback.
         };
 
@@ -1024,24 +1016,26 @@ describe('Bigtable/Table', () => {
           return error;
         };
 
-        sandbox.stub(FakeFilter, 'createRange').callsFake((start, end) => {
-          // tslint:disable-next-line:no-any
-          const range: any = {};
-          if (start) {
-            // tslint:disable-next-line:no-any
-            range.start = (start as any).value || start;
-            range.startInclusive =
-              // tslint:disable-next-line:no-any
-              typeof start === 'object' ? (start as any).inclusive : true;
+        (sandbox.stub(FakeFilter, 'createRange') as sinon.SinonStub).callsFake(
+          (start, end) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const range: any = {};
+            if (start) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              range.start = (start as any).value || start;
+              range.startInclusive =
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                typeof start === 'object' ? (start as any).inclusive : true;
+            }
+            if (end) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              range.end = (end as any).value || end;
+            }
+            return range;
           }
-          if (end) {
-            // tslint:disable-next-line:no-any
-            range.end = (end as any).value || end;
-          }
-          return range;
-        });
+        );
 
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (FakeMutation as any).convertToBytes = (value: {}) => {
           return Buffer.from(value);
         };
@@ -1052,7 +1046,7 @@ describe('Bigtable/Table', () => {
           .stub(global, 'setTimeout')
           .callsFake(fn => (fn as Function)());
 
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           reqOptsCalls.push(config.reqOpts);
 
@@ -1060,12 +1054,12 @@ describe('Bigtable/Table', () => {
             objectMode: true,
           });
 
-          /* tslint:disable-next-line */
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (stream as any).abort = () => {};
 
           setImmediate(() => {
             stream.emit('request');
-            // tslint:disable-next-line:no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (emitters!.shift() as any)(stream);
           });
           return stream;
@@ -1113,7 +1107,7 @@ describe('Bigtable/Table', () => {
 
       it('should have a range which starts after the last read key', done => {
         emitters = [
-          // tslint:disable-next-line:no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (((stream: any) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
@@ -1227,7 +1221,7 @@ describe('Bigtable/Table', () => {
 
   describe('delete', () => {
     it('should make the correct request', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'deleteTable');
@@ -1247,7 +1241,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -1261,7 +1255,7 @@ describe('Bigtable/Table', () => {
     const prefix = 'a';
 
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'dropRowRange');
@@ -1276,7 +1270,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -1287,16 +1281,16 @@ describe('Bigtable/Table', () => {
 
     it('should respect the row key prefix option', done => {
       const fakePrefix = 'b';
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const spy = ((FakeMutation as any).convertToBytes = sinon.spy(
         () => fakePrefix
       ));
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.rowKeyPrefix, fakePrefix);
         assert.strictEqual(spy.callCount, 1);
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assert.strictEqual((spy as any).getCall(0).args[0], prefix);
         done();
       };
@@ -1313,7 +1307,7 @@ describe('Bigtable/Table', () => {
 
   describe('exists', () => {
     it('should not require gaxOptions', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.getMetadata = (options_: any) => {
         assert.deepStrictEqual(options_.gaxOptions, {});
         done();
@@ -1323,7 +1317,7 @@ describe('Bigtable/Table', () => {
 
     it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.getMetadata = (options_: any) => {
         assert.strictEqual(options_.gaxOptions, gaxOptions);
         done();
@@ -1333,7 +1327,7 @@ describe('Bigtable/Table', () => {
 
     it('should pass view = name to getMetadata', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.getMetadata = (options_: any) => {
         assert.strictEqual(options_.view, 'name');
         done();
@@ -1355,7 +1349,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should return error if code is not 5', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
       table.getMetadata = (gaxOptions: {}, callback: Function) => {
@@ -1401,7 +1395,7 @@ describe('Bigtable/Table', () => {
       const options = {
         gaxOptions: {},
       };
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.getMetadata = (options_: any) => {
         assert.strictEqual(options_.gaxOptions, options.gaxOptions);
         done();
@@ -1430,7 +1424,7 @@ describe('Bigtable/Table', () => {
         callback(error);
       };
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.create = (options_: any, callback: Function) => {
         assert.strictEqual(options_.gaxOptions, options.gaxOptions);
         callback(); // done()
@@ -1440,7 +1434,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should not auto create without error code 5', done => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
 
@@ -1507,7 +1501,7 @@ describe('Bigtable/Table', () => {
 
   describe('getIamPolicy', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getIamPolicy');
@@ -1524,7 +1518,7 @@ describe('Bigtable/Table', () => {
       const gaxOptions = {};
       const options = {gaxOptions, requestedPolicyVersion};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         assert.strictEqual(
@@ -1562,7 +1556,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.getMetadata = (options: any) => {
         assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
@@ -1609,7 +1603,7 @@ describe('Bigtable/Table', () => {
   describe('getFamilies', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.getMetadata = (options: any) => {
         assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
@@ -1695,7 +1689,7 @@ describe('Bigtable/Table', () => {
       let setTimeoutSpy: sinon.SinonSpy;
       let clearTimeoutSpy: sinon.SinonSpy;
       let checkConsistencySpy: sinon.SinonSpy;
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let responses: any[] = [];
 
       beforeEach(() => {
@@ -1775,7 +1769,7 @@ describe('Bigtable/Table', () => {
       });
 
       it('should return false after 10 min if inconsistency repeats', done => {
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any, callback: Function) => {
           if (config.method === 'generateConsistencyToken') {
             return callback(null, {consistencyToken: 'sample-token12345'});
@@ -1817,7 +1811,7 @@ describe('Bigtable/Table', () => {
 
   describe('generateConsistencyToken', () => {
     it('should provide proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'generateConsistencyToken');
@@ -1861,7 +1855,7 @@ describe('Bigtable/Table', () => {
     it('should provide the proper request options', done => {
       const cToken = 'consistency-token-123';
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'checkConsistency');
@@ -1922,12 +1916,12 @@ describe('Bigtable/Table', () => {
       full: 4,
     } as {[index: string]: number};
     beforeEach(() => {
-      // tslint:disable-next-line no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (Table as any).VIEWS = views;
     });
 
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getTable');
@@ -1948,7 +1942,7 @@ describe('Bigtable/Table', () => {
         gaxOptions: {},
       };
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, options.gaxOptions);
         done();
@@ -1962,7 +1956,7 @@ describe('Bigtable/Table', () => {
         const options = {
           view,
         };
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           assert.strictEqual(config.reqOpts.view, views[view]);
           done();
@@ -1987,7 +1981,7 @@ describe('Bigtable/Table', () => {
     it('should execute callback with original arguments', done => {
       const args = [{}, {}, {}];
       table.bigtable.request = (config: {}, callback: Function) => {
-        callback.apply(null, args);
+        callback(...args);
       };
       table.getMetadata((...args: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(args), args);
@@ -2028,7 +2022,7 @@ describe('Bigtable/Table', () => {
           assert.ifError(err);
           assert.deepStrictEqual(rows, fakeRows);
 
-          // tslint:disable-next-line no-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const spy = (table as any).createReadStream.getCall(0);
           assert.strictEqual(spy.args[0], options);
           done();
@@ -2104,7 +2098,7 @@ describe('Bigtable/Table', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.mutate = (entries: {}, options: any) => {
         assert.strictEqual(options.gaxOptions, gaxOptions);
         done();
@@ -2126,9 +2120,9 @@ describe('Bigtable/Table', () => {
     });
 
     it('should provide the proper request options', done => {
-      const stream = through.obj();
+      const stream = new PassThrough({objectMode: true});
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'mutateRows');
@@ -2152,7 +2146,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -2163,7 +2157,7 @@ describe('Bigtable/Table', () => {
     it('should use an appProfileId', done => {
       const bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
@@ -2263,14 +2257,11 @@ describe('Bigtable/Table', () => {
 
         beforeEach(() => {
           table.bigtable.request = () => {
-            const stream = through.obj();
-
+            const stream = new PassThrough({objectMode: true});
             stream.push({entries: fakeStatuses});
-
             setImmediate(() => {
               stream.end();
             });
-
             return stream;
           };
 
@@ -2284,7 +2275,7 @@ describe('Bigtable/Table', () => {
         it('should return a PartialFailureError', done => {
           table.mutate(entries, (err: Error) => {
             assert.strictEqual(err.name, 'PartialFailureError');
-            // tslint:disable-next-line:no-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             assert.deepStrictEqual((err as any).errors, [
               Object.assign(
                 {
@@ -2343,9 +2334,9 @@ describe('Bigtable/Table', () => {
     });
 
     describe('retries', () => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let fakeStatuses: any;
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let entryRequests: any;
 
       beforeEach(() => {
@@ -2375,7 +2366,7 @@ describe('Bigtable/Table', () => {
           ],
         ];
         sandbox.stub(ds, 'decorateStatus').returns({} as DecoratedStatus);
-        // tslint:disable-next-line:no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           entryRequests.push(config.reqOpts.entries);
           const stream = new PassThrough({
@@ -2504,7 +2495,7 @@ describe('Bigtable/Table', () => {
 
   describe('sampleRowKeysStream', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'sampleRowKeys');
@@ -2524,7 +2515,7 @@ describe('Bigtable/Table', () => {
     it('should use an appProfileId', done => {
       const bigtableInstance = table.bigtable;
       bigtableInstance.appProfileId = 'app-profile-id-12345';
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtableInstance.request = (config: any) => {
         assert.strictEqual(
           config.reqOpts.appProfileId,
@@ -2539,7 +2530,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
 
@@ -2584,7 +2575,7 @@ describe('Bigtable/Table', () => {
       });
 
       it('should stream key objects', done => {
-        // tslint:disable-next-line no-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const keys: any[] = [];
 
         table
@@ -2635,7 +2626,7 @@ describe('Bigtable/Table', () => {
   describe('setIamPolicy', () => {
     const policy = {};
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'setIamPolicy');
@@ -2650,7 +2641,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -2673,7 +2664,7 @@ describe('Bigtable/Table', () => {
         ],
       };
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.reqOpts.policy, policy);
         done();
@@ -2683,7 +2674,7 @@ describe('Bigtable/Table', () => {
 
     it('should encode policy etag', done => {
       const policy = {etag: 'ABS'};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.policy.etag,
@@ -2718,7 +2709,7 @@ describe('Bigtable/Table', () => {
   describe('testIamPermissions', () => {
     const permissions = 'bigtable.tables.get';
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'testIamPermissions');
@@ -2731,8 +2722,8 @@ describe('Bigtable/Table', () => {
     });
 
     it('should accept permissions as array', done => {
-      const permissions = [`bigtable.tables.get`, `bigtable.tables.list`];
-      // tslint:disable-next-line:no-any
+      const permissions = ['bigtable.tables.get', 'bigtable.tables.list'];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.permissions, permissions);
         done();
@@ -2742,7 +2733,7 @@ describe('Bigtable/Table', () => {
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
@@ -2751,7 +2742,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should unpack permissions from resp object', done => {
-      const testPermissions = [`bigtable.tables.get`, `bigtable.tables.list`];
+      const testPermissions = ['bigtable.tables.get', 'bigtable.tables.list'];
       table.bigtable.request = (config: {}, callback: Function) => {
         callback(null, {permissions: testPermissions});
       };
@@ -2772,7 +2763,7 @@ describe('Bigtable/Table', () => {
       table.bigtable.request = (config: {}, callback: Function) => {
         callback(error);
       };
-      table.testIamPermissions(permission, (err: Error, resp: {}) => {
+      table.testIamPermissions(permission, (err: Error) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -2791,7 +2782,7 @@ describe('Bigtable/Table', () => {
 
   describe('truncate', () => {
     it('should provide the proper request options', done => {
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'dropRowRange');
@@ -2807,7 +2798,7 @@ describe('Bigtable/Table', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // tslint:disable-next-line:no-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
