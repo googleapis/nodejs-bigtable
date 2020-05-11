@@ -29,25 +29,24 @@ exports.readRows = async (req, res) => {
   // Execute the query
   try {
     const prefix = 'phone#';
-    const rows = [];
+    let rows = [];
     await table
-      .createReadStream({
-        prefix,
-      })
-      .on('error', err => {
-        res.send(`Error querying Bigtable: ${err}`);
-        res.status(500).end();
-      })
-      .on('data', row => {
-        rows.push(
-          `rowkey: ${row.id}, ` +
-            `os_build: ${row.data['stats_summary']['os_build'][0].value}\n`
-        );
-      })
-      .on('end', () => {
-        rows.forEach(r => res.write(r));
-        res.status(200).end();
-      });
+        .createReadStream({
+          prefix,
+        })
+        .on('error', err => {
+          res.send(`Error querying Bigtable: ${err}`);
+          res.status(500).end();
+        })
+        .on('data', row => {
+          rows.push(
+              `rowkey: ${row.id}, ` +
+              `os_build: ${row.data["stats_summary"]["os_build"][0].value}\n`
+          )
+        }).on('end', () => {
+          rows.forEach(r => res.write(r));
+          res.status(200).end();
+        });
   } catch (err) {
     res.send(`Error querying Bigtable: ${err}`);
     res.status(500).end();

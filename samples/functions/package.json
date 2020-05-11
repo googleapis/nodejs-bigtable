@@ -14,5 +14,11 @@
   "dependencies": {
     "@google-cloud/bigtable": "^2.3.2",
     "@google-cloud/functions-framework": "^1.5.1"
+  },
+  "devDependencies": {
+    "child-process-promise": "^2.2.1",
+    "mocha": "^7.0.0",
+    "request": "^2.88.0",
+    "requestretry": "^4.1.0"
   }
 }
