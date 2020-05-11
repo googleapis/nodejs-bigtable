@@ -148,8 +148,8 @@ describe('functions', async () => {
     // exec's 'timeout' param won't kill children of "shim" /bin/sh process
     // Workaround: include "& sleep <TIMEOUT>; kill $!" in executed command
     ffProc = execPromise(
-        `functions-framework --target=readRows --signature-type=http --port ${PORT} & sleep 2; kill $!`,
-        {shell: true, cwd}
+      `functions-framework --target=readRows --signature-type=http --port ${PORT} & sleep 2; kill $!`,
+      {shell: true, cwd}
     );
   });
 
@@ -165,19 +165,21 @@ describe('functions', async () => {
       method: 'GET',
       body: {
         instanceId: INSTANCE_ID,
-        tableId: TABLE_ID
+        tableId: TABLE_ID,
       },
       retryDelay: 200,
       json: true,
     });
 
     assert.strictEqual(response.statusCode, 200);
-    assert.strictEqual(response.body,
-        `rowkey: phone#4c410523#20190501, os_build: PQ2A.190405.003
+    assert.strictEqual(
+      response.body,
+      `rowkey: phone#4c410523#20190501, os_build: PQ2A.190405.003
 rowkey: phone#4c410523#20190502, os_build: PQ2A.190405.004
 rowkey: phone#4c410523#20190505, os_build: PQ2A.190406.000
 rowkey: phone#5c10102#20190501, os_build: PQ2A.190401.002
 rowkey: phone#5c10102#20190502, os_build: PQ2A.190406.000
-`);
+`
+    );
   });
 });
