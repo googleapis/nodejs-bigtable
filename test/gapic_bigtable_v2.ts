@@ -254,9 +254,7 @@ describe('v2.BigtableClient', () => {
       };
       const expectedError = new Error('expected');
       client.innerApiCalls.mutateRow = stubSimpleCall(undefined, expectedError);
-      await assert.rejects(async () => {
-        await client.mutateRow(request);
-      }, expectedError);
+      await assert.rejects(client.mutateRow(request), expectedError);
       assert(
         (client.innerApiCalls.mutateRow as SinonStub)
           .getCall(0)
@@ -368,9 +366,7 @@ describe('v2.BigtableClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.checkAndMutateRow(request);
-      }, expectedError);
+      await assert.rejects(client.checkAndMutateRow(request), expectedError);
       assert(
         (client.innerApiCalls.checkAndMutateRow as SinonStub)
           .getCall(0)
@@ -484,9 +480,7 @@ describe('v2.BigtableClient', () => {
         undefined,
         expectedError
       );
-      await assert.rejects(async () => {
-        await client.readModifyWriteRow(request);
-      }, expectedError);
+      await assert.rejects(client.readModifyWriteRow(request), expectedError);
       assert(
         (client.innerApiCalls.readModifyWriteRow as SinonStub)
           .getCall(0)
@@ -574,9 +568,7 @@ describe('v2.BigtableClient', () => {
           reject(err);
         });
       });
-      await assert.rejects(async () => {
-        await promise;
-      }, expectedError);
+      await assert.rejects(promise, expectedError);
       assert(
         (client.innerApiCalls.readRows as SinonStub)
           .getCall(0)
@@ -666,9 +658,7 @@ describe('v2.BigtableClient', () => {
           reject(err);
         });
       });
-      await assert.rejects(async () => {
-        await promise;
-      }, expectedError);
+      await assert.rejects(promise, expectedError);
       assert(
         (client.innerApiCalls.sampleRowKeys as SinonStub)
           .getCall(0)
@@ -758,9 +748,7 @@ describe('v2.BigtableClient', () => {
           reject(err);
         });
       });
-      await assert.rejects(async () => {
-        await promise;
-      }, expectedError);
+      await assert.rejects(promise, expectedError);
       assert(
         (client.innerApiCalls.mutateRows as SinonStub)
           .getCall(0)
