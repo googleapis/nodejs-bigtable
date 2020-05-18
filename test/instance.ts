@@ -21,7 +21,7 @@ import {ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
 import {AppProfile, AppProfileOptions} from '../src/app-profile';
-import {Cluster, CreateClusterOptions} from '../src/cluster';
+import {Cluster} from '../src/cluster';
 import {Family} from '../src/family';
 import {
   Policy,
@@ -214,7 +214,13 @@ describe('Bigtable/Instance', () => {
 
     it('should throw if the routing option is not provided', () => {
       assert.throws(
-        instance.createAppProfile.bind(null, APP_PROFILE_ID, assert.ifError),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.createAppProfile as any).bind(
+          null,
+          APP_PROFILE_ID,
+          {},
+          assert.ifError
+        ),
         /An app profile must contain a routing policy\./
       );
     });
@@ -335,6 +341,10 @@ describe('Bigtable/Instance', () => {
   });
 
   describe('createCluster', () => {
+    const OPTIONS = {
+      nodes: 3,
+      location: 'us-central1-c',
+    };
     it('should provide the proper request options', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
@@ -345,13 +355,11 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
-      instance.createCluster(CLUSTER_ID, assert.ifError);
+      instance.createCluster(CLUSTER_ID, OPTIONS, assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
-      const options = {
-        gaxOptions: {},
-      } as CreateClusterOptions;
+      const options = Object.assign({}, OPTIONS, {gaxOptions: {}});
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.gaxOpts, options.gaxOptions);
@@ -361,15 +369,12 @@ describe('Bigtable/Instance', () => {
     });
 
     it('should respect the location option', done => {
-      const options = {
-        location: 'us-central1-b',
-      } as CreateClusterOptions;
       const fakeLocation = 'a/b/c/d';
       sandbox
         .stub(FakeCluster, 'getLocation_')
         .callsFake((project, location) => {
           assert.strictEqual(project, BIGTABLE.projectId);
-          assert.strictEqual(location, options.location);
+          assert.strictEqual(location, OPTIONS.location);
           return fakeLocation;
         });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -377,7 +382,7 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.reqOpts.cluster.location, fakeLocation);
         done();
       };
-      instance.createCluster(CLUSTER_ID, options, assert.ifError);
+      instance.createCluster(CLUSTER_ID, OPTIONS, assert.ifError);
     });
 
     it('should respect the nodes option', done => {
@@ -394,9 +399,7 @@ describe('Bigtable/Instance', () => {
     });
 
     it('should respect the storage option', done => {
-      const options = {
-        storage: 'ssd',
-      } as CreateClusterOptions;
+      const options = Object.assign({}, OPTIONS, {storage: 'ssd'});
       const fakeStorageType = 2;
       sandbox.stub(FakeCluster, 'getStorageType_').callsFake(type => {
         assert.strictEqual(type, options.storage);
@@ -425,6 +428,7 @@ describe('Bigtable/Instance', () => {
       };
       (instance.createCluster as Function)(
         CLUSTER_ID,
+        OPTIONS,
         (err: Error, cluster: {}, apiResponse: {}) => {
           assert.ifError(err);
           assert.strictEqual(cluster, fakeCluster);
@@ -495,6 +499,22 @@ describe('Bigtable/Instance', () => {
           assert.deepStrictEqual(config.reqOpts.table.columnFamilies, {
             a: {},
             b: {},
+          });
+          done();
+        };
+        instance.createTable(TABLE_ID, options, assert.ifError);
+      });
+
+      it('should accept families as an object', done => {
+        const options = {
+          families: {
+            name: 'e',
+          },
+        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.bigtable.request as Function) = (config: any) => {
+          assert.deepStrictEqual(config.reqOpts.table.columnFamilies, {
+            e: {},
           });
           done();
         };
@@ -1734,18 +1754,6 @@ describe('Bigtable/Instance', () => {
         done();
       };
       instance.setMetadata({}, gaxOptions, assert.ifError);
-    });
-
-    it('should update metadata property with API response', done => {
-      const response = {};
-      sandbox
-        .stub(instance.bigtable, 'request')
-        .callsArgWith(1, null, response);
-      instance.setMetadata({}, err => {
-        assert.ifError(err);
-        assert.strictEqual(instance.metadata, response);
-        done();
-      });
     });
 
     it('should execute callback with all arguments', done => {

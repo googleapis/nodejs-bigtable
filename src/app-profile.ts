@@ -29,7 +29,7 @@ export interface AppProfileOptions {
    * value is required when creating the app profile and optional when setting
    * the metadata.
    */
-  routing?: 'any' | Cluster;
+  routing: 'any' | Cluster;
   /**
    * Whether or not CheckAndMutateRow and ReadModifyWriteRow requests are
    * allowed by this app profile. It is unsafe to send these requests to the
@@ -105,7 +105,9 @@ export type GetAppProfileResponse = [
 export type GetAppProfilesCallback = (
   err: ServiceError | null,
   appProfiles?: AppProfile[],
-  apiResponse?: google.bigtable.admin.v2.IAppProfile[]
+  nextQuery?: {},
+  failedLocations?: string[],
+  apiResponse?: google.bigtable.admin.v2.IListAppProfilesResponse
 ) => void;
 export type GetAppProfilesResponse = [
   AppProfile[],
@@ -223,7 +225,6 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
 
   create(options: AppProfileOptions): Promise<CreateAppProfileResponse>;
   create(options: AppProfileOptions, callback: CreateAppProfileCallback): void;
-  create(callback: CreateAppProfileCallback): void;
   /**
    * Create an app profile.
    *
@@ -234,14 +235,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * region_tag:bigtable_create_app_profile
    */
   create(
-    optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
-    cb?: CreateAppProfileCallback
+    options: AppProfileOptions,
+    callback?: CreateAppProfileCallback
   ): void | Promise<CreateAppProfileResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    this.instance.createAppProfile(this.id, options, callback);
+    this.instance.createAppProfile(this.id, options, callback!);
   }
 
   delete(options?: DeleteAppProfileOptions): Promise<DeleteAppProfileResponse>;

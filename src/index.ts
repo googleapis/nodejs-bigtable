@@ -28,6 +28,7 @@ import {
   CreateInstanceCallback,
   CreateInstanceResponse,
   IInstance,
+  LROCallback,
 } from './instance';
 import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
@@ -57,17 +58,35 @@ export type GetInstancesResponse = [
   google.bigtable.admin.v2.IListInstancesResponse
 ];
 
-export type RequestCallback<T> = (err: ServiceError | null, resp?: T) => void;
+export type RequestCallback<T = void, R = void> = T extends void
+  ? LROCallback
+  : R extends void
+  ? NormalCallback<T>
+  : PagedCallback<T, R>;
+
+export interface NormalCallback<TResponse> {
+  (err: ServiceError | null, res?: TResponse): void;
+}
+
+export interface PagedCallback<Item, Response> {
+  (
+    err: ServiceError | null,
+    results?: Item[] | null,
+    nextQuery?: {} | null,
+    response?: Response | null
+  ): void;
+}
 
 export interface RequestOptions {
   client:
     | 'BigtableInstanceAdminClient'
     | 'BigtableTableAdminClient'
     | 'BigtableClient';
-  reqOpts?: {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reqOpts: any;
   retryOpts?: {};
   gaxOpts?: {};
-  method?: string;
+  method: string;
 }
 
 export interface AbortableDuplex extends Duplex {
@@ -473,7 +492,7 @@ export class Bigtable {
    *
    * @param {string} id The unique id of the instance.
    * @param {object} options Instance creation options.
-   * @param {object[]} options.clusters The clusters to be created within the
+   * @param {object | object[]} options.clusters The cluster(s) to be created within the
    *     instance.
    * @param {string} [options.displayName] The descriptive name for this instance
    *     as it appears in UIs.
@@ -584,19 +603,19 @@ export class Bigtable {
       return clusters;
     }, {} as {[index: string]: google.bigtable.admin.v2.ICluster});
 
-    this.request(
+    this.request<void>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'createInstance',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (...args) => {
-        const err = args[0];
-        if (!err) {
-          args.splice(1, 0, this.instance(id));
+      (err, ...args) => {
+        if (err) {
+          callback!(err);
+          return;
         }
-        callback!(...args);
+        callback!(null, this.instance(id), ...args);
       }
     );
   }
@@ -664,7 +683,7 @@ export class Bigtable {
       parent: this.projectName,
     };
 
-    this.request(
+    this.request<google.bigtable.admin.v2.IListInstancesResponse>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'listInstances',
@@ -676,12 +695,12 @@ export class Bigtable {
           callback!(err);
           return;
         }
-        const instances = resp.instances.map((instanceData: IInstance) => {
+        const instances = resp!.instances!.map((instanceData: IInstance) => {
           const instance = this.instance(instanceData.name!.split('/').pop()!);
           instance.metadata = instanceData;
           return instance;
         });
-        callback!(null, instances, resp.failedLocations, resp);
+        callback!(null, instances, resp!.failedLocations!, resp);
       }
     );
   }
@@ -697,9 +716,12 @@ export class Bigtable {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  request<T = any>(config?: any): AbortableDuplex;
+  request<T = void, R = void>(config: RequestOptions): AbortableDuplex;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  request<T = any>(config?: any, callback?: RequestCallback<T>): void;
+  request<T = void, R = void>(
+    config: RequestOptions,
+    callback?: RequestCallback<T, R>
+  ): void;
   /**
    * Funnel all API requests through this method, to be sure we have a project ID.
    *
@@ -710,9 +732,9 @@ export class Bigtable {
    * @param {function} [callback] Callback function.
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  request<T = any>(
+  request<T = void, R = void>(
     config: RequestOptions,
-    callback?: (err: ServiceError | null, resp?: T) => void
+    callback?: RequestCallback<T, R>
   ): void | AbortableDuplex {
     const isStreamMode = !callback;
 

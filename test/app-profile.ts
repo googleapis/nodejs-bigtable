@@ -176,22 +176,6 @@ describe('Bigtable/AppProfile', () => {
 
       appProfile.create(options, done);
     });
-
-    it('should not require options', done => {
-      appProfile.instance.createAppProfile = (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        id: any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        options: any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        callback: any
-      ) => {
-        assert.deepStrictEqual(options, {});
-        callback();
-      };
-
-      appProfile.create(done);
-    });
   });
 
   describe('delete', () => {

@@ -21,7 +21,7 @@ const pumpify = require('pumpify');
 
 import {google} from '../protos/protos';
 import {Bigtable} from '.';
-import {Instance} from './instance';
+import {Instance, LROResourceCallback} from './instance';
 
 import {
   Backup,
@@ -58,14 +58,14 @@ export type ICluster = google.bigtable.admin.v2.ICluster;
 export type IOperation = google.longrunning.IOperation;
 
 export type ApiResponse = [IOperation];
-export type CreateClusterResponse = [ICluster, Operation, IOperation];
+export type CreateClusterResponse = [Cluster, Operation, IOperation];
 export type BooleanResponse = [boolean];
 export type GetClusterResponse = [ICluster, IOperation];
 export type GetClustersResponse = [Cluster[], IOperation];
 export type GetClusterMetadataResponse = [ICluster, IOperation];
 export type SetClusterMetadataResponse = [Operation, google.protobuf.Empty];
 
-export type CreateClusterCallback = GenericCallback<IOperation>;
+export type CreateClusterCallback = LROResourceCallback<Cluster>;
 export type DeleteClusterCallback = GenericCallback<IOperation>;
 export type ExistsClusterCallback = GenericCallback<boolean>;
 export type GetClusterCallback = GenericClusterCallback<ICluster>;
@@ -185,7 +185,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * Cluster.getStorageType_('ssd');
    * // 1
    */
-  static getStorageType_(type: string): number {
+  static getStorageType_(type?: string): number {
     const storageTypes: {[k: string]: number} = {
       unspecified: 0,
       ssd: 1,
@@ -196,7 +196,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       type = type.toLowerCase();
     }
 
-    return storageTypes[type] || storageTypes.unspecified;
+    return storageTypes[type!] || storageTypes.unspecified;
   }
 
   /**
@@ -209,34 +209,29 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     return new Backup(this, id);
   }
 
-  create(): Promise<CreateClusterResponse>;
   create(options: CreateClusterOptions): Promise<CreateClusterResponse>;
-  create(callback: CreateClusterCallback): void;
   create(options: CreateClusterOptions, callback: CreateClusterCallback): void;
   /**
    * Create a cluster.
    *
-   * @param {object} [options] See {@link Instance#createCluster}.
+   * @param {object} options See {@link Instance#createCluster}.
    * @param {function} [callback] The callback function.
    * @param {?error} callback.err An error returned while making this
    *     request.
+   * @param {Cluster} callback.cluster The newly created
+   *     cluster.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    *
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_create_cluster
    */
   create(
-    optionsOrCallback?: CreateClusterOptions | CreateClusterCallback,
-    cb?: CreateClusterCallback
+    options: CreateClusterOptions,
+    callback?: CreateClusterCallback
   ): void | Promise<CreateClusterResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options =
-      typeof optionsOrCallback === 'object' && optionsOrCallback
-        ? optionsOrCallback
-        : ({} as CreateClusterOptions);
-
-    this.instance.createCluster(this.id, options, callback);
+    this.instance.createCluster(this.id, options, callback!);
   }
 
   createBackup(
