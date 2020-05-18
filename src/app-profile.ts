@@ -106,7 +106,7 @@ export type GetAppProfilesCallback = (
   err: ServiceError | null,
   appProfiles?: AppProfile[],
   nextQuery?: {},
-  failedLocations?: string[],
+  failedLocations?: string[] | null,
   apiResponse?: google.bigtable.admin.v2.IListAppProfilesResponse
 ) => void;
 export type GetAppProfilesResponse = [

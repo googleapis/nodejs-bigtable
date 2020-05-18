@@ -718,11 +718,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
+        let failedLocations = null;
+        if (apiResponse) {
+          failedLocations = apiResponse.failedLocations!;
+        }
         callback(
           null,
           appProfiles,
           nextPageRequest!,
-          apiResponse!.failedLocations!,
+          failedLocations,
           apiResponse!
         );
       }
