@@ -1679,6 +1679,7 @@ describe('Bigtable/Instance', () => {
         done();
       });
     });
+  });
 
   describe('getTablesStream', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

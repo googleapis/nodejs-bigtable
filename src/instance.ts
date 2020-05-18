@@ -1174,6 +1174,21 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       delete gaxOpts.pageToken;
     }
 
+    // Copy over pageSize and pageToken values from gaxOptions.
+    // However values set on options take precedence.
+    if (gaxOpts) {
+      reqOpts = extend(
+        {},
+        {
+          pageSize: gaxOpts.pageSize,
+          pageToken: gaxOpts.pageToken,
+        },
+        reqOpts
+      );
+      delete gaxOpts.pageSize;
+      delete gaxOpts.pageToken;
+    }
+
     this.bigtable.request<
       google.bigtable.admin.v2.ITable,
       google.bigtable.admin.v2.IListTablesResponse
