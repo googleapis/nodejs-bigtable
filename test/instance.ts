@@ -1216,7 +1216,6 @@ describe('Bigtable/Instance', () => {
         .getAppProfilesStream()
         .on('error', err => {
           assert.strictEqual(appProfiles.length, counter);
-          console.log(err.message);
           assert.deepStrictEqual(
             err,
             new Error(
@@ -1524,72 +1523,6 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageSize, pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      console.log('inside the test');
-      console.log(JSON.stringify(Table.VIEWS));
-
-      const expectedReqOpts = Object.assign(
-        {},
-        {gaxOptions},
-        {
-          parent: instance.name,
-          view: Table.VIEWS['unspecified'],
-        },
-        {pageSize: gaxOptions.pageSize, pageToken: gaxOptions.pageToken}
-      );
-      delete expectedReqOpts.gaxOptions;
-
-      (instance.bigtable.request as Function) = (config: RequestOptions) => {
-        assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
-        assert.notStrictEqual(config.gaxOpts, gaxOptions);
-        assert.notDeepStrictEqual(config.gaxOpts, gaxOptions);
-        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
-        done();
-      };
-      instance.getTables({gaxOptions}, assert.ifError);
-    });
-
-    it('pageSize and pageToken in options should take precedence over gaxOptions', done => {
-      const pageSize = 3;
-      const pageToken = 'token';
-      const gaxOptions = {pageSize, pageToken, timeout: 1000};
-      const expectedGaxOpts = {timeout: 1000};
-
-      const optionsPageSize = 5;
-      const optionsPageToken = 'optionsToken';
-      const options = Object.assign(
-        {},
-        {
-          pageSize: optionsPageSize,
-          pageToken: optionsPageToken,
-          gaxOptions,
-        }
-      );
-      const expectedReqOpts = Object.assign(
-        {},
-        {
-          parent: instance.name,
-          view: Table.VIEWS['unspecified'],
-          pageSize: optionsPageSize,
-          pageToken: optionsPageToken,
-        }
-      );
-
-      (instance.bigtable.request as Function) = (config: RequestOptions) => {
-        assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
-        assert.notStrictEqual(config.gaxOpts, gaxOptions);
-        assert.notDeepStrictEqual(config.gaxOpts, gaxOptions);
-        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
-        done();
-      };
-
-      instance.getTables(options, assert.ifError);
-    });
-
-    it('should pass pageSize and pageToken from gaxOptions into reqOpts', done => {
-      const pageSize = 3;
-      const pageToken = 'token';
-      const gaxOptions = {pageSize, pageToken, timeout: 1000};
-      const expectedGaxOpts = {timeout: 1000};
       const expectedReqOpts = Object.assign(
         {},
         {gaxOptions},
@@ -1746,21 +1679,6 @@ describe('Bigtable/Instance', () => {
         done();
       });
     });
-
-    it('should return error', done => {
-      const error = new Error('Error');
-      (instance.bigtable.request as Function) = (
-        config: {},
-        callback: Function
-      ) => {
-        callback(error);
-      };
-      instance.getTables(err => {
-        assert.strictEqual(err, error);
-        done();
-      });
-    });
-  });
 
   describe('getTablesStream', () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
