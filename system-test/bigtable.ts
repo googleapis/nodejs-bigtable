@@ -127,7 +127,8 @@ describe('Bigtable', () => {
       const metadata = {
         displayName: 'metadata-test',
       };
-      await INSTANCE.setMetadata(metadata);
+      const [operation] = await INSTANCE.setMetadata(metadata);
+      await operation.promise();
       const [metadata_] = await INSTANCE.getMetadata();
       assert.strictEqual(metadata.displayName, metadata_.displayName);
     });

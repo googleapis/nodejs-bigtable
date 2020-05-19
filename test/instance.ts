@@ -338,6 +338,24 @@ describe('Bigtable/Instance', () => {
         }
       );
     });
+
+    it('should return an error', done => {
+      const error = new Error('Error');
+      (instance.bigtable.request as Function) = (
+        config: {},
+        callback: Function
+      ) => {
+        callback(error);
+      };
+      instance.createAppProfile(
+        APP_PROFILE_ID,
+        {routing: 'any'} as AppProfileOptions,
+        err => {
+          assert.strictEqual(err, error);
+          done();
+        }
+      );
+    });
   });
 
   describe('createCluster', () => {
@@ -433,6 +451,24 @@ describe('Bigtable/Instance', () => {
           assert.ifError(err);
           assert.strictEqual(cluster, fakeCluster);
           assert.strictEqual(apiResponse, response);
+          done();
+        }
+      );
+    });
+
+    it('should return an error', done => {
+      const error = new Error('Error');
+      (instance.bigtable.request as Function) = (
+        config: {},
+        callback: Function
+      ) => {
+        callback(error);
+      };
+      instance.createCluster(
+        CLUSTER_ID,
+        OPTIONS,
+        (err: ServiceError | null) => {
+          assert.strictEqual(err, error);
           done();
         }
       );
@@ -565,6 +601,20 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(table, fakeTable);
         assert.strictEqual(table!.metadata, response);
         assert.strictEqual(apiResponse, response);
+        done();
+      });
+    });
+
+    it('should return an error', done => {
+      const error = new Error('Error');
+      (instance.bigtable.request as Function) = (
+        config: {},
+        callback: Function
+      ) => {
+        callback(error);
+      };
+      instance.createTable(TABLE_ID, err => {
+        assert.strictEqual(err, error);
         done();
       });
     });
@@ -823,40 +873,19 @@ describe('Bigtable/Instance', () => {
         assert.deepStrictEqual(config.gaxOpts, gaxOptions);
         done();
       };
-      instance.getAppProfiles(gaxOptions, assert.ifError);
+      instance.getAppProfiles({gaxOptions}, assert.ifError);
     });
 
-    it('should pass pageToken from gaxOptions into reqOpts', done => {
-      const pageToken = 'token';
-      const gaxOptions = {pageToken, timeout: 1000};
-      const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
-        {},
-        {gaxOptions},
-        {parent: instance.name},
-        {pageToken: gaxOptions.pageToken}
-      );
-      delete expectedReqOpts.gaxOptions;
-
-      (instance.bigtable.request as Function) = (config: RequestOptions) => {
-        assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
-        assert.notStrictEqual(config.gaxOpts, gaxOptions);
-        assert.notDeepStrictEqual(config.gaxOpts, gaxOptions);
-        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
-        done();
-      };
-      instance.getAppProfiles(gaxOptions, assert.ifError);
-    });
-
-    it('should pass pageSize from gaxOptions into reqOpts', done => {
+    it('should pass pageSize and pageToken from gaxOptions into reqOpts', done => {
       const pageSize = 3;
-      const gaxOptions = {pageSize, timeout: 1000};
+      const pageToken = 'token';
+      const gaxOptions = {pageSize, pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
       const expectedReqOpts = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
-        {pageSize: gaxOptions.pageSize}
+        {pageSize: gaxOptions.pageSize, pageToken: gaxOptions.pageToken}
       );
       delete expectedReqOpts.gaxOptions;
 
@@ -867,12 +896,51 @@ describe('Bigtable/Instance', () => {
         assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
         done();
       };
-      instance.getAppProfiles(gaxOptions, assert.ifError);
+      instance.getAppProfiles({gaxOptions}, assert.ifError);
+    });
+
+    it('pageSize and pageToken in options should take precedence over gaxOptions', done => {
+      const pageSize = 3;
+      const pageToken = 'token';
+      const gaxOptions = {pageSize, pageToken, timeout: 1000};
+      const expectedGaxOpts = {timeout: 1000};
+
+      const optionsPageSize = 5;
+      const optionsPageToken = 'optionsToken';
+      const options = Object.assign(
+        {},
+        {
+          pageSize: optionsPageSize,
+          pageToken: optionsPageToken,
+          gaxOptions,
+        }
+      );
+      const expectedReqOpts = Object.assign(
+        {},
+        {parent: instance.name},
+        {pageSize: optionsPageSize, pageToken: optionsPageToken}
+      );
+
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
+        assert.notStrictEqual(config.gaxOpts, gaxOptions);
+        assert.notDeepStrictEqual(config.gaxOpts, gaxOptions);
+        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+        done();
+      };
+
+      instance.getAppProfiles(options, assert.ifError);
     });
 
     it('should return error from gapic', done => {
       const error = new Error('Error.');
-      sandbox.stub(instance.bigtable, 'request').callsArgWith(1, error);
+      (instance.bigtable.request as Function) = (
+        config: {},
+        callback: Function
+      ) => {
+        callback(error);
+      };
+
       instance.getAppProfiles(err => {
         assert.strictEqual(err, error);
         done();
@@ -881,18 +949,26 @@ describe('Bigtable/Instance', () => {
 
     it('should return an array of AppProfile objects', done => {
       const response = [{name: 'a'}, {name: 'b'}];
-      sandbox
-        .stub(instance.bigtable, 'request')
-        .callsArgWith(1, null, response);
-      instance.getAppProfiles((err, appProfiles, apiResponse) => {
-        assert.ifError(err);
-        assert.strictEqual(appProfiles![0].id, 'a');
-        assert.deepStrictEqual(appProfiles![0].metadata, response[0]);
-        assert.strictEqual(appProfiles![1].id, 'b');
-        assert.deepStrictEqual(appProfiles![1].metadata, response[1]);
-        assert.strictEqual(apiResponse, response);
-        done();
-      });
+      (instance.bigtable.request as Function) = (
+        config: {},
+        callback: Function
+      ) => {
+        callback(null, response, null, {appProfiles: response});
+      };
+
+      instance.getAppProfiles(
+        (err, appProfiles, nextPageRequest, failedLocations, apiResponse) => {
+          assert.ifError(err);
+          assert.strictEqual(appProfiles![0].id, 'a');
+          assert.deepStrictEqual(appProfiles![0].metadata, response[0]);
+          assert.strictEqual(appProfiles![1].id, 'b');
+          assert.deepStrictEqual(appProfiles![1].metadata, response[1]);
+          assert.strictEqual(nextPageRequest, null);
+          assert.strictEqual(failedLocations, undefined);
+          assert.deepStrictEqual(apiResponse, {appProfiles: response});
+          done();
+        }
+      );
     });
   });
 
@@ -1422,6 +1498,69 @@ describe('Bigtable/Instance', () => {
       instance.getTables(options, assert.ifError);
     });
 
+    it('should pass pageSize and pageToken from gaxOptions into reqOpts', done => {
+      const pageSize = 3;
+      const pageToken = 'token';
+      const gaxOptions = {pageSize, pageToken, timeout: 1000};
+      const expectedGaxOpts = {timeout: 1000};
+      const expectedReqOpts = Object.assign(
+        {},
+        {gaxOptions},
+        {
+          parent: instance.name,
+          view: Table.VIEWS['unspecified'],
+        },
+        {pageSize: gaxOptions.pageSize, pageToken: gaxOptions.pageToken}
+      );
+      delete expectedReqOpts.gaxOptions;
+
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
+        assert.notStrictEqual(config.gaxOpts, gaxOptions);
+        assert.notDeepStrictEqual(config.gaxOpts, gaxOptions);
+        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+        done();
+      };
+      instance.getTables({gaxOptions}, assert.ifError);
+    });
+
+    it('pageSize and pageToken in options should take precedence over gaxOptions', done => {
+      const pageSize = 3;
+      const pageToken = 'token';
+      const gaxOptions = {pageSize, pageToken, timeout: 1000};
+      const expectedGaxOpts = {timeout: 1000};
+
+      const optionsPageSize = 5;
+      const optionsPageToken = 'optionsToken';
+      const options = Object.assign(
+        {},
+        {
+          pageSize: optionsPageSize,
+          pageToken: optionsPageToken,
+          gaxOptions,
+        }
+      );
+      const expectedReqOpts = Object.assign(
+        {},
+        {
+          parent: instance.name,
+          view: Table.VIEWS['unspecified'],
+          pageSize: optionsPageSize,
+          pageToken: optionsPageToken,
+        }
+      );
+
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
+        assert.notStrictEqual(config.gaxOpts, gaxOptions);
+        assert.notDeepStrictEqual(config.gaxOpts, gaxOptions);
+        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+        done();
+      };
+
+      instance.getTables(options, assert.ifError);
+    });
+
     Object.keys(views).forEach(view => {
       it('should set the "' + view + '" view', done => {
         const options = {
@@ -1467,7 +1606,7 @@ describe('Bigtable/Instance', () => {
     });
 
     it('should return original GAPIC response arguments', done => {
-      const response = [{}, null, {}, {}];
+      const response = [null, [], {}, {}];
       (instance.bigtable.request as Function) = (
         config: {},
         callback: Function
@@ -1475,10 +1614,22 @@ describe('Bigtable/Instance', () => {
         callback(...response);
       };
       instance.getTables((...args) => {
-        assert.strictEqual(args[0], response[0]);
         assert.strictEqual(args[2], response[2]);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        assert.strictEqual((args as any)[3], response[3]);
+        assert.strictEqual(args[3], response[3]);
+        done();
+      });
+    });
+
+    it('should return error', done => {
+      const error = new Error('Error');
+      (instance.bigtable.request as Function) = (
+        config: {},
+        callback: Function
+      ) => {
+        callback(error);
+      };
+      instance.getTables(err => {
+        assert.strictEqual(err, error);
         done();
       });
     });

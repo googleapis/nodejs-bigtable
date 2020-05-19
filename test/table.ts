@@ -515,7 +515,7 @@ describe('Bigtable/Table', () => {
 
     it('should return a Family object', done => {
       const response = {
-        name: 'response-family-name',
+        columnFamilies: {[FAMILY_ID]: {}},
       };
       const fakeFamily = {} as Family;
       table.bigtable.request = (config: {}, callback: Function) => {
@@ -530,7 +530,10 @@ describe('Bigtable/Table', () => {
         (err: Error, family: Family, apiResponse: {}) => {
           assert.ifError(err);
           assert.strictEqual(family, fakeFamily);
-          assert.strictEqual(family.metadata, response);
+          assert.strictEqual(
+            family.metadata,
+            response.columnFamilies[FAMILY_ID]
+          );
           assert.strictEqual(apiResponse, response);
           done();
         }
