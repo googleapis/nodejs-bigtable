@@ -887,7 +887,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       view: Table.VIEWS[options.view || 'unspecified'],
     });
 
-    delete reqOpts.gaxOptions;
+    delete (reqOpts as GetTablesOptions).gaxOptions;
 
     this.bigtable.request<Table[]>(
       {
