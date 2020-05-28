@@ -882,8 +882,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       view: Table.VIEWS[options.view || 'unspecified'],
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (reqOpts as any).gaxOptions;
+    delete (reqOpts as GetTablesOptions).gaxOptions;
 
     this.bigtable.request<Table[]>(
       {
