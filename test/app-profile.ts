@@ -393,7 +393,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should execute callback with original arguments', done => {
-      const args = [{}, {}, {}];
+      const args = [{}, {}];
 
       appProfile.bigtable.request = (config: {}, callback: Function) => {
         callback(...args);

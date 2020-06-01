@@ -17,7 +17,12 @@ import * as is from 'is';
 import snakeCase = require('lodash.snakecase');
 import {Cluster} from './cluster';
 import {Bigtable} from '.';
-import {Instance, GetAppProfilesOptions} from './instance';
+import {
+  GetAppProfilesOptions,
+  Instance,
+  LROCallback,
+  SetInstanceMetadataResponse,
+} from './instance';
 import {CallOptions} from 'google-gax';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
@@ -86,11 +91,9 @@ export type AppProfileExistsCallback = (
 export type AppProfileExistsResponse = [boolean];
 export type GetAppProfileMetadataCallback = (
   err: ServiceError | null,
-  metadata?: google.bigtable.admin.v2.IAppProfile,
-  apiResponse?: google.bigtable.admin.v2.IAppProfile
+  metadata?: google.bigtable.admin.v2.IAppProfile
 ) => void;
 export type GetAppProfileMetadataResponse = [
-  google.bigtable.admin.v2.IAppProfile,
   google.bigtable.admin.v2.IAppProfile
 ];
 export type GetAppProfileCallback = (
@@ -113,11 +116,8 @@ export type GetAppProfilesResponse = [
   GetAppProfilesOptions,
   google.bigtable.admin.v2.IListAppProfilesResponse
 ];
-export type SetAppProfileMetadataCallback = (
-  err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
-) => void;
-export type SetAppProfileMetadataResponse = [google.protobuf.Empty];
+export type SetAppProfileMetadataCallback = LROCallback;
+export type SetAppProfileMetadataResponse = SetInstanceMetadataResponse;
 
 /**
  * Create an app profile object to interact with your app profile.
@@ -389,7 +389,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    this.bigtable.request<google.bigtable.admin.v2.AppProfile>(
+    this.bigtable.request<google.bigtable.admin.v2.IAppProfile>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'getAppProfile',
@@ -402,7 +402,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         if (resp) {
           this.metadata = resp;
         }
-        callback(err, resp, resp);
+        callback(err, resp);
       }
     );
   }
