@@ -944,6 +944,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {?error} callback.error An error returned while making this request.
    * @param {Cluster[]} callback.clusters List of all
    *     Clusters.
+   * @param {string[]} callback.failedLocations Locations from which Cluster
+   *     information could not be retrieved
    * @param {object} callback.apiResponse The full API response.
    *     Note: 'failedLocations' property may contain locations from which
    *     Cluster information could not be retrieved.
