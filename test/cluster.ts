@@ -388,6 +388,52 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata(options, assert.ifError);
     });
 
+    it('should accept and pass location to #request()', done => {
+      const options = {
+        nodes: 3,
+        location: 'us-west2-b',
+      };
+
+      let fakeLocation: string;
+
+      Cluster.getLocation_ = (project: string, location: string) => {
+        assert.strictEqual(project, PROJECT_ID);
+        assert.strictEqual(location, options.location);
+        fakeLocation = `a/b/c/${location}`;
+        return fakeLocation;
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.reqOpts.location, fakeLocation);
+        done();
+      };
+
+      cluster.setMetadata(options, assert.ifError);
+    });
+
+    it('should accept and pass storage to #request()', done => {
+      const options = {
+        nodes: 3,
+        storage: 'hdd',
+      };
+
+      const fakeStorageType = 'two';
+
+      Cluster.getStorageType_ = (type: string) => {
+        assert.strictEqual(type, options.storage);
+        return fakeStorageType;
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.reqOpts.defaultStorageType, fakeStorageType);
+        done();
+      };
+
+      cluster.setMetadata(options, assert.ifError);
+    });
+
     it('should respect the gaxOptions', done => {
       const options = {
         nodes: 3,
