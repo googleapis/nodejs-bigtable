@@ -696,22 +696,6 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (reqOpts as any).nodes;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((metadata as any).location) {
-      reqOpts.location = Cluster.getLocation_(
-        this.bigtable.projectId,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (metadata as any).location
-      );
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((metadata as any).storage) {
-      reqOpts.defaultStorageType = Cluster.getStorageType_(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (metadata as any).storage
-      );
-    }
-
     this.bigtable.request<Operation>(
       {
         client: 'BigtableInstanceAdminClient',
