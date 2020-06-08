@@ -412,26 +412,16 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
 
-    const reqOpts: ICluster = {
-      name: this.name,
-      serveNodes: metadata.nodes,
-    };
-
+    const reqOpts: ICluster = Object.assign(
+      {},
+      {
+        name: this.name,
+        serveNodes: metadata.nodes,
+      },
+      metadata
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((metadata as any).location) {
-      reqOpts.location = Cluster.getLocation_(
-        this.bigtable.projectId,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (metadata as any).location
-      );
-    }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if ((metadata as any).storage) {
-      reqOpts.defaultStorageType = Cluster.getStorageType_(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (metadata as any).storage
-      );
-    }
+    delete (reqOpts as any).nodes;
 
     this.bigtable.request<Operation>(
       {
