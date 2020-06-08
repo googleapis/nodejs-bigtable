@@ -599,12 +599,14 @@ export class Bigtable {
   /**
    * @typedef {array} GetInstancesResponse
    * @property {Instance[]} 0 Array of {@link Instance} instances.
-   * @property {object} 1 The full API response.
+   * @property {string[]} 1 locations from which Instance information could not be retrieved
+   * @property {object} 2 The full API response.
    */
   /**
    * @callback GetInstancesCallback
    * @param {?Error} err Request error, if any.
    * @param {Instance[]} instances Array of {@link Instance} instances.
+   * @param {string[]} locations from which Instance information could not be retrieved
    * @param {object} apiResponse The full API response.
    */
   /**
@@ -622,6 +624,9 @@ export class Bigtable {
    * bigtable.getInstances(function(err, instances) {
    *   if (!err) {
    *     // `instances` is an array of Instance objects.
+   *     if (failedLocations.length > 0) {
+   *       // These locations contain instances which could not be retrieved.
+   *     }
    *   }
    * });
    *
@@ -629,6 +634,11 @@ export class Bigtable {
    * </caption>
    * bigtable.getInstances().then(function(data) {
    *   const instances = data[0];
+   *
+   *   if (data[1]) {
+   *     // These locations contain instances which could not be retrieved.
+   *     const failedLocations = data[1]
+   *   }
    * });
    */
   getInstances(
