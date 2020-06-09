@@ -637,7 +637,7 @@ export class Bigtable {
    *
    *   if (data[1]) {
    *     // These locations contain instances which could not be retrieved.
-   *     const failedLocations = data[1]
+   *     const failedLocations = data[1];
    *   }
    * });
    */
