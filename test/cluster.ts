@@ -388,7 +388,7 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata(options, assert.ifError);
     });
 
-    it('should accept and pass user provided unput through', done => {
+    it('should accept and pass user provided input through', done => {
       const options = {
         nodes: 3,
         location: 'us-west2-b',
