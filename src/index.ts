@@ -547,6 +547,11 @@ export class Bigtable {
     options: InstanceOptions,
     callback?: CreateInstanceCallback
   ): void | Promise<CreateInstanceResponse> {
+    if (typeof options !== 'object') {
+      throw new Error(
+        'A configuration object is required to create an instance.'
+      );
+    }
     if (!options.clusters) {
       throw new Error(
         'At least one cluster configuration object is required to create an instance.'

@@ -520,6 +520,12 @@ describe('Bigtable', () => {
       }, /A cluster was provided without an `id` property defined\./);
     });
 
+    it('should throw an error if configuration object is not provided', () => {
+      assert.throws(() => {
+        bigtable.createInstance(INSTANCE_ID, assert.ifError);
+      }, /A configuration object is required to create an instance\./);
+    });
+
     it('should throw an error if cluster configuration is not provided', () => {
       assert.throws(() => {
         bigtable.createInstance(INSTANCE_ID, {}, assert.ifError);
