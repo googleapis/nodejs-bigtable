@@ -19,7 +19,7 @@ function main(
   tableId = 'YOUR_TABLE_ID',
   filterType = 'filterRowSample'
 ) {
-  // [START bigtable_filters_imports]
+  // [START bigtable_filters_print]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
@@ -31,8 +31,8 @@ function main(
   const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
-  // [END bigtable_filters_imports]
-
+  // Write your function here!
+  // [START_EXCLUDE]
   switch (filterType) {
     case 'filterRowSample': {
       // [START bigtable_filters_limit_row_sample]
@@ -265,8 +265,8 @@ function main(
       break;
     }
   }
+  // [END_EXCLUDE]
 
-  // [START bigtable_filters_print]
   async function readWithFilter(filter) {
     await table
       .createReadStream({
@@ -304,8 +304,7 @@ function main(
     }
     console.log();
   }
-
-  // [END bigtable_filters_print]
 }
+// [END bigtable_filters_print]
 
 main(...process.argv.slice(2));

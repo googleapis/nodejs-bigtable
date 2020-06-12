@@ -19,7 +19,7 @@ async function main(
   tableId = 'YOUR_TABLE_ID',
   readType = 'readRow'
 ) {
-  // [START bigtable_reads_imports]
+  // [START bigtable_reads_print]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
@@ -29,7 +29,9 @@ async function main(
   // const tableId = 'YOUR_TABLE_ID';
   const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
-  // [END bigtable_reads_imports]
+
+  // Write your function here!
+  // [START_EXCLUDE]
   switch (readType) {
     case 'readRow': {
       // [START bigtable_reads_row]
@@ -156,8 +158,8 @@ async function main(
       break;
     }
   }
+  // [END_EXCLUDE]
 
-  // [START bigtable_reads_print]
   function printRow(rowkey, rowData) {
     console.log(`Reading data for ${rowkey}:`);
 
@@ -180,8 +182,7 @@ async function main(
     }
     console.log();
   }
-
-  // [END bigtable_reads_print]
 }
+// [END bigtable_reads_print]
 
 main(...process.argv.slice(2));
