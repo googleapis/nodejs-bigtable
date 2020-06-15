@@ -450,6 +450,16 @@ describe('Bigtable/AppProfile', () => {
       appProfile.setMetadata(options, assert.ifError);
     });
 
+    it('should accept gaxOptions options', done => {
+      const gaxOptions = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      appProfile.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      appProfile.setMetadata({}, gaxOptions, assert.ifError);
+    });
+
     describe('should respect the routing option when', () => {
       const clusterId = 'my-cluster';
       const cluster = new FakeCluster(INSTANCE, clusterId);
