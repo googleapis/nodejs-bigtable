@@ -150,6 +150,11 @@ describe('Bigtable', () => {
       assert(promisified);
     });
 
+    it('should work without new', () => {
+      const bigtable = Bigtable();
+      assert(bigtable instanceof Bigtable);
+    });
+
     it('should initialize the API object', () => {
       assert.deepStrictEqual(bigtable.api, {});
     });
@@ -337,6 +342,15 @@ describe('Bigtable', () => {
 
   describe('createInstance', () => {
     const INSTANCE_ID = 'my-instance';
+    const CLUSTER = {
+      id: 'my-cluster',
+      location: 'us-central1-b',
+      nodes: 3,
+      storage: 'ssd',
+    };
+    const OPTIONS = {
+      clusters: [CLUSTER],
+    };
 
     it('should provide the proper request options', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -349,23 +363,28 @@ describe('Bigtable', () => {
         assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
-      bigtable.createInstance(INSTANCE_ID, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, OPTIONS, assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
+      const options = Object.assign({}, OPTIONS, {gaxOptions});
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
-      bigtable.createInstance(INSTANCE_ID, {gaxOptions}, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
     });
 
     it('should respect the displayName option', done => {
-      const options = {
-        displayName: 'robocop',
-      };
+      const options = Object.assign(
+        {},
+        {
+          displayName: 'robocop',
+        },
+        OPTIONS
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.strictEqual(
@@ -378,7 +397,7 @@ describe('Bigtable', () => {
     });
 
     it('should respect the type option', done => {
-      const options = {type: 'development'};
+      const options = Object.assign({}, {type: 'development'}, OPTIONS);
       const fakeTypeType = 99;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       FakeInstance.getTypeType_ = (type: string) => {
@@ -394,11 +413,15 @@ describe('Bigtable', () => {
     });
 
     it('should respect the labels option', done => {
-      const options = {
-        labels: {
-          env: 'prod',
+      const options = Object.assign(
+        {},
+        {
+          labels: {
+            env: 'prod',
+          },
         },
-      };
+        OPTIONS
+      );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       bigtable.request = (config: any) => {
         assert.deepStrictEqual(config.reqOpts.instance.labels, options.labels);
@@ -408,24 +431,15 @@ describe('Bigtable', () => {
     });
 
     it('should respect the clusters option', done => {
-      const cluster = {
-        id: 'my-cluster',
-        location: 'us-central1-b',
-        nodes: 3,
-        storage: 'ssd',
-      };
-      const options = {
-        clusters: [cluster],
-      };
       const fakeLocation = 'a/b/c/d';
       FakeCluster.getLocation_ = (project: string, location: string) => {
         assert.strictEqual(project, PROJECT_ID);
-        assert.strictEqual(location, cluster.location);
+        assert.strictEqual(location, OPTIONS.clusters[0].location);
         return fakeLocation;
       };
       const fakeStorage = 20;
       FakeCluster.getStorageType_ = (storage: {}) => {
-        assert.strictEqual(storage, cluster.storage);
+        assert.strictEqual(storage, OPTIONS.clusters[0].storage);
         return fakeStorage;
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -433,7 +447,7 @@ describe('Bigtable', () => {
         assert.deepStrictEqual(config.reqOpts.clusters, {
           'my-cluster': {
             location: fakeLocation,
-            serveNodes: cluster.nodes,
+            serveNodes: OPTIONS.clusters[0].nodes,
             defaultStorageType: fakeStorage,
           },
         });
@@ -441,7 +455,7 @@ describe('Bigtable', () => {
         done();
       };
 
-      bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
+      bigtable.createInstance(INSTANCE_ID, OPTIONS, assert.ifError);
     });
 
     it('should return an error to the callback', done => {
@@ -451,6 +465,7 @@ describe('Bigtable', () => {
       };
       bigtable.createInstance(
         INSTANCE_ID,
+        OPTIONS,
         (err: Error, instance: Instance, operation: gax.Operation) => {
           assert.strictEqual(err, error);
           assert.strictEqual(instance, undefined);
@@ -476,6 +491,7 @@ describe('Bigtable', () => {
       };
       bigtable.createInstance(
         INSTANCE_ID,
+        OPTIONS,
         (err: Error, instance: Instance, ...args: Array<{}>) => {
           assert.ifError(err);
           assert.strictEqual(instance, fakeInstance);
@@ -502,6 +518,18 @@ describe('Bigtable', () => {
       assert.throws(() => {
         bigtable.createInstance(INSTANCE_ID, options);
       }, /A cluster was provided without an `id` property defined\./);
+    });
+
+    it('should throw an error if configuration object is not provided', () => {
+      assert.throws(() => {
+        bigtable.createInstance(INSTANCE_ID, assert.ifError);
+      }, /A configuration object is required to create an instance\./);
+    });
+
+    it('should throw an error if cluster configuration is not provided', () => {
+      assert.throws(() => {
+        bigtable.createInstance(INSTANCE_ID, {}, assert.ifError);
+      }, /At least one cluster configuration object is required to create an instance\./);
     });
   });
 
@@ -541,7 +569,7 @@ describe('Bigtable', () => {
       });
     });
 
-    it('should return an array of instance objects', done => {
+    it('should return an array of instance objects and failed locations', done => {
       const response = {
         instances: [
           {
@@ -551,6 +579,7 @@ describe('Bigtable', () => {
             name: 'b',
           },
         ],
+        failedLocations: ['projects/<project>/locations/<zone_id>'],
       };
       const fakeInstances = [{}, {}];
       bigtable.request = (config: {}, callback: Function) => {
@@ -563,12 +592,18 @@ describe('Bigtable', () => {
       };
 
       bigtable.getInstances(
-        (err: Error, instances: Instance[], apiResponse: {}) => {
+        (
+          err: Error,
+          instances: Instance[],
+          failedLocations: string[],
+          apiResponse: {}
+        ) => {
           assert.ifError(err);
           assert.strictEqual(instances[0], fakeInstances[0]);
           assert.strictEqual(instances[0].metadata, response.instances[0]);
           assert.strictEqual(instances[1], fakeInstances[1]);
           assert.strictEqual(instances[1].metadata, response.instances[1]);
+          assert.strictEqual(failedLocations, response.failedLocations);
           assert.strictEqual(apiResponse, response);
           done();
         }

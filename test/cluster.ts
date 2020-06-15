@@ -374,30 +374,6 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata({}, done);
     });
 
-    it('should respect the location option', done => {
-      const options = {
-        location: 'us-centralb-1',
-      };
-
-      const getLocation = Cluster.getLocation_;
-      const fakeLocation = 'a/b/c/d';
-
-      Cluster.getLocation_ = (project: string, location: string) => {
-        assert.strictEqual(project, PROJECT_ID);
-        assert.strictEqual(location, options.location);
-        return fakeLocation;
-      };
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      cluster.bigtable.request = (config: any) => {
-        assert.strictEqual(config.reqOpts.location, fakeLocation);
-        Cluster.getLocation_ = getLocation;
-        done();
-      };
-
-      cluster.setMetadata(options, assert.ifError);
-    });
-
     it('should respect the nodes option', done => {
       const options = {
         nodes: 3,
@@ -412,27 +388,43 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata(options, assert.ifError);
     });
 
-    it('should respect the storage option', done => {
+    it('should accept and pass user provided input through', done => {
       const options = {
-        storage: 'ssd',
+        nodes: 3,
+        location: 'us-west2-b',
+        defaultStorageType: 'exellent_type',
       };
 
-      const getStorageType = Cluster.getStorageType_;
-      const fakeStorageType = 'a';
-
-      Cluster.getStorageType_ = (storage: {}) => {
-        assert.strictEqual(storage, options.storage);
-        return fakeStorageType;
-      };
+      const expectedReqOpts = Object.assign(
+        {},
+        {name: CLUSTER_NAME, serveNodes: options.nodes},
+        options
+      );
+      delete expectedReqOpts.nodes;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
-        assert.strictEqual(config.reqOpts.defaultStorageType, fakeStorageType);
-        Cluster.getStorageType_ = getStorageType;
+        assert.deepStrictEqual(config.reqOpts, expectedReqOpts);
         done();
       };
 
       cluster.setMetadata(options, assert.ifError);
+    });
+
+    it('should respect the gaxOptions', done => {
+      const options = {
+        nodes: 3,
+      };
+      const gaxOptions = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      cluster.setMetadata(options, gaxOptions, assert.ifError);
     });
 
     it('should execute callback with all arguments', done => {
