@@ -106,12 +106,14 @@ export type GetAppProfilesCallback = (
   err: ServiceError | null,
   appProfiles?: AppProfile[],
   failedLocations?: string[] | null,
-  nextQuery?: {},
+  nextQuery?: google.bigtable.admin.v2.IListAppProfilesRequest,
   apiResponse?: google.bigtable.admin.v2.IListAppProfilesResponse
 ) => void;
 export type GetAppProfilesResponse = [
   AppProfile[],
-  google.bigtable.admin.v2.IAppProfile[]
+  string[],
+  google.bigtable.admin.v2.IListAppProfilesRequest,
+  google.bigtable.admin.v2.IListAppProfilesResponse
 ];
 export type SetAppProfileMetadataCallback = (
   err: ServiceError | null,
