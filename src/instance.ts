@@ -308,6 +308,11 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     options: AppProfileOptions,
     callback?: CreateAppProfileCallback
   ): void | Promise<CreateAppProfileResponse> {
+    if (typeof options !== 'object') {
+      throw new Error(
+        'A configuration object is required to create an appProfile.'
+      );
+    }
     if (!options.routing) {
       throw new Error('An app profile must contain a routing policy.');
     }
@@ -383,6 +388,17 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     options: CreateClusterOptions,
     callback?: CreateClusterCallback
   ): void | Promise<CreateClusterResponse> {
+    if (typeof options !== 'object') {
+      throw new Error(
+        'A configuration object is required to create a cluster.'
+      );
+    }
+    if (!options.location) {
+      throw new Error('A cluster location must be provided.');
+    }
+    if (!options.nodes) {
+      throw new Error('A cluster node count must be provided.');
+    }
     const reqOpts = {
       parent: this.name,
       clusterId: id,
@@ -649,6 +665,23 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   ): void;
   getAppProfiles(callback: GetAppProfilesCallback): void;
   /**
+   * @typedef {array} GetAppProfilesResponse
+   * @property {AppProfile[]} 0 Array of {@link Instance} instances.
+   * @property {string[]} 1 locations from which AppProfile information
+   *     could not be retrieved.
+   * @property {object} 2 nextQuery A query object to receive more results.
+   * @property {object} 3 The full API response.
+   */
+  /**
+   * @callback GetAppProfilesCallback
+   * @param {?Error} err Request error, if any.
+   * @param {AppProfile[]} instances Array of {@link Instance} instances.
+   * @param {string[]} locations Locations from which AppProfile information
+   *     could not be retrieved.
+   * @param {object} nextQuery A query object to receive more results.
+   * @param {object} apiResponse The full API response.
+   */
+  /**
    * Get App Profile objects for this instance.
    *
    * @param {object} [options] Query object.
@@ -725,8 +758,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         callback(
           null,
           appProfiles,
-          nextPageRequest!,
           failedLocations,
+          nextPageRequest!,
           apiResponse!
         );
       }

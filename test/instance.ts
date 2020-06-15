@@ -212,6 +212,12 @@ describe('Bigtable/Instance', () => {
       );
     });
 
+    it('should throw if options object is not provided', () => {
+      assert.throws(() => {
+        (instance.createAppProfile as Function)(APP_PROFILE_ID, assert.ifError);
+      }, /A configuration object is required to create an appProfile\./);
+    });
+
     it('should throw if the routing option is not provided', () => {
       assert.throws(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -363,6 +369,30 @@ describe('Bigtable/Instance', () => {
       nodes: 3,
       location: 'us-central1-c',
     };
+    it('should throw if options object is not provided', () => {
+      assert.throws(() => {
+        (instance.createCluster as Function)(CLUSTER_ID, assert.ifError);
+      }, /A configuration object is required to create a cluster\./);
+    });
+
+    it('should throw if location is not provided', () => {
+      const options = Object.assign({}, OPTIONS);
+      delete options.location;
+
+      assert.throws(() => {
+        instance.createCluster(CLUSTER_ID, options, assert.ifError);
+      }, /A cluster location must be provided\./);
+    });
+
+    it('should throw if node count is not provided', () => {
+      const options = Object.assign({}, OPTIONS);
+      delete options.nodes;
+
+      assert.throws(() => {
+        instance.createCluster(CLUSTER_ID, options, assert.ifError);
+      }, /A cluster node count must be provided\./);
+    });
+
     it('should provide the proper request options', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
@@ -957,7 +987,7 @@ describe('Bigtable/Instance', () => {
       };
 
       instance.getAppProfiles(
-        (err, appProfiles, nextPageRequest, failedLocations, apiResponse) => {
+        (err, appProfiles, failedLocations, nextPageRequest, apiResponse) => {
           assert.ifError(err);
           assert.strictEqual(appProfiles![0].id, 'a');
           assert.deepStrictEqual(appProfiles![0].metadata, response[0]);
