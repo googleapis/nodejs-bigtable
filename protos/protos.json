@@ -13,7 +13,8 @@
                     "java_multiple_files": true,
                     "java_outer_classname": "TableProto",
                     "java_package": "com.google.bigtable.admin.v2",
-                    "php_namespace": "Google\\Cloud\\Bigtable\\Admin\\V2"
+                    "php_namespace": "Google\\Cloud\\Bigtable\\Admin\\V2",
+                    "ruby_package": "Google::Cloud::Bigtable::Admin::V2"
                   },
                   "nested": {
                     "BigtableInstanceAdmin": {
@@ -1841,6 +1842,7 @@
                 "java_outer_classname": "DataProto",
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
+                "ruby_package": "Google::Cloud::Bigtable::V2",
                 "(google.api.resource_definition).type": "bigtable.googleapis.com/Table",
                 "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
               },
