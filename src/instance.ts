@@ -32,6 +32,8 @@ import {
   CreateClusterResponse,
   GetClustersCallback,
   GetClustersResponse,
+  IOperation,
+  BasicClusterConfig,
 } from './cluster';
 import {Family} from './family';
 import {
@@ -56,20 +58,15 @@ import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
 
-export interface ClusterInfo {
-  id?: string;
-  location?: string;
-  serveNodes?: number;
-  nodes?: number;
-  storage?: string;
-  defaultStorageType?: number;
+export interface ClusterInfo extends BasicClusterConfig {
+  id: string;
 }
 
 export interface InstanceOptions {
   /**
    * The clusters to be created within the instance.
    */
-  clusters?: ClusterInfo[] | ClusterInfo;
+  clusters: ClusterInfo[] | ClusterInfo;
 
   /**
    * The descriptive name for this instance as it appears in UIs.
@@ -102,13 +99,16 @@ export interface InstanceOptions {
 }
 
 export type IInstance = google.bigtable.admin.v2.IInstance;
-export type CreateInstanceCallback = (
-  err: ServiceError | null,
-  instance?: Instance,
-  operation?: Operation,
-  apiResponse?: IInstance
-) => void;
-export type CreateInstanceResponse = [Instance, Operation, IInstance];
+export interface LongRunningResourceCallback<Resource> {
+  (
+    err: ServiceError | null,
+    resource?: Resource,
+    operation?: Operation,
+    apiResponse?: IOperation
+  ): void;
+}
+export type CreateInstanceCallback = LongRunningResourceCallback<Instance>;
+export type CreateInstanceResponse = [Instance, Operation, IOperation];
 export type DeleteInstanceCallback = (
   err: ServiceError | null,
   apiResponse?: google.protobuf.Empty
@@ -209,9 +209,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     return new AppProfile(this, name);
   }
 
-  create(options?: InstanceOptions): Promise<CreateInstanceResponse>;
+  create(options: InstanceOptions): Promise<CreateInstanceResponse>;
   create(options: InstanceOptions, callback: CreateInstanceCallback): void;
-  create(callback: CreateInstanceCallback): void;
   /**
    * Create an instance.
    *
@@ -231,14 +230,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * region_tag:bigtable_create_instance
    */
   create(
-    optionsOrCallback?: InstanceOptions | CreateInstanceCallback,
-    cb?: CreateInstanceCallback
+    options: InstanceOptions,
+    callback?: CreateInstanceCallback
   ): void | Promise<CreateInstanceResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    this.bigtable.createInstance(this.id, options, callback);
+    this.bigtable.createInstance(this.id, options, callback!);
   }
 
   createAppProfile(

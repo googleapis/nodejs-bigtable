@@ -27,7 +27,6 @@ import {
   InstanceOptions,
   CreateInstanceCallback,
   CreateInstanceResponse,
-  ClusterInfo,
   IInstance,
 } from './instance';
 import {shouldRetryRequest} from './decorateStatus';
@@ -49,14 +48,14 @@ const {grpc} = new gax.GrpcClient();
 export interface GetInstancesCallback {
   (
     err: ServiceError | null,
-    result?: Instance[] | null,
-    nextQuery?: {} | null,
-    response?: google.bigtable.admin.v2.IListInstancesResponse | null
+    result?: Instance[],
+    failedLocations?: string[],
+    response?: google.bigtable.admin.v2.IListInstancesResponse
   ): void;
 }
 export type GetInstancesResponse = [
   Instance[],
-  {} | null,
+  string[],
   google.bigtable.admin.v2.IListInstancesResponse
 ];
 
@@ -462,14 +461,13 @@ export class Bigtable {
 
   createInstance(
     id: string,
-    options?: InstanceOptions
+    options: InstanceOptions
   ): Promise<CreateInstanceResponse>;
   createInstance(
     id: string,
     options: InstanceOptions,
     callback: CreateInstanceCallback
   ): void;
-  createInstance(id: string, callback: CreateInstanceCallback): void;
   /**
    * Create a Cloud Bigtable instance.
    *
@@ -479,7 +477,7 @@ export class Bigtable {
    * @param {object} options Instance creation options.
    * @param {object[]} options.clusters The clusters to be created within the
    *     instance.
-   * @param {string} options.displayName The descriptive name for this instance
+   * @param {string} [options.displayName] The descriptive name for this instance
    *     as it appears in UIs.
    * @param {Object.<string, string>} [options.labels] Labels are a flexible and
    *     lightweight mechanism for organizing cloud resources into groups that
@@ -546,14 +544,19 @@ export class Bigtable {
    */
   createInstance(
     id: string,
-    optionsOrCallback?: InstanceOptions | CreateInstanceCallback,
-    cb?: CreateInstanceCallback
+    options: InstanceOptions,
+    callback?: CreateInstanceCallback
   ): void | Promise<CreateInstanceResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb;
-
+    if (typeof options !== 'object') {
+      throw new Error(
+        'A configuration object is required to create an instance.'
+      );
+    }
+    if (!options.clusters) {
+      throw new Error(
+        'At least one cluster configuration object is required to create an instance.'
+      );
+    }
     const reqOpts = {
       parent: this.projectName,
       instanceId: id,
@@ -567,7 +570,7 @@ export class Bigtable {
       reqOpts.instance!.type = Instance.getTypeType_(options.type);
     }
 
-    reqOpts.clusters = arrify(options.clusters!).reduce((clusters, cluster) => {
+    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
       if (!cluster.id) {
         throw new Error(
           'A cluster was provided without an `id` property defined.'
@@ -581,7 +584,7 @@ export class Bigtable {
       };
 
       return clusters;
-    }, {} as {[index: string]: ClusterInfo});
+    }, {} as {[index: string]: google.bigtable.admin.v2.ICluster});
 
     this.request(
       {
@@ -606,12 +609,14 @@ export class Bigtable {
   /**
    * @typedef {array} GetInstancesResponse
    * @property {Instance[]} 0 Array of {@link Instance} instances.
-   * @property {object} 1 The full API response.
+   * @property {string[]} 1 locations from which Instance information could not be retrieved
+   * @property {object} 2 The full API response.
    */
   /**
    * @callback GetInstancesCallback
    * @param {?Error} err Request error, if any.
    * @param {Instance[]} instances Array of {@link Instance} instances.
+   * @param {string[]} locations from which Instance information could not be retrieved
    * @param {object} apiResponse The full API response.
    */
   /**
@@ -629,26 +634,21 @@ export class Bigtable {
    * bigtable.getInstances(function(err, instances) {
    *   if (!err) {
    *     // `instances` is an array of Instance objects.
+   *     if (failedLocations.length > 0) {
+   *       // These locations contain instances which could not be retrieved.
+   *     }
    *   }
    * });
-   *
-   * @example <caption>To control how many API requests are made and page
-   * through the results manually, set `autoPaginate` to `false`.</caption>
-   * function callback(err, instances, nextQuery, apiResponse) {
-   *   if (nextQuery) {
-   *     // More results exist.
-   *     bigtable.getInstances(nextQuery, callback);
-   *   }
-   * }
-   *
-   * bigtable.getInstances({
-   *   autoPaginate: false
-   * }, callback);
    *
    * @example <caption>If the callback is omitted, we'll return a Promise.
    * </caption>
    * bigtable.getInstances().then(function(data) {
    *   const instances = data[0];
+   *
+   *   if (data[1]) {
+   *     // These locations contain instances which could not be retrieved.
+   *     const failedLocations = data[1];
+   *   }
    * });
    */
   getInstances(
@@ -683,7 +683,7 @@ export class Bigtable {
           instance.metadata = instanceData;
           return instance;
         });
-        callback!(null, instances, resp);
+        callback!(null, instances, resp.failedLocations, resp);
       }
     );
   }
