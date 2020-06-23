@@ -31,7 +31,7 @@ function main(
   const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
-  // Write your function here!
+  // Write your code here.
   // [START_EXCLUDE]
   switch (filterType) {
     case 'filterRowSample': {
