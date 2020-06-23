@@ -19,24 +19,7 @@ function main(
   tableId = 'YOUR_TABLE_ID',
   filterType = 'filterRowSample'
 ) {
-  // [START bigtable_filters_limit_row_sample]
-  // [START bigtable_filters_limit_row_regex]
-  // [START bigtable_filters_limit_cells_per_col]
-  // [START bigtable_filters_limit_cells_per_row]
-  // [START bigtable_filters_limit_cells_per_row_offset]
-  // [START bigtable_filters_limit_col_family_regex]
-  // [START bigtable_filters_limit_col_qualifier_regex]
-  // [START bigtable_filters_limit_col_range]
-  // [START bigtable_filters_limit_value_range]
-  // [START bigtable_filters_limit_value_regex]
-  // [START bigtable_filters_limit_timestamp_range]
-  // [START bigtable_filters_limit_block_all]
-  // [START bigtable_filters_limit_pass_all]
-  // [START bigtable_filters_modify_strip_value]
-  // [START bigtable_filters_modify_apply_label]
-  // [START bigtable_filters_composing_chain]
-  // [START bigtable_filters_composing_interleave]
-  // [START bigtable_filters_composing_condition]
+  // [START bigtable_filters_print]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
@@ -48,25 +31,8 @@ function main(
   const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
-  // [END bigtable_filters_limit_row_sample]
-  // [END bigtable_filters_limit_row_regex]
-  // [END bigtable_filters_limit_cells_per_col]
-  // [END bigtable_filters_limit_cells_per_row]
-  // [END bigtable_filters_limit_cells_per_row_offset]
-  // [END bigtable_filters_limit_col_family_regex]
-  // [END bigtable_filters_limit_col_qualifier_regex]
-  // [END bigtable_filters_limit_col_range]
-  // [END bigtable_filters_limit_value_range]
-  // [END bigtable_filters_limit_value_regex]
-  // [END bigtable_filters_limit_timestamp_range]
-  // [END bigtable_filters_limit_block_all]
-  // [END bigtable_filters_limit_pass_all]
-  // [END bigtable_filters_modify_strip_value]
-  // [END bigtable_filters_modify_apply_label]
-  // [END bigtable_filters_composing_chain]
-  // [END bigtable_filters_composing_interleave]
-  // [END bigtable_filters_composing_condition]
-
+  // Write your code here.
+  // [START_EXCLUDE]
   switch (filterType) {
     case 'filterRowSample': {
       // [START bigtable_filters_limit_row_sample]
@@ -299,25 +265,8 @@ function main(
       break;
     }
   }
+  // [END_EXCLUDE]
 
-  // [START bigtable_filters_limit_row_sample]
-  // [START bigtable_filters_limit_row_regex]
-  // [START bigtable_filters_limit_cells_per_col]
-  // [START bigtable_filters_limit_cells_per_row]
-  // [START bigtable_filters_limit_cells_per_row_offset]
-  // [START bigtable_filters_limit_col_family_regex]
-  // [START bigtable_filters_limit_col_qualifier_regex]
-  // [START bigtable_filters_limit_col_range]
-  // [START bigtable_filters_limit_value_range]
-  // [START bigtable_filters_limit_value_regex]
-  // [START bigtable_filters_limit_timestamp_range]
-  // [START bigtable_filters_limit_block_all]
-  // [START bigtable_filters_limit_pass_all]
-  // [START bigtable_filters_modify_strip_value]
-  // [START bigtable_filters_modify_apply_label]
-  // [START bigtable_filters_composing_chain]
-  // [START bigtable_filters_composing_interleave]
-  // [START bigtable_filters_composing_condition]
   async function readWithFilter(filter) {
     await table
       .createReadStream({
@@ -355,25 +304,7 @@ function main(
     }
     console.log();
   }
-
-  // [END bigtable_filters_limit_row_sample]
-  // [END bigtable_filters_limit_row_regex]
-  // [END bigtable_filters_limit_cells_per_col]
-  // [END bigtable_filters_limit_cells_per_row]
-  // [END bigtable_filters_limit_cells_per_row_offset]
-  // [END bigtable_filters_limit_col_family_regex]
-  // [END bigtable_filters_limit_col_qualifier_regex]
-  // [END bigtable_filters_limit_col_range]
-  // [END bigtable_filters_limit_value_range]
-  // [END bigtable_filters_limit_value_regex]
-  // [END bigtable_filters_limit_timestamp_range]
-  // [END bigtable_filters_limit_block_all]
-  // [END bigtable_filters_limit_pass_all]
-  // [END bigtable_filters_modify_strip_value]
-  // [END bigtable_filters_modify_apply_label]
-  // [END bigtable_filters_composing_chain]
-  // [END bigtable_filters_composing_interleave]
-  // [END bigtable_filters_composing_condition]
 }
+// [END bigtable_filters_print]
 
 main(...process.argv.slice(2));
