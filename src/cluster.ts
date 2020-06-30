@@ -13,11 +13,17 @@
 // limitations under the License.
 
 import {promisifyAll} from '@google-cloud/promisify';
-import {CallOptions, Operation as GaxOperation, Operation} from 'google-gax';
-import {ServiceError} from 'google-gax';
+import {
+  CallOptions,
+  LROperation,
+  Operation as GaxOperation,
+  Operation,
+  ServiceError,
+} from 'google-gax';
 
 import {google} from '../protos/protos';
 import {Bigtable} from '.';
+import {Table} from './table';
 import {Instance} from './instance';
 
 export interface GenericCallback<T> {
@@ -78,6 +84,53 @@ export type GetClusterMetadataCallback = (
   err: ServiceError | null,
   metadata?: ICluster | null,
   apiResponse?: IOperation | null
+) => void;
+
+export interface CreateBackupOptions {
+  expireTime?: google.protobuf.ITimestamp | Date;
+  gaxOptions?: CallOptions;
+}
+export type CreateBackupCallback = (
+  err: ServiceError | null,
+  apiResponse?: LROperation<
+    google.bigtable.admin.v2.IBackup,
+    google.bigtable.admin.v2.ICreateBackupMetadata
+  >
+) => void;
+export type CreateBackupResponse = [
+  LROperation<
+    google.bigtable.admin.v2.IBackup,
+    google.bigtable.admin.v2.ICreateBackupMetadata
+  >
+];
+
+export interface GetBackupOptions {
+  gaxOptions?: CallOptions;
+}
+export type GetBackupCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.bigtable.admin.v2.IBackup
+) => void;
+export type GetBackupResponse = [google.bigtable.admin.v2.IBackup];
+
+export interface DeleteBackupOptions {
+  gaxOptions?: CallOptions;
+}
+export type DeleteBackupCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.protobuf.IEmpty
+) => void;
+export type DeleteBackupResponse = [google.protobuf.IEmpty];
+
+export interface ListBackupsOptions {
+  filter?: string;
+  orderBy?: string;
+  gaxOptions?: CallOptions;
+}
+export type ListBackupsResponse = [google.bigtable.admin.v2.IBackup[]];
+export type ListBackupsCallback = (
+  err: ServiceError | null,
+  metadata?: google.bigtable.admin.v2.IBackup[]
 ) => void;
 
 /**
@@ -434,6 +487,154 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         callback(err, resp);
       }
     );
+  }
+
+  createBackup(
+    table: Table,
+    id: string,
+    optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
+    cb?: CreateBackupCallback
+  ): void | Promise<CreateBackupResponse> {
+    if (!table) {
+      throw new Error('A reference to a table is required to create a backup.');
+    }
+
+    if (!id) {
+      throw new Error('An id is required to create a backup.');
+    }
+
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    let expireTime: google.protobuf.ITimestamp | null = null;
+    if (options.expireTime) {
+      if (options.expireTime instanceof Date) {
+        expireTime = this._dateToTimestamp(options.expireTime);
+      } else {
+        expireTime = options.expireTime;
+      }
+    }
+
+    const reqOpts: google.bigtable.admin.v2.ICreateBackupRequest = {
+      parent: this.name,
+      backupId: id,
+      backup: {
+        sourceTable: table.name,
+        ...(expireTime ? {expireTime: expireTime} : null),
+      },
+    };
+
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'createBackup',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        callback(...args); // TODO new Backup()
+      }
+    );
+  }
+
+  getBackup(
+    id: string,
+    optionsOrCallback?: GetBackupOptions | GetBackupCallback,
+    cb?: GetBackupCallback
+  ): void | Promise<GetBackupResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    if (!id) {
+      throw new Error('The backup id/name is required.');
+    }
+
+    const name = `${this.name}/backups/${id}`;
+
+    const reqOpts: google.bigtable.admin.v2.IGetBackupRequest = {
+      name,
+    };
+
+    this.bigtable.request<google.bigtable.admin.v2.IBackup>(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'getBackup',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      callback
+    );
+  }
+
+  listBackups(
+    optionsOrCallback?: ListBackupsOptions | ListBackupsCallback,
+    cb?: ListBackupsCallback
+  ): void | Promise<ListBackupsResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
+      parent: this.name,
+      filter: options.filter,
+      orderBy: options.orderBy,
+    };
+
+    this.bigtable.request<google.bigtable.admin.v2.IBackup[]>(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'listBackups',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        callback(...args); // TODO map(new Backup())
+      }
+    );
+  }
+
+  deleteBackup(
+    id: string,
+    optionsOrCallback?: DeleteBackupOptions | DeleteBackupCallback,
+    cb?: DeleteBackupCallback
+  ): void | Promise<DeleteBackupResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    if (!id) {
+      throw new Error('The backup id/name is required.');
+    }
+
+    const name = `${this.name}/backups/${id}`;
+
+    const reqOpts: google.bigtable.admin.v2.IDeleteBackupRequest = {
+      name,
+    };
+
+    this.bigtable.request<google.protobuf.IEmpty>(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'deleteBackup',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      callback
+    );
+  }
+
+  private _dateToTimestamp(date: Date): google.protobuf.ITimestamp {
+    const millis = date.getTime();
+    return {
+      seconds: Math.floor(millis / 1000),
+      nanos: (millis % 1000) * 1000000,
+    };
   }
 }
 
