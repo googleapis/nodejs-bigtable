@@ -150,7 +150,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * });
  *
  * @example <caption>The Bigtable Emulator</caption>
- * // Make sure you have the <a href="https://cloud.google.com/sdk/downloads"> gcloud SDK installed</a>, then run:
+ * // Make sure you have the {@link https://cloud.google.com/sdk/downloads gcloud SDK installed}, then run:
  * $ gcloud beta emulators bigtable start
  *
  * // Before running your Node.js app, set the environment variables that this
@@ -188,8 +188,8 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * // This can also be done from either the Google Cloud Platform Console or the
  * // `gcloud` cli tool. Please refer to the
- * // <a href="https://cloud.google.com/bigtable/docs/creating-instance">
- * // official Bigtable documentation</a> for more information.
+ * // {@link https://cloud.google.com/bigtable/docs/creating-instance official Bigtable documentation}
+ * // for more information.
  *
  * @example <caption>Creating Tables</caption>
  * // After creating your instance and enabling the Bigtable APIs, you are now
