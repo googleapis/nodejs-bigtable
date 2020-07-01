@@ -40,6 +40,11 @@ import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
+import {
+  CreateBackupCallback,
+  CreateBackupOptions,
+  CreateBackupResponse,
+} from './cluster';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
@@ -482,6 +487,72 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         inclusive: !endKey,
       },
     };
+  }
+
+  backup(
+    id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
+    options?: CreateBackupOptions
+  ): Promise<CreateBackupResponse>;
+  backup(
+    id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
+    options: CreateBackupOptions,
+    callback: CreateBackupCallback
+  ): void;
+  backup(
+    id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
+    callback: CreateBackupCallback
+  ): void;
+  /**
+   * Backup a table with cluster auto selection.
+   *
+   * Backups of tables originate from a specific cluster. This is a helper
+   * around Cluster.createBackup that automatically selects the first ready
+   * cluster from which a backup can be performed.
+   *
+   * @param {string} id A unique ID for the backup.
+   * @param {google.protobuf.ITimestamp | Date} expireTime
+   * @param {CreateBackupOptions | CreateBackupCallback} [optionsOrCallback]
+   * @param {CreateBackupCallback} [cb]
+   * @return {void | Promise<CreateBackupResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_create_table
+   */
+  backup(
+    id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
+    optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
+    cb?: CreateBackupCallback
+  ): void | Promise<CreateBackupResponse> {
+    if (!id) {
+      throw new Error('An id is required to create a backup.');
+    }
+
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    this.getReplicationStates(options.gaxOptions)
+      .then(([stateMap]) => {
+        const [clusterId] =
+          [...stateMap.entries()].find(
+            ([, clusterState]) => clusterState.replicationState === 'READY'
+          ) || [];
+        if (!clusterId) {
+          throw new Error('No ready clusters eligible for backup.');
+        }
+        return clusterId;
+      })
+      .then(clusterId => {
+        this.instance
+          .cluster(clusterId)
+          .createBackup(this, id, expireTime, options, callback);
+      })
+      .catch(err => callback(err));
   }
 
   create(options?: CreateTableOptions): Promise<CreateTableResponse>;
