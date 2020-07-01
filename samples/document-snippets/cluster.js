@@ -141,7 +141,7 @@ const snippets = {
     const expireTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // accepts either a Date or an ITimestamp
     table
       .create() // need a table to backup first
-      .then(() => cluster.createBackup(table, backupId, expireTime)) // create the backup
+      .then(() => cluster.createBackup(table, backupId, {expireTime})) // create the backup
       .then(([backupOperation]) => backupOperation.promise()) // wait for backup to finish
       .then(result => {
         const backup = result[0];

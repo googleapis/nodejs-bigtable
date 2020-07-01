@@ -17,8 +17,9 @@ const {Bigtable} = require('@google-cloud/bigtable');
 const uuid = require('uuid');
 const {inspect} = require('util');
 
-function thirtyMinutesFromNow() {
-  return new Date(Date.now() + 24 * 60 * 60 * 1000);
+function xHoursFromNow(x) {
+  const pad = 60 * 1000;
+  return new Date(Date.now() + x * 60 * 60 * 1000 + pad);
 }
 
 function generateBackupId() {
@@ -39,12 +40,10 @@ async function runBackupOperations(
 
   // [START bigtable_create_backup]
   const table = instance.table(tableID);
-  const expireTime = thirtyMinutesFromNow(); // accepts either a Date or an ITimestamp
-  const [backupOperation] = await cluster.createBackup(
-    table,
-    backupID,
-    expireTime
-  );
+  const expireTime = xHoursFromNow(6); // accepts either a Date or an ITimestamp
+  const [backupOperation] = await cluster.createBackup(table, backupID, {
+    expireTime,
+  });
   console.log(
     'Started a table backup operation:',
     inspect(backupOperation.latestResponse.name, {depth: null, colors: true})
@@ -53,17 +52,18 @@ async function runBackupOperations(
   // The long running operation (LRO) "backupOperation" provides an EventEmitter interface
   // or a promise to wait for completion.
   // The backup cannot be interacted with (restore, update, delete) until it is ready.
-  await backupOperation.promise();
-  console.log('Backup is now "READY" (available).');
+  const [backupMeta] = await backupOperation.promise();
+  console.log(
+    `Backup is now "${backupMeta.state}" (READY = 2, i.e. available).`
+  );
   // [END bigtable_create_backup]
 
   // [START bigtable_table_backup]
   // An alternative way is to call backup right on a Table which will
   // automatically select the first cluster that has a READY cluster state.
-  const [backupOperationFromTable] = await table.backup(
-    `${backupID}-2`,
-    thirtyMinutesFromNow()
-  );
+  const [backupOperationFromTable] = await table.backup(`${backupID}-2`, {
+    expireTime: xHoursFromNow(6),
+  });
   await backupOperationFromTable.promise();
   // [END bigtable_table_backup]
 
@@ -76,7 +76,7 @@ async function runBackupOperations(
   // [END bigtable_list_backups]
 
   // [START bigtable_get_backup]
-  // Get information about a backup, like when it will expire or how big it is.
+  // Get metadata about a backup, like when it will expire or how big it is.
   // NOTE: No need to poll with this RPC to get backup ready status,
   //  instead use the EventEmitter or promise interface of the LRO.
 
@@ -87,15 +87,48 @@ async function runBackupOperations(
     );
   }
 
-  const [backupInfo] = await cluster.getBackup(backupID);
-  console.log('The backup is %s bytes in size.', backupInfo.sizeBytes);
+  const [fetchedBackupMeta] = await cluster.getBackup(backupID);
+  console.log('The backup is %s bytes in size.', fetchedBackupMeta.sizeBytes);
 
-  const expireDate = timestampToDate(backupInfo.expireTime);
+  const expireDate = timestampToDate(fetchedBackupMeta.expireTime);
   console.log('The backup will auto delete at', expireDate.toISOString());
 
-  const endDate = timestampToDate(backupInfo.endTime);
+  const endDate = timestampToDate(fetchedBackupMeta.endTime);
   console.log('The backup finished being created at', endDate.toISOString());
   // [END bigtable_get_backup]
+
+  // [START bigtable_update_backup]
+  // Extend a backup's life by updating its expiry date.
+  const [updatedBackupMeta] = await cluster.updateBackup(backupID, {
+    expireTime: xHoursFromNow(7),
+  });
+  const updatedExpireDate = timestampToDate(updatedBackupMeta.expireTime);
+  console.log(
+    'The backup will now auto delete at',
+    updatedExpireDate.toISOString()
+  );
+  // [END bigtable_update_backup]
+
+  // [START bigtable_restore_backup]
+  // Restore a table to an instance from a backup.
+  // Restores do NOT happen on clusters.
+  const restoredTableId = `${tableID}-restored`;
+  console.log(
+    `Restoring backup ${backupID} to new table ${restoredTableId}...`
+  );
+  const [tableRestoreOperation] = await instance.restoreTable(
+    backupID,
+    clusterID,
+    restoredTableId
+  );
+
+  console.log(
+    'Table restoration started, waiting for the table to be fully restored'
+  );
+  const [restoredTable, restoredMeta] = await tableRestoreOperation.promise();
+  console.log('restoredTable:', restoredTable); // TODO cast as Table
+  console.log('restoredMeta:', restoredMeta);
+  // [END bigtable_restore_backup]
 
   // [START bigtable_delete_backup]
   console.log('Deleting the backup %s...', backupID);
