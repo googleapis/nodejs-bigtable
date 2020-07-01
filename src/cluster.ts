@@ -20,6 +20,7 @@ import {
   Operation,
   ServiceError,
 } from 'google-gax';
+import snakeCase = require('lodash.snakecase');
 
 import {google} from '../protos/protos';
 import {Bigtable} from '.';
@@ -86,6 +87,16 @@ export type GetClusterMetadataCallback = (
   apiResponse?: IOperation | null
 ) => void;
 
+export type BackupTimestamp = google.protobuf.ITimestamp | Date;
+export interface ModifiableBackupFields {
+  /**
+   * The ITimestamp (or Date which will be converted) representing when the
+   * backup will automatically be deleted. This must be at a minimum 6 hours
+   * from the time of the backup request and a maximum of 30 days.
+   */
+  expireTime?: BackupTimestamp;
+}
+
 export interface CreateBackupOptions {
   gaxOptions?: CallOptions;
 }
@@ -103,15 +114,6 @@ export type CreateBackupResponse = [
   >
 ];
 
-export interface GetBackupOptions {
-  gaxOptions?: CallOptions;
-}
-export type GetBackupCallback = (
-  err: ServiceError | null,
-  apiResponse?: google.bigtable.admin.v2.IBackup
-) => void;
-export type GetBackupResponse = [google.bigtable.admin.v2.IBackup];
-
 export interface DeleteBackupOptions {
   gaxOptions?: CallOptions;
 }
@@ -120,6 +122,15 @@ export type DeleteBackupCallback = (
   apiResponse?: google.protobuf.IEmpty
 ) => void;
 export type DeleteBackupResponse = [google.protobuf.IEmpty];
+
+export interface GetBackupOptions {
+  gaxOptions?: CallOptions;
+}
+export type GetBackupCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.bigtable.admin.v2.IBackup
+) => void;
+export type GetBackupResponse = [google.bigtable.admin.v2.IBackup];
 
 export interface ListBackupsOptions {
   /**
@@ -147,6 +158,15 @@ export type ListBackupsCallback = (
   err: ServiceError | null,
   metadata?: google.bigtable.admin.v2.IBackup[]
 ) => void;
+
+export interface UpdateBackupOptions {
+  gaxOptions?: CallOptions;
+}
+export type UpdateBackupCallback = (
+  err: ServiceError | null,
+  apiResponse?: google.bigtable.admin.v2.IBackup
+) => void;
+export type UpdateBackupResponse = [google.bigtable.admin.v2.IBackup];
 
 /**
  * Create a cluster object to interact with your cluster.
@@ -507,20 +527,20 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
   createBackup(
     table: Table,
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     options?: CreateBackupOptions
   ): Promise<CreateBackupResponse>;
   createBackup(
     table: Table,
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     options: CreateBackupOptions,
     callback: CreateBackupCallback
   ): void;
   createBackup(
     table: Table,
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     callback: CreateBackupCallback
   ): void;
   /**
@@ -539,8 +559,9 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup_id}`.
    *   This string must be between 1 and 50 characters in length and match the
    *   regex {@link -_.a-zA-Z0-9|_a-zA-Z0-9}*.
-   * @param {google.protobuf.ITimestamp | Date} expireTime When the backup will
-   *   be automatically deleted.
+   * @param {ModifiableBackupFields} fields Fields to be specified.
+   * @param {BackupTimestamp} fields.expireTime When the backup will be
+   *   automatically deleted.
    * @param {CreateBackupOptions | CreateBackupCallback} [optionsOrCallback]
    * @param {CreateBackupCallback} [cb]
    * @return {void | Promise<CreateBackupResponse>}
@@ -551,10 +572,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
   createBackup(
     table: Table,
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
     cb?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
     if (!table) {
       throw new Error('A reference to a table is required to create a backup.');
     }
@@ -563,34 +589,96 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       throw new Error('An id is required to create a backup.');
     }
 
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    if (!fields || !fields.expireTime) {
+      throw new Error('Must specify the `expireTime` field.');
+    }
+
+    const {expireTime, ...restFields} = fields;
+
+    const backup: google.bigtable.admin.v2.IBackup = {
+      sourceTable: table.name,
+      ...restFields,
+    };
 
     if (expireTime instanceof Date) {
-      expireTime = this._dateToTimestamp(expireTime);
+      backup.expireTime = this._dateToTimestamp(expireTime);
+    } else {
+      backup.expireTime = expireTime;
     }
 
     const reqOpts: google.bigtable.admin.v2.ICreateBackupRequest = {
       parent: this.name,
       backupId: id,
-      backup: {
-        sourceTable: table.name,
-        expireTime,
-      },
+      backup,
     };
 
-    this.bigtable.request(
+    this.bigtable.request<
+      LROperation<
+        google.bigtable.admin.v2.IBackup,
+        google.bigtable.admin.v2.ICreateBackupMetadata
+      >
+    >(
       {
         client: 'BigtableTableAdminClient',
         method: 'createBackup',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (...args) => {
-        callback(...args); // TODO new Backup()
-      }
+      callback
+    );
+  }
+
+  deleteBackup(
+    id: string,
+    options?: DeleteBackupOptions
+  ): Promise<DeleteBackupResponse>;
+  deleteBackup(
+    id: string,
+    options: DeleteBackupOptions,
+    callback: DeleteBackupCallback
+  ): void;
+  deleteBackup(id: string, callback: DeleteBackupCallback): void;
+  /**
+   * Deletes a pending or completed Cloud Bigtable backup from this cluster.
+   *
+   * @param {string} id
+   *   Required. The unique ID of the backup. This is not the full name of
+   *   the backup, but just the backup ID part.
+   * @param {DeleteBackupOptions | DeleteBackupCallback} [optionsOrCallback]
+   * @param {DeleteBackupCallback} [cb]
+   * @return {void | Promise<DeleteBackupResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_delete_backup
+   */
+  deleteBackup(
+    id: string,
+    optionsOrCallback?: DeleteBackupOptions | DeleteBackupCallback,
+    cb?: DeleteBackupCallback
+  ): void | Promise<DeleteBackupResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    if (!id) {
+      throw new Error('The backup id/name is required.');
+    }
+
+    const name = `${this.name}/backups/${id}`;
+
+    const reqOpts: google.bigtable.admin.v2.IDeleteBackupRequest = {
+      name,
+    };
+
+    this.bigtable.request<google.protobuf.IEmpty>(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'deleteBackup',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      callback
     );
   }
 
@@ -682,40 +770,46 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (...args) => {
-        callback(...args); // TODO map(new Backup())
-      }
+      callback // TODO map(new Backup())
     );
   }
 
-  deleteBackup(
+  updateBackup(
     id: string,
-    options?: DeleteBackupOptions
-  ): Promise<DeleteBackupResponse>;
-  deleteBackup(
+    fields: ModifiableBackupFields,
+    options?: UpdateBackupOptions
+  ): Promise<UpdateBackupResponse>;
+  updateBackup(
     id: string,
-    options: DeleteBackupOptions,
-    callback: DeleteBackupCallback
+    fields: ModifiableBackupFields,
+    options: UpdateBackupOptions,
+    callback: UpdateBackupCallback
   ): void;
-  deleteBackup(id: string, callback: DeleteBackupCallback): void;
+  updateBackup(
+    id: string,
+    fields: ModifiableBackupFields,
+    callback: UpdateBackupCallback
+  ): void;
   /**
-   * Deletes a pending or completed Cloud Bigtable backup from this cluster.
+   * Updates a pending or completed Cloud Bigtable Backup.
    *
    * @param {string} id
    *   Required. The unique ID of the backup. This is not the full name of
    *   the backup, but just the backup ID part.
-   * @param {DeleteBackupOptions | DeleteBackupCallback} [optionsOrCallback]
-   * @param {DeleteBackupCallback} [cb]
-   * @return {void | Promise<DeleteBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_delete_backup
+   * @param {ModifiableBackupFields} fields
+   *   Required. The fields to be updated.
+   * @param {BackupTimestamp} fields.expireTime
+   *   Required. This is currently the only supported field.
+   * @param {UpdateBackupOptions | UpdateBackupCallback} [optionsOrCallback]
+   * @param {GetBackupCallback} [cb]
+   * @return {void | Promise<UpdateBackupResponse>}
    */
-  deleteBackup(
+  updateBackup(
     id: string,
-    optionsOrCallback?: DeleteBackupOptions | DeleteBackupCallback,
-    cb?: DeleteBackupCallback
-  ): void | Promise<DeleteBackupResponse> {
+    fields: ModifiableBackupFields,
+    optionsOrCallback?: UpdateBackupOptions | UpdateBackupCallback,
+    cb?: UpdateBackupCallback
+  ): void | Promise<UpdateBackupResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
@@ -725,20 +819,50 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       throw new Error('The backup id/name is required.');
     }
 
-    const name = `${this.name}/backups/${id}`;
+    if (!fields || !fields.expireTime) {
+      throw new Error(
+        'Must specify at least one field to update (e.g. expireTime).'
+      );
+    }
 
-    const reqOpts: google.bigtable.admin.v2.IDeleteBackupRequest = {
+    const name = `${this.name}/backups/${id}`;
+    const {expireTime, ...restFields} = fields;
+
+    const backup: google.bigtable.admin.v2.IBackup = {
       name,
+      ...restFields,
     };
 
-    this.bigtable.request<google.protobuf.IEmpty>(
+    if (fields.expireTime) {
+      if (expireTime instanceof Date) {
+        backup.expireTime = this._dateToTimestamp(expireTime);
+      } else {
+        backup.expireTime = expireTime;
+      }
+    }
+
+    const reqOpts: google.bigtable.admin.v2.IUpdateBackupRequest = {
+      backup,
+      updateMask: {
+        paths: [],
+      },
+    };
+
+    const fieldsForMask = ['expireTime'];
+    fieldsForMask.forEach(field => {
+      if (field in fields) {
+        reqOpts.updateMask!.paths!.push(snakeCase(field));
+      }
+    });
+
+    this.bigtable.request<google.bigtable.admin.v2.IBackup>(
       {
         client: 'BigtableTableAdminClient',
-        method: 'deleteBackup',
+        method: 'updateBackup',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      callback
+      callback // TODO new Backup()
     );
   }
 

@@ -44,6 +44,7 @@ import {
   CreateBackupCallback,
   CreateBackupOptions,
   CreateBackupResponse,
+  ModifiableBackupFields,
 } from './cluster';
 
 // See protos/google/rpc/code.proto
@@ -489,18 +490,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
   backup(
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     options?: CreateBackupOptions
   ): Promise<CreateBackupResponse>;
   backup(
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     options: CreateBackupOptions,
     callback: CreateBackupCallback
   ): void;
   backup(
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     callback: CreateBackupCallback
   ): void;
   /**
@@ -511,7 +512,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * cluster from which a backup can be performed.
    *
    * @param {string} id A unique ID for the backup.
-   * @param {google.protobuf.ITimestamp | Date} expireTime
+   * @param {ModifiableBackupFields} fields Fields to be specified.
+   * @param {BackupTimestamp} fields.expireTime When the backup will be
+   *   automatically deleted.
    * @param {CreateBackupOptions | CreateBackupCallback} [optionsOrCallback]
    * @param {CreateBackupCallback} [cb]
    * @return {void | Promise<CreateBackupResponse>}
@@ -521,7 +524,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    */
   backup(
     id: string,
-    expireTime: google.protobuf.ITimestamp | Date,
+    fields: Required<ModifiableBackupFields>,
     optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
     cb?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
@@ -548,7 +551,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       .then(clusterId => {
         this.instance
           .cluster(clusterId)
-          .createBackup(this, id, expireTime, options, callback);
+          .createBackup(this, id, fields, options, callback);
       })
       .catch(err => callback(err));
   }

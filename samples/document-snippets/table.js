@@ -382,7 +382,7 @@ const snippets = {
     // [START bigtable_backup_table]
     const expireInThirtyMinutes = new Date(Date.now() + 30 * 60 * 1000);
     table
-      .backup(backupId, expireInThirtyMinutes)
+      .backup(backupId, {expireTime: expireInThirtyMinutes})
       .then(([backupOperation]) => backupOperation.promise())
       .then(result => {
         const backup = result[0];

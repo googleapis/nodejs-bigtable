@@ -56,10 +56,11 @@ import {
   GetTablesCallback,
   GetTablesResponse,
 } from './table';
-import {CallOptions, Operation} from 'google-gax';
+import {CallOptions, LROperation, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
+import * as protos from '../protos/protos';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -138,6 +139,23 @@ export type SetInstanceMetadataCallback = (
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type SetInstanceMetadataResponse = [google.protobuf.Empty];
+
+export interface RestoreTableOptions {
+  gaxOptions?: CallOptions;
+}
+export type RestoreTableCallback = (
+  err: ServiceError | null,
+  apiResponse?: LROperation<
+    protos.google.bigtable.admin.v2.ITable,
+    protos.google.bigtable.admin.v2.IRestoreTableMetadata
+  >
+) => void;
+export type RestoreTableResponse = [
+  LROperation<
+    protos.google.bigtable.admin.v2.ITable,
+    protos.google.bigtable.admin.v2.IRestoreTableMetadata
+  >
+];
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -1026,6 +1044,102 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       }),
       new Transform({objectMode: true, transform: transformToTable}),
     ]);
+  }
+
+  restoreTable(
+    backupId: string,
+    clusterId: string,
+    tableId: string,
+    options?: RestoreTableOptions
+  ): Promise<RestoreTableResponse>;
+  restoreTable(
+    backupId: string,
+    clusterId: string,
+    tableId: string,
+    options: RestoreTableOptions,
+    callback: RestoreTableCallback
+  ): void;
+  restoreTable(
+    backupId: string,
+    clusterId: string,
+    tableId: string,
+    callback: RestoreTableCallback
+  ): void;
+  /**
+   * Create a new table by restoring from a completed backup.
+   *
+   * The new table must be in the same instance as the instance containing
+   * the backup. The returned table
+   * {@link google.longrunning.Operation|long-running operation} can be used
+   * to track the progress of the operation, and to cancel it.
+   *
+   * @param {string} backupId
+   *   The id of the backup from which to restore. The `backupId` appended to
+   *   `parent` forms the full backup name of the form
+   *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
+   * @param {string} clusterId
+   *   The id of the cluster from where the backup resides. The `clusterId`
+   *   appended to `parent` in conjunction with the `backupId` forms the full
+   *   backup name of the form
+   *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
+   * @param {string} tableId
+   *   Required. The id of the table to create and restore to. This
+   *   table must not already exist. The `table_id` appended to
+   *   `parent` forms the full table name of the form
+   *   `projects/<project>/instances/<instance>/tables/<table_id>`.
+   * @param {RestoreTableOptions | RestoreTableCallback} [optionsOrCallback]
+   * @param {RestoreTableCallback} [cb]
+   * @return {void | Promise<RestoreTableResponse>}
+   */
+  restoreTable(
+    backupId: string,
+    clusterId: string,
+    tableId: string,
+    optionsOrCallback?: RestoreTableOptions | RestoreTableCallback,
+    cb?: RestoreTableCallback
+  ): void | Promise<RestoreTableResponse> {
+    if (!backupId) {
+      throw new Error('A backup id is required for what to restore.');
+    }
+
+    if (!clusterId) {
+      throw new Error(
+        'A cluster id is required from where the backup resides.'
+      );
+    }
+
+    if (!tableId) {
+      throw new Error('An table id is required to restore from a backup.');
+    }
+
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    const backupName = `${this.name}/clusters/${clusterId}/backups/${backupId}`;
+    // const tableName = `${this.name}/tables/${tableId}`;
+
+    const reqOpts: google.bigtable.admin.v2.IRestoreTableRequest = {
+      parent: this.name,
+      tableId,
+      backup: backupName,
+    };
+
+    this.bigtable.request<
+      LROperation<
+        protos.google.bigtable.admin.v2.ITable,
+        protos.google.bigtable.admin.v2.IRestoreTableMetadata
+      >
+    >(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'restoreTable',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      callback
+    );
   }
 
   setIamPolicy(
