@@ -21,6 +21,8 @@ const bigtable = new Bigtable();
 
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
+const BACKUP_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 const clusterSnippets = require('./cluster.js');
 
@@ -73,6 +75,22 @@ describe.skip('Cluster Snippets', () => {
 
   it('should set cluster metadata', () => {
     clusterSnippets.setMeta(INSTANCE_ID, CLUSTER_ID);
+  });
+
+  it('should create a backup of a table', () => {
+    clusterSnippets.createBackup(INSTANCE_ID, CLUSTER_ID, TABLE_ID, BACKUP_ID);
+  });
+
+  it('should list backups', () => {
+    clusterSnippets.listBackups(INSTANCE_ID, CLUSTER_ID);
+  });
+
+  it('should get backup metadata', () => {
+    clusterSnippets.getBackup(INSTANCE_ID, CLUSTER_ID, BACKUP_ID);
+  });
+
+  it('should delete a backup', () => {
+    clusterSnippets.deleteBackup(INSTANCE_ID, CLUSTER_ID, BACKUP_ID);
   });
 
   it('should delete a cluster', () => {
