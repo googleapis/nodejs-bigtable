@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,5 +74,5 @@ describe('backups', () => {
     assert.include(output, 'Backup is now "READY" (available).');
     assert.include(output, backupId);
     assert.include(output, `Deleted backup with ID ${backupId}`);
-  });
+  }).timeout(120 * 1000); // deleting backups is slow, the script does it twice, give it time.
 });

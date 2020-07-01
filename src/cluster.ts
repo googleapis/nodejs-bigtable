@@ -87,7 +87,6 @@ export type GetClusterMetadataCallback = (
 ) => void;
 
 export interface CreateBackupOptions {
-  expireTime?: google.protobuf.ITimestamp | Date;
   gaxOptions?: CallOptions;
 }
 export type CreateBackupCallback = (
@@ -123,8 +122,24 @@ export type DeleteBackupCallback = (
 export type DeleteBackupResponse = [google.protobuf.IEmpty];
 
 export interface ListBackupsOptions {
+  /**
+   * A filter expression that filters backups listed in the response.
+   *   The expression must specify the field name, a comparison operator,
+   *   and the value that you want to use for filtering. The value must be a
+   *   string, a number, or a boolean. The comparison operator must be
+   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
+   *   roughly synonymous with equality. Filter rules are case insensitive.
+   */
   filter?: string;
+
+  /**
+   * An expression for specifying the sort order of the results of the request.
+   *   The string value should specify one or more fields in
+   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is
+   *   described at https://aip.dev/132#ordering.
+   */
   orderBy?: string;
+
   gaxOptions?: CallOptions;
 }
 export type ListBackupsResponse = [google.bigtable.admin.v2.IBackup[]];
@@ -492,6 +507,51 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
   createBackup(
     table: Table,
     id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
+    options?: CreateBackupOptions
+  ): Promise<CreateBackupResponse>;
+  createBackup(
+    table: Table,
+    id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
+    options: CreateBackupOptions,
+    callback: CreateBackupCallback
+  ): void;
+  createBackup(
+    table: Table,
+    id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
+    callback: CreateBackupCallback
+  ): void;
+  /**
+   * Starts creating a new Cloud Bigtable Backup from this cluster.
+   *
+   * The returned backup
+   * {@link google.longrunning.Operation|long-running operation} can be used to
+   * track creation of the backup. Cancelling the returned operation will
+   * stop the creation and delete the backup.
+   *
+   * @param {Table} table A reference to the Table to backup.
+   * @param {string} id
+   *   Required. The id of the backup to be created. The `backup_id` along with
+   *   the parent `parent` are combined as {parent}/backups/{backup_id} to create
+   *   the full backup name, of the form:
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup_id}`.
+   *   This string must be between 1 and 50 characters in length and match the
+   *   regex {@link -_.a-zA-Z0-9|_a-zA-Z0-9}*.
+   * @param {google.protobuf.ITimestamp | Date} expireTime When the backup will
+   *   be automatically deleted.
+   * @param {CreateBackupOptions | CreateBackupCallback} [optionsOrCallback]
+   * @param {CreateBackupCallback} [cb]
+   * @return {void | Promise<CreateBackupResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_create_backup
+   */
+  createBackup(
+    table: Table,
+    id: string,
+    expireTime: google.protobuf.ITimestamp | Date,
     optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
     cb?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
@@ -508,13 +568,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    let expireTime: google.protobuf.ITimestamp | null = null;
-    if (options.expireTime) {
-      if (options.expireTime instanceof Date) {
-        expireTime = this._dateToTimestamp(options.expireTime);
-      } else {
-        expireTime = options.expireTime;
-      }
+    if (expireTime instanceof Date) {
+      expireTime = this._dateToTimestamp(expireTime);
     }
 
     const reqOpts: google.bigtable.admin.v2.ICreateBackupRequest = {
@@ -522,7 +577,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       backupId: id,
       backup: {
         sourceTable: table.name,
-        ...(expireTime ? {expireTime: expireTime} : null),
+        expireTime,
       },
     };
 
@@ -539,6 +594,27 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 
+  getBackup(id: string, options?: GetBackupOptions): Promise<GetBackupResponse>;
+  getBackup(
+    id: string,
+    options: GetBackupOptions,
+    callback: GetBackupCallback
+  ): void;
+  getBackup(id: string, callback: GetBackupCallback): void;
+  /**
+   * Gets metadata on a pending or completed Cloud Bigtable Backup relative
+   * to this cluster.
+   *
+   * @param {string} id
+   *   Required. The unique ID of the backup. This is not the full name of
+   *   the backup, but just the backup ID part.
+   * @param {GetBackupOptions | GetBackupCallback} [optionsOrCallback]
+   * @param {GetBackupCallback} [cb]
+   * @return {void | Promise<GetBackupResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_get_backup
+   */
   getBackup(
     id: string,
     optionsOrCallback?: GetBackupOptions | GetBackupCallback,
@@ -570,6 +646,20 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 
+  listBackups(options?: ListBackupsOptions): Promise<ListBackupsResponse>;
+  listBackups(options: ListBackupsOptions, callback: ListBackupsCallback): void;
+  listBackups(callback: ListBackupsCallback): void;
+  /**
+   * Lists Cloud Bigtable backups within this cluster. Returns both
+   * completed and pending backups.
+   *
+   * @param {ListBackupsOptions | ListBackupsCallback} [optionsOrCallback]
+   * @param {ListBackupsCallback} [cb]
+   * @return {void | Promise<ListBackupsResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_list_backups
+   */
   listBackups(
     optionsOrCallback?: ListBackupsOptions | ListBackupsCallback,
     cb?: ListBackupsCallback
@@ -598,6 +688,29 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 
+  deleteBackup(
+    id: string,
+    options?: DeleteBackupOptions
+  ): Promise<DeleteBackupResponse>;
+  deleteBackup(
+    id: string,
+    options: DeleteBackupOptions,
+    callback: DeleteBackupCallback
+  ): void;
+  deleteBackup(id: string, callback: DeleteBackupCallback): void;
+  /**
+   * Deletes a pending or completed Cloud Bigtable backup from this cluster.
+   *
+   * @param {string} id
+   *   Required. The unique ID of the backup. This is not the full name of
+   *   the backup, but just the backup ID part.
+   * @param {DeleteBackupOptions | DeleteBackupCallback} [optionsOrCallback]
+   * @param {DeleteBackupCallback} [cb]
+   * @return {void | Promise<DeleteBackupResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_delete_backup
+   */
   deleteBackup(
     id: string,
     optionsOrCallback?: DeleteBackupOptions | DeleteBackupCallback,

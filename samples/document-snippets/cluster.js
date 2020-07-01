@@ -129,6 +129,86 @@ const snippets = {
       });
     // [END bigtable_cluster_set_meta]
   },
+
+  createBackup: (instanceId, clusterId, tableId, backupId) => {
+    // [START bigtable_cluster_create_backup]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+    const cluster = instance.cluster(clusterId);
+    const table = instance.table(tableId);
+
+    const expireTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // accepts either a Date or an ITimestamp
+    table
+      .create() // need a table to backup first
+      .then(() => cluster.createBackup(table, backupId, expireTime)) // create the backup
+      .then(([backupOperation]) => backupOperation.promise()) // wait for backup to finish
+      .then(result => {
+        const backup = result[0];
+      })
+      .catch(err => {
+        // Handle the error.
+      });
+    // [END bigtable_cluster_create_backup]
+  },
+
+  listBackups: (instanceId, clusterId) => {
+    // [START bigtable_cluster_list_backups]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+    const cluster = instance.cluster(clusterId);
+
+    cluster
+      .listBackups()
+      .then(result => {
+        const backups = result[0];
+      })
+      .catch(err => {
+        // Handle the error.
+      });
+    // [END bigtable_cluster_list_backups]
+  },
+
+  getBackup: (instanceId, clusterId, backupId) => {
+    // [START bigtable_cluster_get_backup]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+    const cluster = instance.cluster(clusterId);
+
+    cluster
+      .getBackup(backupId)
+      .then(result => {
+        const backup = result[0];
+      })
+      .catch(err => {
+        // Handle the error.
+      });
+    // [END bigtable_cluster_get_backup]
+  },
+
+  deleteBackup: (instanceId, clusterId, backupId) => {
+    // [START bigtable_cluster_delete_backup]
+    const {Bigtable} = require('@google-cloud/bigtable');
+    const bigtable = new Bigtable();
+    const instance = bigtable.instance(instanceId);
+    const cluster = instance.cluster(clusterId);
+
+    cluster
+      .deleteBackup(backupId, {
+        gaxOptions: {
+          timeout: 50 * 1000, // this op takes a good 30-40 seconds
+        },
+      })
+      .then(() => {
+        // empty response, backup was deleted
+      })
+      .catch(err => {
+        // Handle the error.
+      });
+    // [END bigtable_cluster_delete_backup]
+  },
 };
 
 module.exports = snippets;

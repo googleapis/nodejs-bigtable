@@ -14,7 +14,16 @@
 
 // Imports the Google Cloud client library
 const {Bigtable} = require('@google-cloud/bigtable');
+const uuid = require('uuid');
 const {inspect} = require('util');
+
+function thirtyMinutesFromNow() {
+  return new Date(Date.now() + 24 * 60 * 60 * 1000);
+}
+
+function generateBackupId() {
+  return `gcloud-tests-${uuid.v4()}`.substr(0, 48);
+}
 
 async function runBackupOperations(
   instanceID,
@@ -26,13 +35,16 @@ async function runBackupOperations(
   const instance = bigtable.instance(instanceID);
   const cluster = instance.cluster(clusterID);
 
-  const backupID = optionalBackupID || generateBackupId(cluster, tableID);
+  const backupID = optionalBackupID || generateBackupId();
 
   // [START bigtable_create_backup]
   const table = instance.table(tableID);
-  const [backupOperation] = await cluster.createBackup(table, backupID, {
-    expireTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // in 1 day from now
-  });
+  const expireTime = thirtyMinutesFromNow(); // accepts either a Date or an ITimestamp
+  const [backupOperation] = await cluster.createBackup(
+    table,
+    backupID,
+    expireTime
+  );
   console.log(
     'Started a table backup operation:',
     inspect(backupOperation.latestResponse.name, {depth: null, colors: true})
@@ -44,6 +56,16 @@ async function runBackupOperations(
   await backupOperation.promise();
   console.log('Backup is now "READY" (available).');
   // [END bigtable_create_backup]
+
+  // [START bigtable_table_backup]
+  // An alternative way is to call backup right on a Table which will
+  // automatically select the first cluster that has a READY cluster state.
+  const [backupOperationFromTable] = await table.backup(
+    `${backupID}-2`,
+    thirtyMinutesFromNow()
+  );
+  await backupOperationFromTable.promise();
+  // [END bigtable_table_backup]
 
   // [START bigtable_list_backups]
   const [existingBackups] = await cluster.listBackups();
@@ -76,13 +98,24 @@ async function runBackupOperations(
   // [END bigtable_get_backup]
 
   // [START bigtable_delete_backup]
-  await cluster.deleteBackup(backupID);
+  console.log('Deleting the backup %s...', backupID);
+  await cluster.deleteBackup(backupID, {
+    gaxOptions: {
+      // deleting a backup takes a good 30-40 seconds
+      // if DEADLINE_EXCEEDED is witnessed, then deleteBackup exceeds the default timeout
+      // this overrides it
+      timeout: 50 * 1000,
+    },
+  });
   console.log('Deleted backup with ID %s, no response is returned.', backupID);
   // [END bigtable_delete_backup]
-}
 
-function generateBackupId(cluster, table) {
-  return [cluster.id, table.id || table, Date.now()].join('-').slice(-50); // truncate to max backup id length of 50
+  // need to delete that other backup example
+  await cluster.deleteBackup(`${backupID}-2`, {
+    gaxOptions: {
+      timeout: 50 * 1000,
+    },
+  });
 }
 
 require('yargs')
