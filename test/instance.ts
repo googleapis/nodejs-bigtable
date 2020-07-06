@@ -986,16 +986,45 @@ describe('Bigtable/Instance', () => {
         callback(null, response, null, {appProfiles: response});
       };
 
+      instance.getAppProfiles((err, appProfiles, nextQuery, apiResponse) => {
+        assert.ifError(err);
+        assert.strictEqual(appProfiles![0].id, 'a');
+        assert.deepStrictEqual(appProfiles![0].metadata, response[0]);
+        assert.strictEqual(appProfiles![1].id, 'b');
+        assert.deepStrictEqual(appProfiles![1].metadata, response[1]);
+        assert.strictEqual(nextQuery, null);
+        assert.deepStrictEqual(apiResponse, {appProfiles: response});
+        done();
+      });
+    });
+
+    it('should combine options and nextPageRequest and return', done => {
+      const gaxOptions = {autoPaginate: false};
+      const pageSize = 1;
+      const getAppProfilesOptions = {pageSize, gaxOptions};
+      const response = [{name: 'a'}];
+      const nextPageRequestResponse = {pageSize, pageToken: 'someToken'};
+
+      (instance.bigtable.request as Function) = (
+        config: {},
+        callback: Function
+      ) => {
+        callback(null, response, nextPageRequestResponse);
+      };
+
       instance.getAppProfiles(
-        (err, appProfiles, failedLocations, nextPageRequest, apiResponse) => {
+        getAppProfilesOptions,
+        (err, appProfiles, nextQuery) => {
           assert.ifError(err);
-          assert.strictEqual(appProfiles![0].id, 'a');
-          assert.deepStrictEqual(appProfiles![0].metadata, response[0]);
-          assert.strictEqual(appProfiles![1].id, 'b');
-          assert.deepStrictEqual(appProfiles![1].metadata, response[1]);
-          assert.strictEqual(nextPageRequest, null);
-          assert.strictEqual(failedLocations, undefined);
-          assert.deepStrictEqual(apiResponse, {appProfiles: response});
+          assert.strictEqual(nextQuery?.gaxOptions, gaxOptions);
+          assert.strictEqual(
+            nextQuery.pageSize,
+            getAppProfilesOptions.pageSize
+          );
+          assert.strictEqual(
+            nextQuery.pageToken,
+            nextPageRequestResponse.pageToken
+          );
           done();
         }
       );

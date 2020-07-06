@@ -17,7 +17,7 @@ import * as is from 'is';
 import snakeCase = require('lodash.snakecase');
 import {Cluster} from './cluster';
 import {Bigtable} from '.';
-import {Instance} from './instance';
+import {Instance, GetAppProfilesOptions} from './instance';
 import {CallOptions} from 'google-gax';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
@@ -105,14 +105,12 @@ export type GetAppProfileResponse = [
 export type GetAppProfilesCallback = (
   err: ServiceError | null,
   appProfiles?: AppProfile[],
-  failedLocations?: string[] | null,
-  nextQuery?: google.bigtable.admin.v2.IListAppProfilesRequest,
+  nextQuery?: GetAppProfilesOptions | null,
   apiResponse?: google.bigtable.admin.v2.IListAppProfilesResponse
 ) => void;
 export type GetAppProfilesResponse = [
   AppProfile[],
-  string[],
-  google.bigtable.admin.v2.IListAppProfilesRequest,
+  GetAppProfilesOptions,
   google.bigtable.admin.v2.IListAppProfilesResponse
 ];
 export type SetAppProfileMetadataCallback = (

@@ -695,6 +695,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {AppProfile[]} callback.appProfiles List of all AppProfiles.
    * @property {object} callback.nextQuery A query object to receive more results.
    * @param {object} callback.apiResponse The full API response.
+   * @param {string[]} callback.apiResponse.failedLocations Locations from which
+   *     AppProfile information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_app_profiles
@@ -751,17 +754,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
-        let failedLocations = null;
-        if (apiResponse) {
-          failedLocations = apiResponse.failedLocations!;
-        }
-        callback(
-          null,
-          appProfiles,
-          failedLocations,
-          nextPageRequest!,
-          apiResponse!
-        );
+        const nextQuery = nextPageRequest!
+          ? extend({}, options, nextPageRequest!)
+          : null;
+        callback(null, appProfiles, nextQuery, apiResponse!);
       }
     );
   }
