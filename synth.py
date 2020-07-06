@@ -9,18 +9,8 @@ logging.basicConfig(level=logging.DEBUG)
 AUTOSYNTH_MULTIPLE_COMMITS = True
 
 version='v2'
-gapic = gcp.GAPICMicrogenerator()
-v2_library = gapic.typescript_library(
-  'bigtable',
-  version,
-  generator_args={
-    "grpc-service-config": f"google/bigtable/{version}/bigtable_grpc_service_config.json",
-    "package-name": f"@google-cloud/bigtable",
-    "main-service": f"bigtable"
-    },
-    proto_path=f'/google/bigtable/{version}',
-    extra_proto_files=['google/cloud/common_resources.proto'],
-  )
+gapic = gcp.GAPICBazel()
+v2_library = gapic.node_library('bigtable', version, proto_path=f'google/bigtable/{version}')
 # src/index.ts src/v2/index.ts has added AdminClients manually, we don't wanna override it.
 # src/*.ts is a added layer for the client libraries, they need extra setting in tsconfig.json & tslint.json
 # Tracking issues: 1. https://github.com/googleapis/nodejs-bigtable/issues/636
@@ -30,17 +20,7 @@ s.copy(
   excludes=['package.json', 'README.md', 'src/index.ts', 'src/v2/index.ts', 'tsconfig.json', 'tslint.json']
 )
 
-v2_library = gapic.typescript_library(
-    "bigtable_admin",
-    version,
-    generator_args={
-      "grpc-service-config": f"google/bigtable/admin/{version}/bigtableadmin_grpc_service_config.json",
-      "package-name": f"@google-cloud/bigtable",
-      "main-service": f"bigtable"
-      },
-      proto_path=f'/google/bigtable/admin/{version}',
-      extra_proto_files=['google/cloud/common_resources.proto'],
-      )
+v2_library = gapic.node_library("bigtable-admin", version, proto_path=f'google/bigtable/admin/{version}')
 # Not override system-test for admin/v2, just keep the v2 version.
 s.copy(
   v2_library,

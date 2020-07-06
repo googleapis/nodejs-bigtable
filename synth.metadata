@@ -3,23 +3,15 @@
     {
       "git": {
         "name": ".",
-        "remote": "https://github.com/googleapis/nodejs-bigtable.git",
-        "sha": "bd4a2cfe5a40685eb6abdc0d035913ef21efb39f"
-      }
-    },
-    {
-      "git": {
-        "name": "googleapis",
-        "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "94fe3637559a257634d7b47a15bb8d976daff788",
-        "internalRef": "316039767"
+        "remote": "git@github.com:googleapis/nodejs-bigtable.git",
+        "sha": "d9a22048b7f2848a2a6fa11228bcbed30dcbc6ce"
       }
     },
     {
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "dc9caca650c77b7039e2bbc3339ffb34ae78e5b7"
+        "sha": "303271797a360f8a439203413f13a160f2f5b3b4"
       }
     }
   ],
@@ -29,17 +21,17 @@
         "source": "googleapis",
         "apiName": "bigtable",
         "apiVersion": "v2",
-        "language": "typescript",
-        "generator": "gapic-generator-typescript"
+        "language": "nodejs",
+        "generator": "bazel"
       }
     },
     {
       "client": {
         "source": "googleapis",
-        "apiName": "bigtable_admin",
+        "apiName": "bigtable-admin",
         "apiVersion": "v2",
-        "language": "typescript",
-        "generator": "gapic-generator-typescript"
+        "language": "nodejs",
+        "generator": "bazel"
       }
     }
   ]
