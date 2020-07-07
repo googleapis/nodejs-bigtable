@@ -83,9 +83,8 @@ describe('Bigtable', () => {
 
   describe('instances', () => {
     it('should get a list of instances', async () => {
-      const [instances, failedLocations] = await bigtable.getInstances();
+      const [instances] = await bigtable.getInstances();
       assert(instances.length > 0);
-      assert(Array.isArray(failedLocations));
     });
 
     it('should check if an instance exists', async () => {
