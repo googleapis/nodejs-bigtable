@@ -668,19 +668,21 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   /**
    * @typedef {array} GetAppProfilesResponse
    * @property {AppProfile[]} 0 Array of {@link Instance} instances.
-   * @property {string[]} 1 locations from which AppProfile information
-   *     could not be retrieved.
-   * @property {object} 2 nextQuery A query object to receive more results.
-   * @property {object} 3 The full API response.
+   * @property {object} 1 nextQuery A query object to receive more results.
+   * @property {object} 2 The full API response.
+   *     Note: 'failedLocations' property may contain locations from which
+   *     AppProfile information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    */
   /**
    * @callback GetAppProfilesCallback
    * @param {?Error} err Request error, if any.
    * @param {AppProfile[]} instances Array of {@link Instance} instances.
-   * @param {string[]} locations Locations from which AppProfile information
-   *     could not be retrieved.
    * @param {object} nextQuery A query object to receive more results.
    * @param {object} apiResponse The full API response.
+   *     Note: 'failedLocations' property may contain locations from which
+   *     AppProfile information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    */
   /**
    * Get App Profile objects for this instance.
@@ -689,15 +691,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {boolean} [options.autoPaginate=true] Have pagination handled.
    * @param {object} [options.gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @property {number} [options.pageSize] Maximum number of results per page.
+   * @param {number} [options.pageSize] Maximum number of results per page.
    * @param {string} [options.pageToken] A previously-returned page token
    *     representing part of a larger set of results to view.
    * @param {function} callback The callback function.
    * @param {?error} callback.error An error returned while making this request.
    * @param {AppProfile[]} callback.appProfiles List of all AppProfiles.
-   * @property {object} callback.nextQuery A query object to receive more results.
+   * @param {object} callback.nextQuery A query object to receive more results.
    * @param {object} callback.apiResponse The full API response.
-   * @param {string[]} callback.apiResponse.failedLocations Locations from which
+   *     Note: 'failedLocations' property may contain locations from which
    *     AppProfile information could not be retrieved.
    *     Values are of the form `projects/<project>/locations/<zone_id>`
    *
@@ -943,6 +945,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {Cluster[]} callback.clusters List of all
    *     Clusters.
    * @param {object} callback.apiResponse The full API response.
+   *     Note: 'failedLocations' property may contain locations from which
+   *     Cluster information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    *
    * @example <caption>include:samples/document-snippets/instance.js</caption>
    * region_tag:bigtable_get_clusters
