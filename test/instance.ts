@@ -962,6 +962,32 @@ describe('Bigtable/Instance', () => {
       instance.getAppProfiles(options, assert.ifError);
     });
 
+    it('should pass autoPaginate from options to gaxOpts', done => {
+      const gaxOptions = {timeout: 1000};
+      const getAppProfilesOptions = {autoPaginate: false, gaxOptions};
+      const expectedGaxOpts = Object.assign({}, gaxOptions, {
+        autoPaginate: getAppProfilesOptions.autoPaginate,
+      });
+
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+        done();
+      };
+      instance.getAppProfiles(getAppProfilesOptions, assert.ifError);
+    });
+
+    it('autoPaginate in options.gaxOptions should take precedence', done => {
+      const gaxOptions = {timeout: 1000, autoPaginate: false};
+      const getTablesOptions = {autoPaginate: true, gaxOptions};
+      const expectedGaxOpts = Object.assign({}, gaxOptions);
+
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+        done();
+      };
+      instance.getAppProfiles(getTablesOptions, assert.ifError);
+    });
+
     it('should return error from gapic', done => {
       const error = new Error('Error.');
       (instance.bigtable.request as Function) = (
@@ -1465,8 +1491,7 @@ describe('Bigtable/Instance', () => {
     const views = ((FakeTable as any).VIEWS = {
       unspecified: 0,
       name: 1,
-      schema: 2,
-      full: 4,
+      replication: 3,
     });
 
     it('should provide the proper request options', done => {
@@ -1632,6 +1657,32 @@ describe('Bigtable/Instance', () => {
         };
         instance.getTables(options, assert.ifError);
       });
+    });
+
+    it('should pass autoPaginate from options to gaxOpts', done => {
+      const gaxOptions = {timeout: 1000};
+      const getTablesOptions = {autoPaginate: false, gaxOptions};
+      const expectedGaxOpts = Object.assign({}, gaxOptions, {
+        autoPaginate: getTablesOptions.autoPaginate,
+      });
+
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+        done();
+      };
+      instance.getTables(getTablesOptions, assert.ifError);
+    });
+
+    it('autoPaginate in options.gaxOptions should take precedence', done => {
+      const gaxOptions = {timeout: 1000, autoPaginate: false};
+      const getTablesOptions = {autoPaginate: true, gaxOptions};
+      const expectedGaxOpts = Object.assign({}, gaxOptions);
+
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        assert.deepStrictEqual(config.gaxOpts, expectedGaxOpts);
+        done();
+      };
+      instance.getTables(getTablesOptions, assert.ifError);
     });
 
     it('should return an array of table objects', done => {

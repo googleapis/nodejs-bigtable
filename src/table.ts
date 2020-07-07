@@ -37,7 +37,7 @@ import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex, PagedCallback} from '.';
-import {Instance} from './instance';
+import {Instance, PagedOptions} from './instance';
 import {ModifiableBackupFields} from './backup';
 import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
@@ -175,15 +175,12 @@ export type TableExistsCallback = (
 ) => void;
 export type TableExistsResponse = [boolean];
 
-export interface GetTablesOptions {
-  gaxOptions?: CallOptions;
+export interface GetTablesOptions extends PagedOptions {
   /**
    * View over the table's fields.
    * Possible options are 'name' (default) or 'replication' only.
    */
   view?: 'name' | 'replication';
-  pageSize?: number;
-  pageToken?: string;
 }
 
 export interface GetRowsOptions {
