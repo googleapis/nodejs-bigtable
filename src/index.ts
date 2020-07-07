@@ -633,10 +633,10 @@ export class Bigtable {
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    *
-   * bigtable.getInstances(function(err, instances) {
+   * bigtable.getInstances(function(err, instances, response) {
    *   if (!err) {
    *     // `instances` is an array of Instance objects.
-   *     if (failedLocations.length > 0) {
+   *     if (response.failedLocations.length > 0) {
    *       // These locations contain instances which could not be retrieved.
    *     }
    *   }
@@ -646,10 +646,11 @@ export class Bigtable {
    * </caption>
    * bigtable.getInstances().then(function(data) {
    *   const instances = data[0];
+   *   const fullResponse = data[1];
    *
-   *   if (data[1]) {
+   *   if (fullResponse.failedLocations.length > 0) {
    *     // These locations contain instances which could not be retrieved.
-   *     const failedLocations = data[1];
+   *     const failedLocations = fullResponse.failedLocations;
    *   }
    * });
    */
