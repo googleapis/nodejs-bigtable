@@ -1138,7 +1138,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      callback
+      callback // TODO cast as Table
     );
   }
 

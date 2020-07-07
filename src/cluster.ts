@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {PreciseDate} from '@google-cloud/precise-date';
 import {promisifyAll} from '@google-cloud/promisify';
 import {
   CallOptions,
@@ -26,6 +27,7 @@ import {google} from '../protos/protos';
 import {Bigtable} from '.';
 import {Table} from './table';
 import {Instance} from './instance';
+import {Backup} from './backup';
 
 export interface GenericCallback<T> {
   (err?: ServiceError | null, apiResponse?: T | null): void;
@@ -87,12 +89,13 @@ export type GetClusterMetadataCallback = (
   apiResponse?: IOperation | null
 ) => void;
 
-export type BackupTimestamp = google.protobuf.ITimestamp | Date;
+export type BackupTimestamp = google.protobuf.ITimestamp | PreciseDate;
 export interface ModifiableBackupFields {
   /**
-   * The ITimestamp (or Date which will be converted) representing when the
-   * backup will automatically be deleted. This must be at a minimum 6 hours
-   * from the time of the backup request and a maximum of 30 days.
+   * The ITimestamp (Date or PreciseDate will be converted) representing
+   * when the backup will automatically be deleted. This must be at a
+   * minimum 6 hours from the time of the backup request and a maximum of 30
+   * days.
    */
   expireTime?: BackupTimestamp;
 }
@@ -128,9 +131,9 @@ export interface GetBackupOptions {
 }
 export type GetBackupCallback = (
   err: ServiceError | null,
-  apiResponse?: google.bigtable.admin.v2.IBackup
+  apiResponse?: Backup
 ) => void;
-export type GetBackupResponse = [google.bigtable.admin.v2.IBackup];
+export type GetBackupResponse = [Backup];
 
 export interface ListBackupsOptions {
   /**
@@ -153,10 +156,10 @@ export interface ListBackupsOptions {
 
   gaxOptions?: CallOptions;
 }
-export type ListBackupsResponse = [google.bigtable.admin.v2.IBackup[]];
+export type ListBackupsResponse = [Backup[]];
 export type ListBackupsCallback = (
   err: ServiceError | null,
-  metadata?: google.bigtable.admin.v2.IBackup[]
+  metadata?: Backup[]
 ) => void;
 
 export interface UpdateBackupOptions {
@@ -164,9 +167,9 @@ export interface UpdateBackupOptions {
 }
 export type UpdateBackupCallback = (
   err: ServiceError | null,
-  apiResponse?: google.bigtable.admin.v2.IBackup
+  apiResponse?: Backup
 ) => void;
-export type UpdateBackupResponse = [google.bigtable.admin.v2.IBackup];
+export type UpdateBackupResponse = [Backup];
 
 /**
  * Create a cluster object to interact with your cluster.
@@ -601,7 +604,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     };
 
     if (expireTime instanceof Date) {
-      backup.expireTime = this._dateToTimestamp(expireTime);
+      backup.expireTime = new PreciseDate(expireTime).toStruct();
     } else {
       backup.expireTime = expireTime;
     }
@@ -624,7 +627,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      callback
+      callback // TODO cast as Backup
     );
   }
 
@@ -730,7 +733,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      callback
+      (err, resp) => {
+        let backup;
+        if (resp) {
+          backup = new Backup(this.bigtable, resp);
+        }
+
+        callback(err, backup);
+      }
     );
   }
 
@@ -770,7 +780,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      callback // TODO map(new Backup())
+      (err, resp) => {
+        let backups;
+        if (resp) {
+          backups = resp.map(backup => new Backup(this.bigtable, backup));
+        }
+
+        callback(err, backups);
+      }
     );
   }
 
@@ -835,7 +852,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
     if (fields.expireTime) {
       if (expireTime instanceof Date) {
-        backup.expireTime = this._dateToTimestamp(expireTime);
+        backup.expireTime = new PreciseDate(expireTime).toStruct();
       } else {
         backup.expireTime = expireTime;
       }
@@ -862,16 +879,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      callback // TODO new Backup()
-    );
-  }
+      (err, resp) => {
+        let backup;
+        if (resp) {
+          backup = new Backup(this.bigtable, resp);
+        }
 
-  private _dateToTimestamp(date: Date): google.protobuf.ITimestamp {
-    const millis = date.getTime();
-    return {
-      seconds: Math.floor(millis / 1000),
-      nanos: (millis % 1000) * 1000000,
-    };
+        callback(err, backup);
+      }
+    );
   }
 }
 
