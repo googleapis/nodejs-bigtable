@@ -275,10 +275,6 @@ const snippets = {
       .getAppProfiles()
       .then(result => {
         const appProfiles = result[0];
-        if (result[1]) {
-          // These locations contain instances which could not be retrieved.
-          const failedLocations = result[1];
-        }
       })
       .catch(err => {
         // Handle the error.
