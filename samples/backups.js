@@ -17,11 +17,6 @@ const {Bigtable} = require('@google-cloud/bigtable');
 const uuid = require('uuid');
 const {inspect} = require('util');
 
-function xHoursFromNow(x) {
-  const pad = 60 * 1000;
-  return new Date(Date.now() + x * 60 * 60 * 1000 + pad);
-}
-
 function generateBackupId() {
   return `gcloud-tests-${uuid.v4()}`.substr(0, 48);
 }
@@ -40,7 +35,9 @@ async function runBackupOperations(
 
   // [START bigtable_create_backup]
   const table = instance.table(tableID);
-  const expireTime = xHoursFromNow(6); // accepts either a Date or an ITimestamp
+  const expireTime = new Date(Date.now() + 7 * 60 * 60 * 1000); // 7 hours from now
+
+  // expireTime can be either a Date, PreciseDate, or an ITimestamp
   const [backupOperation] = await cluster.createBackup(table, backupID, {
     expireTime,
   });
@@ -62,16 +59,19 @@ async function runBackupOperations(
   // An alternative way is to call backup right on a Table which will
   // automatically select the first cluster that has a READY cluster state.
   const [backupOperationFromTable] = await table.backup(`${backupID}-2`, {
-    expireTime: xHoursFromNow(6),
+    expireTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
   });
-  await backupOperationFromTable.promise();
+  const [backupFromTable] = await backupOperationFromTable.promise();
   // [END bigtable_table_backup]
 
   // [START bigtable_list_backups]
   const [existingBackups] = await cluster.listBackups();
   console.log(
     'These backups exist:',
-    inspect(existingBackups, {depth: null, colors: true})
+    inspect(
+      existingBackups.map(backup => backup.valueOf()),
+      {depth: 3, colors: true}
+    )
   );
   // [END bigtable_list_backups]
 
@@ -79,33 +79,40 @@ async function runBackupOperations(
   // Get metadata about a backup, like when it will expire or how big it is.
   // NOTE: No need to poll with this RPC to get backup ready status,
   //  instead use the EventEmitter or promise interface of the LRO.
+  // `getBackup` also returns a `Backup` with `restore`, `update`, and `delete` methods.
+  const [fetchedBackup] = await cluster.getBackup(backupID);
+  console.log('The backup is %s bytes in size.', fetchedBackup.sizeBytes);
 
-  // Convert GCPs Timestamp into a JavaScript Date, this will be used below...
-  function timestampToDate(timestamp) {
-    return new Date(
-      Number(timestamp.seconds) * 1000 + Math.floor(timestamp.nanos / 1000000)
-    );
-  }
+  // *Time properties have *Date helpers to convert from ITimestamp to PreciseDate
+  console.log(
+    'The backup will auto delete at',
+    fetchedBackup.expireDate.toISOString() // helper for expireTime
+  );
 
-  const [fetchedBackupMeta] = await cluster.getBackup(backupID);
-  console.log('The backup is %s bytes in size.', fetchedBackupMeta.sizeBytes);
-
-  const expireDate = timestampToDate(fetchedBackupMeta.expireTime);
-  console.log('The backup will auto delete at', expireDate.toISOString());
-
-  const endDate = timestampToDate(fetchedBackupMeta.endTime);
-  console.log('The backup finished being created at', endDate.toISOString());
+  console.log(
+    'The backup finished being created at',
+    fetchedBackup.endTime // or use the original timestamp directly
+  );
   // [END bigtable_get_backup]
 
   // [START bigtable_update_backup]
   // Extend a backup's life by updating its expiry date.
-  const [updatedBackupMeta] = await cluster.updateBackup(backupID, {
-    expireTime: xHoursFromNow(7),
+  const [updatedBackup] = await cluster.updateBackup(backupID, {
+    expireTime: new Date(Date.now() + 8 * 60 * 60 * 1000), // 8 hours (was 7)
   });
-  const updatedExpireDate = timestampToDate(updatedBackupMeta.expireTime);
   console.log(
     'The backup will now auto delete at',
-    updatedExpireDate.toISOString()
+    updatedBackup.expireDate.toISOString()
+  );
+
+  // alternatively use the update method on the backup
+  // `updatedBackup` can be reused since it is a `Backup`
+  const [ownUpdatedBackupMeta] = await updatedBackup.update({
+    expireTime: new Date(Date.now() + 9 * 60 * 60 * 1000), // 9 hours (was 8)
+  });
+  console.log(
+    'The backup will now auto delete at',
+    ownUpdatedBackupMeta.expireDate.toISOString()
   );
   // [END bigtable_update_backup]
 
@@ -126,7 +133,7 @@ async function runBackupOperations(
     'Table restoration started, waiting for the table to be fully restored'
   );
   const [restoredTable, restoredMeta] = await tableRestoreOperation.promise();
-  console.log('restoredTable:', restoredTable); // TODO cast as Table
+  console.log('restoredTable:', restoredTable);
   console.log('restoredMeta:', restoredMeta);
   // [END bigtable_restore_backup]
 
@@ -144,6 +151,7 @@ async function runBackupOperations(
   // [END bigtable_delete_backup]
 
   // need to delete that other backup example
+  // await new Backup(backupFromTable).delete();
   await cluster.deleteBackup(`${backupID}-2`, {
     gaxOptions: {
       timeout: 50 * 1000,
