@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [3.0.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.0.0...v3.0.1) (2020-07-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @google-cloud/bigtable to v3 ([#756](https://www.github.com/googleapis/nodejs-bigtable/issues/756)) ([e5e8189](https://www.github.com/googleapis/nodejs-bigtable/commit/e5e8189b3254a7a1d216f5380b6e88c7cdeb0c5e))
+* typeo in nodejs .gitattribute ([#759](https://www.github.com/googleapis/nodejs-bigtable/issues/759)) ([843d1da](https://www.github.com/googleapis/nodejs-bigtable/commit/843d1daa9bdf30b8a5ab612967fbd8652723612d))
+
 ## [3.0.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v2.3.2...v3.0.0) (2020-07-06)
 
 
