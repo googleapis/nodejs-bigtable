@@ -60,7 +60,6 @@ import {CallOptions, LROperation, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
-import * as protos from '../protos/protos';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -146,14 +145,14 @@ export interface RestoreTableOptions {
 export type RestoreTableCallback = (
   err: ServiceError | null,
   apiResponse?: LROperation<
-    protos.google.bigtable.admin.v2.ITable,
-    protos.google.bigtable.admin.v2.IRestoreTableMetadata
+    google.bigtable.admin.v2.ITable,
+    google.bigtable.admin.v2.IRestoreTableMetadata
   >
 ) => void;
 export type RestoreTableResponse = [
   LROperation<
-    protos.google.bigtable.admin.v2.ITable,
-    protos.google.bigtable.admin.v2.IRestoreTableMetadata
+    google.bigtable.admin.v2.ITable,
+    google.bigtable.admin.v2.IRestoreTableMetadata
   >
 ];
 
@@ -1128,8 +1127,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     this.bigtable.request<
       LROperation<
-        protos.google.bigtable.admin.v2.ITable,
-        protos.google.bigtable.admin.v2.IRestoreTableMetadata
+        google.bigtable.admin.v2.ITable,
+        google.bigtable.admin.v2.IRestoreTableMetadata
       >
     >(
       {
