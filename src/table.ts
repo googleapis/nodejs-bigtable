@@ -531,7 +531,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     cb?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
     if (!id) {
-      throw new Error('An id is required to create a backup.');
+      throw new TypeError('An id is required to create a backup.');
     }
 
     const options =
@@ -539,11 +539,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    this.getReplicationStates(options.gaxOptions)
+    this.getReplicationStates({...options.gaxOptions})
       .then(([stateMap]) => {
         const [clusterId] =
           [...stateMap.entries()].find(
-            ([, clusterState]) => clusterState.replicationState === 'READY'
+            ([, clusterState]) =>
+              clusterState.replicationState === 'READY' ||
+              clusterState.replicationState === 'READY_OPTIMIZING'
           ) || [];
         if (!clusterId) {
           throw new Error('No ready clusters eligible for backup.');

@@ -90,7 +90,7 @@ export type GetClusterMetadataCallback = (
   apiResponse?: IOperation | null
 ) => void;
 
-export type BackupTimestamp = google.protobuf.ITimestamp | PreciseDate;
+export type BackupTimestamp = google.protobuf.ITimestamp | PreciseDate | Date;
 export interface ModifiableBackupFields {
   /**
    * The ITimestamp (Date or PreciseDate will be converted) representing

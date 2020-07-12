@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Imports the Google Cloud client library
-const {Bigtable} = require('@google-cloud/bigtable');
+const {Bigtable, Backup} = require('@google-cloud/bigtable');
 const uuid = require('uuid');
 const {inspect} = require('util');
 
@@ -151,8 +151,7 @@ async function runBackupOperations(
   // [END bigtable_delete_backup]
 
   // need to delete that other backup example
-  // await new Backup(backupFromTable).delete();
-  await cluster.deleteBackup(`${backupID}-2`, {
+  await new Backup(bigtable, backupFromTable).delete({
     gaxOptions: {
       timeout: 50 * 1000,
     },
