@@ -20,10 +20,11 @@ import {CallOptions} from 'google-gax';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass: Function) {
+  promisifyAll(klass: Function, options: any) {
     if (klass.name === 'Cluster') {
       promisified = true;
     }
+    promisify.promisifyAll(klass, options);
   },
 });
 

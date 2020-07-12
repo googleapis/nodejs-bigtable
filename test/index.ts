@@ -49,6 +49,7 @@ const fakePromisify = Object.assign({}, promisify, {
       'operation',
       'request',
     ]);
+    promisify.promisifyAll(klass, options);
   },
 });
 const fakeReplaceProjectIdToken = Object.assign({}, projectify, {
@@ -503,7 +504,7 @@ describe('Bigtable', () => {
       );
     });
 
-    it('should throw an error if cluster id not provided.', () => {
+    it('should reject if cluster id not provided.', async () => {
       const options = {
         displayName: 'my-sweet-instance',
         labels: {env: 'prod'},
@@ -515,9 +516,28 @@ describe('Bigtable', () => {
           },
         ],
       };
-      assert.throws(() => {
-        bigtable.createInstance(INSTANCE_ID, options);
-      }, /A cluster was provided without an `id` property defined\./);
+      await assert.rejects(
+        async () => await bigtable.createInstance(INSTANCE_ID, options),
+        /A cluster was provided without an `id` property defined\./
+      );
+    });
+
+    it('should throw if falsy cluster id not provided.', () => {
+      const options = {
+        displayName: 'my-sweet-instance',
+        labels: {env: 'prod'},
+        clusters: [
+          {
+            nodes: 3,
+            location: 'us-central1-b',
+            storage: 'ssd',
+          },
+        ],
+      };
+      assert.throws(
+        () => bigtable.createInstance(INSTANCE_ID, options, () => {}),
+        /A cluster was provided without an `id` property defined\./
+      );
     });
 
     it('should throw an error if configuration object is not provided', () => {

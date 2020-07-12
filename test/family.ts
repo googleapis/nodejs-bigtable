@@ -23,10 +23,11 @@ import {Table} from '../src/table';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass: Function) {
+  promisifyAll(klass: Function, options: any) {
     if (klass.name === 'Family') {
       promisified = true;
     }
+    promisify.promisifyAll(klass, options);
   },
 });
 
