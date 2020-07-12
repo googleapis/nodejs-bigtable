@@ -50,6 +50,7 @@ const fakePromisify = Object.assign({}, promisify, {
       'getTablesStream',
       'getAppProfilesStream',
     ]);
+    promisify.promisifyAll(klass, options);
   },
 });
 
@@ -436,10 +437,18 @@ describe('Bigtable/Instance', () => {
     const TABLE_NAME =
       'projects/my-project/instances/my-instance/tables/my-table';
 
-    it('should throw if an id is not provided', () => {
-      assert.throws(() => {
-        (instance.createTable as Function)();
-      }, /An id is required to create a table\./);
+    it('should throw if a falsy id is provided', () => {
+      assert.throws(
+        () => instance.createTable('', () => {}),
+        /An id is required to create a table\./
+      );
+    });
+
+    it('should reject if an id is not provided', async () => {
+      await assert.rejects(
+        async () => await (instance.createTable as Function)(),
+        /An id is required to create a table\./
+      );
     });
 
     it('should provide the proper request options', done => {
