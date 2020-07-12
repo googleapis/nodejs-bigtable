@@ -44,6 +44,7 @@ const fakePromisify = Object.assign({}, promisify, {
     }
     promisified = true;
     assert.deepStrictEqual(options.exclude, ['family', 'row']);
+    promisify.promisifyAll(klass, options);
   },
 });
 
@@ -301,10 +302,17 @@ describe('Bigtable/Table', () => {
     const FAMILY_ID = 'test-family';
 
     it('should throw if a id is not provided', () => {
-      assert.throws(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (table as any).createFamily();
-      }, /An id is required to create a family\./);
+      assert.throws(
+        () => table.createFamily(undefined, () => {}),
+        /An id is required to create a family\./
+      );
+    });
+
+    it('should reject if a id is not provided', async () => {
+      await assert.rejects(
+        async () => await table.createFamily(),
+        /An id is required to create a family\./
+      );
     });
 
     it('should provide the proper request options', done => {
@@ -2425,7 +2433,7 @@ describe('Bigtable/Table', () => {
         done();
       };
 
-      table.sampleRowKeys(gaxOptions);
+      table.sampleRowKeys(gaxOptions, () => {});
     });
 
     describe('success', () => {

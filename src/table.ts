@@ -530,14 +530,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
     cb?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
-    if (!id) {
-      throw new TypeError('An id is required to create a backup.');
-    }
-
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    if (!id || typeof id === 'function') {
+      throw new TypeError('An id is required to create a backup.');
+    }
 
     this.getReplicationStates({...options.gaxOptions})
       .then(([stateMap]) => {
@@ -641,7 +641,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
 
-    if (!id) {
+    if (!id || typeof id === 'function') {
       throw new Error('An id is required to create a family.');
     }
 
