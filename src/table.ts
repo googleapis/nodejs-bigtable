@@ -550,11 +550,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         return clusterId;
       })
-      .then(clusterId => {
-        this.instance
-          .cluster(clusterId)
-          .createBackup(this, id, fields, options, callback);
-      })
+      .then(clusterId =>
+        this.instance.cluster(clusterId).createBackup(this, id, fields, options)
+      )
+      .then(([resp]) => callback(null, resp))
       .catch(err => callback(err));
   }
 
