@@ -616,11 +616,11 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    if (!table) {
+    if (!table || typeof table === 'function') {
       throw new Error('A reference to a table is required to create a backup.');
     }
 
-    if (!id) {
+    if (!id || typeof table === 'function') {
       throw new Error('An id is required to create a backup.');
     }
 
@@ -696,7 +696,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    if (!id) {
+    if (!id || typeof id === 'function') {
       throw new Error('The backup id/name is required.');
     }
 
@@ -748,7 +748,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    if (!id) {
+    if (!id || typeof id === 'function') {
       throw new Error('The backup id/name is required.');
     }
 
@@ -866,7 +866,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    if (!id) {
+    if (!id || typeof id === 'function') {
       throw new Error('The backup id/name is required.');
     }
 
