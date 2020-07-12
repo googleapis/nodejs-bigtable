@@ -38,14 +38,14 @@ import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
-import {google} from '../protos/protos';
-import {Duplex} from 'stream';
 import {
   CreateBackupCallback,
   CreateBackupOptions,
   CreateBackupResponse,
   ModifiableBackupFields,
 } from './cluster';
+import {google} from '../protos/protos';
+import {Duplex} from 'stream';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)

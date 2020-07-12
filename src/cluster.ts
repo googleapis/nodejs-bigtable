@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {paginator, ResourceStream} from '@google-cloud/paginator';
 import {PreciseDate} from '@google-cloud/precise-date';
 import {promisifyAll} from '@google-cloud/promisify';
 import {
@@ -154,8 +155,35 @@ export interface ListBackupsOptions {
    */
   orderBy?: string;
 
+  /**
+   * Maximum results to return per page.
+   * @default Infinity
+   */
+  pageSize?: number;
+
+  /**
+   * A previously-returned page token representing part of a larger set of
+   * results to view.
+   */
+  pageToken?: string;
+
   gaxOptions?: CallOptions;
 }
+
+export interface ListBackupsStreamOptions extends ListBackupsOptions {
+  /**
+   * Have pagination handled automatically.
+   * @default true
+   */
+  autoPaginate?: boolean;
+
+  /**
+   * Maximum API calls to make.
+   * @default Infinity
+   */
+  maxApiCalls?: number;
+}
+
 export type ListBackupsResponse = [Backup[]];
 export type ListBackupsCallback = (
   err: ServiceError | null,
@@ -190,6 +218,10 @@ export class Cluster {
   id: string;
   name: string;
   metadata?: ICluster;
+  listBackupsStream!: (
+    options?: ListBackupsStreamOptions
+  ) => ResourceStream<Backup>;
+
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
@@ -557,8 +589,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @param {Table} table A reference to the Table to backup.
    * @param {string} id
    *   Required. The id of the backup to be created. The `backup_id` along with
-   *   the parent `parent` are combined as {parent}/backups/{backup_id} to create
-   *   the full backup name, of the form:
+   *   the parent `parent` are combined as {parent}/backups/{backup_id} to
+   *   create the full backup name, of the form:
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup_id}`.
    *   This string must be between 1 and 50 characters in length and match the
    *   regex {@link -_.a-zA-Z0-9|_a-zA-Z0-9}*.
@@ -771,6 +803,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       parent: this.name,
       filter: options.filter,
       orderBy: options.orderBy,
+      pageSize: options.pageSize,
+      pageToken: options.pageToken,
     };
 
     this.bigtable.request<google.bigtable.admin.v2.IBackup[]>(
@@ -890,6 +924,42 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 }
+
+/**
+ * Lists Cloud Bigtable backups within this cluster. Provides both
+ * completed and pending backups as a readable object stream.
+ *
+ * @param {ListBackupsStreamOptions} [options] Configuration object. See
+ *     {@link Cluster#listBackups} for a complete list of options.
+ * @returns {ResourceStream<Backup>}
+ *
+ * @example
+ * const {Bigtable} = require('@google-cloud/bigtable');
+ * const bigtable = new Bigtable();
+ * const instance = bigtable.instance('my-instance');
+ * const cluster = instance.cluster('my-cluster');
+ *
+ * instance.listBackupsStream()
+ *   .on('error', console.error)
+ *   .on('data', function(backup) {
+ *     // backup is a Backup object.
+ *   })
+ *   .on('end', () => {
+ *     // All backups retrieved.
+ *   });
+ *
+ * //-
+ * // If you anticipate many results, you can end a stream early to prevent
+ * // unnecessary processing and API requests.
+ * //-
+ * cluster.listBackupsStream()
+ *   .on('data', function(backup) {
+ *     this.end();
+ *   });
+ */
+Cluster.prototype.listBackupsStream = paginator.streamify<Backup>(
+  'listBackups'
+);
 
 /*! Developer Documentation
  *
