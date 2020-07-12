@@ -465,7 +465,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     optionsOrCallback?: CreateTableOptions | CreateTableCallback,
     cb?: CreateTableCallback
   ): void | Promise<CreateTableResponse> {
-    if (!id) {
+    if (!id || typeof id === 'function') {
       throw new Error('An id is required to create a table.');
     }
 
@@ -1097,28 +1097,26 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     optionsOrCallback?: RestoreTableOptions | RestoreTableCallback,
     cb?: RestoreTableCallback
   ): void | Promise<RestoreTableResponse> {
-    if (!backupId) {
-      throw new Error('A backup id is required for what to restore.');
-    }
-
-    if (!clusterId) {
-      throw new Error(
-        'A cluster id is required from where the backup resides.'
-      );
-    }
-
-    if (!tableId) {
-      throw new Error('An table id is required to restore from a backup.');
-    }
-
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const backupName = `${this.name}/clusters/${clusterId}/backups/${backupId}`;
-    // const tableName = `${this.name}/tables/${tableId}`;
+    if (!backupId || typeof backupId === 'function') {
+      throw new Error('A backup id is required for what to restore.');
+    }
 
+    if (!clusterId || typeof clusterId === 'function') {
+      throw new Error(
+        'A cluster id is required from where the backup resides.'
+      );
+    }
+
+    if (!tableId || typeof tableId === 'function') {
+      throw new Error('An table id is required to restore from a backup.');
+    }
+
+    const backupName = `${this.name}/clusters/${clusterId}/backups/${backupId}`;
     const reqOpts: google.bigtable.admin.v2.IRestoreTableRequest = {
       parent: this.name,
       tableId,
