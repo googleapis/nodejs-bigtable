@@ -1,4 +1,4 @@
-// Copyright 2016 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1304,6 +1304,7 @@ describe('Bigtable/Table', () => {
       await assert.rejects(async () => await table.backup('id', fields), err);
     });
 
+    // test each cluster state that is not eligible for starting a backup
     ([
       'STATE_NOT_KNOWN',
       'INITIALIZING',

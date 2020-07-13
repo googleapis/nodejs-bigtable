@@ -1,4 +1,4 @@
-// Copyright 2016 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -98,6 +98,10 @@ describe('Bigtable/Instance', () => {
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
   const CLUSTER_ID = 'my-cluster';
+  const TABLE_ID = 'my-table';
+  const BACKUP_ID = 'my-backup';
+  const BACKUP_NAME = `${INSTANCE_NAME}/clusters/${CLUSTER_ID}/backups/${BACKUP_ID}`;
+
   let Instance: typeof inst.Instance;
   let instance: inst.Instance;
 
@@ -1488,6 +1492,111 @@ describe('Bigtable/Instance', () => {
           assert(tables.length > 0);
           done();
         });
+    });
+  });
+
+  describe('restoreTable', () => {
+    let requestStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      requestStub = sandbox.stub().yields(null, 'ok');
+      instance.bigtable.request = requestStub;
+    });
+
+    it('should throw if falsy backupId', () => {
+      assert.throws(
+        () => instance.restoreTable('', '', '', () => {}),
+        /backup id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing backupId', async () => {
+      await assert.rejects(
+        async () => await (instance.restoreTable as Function)(),
+        /backup id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should throw if falsy clusterId', () => {
+      assert.throws(
+        () => instance.restoreTable(BACKUP_ID, '', '', () => {}),
+        /cluster id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing clusterId', async () => {
+      await assert.rejects(
+        async () => await (instance.restoreTable as Function)(BACKUP_ID),
+        /cluster id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should throw if falsy tableId', () => {
+      assert.throws(
+        () => instance.restoreTable(BACKUP_ID, CLUSTER_ID, '', () => {}),
+        /table id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing tableId', async () => {
+      await assert.rejects(
+        async () =>
+          await (instance.restoreTable as Function)(BACKUP_ID, CLUSTER_ID),
+        /table id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should call request with rpc signature', async () => {
+      await instance.restoreTable(BACKUP_ID, CLUSTER_ID, TABLE_ID);
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0], {
+        client: 'BigtableTableAdminClient',
+        method: 'restoreTable',
+        reqOpts: {
+          parent: INSTANCE_NAME,
+          tableId: TABLE_ID,
+          backup: BACKUP_NAME,
+        },
+        gaxOpts: undefined,
+      });
+    });
+
+    it('should handle the response', async () => {
+      const [result] = await instance.restoreTable(
+        BACKUP_ID,
+        CLUSTER_ID,
+        TABLE_ID
+      );
+      assert.strictEqual(result, 'ok');
+    });
+
+    it('should call request including opts', async () => {
+      const [result] = await instance.restoreTable(
+        BACKUP_ID,
+        CLUSTER_ID,
+        TABLE_ID,
+        {gaxOptions: {timeout: 9000}}
+      );
+      assert.deepStrictEqual(requestStub.firstCall.args[0].gaxOpts, {
+        timeout: 9000,
+      });
+      assert.strictEqual(result, 'ok');
+    });
+
+    it('should bubble up errors while restoring a table', async () => {
+      const err = new Error('uh oh!');
+      requestStub.yields(err);
+
+      await assert.rejects(
+        async () => await instance.restoreTable(BACKUP_ID, CLUSTER_ID, TABLE_ID)
+      );
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
     });
   });
 
