@@ -41,6 +41,7 @@ export class Backup implements google.bigtable.admin.v2.IBackup {
     | null;
 
   metadata: google.bigtable.admin.v2.IBackup;
+
   private _bigtable: Bigtable;
   private _tableAdminClient: BigtableTableAdminClient;
 
