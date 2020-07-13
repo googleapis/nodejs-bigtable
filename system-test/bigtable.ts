@@ -160,6 +160,21 @@ describe('Bigtable', () => {
     it('should retrieve a list of app profiles', async () => {
       const [appProfiles] = await INSTANCE.getAppProfiles();
       assert(appProfiles[0] instanceof AppProfile);
+      assert(appProfiles.length > 0);
+    });
+
+    it('should retrieve a list of app profiles in stream mode', done => {
+      const appProfiles: AppProfile[] = [];
+      INSTANCE.getAppProfilesStream()
+        .on('error', done)
+        .on('data', appProfile => {
+          assert(appProfile instanceof AppProfile);
+          appProfiles.push(appProfile);
+        })
+        .on('end', () => {
+          assert(appProfiles.length > 0);
+          done();
+        });
     });
 
     it('should check if an app profile exists', async () => {

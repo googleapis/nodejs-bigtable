@@ -750,6 +750,8 @@ export class Bigtable {
       });
     };
 
+    const streamified = {listTablesStream: true, listAppProfilesStream: true};
+
     if (isStreamMode) {
       stream = streamEvents(new PassThrough({objectMode: true}));
       stream.abort = () => {
@@ -757,9 +759,11 @@ export class Bigtable {
           gaxStream.cancel();
         }
       };
-
-      stream.once('reading', makeRequestStream);
-
+      if (config.method! in streamified) {
+        stream.once('reading', makeRequestStreamified);
+      } else {
+        stream.once('reading', makeRequestStream);
+      }
       return stream;
     } else {
       makeRequestCallback();
@@ -802,6 +806,20 @@ export class Bigtable {
         retryRequest(null, retryOpts)
           .on('error', stream.destroy.bind(stream))
           .on('request', stream.emit.bind(stream, 'request'))
+          .pipe(stream);
+      });
+    }
+
+    function makeRequestStreamified() {
+      prepareGaxRequest((err, requestFn) => {
+        if (err) {
+          stream.destroy(err);
+          return;
+        }
+        requestFn!()
+          .on('error', (err: Error) => {
+            stream.destroy(err);
+          })
           .pipe(stream);
       });
     }

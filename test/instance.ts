@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as paginator from '@google-cloud/paginator';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import {before, beforeEach, afterEach, describe, it} from 'mocha';
@@ -42,20 +41,12 @@ const fakePromisify = Object.assign({}, promisify, {
       return;
     }
     promisified = true;
-    assert.deepStrictEqual(options.exclude, ['appProfile', 'cluster', 'table']);
-  },
-});
-
-const fakePaginator = Object.assign({}, paginator, {
-  paginator: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extend(...args: any[]) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this as any).calledWith_ = args;
-    },
-    streamify(methodName: string) {
-      return methodName;
-    },
+    assert.deepStrictEqual(options.exclude, [
+      'appProfile',
+      'cluster',
+      'table',
+      'getTablesStream',
+    ]);
   },
 });
 
@@ -107,7 +98,6 @@ describe('Bigtable/Instance', () => {
 
   before(() => {
     Instance = proxyquire('../src/instance.js', {
-      '@google-cloud/paginator': fakePaginator,
       '@google-cloud/promisify': fakePromisify,
       './app-profile.js': {AppProfile: FakeAppProfile},
       './cluster.js': {Cluster: FakeCluster},
@@ -123,17 +113,6 @@ describe('Bigtable/Instance', () => {
   afterEach(() => sandbox.restore());
 
   describe('instantiation', () => {
-    it('should extend the correct methods', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const args = (fakePaginator.paginator as any).calledWith_;
-      assert.strictEqual(args[0], Instance);
-      assert.deepStrictEqual(args[1], ['getTables']);
-    });
-
-    it('should streamify the correct methods', () => {
-      assert.strictEqual(instance.getTablesStream, 'getTables');
-    });
-
     it('should promisify all the things', () => {
       assert(promisified);
     });
