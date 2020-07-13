@@ -1,4 +1,4 @@
-// Copyright 2016 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {PreciseDate} from '@google-cloud/precise-date';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {before, beforeEach, describe, it} from 'mocha';
+import {afterEach, before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import {CallOptions} from 'google-gax';
+import * as sinon from 'sinon';
+import {ModifiableBackupFields, Table} from '../src';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   promisifyAll(klass: Function, options: any) {
     if (klass.name === 'Cluster') {
       promisified = true;
@@ -31,6 +35,8 @@ const fakePromisify = Object.assign({}, promisify, {
 describe('Bigtable/Cluster', () => {
   const CLUSTER_ID = 'my-cluster';
   const PROJECT_ID = 'grape-spaceship-123';
+  const TABLE_ID = 'my-table';
+  const BACKUP_ID = 'my-backup';
 
   const INSTANCE = {
     name: `projects/${PROJECT_ID}/instances/i`,
@@ -38,19 +44,34 @@ describe('Bigtable/Cluster', () => {
   };
 
   const CLUSTER_NAME = `${INSTANCE.name}/clusters/${CLUSTER_ID}`;
+  const TABLE_NAME = `${INSTANCE.name}/tables/${TABLE_ID}`;
+  const BACKUP_NAME = `${CLUSTER_NAME}/backups/${BACKUP_ID}`;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let Cluster: any;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cluster: any;
 
+  let TABLE: Table;
+  const BackupClassStub = sinon.stub();
+
   before(() => {
     Cluster = proxyquire('../src/cluster.js', {
       '@google-cloud/promisify': fakePromisify,
+      './backup': {Backup: BackupClassStub},
     }).Cluster;
   });
 
   beforeEach(() => {
     cluster = new Cluster(INSTANCE, CLUSTER_ID);
+    TABLE = {
+      bigtable: {},
+      name: TABLE_NAME,
+    } as Table;
+  });
+
+  afterEach(() => {
+    BackupClassStub.reset();
   });
 
   describe('instantiation', () => {
@@ -439,6 +460,672 @@ describe('Bigtable/Cluster', () => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
       });
+    });
+  });
+
+  describe('createBackup', () => {
+    let requestStub: sinon.SinonStub;
+    let fields: ModifiableBackupFields;
+    const expireDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expirePrecise = new PreciseDate(expireDate);
+    const expireTimestamp = expirePrecise.toStruct();
+
+    beforeEach(() => {
+      requestStub = sinon.stub().yields(null, 'ok');
+      cluster.bigtable.request = requestStub;
+      fields = {
+        expireTime: Object.freeze({...expireTimestamp}), // test immutable
+      };
+    });
+
+    it('should throw if non-table provided', () => {
+      assert.throws(
+        () => cluster.createBackup({}, undefined, undefined, () => {}),
+        TypeError,
+        'table error is TypeError'
+      );
+      assert.throws(
+        () => cluster.createBackup({}, undefined, undefined, () => {}),
+        /table is required/i,
+        'table as pojo'
+      );
+      assert.throws(
+        () => cluster.createBackup(undefined, undefined, undefined, () => {}),
+        /table is required/i,
+        'table undefined'
+      );
+      assert.throws(
+        () => cluster.createBackup(null, undefined, undefined, () => {}),
+        /table is required/i,
+        'table null'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing table', async () => {
+      await assert.rejects(
+        async () => await cluster.createBackup(),
+        /table is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should throw if falsy id', () => {
+      assert.throws(
+        () => cluster.createBackup(TABLE, undefined, undefined, () => {}),
+        TypeError,
+        'id is TypeError'
+      );
+      assert.throws(
+        () => cluster.createBackup(TABLE, undefined, undefined, () => {}),
+        /id is required/i,
+        'id is undefined'
+      );
+      assert.throws(
+        () => cluster.createBackup(TABLE, null, undefined, () => {}),
+        /id is required/i,
+        'id is null'
+      );
+      assert.throws(
+        () => cluster.createBackup(TABLE, '', undefined, () => {}),
+        /id is required/i,
+        'id is empty'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing table id', async () => {
+      await assert.rejects(
+        async () => await cluster.createBackup(TABLE),
+        /id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should throw if missing/invalid expireTime', () => {
+      assert.throws(
+        () => cluster.createBackup(TABLE, BACKUP_ID, {}, () => {}),
+        TypeError,
+        'expireTime is TypeError'
+      );
+      assert.throws(
+        () => cluster.createBackup(TABLE, BACKUP_ID, {}, () => {}),
+        /expireTime field is required/i,
+        'expireTime is undefined'
+      );
+      assert.throws(
+        () =>
+          cluster.createBackup(TABLE, BACKUP_ID, {expireTime: null}, () => {}),
+        /expireTime field is required/i,
+        'expireTime is null'
+      );
+      assert.throws(
+        () =>
+          cluster.createBackup(
+            TABLE,
+            BACKUP_ID,
+            {expireTime: {foo: 'bar'}},
+            () => {}
+          ),
+        /expireTime field is required/i,
+        'expireTime is invalid type'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing expireTime', async () => {
+      await assert.rejects(
+        async () => await cluster.createBackup(TABLE, BACKUP_ID),
+        /expireTime field is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should call request with rpc signature', async () => {
+      const [result] = await cluster.createBackup(TABLE, BACKUP_ID, fields);
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0], {
+        client: 'BigtableTableAdminClient',
+        method: 'createBackup',
+        reqOpts: {
+          parent: CLUSTER_NAME,
+          backupId: BACKUP_ID,
+          backup: {
+            expireTime: expireTimestamp,
+            sourceTable: TABLE_NAME,
+          },
+        },
+        gaxOpts: undefined,
+      });
+      assert.strictEqual(result, 'ok');
+    });
+
+    it('should allow table name', async () => {
+      const [result] = await cluster.createBackup(
+        TABLE_NAME,
+        BACKUP_ID,
+        fields
+      );
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.sourceTable,
+        TABLE_NAME
+      );
+      assert.strictEqual(result, 'ok');
+    });
+
+    it('should call request including opts', async () => {
+      const [result] = await cluster.createBackup(TABLE, BACKUP_ID, fields, {
+        gaxOptions: {timeout: 9000},
+      });
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0].gaxOpts, {
+        timeout: 9000,
+      });
+      assert.strictEqual(result, 'ok');
+    });
+
+    it('should pass through all fields', async () => {
+      await cluster.createBackup(TABLE, BACKUP_ID, {
+        ...fields,
+        foo: 'bar',
+      });
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0].reqOpts.backup, {
+        expireTime: expireTimestamp,
+        sourceTable: TABLE_NAME,
+        foo: 'bar',
+      });
+    });
+
+    it('should convert expireTime from Date', async () => {
+      await cluster.createBackup(TABLE, BACKUP_ID, {expireTime: expireDate});
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.expireTime,
+        expireTimestamp
+      );
+    });
+
+    it('should convert expireTime from PreciseDate', async () => {
+      await cluster.createBackup(TABLE, BACKUP_ID, {expireTime: expirePrecise});
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.expireTime,
+        expireTimestamp
+      );
+    });
+
+    it('should keep expireTime when struct', async () => {
+      await cluster.createBackup(TABLE, BACKUP_ID, {
+        expireTime: expireTimestamp,
+      });
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.expireTime,
+        expireTimestamp
+      );
+    });
+
+    it('should bubble up errors while creating a backup', async () => {
+      const err = new Error('uh oh!');
+      requestStub.yields(err);
+      await assert.rejects(
+        async () => await cluster.createBackup(TABLE, BACKUP_ID, fields),
+        err
+      );
+    });
+  });
+
+  describe('deleteBackup', () => {
+    let requestStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      requestStub = sinon.stub().yields(null, 'ok');
+      cluster.bigtable.request = requestStub;
+    });
+
+    it('should throw if falsy backup id', () => {
+      assert.throws(
+        () => cluster.deleteBackup(undefined, () => {}),
+        TypeError,
+        'backup id error is TypeError'
+      );
+      assert.throws(
+        () => cluster.deleteBackup(undefined, () => {}),
+        /backup id is required/i,
+        'backup id is undefined'
+      );
+      assert.throws(
+        () => cluster.deleteBackup(null, () => {}),
+        /backup id is required/i,
+        'backup id is null'
+      );
+      assert.throws(
+        () => cluster.deleteBackup('', () => {}),
+        /backup id is required/i,
+        'backup id is empty'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing backup id', async () => {
+      await assert.rejects(
+        async () => await cluster.deleteBackup(),
+        /backup id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should call request with rpc signature', async () => {
+      const [result] = await cluster.deleteBackup(BACKUP_ID);
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0], {
+        client: 'BigtableTableAdminClient',
+        method: 'deleteBackup',
+        reqOpts: {
+          name: BACKUP_NAME,
+        },
+        gaxOpts: undefined,
+      });
+      assert.strictEqual(result, 'ok');
+    });
+
+    it('should call request including opts', async () => {
+      const [result] = await cluster.deleteBackup(BACKUP_ID, {
+        gaxOptions: {timeout: 9000},
+      });
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0].gaxOpts, {
+        timeout: 9000,
+      });
+      assert.strictEqual(result, 'ok');
+    });
+
+    it('should bubble up errors while deleting a backup', async () => {
+      const err = new Error('uh oh!');
+      requestStub.yields(err);
+      await assert.rejects(
+        async () => await cluster.deleteBackup(BACKUP_ID),
+        err
+      );
+    });
+  });
+
+  describe('getBackup', () => {
+    let requestStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      requestStub = sinon.stub().yields(null, 'inner resp');
+      cluster.bigtable.request = requestStub;
+    });
+
+    it('should throw if falsy backup id', () => {
+      assert.throws(
+        () => cluster.getBackup(undefined, () => {}),
+        TypeError,
+        'backup id error is TypeError'
+      );
+      assert.throws(
+        () => cluster.getBackup(undefined, () => {}),
+        /backup id is required/i,
+        'backup id is undefined'
+      );
+      assert.throws(
+        () => cluster.getBackup(null, () => {}),
+        /backup id is required/i,
+        'backup id is null'
+      );
+      assert.throws(
+        () => cluster.getBackup('', () => {}),
+        /backup id is required/i,
+        'backup id is empty'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing backup id', async () => {
+      await assert.rejects(
+        async () => await cluster.getBackup(),
+        /backup id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should call request with rpc signature', async () => {
+      await cluster.getBackup(BACKUP_ID);
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0], {
+        client: 'BigtableTableAdminClient',
+        method: 'getBackup',
+        reqOpts: {
+          name: BACKUP_NAME,
+        },
+        gaxOpts: undefined,
+      });
+    });
+
+    it('should handle and transform the response', async () => {
+      const [result] = await cluster.getBackup(BACKUP_ID);
+      assert(BackupClassStub.calledOnce, 'Backup constructor called');
+      assert.deepStrictEqual(BackupClassStub.firstCall.args, [
+        {
+          ...INSTANCE.bigtable,
+          request: requestStub,
+        },
+        'inner resp',
+      ]);
+      assert(result instanceof BackupClassStub, 'is a Backup');
+    });
+
+    it('should call request including opts', async () => {
+      const [result] = await cluster.getBackup(BACKUP_ID, {
+        gaxOptions: {timeout: 9000},
+      });
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0].gaxOpts, {
+        timeout: 9000,
+      });
+      assert(result instanceof BackupClassStub, 'is a Backup');
+    });
+
+    it('should bubble up errors while getting a backup', async () => {
+      const err = new Error('uh oh!');
+      requestStub.yields(err);
+      await assert.rejects(async () => await cluster.getBackup(BACKUP_ID), err);
+      assert(
+        BackupClassStub.notCalled,
+        'do not instantiate a backup that is not returned'
+      );
+    });
+  });
+
+  describe('listBackups', () => {
+    let requestStub: sinon.SinonStub;
+
+    beforeEach(() => {
+      requestStub = sinon.stub().yields(null, ['backup1', 'backup2']);
+      cluster.bigtable.request = requestStub;
+    });
+
+    it('should call request with rpc signature', async () => {
+      await cluster.listBackups();
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0], {
+        client: 'BigtableTableAdminClient',
+        method: 'listBackups',
+        reqOpts: {
+          parent: CLUSTER_NAME,
+        },
+        gaxOpts: undefined,
+      });
+    });
+
+    it('should handle and transform the response', async () => {
+      const bigtableMock = {
+        ...INSTANCE.bigtable,
+        request: requestStub,
+      };
+      const [result] = await cluster.listBackups();
+      assert(
+        BackupClassStub.calledTwice,
+        'Backup constructor called for each item'
+      );
+      assert.deepStrictEqual(BackupClassStub.firstCall.args, [
+        bigtableMock,
+        'backup1',
+      ]);
+      assert.deepStrictEqual(BackupClassStub.secondCall.args, [
+        bigtableMock,
+        'backup2',
+      ]);
+      assert(Array.isArray(result));
+      assert(result[0] instanceof BackupClassStub, 'first is a Backup');
+      assert(result[1] instanceof BackupClassStub, 'second is a Backup');
+    });
+
+    it('should call request including gax opts', async () => {
+      const [result] = await cluster.listBackups({
+        gaxOptions: {timeout: 9000},
+      });
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0].gaxOpts, {
+        timeout: 9000,
+      });
+      assert(Array.isArray(result), 'still is the expected result');
+    });
+
+    it('should call request including extra opts', async () => {
+      const [result] = await cluster.listBackups({
+        filter: 'foo',
+        orderBy: 'bar',
+      });
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+
+      const firstArg = requestStub.firstCall.args[0];
+      assert.strictEqual(firstArg.reqOpts.filter, 'foo');
+      assert.strictEqual(firstArg.reqOpts.orderBy, 'bar');
+
+      assert(Array.isArray(result), 'still is the expected result');
+    });
+
+    it('should bubble up errors while getting a backup', async () => {
+      const err = new Error('uh oh!');
+      requestStub.yields(err);
+      await assert.rejects(async () => await cluster.listBackups(), err);
+      assert(
+        BackupClassStub.notCalled,
+        'do not instantiate backups when non are returned'
+      );
+    });
+  });
+
+  describe('updateBackup', () => {
+    let requestStub: sinon.SinonStub;
+    let fields: ModifiableBackupFields;
+    const expireDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expirePrecise = new PreciseDate(expireDate);
+    const expireTimestamp = expirePrecise.toStruct();
+
+    beforeEach(() => {
+      requestStub = sinon.stub().yields(null, 'inner resp');
+      cluster.bigtable.request = requestStub;
+      fields = {
+        expireTime: Object.freeze({...expireTimestamp}), // test immutable
+      };
+    });
+
+    it('should throw if falsy backup id', () => {
+      assert.throws(
+        () => cluster.updateBackup(undefined, undefined, () => {}),
+        TypeError,
+        'backup id error is TypeError'
+      );
+      assert.throws(
+        () => cluster.updateBackup(undefined, undefined, () => {}),
+        /backup id is required/i,
+        'backup id is undefined'
+      );
+      assert.throws(
+        () => cluster.updateBackup(null, undefined, () => {}),
+        /backup id is required/i,
+        'backup id is null'
+      );
+      assert.throws(
+        () => cluster.updateBackup('', undefined, () => {}),
+        /backup id is required/i,
+        'backup id is empty'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing backup id', async () => {
+      await assert.rejects(
+        async () => await cluster.updateBackup(),
+        /backup id is required/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should throw if missing fields', () => {
+      assert.throws(
+        () => cluster.updateBackup(BACKUP_ID, undefined, () => {}),
+        TypeError,
+        'fields error is TypeError'
+      );
+      assert.throws(
+        () => cluster.updateBackup(BACKUP_ID, undefined, () => {}),
+        /at least one field/i,
+        'fields is undefined'
+      );
+      assert.throws(
+        () => cluster.updateBackup(BACKUP_ID, null, () => {}),
+        /at least one field/i,
+        'fields is null'
+      );
+      assert.throws(
+        () => cluster.updateBackup(BACKUP_ID, {}, () => {}),
+        /at least one field/i,
+        'no fields'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if missing fields', async () => {
+      await assert.rejects(
+        async () => await cluster.updateBackup(BACKUP_ID),
+        /at least one field/i,
+        'fields is undefined'
+      );
+      await assert.rejects(
+        async () => await cluster.updateBackup(BACKUP_ID, {}),
+        /at least one field/i,
+        'no fields'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should throw if invalid field: expireTime', () => {
+      assert.throws(
+        () => cluster.updateBackup(BACKUP_ID, {expireTime: null}, () => {}),
+        TypeError,
+        'expireTime error is TypeError'
+      );
+      assert.throws(
+        () => cluster.updateBackup(BACKUP_ID, {expireTime: null}, () => {}),
+        /at least one field/i,
+        'expireTime is null'
+      );
+      assert.throws(
+        () =>
+          cluster.updateBackup(BACKUP_ID, {expireTime: {foo: 'bar'}}, () => {}),
+        /expireTime field is invalid/i,
+        'expireTime is invalid type'
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should reject if invalid field: expireTime', async () => {
+      await assert.rejects(
+        async () =>
+          await cluster.updateBackup(BACKUP_ID, {expireTime: {foo: 'bar'}}),
+        /expireTime field is invalid/i
+      );
+      assert(requestStub.notCalled);
+    });
+
+    it('should call request with rpc signature', async () => {
+      await cluster.updateBackup(BACKUP_ID, fields);
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0], {
+        client: 'BigtableTableAdminClient',
+        method: 'updateBackup',
+        reqOpts: {
+          backup: {
+            name: BACKUP_NAME,
+            expireTime: expireTimestamp,
+          },
+          updateMask: {
+            paths: ['expire_time'],
+          },
+        },
+        gaxOpts: undefined,
+      });
+    });
+
+    it('should handle and transform the response', async () => {
+      const [result] = await cluster.updateBackup(BACKUP_ID, fields);
+      assert(BackupClassStub.calledOnce, 'Backup constructor called');
+      assert.deepStrictEqual(BackupClassStub.firstCall.args, [
+        {
+          ...INSTANCE.bigtable,
+          request: requestStub,
+        },
+        'inner resp',
+      ]);
+      assert(result instanceof BackupClassStub, 'is a Backup');
+    });
+
+    it('should call request including opts', async () => {
+      const [result] = await cluster.updateBackup(BACKUP_ID, fields, {
+        gaxOptions: {timeout: 9000},
+      });
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(requestStub.firstCall.args[0].gaxOpts, {
+        timeout: 9000,
+      });
+      assert(result instanceof BackupClassStub, 'is a Backup');
+    });
+
+    it('should include only supported fields in the mask', async () => {
+      await cluster.updateBackup(BACKUP_ID, {...fields, foo: 'bar'});
+      assert(requestStub.calledOnceWith(sinon.match.object, sinon.match.func));
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.foo,
+        'bar',
+        'backup struct includes foo'
+      );
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.updateMask.paths,
+        ['expire_time'],
+        'update mask excludes foo'
+      );
+    });
+
+    it('should convert expireTime from Date', async () => {
+      await cluster.updateBackup(BACKUP_ID, {expireTime: expireDate});
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.expireTime,
+        expireTimestamp
+      );
+    });
+
+    it('should convert expireTime from PreciseDate', async () => {
+      await cluster.updateBackup(BACKUP_ID, {expireTime: expirePrecise});
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.expireTime,
+        expireTimestamp
+      );
+    });
+
+    it('should keep expireTime when struct', async () => {
+      await cluster.updateBackup(BACKUP_ID, {
+        expireTime: expireTimestamp,
+      });
+      assert.deepStrictEqual(
+        requestStub.firstCall.args[0].reqOpts.backup.expireTime,
+        expireTimestamp
+      );
+    });
+
+    it('should bubble up errors while getting a backup', async () => {
+      const err = new Error('uh oh!');
+      requestStub.yields(err);
+      await assert.rejects(
+        async () => await cluster.updateBackup(BACKUP_ID, fields),
+        err
+      );
+      assert(
+        BackupClassStub.notCalled,
+        'do not instantiate a backup that is not returned'
+      );
     });
   });
 });
