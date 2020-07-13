@@ -40,7 +40,7 @@ export class Backup implements google.bigtable.admin.v2.IBackup {
     | keyof typeof google.bigtable.admin.v2.Backup.State
     | null;
 
-  private readonly _backup: google.bigtable.admin.v2.IBackup;
+  metadata: google.bigtable.admin.v2.IBackup;
   private _bigtable: Bigtable;
   private _tableAdminClient: BigtableTableAdminClient;
 
@@ -51,7 +51,7 @@ export class Backup implements google.bigtable.admin.v2.IBackup {
   constructor(bigtable: Bigtable, backup: google.bigtable.admin.v2.IBackup) {
     Object.assign(this, backup);
 
-    this._backup = backup.valueOf();
+    this.metadata = backup.valueOf();
     this._bigtable = bigtable;
     this._tableAdminClient = this._bigtable.api[
       'BigtableTableAdminClient'
@@ -290,7 +290,7 @@ export class Backup implements google.bigtable.admin.v2.IBackup {
    * @return {google.bigtable.admin.v2.IBackup}
    */
   valueOf(): google.bigtable.admin.v2.IBackup {
-    return {...this._backup};
+    return {...this.metadata};
   }
 }
 

@@ -155,18 +155,6 @@ export interface ListBackupsOptions {
    */
   orderBy?: string;
 
-  /**
-   * Maximum results to return per page.
-   * @default Infinity
-   */
-  pageSize?: number;
-
-  /**
-   * A previously-returned page token representing part of a larger set of
-   * results to view.
-   */
-  pageToken?: string;
-
   gaxOptions?: CallOptions;
 }
 
@@ -560,20 +548,20 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
   }
 
   createBackup(
-    table: Table,
+    table: Table | string,
     id: string,
     fields: Required<ModifiableBackupFields>,
     options?: CreateBackupOptions
   ): Promise<CreateBackupResponse>;
   createBackup(
-    table: Table,
+    table: Table | string,
     id: string,
     fields: Required<ModifiableBackupFields>,
     options: CreateBackupOptions,
     callback: CreateBackupCallback
   ): void;
   createBackup(
-    table: Table,
+    table: Table | string,
     id: string,
     fields: Required<ModifiableBackupFields>,
     callback: CreateBackupCallback
@@ -586,7 +574,9 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * track creation of the backup. Cancelling the returned operation will
    * stop the creation and delete the backup.
    *
-   * @param {Table} table A reference to the Table to backup.
+   * @param {Table|string} table A reference to the Table to backup, or the full
+   *   table path in the form:
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {string} id
    *   Required. The id of the backup to be created. The `backup_id` along with
    *   the parent `parent` are combined as {parent}/backups/{backup_id} to
@@ -605,7 +595,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_cluster_create_backup
    */
   createBackup(
-    table: Table,
+    table: Table | string,
     id: string,
     fields: Required<ModifiableBackupFields>,
     optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
@@ -616,21 +606,31 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    if (!table || typeof table === 'function') {
-      throw new Error('A reference to a table is required to create a backup.');
+    if (
+      !table ||
+      (typeof table === 'object' && !table.name) ||
+      typeof table === 'function'
+    ) {
+      throw new TypeError(
+        'A reference to a table is required to create a backup.'
+      );
     }
 
     if (!id || typeof id === 'function') {
-      throw new Error('An id is required to create a backup.');
+      throw new TypeError('An id is required to create a backup.');
     }
 
-    if (!fields || !fields.expireTime) {
-      throw new Error('Must specify the `expireTime` field.');
+    const isExpireTimeValid =
+      fields &&
+      fields.expireTime &&
+      (fields.expireTime instanceof Date || fields.expireTime.seconds);
+    if (!isExpireTimeValid) {
+      throw new TypeError('The expireTime field is required.');
     }
 
     const {expireTime, ...restFields} = fields;
     const backup: google.bigtable.admin.v2.IBackup = {
-      sourceTable: table.name,
+      sourceTable: typeof table === 'string' ? table : table.name,
       ...restFields,
     };
 
@@ -696,7 +696,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     if (!id || typeof id === 'function') {
-      throw new Error('The backup id/name is required.');
+      throw new TypeError('The backup id is required.');
     }
 
     const name = `${this.name}/backups/${id}`;
@@ -747,7 +747,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     if (!id || typeof id === 'function') {
-      throw new Error('The backup id/name is required.');
+      throw new TypeError('The backup id is required.');
     }
 
     const name = `${this.name}/backups/${id}`;
@@ -797,27 +797,25 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
+      ...options,
       parent: this.name,
-      filter: options.filter,
-      orderBy: options.orderBy,
-      pageSize: options.pageSize,
-      pageToken: options.pageToken,
     };
 
-    this.bigtable.request<google.bigtable.admin.v2.IBackup[]>(
+    delete (reqOpts as ListBackupsOptions).gaxOptions;
+
+    this.bigtable.request<Backup[]>(
       {
         client: 'BigtableTableAdminClient',
         method: 'listBackups',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (err, resp) => {
-        let backups;
-        if (resp) {
-          backups = resp.map(backup => new Backup(this.bigtable, backup));
+      (...args) => {
+        if (args[1]) {
+          args[1] = args[1].map(backup => new Backup(this.bigtable, backup));
         }
 
-        callback(err, backups);
+        callback(...args);
       }
     );
   }
@@ -864,11 +862,11 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     if (!id || typeof id === 'function') {
-      throw new Error('The backup id/name is required.');
+      throw new TypeError('The backup id is required.');
     }
 
     if (!fields || !fields.expireTime) {
-      throw new Error(
+      throw new TypeError(
         'Must specify at least one field to update (e.g. expireTime).'
       );
     }
@@ -881,11 +879,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       ...restFields,
     };
 
-    if (fields.expireTime) {
+    if (expireTime) {
       if (expireTime instanceof Date) {
         backup.expireTime = new PreciseDate(expireTime).toStruct();
-      } else {
+      } else if (expireTime.seconds) {
         backup.expireTime = expireTime;
+      } else {
+        throw new TypeError('The expireTime field is invalid.');
       }
     }
 
@@ -957,6 +957,12 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 Cluster.prototype.listBackupsStream = paginator.streamify<Backup>(
   'listBackups'
 );
+
+/*! Developer Documentation
+ *
+ * These methods can be auto-paginated.
+ */
+paginator.extend(Cluster, ['listBackups']);
 
 /*! Developer Documentation
  *
