@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Imports the Google Cloud client library
-const {Bigtable, Backup} = require('@google-cloud/bigtable');
+const {Bigtable} = require('@google-cloud/bigtable');
 const uuid = require('uuid');
 const {inspect} = require('util');
 
@@ -51,18 +51,24 @@ async function runBackupOperations(
   // The backup cannot be interacted with (restore, update, delete) until it is ready.
   const [backupMeta] = await backupOperation.promise();
   console.log(
-    `Backup is now "${backupMeta.state}" (READY = 2, i.e. available).`
+    `Backup "${backupMeta.name}" is now "${backupMeta.state}" (READY = 2, i.e. available).`
   );
-  // [END bigtable_create_backup]
 
-  // [START bigtable_table_backup]
+  // The resulting backup can be cast to a helpful Backup object.
+  const backup = cluster.asBackup(backupMeta);
+  console.log(`Backup "${backup.backupId}" expires at ${backup.expireDate}.`);
+
   // An alternative way is to call backup right on a Table which will
   // automatically select the first cluster that has a READY cluster state.
   const [backupOperationFromTable] = await table.backup(`${backupID}-2`, {
     expireTime: new Date(Date.now() + 7 * 60 * 60 * 1000), // 7 hours from now
   });
-  const [backupFromTable] = await backupOperationFromTable.promise();
-  // [END bigtable_table_backup]
+  const [backupMetaFromTable] = await backupOperationFromTable.promise();
+  const backupFromTable = cluster.asBackup(backupMetaFromTable);
+  console.log(
+    `Backup "${backup.name}" was created from "${backup.sourceTable}".`
+  );
+  // [END bigtable_create_backup]
 
   // [START bigtable_list_backups]
   const [existingBackups] = await cluster.listBackups();
@@ -148,14 +154,21 @@ async function runBackupOperations(
     },
   });
   console.log('Deleted backup with ID %s, no response is returned.', backupID);
-  // [END bigtable_delete_backup]
 
-  // need to delete that other backup example
-  await new Backup(bigtable, backupFromTable).delete({
+  // Alternatively, if a backup object is available, use the `delete` helper.
+  const backupPartial = cluster.asBackup({
+    name: backupFromTable.name, // used from another example
+  });
+
+  // While the Backup instance only really has the name defined,
+  // there is enough information to perform a delete operation.
+  // But, this `delete` helper could even be used after a `listBackups` call.
+  await backupPartial.delete({
     gaxOptions: {
       timeout: 50 * 1000,
     },
   });
+  // [END bigtable_delete_backup]
 }
 
 require('yargs')
