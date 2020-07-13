@@ -1,4 +1,4 @@
-// Copyright 2016 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -547,6 +547,27 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 
+  /**
+   * Convert a full or partial object (with at least `name`) to a Backup
+   * instance. If defining statically, `backup.get()` should be called to
+   * pull the full state from the remote.
+   *
+   * @example
+   * const name = 'projects/p/instances/i/clusters/c/backups/b';
+   * const backupPartial = cluster.asBackup({name});
+   * const [backup] = await backupLocal.get();
+   * assert(backup instanceof Backup);
+   * assert.strictEqual(backup.name, name);
+   *
+   * @param {google.bigtable.admin.v2.IBackup} backup A full or partial
+   *   object that implements `IBackup`. While any empty object will work,
+   *   `name` should be supplied to be useful in most cases.
+   * @return {Backup}
+   */
+  asBackup(backup: google.bigtable.admin.v2.IBackup): Backup {
+    return new Backup(this.bigtable, backup);
+  }
+
   createBackup(
     table: Table | string,
     id: string,
@@ -765,7 +786,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       (err, resp) => {
         let backup;
         if (resp) {
-          backup = new Backup(this.bigtable, resp);
+          backup = this.asBackup(resp);
         }
 
         callback(err, backup);
@@ -812,7 +833,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       },
       (...args) => {
         if (args[1]) {
-          args[1] = args[1].map(backup => new Backup(this.bigtable, backup));
+          args[1] = args[1].map(backup => this.asBackup(backup));
         }
 
         callback(...args);
@@ -913,7 +934,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       (err, resp) => {
         let backup;
         if (resp) {
-          backup = new Backup(this.bigtable, resp);
+          backup = this.asBackup(resp);
         }
 
         callback(err, backup);
@@ -969,7 +990,7 @@ paginator.extend(Cluster, ['listBackups']);
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-promisifyAll(Cluster);
+promisifyAll(Cluster, {exclude: ['asBackup']});
 
 /**
  * Reference to the {@link Cluster} class.

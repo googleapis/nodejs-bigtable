@@ -28,6 +28,7 @@ const fakePromisify = Object.assign({}, promisify, {
     if (klass.name === 'Cluster') {
       promisified = true;
     }
+    assert.deepStrictEqual(options.exclude, ['asBackup']);
     promisify.promisifyAll(klass, options);
   },
 });
@@ -460,6 +461,18 @@ describe('Bigtable/Cluster', () => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
       });
+    });
+  });
+
+  describe('asBackup', () => {
+    it('should return a Backup instance', () => {
+      const backup = cluster.asBackup({name: 'foo'});
+      assert(BackupClassStub.calledOnce, 'Backup constructor called');
+      assert.deepStrictEqual(BackupClassStub.firstCall.args, [
+        {...INSTANCE.bigtable},
+        {name: 'foo'},
+      ]);
+      assert(backup instanceof BackupClassStub, 'is a Backup');
     });
   });
 
