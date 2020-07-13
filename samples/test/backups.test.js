@@ -71,7 +71,7 @@ describe('backups', () => {
     const output = exec(
       `node backups.js run --instance ${instanceId} --cluster ${clusterId} --table ${tableId} --backup ${backupId}`
     );
-    assert.include(output, 'Backup is now "READY" (available).');
+    assert.include(output, 'The backup finished being created');
     assert.include(output, backupId);
     assert.include(output, `Deleted backup with ID ${backupId}`);
   }).timeout(120 * 1000); // deleting backups is slow, the script does it twice, give it time.
