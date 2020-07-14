@@ -853,7 +853,7 @@
                         CreateInstanceRequest.decode = function decode(reader, length) {
                             if (!(reader instanceof $Reader))
                                 reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateInstanceRequest(), key;
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateInstanceRequest(), key, value;
                             while (reader.pos < end) {
                                 var tag = reader.uint32();
                                 switch (tag >>> 3) {
@@ -867,12 +867,26 @@
                                     message.instance = $root.google.bigtable.admin.v2.Instance.decode(reader, reader.uint32());
                                     break;
                                 case 4:
-                                    reader.skip().pos++;
                                     if (message.clusters === $util.emptyObject)
                                         message.clusters = {};
-                                    key = reader.string();
-                                    reader.pos++;
-                                    message.clusters[key] = $root.google.bigtable.admin.v2.Cluster.decode(reader, reader.uint32());
+                                    var end2 = reader.uint32() + reader.pos;
+                                    key = "";
+                                    value = null;
+                                    while (reader.pos < end2) {
+                                        var tag2 = reader.uint32();
+                                        switch (tag2 >>> 3) {
+                                        case 1:
+                                            key = reader.string();
+                                            break;
+                                        case 2:
+                                            value = $root.google.bigtable.admin.v2.Cluster.decode(reader, reader.uint32());
+                                            break;
+                                        default:
+                                            reader.skipType(tag2 & 7);
+                                            break;
+                                        }
+                                    }
+                                    message.clusters[key] = value;
                                     break;
                                 default:
                                     reader.skipType(tag & 7);
@@ -5863,7 +5877,7 @@
                         Instance.decode = function decode(reader, length) {
                             if (!(reader instanceof $Reader))
                                 reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Instance(), key;
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Instance(), key, value;
                             while (reader.pos < end) {
                                 var tag = reader.uint32();
                                 switch (tag >>> 3) {
@@ -5880,12 +5894,26 @@
                                     message.type = reader.int32();
                                     break;
                                 case 5:
-                                    reader.skip().pos++;
                                     if (message.labels === $util.emptyObject)
                                         message.labels = {};
-                                    key = reader.string();
-                                    reader.pos++;
-                                    message.labels[key] = reader.string();
+                                    var end2 = reader.uint32() + reader.pos;
+                                    key = "";
+                                    value = "";
+                                    while (reader.pos < end2) {
+                                        var tag2 = reader.uint32();
+                                        switch (tag2 >>> 3) {
+                                        case 1:
+                                            key = reader.string();
+                                            break;
+                                        case 2:
+                                            value = reader.string();
+                                            break;
+                                        default:
+                                            reader.skipType(tag2 & 7);
+                                            break;
+                                        }
+                                    }
+                                    message.labels[key] = value;
                                     break;
                                 default:
                                     reader.skipType(tag & 7);
@@ -15743,7 +15771,7 @@
                         Table.decode = function decode(reader, length) {
                             if (!(reader instanceof $Reader))
                                 reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Table(), key;
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Table(), key, value;
                             while (reader.pos < end) {
                                 var tag = reader.uint32();
                                 switch (tag >>> 3) {
@@ -15751,20 +15779,48 @@
                                     message.name = reader.string();
                                     break;
                                 case 2:
-                                    reader.skip().pos++;
                                     if (message.clusterStates === $util.emptyObject)
                                         message.clusterStates = {};
-                                    key = reader.string();
-                                    reader.pos++;
-                                    message.clusterStates[key] = $root.google.bigtable.admin.v2.Table.ClusterState.decode(reader, reader.uint32());
+                                    var end2 = reader.uint32() + reader.pos;
+                                    key = "";
+                                    value = null;
+                                    while (reader.pos < end2) {
+                                        var tag2 = reader.uint32();
+                                        switch (tag2 >>> 3) {
+                                        case 1:
+                                            key = reader.string();
+                                            break;
+                                        case 2:
+                                            value = $root.google.bigtable.admin.v2.Table.ClusterState.decode(reader, reader.uint32());
+                                            break;
+                                        default:
+                                            reader.skipType(tag2 & 7);
+                                            break;
+                                        }
+                                    }
+                                    message.clusterStates[key] = value;
                                     break;
                                 case 3:
-                                    reader.skip().pos++;
                                     if (message.columnFamilies === $util.emptyObject)
                                         message.columnFamilies = {};
-                                    key = reader.string();
-                                    reader.pos++;
-                                    message.columnFamilies[key] = $root.google.bigtable.admin.v2.ColumnFamily.decode(reader, reader.uint32());
+                                    var end2 = reader.uint32() + reader.pos;
+                                    key = "";
+                                    value = null;
+                                    while (reader.pos < end2) {
+                                        var tag2 = reader.uint32();
+                                        switch (tag2 >>> 3) {
+                                        case 1:
+                                            key = reader.string();
+                                            break;
+                                        case 2:
+                                            value = $root.google.bigtable.admin.v2.ColumnFamily.decode(reader, reader.uint32());
+                                            break;
+                                        default:
+                                            reader.skipType(tag2 & 7);
+                                            break;
+                                        }
+                                    }
+                                    message.columnFamilies[key] = value;
                                     break;
                                 case 4:
                                     message.granularity = reader.int32();
