@@ -1184,7 +1184,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         reqOpts,
         gaxOpts,
       },
-      (err, ITables, ...args) => {
+      (err, ITables, nextPageRequest, ...args) => {
         if (err) {
           callback!(err);
           return;
@@ -1194,8 +1194,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           table.metadata = tableObj;
           return table;
         });
-
-        callback(null, tables, ...args);
+        const nextQuery = nextPageRequest!
+          ? extend({}, options, nextPageRequest!)
+          : null;
+        callback(null, tables, nextQuery, ...args);
       }
     );
   }
