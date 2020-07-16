@@ -816,7 +816,8 @@ export class Bigtable {
           stream.destroy(err);
           return;
         }
-        requestFn!()
+        gaxStream = requestFn!();
+        gaxStream
           .on('error', (err: Error) => {
             stream.destroy(err);
           })
