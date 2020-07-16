@@ -163,20 +163,6 @@ describe('Bigtable', () => {
       assert(appProfiles.length > 0);
     });
 
-    it('should retrieve a list of app profiles in stream mode', done => {
-      const appProfiles: AppProfile[] = [];
-      INSTANCE.getAppProfilesStream()
-        .on('error', done)
-        .on('data', appProfile => {
-          assert(appProfile instanceof AppProfile);
-          appProfiles.push(appProfile);
-        })
-        .on('end', () => {
-          assert(appProfiles.length > 0);
-          done();
-        });
-    });
-
     it('should check if an app profile exists', async () => {
       const [exists] = await APP_PROFILE.exists();
       assert.strictEqual(exists, true);

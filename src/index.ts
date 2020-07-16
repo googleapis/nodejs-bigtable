@@ -750,7 +750,7 @@ export class Bigtable {
       });
     };
 
-    const streamified = {listTablesStream: true, listAppProfilesStream: true};
+    const streamified = {listTablesStream: true};
 
     if (isStreamMode) {
       stream = streamEvents(new PassThrough({objectMode: true}));

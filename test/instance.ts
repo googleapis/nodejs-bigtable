@@ -30,6 +30,8 @@ import {
   GetTablesOptions,
 } from '../src/table';
 import {Bigtable} from '../src';
+import {PassThrough} from 'stream';
+import * as pumpify from 'pumpify';
 
 const sandbox = sinon.createSandbox();
 
@@ -89,6 +91,7 @@ describe('Bigtable/Instance', () => {
   const BIGTABLE = {
     projectName: 'projects/my-project',
     projectId: 'my-project',
+    request: () => {},
   } as Bigtable;
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
@@ -103,6 +106,7 @@ describe('Bigtable/Instance', () => {
       './cluster.js': {Cluster: FakeCluster},
       './family.js': {Family: FakeFamily},
       './table.js': {Table: FakeTable},
+      pumpify,
     }).Instance;
   });
 
@@ -978,6 +982,138 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual((args as any)[3], response[3]);
         done();
       });
+    });
+  });
+
+  describe('getTablesStream', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const views = ((FakeTable as any).VIEWS = {
+      unspecified: 0,
+      name: 1,
+      schema: 2,
+      full: 4,
+    });
+    const returnStream = new PassThrough({
+      objectMode: true,
+    });
+
+    it('should provide the proper request options', done => {
+      const stub = sandbox.stub(pumpify, 'obj');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'listTablesStream');
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
+        assert.strictEqual(config.reqOpts.view, views.unspecified);
+        assert.deepStrictEqual(config.gaxOpts, {});
+        setImmediate(done);
+        return returnStream;
+      };
+      instance.getTablesStream();
+      assert.strictEqual(stub.getCall(0).args[0][0], returnStream);
+    });
+
+    it('should accept gaxOptions', done => {
+      const options = {
+        gaxOptions: {},
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.deepStrictEqual(config.gaxOpts, options.gaxOptions);
+        setImmediate(done);
+        return returnStream;
+      };
+      instance.getTablesStream(options);
+    });
+
+    Object.keys(views).forEach(view => {
+      it('should set the "' + view + '" view', done => {
+        const options = {
+          view,
+        } as GetTablesOptions;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.bigtable.request as Function) = (config: any) => {
+          assert.strictEqual(config.reqOpts.view, views[view as 'unspecified']);
+          setImmediate(done);
+          return returnStream;
+        };
+        instance.getTablesStream(options);
+      });
+    });
+
+    it('should return an array of table objects', done => {
+      const response = [
+        {
+          name: '/projects/my-project/instances/my-instance/tables/my-table-a',
+        },
+        {
+          name: '/projects/my-project/instances/my-instance/tables/my-table-b',
+        },
+      ];
+
+      const fakeTables = [{}, {}];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      let tableCount = 0;
+      (instance.table as Function) = (id: string) => {
+        assert.strictEqual(id, response[tableCount].name.split('/').pop());
+        return fakeTables[tableCount++];
+      };
+      setImmediate(() => {
+        response.forEach(r => {
+          returnStream.push(r);
+        });
+        returnStream.push(null);
+      });
+
+      const tables: Table[] = [];
+      instance
+        .getTablesStream()
+        .on('error', assert.ifError)
+        .on('data', table => {
+          tables.push(table);
+        })
+        .on('end', () => {
+          assert.strictEqual(tables[0], fakeTables[0]);
+          assert.deepStrictEqual(tables[0].metadata, response[0]);
+          assert.strictEqual(tables[1], fakeTables[1]);
+          assert.deepStrictEqual(tables[1].metadata, response[1]);
+          done();
+        });
+    });
+
+    it('should transform into Table objects', done => {
+      const returnStream = new PassThrough({
+        objectMode: true,
+      });
+      const response = [
+        {
+          name: '/projects/my-project/instances/my-instance/tables/my-table-a',
+        },
+      ];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      setImmediate(() => {
+        returnStream.end(response[0]);
+      });
+
+      const tables: Table[] = [];
+      instance
+        .getTablesStream()
+        .on('error', assert.ifError)
+        .on('data', table => {
+          assert(table instanceof FakeTable);
+          tables.push(table);
+        })
+        .on('end', () => {
+          assert(tables.length > 0);
+          done();
+        });
     });
   });
 
