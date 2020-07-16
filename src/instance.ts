@@ -686,36 +686,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
-  getAppProfilesStream(options?: CallOptions): NodeJS.ReadableStream {
-    const reqOpts = {
-      parent: this.name,
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
-
-    const transform = function (
-      this: Transform,
-      chunk: google.bigtable.admin.v2.ITable,
-      enc: string,
-      callback: Function
-    ) {
-      const appProfile = self.appProfile(chunk.name!.split('/').pop()!);
-      appProfile.metadata = chunk;
-      callback(null, appProfile);
-    };
-
-    return pumpify.obj([
-      this.bigtable.request({
-        client: 'BigtableInstanceAdminClient',
-        method: 'listAppProfilesStream',
-        reqOpts,
-        gaxOpts: options,
-      }),
-      new Transform({objectMode: true, transform}),
-    ]);
-  }
-
   getClusters(options?: CallOptions): Promise<GetClustersResponse>;
   getClusters(options: CallOptions, callback: GetClustersCallback): void;
   getClusters(callback: GetClustersCallback): void;
