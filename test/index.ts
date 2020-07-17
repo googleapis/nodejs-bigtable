@@ -874,7 +874,7 @@ describe('Bigtable', () => {
       });
     });
 
-    describe('makeRequestStreamified', () => {
+    describe('makeGapicStreamRequest', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let GAX_STREAM: any;
       const config = {

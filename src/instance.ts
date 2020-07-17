@@ -951,12 +951,11 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
-    const transform = function (
-      this: Transform,
+    const transformToTable = (
       chunk: google.bigtable.admin.v2.ITable,
       enc: string,
       callback: Function
-    ) {
+    ) => {
       const table = self.table(chunk.name!.split('/').pop()!);
       table.metadata = chunk;
       callback(null, table);
@@ -969,7 +968,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         gaxOpts,
       }),
 
-      new Transform({objectMode: true, transform}),
+      new Transform({objectMode: true, transform: transformToTable}),
     ]);
   }
 

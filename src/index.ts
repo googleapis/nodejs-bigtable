@@ -750,7 +750,7 @@ export class Bigtable {
       });
     };
 
-    const streamified = {listTablesStream: true};
+    const gapicStreamingMethods = {listTablesStream: true};
 
     if (isStreamMode) {
       stream = streamEvents(new PassThrough({objectMode: true}));
@@ -759,8 +759,8 @@ export class Bigtable {
           gaxStream.cancel();
         }
       };
-      if (config.method! in streamified) {
-        stream.once('reading', makeRequestStreamified);
+      if (config.method! in gapicStreamingMethods) {
+        stream.once('reading', makeGapicStreamRequest);
       } else {
         stream.once('reading', makeRequestStream);
       }
@@ -810,7 +810,7 @@ export class Bigtable {
       });
     }
 
-    function makeRequestStreamified() {
+    function makeGapicStreamRequest() {
       prepareGaxRequest((err, requestFn) => {
         if (err) {
           stream.destroy(err);
