@@ -16,7 +16,6 @@ import {promisifyAll} from '@google-cloud/promisify';
 import {Transform} from 'stream';
 import arrify = require('arrify');
 import * as is from 'is';
-import * as extend from 'extend';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 
@@ -940,7 +939,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *   });
    */
   getTablesStream(options: GetTablesOptions = {}): NodeJS.ReadableStream {
-    const gaxOpts = extend(true, {}, options.gaxOptions);
     const reqOpts = Object.assign({}, options, {
       parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
@@ -965,7 +963,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         client: 'BigtableTableAdminClient',
         method: 'listTablesStream',
         reqOpts,
-        gaxOpts,
+        gaxOpts: options.gaxOptions,
       }),
 
       new Transform({objectMode: true, transform: transformToTable}),

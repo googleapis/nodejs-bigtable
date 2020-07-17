@@ -1005,7 +1005,7 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.method, 'listTablesStream');
         assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.view, views.unspecified);
-        assert.deepStrictEqual(config.gaxOpts, {});
+        assert.strictEqual(config.gaxOpts, undefined);
         setImmediate(done);
         return returnStream;
       };
