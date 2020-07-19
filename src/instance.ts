@@ -965,7 +965,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         reqOpts,
         gaxOpts: options.gaxOptions,
       }),
-
       new Transform({objectMode: true, transform: transformToTable}),
     ]);
   }
