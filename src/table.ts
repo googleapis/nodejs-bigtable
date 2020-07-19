@@ -16,14 +16,13 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
-import {PassThrough} from 'stream';
+import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 import * as is from 'is';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
-import * as through from 'through2';
 
 import {
   Family,
@@ -810,24 +809,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      rowStream = pumpify.obj([
-        requestStream,
-        chunkTransformer,
-        through.obj((rowData, enc, next) => {
-          if (
-            chunkTransformer._destroyed ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (userStream as any)._writableState.ended
-          ) {
-            return next();
-          }
-          numRequestsMade = 0;
-          rowsRead++;
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
-        }),
-      ]);
+      const transform = new Transform({objectMode: true});
+      transform._transform = (rowData, _, next) => {
+        if (chunkTransformer._destroyed || !userStream.writable) {
+          return next();
+        }
+        numRequestsMade = 0;
+        rowsRead++;
+        const row = this.row(rowData.key);
+        row.data = rowData.data;
+        next(null, row);
+      };
+
+      rowStream = pumpify.obj([requestStream, chunkTransformer, transform]);
 
       rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -1561,6 +1555,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       appProfileId: this.bigtable.appProfileId,
     };
 
+    const transform = new Transform({
+      transform(key, enc, next) {
+        next(null, {
+          key: key.rowKey,
+          offset: key.offsetBytes,
+        });
+      },
+      objectMode: true,
+    });
+
     return pumpify.obj([
       this.bigtable.request({
         client: 'BigtableClient',
@@ -1568,12 +1572,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts,
         gaxOpts: gaxOptions,
       }),
-      through.obj((key, enc, next) => {
-        next(null, {
-          key: key.rowKey,
-          offset: key.offsetBytes,
-        });
-      }),
+      transform,
     ]);
   }
 
