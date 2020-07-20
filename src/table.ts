@@ -809,17 +809,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      const transform = new Transform({objectMode: true});
-      transform._transform = (rowData, _, next) => {
-        if (chunkTransformer._destroyed || !userStream.writable) {
-          return next();
-        }
-        numRequestsMade = 0;
-        rowsRead++;
-        const row = this.row(rowData.key);
-        row.data = rowData.data;
-        next(null, row);
-      };
+      const transform = new Transform({
+        transform: (rowData, _, next) => {
+          if (chunkTransformer._destroyed || !userStream.writable) {
+            return next();
+          }
+          numRequestsMade = 0;
+          rowsRead++;
+          const row = this.row(rowData.key);
+          row.data = rowData.data;
+          next(null, row);
+        },
+        objectMode: true,
+      });
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, transform]);
 

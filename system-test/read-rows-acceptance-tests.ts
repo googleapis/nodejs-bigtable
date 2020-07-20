@@ -24,7 +24,9 @@ import {protobuf} from 'google-gax';
 import * as fs from 'fs';
 import * as path from 'path';
 import {Instance} from '../src/instance';
-import {Bigtable, AbortableDuplex} from '../src';
+import {Bigtable} from '../src';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const streamEvents = require('stream-events');
 
 const protosJson = path.resolve(__dirname, '../protos/protos.json');
 const root = protobuf.Root.fromJSON(
@@ -69,31 +71,29 @@ describe('Read Row Acceptance tests', () => {
       table.bigtable = {} as Bigtable;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (table.bigtable.request as any) = () => {
-        const stream = new PassThrough({
-          objectMode: true,
-        });
+        const stream = streamEvents(new PassThrough({objectMode: true}));
+        stream.abort = () => {};
 
-        ((stream as {}) as AbortableDuplex).abort = () => {};
+        const mocked_stream = function (size: number) {
+          test.chunks_base64.forEach((value, index, array) => {
+            const chunk = value;
+            const cellChunk = CellChunk.decode(
+              Buffer.from(chunk as string, 'base64')
+            );
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            let readRowsResponse: any = {chunks: [cellChunk]};
+            readRowsResponse = ReadRowsResponse.create(readRowsResponse);
+            readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {
+              defaults: true,
+              longs: String,
+              oneofs: true,
+            });
+            stream.emit('data', readRowsResponse);
+          });
+          stream.emit('end');
+        };
 
-        setImmediate(() => {
-          test.chunks_base64
-            .map(chunk => {
-              const cellChunk = CellChunk.decode(
-                Buffer.from(chunk as string, 'base64')
-              ); //.decode64(chunk);
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              let readRowsResponse: any = {chunks: [cellChunk]};
-              readRowsResponse = ReadRowsResponse.create(readRowsResponse);
-              readRowsResponse = ReadRowsResponse.toObject(readRowsResponse, {
-                defaults: true,
-                longs: String,
-                oneofs: true,
-              });
-              return readRowsResponse;
-            })
-            .forEach(readRowsResponse => stream.push(readRowsResponse));
-          stream.push(null);
-        });
+        stream.once('reading', mocked_stream);
 
         return stream;
       };
