@@ -635,6 +635,13 @@ describe('Bigtable', () => {
       gaxOpts: {},
     };
 
+    const gapicStreamingMethods = [
+      'listTablesStream',
+      'listInstancesStream',
+      'listAppProfilesStream',
+      'listClustersStream',
+    ];
+
     beforeEach(() => {
       bigtable.getProjectId_ = (callback: Function) => {
         callback(null, PROJECT_ID);
@@ -874,76 +881,80 @@ describe('Bigtable', () => {
       });
     });
 
-    describe('makeGapicStreamRequest', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let GAX_STREAM: any;
-      const config = {
-        client: 'client',
-        method: 'listTablesStream',
-        reqOpts: {
-          a: 'b',
-          c: 'd',
-        },
-        gaxOpts: {},
-      };
+    gapicStreamingMethods.forEach(method => {
+      describe('makeGapicStreamRequest', () => {
+        describe(method, () => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          let GAX_STREAM: any;
+          const config = {
+            client: 'client',
+            method: method,
+            reqOpts: {
+              a: 'b',
+              c: 'd',
+            },
+            gaxOpts: {},
+          };
 
-      beforeEach(() => {
-        GAX_STREAM = new PassThrough();
-        bigtable.api[config.client][config.method] = {
-          bind() {
-            return () => {
-              return GAX_STREAM;
+          beforeEach(() => {
+            GAX_STREAM = new PassThrough();
+            bigtable.api[config.client][config.method] = {
+              bind() {
+                return () => {
+                  return GAX_STREAM;
+                };
+              },
             };
-          },
-        };
-      });
+          });
 
-      it('should expose an abort function', done => {
-        GAX_STREAM.cancel = done;
+          it('should expose an abort function', done => {
+            GAX_STREAM.cancel = done;
 
-        const requestStream = bigtable.request(config);
-        requestStream.emit('reading');
-        requestStream.abort();
-      });
+            const requestStream = bigtable.request(config);
+            requestStream.emit('reading');
+            requestStream.abort();
+          });
 
-      it('should prepare the request once reading', done => {
-        bigtable.api[config.client][config.method] = {
-          bind(gaxClient: {}, reqOpts: {}, gaxOpts: {}) {
-            assert.strictEqual(gaxClient, bigtable.api[config.client]);
-            assert.deepStrictEqual(reqOpts, config.reqOpts);
-            assert.strictEqual(gaxOpts, config.gaxOpts);
-            setImmediate(done);
-            return () => {
-              return GAX_STREAM;
+          it('should prepare the request once reading', done => {
+            bigtable.api[config.client][config.method] = {
+              bind(gaxClient: {}, reqOpts: {}, gaxOpts: {}) {
+                assert.strictEqual(gaxClient, bigtable.api[config.client]);
+                assert.deepStrictEqual(reqOpts, config.reqOpts);
+                assert.strictEqual(gaxOpts, config.gaxOpts);
+                setImmediate(done);
+                return () => {
+                  return GAX_STREAM;
+                };
+              },
             };
-          },
-        };
 
-        const requestStream = bigtable.request(config);
-        requestStream.emit('reading');
-      });
+            const requestStream = bigtable.request(config);
+            requestStream.emit('reading');
+          });
 
-      it('should destroy the stream with prepare error', done => {
-        const error = new Error('Error.');
-        bigtable.getProjectId_ = (callback: Function) => {
-          callback(error);
-        };
-        const requestStream = bigtable.request(config);
-        requestStream.emit('reading');
-        requestStream.on('error', (err: Error) => {
-          assert.strictEqual(err, error);
-          done();
-        });
-      });
+          it('should destroy the stream with prepare error', done => {
+            const error = new Error('Error.');
+            bigtable.getProjectId_ = (callback: Function) => {
+              callback(error);
+            };
+            const requestStream = bigtable.request(config);
+            requestStream.emit('reading');
+            requestStream.on('error', (err: Error) => {
+              assert.strictEqual(err, error);
+              done();
+            });
+          });
 
-      it('should destroy the stream with GAX error', done => {
-        const error = new Error('Error.');
-        const requestStream = bigtable.request(config);
-        requestStream.emit('reading');
-        GAX_STREAM.emit('error', error);
-        requestStream.on('error', (err: Error) => {
-          assert.strictEqual(err, error);
-          done();
+          it('should destroy the stream with GAX error', done => {
+            const error = new Error('Error.');
+            const requestStream = bigtable.request(config);
+            requestStream.emit('reading');
+            GAX_STREAM.emit('error', error);
+            requestStream.on('error', (err: Error) => {
+              assert.strictEqual(err, error);
+              done();
+            });
+          });
         });
       });
     });
