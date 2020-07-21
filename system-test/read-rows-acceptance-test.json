@@ -378,14 +378,6 @@
         "name": "invalid - duplicate row key",
         "chunks_base64": ["CgRSS18xEgMKAUEaAwoBQyBkMgl2YWx1ZS1WQUxIAQ==", "CgRSS18xEgMKAUIaAwoBRCBkMgl2YWx1ZS1WQUxIAQ=="],
         "results": [{
-            "fm": "A",
-            "rk": "RK_1",
-            "qual": "C",
-            "label": "",
-            "error": false,
-            "value": "value-VAL",
-            "ts": 100
-        }, {
             "fm": "",
             "rk": "",
             "qual": "",
@@ -399,14 +391,6 @@
         "name": "invalid - new row missing row key",
         "chunks_base64": ["CgRSS18xEgMKAUEaAwoBQyBkMgl2YWx1ZS1WQUxIAQ==", "IGQyCXZhbHVlLVZBTEgB"],
         "results": [{
-            "fm": "A",
-            "rk": "RK_1",
-            "qual": "C",
-            "label": "",
-            "error": false,
-            "value": "value-VAL",
-            "ts": 100
-        }, {
             "fm": "",
             "rk": "",
             "qual": "",

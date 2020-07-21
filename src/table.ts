@@ -809,9 +809,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      const transform = new Transform({
+      const toRowStream = new Transform({
         transform: (rowData, _, next) => {
-          if (chunkTransformer._destroyed || !userStream.writable) {
+          if (
+            chunkTransformer._destroyed ||
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (userStream as any)._writableState.ended
+          ) {
             return next();
           }
           numRequestsMade = 0;
@@ -823,7 +827,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         objectMode: true,
       });
 
-      rowStream = pumpify.obj([requestStream, chunkTransformer, transform]);
+      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
       rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -1557,7 +1561,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       appProfileId: this.bigtable.appProfileId,
     };
 
-    const transform = new Transform({
+    const rowKeysStream = new Transform({
       transform(key, enc, next) {
         next(null, {
           key: key.rowKey,
@@ -1574,7 +1578,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts,
         gaxOpts: gaxOptions,
       }),
-      transform,
+      rowKeysStream,
     ]);
   }
 
