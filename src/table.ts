@@ -16,14 +16,13 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
-import {PassThrough} from 'stream';
+import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 import * as is from 'is';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
-import * as through from 'through2';
 
 import {
   Family,
@@ -810,10 +809,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      rowStream = pumpify.obj([
-        requestStream,
-        chunkTransformer,
-        through.obj((rowData, enc, next) => {
+      const toRowStream = new Transform({
+        transform: (rowData, _, next) => {
           if (
             chunkTransformer._destroyed ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -826,8 +823,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           const row = this.row(rowData.key);
           row.data = rowData.data;
           next(null, row);
-        }),
-      ]);
+        },
+        objectMode: true,
+      });
+
+      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
       rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -1561,6 +1561,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       appProfileId: this.bigtable.appProfileId,
     };
 
+    const rowKeysStream = new Transform({
+      transform(key, enc, next) {
+        next(null, {
+          key: key.rowKey,
+          offset: key.offsetBytes,
+        });
+      },
+      objectMode: true,
+    });
+
     return pumpify.obj([
       this.bigtable.request({
         client: 'BigtableClient',
@@ -1568,12 +1578,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts,
         gaxOpts: gaxOptions,
       }),
-      through.obj((key, enc, next) => {
-        next(null, {
-          key: key.rowKey,
-          offset: key.offsetBytes,
-        });
-      }),
+      rowKeysStream,
     ]);
   }
 
