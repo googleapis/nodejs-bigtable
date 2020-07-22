@@ -993,8 +993,11 @@ describe('Bigtable/Instance', () => {
       schema: 2,
       full: 4,
     });
-    const returnStream = new PassThrough({
-      objectMode: true,
+    let returnStream: PassThrough;
+    beforeEach(() => {
+      returnStream = new PassThrough({
+        objectMode: true,
+      });
     });
 
     it('should provide the proper request options', done => {
@@ -1038,6 +1041,21 @@ describe('Bigtable/Instance', () => {
           return returnStream;
         };
         instance.getTablesStream(options);
+      });
+    });
+
+    it('should return an error from gapic', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      const error = new Error('Error');
+      setImmediate(() => {
+        returnStream.destroy(error);
+      });
+      instance.getTablesStream().on('error', err => {
+        assert.strictEqual(err, error);
+        done();
       });
     });
 
