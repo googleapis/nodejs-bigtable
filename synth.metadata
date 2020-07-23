@@ -4,7 +4,7 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/nodejs-bigtable.git",
-        "sha": "3d046b5d7b08b4297c414a540b177c0c7d581d5b"
+        "sha": "1d8d0e8ff546e450601e17fb97c2739c450fed8c"
       }
     },
     {
@@ -19,7 +19,7 @@
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "99c93fe09f8c1dca09dfc0301c8668e3a70dd796"
+        "sha": "3a00b7fea8c4c83eaff8eb207f530a2e3e8e1de3"
       }
     }
   ],
