@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as paginator from '@google-cloud/paginator';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import {before, beforeEach, afterEach, describe, it} from 'mocha';
@@ -31,6 +30,8 @@ import {
   GetTablesOptions,
 } from '../src/table';
 import {Bigtable} from '../src';
+import {PassThrough} from 'stream';
+import * as pumpify from 'pumpify';
 
 const sandbox = sinon.createSandbox();
 
@@ -42,20 +43,12 @@ const fakePromisify = Object.assign({}, promisify, {
       return;
     }
     promisified = true;
-    assert.deepStrictEqual(options.exclude, ['appProfile', 'cluster', 'table']);
-  },
-});
-
-const fakePaginator = Object.assign({}, paginator, {
-  paginator: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    extend(...args: any[]) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this as any).calledWith_ = args;
-    },
-    streamify(methodName: string) {
-      return methodName;
-    },
+    assert.deepStrictEqual(options.exclude, [
+      'appProfile',
+      'cluster',
+      'table',
+      'getTablesStream',
+    ]);
   },
 });
 
@@ -98,6 +91,7 @@ describe('Bigtable/Instance', () => {
   const BIGTABLE = {
     projectName: 'projects/my-project',
     projectId: 'my-project',
+    request: () => {},
   } as Bigtable;
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
@@ -107,12 +101,12 @@ describe('Bigtable/Instance', () => {
 
   before(() => {
     Instance = proxyquire('../src/instance.js', {
-      '@google-cloud/paginator': fakePaginator,
       '@google-cloud/promisify': fakePromisify,
       './app-profile.js': {AppProfile: FakeAppProfile},
       './cluster.js': {Cluster: FakeCluster},
       './family.js': {Family: FakeFamily},
       './table.js': {Table: FakeTable},
+      pumpify,
     }).Instance;
   });
 
@@ -123,17 +117,6 @@ describe('Bigtable/Instance', () => {
   afterEach(() => sandbox.restore());
 
   describe('instantiation', () => {
-    it('should extend the correct methods', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const args = (fakePaginator.paginator as any).calledWith_;
-      assert.strictEqual(args[0], Instance);
-      assert.deepStrictEqual(args[1], ['getTables']);
-    });
-
-    it('should streamify the correct methods', () => {
-      assert.strictEqual(instance.getTablesStream, 'getTables');
-    });
-
     it('should promisify all the things', () => {
       assert(promisified);
     });
@@ -999,6 +982,156 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual((args as any)[3], response[3]);
         done();
       });
+    });
+  });
+
+  describe('getTablesStream', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const views = ((FakeTable as any).VIEWS = {
+      unspecified: 0,
+      name: 1,
+      schema: 2,
+      full: 4,
+    });
+    let returnStream: PassThrough;
+    beforeEach(() => {
+      returnStream = new PassThrough({
+        objectMode: true,
+      });
+    });
+
+    it('should provide the proper request options', done => {
+      const stub = sandbox.stub(pumpify, 'obj');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'listTablesStream');
+        assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
+        assert.strictEqual(config.reqOpts.view, views.unspecified);
+        assert.strictEqual(config.gaxOpts, undefined);
+        setImmediate(done);
+        return returnStream;
+      };
+      instance.getTablesStream();
+      assert.strictEqual(stub.getCall(0).args[0][0], returnStream);
+    });
+
+    it('should accept gaxOptions', done => {
+      const options = {
+        gaxOptions: {},
+      };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.deepStrictEqual(config.gaxOpts, options.gaxOptions);
+        setImmediate(done);
+        return returnStream;
+      };
+      instance.getTablesStream(options);
+    });
+
+    Object.keys(views).forEach(view => {
+      it('should set the "' + view + '" view', done => {
+        const options = {
+          view,
+        } as GetTablesOptions;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.bigtable.request as Function) = (config: any) => {
+          assert.strictEqual(config.reqOpts.view, views[view as 'unspecified']);
+          setImmediate(done);
+          return returnStream;
+        };
+        instance.getTablesStream(options);
+      });
+    });
+
+    it('should return an error from gapic', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      const error = new Error('Error');
+      setImmediate(() => {
+        returnStream.destroy(error);
+      });
+      instance.getTablesStream().on('error', err => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return an array of table objects', done => {
+      const response = [
+        {
+          name: '/projects/my-project/instances/my-instance/tables/my-table-a',
+        },
+        {
+          name: '/projects/my-project/instances/my-instance/tables/my-table-b',
+        },
+      ];
+
+      const fakeTables = [{}, {}];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      let tableCount = 0;
+      (instance.table as Function) = (id: string) => {
+        assert.strictEqual(id, response[tableCount].name.split('/').pop());
+        return fakeTables[tableCount++];
+      };
+      setImmediate(() => {
+        response.forEach(r => {
+          returnStream.push(r);
+        });
+        returnStream.push(null);
+      });
+
+      const tables: Table[] = [];
+      instance
+        .getTablesStream()
+        .on('error', assert.ifError)
+        .on('data', table => {
+          tables.push(table);
+        })
+        .on('end', () => {
+          assert.strictEqual(tables[0], fakeTables[0]);
+          assert.deepStrictEqual(tables[0].metadata, response[0]);
+          assert.strictEqual(tables[1], fakeTables[1]);
+          assert.deepStrictEqual(tables[1].metadata, response[1]);
+          done();
+        });
+    });
+
+    it('should transform into Table objects', done => {
+      const returnStream = new PassThrough({
+        objectMode: true,
+      });
+      const response = [
+        {
+          name: '/projects/my-project/instances/my-instance/tables/my-table-a',
+        },
+      ];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      setImmediate(() => {
+        returnStream.end(response[0]);
+      });
+
+      const tables: Table[] = [];
+      instance
+        .getTablesStream()
+        .on('error', assert.ifError)
+        .on('data', table => {
+          assert(table instanceof FakeTable);
+          tables.push(table);
+        })
+        .on('end', () => {
+          assert(tables.length > 0);
+          done();
+        });
     });
   });
 

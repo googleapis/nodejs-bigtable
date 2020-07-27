@@ -160,6 +160,7 @@ describe('Bigtable', () => {
     it('should retrieve a list of app profiles', async () => {
       const [appProfiles] = await INSTANCE.getAppProfiles();
       assert(appProfiles[0] instanceof AppProfile);
+      assert(appProfiles.length > 0);
     });
 
     it('should check if an app profile exists', async () => {

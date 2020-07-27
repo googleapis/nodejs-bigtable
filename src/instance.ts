@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {paginator, ResourceStream} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
+import {Transform} from 'stream';
 import arrify = require('arrify');
 import * as is from 'is';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pumpify = require('pumpify');
+
 import snakeCase = require('lodash.snakecase');
 import {
   AppProfile,
@@ -155,7 +158,6 @@ export class Instance {
   id: string;
   name: string;
   metadata?: google.bigtable.admin.v2.IInstance;
-  getTablesStream!: (options?: GetTablesOptions) => ResourceStream<Table>;
   constructor(bigtable: Bigtable, id: string) {
     this.bigtable = bigtable;
 
@@ -905,6 +907,68 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  /**
+   * Get {@link Table} objects for all the tables in your Cloud Bigtable
+   * instance as a readable object stream.
+   *
+   * @param {object} [options] Query object. See
+   *     {@link Instance#getTables} for a complete list of options.
+   * @returns {stream}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   *
+   * instance.getTablesStream()
+   *   .on('error', console.error)
+   *   .on('data', function(table) {
+   *     // table is a Table object.
+   *   })
+   *   .on('end', () => {
+   *     // All tables retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * instance.getTablesStream()
+   *   .on('data', function(table) {
+   *     this.end();
+   *   });
+   */
+  getTablesStream(options: GetTablesOptions = {}): NodeJS.ReadableStream {
+    const reqOpts = Object.assign({}, options, {
+      parent: this.name,
+      view: Table.VIEWS[options.view || 'unspecified'],
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (reqOpts as any).gaxOptions;
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const transformToTable = (
+      chunk: google.bigtable.admin.v2.ITable,
+      enc: string,
+      callback: Function
+    ) => {
+      const table = self.table(chunk.name!.split('/').pop()!);
+      table.metadata = chunk;
+      callback(null, table);
+    };
+    return pumpify.obj([
+      this.bigtable.request({
+        client: 'BigtableTableAdminClient',
+        method: 'listTablesStream',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      }),
+      new Transform({objectMode: true, transform: transformToTable}),
+    ]);
+  }
+
   setIamPolicy(
     policy: Policy,
     gaxOptions?: CallOptions
@@ -1104,52 +1168,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   }
 }
 
-/**
- * Get {@link Table} objects for all the tables in your Cloud Bigtable
- * instance as a readable object stream.
- *
- * @param {object} [query] Configuration object. See
- *     {@link Instance#getTables} for a complete list of options.
- * @returns {stream}
- *
- * @example
- * const {Bigtable} = require('@google-cloud/bigtable');
- * const bigtable = new Bigtable();
- * const instance = bigtable.instance('my-instance');
- *
- * instance.getTablesStream()
- *   .on('error', console.error)
- *   .on('data', function(table) {
- *     // table is a Table object.
- *   })
- *   .on('end', () => {
- *     // All tables retrieved.
- *   });
- *
- * //-
- * // If you anticipate many results, you can end a stream early to prevent
- * // unnecessary processing and API requests.
- * //-
- * instance.getTablesStream()
- *   .on('data', function(table) {
- *     this.end();
- *   });
- */
-Instance.prototype.getTablesStream = paginator.streamify<Table>('getTables');
-
-/*! Developer Documentation
- *
- * These methods can be auto-paginated.
- */
-paginator.extend(Instance, ['getTables']);
-
 /*! Developer Documentation
  *
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
 promisifyAll(Instance, {
-  exclude: ['appProfile', 'cluster', 'table'],
+  exclude: ['appProfile', 'cluster', 'table', 'getTablesStream'],
 });
 
 /**
