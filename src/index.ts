@@ -752,9 +752,7 @@ export class Bigtable {
 
     const gapicStreamingMethods = {
       listTablesStream: true,
-      listInstancesStream: true,
       listAppProfilesStream: true,
-      listClustersStream: true,
     };
 
     if (isStreamMode) {
