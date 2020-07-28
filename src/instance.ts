@@ -686,6 +686,65 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     );
   }
 
+  /**
+   * Get {@link AppProfile} objects for all the App Profiles in your
+   * Cloud Bigtable instance as a readable object stream.
+   *
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     {@link Instance#getAppProfiles} for a complete list of options.
+   * @returns {stream}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   *
+   * instance.getAppProfilesStream()
+   *   .on('error', console.error)
+   *   .on('data', function(appProfile) {
+   *     // appProfile is a AppProfile object.
+   *   })
+   *   .on('end', () => {
+   *     // All appProfiles retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * instance.getAppProfilesStream()
+   *   .on('data', function(appProfile) {
+   *     this.end();
+   *   });
+   */
+  getAppProfilesStream(gaxOptions?: CallOptions): NodeJS.ReadableStream {
+    const reqOpts = {
+      parent: this.name,
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const transformToAppProfile = (
+      chunk: google.bigtable.admin.v2.IAppProfile,
+      enc: string,
+      callback: Function
+    ) => {
+      const appProfile = self.appProfile(chunk.name!.split('/').pop()!);
+      appProfile.metadata = chunk;
+      callback(null, appProfile);
+    };
+    return pumpify.obj([
+      this.bigtable.request({
+        client: 'BigtableInstanceAdminClient',
+        method: 'listAppProfilesStream',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      }),
+      new Transform({objectMode: true, transform: transformToAppProfile}),
+    ]);
+  }
+
   getClusters(options?: CallOptions): Promise<GetClustersResponse>;
   getClusters(options: CallOptions, callback: GetClustersCallback): void;
   getClusters(callback: GetClustersCallback): void;

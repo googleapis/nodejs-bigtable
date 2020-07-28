@@ -724,6 +724,104 @@ describe('Bigtable/Instance', () => {
     });
   });
 
+  describe('getApprofilesStream', () => {
+    let returnStream: PassThrough;
+    beforeEach(() => {
+      returnStream = new PassThrough({
+        objectMode: true,
+      });
+    });
+
+    it('should provide the proper request options', done => {
+      const stub = sandbox.stub(pumpify, 'obj');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
+        assert.strictEqual(config.method, 'listAppProfilesStream');
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: INSTANCE_NAME,
+        });
+        assert.deepStrictEqual(config.gaxOpts, undefined);
+        setImmediate(done);
+        return returnStream;
+      };
+      instance.getAppProfilesStream();
+      assert.strictEqual(stub.getCall(0).args[0][0], returnStream);
+    });
+
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {timeout: 1000};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        setImmediate(done);
+        return returnStream;
+      };
+      instance.getAppProfilesStream(gaxOptions);
+    });
+
+    it('should return error from gapic', done => {
+      const error = new Error('Error.');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      setImmediate(() => {
+        returnStream.destroy(error);
+      });
+
+      instance.getAppProfilesStream().on('error', err => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should return an array of AppProfile objects', done => {
+      const response = [
+        {
+          name:
+            '/projects/my-project/instances/my-instance/appProfiles/my-appProfile-a',
+        },
+        {
+          name:
+            '/projects/my-project/instances/my-instance/appProfiles/my-appProfile-a',
+        },
+      ];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+      setImmediate(() => {
+        response.forEach(r => {
+          returnStream.push(r);
+        });
+        returnStream.push(null);
+      });
+
+      const appProfiles: AppProfile[] = [];
+      instance
+        .getAppProfilesStream()
+        .on('error', assert.ifError)
+        .on('data', appProfile => {
+          assert(appProfile instanceof FakeAppProfile);
+          appProfiles.push(appProfile);
+        })
+        .on('end', () => {
+          assert.strictEqual(
+            appProfiles[0].id,
+            response[0].name.split('/').pop()
+          );
+          assert.deepStrictEqual(appProfiles[0].metadata, response[0]);
+          assert.strictEqual(
+            appProfiles[1].id,
+            response[1].name.split('/').pop()
+          );
+          assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
+          done();
+        });
+    });
+  });
+
   describe('getClusters', () => {
     it('should provide the proper request options', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

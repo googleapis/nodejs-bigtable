@@ -750,7 +750,10 @@ export class Bigtable {
       });
     };
 
-    const gapicStreamingMethods = {listTablesStream: true};
+    const gapicStreamingMethods = {
+      listTablesStream: true,
+      listAppProfilesStream: true,
+    };
 
     if (isStreamMode) {
       stream = streamEvents(new PassThrough({objectMode: true}));
