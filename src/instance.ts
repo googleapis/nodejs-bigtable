@@ -1233,7 +1233,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
  * that a callback is omitted.
  */
 promisifyAll(Instance, {
-  exclude: ['appProfile', 'cluster', 'table', 'getTablesStream'],
+  exclude: [
+    'appProfile',
+    'cluster',
+    'table',
+    'getTablesStream',
+    'getAppProfilesStream',
+  ],
 });
 
 /**
