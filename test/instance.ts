@@ -48,6 +48,7 @@ const fakePromisify = Object.assign({}, promisify, {
       'cluster',
       'table',
       'getTablesStream',
+      'getAppProfilesStream',
     ]);
   },
 });
