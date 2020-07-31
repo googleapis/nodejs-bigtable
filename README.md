@@ -14,6 +14,9 @@
 Cloud Bigtable Client Library for Node.js
 
 
+A comprehensive list of changes in each version may be found in
+[the CHANGELOG](https://github.com/googleapis/nodejs-bigtable/blob/master/CHANGELOG.md).
+
 * [Cloud Bigtable Node.js Client API Reference][client-docs]
 * [Cloud Bigtable Documentation][product-docs]
 * [github.com/googleapis/nodejs-bigtable](https://github.com/googleapis/nodejs-bigtable)
