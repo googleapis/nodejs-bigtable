@@ -180,6 +180,8 @@ export interface GetTablesOptions {
    * 'full'. Default: 'name'.
    */
   view?: 'name' | 'schema' | 'full';
+  pageSize?: number;
+  pageToken?: string;
 }
 
 export interface GetRowsOptions {

@@ -16,6 +16,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import {Transform} from 'stream';
 import arrify = require('arrify');
 import * as is from 'is';
+import * as extend from 'extend';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
 
@@ -653,21 +654,33 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     optionsOrCallback?: CallOptions | GetAppProfilesCallback,
     cb?: GetAppProfilesCallback
   ): void | Promise<GetAppProfilesResponse> {
-    const gaxOptions =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const gaxOpts =
+      typeof optionsOrCallback === 'object'
+        ? extend(true, {}, optionsOrCallback)
+        : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts = {
+    const reqOpts: google.bigtable.admin.v2.IListAppProfilesRequest = {
       parent: this.name,
     };
+
+    if (is.number(gaxOpts.pageSize)) {
+      reqOpts.pageSize = gaxOpts.pageSize;
+    }
+    delete gaxOpts.pageSize;
+
+    if (gaxOpts.pageToken) {
+      reqOpts.pageToken = gaxOpts.pageToken;
+    }
+    delete gaxOpts.pageToken;
 
     this.bigtable.request<google.bigtable.admin.v2.IAppProfile[]>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'listAppProfiles',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts,
       },
       (err, resp) => {
         if (err) {
@@ -718,10 +731,21 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     this.end();
    *   });
    */
-  getAppProfilesStream(gaxOptions?: CallOptions): NodeJS.ReadableStream {
-    const reqOpts = {
+  getAppProfilesStream(gaxOptions: CallOptions = {}): NodeJS.ReadableStream {
+    const reqOpts: google.bigtable.admin.v2.IListAppProfilesRequest = {
       parent: this.name,
     };
+    const gaxOpts = extend(true, {}, gaxOptions);
+
+    if (is.number(gaxOpts.pageSize)) {
+      reqOpts.pageSize = gaxOpts.pageSize;
+    }
+    delete gaxOpts.pageSize;
+
+    if (gaxOpts.pageToken) {
+      reqOpts.pageToken = gaxOpts.pageToken;
+    }
+    delete gaxOpts.pageToken;
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
@@ -739,7 +763,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         client: 'BigtableInstanceAdminClient',
         method: 'listAppProfilesStream',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts,
       }),
       new Transform({objectMode: true, transform: transformToAppProfile}),
     ]);
@@ -938,10 +962,26 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts = Object.assign({}, options, {
+    const gaxOpts = extend(true, {}, options.gaxOptions);
+    let reqOpts = Object.assign({}, options, {
       parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     });
+
+    // Copy over pageSize and pageToken values from gaxOptions.
+    // However values set on options take precedence.
+    if (gaxOpts) {
+      reqOpts = extend(
+        {},
+        {
+          pageSize: gaxOpts.pageSize,
+          pageToken: gaxOpts.pageToken,
+        },
+        reqOpts
+      );
+      delete gaxOpts.pageSize;
+      delete gaxOpts.pageToken;
+    }
 
     delete (reqOpts as GetTablesOptions).gaxOptions;
 
@@ -950,7 +990,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         client: 'BigtableTableAdminClient',
         method: 'listTables',
         reqOpts,
-        gaxOpts: options.gaxOptions,
+        gaxOpts,
       },
       (...args) => {
         if (args[1]) {
@@ -998,13 +1038,29 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *   });
    */
   getTablesStream(options: GetTablesOptions = {}): NodeJS.ReadableStream {
-    const reqOpts = Object.assign({}, options, {
+    const gaxOpts = extend(true, {}, options.gaxOptions);
+    let reqOpts = Object.assign({}, options, {
       parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delete (reqOpts as any).gaxOptions;
+
+    // Copy over pageSize and pageToken values from gaxOptions.
+    // However values set on options take precedence.
+    if (gaxOpts) {
+      reqOpts = extend(
+        {},
+        {
+          pageSize: gaxOpts.pageSize,
+          pageToken: gaxOpts.pageToken,
+        },
+        reqOpts
+      );
+      delete gaxOpts.pageSize;
+      delete gaxOpts.pageToken;
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
@@ -1022,7 +1078,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         client: 'BigtableTableAdminClient',
         method: 'listTablesStream',
         reqOpts,
-        gaxOpts: options.gaxOptions,
+        gaxOpts,
       }),
       new Transform({objectMode: true, transform: transformToTable}),
     ]);
