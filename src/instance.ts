@@ -57,10 +57,16 @@ import {
   GetTablesCallback,
   GetTablesResponse,
 } from './table';
-import {CallOptions, LROperation, Operation} from 'google-gax';
+import {CallOptions, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
-import {Bigtable} from '.';
+import {Backup, Bigtable} from '.';
 import {google} from '../protos/protos';
+import {
+  ModifiableBackupFields,
+  RestoreTableCallback,
+  RestoreTableResponse,
+} from './backup';
+import {BigtableTableAdminClient} from './v2';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -140,23 +146,6 @@ export type SetInstanceMetadataCallback = (
 ) => void;
 export type SetInstanceMetadataResponse = [google.protobuf.Empty];
 
-export interface RestoreTableOptions {
-  gaxOptions?: CallOptions;
-}
-export type RestoreTableCallback = (
-  err: ServiceError | null,
-  apiResponse?: LROperation<
-    google.bigtable.admin.v2.ITable,
-    google.bigtable.admin.v2.IRestoreTableMetadata
-  >
-) => void;
-export type RestoreTableResponse = [
-  LROperation<
-    google.bigtable.admin.v2.ITable,
-    google.bigtable.admin.v2.IRestoreTableMetadata
-  >
-];
-
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
  *
@@ -227,6 +216,38 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   appProfile(name: string): AppProfile {
     return new AppProfile(this, name);
+  }
+
+  /**
+   * Get a reference to a Bigtable Backup.
+   *
+   * @example
+   * const id = 'my-backup';
+   * const backup = instance.backup(id, 'my-cluster');
+   * const expiresAt = new Date(Date.now() * 1000 * 60 * 60 * 6);
+   * const [operation] = await backup.create({expireTime: expiresAt});
+   * await operation.promise();
+   * const [fetchedBackup] = await backup.get();
+   * assert(backup instanceof Backup);
+   * assert.strictEqual(backup.id, id);
+   * assert.strictEqual(backup, fetchedBackup);
+   *
+   * @param {string} idOrName The backup name or id.
+   * @param {string | Cluster} cluster The id of the cluster this back is
+   * related to, or an instance of a Cluster.
+   * @param {ModifiableBackupFields} [fields] Declare things like
+   * `expireTime` at the point of instantiation. This can always be supplied
+   * later when creating the backup, or can be fetched using `backup.get()`.
+   * @returns {Backup}
+   */
+  backup(
+    idOrName: string,
+    cluster: string | Cluster,
+    fields?: ModifiableBackupFields
+  ): Backup {
+    const clusterInstance =
+      typeof cluster === 'string' ? this.cluster(cluster) : cluster;
+    return new Backup(clusterInstance, idOrName, fields);
   }
 
   create(options: InstanceOptions): Promise<CreateInstanceResponse>;
@@ -1125,23 +1146,20 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     ]);
   }
 
-  restoreTable(
-    backupId: string,
-    clusterId: string,
+  createTableFromBackup(
     tableId: string,
-    options?: RestoreTableOptions
+    backup: Backup | string,
+    gaxOptions: CallOptions
   ): Promise<RestoreTableResponse>;
-  restoreTable(
-    backupId: string,
-    clusterId: string,
+  createTableFromBackup(
     tableId: string,
-    options: RestoreTableOptions,
+    backup: Backup | string,
+    gaxOptions: CallOptions,
     callback: RestoreTableCallback
   ): void;
-  restoreTable(
-    backupId: string,
-    clusterId: string,
+  createTableFromBackup(
     tableId: string,
+    backup: Backup | string,
     callback: RestoreTableCallback
   ): void;
   /**
@@ -1152,71 +1170,52 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * {@link google.longrunning.Operation|long-running operation} can be used
    * to track the progress of the operation, and to cancel it.
    *
-   * @param {string} backupId
-   *   The id of the backup from which to restore. The `backupId` appended to
-   *   `parent` forms the full backup name of the form
-   *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
-   * @param {string} clusterId
-   *   The id of the cluster from where the backup resides. The `clusterId`
-   *   appended to `parent` in conjunction with the `backupId` forms the full
-   *   backup name of the form
-   *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
    * @param {string} tableId
    *   Required. The id of the table to create and restore to. This
    *   table must not already exist. The `table_id` appended to
    *   `parent` forms the full table name of the form
    *   `projects/<project>/instances/<instance>/tables/<table_id>`.
-   * @param {RestoreTableOptions | RestoreTableCallback} [optionsOrCallback]
+   * @param {Backup | string} backup
+   *   The name of the backup from which to restore of the form
+   *  `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
+   *  or a Backup instance.
+   * @param {CallOptions | RestoreTableCallback} [gaxOptionsOrCallback]
    * @param {RestoreTableCallback} [cb]
    * @return {void | Promise<RestoreTableResponse>}
    */
-  restoreTable(
-    backupId: string,
-    clusterId: string,
+  createTableFromBackup(
     tableId: string,
-    optionsOrCallback?: RestoreTableOptions | RestoreTableCallback,
+    backup: Backup | string,
+    gaxOptionsOrCallback?: CallOptions | RestoreTableCallback,
     cb?: RestoreTableCallback
   ): void | Promise<RestoreTableResponse> {
     const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    if (!backupId || typeof backupId === 'function') {
-      throw new Error('A backup id is required for what to restore.');
-    }
-
-    if (!clusterId || typeof clusterId === 'function') {
-      throw new Error(
-        'A cluster id is required from where the backup resides.'
-      );
-    }
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
     if (!tableId || typeof tableId === 'function') {
       throw new Error('An table id is required to restore from a backup.');
     }
 
-    const backupName = `${this.name}/clusters/${clusterId}/backups/${backupId}`;
-    const reqOpts: google.bigtable.admin.v2.IRestoreTableRequest = {
-      parent: this.name,
-      tableId,
-      backup: backupName,
-    };
+    const tableAdminClient = this.bigtable.api[
+      'BigtableTableAdminClient'
+    ] as BigtableTableAdminClient;
 
-    this.bigtable.request<
-      LROperation<
-        google.bigtable.admin.v2.ITable,
-        google.bigtable.admin.v2.IRestoreTableMetadata
-      >
-    >(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'restoreTable',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      callback // TODO cast as Table
-    );
+    let backupFrom: Backup;
+    if (backup instanceof Backup) {
+      backupFrom = backup;
+    } else {
+      const clusterId = tableAdminClient
+        .matchClusterFromBackupName(backup)
+        .toString();
+      if (!clusterId) {
+        throw new Error('A complete backup name (path) is required.');
+      }
+      backupFrom = new Backup(this.cluster(clusterId), backup);
+    }
+
+    backupFrom.restore(tableId, options, callback);
   }
 
   setIamPolicy(

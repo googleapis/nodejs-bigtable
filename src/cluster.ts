@@ -12,23 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {paginator, ResourceStream} from '@google-cloud/paginator';
-import {PreciseDate} from '@google-cloud/precise-date';
+import {paginator} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
 import {
   CallOptions,
-  LROperation,
   Operation as GaxOperation,
   Operation,
   ServiceError,
 } from 'google-gax';
-import snakeCase = require('lodash.snakecase');
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pumpify = require('pumpify');
 
 import {google} from '../protos/protos';
 import {Bigtable} from '.';
-import {Table} from './table';
 import {Instance} from './instance';
-import {Backup} from './backup';
+import {
+  Backup,
+  GetBackupsCallback,
+  GetBackupsOptions,
+  GetBackupsResponse,
+  IBackup,
+} from './backup';
+import {Transform} from 'stream';
 
 export interface GenericCallback<T> {
   (err?: ServiceError | null, apiResponse?: T | null): void;
@@ -90,103 +96,6 @@ export type GetClusterMetadataCallback = (
   apiResponse?: IOperation | null
 ) => void;
 
-export type BackupTimestamp = google.protobuf.ITimestamp | PreciseDate | Date;
-export interface ModifiableBackupFields {
-  /**
-   * The ITimestamp (Date or PreciseDate will be converted) representing
-   * when the backup will automatically be deleted. This must be at a
-   * minimum 6 hours from the time of the backup request and a maximum of 30
-   * days.
-   */
-  expireTime?: BackupTimestamp;
-}
-
-export interface CreateBackupOptions {
-  gaxOptions?: CallOptions;
-}
-export type CreateBackupCallback = (
-  err: ServiceError | null,
-  apiResponse?: LROperation<
-    google.bigtable.admin.v2.IBackup,
-    google.bigtable.admin.v2.ICreateBackupMetadata
-  >
-) => void;
-export type CreateBackupResponse = [
-  LROperation<
-    google.bigtable.admin.v2.IBackup,
-    google.bigtable.admin.v2.ICreateBackupMetadata
-  >
-];
-
-export interface DeleteBackupOptions {
-  gaxOptions?: CallOptions;
-}
-export type DeleteBackupCallback = (
-  err: ServiceError | null,
-  apiResponse?: google.protobuf.IEmpty
-) => void;
-export type DeleteBackupResponse = [google.protobuf.IEmpty];
-
-export interface GetBackupOptions {
-  gaxOptions?: CallOptions;
-}
-export type GetBackupCallback = (
-  err: ServiceError | null,
-  apiResponse?: Backup
-) => void;
-export type GetBackupResponse = [Backup];
-
-export interface ListBackupsOptions {
-  /**
-   * A filter expression that filters backups listed in the response.
-   *   The expression must specify the field name, a comparison operator,
-   *   and the value that you want to use for filtering. The value must be a
-   *   string, a number, or a boolean. The comparison operator must be
-   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
-   *   roughly synonymous with equality. Filter rules are case insensitive.
-   */
-  filter?: string;
-
-  /**
-   * An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in
-   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is
-   *   described at https://aip.dev/132#ordering.
-   */
-  orderBy?: string;
-
-  gaxOptions?: CallOptions;
-}
-
-export interface ListBackupsStreamOptions extends ListBackupsOptions {
-  /**
-   * Have pagination handled automatically.
-   * @default true
-   */
-  autoPaginate?: boolean;
-
-  /**
-   * Maximum API calls to make.
-   * @default Infinity
-   */
-  maxApiCalls?: number;
-}
-
-export type ListBackupsResponse = [Backup[]];
-export type ListBackupsCallback = (
-  err: ServiceError | null,
-  metadata?: Backup[]
-) => void;
-
-export interface UpdateBackupOptions {
-  gaxOptions?: CallOptions;
-}
-export type UpdateBackupCallback = (
-  err: ServiceError | null,
-  apiResponse?: Backup
-) => void;
-export type UpdateBackupResponse = [Backup];
-
 /**
  * Create a cluster object to interact with your cluster.
  *
@@ -206,9 +115,6 @@ export class Cluster {
   id: string;
   name: string;
   metadata?: ICluster;
-  listBackupsStream!: (
-    options?: ListBackupsStreamOptions
-  ) => ResourceStream<Backup>;
 
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
@@ -547,271 +453,24 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 
-  /**
-   * Convert a full or partial object (with at least `name`) to a Backup
-   * instance. If defining statically, `backup.get()` should be called to
-   * pull the full state from the remote.
-   *
-   * @example
-   * const name = 'projects/p/instances/i/clusters/c/backups/b';
-   * const backupPartial = cluster.asBackup({name});
-   * const [backup] = await backupLocal.get();
-   * assert(backup instanceof Backup);
-   * assert.strictEqual(backup.name, name);
-   *
-   * @param {google.bigtable.admin.v2.IBackup} backup A full or partial
-   *   object that implements `IBackup`. While any empty object will work,
-   *   `name` should be supplied to be useful in most cases.
-   * @return {Backup}
-   */
-  asBackup(backup: google.bigtable.admin.v2.IBackup): Backup {
-    return new Backup(this.bigtable, backup);
-  }
-
-  createBackup(
-    table: Table | string,
-    id: string,
-    fields: Required<ModifiableBackupFields>,
-    options?: CreateBackupOptions
-  ): Promise<CreateBackupResponse>;
-  createBackup(
-    table: Table | string,
-    id: string,
-    fields: Required<ModifiableBackupFields>,
-    options: CreateBackupOptions,
-    callback: CreateBackupCallback
-  ): void;
-  createBackup(
-    table: Table | string,
-    id: string,
-    fields: Required<ModifiableBackupFields>,
-    callback: CreateBackupCallback
-  ): void;
-  /**
-   * Starts creating a new Cloud Bigtable Backup from this cluster.
-   *
-   * The returned backup
-   * {@link google.longrunning.Operation|long-running operation} can be used to
-   * track creation of the backup. Cancelling the returned operation will
-   * stop the creation and delete the backup.
-   *
-   * @param {Table|string} table A reference to the Table to backup, or the full
-   *   table path in the form:
-   *   `projects/{project}/instances/{instance}/tables/{table}`.
-   * @param {string} id
-   *   Required. The id of the backup to be created. The `backup_id` along with
-   *   the parent `parent` are combined as {parent}/backups/{backup_id} to
-   *   create the full backup name, of the form:
-   *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup_id}`.
-   *   This string must be between 1 and 50 characters in length and match the
-   *   regex {@link -_.a-zA-Z0-9|_a-zA-Z0-9}*.
-   * @param {ModifiableBackupFields} fields Fields to be specified.
-   * @param {BackupTimestamp} fields.expireTime When the backup will be
-   *   automatically deleted.
-   * @param {CreateBackupOptions | CreateBackupCallback} [optionsOrCallback]
-   * @param {CreateBackupCallback} [cb]
-   * @return {void | Promise<CreateBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_create_backup
-   */
-  createBackup(
-    table: Table | string,
-    id: string,
-    fields: Required<ModifiableBackupFields>,
-    optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
-    cb?: CreateBackupCallback
-  ): void | Promise<CreateBackupResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    if (
-      !table ||
-      (typeof table === 'object' && !table.name) ||
-      typeof table === 'function'
-    ) {
-      throw new TypeError(
-        'A reference to a table is required to create a backup.'
-      );
-    }
-
-    if (!id || typeof id === 'function') {
-      throw new TypeError('An id is required to create a backup.');
-    }
-
-    const isExpireTimeValid =
-      fields &&
-      fields.expireTime &&
-      (fields.expireTime instanceof Date || fields.expireTime.seconds);
-    if (!isExpireTimeValid) {
-      throw new TypeError('The expireTime field is required.');
-    }
-
-    const {expireTime, ...restFields} = fields;
-    const backup: google.bigtable.admin.v2.IBackup = {
-      sourceTable: typeof table === 'string' ? table : table.name,
-      ...restFields,
-    };
-
-    if (expireTime instanceof Date) {
-      backup.expireTime = new PreciseDate(expireTime).toStruct();
-    } else {
-      backup.expireTime = expireTime;
-    }
-
-    const reqOpts: google.bigtable.admin.v2.ICreateBackupRequest = {
-      parent: this.name,
-      backupId: id,
-      backup,
-    };
-
-    this.bigtable.request<
-      LROperation<
-        google.bigtable.admin.v2.IBackup,
-        google.bigtable.admin.v2.ICreateBackupMetadata
-      >
-    >(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'createBackup',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      callback // TODO cast as Backup
-    );
-  }
-
-  deleteBackup(
-    id: string,
-    options?: DeleteBackupOptions
-  ): Promise<DeleteBackupResponse>;
-  deleteBackup(
-    id: string,
-    options: DeleteBackupOptions,
-    callback: DeleteBackupCallback
-  ): void;
-  deleteBackup(id: string, callback: DeleteBackupCallback): void;
-  /**
-   * Deletes a pending or completed Cloud Bigtable backup from this cluster.
-   *
-   * @param {string} id
-   *   Required. The unique ID of the backup. This is not the full name of
-   *   the backup, but just the backup ID part.
-   * @param {DeleteBackupOptions | DeleteBackupCallback} [optionsOrCallback]
-   * @param {DeleteBackupCallback} [cb]
-   * @return {void | Promise<DeleteBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_delete_backup
-   */
-  deleteBackup(
-    id: string,
-    optionsOrCallback?: DeleteBackupOptions | DeleteBackupCallback,
-    cb?: DeleteBackupCallback
-  ): void | Promise<DeleteBackupResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    if (!id || typeof id === 'function') {
-      throw new TypeError('The backup id is required.');
-    }
-
-    const name = `${this.name}/backups/${id}`;
-    const reqOpts: google.bigtable.admin.v2.IDeleteBackupRequest = {
-      name,
-    };
-
-    this.bigtable.request<google.protobuf.IEmpty>(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'deleteBackup',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      callback
-    );
-  }
-
-  getBackup(id: string, options?: GetBackupOptions): Promise<GetBackupResponse>;
-  getBackup(
-    id: string,
-    options: GetBackupOptions,
-    callback: GetBackupCallback
-  ): void;
-  getBackup(id: string, callback: GetBackupCallback): void;
-  /**
-   * Gets metadata on a pending or completed Cloud Bigtable Backup relative
-   * to this cluster.
-   *
-   * @param {string} id
-   *   Required. The unique ID of the backup. This is not the full name of
-   *   the backup, but just the backup ID part.
-   * @param {GetBackupOptions | GetBackupCallback} [optionsOrCallback]
-   * @param {GetBackupCallback} [cb]
-   * @return {void | Promise<GetBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_get_backup
-   */
-  getBackup(
-    id: string,
-    optionsOrCallback?: GetBackupOptions | GetBackupCallback,
-    cb?: GetBackupCallback
-  ): void | Promise<GetBackupResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    if (!id || typeof id === 'function') {
-      throw new TypeError('The backup id is required.');
-    }
-
-    const name = `${this.name}/backups/${id}`;
-    const reqOpts: google.bigtable.admin.v2.IGetBackupRequest = {
-      name,
-    };
-
-    this.bigtable.request<google.bigtable.admin.v2.IBackup>(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'getBackup',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      (err, resp) => {
-        let backup;
-        if (resp) {
-          backup = this.asBackup(resp);
-        }
-
-        callback(err, backup);
-      }
-    );
-  }
-
-  listBackups(options?: ListBackupsOptions): Promise<ListBackupsResponse>;
-  listBackups(options: ListBackupsOptions, callback: ListBackupsCallback): void;
-  listBackups(callback: ListBackupsCallback): void;
+  getBackups(options?: GetBackupsOptions): Promise<GetBackupsResponse>;
+  getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
+  getBackups(callback: GetBackupsCallback): void;
   /**
    * Lists Cloud Bigtable backups within this cluster. Returns both
    * completed and pending backups.
    *
-   * @param {ListBackupsOptions | ListBackupsCallback} [optionsOrCallback]
-   * @param {ListBackupsCallback} [cb]
+   * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
+   * @param {GetBackupsResponse} [cb]
    * @return {void | Promise<ListBackupsResponse>}
    *
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_cluster_list_backups
    */
-  listBackups(
-    optionsOrCallback?: ListBackupsOptions | ListBackupsCallback,
-    cb?: ListBackupsCallback
-  ): void | Promise<ListBackupsResponse> {
+  getBackups(
+    optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
+    cb?: GetBackupsCallback
+  ): void | Promise<GetBackupsResponse> {
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
@@ -822,175 +481,99 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       parent: this.name,
     };
 
-    delete (reqOpts as ListBackupsOptions).gaxOptions;
+    delete (reqOpts as GetBackupsOptions).gaxOptions;
 
-    this.bigtable.request<Backup[]>(
+    this.bigtable.request<google.bigtable.admin.v2.IBackup[]>(
       {
         client: 'BigtableTableAdminClient',
         method: 'listBackups',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (...args) => {
-        if (args[1]) {
-          args[1] = args[1].map(backup => this.asBackup(backup));
+      (err, resp) => {
+        let backups;
+        if (resp) {
+          backups = resp.map(iBackup => {
+            const backup = new Backup(this, iBackup.name!);
+            backup.metadata = iBackup;
+            return backup;
+          }) as Backup[];
         }
 
-        callback(...args);
+        callback(err, backups, resp);
       }
     );
   }
 
-  updateBackup(
-    id: string,
-    fields: ModifiableBackupFields,
-    options?: UpdateBackupOptions
-  ): Promise<UpdateBackupResponse>;
-  updateBackup(
-    id: string,
-    fields: ModifiableBackupFields,
-    options: UpdateBackupOptions,
-    callback: UpdateBackupCallback
-  ): void;
-  updateBackup(
-    id: string,
-    fields: ModifiableBackupFields,
-    callback: UpdateBackupCallback
-  ): void;
   /**
-   * Updates a pending or completed Cloud Bigtable Backup.
+   * Lists Cloud Bigtable backups within this cluster. Provides both
+   * completed and pending backups as a readable object stream.
    *
-   * @param {string} id
-   *   Required. The unique ID of the backup. This is not the full name of
-   *   the backup, but just the backup ID part.
-   * @param {ModifiableBackupFields} fields
-   *   Required. The fields to be updated.
-   * @param {BackupTimestamp} fields.expireTime
-   *   Required. This is currently the only supported field.
-   * @param {UpdateBackupOptions | UpdateBackupCallback} [optionsOrCallback]
-   * @param {GetBackupCallback} [cb]
-   * @return {void | Promise<UpdateBackupResponse>}
+   * @param {GetBackupsOptions} [options] Configuration object. See
+   *     {@link Cluster#getBackups} for a complete list of options.
+   * @returns {ReadableStream<Backup>}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const cluster = instance.cluster('my-cluster');
+   *
+   * instance.getBackupsStream()
+   *   .on('error', console.error)
+   *   .on('data', function(backup) {
+   *     // backup is a Backup object.
+   *   })
+   *   .on('end', () => {
+   *     // All backups retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * cluster.getBackupsStream()
+   *   .on('data', function(backup) {
+   *     this.end();
+   *   });
    */
-  updateBackup(
-    id: string,
-    fields: ModifiableBackupFields,
-    optionsOrCallback?: UpdateBackupOptions | UpdateBackupCallback,
-    cb?: UpdateBackupCallback
-  ): void | Promise<UpdateBackupResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    if (!id || typeof id === 'function') {
-      throw new TypeError('The backup id is required.');
-    }
-
-    if (!fields || !fields.expireTime) {
-      throw new TypeError(
-        'Must specify at least one field to update (e.g. expireTime).'
-      );
-    }
-
-    const name = `${this.name}/backups/${id}`;
-    const {expireTime, ...restFields} = fields;
-
-    const backup: google.bigtable.admin.v2.IBackup = {
-      name,
-      ...restFields,
+  getBackupsStream(options: GetBackupsOptions): NodeJS.ReadableStream {
+    const {gaxOptions, ...restOptions} = options;
+    const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
+      ...restOptions,
+      parent: this.name,
     };
 
-    if (expireTime) {
-      if (expireTime instanceof Date) {
-        backup.expireTime = new PreciseDate(expireTime).toStruct();
-      } else if (expireTime.seconds) {
-        backup.expireTime = expireTime;
-      } else {
-        throw new TypeError('The expireTime field is invalid.');
-      }
-    }
-
-    const reqOpts: google.bigtable.admin.v2.IUpdateBackupRequest = {
-      backup,
-      updateMask: {
-        paths: [],
-      },
+    const transformToBackup = (obj: IBackup, enc: string, cb: Function) => {
+      const backup = this.instance.backup(obj.name!, this);
+      backup.metadata = obj;
+      cb(null, backup);
     };
 
-    const fieldsForMask = ['expireTime'];
-    fieldsForMask.forEach(field => {
-      if (field in fields) {
-        reqOpts.updateMask!.paths!.push(snakeCase(field));
-      }
-    });
-
-    this.bigtable.request<google.bigtable.admin.v2.IBackup>(
-      {
+    return pumpify.obj([
+      this.bigtable.request({
         client: 'BigtableTableAdminClient',
-        method: 'updateBackup',
+        method: 'listBackupsStream',
         reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      (err, resp) => {
-        let backup;
-        if (resp) {
-          backup = this.asBackup(resp);
-        }
-
-        callback(err, backup);
-      }
-    );
+        gaxOpts: gaxOptions,
+      }),
+      new Transform({objectMode: true, transform: transformToBackup}),
+    ]);
   }
 }
-
-/**
- * Lists Cloud Bigtable backups within this cluster. Provides both
- * completed and pending backups as a readable object stream.
- *
- * @param {ListBackupsStreamOptions} [options] Configuration object. See
- *     {@link Cluster#listBackups} for a complete list of options.
- * @returns {ResourceStream<Backup>}
- *
- * @example
- * const {Bigtable} = require('@google-cloud/bigtable');
- * const bigtable = new Bigtable();
- * const instance = bigtable.instance('my-instance');
- * const cluster = instance.cluster('my-cluster');
- *
- * instance.listBackupsStream()
- *   .on('error', console.error)
- *   .on('data', function(backup) {
- *     // backup is a Backup object.
- *   })
- *   .on('end', () => {
- *     // All backups retrieved.
- *   });
- *
- * //-
- * // If you anticipate many results, you can end a stream early to prevent
- * // unnecessary processing and API requests.
- * //-
- * cluster.listBackupsStream()
- *   .on('data', function(backup) {
- *     this.end();
- *   });
- */
-Cluster.prototype.listBackupsStream = paginator.streamify<Backup>(
-  'listBackups'
-);
 
 /*! Developer Documentation
  *
  * These methods can be auto-paginated.
  */
-paginator.extend(Cluster, ['listBackups']);
+paginator.extend(Cluster, ['getBackups']);
 
 /*! Developer Documentation
  *
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-promisifyAll(Cluster, {exclude: ['asBackup']});
+promisifyAll(Cluster);
 
 /**
  * Reference to the {@link Cluster} class.

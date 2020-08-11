@@ -958,7 +958,26 @@ export {
   SetAppProfileMetadataCallback,
   SetAppProfileMetadataResponse,
 } from './app-profile';
-export {Backup} from './backup';
+export {
+  Backup,
+  BackupTimestamp,
+  CreateBackupCallback,
+  CreateBackupResponse,
+  DeleteBackupCallback,
+  DeleteBackupResponse,
+  GenericBackupCallback,
+  GetBackupCallback,
+  GetBackupResponse,
+  GetBackupsCallback,
+  GetBackupsOptions,
+  GetBackupsResponse,
+  IBackup,
+  ModifiableBackupFields,
+  RestoreTableCallback,
+  RestoreTableResponse,
+  UpdateBackupCallback,
+  UpdateBackupResponse,
+} from './backup';
 export {
   Chunk,
   ChunkTransformer,
@@ -991,24 +1010,6 @@ export {
   IEmpty,
   SetClusterMetadataCallback,
   SetClusterMetadataResponse,
-  BackupTimestamp,
-  ModifiableBackupFields,
-  CreateBackupOptions,
-  CreateBackupCallback,
-  CreateBackupResponse,
-  DeleteBackupOptions,
-  DeleteBackupCallback,
-  DeleteBackupResponse,
-  GetBackupOptions,
-  GetBackupCallback,
-  GetBackupResponse,
-  ListBackupsOptions,
-  ListBackupsStreamOptions,
-  ListBackupsCallback,
-  ListBackupsResponse,
-  UpdateBackupOptions,
-  UpdateBackupCallback,
-  UpdateBackupResponse,
 } from './cluster';
 export {
   CreateFamilyCallback,
@@ -1062,9 +1063,6 @@ export {
   InstanceExistsResponse,
   SetInstanceMetadataCallback,
   SetInstanceMetadataResponse,
-  RestoreTableOptions,
-  RestoreTableCallback,
-  RestoreTableResponse,
 } from './instance';
 export {
   IMutation,
