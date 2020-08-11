@@ -40,10 +40,9 @@ import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
 import {
   CreateBackupCallback,
-  CreateBackupOptions,
   CreateBackupResponse,
   ModifiableBackupFields,
-} from './cluster';
+} from './backup';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 
@@ -491,12 +490,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   backup(
     id: string,
     fields: Required<ModifiableBackupFields>,
-    options?: CreateBackupOptions
+    gaxOptions?: CallOptions
   ): Promise<CreateBackupResponse>;
   backup(
     id: string,
     fields: Required<ModifiableBackupFields>,
-    options: CreateBackupOptions,
+    gaxOptions: CallOptions,
     callback: CreateBackupCallback
   ): void;
   backup(
@@ -515,7 +514,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {ModifiableBackupFields} fields Fields to be specified.
    * @param {BackupTimestamp} fields.expireTime When the backup will be
    *   automatically deleted.
-   * @param {CreateBackupOptions | CreateBackupCallback} [optionsOrCallback]
+   * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
    * @param {CreateBackupCallback} [cb]
    * @return {void | Promise<CreateBackupResponse>}
    *
@@ -525,19 +524,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   backup(
     id: string,
     fields: Required<ModifiableBackupFields>,
-    optionsOrCallback?: CreateBackupOptions | CreateBackupCallback,
+    gaxOptionsOrCallback?: CallOptions | CreateBackupCallback,
     cb?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
     const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
     if (!id || typeof id === 'function') {
       throw new TypeError('An id is required to create a backup.');
     }
 
-    this.getReplicationStates({...options.gaxOptions})
+    this.getReplicationStates({...options})
       .then(([stateMap]) => {
         const [clusterId] =
           [...stateMap.entries()].find(
@@ -550,10 +549,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         return clusterId;
       })
-      .then(clusterId =>
-        this.instance.cluster(clusterId).createBackup(this, id, fields, options)
-      )
-      .then(([resp]) => callback(null, resp))
+      .then(clusterId => {
+        const backup = this.instance.backup(id, clusterId, fields);
+        return backup.create(this);
+      })
+      .then(argv => callback(null, ...argv))
       .catch(err => callback(err));
   }
 
