@@ -1578,7 +1578,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         client: 'BigtableClient',
         method: 'sampleRowKeys',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: Object.assign({}, gaxOptions),
       }),
       rowKeysStream,
     ]);

@@ -28,6 +28,7 @@ import {Entry, PartialFailureError} from '../src/table';
 import {CancellableStream, GrpcClient, GoogleAuth} from 'google-gax';
 import {BigtableClient} from '../src/v2';
 import {PassThrough} from 'stream';
+import {shouldRetryRequest} from '../src/decorateStatus';
 
 const {grpc} = new GrpcClient();
 
@@ -35,6 +36,7 @@ const {grpc} = new GrpcClient();
 function dispatch(emitter: EventEmitter, response: any) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const emits: any[] = [];
+  emits.push({name: 'request'});
   emits.push({name: 'response', arg: {code: response.code}});
   if (response.entry_codes) {
     emits.push({name: 'data', arg: entryResponses(response.entry_codes)});
@@ -62,12 +64,6 @@ function entryResponses(statusCodes: number[]) {
   };
 }
 
-function getDeltas(array: number[]) {
-  return array.reduce((acc, item, index) => {
-    return index ? acc.concat(item - array[index - 1]) : [item];
-  }, [] as number[]);
-}
-
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
   bigtable.api = {};
@@ -88,6 +84,7 @@ describe('Bigtable/Table', () => {
     let mutationCallTimes: number[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let responses: any[] | null;
+    let currentRetryAttempt: number;
 
     beforeEach(() => {
       clock = sinon.useFakeTimers({
@@ -97,10 +94,20 @@ describe('Bigtable/Table', () => {
       mutationCallTimes = [];
       responses = null;
       bigtable.api.BigtableClient = {
-        mutateRows: reqOpts => {
+        mutateRows: (reqOpts, options) => {
+          const retryRequestOptions = {
+            noResponseRetries: 0,
+            objectMode: true,
+            shouldRetryFn: shouldRetryRequest,
+            currentRetryAttempt: currentRetryAttempt++,
+          };
           mutationBatchesInvoked.push(
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
+          );
+          assert.deepStrictEqual(
+            options!.retryRequestOptions,
+            retryRequestOptions
           );
           mutationCallTimes.push(new Date().getTime());
           const emitter = new PassThrough({objectMode: true});
@@ -116,6 +123,7 @@ describe('Bigtable/Table', () => {
 
     tests.forEach(test => {
       it(test.name, done => {
+        currentRetryAttempt = 0;
         responses = test.responses;
         TABLE.maxRetries = test.max_retries;
         TABLE.mutate(test.mutations_request, error => {
@@ -123,22 +131,6 @@ describe('Bigtable/Table', () => {
             mutationBatchesInvoked,
             test.mutation_batches_invoked
           );
-          getDeltas(mutationCallTimes).forEach((delta, index) => {
-            if (index === 0) {
-              const message = 'First request should happen Immediately';
-              assert.strictEqual(index, 0, message);
-              return;
-            }
-            const minBackoff = 1000 * Math.pow(2, index);
-
-            // Adjust for some flakiness with the fake timers.
-            const maxBackoff = minBackoff + 1010;
-            const message =
-              `Backoff for retry #${index} should be between ` +
-              `${minBackoff} and ${maxBackoff}, was ${delta}`;
-            assert(delta > minBackoff, message);
-            assert(delta < maxBackoff, message);
-          });
           if (test.errors) {
             const expectedIndices = test.errors.map(error => {
               return error.index_in_mutations_request;

@@ -23,6 +23,7 @@ import * as sn from 'sinon';
 import {Cluster} from '../src/cluster.js';
 import {Instance} from '../src/instance.js';
 import {PassThrough} from 'stream';
+import {shouldRetryRequest} from '../src/decorateStatus.js';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const v2 = require('../src/v2');
@@ -67,16 +68,6 @@ function fakeGoogleAuth() {
   return (googleAuthOverride || noop).apply(null, arguments);
 }
 
-let retryRequestOverride: Function | null;
-function fakeRetryRequest() {
-  // eslint-disable-next-line prefer-spread
-  return (retryRequestOverride || require('retry-request')).apply(
-    null,
-    // eslint-disable-next-line prefer-rest-params
-    arguments
-  );
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function createFake(klass: any) {
   return class Fake extends klass {
@@ -110,7 +101,6 @@ describe('Bigtable', () => {
       'google-gax': {
         GoogleAuth: fakeGoogleAuth,
       },
-      'retry-request': fakeRetryRequest,
       './cluster.js': {Cluster: FakeCluster},
       './instance.js': {Instance: FakeInstance},
       './v2': fakeV2,
@@ -124,7 +114,6 @@ describe('Bigtable', () => {
 
   beforeEach(() => {
     googleAuthOverride = null;
-    retryRequestOverride = null;
     replaceProjectIdTokenOverride = null;
     delete process.env.BIGTABLE_EMULATOR_HOST;
     bigtable = new bigtableModule.Bigtable({projectId: PROJECT_ID});
@@ -635,12 +624,7 @@ describe('Bigtable', () => {
       gaxOpts: {},
     };
 
-    const gapicStreamingMethods = [
-      'listTablesStream',
-      'listInstancesStream',
-      'listAppProfilesStream',
-      'listClustersStream',
-    ];
+    const gapicStreamingMethods = ['listTablesStream', 'listAppProfilesStream'];
 
     beforeEach(() => {
       bigtable.getProjectId_ = (callback: Function) => {
@@ -805,12 +789,22 @@ describe('Bigtable', () => {
         };
       });
 
-      it('should use retry-request', done => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        retryRequestOverride = (_: {}, config: any) => {
-          assert.strictEqual(config.currentRetryAttempt, 0);
-          assert.strictEqual(config.objectMode, true);
-          done();
+      it('should pass retryRequestOptions', done => {
+        const expectedRetryRequestOptions = {
+          currentRetryAttempt: 0,
+          noResponseRetries: 0,
+          objectMode: true,
+          shouldRetryFn: shouldRetryRequest,
+        };
+
+        bigtable.api[CONFIG.client] = {
+          [CONFIG.method]: (reqOpts: {}, options: gax.CallOptions) => {
+            assert.deepStrictEqual(
+              options.retryRequestOptions,
+              expectedRetryRequestOptions
+            );
+            done();
+          },
         };
 
         const requestStream = bigtable.request(CONFIG);
@@ -866,18 +860,11 @@ describe('Bigtable', () => {
         });
       });
 
-      it('should re-emit request event from retry-request', done => {
-        retryRequestOverride = () => {
-          const fakeRetryRequestStream = new PassThrough({objectMode: true});
-          setImmediate(() => {
-            fakeRetryRequestStream.emit('request');
-          });
-          return fakeRetryRequestStream;
-        };
-
+      it('should re-emit request event from gax-stream', done => {
         const requestStream = bigtable.request(CONFIG);
         requestStream.emit('reading');
         requestStream.on('request', done);
+        GAX_STREAM.emit('request');
       });
     });
 

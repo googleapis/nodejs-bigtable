@@ -60,7 +60,6 @@
     "lodash.snakecase": "^4.1.1",
     "long": "^4.0.0",
     "pumpify": "^2.0.0",
-    "retry-request": "^4.0.0",
     "stream-events": "^1.0.2"
   },
   "devDependencies": {

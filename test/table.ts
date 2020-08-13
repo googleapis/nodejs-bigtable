@@ -2500,7 +2500,7 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'sampleRowKeys');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
-        assert.strictEqual(config.gaxOpts, undefined);
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         setImmediate(done);
 
@@ -2532,7 +2532,7 @@ describe('Bigtable/Table', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
-        assert.strictEqual(config.gaxOpts, gaxOptions);
+        assert.deepStrictEqual(config.gaxOpts, gaxOptions);
 
         setImmediate(done);
 
