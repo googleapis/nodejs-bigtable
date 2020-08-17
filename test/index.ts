@@ -811,6 +811,30 @@ describe('Bigtable', () => {
         requestStream.emit('reading');
       });
 
+      it('should set gaxOpts.retryRequestOptions when gaxOpts undefined', done => {
+        const expectedRetryRequestOptions = {
+          currentRetryAttempt: 0,
+          noResponseRetries: 0,
+          objectMode: true,
+          shouldRetryFn: shouldRetryRequest,
+        };
+
+        bigtable.api[CONFIG.client] = {
+          [CONFIG.method]: (reqOpts: {}, options: gax.CallOptions) => {
+            assert.deepStrictEqual(
+              options.retryRequestOptions,
+              expectedRetryRequestOptions
+            );
+            done();
+          },
+        };
+
+        const config = Object.assign({}, CONFIG);
+        delete config.gaxOpts;
+        const requestStream = bigtable.request(config);
+        requestStream.emit('reading');
+      });
+
       it('should expose an abort function', done => {
         GAX_STREAM.cancel = done;
 
