@@ -1105,6 +1105,29 @@ describe('Bigtable/Table', () => {
         });
       });
 
+      it('should not retry over maxRetries', done => {
+        const error = new Error('retry me!') as ServiceError;
+        error.code = 4;
+
+        emitters = [
+          (((stream: Writable) => {
+            stream.emit('error', error);
+            stream.end();
+          }) as {}) as EventEmitter,
+        ];
+
+        table.maxRetries = 0;
+        table
+          .createReadStream()
+          .on('error', (err: ServiceError) => {
+            assert.strictEqual(err, error);
+            assert.strictEqual(reqOptsCalls.length, 1);
+            done();
+          })
+          .on('end', done)
+          .resume();
+      });
+
       it('should have a range which starts after the last read key', done => {
         emitters = [
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
