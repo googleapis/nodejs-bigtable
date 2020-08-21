@@ -4,7 +4,7 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/nodejs-bigtable.git",
-        "sha": "125979eb557083be8a109035066a626df0f3594f"
+        "sha": "2a199aae5646fe4e19836e13a61fcb83b527e4c5"
       }
     },
     {
@@ -19,7 +19,7 @@
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "1a60ff2a3975c2f5054431588bd95db9c3b862ba"
+        "sha": "05de3e1e14a0b07eab8b474e669164dbd31f81fb"
       }
     }
   ],
@@ -60,19 +60,19 @@
     ".kokoro/common.cfg",
     ".kokoro/continuous/node10/common.cfg",
     ".kokoro/continuous/node10/docs.cfg",
-    ".kokoro/continuous/node10/lint.cfg",
-    ".kokoro/continuous/node10/samples-test.cfg",
-    ".kokoro/continuous/node10/system-test.cfg",
     ".kokoro/continuous/node10/test.cfg",
     ".kokoro/continuous/node12/common.cfg",
+    ".kokoro/continuous/node12/lint.cfg",
+    ".kokoro/continuous/node12/samples-test.cfg",
+    ".kokoro/continuous/node12/system-test.cfg",
     ".kokoro/continuous/node12/test.cfg",
     ".kokoro/docs.sh",
     ".kokoro/lint.sh",
     ".kokoro/populate-secrets.sh",
     ".kokoro/presubmit/node10/common.cfg",
-    ".kokoro/presubmit/node10/samples-test.cfg",
-    ".kokoro/presubmit/node10/system-test.cfg",
     ".kokoro/presubmit/node12/common.cfg",
+    ".kokoro/presubmit/node12/samples-test.cfg",
+    ".kokoro/presubmit/node12/system-test.cfg",
     ".kokoro/presubmit/node12/test.cfg",
     ".kokoro/publish.sh",
     ".kokoro/release/docs-devsite.cfg",
@@ -95,7 +95,6 @@
     "README.md",
     "api-extractor.json",
     "linkinator.config.json",
-    "package-lock.json.2572062608",
     "protos/google/bigtable/admin/v2/bigtable_instance_admin.proto",
     "protos/google/bigtable/admin/v2/bigtable_table_admin.proto",
     "protos/google/bigtable/admin/v2/common.proto",
@@ -108,7 +107,6 @@
     "protos/protos.json",
     "renovate.json",
     "samples/README.md",
-    "samples/package-lock.json.1171489877",
     "src/v2/bigtable_client.ts",
     "src/v2/bigtable_client_config.json",
     "src/v2/bigtable_instance_admin_client.ts",
