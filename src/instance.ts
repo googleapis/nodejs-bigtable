@@ -61,10 +61,7 @@ import {CallOptions, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {Backup, Bigtable} from '.';
 import {google} from '../protos/protos';
-import {
-  RestoreTableCallback,
-  RestoreTableResponse,
-} from './backup';
+import {RestoreTableCallback, RestoreTableResponse} from './backup';
 import {BigtableTableAdminClient} from './v2';
 
 export interface ClusterInfo extends BasicClusterConfig {
