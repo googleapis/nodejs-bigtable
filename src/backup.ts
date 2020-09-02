@@ -18,6 +18,7 @@ import snakeCase = require('lodash.snakecase');
 import {google} from '../protos/protos';
 import {Bigtable, Cluster, Table} from './';
 import {BigtableTableAdminClient} from './v2';
+import {CreateBackupConfig} from './cluster';
 import {CallOptions, LROperation, ServiceError} from 'google-gax';
 
 type IEmpty = google.protobuf.IEmpty;
@@ -40,23 +41,32 @@ export interface GenericBackupCallback<T> {
 
 export type DeleteBackupCallback = GenericBackupCallback<IEmpty>;
 export type DeleteBackupResponse = [Backup, IEmpty];
+
 export type GetBackupCallback = GenericBackupCallback<IBackup>;
 export type GetBackupResponse = [Backup, IBackup];
-export type UpdateBackupCallback = GenericBackupCallback<IBackup>;
-export type UpdateBackupResponse = [Backup, IBackup];
+
+export type GetMetadataCallback = GenericBackupCallback<IBackup>;
+export type GetMetadataResponse = [IBackup, IEmpty];
+
+export type SetMetadataCallback = GenericBackupCallback<IBackup>;
+export type SetMetadataResponse = [Backup, IBackup];
 
 export type CreateBackupCallback = (
   err: ServiceError | null,
-  apiResponse?: LROperation<
+  backup?: Backup,
+  operation?: LROperation<
     google.bigtable.admin.v2.IBackup,
     google.bigtable.admin.v2.ICreateBackupMetadata
-  >
+  >,
+  apiResponse?: google.bigtable.admin.v2.ICreateBackupMetadata
 ) => void;
 export type CreateBackupResponse = [
+  Backup,
   LROperation<
     google.bigtable.admin.v2.IBackup,
     google.bigtable.admin.v2.ICreateBackupMetadata
-  >
+  >,
+  google.bigtable.admin.v2.ICreateBackupMetadata
 ];
 
 export type RestoreTableCallback = (
@@ -116,7 +126,8 @@ export type GetBackupsCallback = (
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
- * const backup = instance.backup('my-backup', 'my-cluster');
+ * const cluster = instance.cluster('my-cluster');
+ * const backup = cluster.backup('my-backup');
  */
 export class Backup {
   bigtable: Bigtable;
@@ -124,58 +135,38 @@ export class Backup {
 
   /**
    * A unique backup string, e.g. "my-backup".
-   * This string must be between 1 and 50 characters in length and match the
-   * regex {@link -_.a-zA-Z0-9|_a-zA-Z0-9}*.
    */
   id: string;
 
   /**
    * The full path of the backup which is in the form of:
    *  `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}`.
-   *
-   * The "backup" portion must be between 1 and 50 characters in length and
-   * match the regex {@link -_.a-zA-Z0-9|_a-zA-Z0-9}*.
    */
   name: string;
   metadata: IBackup;
 
   /**
    * @param {Cluster} cluster
-   * @param {string} idOrName The backup name or id.
-   * @param {ModifiableBackupFields} [fields]
+   * @param {string} id The backup name or id.
    */
-  constructor(
-    cluster: Cluster,
-    idOrName: string,
-    fields?: ModifiableBackupFields
-  ) {
+  constructor(cluster: Cluster, id: string) {
     this.bigtable = cluster.bigtable;
     this.cluster = cluster;
     this.metadata = {};
-
-    if (fields && fields.expireTime) {
-      if (fields.expireTime instanceof Date) {
-        this.metadata.expireTime = new PreciseDate(
-          fields.expireTime
-        ).toStruct();
-      } else if (fields.expireTime.seconds) {
-        this.metadata.expireTime = fields.expireTime;
-      }
-    }
 
     const tableAdminClient = this.bigtable.api[
       'BigtableTableAdminClient'
     ] as BigtableTableAdminClient;
 
-    if (idOrName.includes('/')) {
-      this.name = idOrName;
-      this.id = tableAdminClient.matchBackupFromBackupName(idOrName).toString();
+    if (id.includes('/')) {
+      this.name = id;
+      this.id = tableAdminClient.matchBackupFromBackupName(id).toString();
       if (!this.id) {
-        throw new Error(`Backup id '${idOrName}' is not formatted correctly.
-        Please use the format 'projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}.`);
+        throw new Error(`Backup id "${id}" is not formatted correctly.
+        Please use the format "projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}."`);
       }
     } else {
-      this.id = idOrName;
+      this.id = id;
       this.name = tableAdminClient.backupPath(
         this.bigtable.projectId,
         this.cluster.instance.id,
@@ -231,40 +222,24 @@ export class Backup {
   }
 
   create(
-    table: Table | string,
-    fields?: Required<ModifiableBackupFields>
+    config: CreateBackupConfig
   ): Promise<CreateBackupResponse>;
-  create(
-    table: Table | string,
-    fields: Required<ModifiableBackupFields>,
-    gaxOptions?: CallOptions
-  ): Promise<CreateBackupResponse>;
-  create(
-    table: Table | string,
-    fields: Required<ModifiableBackupFields>,
-    gaxOptions: CallOptions,
-    callback: CreateBackupCallback
-  ): void;
-  create(
-    table: Table | string,
-    fields: Required<ModifiableBackupFields>,
-    callback: CreateBackupCallback
-  ): void;
   /**
    * Starts creating a new Cloud Bigtable Backup.
    *
-   * The returned backup
-   * {@link google.longrunning.Operation|long-running operation} can be used to
-   * track creation of the backup. Cancelling the returned operation will
-   * stop the creation and delete the backup.
+   * The returned {@link google.longrunning.Operation|long-running operation}
+   * can be used to track creation of the backup. Cancelling the returned
+   * operation will stop the creation and delete the backup.
    *
-   * @param {Table|string} table A reference to the Table to backup, or the full
-   *   table path in the form:
-   *   `projects/{project}/instances/{instance}/tables/{table}`.
-   * @param {ModifiableBackupFields} [fields] Fields to be specified, otherwise
-   *   use the data originally provided to the constructor.
-   * @param {BackupTimestamp} [fields.expireTime] When the backup will be
-   *   automatically deleted.
+   * @param {CreateBackupConfig} config Configuration object.
+   * @param {string|Table} config.table Table to create the backup from.
+   * @param {ModifiableBackupFields} config.metadata Metadata to set on the
+   *     Backup.
+   * @param {BackupTimestamp} config.metadata.expireTime When the backup will be
+   *     automatically deleted.
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html. 
    * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
    * @param {CreateBackupCallback} [cb]
    * @return {void | Promise<CreateBackupResponse>}
@@ -273,59 +248,10 @@ export class Backup {
    * region_tag:bigtable_cluster_create_backup
    */
   create(
-    table: Table | string,
-    fields?: Required<ModifiableBackupFields>,
-    gaxOptionsOrCallback?: CallOptions | CreateBackupCallback,
-    cb?: CreateBackupCallback
+    config: CreateBackupConfig,
+    callback?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
-    const options =
-      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
-    const callback =
-      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
-
-    if (
-      !table ||
-      (typeof table === 'object' && !table.name) ||
-      typeof table === 'function'
-    ) {
-      throw new TypeError(
-        'A reference to a table is required to create a backup.'
-      );
-    }
-
-    const {expireTime, ...restFields} = fields || {};
-    this.metadata = {
-      sourceTable: typeof table === 'string' ? table : table.name,
-      ...restFields,
-    };
-
-    if (expireTime instanceof Date) {
-      this.metadata.expireTime = new PreciseDate(expireTime).toStruct();
-    } else if (expireTime && expireTime.seconds) {
-      this.metadata.expireTime = expireTime;
-    }
-
-    if (!this.metadata.expireTime) {
-      throw new TypeError('The expireTime field is invalid.');
-    }
-
-    const reqOpts: google.bigtable.admin.v2.ICreateBackupRequest = {
-      parent: this.cluster.name,
-      backupId: this.id,
-      backup: this.metadata,
-    };
-
-    this.bigtable.request<
-      LROperation<IBackup, google.bigtable.admin.v2.ICreateBackupMetadata>
-    >(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'createBackup',
-        reqOpts,
-        gaxOpts: options,
-      },
-      callback
-    );
+    this.cluster.createBackup(this.id, config, callback!);
   }
 
   delete(gaxOptions?: CallOptions): Promise<DeleteBackupResponse>;
@@ -345,21 +271,19 @@ export class Backup {
     gaxOptionsOrCallback?: CallOptions | DeleteBackupCallback,
     cb?: DeleteBackupCallback
   ): void | Promise<DeleteBackupResponse> {
-    const options =
+    const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
-
-    const reqOpts: google.bigtable.admin.v2.IDeleteBackupRequest = {
-      name: this.name,
-    };
 
     this.bigtable.request<google.protobuf.IEmpty>(
       {
         client: 'BigtableTableAdminClient',
         method: 'deleteBackup',
-        reqOpts,
-        gaxOpts: options,
+        reqOpts: {
+          name: this.name,
+        },
+        gaxOpts,
       },
       (err, resp) => callback(err, this, resp)
     );
@@ -369,11 +293,15 @@ export class Backup {
   get(callback: GetBackupCallback): void;
   get(gaxOptions: CallOptions, callback: GetBackupCallback): void;
   /**
-   * Gets fresh metadata for this Cloud Bigtable Backup.
+   * Get a backup if it exists.
    *
-   * @param {CallOptions | GetBackupCallback} [gaxOptionsOrCallback]
-   * @param {GetBackupCallback} [cb]
-   * @return {void | Promise<GetBackupResponse>}
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {Backup} callback.backup The Backup instance.
+   * @param {object} callback.apiResponse The full API response.
    *
    * @example <caption>include:samples/document-snippets/cluster.js</caption>
    * region_tag:bigtable_cluster_get_backup
@@ -382,21 +310,19 @@ export class Backup {
     gaxOptionsOrCallback?: CallOptions | GetBackupCallback,
     cb?: GetBackupCallback
   ): void | Promise<GetBackupResponse> {
-    const options =
+    const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
-
-    const reqOpts: google.bigtable.admin.v2.IGetBackupRequest = {
-      name: this.name,
-    };
 
     this.bigtable.request<IBackup>(
       {
         client: 'BigtableTableAdminClient',
         method: 'getBackup',
-        reqOpts,
-        gaxOpts: options,
+        reqOpts: {
+          name: this.name,
+        },
+        gaxOpts,
       },
       (err, resp) => {
         if (resp) {
@@ -406,6 +332,32 @@ export class Backup {
         callback(err, this, this.metadata);
       }
     );
+  }
+
+  getMetadata(gaxOptions?: CallOptions): Promise<GetMetadataResponse>;
+  getMetadata(callback: GetMetadataCallback): void;
+  getMetadata(gaxOptions: CallOptions, callback: GetMetadataCallback): void;
+  /**
+   * Get a backup if it exists.
+   *
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {object} callback.apiResponse The full API response.
+   */
+  getMetadata(
+    gaxOptionsOrCallback?: CallOptions | GetMetadataCallback,
+    cb?: GetMetadataCallback
+  ): void | Promise<GetMetadataResponse> {
+    const gaxOpts =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    const callback =
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+
+    // @TODO `this.metadata` isn't a `Backup`. Figure out why it has to be cast.
+    this.get(gaxOpts, err => callback(err, this.metadata as Backup));
   }
 
   restore(
@@ -422,15 +374,12 @@ export class Backup {
    * Create a new table by restoring from this completed backup.
    *
    * The new table must be in the same instance as the instance containing
-   * the backup. The returned table
+   * the backup. The returned
    * {@link google.longrunning.Operation|long-running operation} can be used
    * to track the progress of the operation, and to cancel it.
    *
-   * @param {string} tableId
-   *   Required. The id of the table to create and restore to. This
-   *   table must not already exist. The `table_id` appended to
-   *   `parent` forms the full table name of the form
-   *   `projects/<project>/instances/<instance>/tables/<table_id>`.
+   * @param {string} tableId The id of the table to create and restore to. This
+   *   table must not already exist.
    * @param {CallOptions | RestoreTableCallback} [gaxOptionsOrCallback]
    * @param {RestoreTableCallback} [cb]
    * @return {void | Promise<RestoreTableResponse>}
@@ -440,16 +389,12 @@ export class Backup {
     gaxOptionsOrCallback?: CallOptions | RestoreTableCallback,
     cb?: RestoreTableCallback
   ): void | Promise<RestoreTableResponse> {
-    const options =
+    const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
-    const reqOpts: google.bigtable.admin.v2.IRestoreTableRequest = {
-      parent: this.cluster.name,
-      tableId,
-      backup: this.name,
-    };
+    const table = this.cluster.instance.table(tableId);
 
     this.bigtable.request<
       LROperation<
@@ -460,55 +405,51 @@ export class Backup {
       {
         client: 'BigtableTableAdminClient',
         method: 'restoreTable',
-        reqOpts,
-        gaxOpts: options,
+        reqOpts: {
+          parent: this.cluster.name,
+          tableId: table.name,
+          backup: this.name,
+        },
+        gaxOpts,
       },
       (err, operation) => {
-        let table: Table | null = null;
-        if (!err) {
-          table = new Table(this.cluster.instance, tableId);
+        if (err) {
+          callback(err, null, operation);
+          return;
         }
+
         callback(err, table, operation);
       }
     );
   }
 
-  update(
+  setMetadata(
     fields: ModifiableBackupFields,
     gaxOptions?: CallOptions
-  ): Promise<UpdateBackupResponse>;
-  update(fields: ModifiableBackupFields, callback: UpdateBackupCallback): void;
-  update(
+  ): Promise<SetMetadataResponse>;
+  setMetadata(fields: ModifiableBackupFields, callback: SetMetadataCallback): void;
+  setMetadata(
     fields: ModifiableBackupFields,
     gaxOptions: CallOptions,
-    callback: UpdateBackupCallback
+    callback: SetMetadataCallback
   ): void;
   /**
    * Updates this pending or completed Cloud Bigtable Backup.
    *
-   * @param {ModifiableBackupFields} fields
-   *   Required. The fields to be updated.
-   * @param {BackupTimestamp} fields.expireTime
-   *   Required. This is currently the only supported field.
-   * @param {CallOptions | UpdateBackupCallback} [gaxOptionsOrCallback]
-   * @param {UpdateBackupCallback} [cb]
-   * @return {void | Promise<UpdateBackupResponse>}
+   * @param {ModifiableBackupFields} metadata - The fields to be updated.
+   * @param {CallOptions | SetMetadataCallback} [gaxOptionsOrCallback]
+   * @param {SetMetadataCallback} [cb]
+   * @return {void | Promise<SetMetadataResponse>}
    */
-  update(
+  setMetadata(
     fields: ModifiableBackupFields,
-    gaxOptionsOrCallback?: CallOptions | UpdateBackupCallback,
-    cb?: UpdateBackupCallback
-  ): void | Promise<UpdateBackupResponse> {
-    const options =
+    gaxOptionsOrCallback?: CallOptions | SetMetadataCallback,
+    cb?: SetMetadataCallback
+  ): void | Promise<SetMetadataResponse> {
+    const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
-
-    if (!fields || !fields.expireTime) {
-      throw new TypeError(
-        'Must specify at least one field to update (e.g. expireTime).'
-      );
-    }
 
     const {expireTime, ...restFields} = fields;
 
@@ -522,8 +463,6 @@ export class Backup {
         backup.expireTime = new PreciseDate(expireTime).toStruct();
       } else if (expireTime.seconds) {
         backup.expireTime = expireTime;
-      } else {
-        throw new TypeError('The expireTime field is invalid.');
       }
     }
 
@@ -536,7 +475,7 @@ export class Backup {
 
     const fieldsForMask = ['expireTime'];
     fieldsForMask.forEach(field => {
-      if (field in fields) {
+      if (fields.hasOwnProperty(field)) {
         reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });
@@ -546,7 +485,7 @@ export class Backup {
         client: 'BigtableTableAdminClient',
         method: 'updateBackup',
         reqOpts,
-        gaxOpts: options,
+        gaxOpts,
       },
       (err, resp) => {
         if (resp) {

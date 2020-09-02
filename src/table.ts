@@ -489,20 +489,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
   }
 
-  backup(
+  createBackup(
     id: string,
-    fields: Required<ModifiableBackupFields>,
+    config: Required<ModifiableBackupFields>,
     gaxOptions?: CallOptions
   ): Promise<CreateBackupResponse>;
-  backup(
+  createBackup(
     id: string,
-    fields: Required<ModifiableBackupFields>,
+    config: Required<ModifiableBackupFields>,
     gaxOptions: CallOptions,
     callback: CreateBackupCallback
   ): void;
-  backup(
+  createBackup(
     id: string,
-    fields: Required<ModifiableBackupFields>,
+    config: Required<ModifiableBackupFields>,
     callback: CreateBackupCallback
   ): void;
   /**
@@ -513,7 +513,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * cluster from which a backup can be performed.
    *
    * @param {string} id A unique ID for the backup.
-   * @param {ModifiableBackupFields} fields Fields to be specified.
+   * @param {ModifiableBackupFields} config Metadata to set on the Backup.
    * @param {BackupTimestamp} fields.expireTime When the backup will be
    *   automatically deleted.
    * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
@@ -523,9 +523,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @example <caption>include:samples/document-snippets/table.js</caption>
    * region_tag:bigtable_create_table
    */
-  backup(
+  createBackup(
     id: string,
-    fields: Required<ModifiableBackupFields>,
+    config: Required<ModifiableBackupFields>,
     gaxOptionsOrCallback?: CallOptions | CreateBackupCallback,
     cb?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
@@ -549,11 +549,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         if (!clusterId) {
           throw new Error('No ready clusters eligible for backup.');
         }
-        return clusterId;
+        return this.instance.cluster(clusterId);
       })
-      .then(clusterId => {
-        const backup = this.instance.backup(id, clusterId, fields);
-        return backup.create(this);
+      .then(cluster => {
+        return cluster.createBackup(id, {
+          table: this.name,
+          metadata: config,
+        });
       })
       .then(argv => callback(null, ...argv))
       .catch(err => callback(err));

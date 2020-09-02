@@ -146,6 +146,12 @@ export type SetInstanceMetadataCallback = (
 ) => void;
 export type SetInstanceMetadataResponse = [google.protobuf.Empty];
 
+export interface CreateTableFromBackupConfig {
+  table: string,
+  backup: Backup | string,
+  gaxOptions?: CallOptions
+}
+
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
  *
@@ -216,38 +222,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   appProfile(name: string): AppProfile {
     return new AppProfile(this, name);
-  }
-
-  /**
-   * Get a reference to a Bigtable Backup.
-   *
-   * @example
-   * const id = 'my-backup';
-   * const backup = instance.backup(id, 'my-cluster');
-   * const expiresAt = new Date(Date.now() * 1000 * 60 * 60 * 6);
-   * const [operation] = await backup.create({expireTime: expiresAt});
-   * await operation.promise();
-   * const [fetchedBackup] = await backup.get();
-   * assert(backup instanceof Backup);
-   * assert.strictEqual(backup.id, id);
-   * assert.strictEqual(backup, fetchedBackup);
-   *
-   * @param {string} idOrName The backup name or id.
-   * @param {string | Cluster} cluster The id of the cluster this back is
-   * related to, or an instance of a Cluster.
-   * @param {ModifiableBackupFields} [fields] Declare things like
-   * `expireTime` at the point of instantiation. This can always be supplied
-   * later when creating the backup, or can be fetched using `backup.get()`.
-   * @returns {Backup}
-   */
-  backup(
-    idOrName: string,
-    cluster: string | Cluster,
-    fields?: ModifiableBackupFields
-  ): Backup {
-    const clusterInstance =
-      typeof cluster === 'string' ? this.cluster(cluster) : cluster;
-    return new Backup(clusterInstance, idOrName, fields);
   }
 
   create(options: InstanceOptions): Promise<CreateInstanceResponse>;
@@ -1147,19 +1121,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   }
 
   createTableFromBackup(
-    tableId: string,
-    backup: Backup | string,
-    gaxOptions: CallOptions
+    config: CreateTableFromBackupConfig,
   ): Promise<RestoreTableResponse>;
   createTableFromBackup(
-    tableId: string,
-    backup: Backup | string,
-    gaxOptions: CallOptions,
-    callback: RestoreTableCallback
-  ): void;
-  createTableFromBackup(
-    tableId: string,
-    backup: Backup | string,
+    config: CreateTableFromBackupConfig,
     callback: RestoreTableCallback
   ): void;
   /**
@@ -1170,31 +1135,23 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * {@link google.longrunning.Operation|long-running operation} can be used
    * to track the progress of the operation, and to cancel it.
    *
-   * @param {string} tableId
-   *   Required. The id of the table to create and restore to. This
-   *   table must not already exist. The `table_id` appended to
-   *   `parent` forms the full table name of the form
-   *   `projects/<project>/instances/<instance>/tables/<table_id>`.
-   * @param {Backup | string} backup
-   *   The name of the backup from which to restore of the form
-   *  `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
-   *  or a Backup instance.
-   * @param {CallOptions | RestoreTableCallback} [gaxOptionsOrCallback]
+   * @param {CreateTableFromBackupConfig} config Configuration object.
+   * @param {string} config.tableId The id of the table to create and restore
+   *     to.
+   * @param {Backup | string} config.backup The name of the backup from which to restore of the form
+   *    `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
+   *    or a Backup instance.
+   * @param {CallOptions | RestoreTableCallback} [config.gaxOptions] Request
+   *     configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {RestoreTableCallback} [cb]
    * @return {void | Promise<RestoreTableResponse>}
    */
   createTableFromBackup(
-    tableId: string,
-    backup: Backup | string,
-    gaxOptionsOrCallback?: CallOptions | RestoreTableCallback,
-    cb?: RestoreTableCallback
+    config: CreateTableFromBackupConfig,
+    callback?: RestoreTableCallback
   ): void | Promise<RestoreTableResponse> {
-    const options =
-      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
-    const callback =
-      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
-
-    if (!tableId || typeof tableId === 'function') {
+    if (!config.table) {
       throw new Error('An table id is required to restore from a backup.');
     }
 
@@ -1202,20 +1159,21 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       'BigtableTableAdminClient'
     ] as BigtableTableAdminClient;
 
-    let backupFrom: Backup;
-    if (backup instanceof Backup) {
-      backupFrom = backup;
+    let backup: Backup;
+
+    if (config.backup instanceof Backup) {
+      backup = config.backup;
     } else {
       const clusterId = tableAdminClient
-        .matchClusterFromBackupName(backup)
+        .matchClusterFromBackupName(config.backup)
         .toString();
       if (!clusterId) {
         throw new Error('A complete backup name (path) is required.');
       }
-      backupFrom = new Backup(this.cluster(clusterId), backup);
+      backup = this.cluster(clusterId).backup(config.backup);
     }
 
-    backupFrom.restore(tableId, options, callback);
+    backup.restore(config.table, config.gaxOptions!, callback!);
   }
 
   setIamPolicy(

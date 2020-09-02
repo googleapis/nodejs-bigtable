@@ -16,6 +16,7 @@ import {paginator} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
 import {
   CallOptions,
+  LROperation,
   Operation as GaxOperation,
   Operation,
   ServiceError,
@@ -29,12 +30,16 @@ import {Bigtable} from '.';
 import {Instance} from './instance';
 import {
   Backup,
+  CreateBackupCallback,
+  CreateBackupResponse,
   GetBackupsCallback,
   GetBackupsOptions,
   GetBackupsResponse,
   IBackup,
+  ModifiableBackupFields,
 } from './backup';
 import {Transform} from 'stream';
+import { Table } from './table';
 
 export interface GenericCallback<T> {
   (err?: ServiceError | null, apiResponse?: T | null): void;
@@ -85,6 +90,12 @@ export interface BasicClusterConfig {
   location: string;
   nodes: number;
   storage?: string;
+}
+
+export interface CreateBackupConfig {
+  table: string | Table;
+  metadata: ModifiableBackupFields;
+  gaxOptions?: CallOptions;
 }
 
 export interface CreateClusterOptions extends BasicClusterConfig {
@@ -188,6 +199,16 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     return storageTypes[type] || storageTypes.unspecified;
   }
 
+  /**
+   * Get a reference to a Bigtable Cluster.
+   *
+   * @param {string} id The backup name or id.
+   * @returns {Backup}
+   */
+  backup(id: string): Backup {
+    return new Backup(this, id);
+  }
+
   create(): Promise<CreateClusterResponse>;
   create(options: CreateClusterOptions): Promise<CreateClusterResponse>;
   create(callback: CreateClusterCallback): void;
@@ -216,6 +237,75 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         : ({} as CreateClusterOptions);
 
     this.instance.createCluster(this.id, options, callback);
+  }
+
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+  ): Promise<CreateBackupResponse>;
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback: CreateBackupCallback
+  ): void;
+  /**
+   * Backup a table from this cluster.
+   *
+   * @param {string} id A unique ID for the backup.
+   * @param {object} config Configuration object.
+   * @param {string|Table} config.table Table to create the backup from.
+   * @param {ModifiableBackupFields} config.metadata Metadata to set on the
+   *     Backup.
+   * @param {BackupTimestamp} config.metadata.expireTime When the backup will be
+   *     automatically deleted.
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html. 
+   * @param {CreateBackupCallback} [cb] Callback
+   * @return {void | Promise<CreateBackupResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_create_table
+   */
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback?: CreateBackupCallback
+  ): void | Promise<CreateBackupResponse> {
+    if (!id) {
+      throw new TypeError('An id is required to create a backup.');
+    }
+
+    if (typeof config !== 'object') {
+      throw new Error('A configuration object is required.');
+    }
+
+    const table = config.table;
+
+    if (!table) {
+      throw new Error('A source table is required to backup.');
+    }
+
+    const {expireTime, ...restFields} = config.metadata || {};
+
+    this.bigtable.request<
+      LROperation<IBackup, google.bigtable.admin.v2.ICreateBackupMetadata>
+    >(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'createBackup',
+        reqOpts: {
+          parent: this.name,
+          backupId: id,
+          backup: {
+            sourceTable: typeof table === 'string' ? table : table.name,
+            ...restFields,
+          },
+        },
+        gaxOpts: config.gaxOptions,
+      },
+      callback
+    );
   }
 
   delete(): Promise<ApiResponse>;
@@ -338,6 +428,115 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 
+  getBackups(options?: GetBackupsOptions): Promise<GetBackupsResponse>;
+  getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
+  getBackups(callback: GetBackupsCallback): void;
+  /**
+   * Lists Cloud Bigtable backups within this cluster. Returns both
+   * completed and pending backups.
+   *
+   * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
+   * @param {GetBackupsResponse} [cb]
+   * @return {void | Promise<ListBackupsResponse>}
+   *
+   * @example <caption>include:samples/document-snippets/cluster.js</caption>
+   * region_tag:bigtable_cluster_list_backups
+   */
+  getBackups(
+    optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
+    cb?: GetBackupsCallback
+  ): void | Promise<GetBackupsResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
+      ...options,
+      parent: this.name,
+    };
+
+    delete (reqOpts as GetBackupsOptions).gaxOptions;
+
+    this.bigtable.request<google.bigtable.admin.v2.IBackup[]>(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'listBackups',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (err, resp) => {
+        let backups;
+        if (resp) {
+          backups = resp.map(backup => {
+            const backupInstance = this.backup(backup.name!);
+            backupInstance.metadata = backup;
+            return backupInstance;
+          }) as Backup[];
+        }
+
+        callback(err, backups, resp);
+      }
+    );
+  }
+
+  /**
+   * Lists Cloud Bigtable backups within this cluster. Provides both
+   * completed and pending backups as a readable object stream.
+   *
+   * @param {GetBackupsOptions} [options] Configuration object. See
+   *     {@link Cluster#getBackups} for a complete list of options.
+   * @returns {ReadableStream<Backup>}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   * const cluster = instance.cluster('my-cluster');
+   *
+   * cluster.getBackupsStream()
+   *   .on('error', console.error)
+   *   .on('data', function(backup) {
+   *     // backup is a Backup object.
+   *   })
+   *   .on('end', () => {
+   *     // All backups retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * cluster.getBackupsStream()
+   *   .on('data', function(backup) {
+   *     this.end();
+   *   });
+   */
+  getBackupsStream(options: GetBackupsOptions): NodeJS.ReadableStream {
+    const {gaxOptions, ...restOptions} = options;
+    const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
+      ...restOptions,
+      parent: this.name,
+    };
+
+    return pumpify.obj([
+      this.bigtable.request({
+        client: 'BigtableTableAdminClient',
+        method: 'listBackupsStream',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      }),
+      new Transform({
+        objectMode: true,
+        transform: (backup: IBackup, enc: string, cb: Function) => {
+          const backupInstance = this.backup(backup.name!);
+          backupInstance.metadata = backup;
+          cb(null, backupInstance);
+        }
+      }),
+    ]);
+  }
+
   getMetadata(): Promise<GetClusterMetadataResponse>;
   getMetadata(gaxOptions: CallOptions): Promise<GetClusterMetadataResponse>;
   getMetadata(callback: GetClusterMetadataCallback): void;
@@ -451,114 +650,6 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         callback(err, resp);
       }
     );
-  }
-
-  getBackups(options?: GetBackupsOptions): Promise<GetBackupsResponse>;
-  getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
-  getBackups(callback: GetBackupsCallback): void;
-  /**
-   * Lists Cloud Bigtable backups within this cluster. Returns both
-   * completed and pending backups.
-   *
-   * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
-   * @param {GetBackupsResponse} [cb]
-   * @return {void | Promise<ListBackupsResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_list_backups
-   */
-  getBackups(
-    optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
-    cb?: GetBackupsCallback
-  ): void | Promise<GetBackupsResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
-    const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
-      ...options,
-      parent: this.name,
-    };
-
-    delete (reqOpts as GetBackupsOptions).gaxOptions;
-
-    this.bigtable.request<google.bigtable.admin.v2.IBackup[]>(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'listBackups',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      (err, resp) => {
-        let backups;
-        if (resp) {
-          backups = resp.map(iBackup => {
-            const backup = new Backup(this, iBackup.name!);
-            backup.metadata = iBackup;
-            return backup;
-          }) as Backup[];
-        }
-
-        callback(err, backups, resp);
-      }
-    );
-  }
-
-  /**
-   * Lists Cloud Bigtable backups within this cluster. Provides both
-   * completed and pending backups as a readable object stream.
-   *
-   * @param {GetBackupsOptions} [options] Configuration object. See
-   *     {@link Cluster#getBackups} for a complete list of options.
-   * @returns {ReadableStream<Backup>}
-   *
-   * @example
-   * const {Bigtable} = require('@google-cloud/bigtable');
-   * const bigtable = new Bigtable();
-   * const instance = bigtable.instance('my-instance');
-   * const cluster = instance.cluster('my-cluster');
-   *
-   * instance.getBackupsStream()
-   *   .on('error', console.error)
-   *   .on('data', function(backup) {
-   *     // backup is a Backup object.
-   *   })
-   *   .on('end', () => {
-   *     // All backups retrieved.
-   *   });
-   *
-   * //-
-   * // If you anticipate many results, you can end a stream early to prevent
-   * // unnecessary processing and API requests.
-   * //-
-   * cluster.getBackupsStream()
-   *   .on('data', function(backup) {
-   *     this.end();
-   *   });
-   */
-  getBackupsStream(options: GetBackupsOptions): NodeJS.ReadableStream {
-    const {gaxOptions, ...restOptions} = options;
-    const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
-      ...restOptions,
-      parent: this.name,
-    };
-
-    const transformToBackup = (obj: IBackup, enc: string, cb: Function) => {
-      const backup = this.instance.backup(obj.name!, this);
-      backup.metadata = obj;
-      cb(null, backup);
-    };
-
-    return pumpify.obj([
-      this.bigtable.request({
-        client: 'BigtableTableAdminClient',
-        method: 'listBackupsStream',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      }),
-      new Transform({objectMode: true, transform: transformToBackup}),
-    ]);
   }
 }
 
