@@ -27,11 +27,10 @@ const sandbox = sinon.createSandbox();
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass: Function, options: any) {
+  promisifyAll(klass: Function) {
     if (klass.name === 'Row') {
       promisified = true;
     }
-    promisify.promisifyAll(klass, options);
   },
 });
 
@@ -632,17 +631,9 @@ describe('Bigtable/Row', () => {
     ];
 
     it('should throw if a rule is not provided', () => {
-      assert.throws(
-        () => (row.createRules as Function)(undefined, () => {}),
-        /At least one rule must be provided\./
-      );
-    });
-
-    it('should reject if a rule is not provided', async () => {
-      await assert.rejects(
-        async () => await (row.createRules as Function)(),
-        /At least one rule must be provided\./
-      );
+      assert.throws(() => {
+        (row.createRules as Function)();
+      }, /At least one rule must be provided\./);
     });
 
     it('should read/modify/write rules', done => {

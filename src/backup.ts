@@ -243,9 +243,6 @@ export class Backup {
    * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
    * @param {CreateBackupCallback} [cb]
    * @return {void | Promise<CreateBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_create_backup
    */
   create(
     config: CreateBackupConfig,
@@ -263,9 +260,6 @@ export class Backup {
    * @param {CallOptions | DeleteBackupCallback} [gaxOptionsOrCallback]
    * @param {DeleteBackupCallback} [cb]
    * @return {void | Promise<DeleteBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_delete_backup
    */
   delete(
     gaxOptionsOrCallback?: CallOptions | DeleteBackupCallback,
@@ -302,9 +296,6 @@ export class Backup {
    *     request.
    * @param {Backup} callback.backup The Backup instance.
    * @param {object} callback.apiResponse The full API response.
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_get_backup
    */
   get(
     gaxOptionsOrCallback?: CallOptions | GetBackupCallback,

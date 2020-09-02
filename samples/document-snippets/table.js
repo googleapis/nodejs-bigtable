@@ -375,24 +375,6 @@ const snippets = {
     // [END bigtable_del_rows]
   },
 
-  backup: (instanceId, tableId, backupId) => {
-    const instance = bigtable.instance(instanceId);
-    const table = instance.table(tableId);
-
-    // [START bigtable_backup_table]
-    const expireInThirtyMinutes = new Date(Date.now() + 30 * 60 * 1000);
-    table
-      .backup(backupId, {expireTime: expireInThirtyMinutes})
-      .then(([backupOperation]) => backupOperation.promise())
-      .then(result => {
-        const backup = result[0];
-      })
-      .catch(err => {
-        // Handle the error.
-      });
-    // [END bigtable_backup_table]
-  },
-
   delTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);

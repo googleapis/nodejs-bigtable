@@ -22,7 +22,6 @@ const bigtable = new Bigtable();
 const INSTANCE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const CLUSTER_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 const TABLE_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
-const BACKUP_ID = `gcloud-tests-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 const tableSnippets = require('./table.js');
 
@@ -92,10 +91,6 @@ describe.skip('Table Snippets', () => {
 
   it('should create sample row-keys', () => {
     tableSnippets.sampleRowKeys(INSTANCE_ID, TABLE_ID);
-  });
-
-  it('should backup table', () => {
-    tableSnippets.backup(INSTANCE_ID, TABLE_ID, BACKUP_ID);
   });
 
   // it('should delete rows', () => {

@@ -20,11 +20,10 @@ import {CallOptions} from 'google-gax';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass: Function, options: any) {
+  promisifyAll(klass: Function) {
     if (klass.name === 'AppProfile') {
       promisified = true;
     }
-    promisify.promisifyAll(klass, options);
   },
 });
 

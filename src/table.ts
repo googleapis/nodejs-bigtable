@@ -489,6 +489,34 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
   }
 
+  create(options?: CreateTableOptions): Promise<CreateTableResponse>;
+  create(options: CreateTableOptions, callback: CreateTableCallback): void;
+  create(callback: CreateTableCallback): void;
+  /**
+   * Create a table.
+   *
+   * @param {object} [options] See {@link Instance#createTable}.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Table} callback.table The newly created table.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_create_table
+   */
+  create(
+    optionsOrCallback?: CreateTableOptions | CreateTableCallback,
+    cb?: CreateTableCallback
+  ): void | Promise<CreateTableResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    this.instance.createTable(this.id, options, callback);
+  }
+
   createBackup(
     id: string,
     config: Required<ModifiableBackupFields>,
@@ -509,7 +537,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * Backup a table with cluster auto selection.
    *
    * Backups of tables originate from a specific cluster. This is a helper
-   * around Cluster.createBackup that automatically selects the first ready
+   * around `Cluster.createBackup` that automatically selects the first ready
    * cluster from which a backup can be performed.
    *
    * @param {string} id A unique ID for the backup.
@@ -519,9 +547,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
    * @param {CreateBackupCallback} [cb]
    * @return {void | Promise<CreateBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_create_table
    */
   createBackup(
     id: string,
@@ -559,34 +584,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       })
       .then(argv => callback(null, ...argv))
       .catch(err => callback(err));
-  }
-
-  create(options?: CreateTableOptions): Promise<CreateTableResponse>;
-  create(options: CreateTableOptions, callback: CreateTableCallback): void;
-  create(callback: CreateTableCallback): void;
-  /**
-   * Create a table.
-   *
-   * @param {object} [options] See {@link Instance#createTable}.
-   * @param {object} [options.gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
-   * @param {function} callback The callback function.
-   * @param {?error} callback.err An error returned while making this request.
-   * @param {Table} callback.table The newly created table.
-   * @param {object} callback.apiResponse The full API response.
-   *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_create_table
-   */
-  create(
-    optionsOrCallback?: CreateTableOptions | CreateTableCallback,
-    cb?: CreateTableCallback
-  ): void | Promise<CreateTableResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    this.instance.createTable(this.id, options, callback);
   }
 
   createFamily(

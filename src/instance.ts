@@ -1138,9 +1138,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {CreateTableFromBackupConfig} config Configuration object.
    * @param {string} config.tableId The id of the table to create and restore
    *     to.
-   * @param {Backup | string} config.backup The name of the backup from which to restore of the form
-   *    `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
-   *    or a Backup instance.
+   * @param {Backup | string} config.backup The name of the backup from which to
+   *     restore of the form
+   *     `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
+   *     or a Backup instance.
    * @param {CallOptions | RestoreTableCallback} [config.gaxOptions] Request
    *     configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.

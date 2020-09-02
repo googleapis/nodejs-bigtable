@@ -263,9 +263,6 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html. 
    * @param {CreateBackupCallback} [cb] Callback
    * @return {void | Promise<CreateBackupResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_create_table
    */
   createBackup(
     id: string,
@@ -304,7 +301,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         },
         gaxOpts: config.gaxOptions,
       },
-      callback
+      (err, operation) => {
+        if (err) {
+          callback!(err, undefined, operation);
+          return;
+        }
+
+        callback!(null, this.backup(id), operation);
+      }
     );
   }
 
@@ -432,15 +436,12 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
   getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
   getBackups(callback: GetBackupsCallback): void;
   /**
-   * Lists Cloud Bigtable backups within this cluster. Returns both
+   * Get Cloud Bigtable Backup instances within this cluster. This returns both
    * completed and pending backups.
    *
    * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
    * @param {GetBackupsResponse} [cb]
    * @return {void | Promise<ListBackupsResponse>}
-   *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_list_backups
    */
   getBackups(
     optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,

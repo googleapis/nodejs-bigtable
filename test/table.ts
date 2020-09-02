@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2016 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,11 +29,8 @@ import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 import * as tblTypes from '../src/table';
 import * as ds from '../src/decorateStatus.js';
-import {Bigtable, ModifiableBackupFields, protos} from '../src';
+import {Bigtable} from '../src';
 import {EventEmitter} from 'events';
-
-import IClusterState = protos.google.bigtable.admin.v2.Table.IClusterState;
-import ReplicationState = protos.google.bigtable.admin.v2.Table.ClusterState.ReplicationState;
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -47,7 +44,6 @@ const fakePromisify = Object.assign({}, promisify, {
     }
     promisified = true;
     assert.deepStrictEqual(options.exclude, ['family', 'row']);
-    promisify.promisifyAll(klass, options);
   },
 });
 
@@ -305,17 +301,10 @@ describe('Bigtable/Table', () => {
     const FAMILY_ID = 'test-family';
 
     it('should throw if a id is not provided', () => {
-      assert.throws(
-        () => table.createFamily(undefined, () => {}),
-        /An id is required to create a family\./
-      );
-    });
-
-    it('should reject if a id is not provided', async () => {
-      await assert.rejects(
-        async () => await table.createFamily(),
-        /An id is required to create a family\./
-      );
+      assert.throws(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (table as any).createFamily();
+      }, /An id is required to create a family\./);
     });
 
     it('should provide the proper request options', done => {
@@ -1226,98 +1215,6 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(reqOptsCalls[1].rows.rowKeys, undefined);
           done();
         });
-      });
-    });
-  });
-
-  describe('backup', () => {
-    let stateMap: Map<string, IClusterState>;
-    let fields: Required<ModifiableBackupFields>;
-    let getReplicationStatesStub: sinon.SinonStub;
-    let clusterStub: sinon.SinonStub;
-    let createBackupStub: sinon.SinonStub;
-
-    beforeEach(() => {
-      stateMap = new Map([
-        ['cluster1', {replicationState: 'READY'}],
-        ['cluster2', {replicationState: 'READY_OPTIMIZING'}],
-      ]);
-
-      fields = {expireTime: new Date(Date.now() + 6 * 60 * 60 * 1000)};
-
-      getReplicationStatesStub = sandbox
-        .stub(table, 'getReplicationStates')
-        .resolves([stateMap]);
-
-      createBackupStub = sandbox.stub().resolves(['ok']);
-
-      clusterStub = sandbox.stub().returns({
-        createBackup: createBackupStub,
-      });
-
-      table.instance.cluster = clusterStub;
-    });
-
-    it('should throw if falsy required id param', () => {
-      assert.throws(() => table.backup(null, fields, () => {}), 'null id');
-      assert.throws(() => table.backup('', fields, () => {}), 'empty id');
-      assert.throws(
-        () => table.backup('', fields, () => {}),
-        /an id is required/i,
-        'error message'
-      );
-      assert.throws(
-        () => table.backup('', fields, () => {}),
-        TypeError,
-        'error type'
-      );
-    });
-
-    it('should reject if falsy required id param', async () => {
-      await assert.rejects(async () => await table.backup('', fields));
-    });
-
-    it('should backup from the first ready cluster', async () => {
-      const [result] = await table.backup('id', fields);
-      assert.strictEqual(result, 'ok');
-      assert(getReplicationStatesStub.calledOnceWithExactly({}));
-      assert(clusterStub.calledOnceWithExactly('cluster1'));
-      assert(createBackupStub.calledOnceWithExactly(table, 'id', fields, {}));
-    });
-
-    it('should call cluster backup with pass through options', async () => {
-      await table.backup('id', fields, {
-        gaxOptions: {
-          timeout: 9000,
-        },
-      });
-      assert(
-        createBackupStub.calledOnceWithExactly(table, 'id', fields, {
-          gaxOptions: {timeout: 9000},
-        })
-      );
-    });
-
-    it('should bubble up errors while creating a backup', async () => {
-      const err = new Error('uh oh!');
-      createBackupStub.rejects(err);
-      await assert.rejects(async () => await table.backup('id', fields), err);
-    });
-
-    // test each cluster state that is not eligible for starting a backup
-    ([
-      'STATE_NOT_KNOWN',
-      'INITIALIZING',
-      'PLANNED_MAINTENANCE',
-      'UNPLANNED_MAINTENANCE',
-    ] as Array<keyof typeof ReplicationState>).forEach(nonReadyState => {
-      it(`should reject if no ready clusters (${nonReadyState})`, async () => {
-        stateMap.set('cluster1', {replicationState: nonReadyState});
-        stateMap.set('cluster2', {replicationState: nonReadyState});
-        await assert.rejects(
-          async () => await table.backup('id', fields),
-          /no ready clusters/i
-        );
       });
     });
   });
@@ -2528,7 +2425,7 @@ describe('Bigtable/Table', () => {
         done();
       };
 
-      table.sampleRowKeys(gaxOptions, () => {});
+      table.sampleRowKeys(gaxOptions);
     });
 
     describe('success', () => {
