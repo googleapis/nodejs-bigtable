@@ -126,7 +126,6 @@ export class Cluster {
   id: string;
   name: string;
   metadata?: ICluster;
-
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;

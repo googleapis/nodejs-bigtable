@@ -460,7 +460,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     optionsOrCallback?: CreateTableOptions | CreateTableCallback,
     cb?: CreateTableCallback
   ): void | Promise<CreateTableResponse> {
-    if (!id || typeof id === 'function') {
+    if (!id) {
       throw new Error('An id is required to create a table.');
     }
 

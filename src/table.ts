@@ -639,7 +639,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
 
-    if (!id || typeof id === 'function') {
+    if (!id) {
       throw new Error('An id is required to create a family.');
     }
 
