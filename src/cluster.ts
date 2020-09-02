@@ -463,17 +463,20 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (err, resp) => {
-        let backups;
-        if (resp) {
-          backups = resp.map(backup => {
-            const backupInstance = this.backup(backup.name!);
+      (err, ...resp: any[]) => {
+        let backups: Backup[] = [];
+
+        if (resp[0]) {
+          backups = resp[0].map((backup: IBackup) => {
+            const backupInstance = this.backup(backup.name!.split('/').pop()!);
             backupInstance.metadata = backup;
             return backupInstance;
-          }) as Backup[];
+          });
         }
+        const nextQuery = resp[1]! ? Object.assign({}, options, resp[1]) : null;
+        const apiResp: google.bigtable.admin.v2.IListBackupsResponse = resp[2];
 
-        callback(err, backups, resp);
+        callback(err, backups, nextQuery, apiResp);
       }
     );
   }

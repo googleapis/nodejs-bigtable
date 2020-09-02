@@ -111,7 +111,8 @@ export type GetBackupsResponse = [Backup[], IBackup[]];
 export type GetBackupsCallback = (
   err: ServiceError | null,
   backups?: Backup[],
-  apiResponse?: IBackup[]
+  nextQuery?: IBackup,
+  apiResponse?: google.bigtable.admin.v2.IListBackupsResponse
 ) => void;
 
 /**
