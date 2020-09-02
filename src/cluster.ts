@@ -39,7 +39,7 @@ import {
   ModifiableBackupFields,
 } from './backup';
 import {Transform} from 'stream';
-import { Table } from './table';
+import {Table} from './table';
 
 export interface GenericCallback<T> {
   (err?: ServiceError | null, apiResponse?: T | null): void;
@@ -241,7 +241,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
   createBackup(
     id: string,
-    config: CreateBackupConfig,
+    config: CreateBackupConfig
   ): Promise<CreateBackupResponse>;
   createBackup(
     id: string,
@@ -260,7 +260,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     automatically deleted.
    * @param {CallOptions} [config.gaxOptions] Request configuration options,
    *     outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html. 
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {CreateBackupCallback} [cb] Callback
    * @return {void | Promise<CreateBackupResponse>}
    */
@@ -283,8 +283,6 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       throw new Error('A source table is required to backup.');
     }
 
-    const {expireTime, ...restFields} = config.metadata || {};
-
     this.bigtable.request<
       LROperation<IBackup, google.bigtable.admin.v2.ICreateBackupMetadata>
     >(
@@ -296,7 +294,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
           backupId: id,
           backup: {
             sourceTable: typeof table === 'string' ? table : table.name,
-            ...restFields,
+            ...config.metadata,
           },
         },
         gaxOpts: config.gaxOptions,
@@ -533,7 +531,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
           const backupInstance = this.backup(backup.name!);
           backupInstance.metadata = backup;
           cb(null, backupInstance);
-        }
+        },
       }),
     ]);
   }

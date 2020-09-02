@@ -221,9 +221,7 @@ export class Backup {
     });
   }
 
-  create(
-    config: CreateBackupConfig
-  ): Promise<CreateBackupResponse>;
+  create(config: CreateBackupConfig): Promise<CreateBackupResponse>;
   /**
    * Starts creating a new Cloud Bigtable Backup.
    *
@@ -239,7 +237,7 @@ export class Backup {
    *     automatically deleted.
    * @param {CallOptions} [config.gaxOptions] Request configuration options,
    *     outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html. 
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
    * @param {CreateBackupCallback} [cb]
    * @return {void | Promise<CreateBackupResponse>}
@@ -418,7 +416,10 @@ export class Backup {
     fields: ModifiableBackupFields,
     gaxOptions?: CallOptions
   ): Promise<SetMetadataResponse>;
-  setMetadata(fields: ModifiableBackupFields, callback: SetMetadataCallback): void;
+  setMetadata(
+    fields: ModifiableBackupFields,
+    callback: SetMetadataCallback
+  ): void;
   setMetadata(
     fields: ModifiableBackupFields,
     gaxOptions: CallOptions,
@@ -466,7 +467,7 @@ export class Backup {
 
     const fieldsForMask = ['expireTime'];
     fieldsForMask.forEach(field => {
-      if (fields.hasOwnProperty(field)) {
+      if (field in fields) {
         reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });

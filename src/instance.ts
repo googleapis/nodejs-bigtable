@@ -62,7 +62,6 @@ import {ServiceError} from 'google-gax';
 import {Backup, Bigtable} from '.';
 import {google} from '../protos/protos';
 import {
-  ModifiableBackupFields,
   RestoreTableCallback,
   RestoreTableResponse,
 } from './backup';
@@ -147,9 +146,9 @@ export type SetInstanceMetadataCallback = (
 export type SetInstanceMetadataResponse = [google.protobuf.Empty];
 
 export interface CreateTableFromBackupConfig {
-  table: string,
-  backup: Backup | string,
-  gaxOptions?: CallOptions
+  table: string;
+  backup: Backup | string;
+  gaxOptions?: CallOptions;
 }
 
 /**
@@ -1121,7 +1120,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   }
 
   createTableFromBackup(
-    config: CreateTableFromBackupConfig,
+    config: CreateTableFromBackupConfig
   ): Promise<RestoreTableResponse>;
   createTableFromBackup(
     config: CreateTableFromBackupConfig,
