@@ -1160,7 +1160,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         const clusterId = config.backup.match(/clusters\/([^/]+)/)![1];
         backup = this.cluster(clusterId).backup(config.backup);
       } catch (e) {
-        throw new Error('A complete backup name (path) is required.');
+        throw new Error(
+          'A complete backup name (path) is required or a Backup object.'
+        );
       }
     }
 

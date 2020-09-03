@@ -452,19 +452,33 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
+    const gaxOpts = options.gaxOptions || {};
+
     const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
-      ...options,
       parent: this.name,
+      pageSize: gaxOpts.pageSize,
+      pageToken: gaxOpts.pageToken,
+      ...options,
     };
 
+    delete gaxOpts.pageSize;
+    delete gaxOpts.pageToken;
+    delete (reqOpts as CallOptions).autoPaginate;
     delete (reqOpts as GetBackupsOptions).gaxOptions;
+
+    if (
+      typeof options.autoPaginate === 'boolean' &&
+      typeof gaxOpts.autoPaginate === 'undefined'
+    ) {
+      gaxOpts.autoPaginate = options.autoPaginate;
+    }
 
     this.bigtable.request<google.bigtable.admin.v2.IBackup[]>(
       {
         client: 'BigtableTableAdminClient',
         method: 'listBackups',
         reqOpts,
-        gaxOpts: options.gaxOptions,
+        gaxOpts,
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (err, ...resp: any[]) => {
@@ -663,7 +677,9 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-promisifyAll(Cluster);
+promisifyAll(Cluster, {
+  exclude: ['backup'],
+});
 
 /**
  * Reference to the {@link Cluster} class.

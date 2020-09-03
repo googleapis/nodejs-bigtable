@@ -327,6 +327,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this
    *     request.
+   * @param {object} callback.metadata The metadata.
    * @param {object} callback.apiResponse The full API response.
    */
   getMetadata(

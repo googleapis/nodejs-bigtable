@@ -542,6 +542,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * around `Cluster.createBackup` that automatically selects the first ready
    * cluster from which a backup can be performed.
    *
+   * NOTE: This will make two API requests to first determine the most
+   * appropriate cluster, then create the backup. This could lead to a race
+   * condition if other requests are simultaneously sent or if the cluster
+   * availability state changes between each call.
+   *
    * @param {string} id A unique ID for the backup.
    * @param {CreateBackupConfig} config Metadata to set on the Backup.
    * @param {BackupTimestamp} config.expireTime When the backup will be
