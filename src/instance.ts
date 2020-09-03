@@ -779,7 +779,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       gaxOpts,
     });
     stream.on('response', apiResp => {
-      if (apiResp.failedLocations.length > 0) {
+      if (arrify(apiResp.failedLocations).length > 0) {
         failedLocations = failedLocations.concat(apiResp.failedLocations);
       }
     });
