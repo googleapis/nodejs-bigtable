@@ -35,7 +35,11 @@ export interface ModifiableBackupFields {
 }
 
 export interface GenericBackupCallback<T> {
-  (err: ServiceError | null, backup: Backup, apiResponse?: T): void;
+  (
+    err?: ServiceError | null,
+    backup?: Backup | null,
+    apiResponse?: T | null
+  ): void;
 }
 
 export type DeleteBackupCallback = (
@@ -304,21 +308,10 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
-    this.bigtable.request<IBackup>(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'getBackup',
-        reqOpts: {
-          name: this.name,
-        },
-        gaxOpts,
-      },
-      (err, resp) => {
-        if (resp) {
-          this.metadata = resp;
-        }
-
-        callback(err, this, this.metadata);
+    this.getMetadata(
+      gaxOpts,
+      (err?: ServiceError | null, metadata?: IBackup | null) => {
+        callback(err, err ? null : this, metadata);
       }
     );
   }
@@ -345,7 +338,22 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
-    this.get(gaxOpts, err => callback(err, this.metadata));
+    this.bigtable.request<IBackup>(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'getBackup',
+        reqOpts: {
+          name: this.name,
+        },
+        gaxOpts,
+      },
+      (err, resp) => {
+        if (resp) {
+          this.metadata = resp;
+        }
+        callback(err, resp);
+      }
+    );
   }
 
   restore(
