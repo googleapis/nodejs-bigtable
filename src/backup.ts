@@ -53,8 +53,12 @@ export type GetMetadataCallback = (
 ) => void;
 export type GetMetadataResponse = [IBackup];
 
-export type SetMetadataCallback = GenericBackupCallback<IBackup>;
-export type SetMetadataResponse = [Backup, IBackup];
+export type SetMetadataCallback = (
+  err: ServiceError | null,
+  metadata: IBackup,
+  resp: IBackup
+) => void;
+export type SetMetadataResponse = [IBackup, IBackup];
 
 export type CreateBackupCallback = (
   err: ServiceError | null,
@@ -223,8 +227,12 @@ export class Backup {
    * @param {CallOptions} [config.gaxOptions] Request configuration options,
    *     outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
-   * @param {CreateBackupCallback} [cb]
+   * @param {CreateBackupCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Backup} callback.backup The newly created Backup.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<CreateBackupResponse>}
    */
   create(
@@ -241,7 +249,9 @@ export class Backup {
    * Deletes this pending or completed Cloud Bigtable backup.
    *
    * @param {CallOptions | DeleteBackupCallback} [gaxOptionsOrCallback]
-   * @param {DeleteBackupCallback} [cb]
+   * @param {DeleteBackupCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<DeleteBackupResponse>}
    */
   delete(
@@ -354,7 +364,12 @@ export class Backup {
    * @param {string} tableId The id of the table to create and restore to. This
    *   table must not already exist.
    * @param {CallOptions | RestoreTableCallback} [gaxOptionsOrCallback]
-   * @param {RestoreTableCallback} [cb]
+   * @param {RestoreTableCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Table} callback.table The newly created Table.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<RestoreTableResponse>}
    */
   restore(
@@ -411,7 +426,10 @@ export class Backup {
    *
    * @param {ModifiableBackupFields} metadata - The fields to be updated.
    * @param {CallOptions | SetMetadataCallback} [gaxOptionsOrCallback]
-   * @param {SetMetadataCallback} [cb]
+   * @param {SetMetadataCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param
+   * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<SetMetadataResponse>}
    */
   setMetadata(
@@ -465,7 +483,7 @@ export class Backup {
           this.metadata = resp;
         }
 
-        callback(err, this, this.metadata);
+        callback(err, this.metadata, resp!);
       }
     );
   }

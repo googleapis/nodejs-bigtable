@@ -373,6 +373,10 @@ export interface PrefixRange {
   end?: BoundData | string;
 }
 
+export interface CreateBackupConfig extends ModifiableBackupFields {
+  gaxOptions?: CallOptions;
+}
+
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
  *
@@ -519,18 +523,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
   createBackup(
     id: string,
-    config: Required<ModifiableBackupFields>,
-    gaxOptions?: CallOptions
+    config: CreateBackupConfig
   ): Promise<CreateBackupResponse>;
   createBackup(
     id: string,
-    config: Required<ModifiableBackupFields>,
-    gaxOptions: CallOptions,
+    config: CreateBackupConfig,
     callback: CreateBackupCallback
   ): void;
   createBackup(
     id: string,
-    config: Required<ModifiableBackupFields>,
+    config: CreateBackupConfig,
     callback: CreateBackupCallback
   ): void;
   /**
@@ -541,29 +543,30 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * cluster from which a backup can be performed.
    *
    * @param {string} id A unique ID for the backup.
-   * @param {ModifiableBackupFields} config Metadata to set on the Backup.
-   * @param {BackupTimestamp} fields.expireTime When the backup will be
+   * @param {CreateBackupConfig} config Metadata to set on the Backup.
+   * @param {BackupTimestamp} config.expireTime When the backup will be
    *   automatically deleted.
-   * @param {CallOptions | CreateBackupCallback} [gaxOptionsOrCallback]
-   * @param {CreateBackupCallback} [cb]
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {CreateBackupCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Backup} callback.backup The newly created Backup.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<CreateBackupResponse>}
    */
   createBackup(
     id: string,
-    config: Required<ModifiableBackupFields>,
-    gaxOptionsOrCallback?: CallOptions | CreateBackupCallback,
-    cb?: CreateBackupCallback
+    config: CreateBackupConfig,
+    callback?: CreateBackupCallback
   ): void | Promise<CreateBackupResponse> {
-    const options =
-      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
-    const callback =
-      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
-
-    if (!id || typeof id === 'function') {
+    if (!id) {
       throw new TypeError('An id is required to create a backup.');
     }
 
-    this.getReplicationStates({...options})
+    this.getReplicationStates(config.gaxOptions)
       .then(([stateMap]) => {
         const [clusterId] =
           [...stateMap.entries()].find(
@@ -579,11 +582,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       .then(cluster => {
         return cluster.createBackup(id, {
           table: this.name,
-          metadata: config,
+          ...config,
         });
       })
-      .then(argv => callback(null, ...argv))
-      .catch(err => callback(err));
+      .then(argv => callback!(null, ...argv))
+      .catch(err => callback!(err));
   }
 
   createFamily(

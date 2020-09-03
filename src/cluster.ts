@@ -250,7 +250,12 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @param {CallOptions} [config.gaxOptions] Request configuration options,
    *     outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @param {CreateBackupCallback} [cb] Callback
+   * @param {CreateBackupCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Cluster} callback.backup The newly created Backup.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<CreateBackupResponse>}
    */
   createBackup(
@@ -432,7 +437,10 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * completed and pending backups.
    *
    * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
-   * @param {GetBackupsResponse} [cb]
+   * @param {GetBackupsResponse} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Backup[]} callback.backups All matching Backup instances.
+   * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<ListBackupsResponse>}
    */
   getBackups(
