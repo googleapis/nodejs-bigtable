@@ -62,7 +62,6 @@ import {ServiceError} from 'google-gax';
 import {Backup, Bigtable} from '.';
 import {google} from '../protos/protos';
 import {RestoreTableCallback, RestoreTableResponse} from './backup';
-import {BigtableTableAdminClient} from './v2';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -1152,22 +1151,17 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       throw new Error('An table id is required to restore from a backup.');
     }
 
-    const tableAdminClient = this.bigtable.api[
-      'BigtableTableAdminClient'
-    ] as BigtableTableAdminClient;
-
     let backup: Backup;
 
     if (config.backup instanceof Backup) {
       backup = config.backup;
     } else {
-      const clusterId = tableAdminClient
-        .matchClusterFromBackupName(config.backup)
-        .toString();
-      if (!clusterId) {
+      try {
+        const clusterId = config.backup.match(/clusters\/([^/]+)/)![1];
+        backup = this.cluster(clusterId).backup(config.backup);
+      } catch (e) {
         throw new Error('A complete backup name (path) is required.');
       }
-      backup = this.cluster(clusterId).backup(config.backup);
     }
 
     backup.restore(config.table, config.gaxOptions!, callback!);
