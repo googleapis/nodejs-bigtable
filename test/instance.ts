@@ -769,7 +769,7 @@ describe('Bigtable/Instance', () => {
     });
   });
 
-  describe('getApprofilesStream', () => {
+  describe('getAppProfilesStream', () => {
     let returnStream: PassThrough;
     beforeEach(() => {
       returnStream = new PassThrough({
@@ -865,6 +865,87 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(err, error);
         done();
       });
+    });
+
+    it('should return a decorated error with failedLocations list', done => {
+      let counter = 0;
+      let failedLocations: string[] = [];
+      const pages = [
+        {
+          appProfiles: [
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-a',
+            },
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-b',
+            },
+          ],
+          response: {failedLocations: []},
+        },
+        {
+          appProfiles: [
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-c',
+            },
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-d',
+            },
+          ],
+          response: {failedLocations: ['us-east1-a']},
+        },
+
+        {
+          appProfiles: [
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-e',
+            },
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-f',
+            },
+          ],
+          response: {failedLocations: ['us-west1-b', 'us-west1-c']},
+        },
+      ];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+
+      setImmediate(() => {
+        pages.forEach(p => {
+          failedLocations = failedLocations.concat(p.response.failedLocations);
+          returnStream.emit('response', p.response);
+          p.appProfiles.forEach(a => {
+            returnStream.push(a);
+            counter++;
+          });
+        });
+        returnStream.push(null);
+      });
+      const appProfiles: AppProfile[] = [];
+      instance
+        .getAppProfilesStream()
+        .on('error', err => {
+          assert.strictEqual(appProfiles.length, counter);
+          console.log(err.message);
+          assert.deepStrictEqual(
+            err,
+            new Error(
+              `Resources from the following locations are currently not available\n${JSON.stringify(
+                failedLocations
+              )}`
+            )
+          );
+          done();
+        })
+        .on('data', appProfile => {
+          assert(appProfile instanceof FakeAppProfile);
+          appProfiles.push(appProfile);
+        })
+        .on('end', () => {
+          done();
+        });
     });
 
     it('should return an array of AppProfile objects', done => {

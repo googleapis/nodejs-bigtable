@@ -824,6 +824,9 @@ export class Bigtable {
           .on('error', (err: Error) => {
             stream.destroy(err);
           })
+          .on('response', response => {
+            stream.emit('response', response);
+          })
           .pipe(stream);
       });
     }

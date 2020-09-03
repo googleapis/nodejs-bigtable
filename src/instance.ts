@@ -758,14 +758,38 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       appProfile.metadata = chunk;
       callback(null, appProfile);
     };
+    let failedLocations: string[] = [];
+    const flush = (callback: Function) => {
+      if (failedLocations.length > 0) {
+        callback(
+          new Error(
+            `Resources from the following locations are currently not available\n${JSON.stringify(
+              failedLocations
+            )}`
+          )
+        );
+      } else {
+        callback();
+      }
+    };
+    const stream = this.bigtable.request({
+      client: 'BigtableInstanceAdminClient',
+      method: 'listAppProfilesStream',
+      reqOpts,
+      gaxOpts,
+    });
+    stream.on('response', apiResp => {
+      if (arrify(apiResp.failedLocations).length > 0) {
+        failedLocations = failedLocations.concat(apiResp.failedLocations);
+      }
+    });
     return pumpify.obj([
-      this.bigtable.request({
-        client: 'BigtableInstanceAdminClient',
-        method: 'listAppProfilesStream',
-        reqOpts,
-        gaxOpts,
+      stream,
+      new Transform({
+        objectMode: true,
+        transform: transformToAppProfile,
+        flush,
       }),
-      new Transform({objectMode: true, transform: transformToAppProfile}),
     ]);
   }
 
