@@ -1138,8 +1138,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     restore of the form
    *     `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
    *     or a Backup instance.
-   * @param {CallOptions | RestoreTableCallback} [config.gaxOptions] Request
-   *     configuration options, outlined here:
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {RestoreTableCallback} [cb]
    * @return {void | Promise<RestoreTableResponse>}

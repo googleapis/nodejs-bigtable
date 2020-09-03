@@ -18,8 +18,8 @@ import snakeCase = require('lodash.snakecase');
 import {google} from '../protos/protos';
 import {Bigtable, Cluster, Table} from './';
 import {BigtableTableAdminClient} from './v2';
-import {CreateBackupConfig} from './cluster';
-import {CallOptions, LROperation, ServiceError} from 'google-gax';
+import {CreateBackupConfig, IOperation} from './cluster';
+import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 
 type IEmpty = google.protobuf.IEmpty;
 export type IBackup = google.bigtable.admin.v2.IBackup;
@@ -39,14 +39,20 @@ export interface GenericBackupCallback<T> {
   (err: ServiceError | null, backup: Backup, apiResponse?: T): void;
 }
 
-export type DeleteBackupCallback = GenericBackupCallback<IEmpty>;
-export type DeleteBackupResponse = [Backup, IEmpty];
+export type DeleteBackupCallback = (
+  err: ServiceError | null,
+  apiResponse?: IEmpty
+) => void;
+export type DeleteBackupResponse = [IEmpty];
 
 export type GetBackupCallback = GenericBackupCallback<IBackup>;
 export type GetBackupResponse = [Backup, IBackup];
 
-export type GetMetadataCallback = GenericBackupCallback<IBackup>;
-export type GetMetadataResponse = [IBackup, IEmpty];
+export type GetMetadataCallback = (
+  err?: ServiceError | null,
+  metadata?: IBackup | null
+) => void;
+export type GetMetadataResponse = [IBackup];
 
 export type SetMetadataCallback = GenericBackupCallback<IBackup>;
 export type SetMetadataResponse = [Backup, IBackup];
@@ -54,64 +60,54 @@ export type SetMetadataResponse = [Backup, IBackup];
 export type CreateBackupCallback = (
   err: ServiceError | null,
   backup?: Backup,
-  operation?: LROperation<
-    google.bigtable.admin.v2.IBackup,
-    google.bigtable.admin.v2.ICreateBackupMetadata
-  >,
-  apiResponse?: google.bigtable.admin.v2.ICreateBackupMetadata
+  operation?: Operation,
+  apiResponse?: IOperation
 ) => void;
-export type CreateBackupResponse = [
-  Backup,
-  LROperation<
-    google.bigtable.admin.v2.IBackup,
-    google.bigtable.admin.v2.ICreateBackupMetadata
-  >,
-  google.bigtable.admin.v2.ICreateBackupMetadata
-];
+export type CreateBackupResponse = [Backup, Operation, IOperation];
 
 export type RestoreTableCallback = (
   err: ServiceError | null,
-  table: Table | null,
-  apiResponse?: LROperation<
-    google.bigtable.admin.v2.ITable,
-    google.bigtable.admin.v2.IRestoreTableMetadata
-  >
+  table?: Table,
+  operation?: Operation,
+  apiResponse?: IOperation
 ) => void;
-export type RestoreTableResponse = [
-  Table,
-  LROperation<
-    google.bigtable.admin.v2.ITable,
-    google.bigtable.admin.v2.IRestoreTableMetadata
-  >
-];
+export type RestoreTableResponse = [Table, Operation, IOperation];
 
 export interface GetBackupsOptions {
   /**
-   * A filter expression that filters backups listed in the response.
-   *   The expression must specify the field name, a comparison operator,
-   *   and the value that you want to use for filtering. The value must be a
-   *   string, a number, or a boolean. The comparison operator must be
-   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
-   *   roughly synonymous with equality. Filter rules are case insensitive.
+   * A filter expression that filters backups listed in the response. The
+   * expression must specify the field name, a comparison operator, and the
+   * value that you want to use for filtering. The value must be a string, a
+   * number, or a boolean. The comparison operator must be <, >, <=, >=, !=, =,
+   * or :. Colon ‘:’ represents a HAS operator which is roughly synonymous with
+   * equality. Filter rules are case insensitive.
    */
   filter?: string;
 
   /**
    * An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in
-   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is
-   *   described at https://aip.dev/132#ordering.
+   * The string value should specify one or more fields in
+   * {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is
+   * described at https://aip.dev/132#ordering.
    */
   orderBy?: string;
 
   gaxOptions?: CallOptions;
+
+  pageSize?: number;
+  pageToken?: string;
+  autoPaginate?: boolean;
 }
 
-export type GetBackupsResponse = [Backup[], IBackup[]];
+export type GetBackupsResponse = [
+  Backup[],
+  GetBackupsOptions,
+  google.bigtable.admin.v2.IListBackupsResponse
+];
 export type GetBackupsCallback = (
   err: ServiceError | null,
   backups?: Backup[],
-  nextQuery?: IBackup,
+  nextQuery?: GetBackupsOptions,
   apiResponse?: google.bigtable.admin.v2.IListBackupsResponse
 ) => void;
 
@@ -178,7 +174,8 @@ export class Backup {
   }
 
   /**
-   * A Date-compatible PreciseDate representation of `expireTime`.
+   * A Date-compatible PreciseDate representing the expiration time of this
+   * backup.
    * @readonly
    * @return {PreciseDate}
    */
@@ -193,7 +190,8 @@ export class Backup {
   }
 
   /**
-   * A Date-compatible PreciseDate representation of `startTime`.
+   * A Date-compatible PreciseDate representing the time that this backup was
+   * started.
    * @readonly
    * @return {PreciseDate}
    */
@@ -208,7 +206,8 @@ export class Backup {
   }
 
   /**
-   * A Date-compatible PreciseDate representation of `endTime`.
+   * A Date-compatible PreciseDate representing the time that the backup was
+   * finished.
    * @readonly
    * @return {PreciseDate}
    */
@@ -222,6 +221,7 @@ export class Backup {
     });
   }
 
+  create(config: CreateBackupConfig, callback?: CreateBackupCallback): void;
   create(config: CreateBackupConfig): Promise<CreateBackupResponse>;
   /**
    * Starts creating a new Cloud Bigtable Backup.
@@ -278,7 +278,7 @@ export class Backup {
         },
         gaxOpts,
       },
-      (err, resp) => callback(err, this, resp)
+      callback
     );
   }
 
@@ -346,8 +346,7 @@ export class Backup {
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
-    // @TODO `this.metadata` isn't a `Backup`. Figure out why it has to be cast.
-    this.get(gaxOpts, err => callback(err, this.metadata as Backup));
+    this.get(gaxOpts, err => callback(err, this.metadata));
   }
 
   restore(
@@ -384,8 +383,6 @@ export class Backup {
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
-    const table = this.cluster.instance.table(tableId);
-
     this.bigtable.request<
       LROperation<
         google.bigtable.admin.v2.ITable,
@@ -397,32 +394,31 @@ export class Backup {
         method: 'restoreTable',
         reqOpts: {
           parent: this.cluster.name,
-          tableId: table.name,
+          tableId,
           backup: this.name,
         },
         gaxOpts,
       },
-      (err, operation) => {
+      (err, ...args) => {
         if (err) {
-          callback(err, null, operation);
+          callback(err, undefined, ...args);
           return;
         }
-
-        callback(err, table, operation);
+        callback(err, this.cluster.instance.table(tableId), ...args);
       }
     );
   }
 
   setMetadata(
-    fields: ModifiableBackupFields,
+    metadata: ModifiableBackupFields,
     gaxOptions?: CallOptions
   ): Promise<SetMetadataResponse>;
   setMetadata(
-    fields: ModifiableBackupFields,
+    metadata: ModifiableBackupFields,
     callback: SetMetadataCallback
   ): void;
   setMetadata(
-    fields: ModifiableBackupFields,
+    metadata: ModifiableBackupFields,
     gaxOptions: CallOptions,
     callback: SetMetadataCallback
   ): void;
@@ -435,7 +431,7 @@ export class Backup {
    * @return {void | Promise<SetMetadataResponse>}
    */
   setMetadata(
-    fields: ModifiableBackupFields,
+    metadata: ModifiableBackupFields,
     gaxOptionsOrCallback?: CallOptions | SetMetadataCallback,
     cb?: SetMetadataCallback
   ): void | Promise<SetMetadataResponse> {
@@ -444,11 +440,11 @@ export class Backup {
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
-    const {expireTime, ...restFields} = fields;
+    const {expireTime, ...restMetadata} = metadata;
 
     const backup: IBackup = {
       name: this.name,
-      ...restFields,
+      ...restMetadata,
     };
 
     if (expireTime) {
@@ -468,7 +464,7 @@ export class Backup {
 
     const fieldsForMask = ['expireTime'];
     fieldsForMask.forEach(field => {
-      if (field in fields) {
+      if (field in metadata) {
         reqOpts.updateMask!.paths!.push(snakeCase(field));
       }
     });

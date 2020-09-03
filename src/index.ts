@@ -751,8 +751,9 @@ export class Bigtable {
     };
 
     const gapicStreamingMethods = {
-      listTablesStream: true,
       listAppProfilesStream: true,
+      listBackupsStream: true,
+      listTablesStream: true,
     };
 
     if (isStreamMode) {

@@ -12,15 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {paginator} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
-import {
-  CallOptions,
-  LROperation,
-  Operation as GaxOperation,
-  Operation,
-  ServiceError,
-} from 'google-gax';
+import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
@@ -54,7 +47,7 @@ export interface GenericClusterCallback<T> {
 export interface GenericOperationCallback<T> {
   (
     err?: ServiceError | null,
-    operation?: GaxOperation | null,
+    operation?: Operation | null,
     apiResponse?: T | null
   ): void;
 }
@@ -64,7 +57,7 @@ export type ICluster = google.bigtable.admin.v2.ICluster;
 export type IOperation = google.longrunning.IOperation;
 
 export type ApiResponse = [IOperation];
-export type CreateClusterResponse = [ICluster, GaxOperation, IOperation];
+export type CreateClusterResponse = [ICluster, Operation, IOperation];
 export type BooleanResponse = [boolean];
 export type GetClusterResponse = [ICluster, IOperation];
 export type GetClustersResponse = [Cluster[], IOperation];
@@ -298,13 +291,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         },
         gaxOpts: config.gaxOptions,
       },
-      (err, operation) => {
+      (err, ...args) => {
         if (err) {
-          callback!(err, undefined, operation);
+          callback!(err, undefined, ...args);
           return;
         }
 
-        callback!(null, this.backup(id), operation);
+        callback!(null, this.backup(id), ...args);
       }
     );
   }
@@ -654,12 +647,6 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     );
   }
 }
-
-/*! Developer Documentation
- *
- * These methods can be auto-paginated.
- */
-paginator.extend(Cluster, ['getBackups']);
 
 /*! Developer Documentation
  *
