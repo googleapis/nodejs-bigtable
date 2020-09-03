@@ -85,9 +85,8 @@ export interface BasicClusterConfig {
   storage?: string;
 }
 
-export interface CreateBackupConfig {
+export interface CreateBackupConfig extends ModifiableBackupFields {
   table: string | Table;
-  metadata: ModifiableBackupFields;
   gaxOptions?: CallOptions;
 }
 
@@ -245,11 +244,9 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *
    * @param {string} id A unique ID for the backup.
    * @param {object} config Configuration object.
-   * @param {string|Table} config.table Table to create the backup from.
-   * @param {ModifiableBackupFields} config.metadata Metadata to set on the
-   *     Backup.
-   * @param {BackupTimestamp} config.metadata.expireTime When the backup will be
+   * @param {BackupTimestamp} config.expireTime When the backup will be
    *     automatically deleted.
+   * @param {string|Table} config.table Table to create the backup from.
    * @param {CallOptions} [config.gaxOptions] Request configuration options,
    *     outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
@@ -275,20 +272,25 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       throw new Error('A source table is required to backup.');
     }
 
+    const reqOpts = {
+      parent: this.name,
+      backupId: id,
+      backup: {
+        sourceTable: typeof table === 'string' ? table : table.name,
+        ...config,
+      },
+    };
+
+    delete reqOpts.backup.table;
+    delete reqOpts.backup.gaxOptions;
+
     this.bigtable.request<
       LROperation<IBackup, google.bigtable.admin.v2.ICreateBackupMetadata>
     >(
       {
         client: 'BigtableTableAdminClient',
         method: 'createBackup',
-        reqOpts: {
-          parent: this.name,
-          backupId: id,
-          backup: {
-            sourceTable: typeof table === 'string' ? table : table.name,
-            ...config.metadata,
-          },
-        },
+        reqOpts,
         gaxOpts: config.gaxOptions,
       },
       (err, ...args) => {

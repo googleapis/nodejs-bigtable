@@ -217,11 +217,9 @@ export class Backup {
    * operation will stop the creation and delete the backup.
    *
    * @param {CreateBackupConfig} config Configuration object.
-   * @param {string|Table} config.table Table to create the backup from.
-   * @param {ModifiableBackupFields} config.metadata Metadata to set on the
-   *     Backup.
-   * @param {BackupTimestamp} config.metadata.expireTime When the backup will be
+   * @param {BackupTimestamp} config.expireTime When the backup will be
    *     automatically deleted.
+   * @param {string|Table} config.table Table to create the backup from.
    * @param {CallOptions} [config.gaxOptions] Request configuration options,
    *     outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
