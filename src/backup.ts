@@ -155,8 +155,13 @@ export class Backup {
     this.metadata = {};
 
     if (id.includes('/')) {
-      this.name = id;
-      this.id = id.split('/').pop()!;
+      if (id.startsWith(cluster.name)) {
+        this.name = id;
+        this.id = id.split('/').pop()!;
+      } else {
+        throw new Error(`Backup id '${id}' is not formatted correctly.
+Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
+      }
     } else {
       this.name = `${this.cluster.name}/backups/${id}`;
       this.id = id;
