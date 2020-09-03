@@ -47,7 +47,6 @@
     "api-documenter": "api-documenter yaml --input-folder=temp"
   },
   "dependencies": {
-    "@google-cloud/paginator": "^3.0.0",
     "@google-cloud/precise-date": "^2.0.1",
     "@google-cloud/projectify": "^2.0.0",
     "@google-cloud/promisify": "^2.0.0",
