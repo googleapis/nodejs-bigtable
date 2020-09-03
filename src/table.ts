@@ -566,27 +566,33 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       throw new TypeError('An id is required to create a backup.');
     }
 
-    this.getReplicationStates(config.gaxOptions)
-      .then(([stateMap]) => {
-        const [clusterId] =
-          [...stateMap.entries()].find(
-            ([, clusterState]) =>
-              clusterState.replicationState === 'READY' ||
-              clusterState.replicationState === 'READY_OPTIMIZING'
-          ) || [];
-        if (!clusterId) {
-          throw new Error('No ready clusters eligible for backup.');
-        }
-        return this.instance.cluster(clusterId);
-      })
-      .then(cluster => {
-        return cluster.createBackup(id, {
+    this.getReplicationStates(config.gaxOptions!, (err, stateMap) => {
+      if (err) {
+        callback!(err);
+        return;
+      }
+
+      const [clusterId] =
+        [...stateMap!.entries()].find(([, clusterState]) => {
+          return (
+            clusterState.replicationState === 'READY' ||
+            clusterState.replicationState === 'READY_OPTIMIZING'
+          );
+        }) || [];
+
+      if (!clusterId) {
+        throw new Error('No ready clusters eligible for backup.');
+      }
+
+      this.instance.cluster(clusterId).createBackup(
+        id,
+        {
           table: this.name,
           ...config,
-        });
-      })
-      .then(argv => callback!(null, ...argv))
-      .catch(err => callback!(err));
+        },
+        callback!
+      );
+    });
   }
 
   createFamily(
