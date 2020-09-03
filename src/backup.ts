@@ -17,7 +17,6 @@ import {promisifyAll} from '@google-cloud/promisify';
 import snakeCase = require('lodash.snakecase');
 import {google} from '../protos/protos';
 import {Bigtable, Cluster, Table} from './';
-import {BigtableTableAdminClient} from './v2';
 import {CreateBackupConfig, IOperation} from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 
@@ -151,25 +150,12 @@ export class Backup {
     this.cluster = cluster;
     this.metadata = {};
 
-    const tableAdminClient = this.bigtable.api[
-      'BigtableTableAdminClient'
-    ] as BigtableTableAdminClient;
-
     if (id.includes('/')) {
       this.name = id;
-      this.id = tableAdminClient.matchBackupFromBackupName(id).toString();
-      if (!this.id) {
-        throw new Error(`Backup id "${id}" is not formatted correctly.
-        Please use the format "projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}."`);
-      }
+      this.id = id.split('/').pop()!;
     } else {
+      this.name = `${this.cluster.name}/backups/${id}`;
       this.id = id;
-      this.name = tableAdminClient.backupPath(
-        this.bigtable.projectId,
-        this.cluster.instance.id,
-        this.cluster.id,
-        this.id
-      );
     }
   }
 
