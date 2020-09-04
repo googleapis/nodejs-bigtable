@@ -252,7 +252,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {CreateBackupCallback} [callback] The callback function.
    * @param {?error} callback.err An error returned while making this request.
-   * @param {Cluster} callback.backup The newly created Backup.
+   * @param {Backup} callback.backup The newly created Backup.
    * @param {Operation} callback.operation An operation object that can be used
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.

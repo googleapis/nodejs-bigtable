@@ -456,40 +456,25 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
 
-    const {expireTime, ...restMetadata} = metadata;
-
-    const backup: IBackup = {
+    const backup = {
       name: this.name,
-      ...restMetadata,
+      ...metadata,
     };
 
-    if (expireTime) {
-      if (expireTime instanceof Date) {
-        backup.expireTime = new PreciseDate(expireTime).toStruct();
-      } else if (expireTime.seconds) {
-        backup.expireTime = expireTime;
-      }
+    if (backup.expireTime instanceof Date) {
+      backup.expireTime = new PreciseDate(backup.expireTime).toStruct();
     }
-
-    const reqOpts: google.bigtable.admin.v2.IUpdateBackupRequest = {
-      backup,
-      updateMask: {
-        paths: [],
-      },
-    };
-
-    const fieldsForMask = ['expireTime'];
-    fieldsForMask.forEach(field => {
-      if (field in metadata) {
-        reqOpts.updateMask!.paths!.push(snakeCase(field));
-      }
-    });
 
     this.bigtable.request<IBackup>(
       {
         client: 'BigtableTableAdminClient',
         method: 'updateBackup',
-        reqOpts,
+        reqOpts: {
+          backup,
+          updateMask: {
+            paths: Object.keys(metadata).map(snakeCase),
+          },
+        },
         gaxOpts,
       },
       (err, resp) => {
