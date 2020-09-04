@@ -1141,6 +1141,44 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     });
   }
 
+  getFamilies(gaxOptions?: CallOptions): Promise<GetFamiliesResponse>;
+  getFamilies(gaxOptions: CallOptions, callback: GetFamiliesCallback): void;
+  getFamilies(callback: GetFamiliesCallback): void;
+  /**
+   * Get Family objects for all the column familes in your table.
+   *
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Family[]} callback.families The list of families.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/document-snippets/table.js</caption>
+   * region_tag:bigtable_get_families
+   */
+  getFamilies(
+    optionsOrCallback?: CallOptions | GetFamiliesCallback,
+    cb?: GetFamiliesCallback
+  ): void | Promise<GetFamiliesResponse> {
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    this.getMetadata({gaxOptions}, (err, metadata) => {
+      if (err) {
+        callback(err);
+        return;
+      }
+      const families = Object.keys(metadata.columnFamilies!).map(familyId => {
+        const family = this.family(familyId);
+        family.metadata = metadata.columnFamilies![familyId];
+        return family;
+      });
+      callback(null, families, metadata.columnFamilies!);
+    });
+  }
+
   getIamPolicy(options?: GetIamPolicyOptions): Promise<[Policy]>;
   getIamPolicy(
     options: GetIamPolicyOptions,
@@ -1201,42 +1239,50 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
-  getFamilies(gaxOptions?: CallOptions): Promise<GetFamiliesResponse>;
-  getFamilies(gaxOptions: CallOptions, callback: GetFamiliesCallback): void;
-  getFamilies(callback: GetFamiliesCallback): void;
+  getMetadata(options?: GetMetadataOptions): Promise<GetMetadataResponse>;
+  getMetadata(options: GetMetadataOptions, callback: GetMetadataCallback): void;
+  getMetadata(callback: GetMetadataCallback): void;
   /**
-   * Get Family objects for all the column familes in your table.
+   * Get the table's metadata.
    *
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @param {function} callback The callback function.
-   * @param {?error} callback.err An error returned while making this request.
-   * @param {Family[]} callback.families The list of families.
-   * @param {object} callback.apiResponse The full API response.
+   * @param {object} [options] Table request options.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {string} [options.view] The view to be applied to the table fields.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {object} callback.metadata The table's metadata.
    *
    * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_get_families
+   * region_tag:bigtable_get_table_meta
    */
-  getFamilies(
-    optionsOrCallback?: CallOptions | GetFamiliesCallback,
-    cb?: GetFamiliesCallback
-  ): void | Promise<GetFamiliesResponse> {
+  getMetadata(
+    optionsOrCallback?: GetMetadataOptions | GetMetadataCallback,
+    cb?: GetMetadataCallback
+  ): void | Promise<GetMetadataResponse> {
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const gaxOptions =
+    const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    this.getMetadata({gaxOptions}, (err, metadata) => {
-      if (err) {
-        callback(err);
-        return;
+    const reqOpts = {
+      name: this.name,
+      view: Table.VIEWS[options.view || 'unspecified'],
+    };
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'getTable',
+        reqOpts,
+        gaxOpts: options.gaxOptions,
+      },
+      (...args) => {
+        if (args[1]) {
+          this.metadata = args[1];
+        }
+        callback(...args);
       }
-      const families = Object.keys(metadata.columnFamilies!).map(familyId => {
-        const family = this.family(familyId);
-        family.metadata = metadata.columnFamilies![familyId];
-        return family;
-      });
-      callback(null, families, metadata.columnFamilies!);
-    });
+    );
   }
 
   getReplicationStates(
@@ -1301,52 +1347,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       );
       callback(null, clusterStates, metadata);
     });
-  }
-
-  getMetadata(options?: GetMetadataOptions): Promise<GetMetadataResponse>;
-  getMetadata(options: GetMetadataOptions, callback: GetMetadataCallback): void;
-  getMetadata(callback: GetMetadataCallback): void;
-  /**
-   * Get the table's metadata.
-   *
-   * @param {object} [options] Table request options.
-   * @param {object} [options.gaxOptions] Request configuration options, outlined
-   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
-   * @param {string} [options.view] The view to be applied to the table fields.
-   * @param {function} [callback] The callback function.
-   * @param {?error} callback.err An error returned while making this
-   *     request.
-   * @param {object} callback.metadata The table's metadata.
-   *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_get_table_meta
-   */
-  getMetadata(
-    optionsOrCallback?: GetMetadataOptions | GetMetadataCallback,
-    cb?: GetMetadataCallback
-  ): void | Promise<GetMetadataResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const reqOpts = {
-      name: this.name,
-      view: Table.VIEWS[options.view || 'unspecified'],
-    };
-    this.bigtable.request(
-      {
-        client: 'BigtableTableAdminClient',
-        method: 'getTable',
-        reqOpts,
-        gaxOpts: options.gaxOptions,
-      },
-      (...args) => {
-        if (args[1]) {
-          this.metadata = args[1];
-        }
-        callback(...args);
-      }
-    );
   }
 
   getRows(options?: GetRowsOptions): Promise<GetRowsResponse>;
