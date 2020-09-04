@@ -65,7 +65,7 @@ export type BackupSetMetadataCallback = (
 export type BackupSetMetadataResponse = [IBackup, IBackup];
 
 export type CreateBackupCallback = (
-  err: ServiceError | null,
+  err: ServiceError | Error | null,
   backup?: Backup,
   operation?: Operation,
   apiResponse?: IOperation

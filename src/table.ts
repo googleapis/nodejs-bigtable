@@ -571,6 +571,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       throw new TypeError('An id is required to create a backup.');
     }
 
+    if (!config) {
+      throw new TypeError('A configuration object is required.');
+    }
+
     this.getReplicationStates(config.gaxOptions!, (err, stateMap) => {
       if (err) {
         callback!(err);
@@ -586,7 +590,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }) || [];
 
       if (!clusterId) {
-        throw new Error('No ready clusters eligible for backup.');
+        callback!(new Error('No ready clusters eligible for backup.'));
+        return;
       }
 
       this.instance.cluster(clusterId).createBackup(
