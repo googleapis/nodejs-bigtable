@@ -976,8 +976,10 @@ export {
   ModifiableBackupFields,
   RestoreTableCallback,
   RestoreTableResponse,
-  UpdateBackupCallback,
-  UpdateBackupResponse,
+  BackupSetMetadataCallback,
+  BackupSetMetadataResponse,
+  BackupGetMetadataCallback,
+  BackupGetMetadataResponse,
 } from './backup';
 export {
   Chunk,

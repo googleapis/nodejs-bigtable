@@ -51,18 +51,18 @@ export type DeleteBackupResponse = [IEmpty];
 export type GetBackupCallback = GenericBackupCallback<IBackup>;
 export type GetBackupResponse = [Backup, IBackup];
 
-export type GetMetadataCallback = (
+export type BackupGetMetadataCallback = (
   err?: ServiceError | null,
   metadata?: IBackup | null
 ) => void;
-export type GetMetadataResponse = [IBackup];
+export type BackupGetMetadataResponse = [IBackup];
 
-export type SetMetadataCallback = (
+export type BackupSetMetadataCallback = (
   err: ServiceError | null,
   metadata: IBackup,
   resp: IBackup
 ) => void;
-export type SetMetadataResponse = [IBackup, IBackup];
+export type BackupSetMetadataResponse = [IBackup, IBackup];
 
 export type CreateBackupCallback = (
   err: ServiceError | null,
@@ -316,9 +316,12 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     );
   }
 
-  getMetadata(gaxOptions?: CallOptions): Promise<GetMetadataResponse>;
-  getMetadata(callback: GetMetadataCallback): void;
-  getMetadata(gaxOptions: CallOptions, callback: GetMetadataCallback): void;
+  getMetadata(gaxOptions?: CallOptions): Promise<BackupGetMetadataResponse>;
+  getMetadata(callback: BackupGetMetadataCallback): void;
+  getMetadata(
+    gaxOptions: CallOptions,
+    callback: BackupGetMetadataCallback
+  ): void;
   /**
    * Get a backup if it exists.
    *
@@ -331,9 +334,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {object} callback.apiResponse The full API response.
    */
   getMetadata(
-    gaxOptionsOrCallback?: CallOptions | GetMetadataCallback,
-    cb?: GetMetadataCallback
-  ): void | Promise<GetMetadataResponse> {
+    gaxOptionsOrCallback?: CallOptions | BackupGetMetadataCallback,
+    cb?: BackupGetMetadataCallback
+  ): void | Promise<BackupGetMetadataResponse> {
     const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
@@ -425,32 +428,32 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   setMetadata(
     metadata: ModifiableBackupFields,
     gaxOptions?: CallOptions
-  ): Promise<SetMetadataResponse>;
+  ): Promise<BackupSetMetadataResponse>;
   setMetadata(
     metadata: ModifiableBackupFields,
-    callback: SetMetadataCallback
+    callback: BackupSetMetadataCallback
   ): void;
   setMetadata(
     metadata: ModifiableBackupFields,
     gaxOptions: CallOptions,
-    callback: SetMetadataCallback
+    callback: BackupSetMetadataCallback
   ): void;
   /**
    * Updates this pending or completed Cloud Bigtable Backup.
    *
    * @param {ModifiableBackupFields} metadata - The fields to be updated.
-   * @param {CallOptions | SetMetadataCallback} [gaxOptionsOrCallback]
-   * @param {SetMetadataCallback} [callback] The callback function.
+   * @param {CallOptions | BackupSetMetadataCallback} [gaxOptionsOrCallback]
+   * @param {BackupSetMetadataCallback} [callback] The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param
    * @param {object} callback.apiResponse The full API response.
-   * @return {void | Promise<SetMetadataResponse>}
+   * @return {void | Promise<BackupSetMetadataResponse>}
    */
   setMetadata(
     metadata: ModifiableBackupFields,
-    gaxOptionsOrCallback?: CallOptions | SetMetadataCallback,
-    cb?: SetMetadataCallback
-  ): void | Promise<SetMetadataResponse> {
+    gaxOptionsOrCallback?: CallOptions | BackupSetMetadataCallback,
+    cb?: BackupSetMetadataCallback
+  ): void | Promise<BackupSetMetadataResponse> {
     const gaxOpts =
       typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
     const callback =
