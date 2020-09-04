@@ -49,7 +49,7 @@
   "dependencies": {
     "@google-cloud/precise-date": "^2.0.1",
     "@google-cloud/projectify": "^2.0.0",
-    "@google-cloud/promisify": "^2.0.0",
+    "@google-cloud/promisify": "^2.0.3",
     "arrify": "^2.0.0",
     "concat-stream": "^2.0.0",
     "dot-prop": "^5.0.0",
