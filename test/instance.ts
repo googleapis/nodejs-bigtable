@@ -61,6 +61,8 @@ class FakeAppProfile extends AppProfile {
   }
 }
 
+class FakeBackup {}
+
 class FakeCluster extends Cluster {
   calledWith_: Array<{}>;
   constructor(...args: [inst.Instance, string]) {
@@ -104,6 +106,7 @@ describe('Bigtable/Instance', () => {
     Instance = proxyquire('../src/instance.js', {
       '@google-cloud/promisify': fakePromisify,
       './app-profile.js': {AppProfile: FakeAppProfile},
+      './backup.js': {Backup: FakeBackup},
       './cluster.js': {Cluster: FakeCluster},
       './family.js': {Family: FakeFamily},
       './table.js': {Table: FakeTable},
@@ -543,6 +546,109 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(apiResponse, response);
         done();
       });
+    });
+  });
+
+  describe('createTableFromBackup', () => {
+    it('should throw if a table is not provided', () => {
+      assert.throws(() => {
+        (instance.createTableFromBackup as Function)({});
+      }, /A table id is required to restore from a backup\./);
+    });
+
+    it('should restore from a provided Backup instance', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const backup = new FakeBackup() as any;
+      const table = 'table';
+
+      backup.restore = (
+        _table: string,
+        gaxOptions: object,
+        callback: Function
+      ) => {
+        assert.strictEqual(_table, table);
+        assert.strictEqual(typeof gaxOptions, 'undefined');
+        callback(); // done()
+      };
+
+      instance.createTableFromBackup(
+        {
+          table,
+          backup,
+        },
+        done
+      );
+    });
+
+    it('should create a Backup using the provided name', done => {
+      const clusterId = 'my-cluster';
+      const backupId = 'my-backup';
+      const backup = `/clusters/${clusterId}/backups/${backupId}`;
+      const table = 'table';
+
+      (instance.cluster as Function) = (id: string) => {
+        assert.strictEqual(id, clusterId);
+        return {
+          backup: (id: string) => {
+            assert.strictEqual(id, backup);
+            return {
+              restore: (
+                _table: string,
+                gaxOptions: object,
+                callback: Function
+              ) => {
+                assert.strictEqual(_table, table);
+                assert.strictEqual(typeof gaxOptions, 'undefined');
+                callback(); // done()
+              },
+            };
+          },
+        };
+      };
+
+      instance.createTableFromBackup(
+        {
+          table,
+          backup,
+        },
+        done
+      );
+    });
+
+    it('should throw if an unformatted backup name is provided', () => {
+      const backup = 'backup-id';
+      const table = 'table';
+
+      assert.throws(() => {
+        instance.createTableFromBackup(
+          {
+            table,
+            backup,
+          },
+          assert.ifError
+        );
+      }, /A complete backup name \(path\) is required or a Backup object\./);
+    });
+
+    it('should accept gaxOptions', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const backup = new FakeBackup() as any;
+      const table = 'table';
+      const gaxOptions = {};
+
+      backup.restore = (table: string, _gaxOptions: object) => {
+        assert.strictEqual(_gaxOptions, gaxOptions);
+        done();
+      };
+
+      instance.createTableFromBackup(
+        {
+          table,
+          backup,
+          gaxOptions,
+        },
+        assert.ifError
+      );
     });
   });
 

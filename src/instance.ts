@@ -59,9 +59,9 @@ import {
 } from './table';
 import {CallOptions, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
-import {Backup, Bigtable} from '.';
+import {Bigtable} from '.';
 import {google} from '../protos/protos';
-import {RestoreTableCallback, RestoreTableResponse} from './backup';
+import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -1131,12 +1131,11 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * to track the progress of the operation, and to cancel it.
    *
    * @param {CreateTableFromBackupConfig} config Configuration object.
-   * @param {string} config.tableId The id of the table to create and restore
-   *     to.
    * @param {Backup | string} config.backup The name of the backup from which to
    *     restore of the form
    *     `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
    *     or a Backup instance.
+   * @param {string} config.table The id of the table to create and restore to.
    * @param {CallOptions} [config.gaxOptions] Request configuration options,
    *     outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
@@ -1148,7 +1147,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     callback?: RestoreTableCallback
   ): void | Promise<RestoreTableResponse> {
     if (!config.table) {
-      throw new Error('An table id is required to restore from a backup.');
+      throw new Error('A table id is required to restore from a backup.');
     }
 
     let backup: Backup;
