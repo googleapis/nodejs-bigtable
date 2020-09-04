@@ -33,6 +33,7 @@ import {
 } from './backup';
 import {Transform} from 'stream';
 import {Table} from './table';
+import extend = require('extend');
 
 export interface GenericCallback<T> {
   (err?: ServiceError | null, apiResponse?: T | null): void;
@@ -447,10 +448,12 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
     cb?: GetBackupsCallback
   ): void | Promise<GetBackupsResponse> {
-    const options =
+    let options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    options = extend(true, {}, options);
 
     const gaxOpts = options.gaxOptions || {};
 
@@ -486,12 +489,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
         if (resp[0]) {
           backups = resp[0].map((backup: IBackup) => {
-            const backupInstance = this.backup(backup.name!.split('/').pop()!);
+            const backupInstance = this.backup(backup.name!);
             backupInstance.metadata = backup;
             return backupInstance;
           });
         }
-        const nextQuery = resp[1]! ? Object.assign({}, options, resp[1]) : null;
+
+        const nextQuery = resp[1]! ? Object.assign(options, resp[1]) : null;
         const apiResp: google.bigtable.admin.v2.IListBackupsResponse = resp[2];
 
         callback(err, backups, nextQuery, apiResp);
@@ -532,7 +536,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *   });
    */
   getBackupsStream(options: GetBackupsOptions): NodeJS.ReadableStream {
-    const {gaxOptions, ...restOptions} = options;
+    const {gaxOptions, ...restOptions} = options || {};
     const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
       ...restOptions,
       parent: this.name,

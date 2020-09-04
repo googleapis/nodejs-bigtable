@@ -16,16 +16,27 @@ import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
 import {before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
+import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
-  promisifyAll(klass: Function) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  promisifyAll(klass: Function, options: any) {
     if (klass.name === 'Cluster') {
       promisified = true;
+      assert.deepStrictEqual(options.exclude, ['backup']);
     }
   },
 });
+
+class FakeBackup {
+  calledWith_: Array<{}>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(...args: any[]) {
+    this.calledWith_ = Array.from(args);
+  }
+}
 
 describe('Bigtable/Cluster', () => {
   const CLUSTER_ID = 'my-cluster';
@@ -45,6 +56,7 @@ describe('Bigtable/Cluster', () => {
   before(() => {
     Cluster = proxyquire('../src/cluster.js', {
       '@google-cloud/promisify': fakePromisify,
+      './backup.js': {Backup: FakeBackup},
     }).Cluster;
   });
 
@@ -140,6 +152,18 @@ describe('Bigtable/Cluster', () => {
     });
   });
 
+  describe('backup', () => {
+    it('should return a Backup object', () => {
+      const backupId = 'backup-id';
+      const backup = cluster.backup(backupId);
+      assert(backup instanceof FakeBackup);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const args = (backup as any).calledWith_;
+      assert.strictEqual(args[0], cluster);
+      assert.strictEqual(args[1], backupId);
+    });
+  });
+
   describe('create', () => {
     it('should call createCluster from instance', done => {
       const options = {};
@@ -168,6 +192,204 @@ describe('Bigtable/Cluster', () => {
       };
 
       cluster.create(done);
+    });
+  });
+
+  describe('createBackup', () => {
+    it('should throw if backup id not provided', () => {
+      assert.throws(() => {
+        cluster.createBackup();
+      }, /An id is required to create a backup\./);
+    });
+
+    it('should throw if config is not provided', () => {
+      assert.throws(() => {
+        cluster.createBackup('id');
+      }, /A configuration object is required\./);
+    });
+
+    it('should throw if a source table is not provided', () => {
+      assert.throws(() => {
+        cluster.createBackup('id', {});
+      }, /A source table is required to backup\./);
+    });
+
+    it('should accept table as a string', done => {
+      const table = 'table-name';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.reqOpts.backup.sourceTable, table);
+        done();
+      };
+
+      cluster.createBackup(
+        'id',
+        {
+          table,
+        },
+        assert.ifError
+      );
+    });
+
+    it('should accept table as a Table object', done => {
+      const table = {
+        name: 'table-name',
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.reqOpts.backup.sourceTable, table.name);
+        done();
+      };
+
+      cluster.createBackup(
+        'id',
+        {
+          table,
+        },
+        assert.ifError
+      );
+    });
+
+    it('should not include table in request options', done => {
+      const table = 'table-name';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(typeof config.reqOpts.backup.table, 'undefined');
+        done();
+      };
+
+      cluster.createBackup(
+        'id',
+        {
+          table,
+        },
+        assert.ifError
+      );
+    });
+
+    it('should send correct request', done => {
+      const backupId = 'backup-id';
+      const table = 'table-name';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'createBackup');
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: cluster.name,
+          backupId,
+          backup: {
+            sourceTable: table,
+            configProperty: true,
+          },
+        });
+        assert.strictEqual(typeof config.gaxOpts, 'undefined');
+        done();
+      };
+
+      cluster.createBackup(
+        backupId,
+        {
+          table,
+          configProperty: true,
+        },
+        assert.ifError
+      );
+    });
+
+    it('should accept gaxOptions', done => {
+      const table = 'table-name';
+      const gaxOptions = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+
+      cluster.createBackup(
+        'id',
+        {
+          table,
+          gaxOptions,
+        },
+        assert.ifError
+      );
+    });
+
+    it('should not include gaxOptions in request options', done => {
+      const table = 'table-name';
+      const gaxOptions = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(typeof config.reqOpts.gaxOptions, 'undefined');
+        done();
+      };
+
+      cluster.createBackup(
+        'id',
+        {
+          table,
+          gaxOptions,
+        },
+        assert.ifError
+      );
+    });
+
+    it('should execute callback with error and original args', done => {
+      const error = new Error('Error.');
+      const args = [{}, {}, {}];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any, callback: Function) => {
+        callback(error, ...args);
+      };
+
+      cluster.createBackup(
+        'id',
+        {
+          table: 'table-name',
+        },
+        (err: Error, backup: {}, ..._args: Array<{}>) => {
+          assert.strictEqual(err, error);
+          assert.strictEqual(backup, undefined);
+          assert.deepStrictEqual(Array.from(_args), args);
+          done();
+        }
+      );
+    });
+
+    it('should execute callback with Backup and original args', done => {
+      const id = 'backup-id';
+      const backupInstance = {};
+      const args = [{}, {}, {}];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any, callback: Function) => {
+        callback(null, ...args);
+      };
+
+      cluster.backup = (_id: string) => {
+        assert.strictEqual(_id, id);
+        return backupInstance;
+      };
+
+      cluster.createBackup(
+        id,
+        {
+          table: 'table-name',
+        },
+        (err: Error, backup: {}, ..._args: Array<{}>) => {
+          assert.ifError(err);
+          assert.strictEqual(backup, backupInstance);
+          assert.deepStrictEqual(Array.from(_args), args);
+          done();
+        }
+      );
     });
   });
 
@@ -310,6 +532,270 @@ describe('Bigtable/Cluster', () => {
         assert.strictEqual(metadata_, metadata);
         done();
       });
+    });
+  });
+
+  describe('getBackups', () => {
+    it('should send the correct request', done => {
+      const options = {a: 'b'};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'listBackups');
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: cluster.name,
+          pageSize: undefined,
+          pageToken: undefined,
+          ...options,
+        });
+        assert.deepStrictEqual(config.gaxOpts, {});
+
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
+    it('should locate pagination settings from gaxOptions', done => {
+      const options = {
+        gaxOptions: {
+          pageSize: 'size',
+          pageToken: 'token',
+        },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(
+          config.reqOpts.pageSize,
+          options.gaxOptions.pageSize
+        );
+        assert.strictEqual(
+          config.reqOpts.pageToken,
+          options.gaxOptions.pageToken
+        );
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
+    it('should remove extraneous pagination settings from request', done => {
+      const options = {
+        gaxOptions: {
+          pageSize: 'size',
+          pageToken: 'token',
+        },
+        autoPaginate: true,
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(typeof config.gaxOpts.pageSize, 'undefined');
+        assert.strictEqual(typeof config.gaxOpts.pageToken, 'undefined');
+        assert.strictEqual(typeof config.reqOpts.autoPaginate, 'undefined');
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
+    it('should accept gaxOptions', done => {
+      const options = {
+        gaxOptions: {a: 'b'},
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(typeof config.reqOpts.gaxOptions, 'undefined');
+        assert.deepStrictEqual(config.gaxOpts, options.gaxOptions);
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
+    it('should not send gaxOptions as request options', done => {
+      const options = {
+        gaxOptions: {a: 'b'},
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert(Object.keys(options.gaxOptions).every(k => !config.reqOpts[k]));
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
+    it('should set autoPaginate from options', done => {
+      const options = {
+        autoPaginate: true,
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts.autoPaginate, options.autoPaginate);
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
+    it('should prefer autoPaginate from gaxOpts', done => {
+      const options = {
+        autoPaginate: false,
+        gaxOptions: {
+          autoPaginate: true,
+        },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts.autoPaginate, true);
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
+    it('should execute callback with error and correct response arguments', done => {
+      const error = new Error('Error.');
+      const apiResponse = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any, callback: Function) => {
+        callback(error, [], null, apiResponse);
+      };
+
+      cluster.getBackups(
+        (err: Error, backups: [], nextQuery: {}, apiResp: {}) => {
+          assert.strictEqual(err, error);
+          assert.deepStrictEqual(backups, []);
+          assert.strictEqual(nextQuery, null);
+          assert.strictEqual(apiResp, apiResponse);
+          done();
+        }
+      );
+    });
+
+    it('should execute callback with Backup instances', done => {
+      const rawBackup = {name: 'name', a: 'b'};
+      const backupInstance = {};
+
+      cluster.backup = (id: string) => {
+        assert.strictEqual(id, rawBackup.name);
+        return backupInstance;
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any, callback: Function) => {
+        callback(null, [rawBackup]);
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.getBackups((err: Error, backups: any[]) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(backups, [backupInstance]);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        assert.strictEqual((backups[0] as any)!.metadata, rawBackup);
+        done();
+      });
+    });
+
+    it('should execute callback with prepared nextQuery', done => {
+      const options = {pageToken: '1'};
+      const nextQuery = {pageToken: '2'};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any, callback: Function) => {
+        callback(null, [], nextQuery);
+      };
+
+      cluster.getBackups(options, (err: Error, backups: [], _nextQuery: {}) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(_nextQuery, nextQuery);
+        done();
+      });
+    });
+  });
+
+  describe('getBackupsStream', () => {
+    it('should make correct request', done => {
+      const options = {a: 'b'};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'listBackupsStream');
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: cluster.name,
+          ...options,
+        });
+        assert.strictEqual(typeof config.gaxOpts, 'undefined');
+        setImmediate(done);
+        return new PassThrough();
+      };
+
+      cluster.getBackupsStream(options);
+    });
+
+    it('should accept gaxOptions', done => {
+      const options = {gaxOptions: {}};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts, options.gaxOptions);
+        setImmediate(done);
+        return new PassThrough();
+      };
+
+      cluster.getBackupsStream(options);
+    });
+
+    it('should not include gaxOptions in reqOpts', done => {
+      const options = {gaxOptions: {a: 'b'}};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert(Object.keys(options.gaxOptions).every(k => !config.reqOpts[k]));
+        setImmediate(done);
+        return new PassThrough();
+      };
+
+      cluster.getBackupsStream(options);
+    });
+
+    it('should transform response backups into Backup objects', done => {
+      const rawBackup = {name: 'name', a: 'b'};
+      const backupInstance = {};
+      const requestStream = new Readable({
+        objectMode: true,
+        read() {
+          this.push(rawBackup);
+          this.push(null);
+        },
+      });
+
+      cluster.backup = (id: string) => {
+        assert.strictEqual(id, rawBackup.name);
+        return backupInstance;
+      };
+
+      cluster.bigtable.request = () => requestStream;
+
+      cluster
+        .getBackupsStream()
+        .on('error', done)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .on('data', (backup: any) => {
+          assert.strictEqual(backup, backupInstance);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          assert.strictEqual((backup as any).metadata, rawBackup);
+          done();
+        });
     });
   });
 
