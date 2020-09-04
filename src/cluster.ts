@@ -23,8 +23,6 @@ import {Bigtable} from '.';
 import {Instance} from './instance';
 import {
   Backup,
-  CreateBackupCallback,
-  CreateBackupResponse,
   GetBackupsCallback,
   GetBackupsOptions,
   GetBackupsResponse,
@@ -90,6 +88,14 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
   table: string | Table;
   gaxOptions?: CallOptions;
 }
+
+export type CreateBackupCallback = (
+  err: ServiceError | Error | null,
+  backup?: Backup,
+  operation?: Operation,
+  apiResponse?: IOperation
+) => void;
+export type CreateBackupResponse = [Backup, Operation, IOperation];
 
 export interface CreateClusterOptions extends BasicClusterConfig {
   gaxOptions?: CallOptions;

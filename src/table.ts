@@ -38,11 +38,8 @@ import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
-import {
-  CreateBackupCallback,
-  CreateBackupResponse,
-  ModifiableBackupFields,
-} from './backup';
+import {ModifiableBackupFields} from './backup';
+import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 

@@ -17,7 +17,12 @@ import {promisifyAll} from '@google-cloud/promisify';
 import snakeCase = require('lodash.snakecase');
 import {google} from '../protos/protos';
 import {Bigtable, Cluster, Table} from './';
-import {CreateBackupConfig, IOperation} from './cluster';
+import {
+  CreateBackupConfig,
+  CreateBackupCallback,
+  CreateBackupResponse,
+  IOperation,
+} from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 
 type IEmpty = google.protobuf.IEmpty;
@@ -48,6 +53,12 @@ export type DeleteBackupCallback = (
 ) => void;
 export type DeleteBackupResponse = [IEmpty];
 
+export type BackupExistsCallback = (
+  err: ServiceError | null,
+  exists?: boolean
+) => void;
+export type BackupExistsResponse = [boolean];
+
 export type GetBackupCallback = GenericBackupCallback<IBackup>;
 export type GetBackupResponse = [Backup, IBackup];
 
@@ -63,14 +74,6 @@ export type BackupSetMetadataCallback = (
   resp: IBackup
 ) => void;
 export type BackupSetMetadataResponse = [IBackup, IBackup];
-
-export type CreateBackupCallback = (
-  err: ServiceError | Error | null,
-  backup?: Backup,
-  operation?: Operation,
-  apiResponse?: IOperation
-) => void;
-export type CreateBackupResponse = [Backup, Operation, IOperation];
 
 export type RestoreTableCallback = (
   err: ServiceError | null,
@@ -147,7 +150,7 @@ export class Backup {
    *  `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}`.
    */
   name: string;
-  metadata: IBackup;
+  metadata?: IBackup;
 
   /**
    * @param {Cluster} cluster
@@ -156,7 +159,6 @@ export class Backup {
   constructor(cluster: Cluster, id: string) {
     this.bigtable = cluster.bigtable;
     this.cluster = cluster;
-    this.metadata = {};
 
     if (id.includes('/')) {
       if (id.startsWith(cluster.name)) {
@@ -170,6 +172,22 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       this.name = `${this.cluster.name}/backups/${id}`;
       this.id = id;
     }
+  }
+
+  /**
+   * A Date-compatible PreciseDate representing the time that the backup was
+   * finished.
+   * @readonly
+   * @return {PreciseDate}
+   */
+  get endDate(): PreciseDate {
+    if (!this.metadata || !this.metadata.endTime) {
+      throw new TypeError('An endTime is required to convert to Date.');
+    }
+    return new PreciseDate({
+      seconds: this.metadata.endTime.seconds!,
+      nanos: this.metadata.endTime.nanos!,
+    });
   }
 
   /**
@@ -201,22 +219,6 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     return new PreciseDate({
       seconds: this.metadata.startTime.seconds!,
       nanos: this.metadata.startTime.nanos!,
-    });
-  }
-
-  /**
-   * A Date-compatible PreciseDate representing the time that the backup was
-   * finished.
-   * @readonly
-   * @return {PreciseDate}
-   */
-  get endDate(): PreciseDate {
-    if (!this.metadata || !this.metadata.endTime) {
-      throw new TypeError('An endTime is required to convert to Date.');
-    }
-    return new PreciseDate({
-      seconds: this.metadata.endTime.seconds!,
-      nanos: this.metadata.endTime.nanos!,
     });
   }
 
@@ -283,6 +285,41 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       },
       callback
     );
+  }
+
+  exists(gaxOptions?: CallOptions): Promise<BackupExistsResponse>;
+  exists(gaxOptions: CallOptions, callback: BackupExistsCallback): void;
+  exists(callback: BackupExistsCallback): void;
+  /**
+   * Check if a backup exists.
+   *
+   * @param {object} [gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this
+   *     request.
+   * @param {boolean} callback.exists Whether the backup exists or not.
+   */
+  exists(
+    optionsOrCallback?: CallOptions | BackupExistsCallback,
+    cb?: BackupExistsCallback
+  ): void | Promise<BackupExistsResponse> {
+    const gaxOptions =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+
+    this.getMetadata(gaxOptions, err => {
+      if (err) {
+        if (err.code === 5) {
+          callback(null, false);
+          return;
+        }
+        callback(err);
+        return;
+      }
+      callback(null, true);
+    });
   }
 
   get(gaxOptions?: CallOptions): Promise<GetBackupResponse>;
@@ -485,7 +522,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
           this.metadata = resp;
         }
 
-        callback(err, this.metadata, resp!);
+        callback(err, this.metadata!, resp!);
       }
     );
   }
@@ -496,7 +533,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
-promisifyAll(Backup, {exclude: ['expireDate', 'startDate', 'endDate']});
+promisifyAll(Backup, {exclude: ['endDate', 'expireDate', 'startDate']});
 
 /**
  * Reference to the {@link Backup} class.

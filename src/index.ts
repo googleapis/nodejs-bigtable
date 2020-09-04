@@ -962,8 +962,6 @@ export {
 export {
   Backup,
   BackupTimestamp,
-  CreateBackupCallback,
-  CreateBackupResponse,
   DeleteBackupCallback,
   DeleteBackupResponse,
   GenericBackupCallback,
@@ -996,6 +994,8 @@ export {
   IOperation,
   ApiResponse,
   BooleanResponse,
+  CreateBackupCallback,
+  CreateBackupResponse,
   CreateClusterCallback,
   CreateClusterOptions,
   CreateClusterResponse,
