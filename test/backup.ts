@@ -391,7 +391,7 @@ describe('Bigtable/Backup', () => {
       const gaxOptions = {};
 
       backup.bigtable.request = (config: {gaxOpts: {}}) => {
-        assert.deepStrictEqual(config.gaxOpts, gaxOptions);
+        assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
 
