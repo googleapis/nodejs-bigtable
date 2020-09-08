@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {PreciseDate} from '@google-cloud/precise-date';
 import {promisifyAll} from '@google-cloud/promisify';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 
@@ -21,6 +22,7 @@ const pumpify = require('pumpify');
 import {google} from '../protos/protos';
 import {Bigtable} from '.';
 import {Instance} from './instance';
+
 import {
   Backup,
   GetBackupsCallback,
@@ -293,6 +295,12 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       },
     };
 
+    if (reqOpts.backup.expireTime instanceof Date) {
+      reqOpts.backup.expireTime = new PreciseDate(
+        reqOpts.backup.expireTime
+      ).toStruct();
+    }
+
     delete reqOpts.backup.table;
     delete reqOpts.backup.gaxOptions;
 
@@ -495,7 +503,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
         if (resp[0]) {
           backups = resp[0].map((backup: IBackup) => {
-            const backupInstance = this.backup(backup.name!);
+            const backupInstance = this.backup(backup.name!.split('/').pop()!);
             backupInstance.metadata = backup;
             return backupInstance;
           });
@@ -541,7 +549,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     this.end();
    *   });
    */
-  getBackupsStream(options: GetBackupsOptions): NodeJS.ReadableStream {
+  getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
     const {gaxOptions, ...restOptions} = options || {};
     const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
       ...restOptions,
@@ -558,7 +566,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       new Transform({
         objectMode: true,
         transform: (backup: IBackup, enc: string, cb: Function) => {
-          const backupInstance = this.backup(backup.name!);
+          const backupInstance = this.backup(backup.name!.split('/').pop()!);
           backupInstance.metadata = backup;
           cb(null, backupInstance);
         },

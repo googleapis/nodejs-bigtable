@@ -708,11 +708,11 @@ describe('Bigtable/Cluster', () => {
     });
 
     it('should execute callback with Backup instances', done => {
-      const rawBackup = {name: 'name', a: 'b'};
+      const rawBackup = {name: 'long/formatted/name', a: 'b'};
       const backupInstance = {};
 
       cluster.backup = (id: string) => {
-        assert.strictEqual(id, rawBackup.name);
+        assert.strictEqual(id, rawBackup.name.split('/').pop());
         return backupInstance;
       };
 
@@ -795,7 +795,7 @@ describe('Bigtable/Cluster', () => {
     });
 
     it('should transform response backups into Backup objects', done => {
-      const rawBackup = {name: 'name', a: 'b'};
+      const rawBackup = {name: 'long/formatted/name', a: 'b'};
       const backupInstance = {};
       const requestStream = new Readable({
         objectMode: true,
@@ -806,7 +806,7 @@ describe('Bigtable/Cluster', () => {
       });
 
       cluster.backup = (id: string) => {
-        assert.strictEqual(id, rawBackup.name);
+        assert.strictEqual(id, rawBackup.name.split('/').pop());
         return backupInstance;
       };
 
