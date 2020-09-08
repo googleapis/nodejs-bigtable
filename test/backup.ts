@@ -60,6 +60,9 @@ describe('Bigtable/Backup', () => {
     CLUSTER = {
       bigtable: {} as Bigtable,
       name: 'a/b/c/d',
+      instance: {
+        name: 'instance-name',
+      },
     } as clusterTypes.Cluster;
     BACKUP_NAME = CLUSTER.name + '/backups/' + BACKUP_ID;
     backup = new Backup(CLUSTER, BACKUP_ID);
@@ -375,7 +378,7 @@ describe('Bigtable/Backup', () => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'restoreTable');
         assert.deepStrictEqual(config.reqOpts, {
-          parent: backup.cluster.name,
+          parent: backup.cluster.instance.name,
           tableId,
           backup: backup.name,
         });

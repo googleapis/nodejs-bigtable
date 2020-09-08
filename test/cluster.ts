@@ -593,14 +593,8 @@ describe('Bigtable/Cluster', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
-        assert.strictEqual(
-          config.reqOpts.pageSize,
-          options.pageSize
-        );
-        assert.strictEqual(
-          config.reqOpts.pageToken,
-          options.pageToken
-        );
+        assert.strictEqual(config.reqOpts.pageSize, options.pageSize);
+        assert.strictEqual(config.reqOpts.pageToken, options.pageToken);
         done();
       };
 

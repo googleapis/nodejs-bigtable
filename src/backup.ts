@@ -446,7 +446,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         client: 'BigtableTableAdminClient',
         method: 'restoreTable',
         reqOpts: {
-          parent: this.cluster.name,
+          parent: this.cluster.instance.name,
           tableId,
           backup: this.name,
         },
