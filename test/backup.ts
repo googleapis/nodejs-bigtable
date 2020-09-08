@@ -46,7 +46,8 @@ describe.only('Bigtable/Backup', () => {
   let BACKUP_NAME: string;
 
   let Backup: typeof backupTypes.Backup;
-  let backup: backupTypes.Backup;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let backup: any;
 
   before(() => {
     Backup = proxyquire('../src/backup.js', {
@@ -182,8 +183,7 @@ describe.only('Bigtable/Backup', () => {
     it('should call createBackup from cluster', done => {
       const config = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup.cluster.createBackup as any) = (
+      backup.cluster.createBackup = (
         id: string,
         _config: {},
         callback: Function
@@ -193,15 +193,14 @@ describe.only('Bigtable/Backup', () => {
         callback(); // done()
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.create(config as any, done);
+      backup.create(config, done);
     });
   });
 
   describe('delete', () => {
     it('should make the correct request', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any, callback: Function) => {
+      backup.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'deleteBackup');
         assert.deepStrictEqual(config.reqOpts, {
@@ -217,8 +216,7 @@ describe.only('Bigtable/Backup', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any) => {
+      backup.bigtable.request = (config: {gaxOpts: {}}) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -229,8 +227,7 @@ describe.only('Bigtable/Backup', () => {
 
   describe('exists', () => {
     it('should not require gaxOptions', done => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (options: any) => {
+      backup.getMetadata = (options: {}) => {
         assert.deepStrictEqual(options, {});
         done();
       };
@@ -239,8 +236,7 @@ describe.only('Bigtable/Backup', () => {
 
     it('should pass gaxOptions to getMetadata', done => {
       const gaxOptions = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (options: any) => {
+      backup.getMetadata = (options: {}) => {
         assert.strictEqual(options, gaxOptions);
         done();
       };
@@ -250,12 +246,10 @@ describe.only('Bigtable/Backup', () => {
     it('should return false if error code is 5', done => {
       const error = new Error('Error.') as ServiceError;
       error.code = 5;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (gaxOptions: {}, callback: Function) => {
+      backup.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.exists((err: any, exists: any) => {
+      backup.exists((err: Error | null, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, false);
         done();
@@ -266,8 +260,7 @@ describe.only('Bigtable/Backup', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const error: any = new Error('Error.');
       error.code = 'NOT-5';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (gaxOptions: {}, callback: Function) => {
+      backup.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -278,12 +271,10 @@ describe.only('Bigtable/Backup', () => {
     });
 
     it('should return true if no error', done => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (gaxOptions: {}, callback: Function) => {
+      backup.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(null, {});
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.exists((err: any, exists: any) => {
+      backup.exists((err: Error | null, exists: boolean) => {
         assert.ifError(err);
         assert.strictEqual(exists, true);
         done();
@@ -294,8 +285,7 @@ describe.only('Bigtable/Backup', () => {
   describe('get', () => {
     it('should call getMetadata', done => {
       const gaxOptions = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (options: {}) => {
+      backup.getMetadata = (options: {}) => {
         assert.strictEqual(options, gaxOptions);
         done();
       };
@@ -303,8 +293,7 @@ describe.only('Bigtable/Backup', () => {
     });
 
     it('should not require an options object', done => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (options: {}) => {
+      backup.getMetadata = (options: {}) => {
         assert.deepStrictEqual(options, {});
         done();
       };
@@ -313,12 +302,10 @@ describe.only('Bigtable/Backup', () => {
 
     it('should return an error from getMetadata', done => {
       const error = new Error('Error.');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (gaxOptions: {}, callback: Function) => {
+      backup.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(error);
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.get((err: any) => {
+      backup.get((err: Error | null) => {
         assert.strictEqual(err, error);
         done();
       });
@@ -326,12 +313,10 @@ describe.only('Bigtable/Backup', () => {
 
     it('should return self and API response', done => {
       const apiResponse = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).getMetadata = (gaxOptions: {}, callback: Function) => {
+      backup.getMetadata = (gaxOptions: {}, callback: Function) => {
         callback(null, apiResponse);
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.get((err: any, _backup: any, _apiResponse: any) => {
+      backup.get((err: Error | null, _backup: {}, _apiResponse: {}) => {
         assert.ifError(err);
         assert.strictEqual(_backup, backup);
         assert.strictEqual(_apiResponse, apiResponse);
@@ -343,7 +328,7 @@ describe.only('Bigtable/Backup', () => {
   describe('getMetadata', () => {
     it('should make the correct request', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any) => {
+      backup.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'getBackup');
         assert.deepStrictEqual(config.reqOpts, {
@@ -359,8 +344,7 @@ describe.only('Bigtable/Backup', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any) => {
+      backup.bigtable.request = (config: {gaxOpts: {}}) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -370,12 +354,10 @@ describe.only('Bigtable/Backup', () => {
 
     it('should update the metadata', done => {
       const response = {};
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: {}, callback: Function) => {
+      backup.bigtable.request = (config: {}, callback: Function) => {
         callback(null, response);
       };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.getMetadata((err: any, metadata: any) => {
+      backup.getMetadata((err: Error | null, metadata: {}) => {
         assert.ifError(err);
         assert.strictEqual(metadata, response);
         assert.strictEqual(backup.metadata, response);
@@ -389,7 +371,7 @@ describe.only('Bigtable/Backup', () => {
       const tableId = 'table-id';
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any) => {
+      backup.bigtable.request = (config: any) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'restoreTable');
         assert.deepStrictEqual(config.reqOpts, {
@@ -408,8 +390,7 @@ describe.only('Bigtable/Backup', () => {
       const tableId = 'table-id';
       const gaxOptions = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any) => {
+      backup.bigtable.request = (config: {gaxOpts: {}}) => {
         assert.deepStrictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -422,18 +403,20 @@ describe.only('Bigtable/Backup', () => {
       const error = new Error('Error.');
       const args = [{a: 'b'}, {c: 'd'}, {e: 'f'}];
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any, callback: Function) => {
+      backup.bigtable.request = (config: {}, callback: Function) => {
         callback(error, ...args);
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.restore(tableId, (err, table, ..._args: any[]) => {
-        assert.strictEqual(err, error);
-        assert.strictEqual(table, undefined);
-        assert.deepStrictEqual(_args, args);
-        done();
-      });
+      backup.restore(
+        tableId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (err: Error | null, table: {}, ..._args: any[]) => {
+          assert.strictEqual(err, error);
+          assert.strictEqual(table, undefined);
+          assert.deepStrictEqual(_args, args);
+          done();
+        }
+      );
     });
 
     it('should execute callback with created Table', done => {
@@ -441,26 +424,27 @@ describe.only('Bigtable/Backup', () => {
       const args = [{a: 'b'}, {c: 'd'}, {e: 'f'}];
       const tableInstance = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).cluster.instance = {
+      backup.cluster.instance = {
         table: (_tableId: string) => {
           assert.strictEqual(_tableId, tableId);
           return tableInstance;
         },
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any, callback: Function) => {
+      backup.bigtable.request = (config: {}, callback: Function) => {
         callback(null, ...args);
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.restore(tableId, (err, table, ..._args: any[]) => {
-        assert.ifError(err);
-        assert.strictEqual(table, tableInstance);
-        assert.deepStrictEqual(_args, args);
-        done();
-      });
+      backup.restore(
+        tableId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (err: Error | null, table: {}, ..._args: any[]) => {
+          assert.ifError(err);
+          assert.strictEqual(table, tableInstance);
+          assert.deepStrictEqual(_args, args);
+          done();
+        }
+      );
     });
   });
 
@@ -471,7 +455,7 @@ describe.only('Bigtable/Backup', () => {
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any, callback: Function) => {
+      backup.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'updateBackup');
         assert.deepStrictEqual(config.reqOpts, {
@@ -487,16 +471,14 @@ describe.only('Bigtable/Backup', () => {
         callback(); // done()
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      backup.setMetadata(metadata as any, done);
+      backup.setMetadata(metadata, done);
     });
 
     it('should accept gaxOptions', done => {
       const metadata = {};
       const gaxOptions = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any) => {
+      backup.bigtable.request = (config: {gaxOpts: {}}) => {
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -513,7 +495,7 @@ describe.only('Bigtable/Backup', () => {
       ).toStruct();
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: any) => {
+      backup.bigtable.request = (config: any) => {
         assert.deepStrictEqual(
           config.reqOpts.backup.expireTime,
           expectedExpireTime
@@ -528,16 +510,13 @@ describe.only('Bigtable/Backup', () => {
       const metadata = {};
       const response = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (backup as any).bigtable.request = (config: {}, callback: Function) => {
+      backup.bigtable.request = (config: {}, callback: Function) => {
         callback(null, response);
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       backup.setMetadata(
         metadata,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (err: any, metadata: any, apiResponse: any) => {
+        (err: Error | null, metadata: {}, apiResponse: {}) => {
           assert.ifError(err);
           assert.strictEqual(metadata, response);
           assert.strictEqual(backup.metadata, response);
