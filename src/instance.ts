@@ -809,7 +809,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
   getBackups(callback: GetBackupsCallback): void;
   /**
-   * Get Cloud Bigtable Backup instances within this cluster. This returns both
+   * Get Cloud Bigtable Backup instances within this instance. This returns both
    * completed and pending backups.
    *
    * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
@@ -827,12 +827,30 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    this.cluster('-').getBackups(options, callback);
+    this.cluster('-').getBackups(options, (err, backups, ...args) => {
+      if (err) {
+        callback(err, backups, ...args);
+        return;
+      }
+
+      const backupsFromCorrectCluster = backups?.map(backup => {
+        const matchedClusterId = backup.metadata?.name?.match(
+          /clusters\/([^/]+)/
+        )![1];
+        const backupInstance = this.cluster(matchedClusterId!).backup(
+          backup.id
+        );
+        backupInstance.metadata = backup.metadata;
+        return backupInstance;
+      });
+
+      callback(null, backupsFromCorrectCluster, ...args);
+    });
   }
 
   /**
-   * Lists Cloud Bigtable backups within this instance. Provides both
-   * completed and pending backups as a readable object stream.
+   * Get Cloud Bigtable Backup instances within this instance. This returns both
+   * completed and pending backups as a readable stream.
    *
    * @param {GetBackupsOptions} [options] Configuration object. See
    *     {@link Instance#getBackups} for a complete list of options.
@@ -862,7 +880,23 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *   });
    */
   getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
-    return this.cluster('-').getBackupsStream(options);
+    return this.cluster('-')
+      .getBackupsStream(options)
+      .pipe(
+        new Transform({
+          objectMode: true,
+          transform: (backup, enc, next) => {
+            const matchedClusterId = backup.metadata?.name?.match(
+              /clusters\/([^/]+)/
+            )![1];
+            const backupInstance = this.cluster(matchedClusterId!).backup(
+              backup.id
+            );
+            backupInstance.metadata = backup.metadata;
+            next(null, backupInstance);
+          },
+        })
+      );
   }
 
   getClusters(options?: CallOptions): Promise<GetClustersResponse>;

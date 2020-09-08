@@ -37,26 +37,24 @@ describe('Bigtable', () => {
   const CLUSTER_ID = generateId('cluster');
 
   async function reapBackups(instance: Instance) {
-    const [clusters] = await instance.getClusters();
+    const [backups] = await instance.getBackups();
     return Promise.all(
-      clusters.map(async cluster => {
-        const [backups] = await cluster.getBackups();
-        return Promise.all(
-          backups.map(backup => backup.delete({timeout: 50 * 1000}))
-        );
+      backups.map(backup => {
+        return backup.delete({timeout: 50 * 1000});
       })
     );
   }
 
   async function reapInstances() {
     const [instances] = await bigtable.getInstances();
-    const testInstances = instances.filter(i => i.id.match(PREFIX));
-    // .filter(i => {
-    //   const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
-    //   // Only delete stale resources.
-    //   const oneHourAgo = new Date(Date.now() - 3600000);
-    //   return !timeCreated || timeCreated <= oneHourAgo;
-    // });
+    const testInstances = instances
+      .filter(i => i.id.match(PREFIX))
+      .filter(i => {
+        const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
+        // Only delete stale resources.
+        const oneHourAgo = new Date(Date.now() - 3600000);
+        return !timeCreated || timeCreated <= oneHourAgo;
+      });
     const q = new Q({concurrency: 5});
     // need to delete backups first due to instance deletion precondition
     await Promise.all(testInstances.map(instance => reapBackups(instance)));
@@ -66,7 +64,7 @@ describe('Bigtable', () => {
           try {
             await instance.delete();
           } catch (e) {
-            console.log(`Error deleing instance: ${instance.id}`);
+            console.log(`Error deleting instance: ${instance.id}`);
           }
         });
       })
@@ -1174,15 +1172,7 @@ describe('Bigtable', () => {
         replaceProjectId(bigtable, backupNameFromCluster)
       );
 
-      const expectedTime = expireTime.toStruct();
-      assert.deepStrictEqual(
-        BACKUP.metadata?.expireTime?.seconds?.toString(),
-        expectedTime.seconds.toString()
-      );
-      assert.deepStrictEqual(
-        BACKUP.metadata?.expireTime?.nanos?.toString(),
-        expectedTime.nanos.toString()
-      );
+      assert.deepStrictEqual(BACKUP.expireDate, expireTime);
     });
 
     it('should create backup of a table (from table)', async () => {
@@ -1197,15 +1187,7 @@ describe('Bigtable', () => {
         replaceProjectId(bigtable, backupNameFromTable)
       );
 
-      const expectedTime = expireTime.toStruct();
-      assert.deepStrictEqual(
-        backup.metadata?.expireTime?.seconds?.toString(),
-        expectedTime.seconds.toString()
-      );
-      assert.deepStrictEqual(
-        backup.metadata?.expireTime?.nanos?.toString(),
-        expectedTime.nanos.toString()
-      );
+      assert.deepStrictEqual(backup.expireDate, expireTime);
     });
 
     it('should get a specific backup (cluster)', async () => {

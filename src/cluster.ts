@@ -504,6 +504,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
         if (resp[0]) {
           backups = resp[0].map((backup: IBackup) => {
             const backupInstance = this.backup(backup.name!.split('/').pop()!);
+            console.log('instance name when created', backupInstance.name);
             backupInstance.metadata = backup;
             return backupInstance;
           });
