@@ -30,6 +30,11 @@ import {
   GetAppProfilesResponse,
 } from './app-profile';
 import {
+  GetBackupsCallback,
+  GetBackupsOptions,
+  GetBackupsResponse,
+} from './backup';
+import {
   Cluster,
   CreateClusterOptions,
   CreateClusterCallback,
@@ -800,6 +805,66 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     ]);
   }
 
+  getBackups(options?: GetBackupsOptions): Promise<GetBackupsResponse>;
+  getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
+  getBackups(callback: GetBackupsCallback): void;
+  /**
+   * Get Cloud Bigtable Backup instances within this cluster. This returns both
+   * completed and pending backups.
+   *
+   * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
+   * @param {GetBackupsResponse} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Backup[]} callback.backups All matching Backup instances.
+   * @param {object} callback.apiResponse The full API response.
+   * @return {void | Promise<ListBackupsResponse>}
+   */
+  getBackups(
+    optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
+    cb?: GetBackupsCallback
+  ): void | Promise<GetBackupsResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    this.cluster('-').getBackups(options, callback);
+  }
+
+  /**
+   * Lists Cloud Bigtable backups within this instance. Provides both
+   * completed and pending backups as a readable object stream.
+   *
+   * @param {GetBackupsOptions} [options] Configuration object. See
+   *     {@link Instance#getBackups} for a complete list of options.
+   * @returns {ReadableStream<Backup>}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   *
+   * instance.getBackupsStream()
+   *   .on('error', console.error)
+   *   .on('data', function(backup) {
+   *     // backup is a Backup object.
+   *   })
+   *   .on('end', () => {
+   *     // All backups retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * instance.getBackupsStream()
+   *   .on('data', function(backup) {
+   *     this.end();
+   *   });
+   */
+  getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
+    return this.cluster('-').getBackupsStream(options);
+  }
+
   getClusters(options?: CallOptions): Promise<GetClustersResponse>;
   getClusters(options: CallOptions, callback: GetClustersCallback): void;
   getClusters(callback: GetClustersCallback): void;
@@ -1377,6 +1442,7 @@ promisifyAll(Instance, {
     'appProfile',
     'cluster',
     'table',
+    'getBackupsStream',
     'getTablesStream',
     'getAppProfilesStream',
   ],

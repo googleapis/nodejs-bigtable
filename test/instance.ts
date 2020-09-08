@@ -47,6 +47,7 @@ const fakePromisify = Object.assign({}, promisify, {
       'appProfile',
       'cluster',
       'table',
+      'getBackupsStream',
       'getTablesStream',
       'getAppProfilesStream',
     ]);
@@ -1097,6 +1098,46 @@ describe('Bigtable/Instance', () => {
           assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
           done();
         });
+    });
+  });
+
+  describe('getBackups', () => {
+    it('should correctly call Cluster#getBackups', done => {
+      const options = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance as any).cluster = (name: string) => {
+        assert.strictEqual(name, '-');
+        return {
+          getBackups: (_options: {}, callback: Function) => {
+            assert.strictEqual(_options, options);
+            callback(); // done()
+          },
+        };
+      };
+
+      instance.getBackups(options, done);
+    });
+  });
+
+  describe('getBackupsStream', () => {
+    it('should correctly call and return Cluster#getBackupsStream', () => {
+      const options = {};
+      const getBackupsStream = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance as any).cluster = (name: string) => {
+        assert.strictEqual(name, '-');
+        return {
+          getBackupsStream: (_options: {}) => {
+            assert.strictEqual(_options, options);
+            return getBackupsStream;
+          },
+        };
+      };
+
+      const returnedGetBackupsStream = instance.getBackupsStream(options);
+      assert.strictEqual(returnedGetBackupsStream, getBackupsStream);
     });
   });
 

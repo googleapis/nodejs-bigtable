@@ -1217,15 +1217,35 @@ describe('Bigtable', () => {
       assert.strictEqual(backup.metadata!.state, 'READY');
     });
 
-    it('should list backups (await)', async () => {
+    it('should get backups in an instance', async () => {
+      const [backups] = await INSTANCE.getBackups();
+      assert(Array.isArray(backups));
+      assert(backups.length > 0);
+      assert(backups.some(backup => backup.id === BACKUP.id));
+    });
+
+    it('should get backups in an instance as a stream', done => {
+      const backups: Backup[] = [];
+
+      INSTANCE.getBackupsStream()
+        .on('error', done)
+        .on('data', backup => {
+          backups.push(backup);
+        })
+        .on('end', () => {
+          assert(backups.length > 0);
+          done();
+        });
+    });
+
+    it('should get backups in a cluster', async () => {
       const [backups] = await CLUSTER.getBackups();
       assert(Array.isArray(backups));
       assert(backups.length > 0);
-      assert(backups.some(backup => backup.id === backupIdFromCluster));
-      assert(backups.some(backup => backup.id === backupIdFromTable));
+      assert(backups.some(backup => backup.id === BACKUP.id));
     });
 
-    it('should list backups (stream)', done => {
+    it('should get backups in a cluster as a stream', done => {
       const backups: Backup[] = [];
 
       CLUSTER.getBackupsStream()
