@@ -40,7 +40,7 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 
-describe.only('Bigtable/Backup', () => {
+describe('Bigtable/Backup', () => {
   const BACKUP_ID = 'my-backup';
   let CLUSTER: clusterTypes.Cluster;
   let BACKUP_NAME: string;

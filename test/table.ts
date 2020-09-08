@@ -302,7 +302,7 @@ describe('Bigtable/Table', () => {
     });
 
     it('should accept READY_OPTIMIZING status', done => {
-      const readyClusterId = 'cluster-id';
+      const readyClusterId = 'unique-cluster-id';
       const replicationStates = new Map();
       replicationStates.set('a', {replicationState: 'NOT_READY'});
       replicationStates.set(readyClusterId, {
@@ -316,7 +316,7 @@ describe('Bigtable/Table', () => {
       };
 
       table.getReplicationStates = (gaxOptions: {}, callback: Function) => {
-        callback(null, REPLICATION_STATES);
+        callback(null, replicationStates);
       };
 
       table.createBackup(BACKUP_ID, CONFIG, assert.ifError);
