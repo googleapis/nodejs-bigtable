@@ -581,6 +581,32 @@ describe('Bigtable/Cluster', () => {
       cluster.getBackups(options, assert.ifError);
     });
 
+    it('should prefer pageSize and pageToken from options over gaxOptions', done => {
+      const options = {
+        pageSize: 'size-good',
+        pageToken: 'token-good',
+        gaxOptions: {
+          pageSize: 'size-bad',
+          pageToken: 'token-bad',
+        },
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.strictEqual(
+          config.reqOpts.pageSize,
+          options.pageSize
+        );
+        assert.strictEqual(
+          config.reqOpts.pageToken,
+          options.pageToken
+        );
+        done();
+      };
+
+      cluster.getBackups(options, assert.ifError);
+    });
+
     it('should remove extraneous pagination settings from request', done => {
       const options = {
         gaxOptions: {
