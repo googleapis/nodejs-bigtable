@@ -18,6 +18,7 @@ import {before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
+import {PreciseDate} from '@google-cloud/precise-date';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -265,6 +266,28 @@ describe('Bigtable/Cluster', () => {
         'id',
         {
           table,
+        },
+        assert.ifError
+      );
+    });
+
+    it('should convert a Date expireTime to a struct', done => {
+      const expireTime = new Date();
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any) => {
+        assert.deepStrictEqual(
+          config.reqOpts.backup.expireTime,
+          new PreciseDate(expireTime).toStruct()
+        );
+        done();
+      };
+
+      cluster.createBackup(
+        'id',
+        {
+          table: 'table-id',
+          expireTime,
         },
         assert.ifError
       );
@@ -725,6 +748,36 @@ describe('Bigtable/Cluster', () => {
       });
     });
 
+    it('should create Backup from correct cluster when using - as an id', done => {
+      cluster.id = '-';
+
+      const clusterId = 'cluster-id';
+      const backupId = 'backup-id';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      cluster.bigtable.request = (config: any, callback: Function) => {
+        callback(null, [
+          {
+            name: `projects/project-id/clusters/${clusterId}/backups/${backupId}`,
+          },
+        ]);
+      };
+
+      cluster.instance.cluster = (id: string) => {
+        assert.strictEqual(id, clusterId);
+
+        return {
+          backup: (id: string) => {
+            assert.strictEqual(id, backupId);
+            setImmediate(done);
+            return {};
+          },
+        };
+      };
+
+      cluster.getBackups(assert.ifError);
+    });
+
     it('should execute callback with prepared nextQuery', done => {
       const options = {pageToken: '1'};
       const nextQuery = {pageToken: '2'};
@@ -816,6 +869,39 @@ describe('Bigtable/Cluster', () => {
           assert.strictEqual((backup as any).metadata, rawBackup);
           done();
         });
+    });
+
+    it('should create Backup from correct cluster when using - as an id', done => {
+      cluster.id = '-';
+
+      const clusterId = 'cluster-id';
+      const backupId = 'backup-id';
+
+      const requestStream = new Readable({
+        objectMode: true,
+        read() {
+          this.push({
+            name: `projects/project-id/clusters/${clusterId}/backups/${backupId}`,
+          });
+          this.push(null);
+        },
+      });
+
+      cluster.instance.cluster = (id: string) => {
+        assert.strictEqual(id, clusterId);
+
+        return {
+          backup: (id: string) => {
+            assert.strictEqual(id, backupId);
+            setImmediate(done);
+            return {};
+          },
+        };
+      };
+
+      cluster.bigtable.request = () => requestStream;
+
+      cluster.getBackupsStream().on('error', done);
     });
   });
 
