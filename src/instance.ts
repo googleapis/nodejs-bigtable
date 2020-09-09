@@ -827,25 +827,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    this.cluster('-').getBackups(options, (err, backups, ...args) => {
-      if (err) {
-        callback(err, backups, ...args);
-        return;
-      }
-
-      const backupsFromCorrectCluster = backups?.map(backup => {
-        const matchedClusterId = backup.metadata?.name?.match(
-          /clusters\/([^/]+)/
-        )![1];
-        const backupInstance = this.cluster(matchedClusterId!).backup(
-          backup.id
-        );
-        backupInstance.metadata = backup.metadata;
-        return backupInstance;
-      });
-
-      callback(null, backupsFromCorrectCluster, ...args);
-    });
+    this.cluster('-').getBackups(options, callback);
   }
 
   /**
@@ -880,23 +862,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *   });
    */
   getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
-    return this.cluster('-')
-      .getBackupsStream(options)
-      .pipe(
-        new Transform({
-          objectMode: true,
-          transform: (backup, enc, next) => {
-            const matchedClusterId = backup.metadata?.name?.match(
-              /clusters\/([^/]+)/
-            )![1];
-            const backupInstance = this.cluster(matchedClusterId!).backup(
-              backup.id
-            );
-            backupInstance.metadata = backup.metadata;
-            next(null, backupInstance);
-          },
-        })
-      );
+    return this.cluster('-').getBackupsStream(options);
   }
 
   getClusters(options?: CallOptions): Promise<GetClustersResponse>;

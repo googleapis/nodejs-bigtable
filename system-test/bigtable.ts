@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
@@ -1140,11 +1141,11 @@ describe('Bigtable', () => {
     // testing and the naming convention used here does not actually influence
     // the real functionality - it is just a way to keep things organized!
     const backupIdFromCluster = generateId('backup');
-    const backupNameFromCluster = `${CLUSTER.name}/backups/${backupIdFromCluster}`;
+    let backupNameFromCluster: string;
     const restoreTableIdFromCluster = generateId('table');
 
     const backupIdFromTable = generateId('backup');
-    const backupNameFromTable = `${CLUSTER.name}/backups/${backupIdFromTable}`;
+    let backupNameFromTable: string;
 
     // The minimum backup expiry time is 6 hours. The times here each have a 2
     // hour padding to tolerate latency and clock drift. Also, while the time
@@ -1162,15 +1163,20 @@ describe('Bigtable', () => {
       });
       BACKUP = backup;
       await op.promise();
+      backupNameFromCluster = replaceProjectIdToken(
+        `${CLUSTER.name}/backups/${backupIdFromCluster}`,
+        bigtable.projectId
+      );
+      backupNameFromTable = replaceProjectIdToken(
+        `${CLUSTER.name}/backups/${backupIdFromTable}`,
+        bigtable.projectId
+      );
     });
 
     it('should create backup of a table (from cluster)', async () => {
       await BACKUP.getMetadata();
 
-      assert.strictEqual(
-        BACKUP.metadata!.name,
-        replaceProjectId(bigtable, backupNameFromCluster)
-      );
+      assert.strictEqual(BACKUP.metadata!.name, backupNameFromCluster);
 
       assert.deepStrictEqual(BACKUP.expireDate, expireTime);
     });
@@ -1182,20 +1188,14 @@ describe('Bigtable', () => {
       await op.promise();
       await backup.getMetadata();
 
-      assert.strictEqual(
-        backup.metadata!.name,
-        replaceProjectId(bigtable, backupNameFromTable)
-      );
+      assert.strictEqual(backup.metadata!.name, backupNameFromTable);
 
       assert.deepStrictEqual(backup.expireDate, expireTime);
     });
 
     it('should get a specific backup (cluster)', async () => {
       const [backup] = await CLUSTER.backup(backupIdFromCluster).get();
-      assert.strictEqual(
-        backup.metadata!.name,
-        replaceProjectId(bigtable, backupNameFromCluster)
-      );
+      assert.strictEqual(backup.metadata!.name, backupNameFromCluster);
       assert.strictEqual(backup.metadata!.state, 'READY');
     });
 
@@ -1256,26 +1256,12 @@ describe('Bigtable', () => {
         expireTime: updateExpireTime,
       });
 
-      const name = replaceProjectId(bigtable, backupNameFromCluster);
-      assert.strictEqual(metadata.name, name);
-
-      const expectedTime = updateExpireTime.toStruct();
-      assert.deepStrictEqual(
-        metadata.expireTime?.seconds?.toString(),
-        expectedTime.seconds.toString()
-      );
-      assert.deepStrictEqual(
-        metadata.expireTime?.nanos?.toString(),
-        expectedTime.nanos.toString()
-      );
+      assert.strictEqual(metadata.name, backupNameFromCluster);
+      assert.deepStrictEqual(backup.expireDate, updateExpireTime);
     });
   });
 });
 
 function generateId(resourceType: string) {
   return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
-}
-
-function replaceProjectId(bigtable: Bigtable, resourcePath: string): string {
-  return resourcePath.replace('{{projectId}}', bigtable.projectId);
 }

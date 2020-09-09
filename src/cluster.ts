@@ -503,8 +503,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
         if (resp[0]) {
           backups = resp[0].map((backup: IBackup) => {
-            const backupInstance = this.backup(backup.name!.split('/').pop()!);
-            console.log('instance name when created', backupInstance.name);
+            // Instance#getBackups() uses `-` as a cluster id, which tells the
+            // API to return backups from any cluster.
+            const backupInstance =
+              this.id === '-'
+                ? this.instance
+                    .cluster(backup.name?.match(/clusters\/([^/]+)/)![1]!)
+                    .backup(backup.name!.split('/').pop()!)
+                : this.backup(backup.name!.split('/').pop()!);
             backupInstance.metadata = backup;
             return backupInstance;
           });
@@ -567,7 +573,14 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       new Transform({
         objectMode: true,
         transform: (backup: IBackup, enc: string, cb: Function) => {
-          const backupInstance = this.backup(backup.name!.split('/').pop()!);
+          // Instance#getBackupsStream() uses `-` as a cluster id, which tells
+          // the API to return backups from any cluster.
+          const backupInstance =
+            this.id === '-'
+              ? this.instance
+                  .cluster(backup.name?.match(/clusters\/([^/]+)/)![1]!)
+                  .backup(backup.name!.split('/').pop()!)
+              : this.backup(backup.name!.split('/').pop()!);
           backupInstance.metadata = backup;
           cb(null, backupInstance);
         },

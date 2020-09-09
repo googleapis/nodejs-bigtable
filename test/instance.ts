@@ -30,7 +30,7 @@ import {
   GetTablesOptions,
 } from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
-import {PassThrough, Readable} from 'stream';
+import {PassThrough} from 'stream';
 import * as pumpify from 'pumpify';
 
 const sandbox = sinon.createSandbox();
@@ -1118,125 +1118,12 @@ describe('Bigtable/Instance', () => {
 
       instance.getBackups(options, done);
     });
-
-    it('should return error and original arguments if getting backups fails', done => {
-      const error = new Error('Error.');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const backups: any[] = [];
-      const args = [{a: 'b'}, {c: 'd'}, {e: 'f'}];
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (instance as any).cluster = () => {
-        return {
-          getBackups: (options: {}, callback: Function) => {
-            callback(error, backups, ...args);
-          },
-        };
-      };
-
-      instance.getBackups((err, _backups, ..._args) => {
-        assert.strictEqual(err, error);
-        assert.strictEqual(_backups, backups);
-        assert.deepStrictEqual(_args, args);
-        done();
-      });
-    });
-
-    it('should create Backup from correct cluster', done => {
-      const clusterId = 'cluster-id';
-      const backupId = 'backup-id';
-      const getBackupsResponse = [
-        {
-          id: backupId,
-          metadata: {
-            name: `projects/project-id/clusters/${clusterId}/backups/${backupId}`,
-          },
-        },
-      ];
-
-      let numTimesClusterCalled = 0;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (instance as any).cluster = (id: string) => {
-        numTimesClusterCalled++;
-
-        if (numTimesClusterCalled === 1) {
-          return {
-            getBackups: (options: {}, callback: Function) => {
-              callback(null, getBackupsResponse);
-            },
-          };
-        }
-
-        assert.strictEqual(id, clusterId);
-        return {
-          backup: (id: string) => {
-            assert.strictEqual(id, backupId);
-            done();
-          },
-        };
-      };
-
-      instance.getBackups(assert.ifError);
-    });
-
-    it('should return backups and original arguments', done => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const args = [{a: 'b'}, {c: 'd'}, {e: 'f'}];
-      const getBackupsResponse = [
-        [
-          {
-            id: 'id',
-            metadata: {
-              name: 'projects/project-id/clusters/c/backups/b',
-            },
-          },
-        ],
-        ...args,
-      ];
-
-      const backup = {};
-
-      let numTimesClusterCalled = 0;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (instance as any).cluster = () => {
-        numTimesClusterCalled++;
-
-        if (numTimesClusterCalled === 1) {
-          return {
-            getBackups: (options: {}, callback: Function) => {
-              callback(null, ...getBackupsResponse);
-            },
-          };
-        }
-
-        return {
-          backup: () => backup,
-        };
-      };
-
-      instance.getBackups((err, _backups, ..._args) => {
-        assert.ifError(err);
-        assert.strictEqual(_backups![0], backup);
-        assert.strictEqual(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (backup as any).metadata,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (getBackupsResponse[0] as any)[0].metadata
-        );
-        assert.deepStrictEqual(_args, args);
-        done();
-      });
-    });
   });
 
   describe('getBackupsStream', () => {
-    it('should correctly call Cluster#getBackupsStream', done => {
+    it('should correctly call Cluster#getBackupsStream', () => {
       const options = {};
-      const getBackupsStream = {
-        pipe: () => done(),
-      };
+      const getBackupsStream = {};
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance as any).cluster = (name: string) => {
@@ -1250,64 +1137,6 @@ describe('Bigtable/Instance', () => {
       };
 
       instance.getBackupsStream(options);
-    });
-
-    it('should create Backup from correct cluster', done => {
-      const clusterId = 'cluster-id';
-      const backupId = 'backup-id';
-
-      const backupFromWrongCluster = {
-        id: backupId,
-        metadata: {
-          name: `projects/project-id/clusters/${clusterId}/backups/${backupId}`,
-        },
-      };
-
-      const backupInstanceFromCorrectCluster = {};
-
-      let numTimesClusterCalled = 0;
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (instance as any).cluster = (id: string) => {
-        numTimesClusterCalled++;
-
-        if (numTimesClusterCalled === 1) {
-          return {
-            getBackupsStream: () => {
-              return new Readable({
-                objectMode: true,
-                read() {
-                  this.push(backupFromWrongCluster);
-                  this.push(null);
-                },
-              });
-            },
-          };
-        }
-
-        assert.strictEqual(id, clusterId);
-        return {
-          backup: (id: string) => {
-            assert.strictEqual(id, backupId);
-            return backupInstanceFromCorrectCluster;
-          },
-        };
-      };
-
-      instance
-        .getBackupsStream()
-        .on('error', done)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .on('data', (backup: any) => {
-          assert.strictEqual(backup, backupInstanceFromCorrectCluster);
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          assert.strictEqual(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (backup as any).metadata,
-            backupFromWrongCluster.metadata
-          );
-          done();
-        });
     });
   });
 
