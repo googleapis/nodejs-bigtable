@@ -38,6 +38,8 @@ import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
+import {ModifiableBackupFields} from './backup';
+import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 
@@ -368,6 +370,10 @@ export interface PrefixRange {
   end?: BoundData | string;
 }
 
+export interface CreateBackupConfig extends ModifiableBackupFields {
+  gaxOptions?: CallOptions;
+}
+
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
  *
@@ -510,6 +516,90 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.instance.createTable(this.id, options, callback);
+  }
+
+  createBackup(
+    id: string,
+    config: CreateBackupConfig
+  ): Promise<CreateBackupResponse>;
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback: CreateBackupCallback
+  ): void;
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback: CreateBackupCallback
+  ): void;
+  /**
+   * Backup a table with cluster auto selection.
+   *
+   * Backups of tables originate from a specific cluster. This is a helper
+   * around `Cluster.createBackup` that automatically selects the first ready
+   * cluster from which a backup can be performed.
+   *
+   * NOTE: This will make two API requests to first determine the most
+   * appropriate cluster, then create the backup. This could lead to a race
+   * condition if other requests are simultaneously sent or if the cluster
+   * availability state changes between each call.
+   *
+   * @param {string} id A unique ID for the backup.
+   * @param {CreateBackupConfig} config Metadata to set on the Backup.
+   * @param {BackupTimestamp} config.expireTime When the backup will be
+   *   automatically deleted.
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {CreateBackupCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Backup} callback.backup The newly created Backup.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
+   * @return {void | Promise<CreateBackupResponse>}
+   */
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback?: CreateBackupCallback
+  ): void | Promise<CreateBackupResponse> {
+    if (!id) {
+      throw new TypeError('An id is required to create a backup.');
+    }
+
+    if (!config) {
+      throw new TypeError('A configuration object is required.');
+    }
+
+    this.getReplicationStates(config.gaxOptions!, (err, stateMap) => {
+      if (err) {
+        callback!(err);
+        return;
+      }
+
+      const [clusterId] =
+        [...stateMap!.entries()].find(([, clusterState]) => {
+          return (
+            clusterState.replicationState === 'READY' ||
+            clusterState.replicationState === 'READY_OPTIMIZING'
+          );
+        }) || [];
+
+      if (!clusterId) {
+        callback!(new Error('No ready clusters eligible for backup.'));
+        return;
+      }
+
+      this.instance.cluster(clusterId).createBackup(
+        id,
+        {
+          table: this.name,
+          ...config,
+        },
+        callback!
+      );
+    });
   }
 
   createFamily(

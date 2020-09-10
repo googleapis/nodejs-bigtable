@@ -635,7 +635,11 @@ describe('Bigtable', () => {
       gaxOpts: {},
     };
 
-    const gapicStreamingMethods = ['listTablesStream', 'listAppProfilesStream'];
+    const gapicStreamingMethods = [
+      'listTablesStream',
+      'listBackupsStream',
+      'listAppProfilesStream',
+    ];
 
     beforeEach(() => {
       bigtable.getProjectId_ = (callback: Function) => {

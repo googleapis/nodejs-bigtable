@@ -30,6 +30,11 @@ import {
   GetAppProfilesResponse,
 } from './app-profile';
 import {
+  GetBackupsCallback,
+  GetBackupsOptions,
+  GetBackupsResponse,
+} from './backup';
+import {
   Cluster,
   CreateClusterOptions,
   CreateClusterCallback,
@@ -61,6 +66,7 @@ import {CallOptions, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
+import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -139,6 +145,12 @@ export type SetInstanceMetadataCallback = (
   apiResponse?: google.protobuf.Empty
 ) => void;
 export type SetInstanceMetadataResponse = [google.protobuf.Empty];
+
+export interface CreateTableFromBackupConfig {
+  table: string;
+  backup: Backup | string;
+  gaxOptions?: CallOptions;
+}
 
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
@@ -793,6 +805,66 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     ]);
   }
 
+  getBackups(options?: GetBackupsOptions): Promise<GetBackupsResponse>;
+  getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
+  getBackups(callback: GetBackupsCallback): void;
+  /**
+   * Get Cloud Bigtable Backup instances within this instance. This returns both
+   * completed and pending backups.
+   *
+   * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
+   * @param {GetBackupsResponse} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Backup[]} callback.backups All matching Backup instances.
+   * @param {object} callback.apiResponse The full API response.
+   * @return {void | Promise<ListBackupsResponse>}
+   */
+  getBackups(
+    optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
+    cb?: GetBackupsCallback
+  ): void | Promise<GetBackupsResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    this.cluster('-').getBackups(options, callback);
+  }
+
+  /**
+   * Get Cloud Bigtable Backup instances within this instance. This returns both
+   * completed and pending backups as a readable stream.
+   *
+   * @param {GetBackupsOptions} [options] Configuration object. See
+   *     {@link Instance#getBackups} for a complete list of options.
+   * @returns {ReadableStream<Backup>}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   *
+   * instance.getBackupsStream()
+   *   .on('error', console.error)
+   *   .on('data', function(backup) {
+   *     // backup is a Backup object.
+   *   })
+   *   .on('end', () => {
+   *     // All backups retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * instance.getBackupsStream()
+   *   .on('data', function(backup) {
+   *     this.end();
+   *   });
+   */
+  getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
+    return this.cluster('-').getBackupsStream(options);
+  }
+
   getClusters(options?: CallOptions): Promise<GetClustersResponse>;
   getClusters(options: CallOptions, callback: GetClustersCallback): void;
   getClusters(callback: GetClustersCallback): void;
@@ -1108,6 +1180,59 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     ]);
   }
 
+  createTableFromBackup(
+    config: CreateTableFromBackupConfig
+  ): Promise<RestoreTableResponse>;
+  createTableFromBackup(
+    config: CreateTableFromBackupConfig,
+    callback: RestoreTableCallback
+  ): void;
+  /**
+   * Create a new table by restoring from a completed backup.
+   *
+   * The new table must be in the same instance as the instance containing
+   * the backup. The returned table
+   * {@link google.longrunning.Operation|long-running operation} can be used
+   * to track the progress of the operation, and to cancel it.
+   *
+   * @param {CreateTableFromBackupConfig} config Configuration object.
+   * @param {Backup | string} config.backup The name of the backup from which to
+   *     restore of the form
+   *     `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
+   *     or a Backup instance.
+   * @param {string} config.table The id of the table to create and restore to.
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {RestoreTableCallback} [cb]
+   * @return {void | Promise<RestoreTableResponse>}
+   */
+  createTableFromBackup(
+    config: CreateTableFromBackupConfig,
+    callback?: RestoreTableCallback
+  ): void | Promise<RestoreTableResponse> {
+    if (!config.table) {
+      throw new Error('A table id is required to restore from a backup.');
+    }
+
+    let backup: Backup;
+
+    if (config.backup instanceof Backup) {
+      backup = config.backup;
+    } else {
+      try {
+        const clusterId = config.backup.match(/clusters\/([^/]+)/)![1];
+        backup = this.cluster(clusterId).backup(config.backup);
+      } catch (e) {
+        throw new Error(
+          'A complete backup name (path) is required or a Backup object.'
+        );
+      }
+    }
+
+    backup.restore(config.table, config.gaxOptions!, callback!);
+  }
+
   setIamPolicy(
     policy: Policy,
     gaxOptions?: CallOptions
@@ -1317,6 +1442,7 @@ promisifyAll(Instance, {
     'appProfile',
     'cluster',
     'table',
+    'getBackupsStream',
     'getTablesStream',
     'getAppProfilesStream',
   ],
