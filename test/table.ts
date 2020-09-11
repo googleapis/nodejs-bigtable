@@ -1234,6 +1234,29 @@ describe('Bigtable/Table', () => {
         });
       });
 
+      it('should not retry over maxRetries', done => {
+        const error = new Error('retry me!') as ServiceError;
+        error.code = 4;
+
+        emitters = [
+          (((stream: Writable) => {
+            stream.emit('error', error);
+            stream.end();
+          }) as {}) as EventEmitter,
+        ];
+
+        table.maxRetries = 0;
+        table
+          .createReadStream()
+          .on('error', (err: ServiceError) => {
+            assert.strictEqual(err, error);
+            assert.strictEqual(reqOptsCalls.length, 1);
+            done();
+          })
+          .on('end', done)
+          .resume();
+      });
+
       it('should have a range which starts after the last read key', done => {
         emitters = [
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2629,7 +2652,7 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'sampleRowKeys');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
-        assert.strictEqual(config.gaxOpts, undefined);
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         setImmediate(done);
 
@@ -2661,7 +2684,7 @@ describe('Bigtable/Table', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
-        assert.strictEqual(config.gaxOpts, gaxOptions);
+        assert.deepStrictEqual(config.gaxOpts, gaxOptions);
 
         setImmediate(done);
 
