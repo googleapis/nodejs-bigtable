@@ -47,6 +47,7 @@ const fakePromisify = Object.assign({}, promisify, {
       'appProfile',
       'cluster',
       'table',
+      'getBackupsStream',
       'getTablesStream',
       'getAppProfilesStream',
     ]);
@@ -60,6 +61,8 @@ class FakeAppProfile extends AppProfile {
     this.calledWith_ = args;
   }
 }
+
+class FakeBackup {}
 
 class FakeCluster extends Cluster {
   calledWith_: Array<{}>;
@@ -104,6 +107,7 @@ describe('Bigtable/Instance', () => {
     Instance = proxyquire('../src/instance.js', {
       '@google-cloud/promisify': fakePromisify,
       './app-profile.js': {AppProfile: FakeAppProfile},
+      './backup.js': {Backup: FakeBackup},
       './cluster.js': {Cluster: FakeCluster},
       './family.js': {Family: FakeFamily},
       './table.js': {Table: FakeTable},
@@ -546,6 +550,109 @@ describe('Bigtable/Instance', () => {
     });
   });
 
+  describe('createTableFromBackup', () => {
+    it('should throw if a table is not provided', () => {
+      assert.throws(() => {
+        (instance.createTableFromBackup as Function)({});
+      }, /A table id is required to restore from a backup\./);
+    });
+
+    it('should restore from a provided Backup instance', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const backup = new FakeBackup() as any;
+      const table = 'table';
+
+      backup.restore = (
+        _table: string,
+        gaxOptions: object,
+        callback: Function
+      ) => {
+        assert.strictEqual(_table, table);
+        assert.strictEqual(typeof gaxOptions, 'undefined');
+        callback(); // done()
+      };
+
+      instance.createTableFromBackup(
+        {
+          table,
+          backup,
+        },
+        done
+      );
+    });
+
+    it('should create a Backup using the provided name', done => {
+      const clusterId = 'my-cluster';
+      const backupId = 'my-backup';
+      const backup = `/clusters/${clusterId}/backups/${backupId}`;
+      const table = 'table';
+
+      (instance.cluster as Function) = (id: string) => {
+        assert.strictEqual(id, clusterId);
+        return {
+          backup: (id: string) => {
+            assert.strictEqual(id, backup);
+            return {
+              restore: (
+                _table: string,
+                gaxOptions: object,
+                callback: Function
+              ) => {
+                assert.strictEqual(_table, table);
+                assert.strictEqual(typeof gaxOptions, 'undefined');
+                callback(); // done()
+              },
+            };
+          },
+        };
+      };
+
+      instance.createTableFromBackup(
+        {
+          table,
+          backup,
+        },
+        done
+      );
+    });
+
+    it('should throw if an unformatted backup name is provided', () => {
+      const backup = 'backup-id';
+      const table = 'table';
+
+      assert.throws(() => {
+        instance.createTableFromBackup(
+          {
+            table,
+            backup,
+          },
+          assert.ifError
+        );
+      }, /A complete backup name \(path\) is required or a Backup object\./);
+    });
+
+    it('should accept gaxOptions', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const backup = new FakeBackup() as any;
+      const table = 'table';
+      const gaxOptions = {};
+
+      backup.restore = (table: string, _gaxOptions: object) => {
+        assert.strictEqual(_gaxOptions, gaxOptions);
+        done();
+      };
+
+      instance.createTableFromBackup(
+        {
+          table,
+          backup,
+          gaxOptions,
+        },
+        assert.ifError
+      );
+    });
+  });
+
   describe('cluster', () => {
     it('should return a Cluster object', () => {
       const cluster = instance.cluster(CLUSTER_ID);
@@ -769,7 +876,7 @@ describe('Bigtable/Instance', () => {
     });
   });
 
-  describe('getApprofilesStream', () => {
+  describe('getAppProfilesStream', () => {
     let returnStream: PassThrough;
     beforeEach(() => {
       returnStream = new PassThrough({
@@ -867,6 +974,87 @@ describe('Bigtable/Instance', () => {
       });
     });
 
+    it('should return a decorated error with failedLocations list', done => {
+      let counter = 0;
+      let failedLocations: string[] = [];
+      const pages = [
+        {
+          appProfiles: [
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-a',
+            },
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-b',
+            },
+          ],
+          response: {failedLocations: []},
+        },
+        {
+          appProfiles: [
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-c',
+            },
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-d',
+            },
+          ],
+          response: {failedLocations: ['us-east1-a']},
+        },
+
+        {
+          appProfiles: [
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-e',
+            },
+            {
+              name: '/projects/p/instances/i/appProfiles/profile-f',
+            },
+          ],
+          response: {failedLocations: ['us-west1-b', 'us-west1-c']},
+        },
+      ];
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = () => {
+        return returnStream;
+      };
+
+      setImmediate(() => {
+        pages.forEach(p => {
+          failedLocations = failedLocations.concat(p.response.failedLocations);
+          returnStream.emit('response', p.response);
+          p.appProfiles.forEach(a => {
+            returnStream.push(a);
+            counter++;
+          });
+        });
+        returnStream.push(null);
+      });
+      const appProfiles: AppProfile[] = [];
+      instance
+        .getAppProfilesStream()
+        .on('error', err => {
+          assert.strictEqual(appProfiles.length, counter);
+          console.log(err.message);
+          assert.deepStrictEqual(
+            err,
+            new Error(
+              `Resources from the following locations are currently not available\n${JSON.stringify(
+                failedLocations
+              )}`
+            )
+          );
+          done();
+        })
+        .on('data', appProfile => {
+          assert(appProfile instanceof FakeAppProfile);
+          appProfiles.push(appProfile);
+        })
+        .on('end', () => {
+          done();
+        });
+    });
+
     it('should return an array of AppProfile objects', done => {
       const response = [
         {
@@ -910,6 +1098,45 @@ describe('Bigtable/Instance', () => {
           assert.deepStrictEqual(appProfiles[1].metadata, response[1]);
           done();
         });
+    });
+  });
+
+  describe('getBackups', () => {
+    it('should correctly call Cluster#getBackups', done => {
+      const options = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance as any).cluster = (name: string) => {
+        assert.strictEqual(name, '-');
+        return {
+          getBackups: (_options: {}, callback: Function) => {
+            assert.strictEqual(_options, options);
+            callback(); // done()
+          },
+        };
+      };
+
+      instance.getBackups(options, done);
+    });
+  });
+
+  describe('getBackupsStream', () => {
+    it('should correctly call Cluster#getBackupsStream', () => {
+      const options = {};
+      const getBackupsStream = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance as any).cluster = (name: string) => {
+        assert.strictEqual(name, '-');
+        return {
+          getBackupsStream: (_options: {}) => {
+            assert.strictEqual(_options, options);
+            return getBackupsStream;
+          },
+        };
+      };
+
+      instance.getBackupsStream(options);
     });
   });
 

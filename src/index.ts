@@ -749,8 +749,9 @@ export class Bigtable {
     };
 
     const gapicStreamingMethods = {
-      listTablesStream: true,
       listAppProfilesStream: true,
+      listBackupsStream: true,
+      listTablesStream: true,
     };
 
     if (isStreamMode) {
@@ -818,6 +819,9 @@ export class Bigtable {
         gaxStream
           .on('error', (err: Error) => {
             stream.destroy(err);
+          })
+          .on('response', response => {
+            stream.emit('response', response);
           })
           .pipe(stream);
       });
@@ -951,6 +955,26 @@ export {
   SetAppProfileMetadataResponse,
 } from './app-profile';
 export {
+  Backup,
+  BackupTimestamp,
+  DeleteBackupCallback,
+  DeleteBackupResponse,
+  GenericBackupCallback,
+  GetBackupCallback,
+  GetBackupResponse,
+  GetBackupsCallback,
+  GetBackupsOptions,
+  GetBackupsResponse,
+  IBackup,
+  ModifiableBackupFields,
+  RestoreTableCallback,
+  RestoreTableResponse,
+  BackupSetMetadataCallback,
+  BackupSetMetadataResponse,
+  BackupGetMetadataCallback,
+  BackupGetMetadataResponse,
+} from './backup';
+export {
   Chunk,
   ChunkTransformer,
   Data,
@@ -965,6 +989,8 @@ export {
   IOperation,
   ApiResponse,
   BooleanResponse,
+  CreateBackupCallback,
+  CreateBackupResponse,
   CreateClusterCallback,
   CreateClusterOptions,
   CreateClusterResponse,

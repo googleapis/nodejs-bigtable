@@ -14,9 +14,9 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@google-cloud/bigtable": "^3.0.1",
+    "@google-cloud/bigtable": "^3.1.0",
     "uuid": "^8.0.0",
-    "yargs": "^15.0.0"
+    "yargs": "^16.0.0"
   },
   "devDependencies": {
     "@google-cloud/functions-framework": "^1.5.1",

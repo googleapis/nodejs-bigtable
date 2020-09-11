@@ -4,6 +4,22 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.1.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.0.1...v3.1.0) (2020-09-10)
+
+
+### Features
+
+* add gapic getAppProfilesStream method ([#771](https://www.github.com/googleapis/nodejs-bigtable/issues/771)) ([c694ae5](https://www.github.com/googleapis/nodejs-bigtable/commit/c694ae5a9875c2862ecc001f9e5f6bd8212483fa))
+* getAppProfilesStream emits (if there are any failed locations present) decorated error with failedLocations info ([#795](https://www.github.com/googleapis/nodejs-bigtable/issues/795)) ([dbb19fe](https://www.github.com/googleapis/nodejs-bigtable/commit/dbb19fed8ffcd6c5737b65dbe202b3031e4d3387))
+* introduce Backups ([#794](https://www.github.com/googleapis/nodejs-bigtable/issues/794)) ([7979e39](https://www.github.com/googleapis/nodejs-bigtable/commit/7979e3958cf4d1c21f24dc2bfd9fd0e245506fd5))
+* remove through2 dependency ([#770](https://www.github.com/googleapis/nodejs-bigtable/issues/770)) ([29c85d8](https://www.github.com/googleapis/nodejs-bigtable/commit/29c85d828fd7606c24d44a3ee8d5633967a1c089))
+* respect pageSize and pageToken from gaxOptions ([#781](https://www.github.com/googleapis/nodejs-bigtable/issues/781)) ([3ca5de3](https://www.github.com/googleapis/nodejs-bigtable/commit/3ca5de3af142d0015209ee1281a767f6fd5a5093))
+
+
+### Bug Fixes
+
+* **deps:** update dependency yargs to v16 ([#797](https://www.github.com/googleapis/nodejs-bigtable/issues/797)) ([3a50ecf](https://www.github.com/googleapis/nodejs-bigtable/commit/3a50ecf081e4846372c147eeb7a1806ed0aa981f))
+
 ### [3.0.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.0.0...v3.0.1) (2020-07-09)
 
 

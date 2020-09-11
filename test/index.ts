@@ -624,7 +624,11 @@ describe('Bigtable', () => {
       gaxOpts: {},
     };
 
-    const gapicStreamingMethods = ['listTablesStream', 'listAppProfilesStream'];
+    const gapicStreamingMethods = [
+      'listTablesStream',
+      'listBackupsStream',
+      'listAppProfilesStream',
+    ];
 
     beforeEach(() => {
       bigtable.getProjectId_ = (callback: Function) => {
@@ -965,6 +969,17 @@ describe('Bigtable', () => {
               assert.strictEqual(err, error);
               done();
             });
+          });
+
+          it('should emit resmonse from GAX stream', done => {
+            const response = {};
+            const requestStream = bigtable.request(config);
+            requestStream.emit('reading');
+            requestStream.on('response', (resp: {}) => {
+              assert.strictEqual(resp, response);
+              done();
+            });
+            GAX_STREAM.emit('response', response);
           });
         });
       });
