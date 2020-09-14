@@ -22,8 +22,10 @@ import {ServiceError} from 'google-gax';
 
 import * as clusterTypes from '../src/cluster';
 import * as backupTypes from '../src/backup';
+import * as instanceTypes from '../src/instance';
 
 import {Bigtable} from '../src';
+import {Table, Policy} from '../src/table';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -40,6 +42,14 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 
+class FakeTable extends Table {
+  calledWith_: Array<{}>;
+  constructor(...args: [instanceTypes.Instance, string]) {
+    super(args[0], args[1]);
+    this.calledWith_ = args;
+  }
+}
+
 describe('Bigtable/Backup', () => {
   const BACKUP_ID = 'my-backup';
   let CLUSTER: clusterTypes.Cluster;
@@ -52,6 +62,7 @@ describe('Bigtable/Backup', () => {
   before(() => {
     Backup = proxyquire('../src/backup.js', {
       '@google-cloud/promisify': fakePromisify,
+      './table.js': {Table: FakeTable},
       pumpify,
     }).Backup;
   });
@@ -328,6 +339,49 @@ describe('Bigtable/Backup', () => {
     });
   });
 
+  describe('getIamPolicy', () => {
+    it('should provide the proper request options', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'getIamPolicy');
+        assert.strictEqual(config.reqOpts.resource, backup.name);
+        assert.strictEqual(config.reqOpts.requestedPolicyVersion, undefined);
+        assert.strictEqual(config.gaxOpt, undefined);
+        done();
+      };
+      backup.getIamPolicy(assert.ifError);
+    });
+
+    it('should accept options', done => {
+      const requestedPolicyVersion = 0;
+      const gaxOptions = {};
+      const options = {gaxOptions, requestedPolicyVersion};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        assert.strictEqual(
+          config.reqOpts.options.requestedPolicyVersion,
+          requestedPolicyVersion
+        );
+        done();
+      };
+      backup.getIamPolicy(options, assert.ifError);
+    });
+
+    it('should return error', done => {
+      const error = new Error('error');
+      backup.bigtable.request = (config: {}, callback: Function) => {
+        callback(error);
+      };
+      backup.getIamPolicy((err: Error) => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+  });
+
   describe('getMetadata', () => {
     it('should make the correct request', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -527,6 +581,144 @@ describe('Bigtable/Backup', () => {
           done();
         }
       );
+    });
+  });
+
+  describe('setIamPolicy', () => {
+    const policy = {};
+    it('should provide the proper request options', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'setIamPolicy');
+        assert.strictEqual(config.reqOpts.resource, backup.name);
+        assert.strictEqual(config.reqOpts.policy, policy);
+        assert.strictEqual(config.gaxOpt, undefined);
+        done();
+      };
+      backup.setIamPolicy(policy, assert.ifError);
+    });
+
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      backup.setIamPolicy(policy, gaxOptions, assert.ifError);
+    });
+
+    it('should pass policy to bigtable.request', done => {
+      const policy: Policy = {
+        bindings: [
+          {
+            role: 'roles/bigtable.viewer',
+            members: ['user:mike@example.com', 'group:admins@example.com'],
+            condition: {
+              title: 'expirable access',
+              description: 'Does not grant access after Sep 2020',
+              expression: "request.time <timestamp('2020-10-01T00:00:00.000Z')",
+            },
+          },
+        ],
+      };
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.strictEqual(config.reqOpts.policy, policy);
+        done();
+      };
+      backup.setIamPolicy(policy, assert.ifError);
+    });
+
+    it('should encode policy etag', done => {
+      const policy = {etag: 'ABS'};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.deepStrictEqual(
+          config.reqOpts.policy.etag,
+          Buffer.from(policy.etag)
+        );
+        done();
+      };
+      backup.setIamPolicy(policy, assert.ifError);
+    });
+
+    it('should return error', done => {
+      const error = new Error('error');
+      backup.bigtable.request = (config: {}, callback: Function) => {
+        callback(error);
+      };
+      backup.setIamPolicy(policy, (err: Error) => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+  });
+
+  describe('testIamPermissions', () => {
+    const permissions = 'bigtable.tables.get';
+    it('should provide the proper request options', done => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'testIamPermissions');
+        assert.strictEqual(config.reqOpts.resource, backup.name);
+        assert.deepStrictEqual(config.reqOpts.permissions, [permissions]);
+        assert.strictEqual(config.gaxOpt, undefined);
+        done();
+      };
+      backup.testIamPermissions(permissions, assert.ifError);
+    });
+
+    it('should accept permissions as array', done => {
+      const permissions = ['bigtable.tables.get', 'bigtable.tables.list'];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.deepStrictEqual(config.reqOpts.permissions, permissions);
+        done();
+      };
+      backup.testIamPermissions(permissions, assert.ifError);
+    });
+
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      backup.testIamPermissions(permissions, gaxOptions, assert.ifError);
+    });
+
+    it('should unpack permissions from resp object', done => {
+      const testPermissions = ['bigtable.tables.get', 'bigtable.tables.list'];
+      backup.bigtable.request = (config: {}, callback: Function) => {
+        callback(null, {permissions: testPermissions});
+      };
+      backup.testIamPermissions(
+        testPermissions,
+        (err: Error, permissions: {}) => {
+          assert.ifError(err);
+          assert.strictEqual(Array.isArray(permissions), true);
+          assert.deepStrictEqual(permissions, testPermissions);
+          done();
+        }
+      );
+    });
+
+    it('should return error', done => {
+      const permission = 'bigtable.tables.get';
+      const error = new Error('error');
+      backup.bigtable.request = (config: {}, callback: Function) => {
+        callback(error);
+      };
+      backup.testIamPermissions(permission, (err: Error) => {
+        assert.strictEqual(err, error);
+        done();
+      });
     });
   });
 });

@@ -1259,6 +1259,37 @@ describe('Bigtable', () => {
       assert.strictEqual(metadata.name, backupNameFromCluster);
       assert.deepStrictEqual(backup.expireDate, updateExpireTime);
     });
+
+    it.only('should get an Iam Policy for the backup', async () => {
+      const policyProperties = ['version', 'bindings', 'etag'];
+      const [policy] = await BACKUP.getIamPolicy();
+      console.log(`policy => \n${JSON.stringify(policy)}`);
+
+      policyProperties.forEach(property => {
+        assert.strictEqual(Object.keys(policy).includes(property), true);
+      });
+    });
+
+    it.only('should test Iam permissions for the backup', async () => {
+      const permissions = ['bigtable.backups.get', 'bigtable.backups.delete'];
+      const [grantedPermissions] = await BACKUP.testIamPermissions(permissions);
+      console.log(`grantedPermissions => \n${grantedPermissions}`);
+      assert.strictEqual(grantedPermissions.length, permissions.length);
+      permissions.forEach(permission => {
+        assert.strictEqual(grantedPermissions.includes(permission), true);
+      });
+    });
+
+    it.only('should set Iam Policy on the backup', async () => {
+      const backup = CLUSTER.backup(backupIdFromCluster);
+
+      const [policy] = await backup.getIamPolicy();
+      const [updatedPolicy] = await backup.setIamPolicy(policy);
+      console.log(`policy => \n${JSON.stringify(policy)}`);
+      console.log(`updatedPolicy => \n${JSON.stringify(updatedPolicy)}`);
+
+      assert.notStrictEqual(updatedPolicy, null);
+    });
   });
 });
 
