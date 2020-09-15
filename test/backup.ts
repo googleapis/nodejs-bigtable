@@ -26,8 +26,7 @@ import * as instanceTypes from '../src/instance';
 import * as sinon from 'sinon';
 
 import {Bigtable} from '../src';
-import {Table, Policy, GetIamPolicyOptions} from '../src/table';
-import {callbackify} from 'util';
+import {Table} from '../src/table';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -586,7 +585,6 @@ describe('Bigtable/Backup', () => {
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       sinon
         .stub(Table.prototype, 'setIamPolicy')
         .callsFake((_policy, gaxOpts, callback) => {
