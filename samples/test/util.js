@@ -16,13 +16,34 @@ const uuid = require('uuid');
 const {Bigtable} = require('@google-cloud/bigtable');
 const {after} = require('mocha');
 
+const PREFIX = 'gcloud-tests-';
 const runId = uuid.v4().split('-')[0];
-const instanceId = `gcloud-tests-${runId}`;
-const clusterId = `gcloud-tests-${runId}`;
+const instanceId = `${PREFIX}-${runId}`;
+const clusterId = `${PREFIX}-${runId}`;
 const bigtable = new Bigtable();
 let instance;
 
 let obtainPromise;
+
+// Get a unique ID to use for test resources.
+function generateId() {
+  return `${PREFIX}-${uuid.v4()}`.substr(0, 30);
+}
+
+/**
+ * Get instances created more than one hour ago.
+ */
+async function getStaleInstances() {
+  const [instances] = await bigtable.getInstances();
+  return instances
+    .filter(i => i.id.match(PREFIX))
+    .filter(i => {
+      const timeCreated = i.metadata.labels.time_created;
+      // Only delete stale resources.
+      const oneHourAgo = new Date(Date.now() - 3600000);
+      return !timeCreated || timeCreated <= oneHourAgo;
+    });
+}
 
 /**
  * Only create a single cluster and instance, but let multiple tests await
@@ -63,4 +84,4 @@ after(async () => {
   await instance.delete();
 });
 
-module.exports = {obtainTestInstance};
+module.exports = {generateId, getStaleInstances, obtainTestInstance};

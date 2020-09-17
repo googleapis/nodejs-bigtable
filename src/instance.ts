@@ -818,6 +818,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {Backup[]} callback.backups All matching Backup instances.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<ListBackupsResponse>}
+   *
+   * @example <caption>include:samples/backups.list.js</caption>
+   * region_tag:bigtable_list_backups
    */
   getBackups(
     optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
@@ -1206,6 +1209,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {RestoreTableCallback} [cb]
    * @return {void | Promise<RestoreTableResponse>}
+   *
+   * @example <caption>include:samples/backups.restore.js</caption>
+   * region_tag:bigtable_restore_backup
    */
   createTableFromBackup(
     config: CreateTableFromBackupConfig,
