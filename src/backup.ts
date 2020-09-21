@@ -257,6 +257,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<CreateBackupResponse>}
+   *
+   * @example <caption>include:samples/backups.create.js</caption>
+   * region_tag:bigtable_create_backup
    */
   create(
     config: CreateBackupConfig,
@@ -276,6 +279,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {?error} callback.err An error returned while making this request.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<DeleteBackupResponse>}
+   *
+   * @example <caption>include:samples/backups.delete.js</caption>
+   * region_tag:bigtable_delete_backup
    */
   delete(
     gaxOptionsOrCallback?: CallOptions | DeleteBackupCallback,
@@ -347,6 +353,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     request.
    * @param {Backup} callback.backup The Backup instance.
    * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/backups.get.js</caption>
+   * region_tag:bigtable_get_backup
    */
   get(
     gaxOptionsOrCallback?: CallOptions | GetBackupCallback,
@@ -413,6 +422,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     request.
    * @param {object} callback.metadata The metadata.
    * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/backups.get.js</caption>
+   * region_tag:bigtable_get_backup
    */
   getMetadata(
     gaxOptionsOrCallback?: CallOptions | BackupGetMetadataCallback,
@@ -469,6 +481,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<RestoreTableResponse>}
+   *
+   * @example <caption>include:samples/backups.restore.js</caption>
+   * region_tag:bigtable_restore_backup
    */
   restore(
     tableId: string,
@@ -561,6 +576,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<BackupSetMetadataResponse>}
+   *
+   * @example <caption>include:samples/backups.update.js</caption>
+   * region_tag:bigtable_update_backup
    */
   setMetadata(
     metadata: ModifiableBackupFields,
