@@ -601,7 +601,7 @@ describe('Bigtable/Backup', () => {
       sinon.restore();
     });
 
-    const permissions = 'bigtable.tables.get';
+    const permissions = 'bigtable.backups.get';
     it('should properly call Table#testIamPermissions', done => {
       sinon
         .stub(Table.prototype, 'testIamPermissions')
@@ -614,7 +614,12 @@ describe('Bigtable/Backup', () => {
     });
 
     it('should accept permissions as array', done => {
-      const permissions = ['bigtable.tables.get', 'bigtable.tables.list'];
+      const permissions = [
+        'bigtable.backups.get',
+        'bigtable.backups.delete',
+        'bigtable.backups.update',
+        'bigtable.backups.restore',
+      ];
       sinon
         .stub(Table.prototype, 'testIamPermissions')
         .callsFake((_permissions, gaxOpts, callback) => {
