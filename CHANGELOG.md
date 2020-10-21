@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [3.1.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.1.0...v3.1.1) (2020-10-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency dot-prop to v6 ([#806](https://www.github.com/googleapis/nodejs-bigtable/issues/806)) ([edf65be](https://www.github.com/googleapis/nodejs-bigtable/commit/edf65bee1b75faac44a6ce15cdf7fab14a3a4405))
+
 ## [3.1.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.0.1...v3.1.0) (2020-09-10)
 
 
