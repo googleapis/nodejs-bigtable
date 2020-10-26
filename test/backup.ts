@@ -15,15 +15,18 @@
 import {PreciseDate} from '@google-cloud/precise-date';
 import * as promisify from '@google-cloud/promisify';
 import * as assert from 'assert';
-import {before, beforeEach, describe, it} from 'mocha';
+import {before, beforeEach, describe, it, afterEach} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import {ServiceError} from 'google-gax';
 
 import * as clusterTypes from '../src/cluster';
 import * as backupTypes from '../src/backup';
+import * as instanceTypes from '../src/instance';
+import * as sinon from 'sinon';
 
 import {Bigtable} from '../src';
+import {Table} from '../src/table';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -40,6 +43,14 @@ const fakePromisify = Object.assign({}, promisify, {
   },
 });
 
+class FakeTable extends Table {
+  calledWith_: Array<{}>;
+  constructor(...args: [instanceTypes.Instance, string]) {
+    super(args[0], args[1]);
+    this.calledWith_ = args;
+  }
+}
+
 describe('Bigtable/Backup', () => {
   const BACKUP_ID = 'my-backup';
   let CLUSTER: clusterTypes.Cluster;
@@ -52,6 +63,7 @@ describe('Bigtable/Backup', () => {
   before(() => {
     Backup = proxyquire('../src/backup.js', {
       '@google-cloud/promisify': fakePromisify,
+      './table.js': {Table: FakeTable},
       pumpify,
     }).Backup;
   });
@@ -328,6 +340,30 @@ describe('Bigtable/Backup', () => {
     });
   });
 
+  describe('getIamPolicy', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should correctly call Table#getIamPolicy()', done => {
+      sinon.stub(Table.prototype, 'getIamPolicy').callsFake((opt, callback) => {
+        assert.deepStrictEqual(opt, {});
+        callback(); // done()
+      });
+      backup.getIamPolicy(done);
+    });
+
+    it('should accept options', done => {
+      const options = {gaxOptions: {}, requestedPolicyVersion: 1};
+
+      sinon.stub(Table.prototype, 'getIamPolicy').callsFake((opt, callback) => {
+        assert.strictEqual(opt, options);
+        callback(); // done()
+      });
+      backup.getIamPolicy(options, done);
+    });
+  });
+
   describe('getMetadata', () => {
     it('should make the correct request', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -527,6 +563,83 @@ describe('Bigtable/Backup', () => {
           done();
         }
       );
+    });
+  });
+
+  describe('setIamPolicy', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    const policy = {};
+    it('should correctly call Table#setIamPolicy()', done => {
+      sinon
+        .stub(Table.prototype, 'setIamPolicy')
+        .callsFake((_policy, gaxOpts, callback) => {
+          assert.strictEqual(_policy, policy);
+          assert.deepStrictEqual(gaxOpts, {});
+          callback(); // done()
+        });
+      backup.setIamPolicy(policy, done);
+    });
+
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {};
+
+      sinon
+        .stub(Table.prototype, 'setIamPolicy')
+        .callsFake((_policy, gaxOpts, callback) => {
+          assert.strictEqual(_policy, policy);
+          assert.strictEqual(gaxOpts, gaxOptions);
+          callback(); // done()
+        });
+      backup.setIamPolicy(policy, gaxOptions, done);
+    });
+  });
+
+  describe('testIamPermissions', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const permissions = 'bigtable.backups.get';
+    it('should properly call Table#testIamPermissions', done => {
+      sinon
+        .stub(Table.prototype, 'testIamPermissions')
+        .callsFake((_permissions, gaxOpts, callback) => {
+          assert.strictEqual(_permissions, permissions);
+          assert.deepStrictEqual(gaxOpts, {});
+          callback(); // done()
+        });
+      backup.testIamPermissions(permissions, done);
+    });
+
+    it('should accept permissions as array', done => {
+      const permissions = [
+        'bigtable.backups.get',
+        'bigtable.backups.delete',
+        'bigtable.backups.update',
+        'bigtable.backups.restore',
+      ];
+      sinon
+        .stub(Table.prototype, 'testIamPermissions')
+        .callsFake((_permissions, gaxOpts, callback) => {
+          assert.strictEqual(_permissions, permissions);
+          assert.deepStrictEqual(gaxOpts, {});
+          callback(); // done()
+        });
+      backup.testIamPermissions(permissions, done);
+    });
+
+    it('should accept gaxOptions', done => {
+      const gaxOptions = {};
+      sinon
+        .stub(Table.prototype, 'testIamPermissions')
+        .callsFake((_permissions, gaxOpts, callback) => {
+          assert.strictEqual(_permissions, permissions);
+          assert.strictEqual(gaxOpts, gaxOptions);
+          callback(); // done()
+        });
+      backup.testIamPermissions(permissions, gaxOptions, done);
     });
   });
 });
