@@ -1678,12 +1678,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     policy: Policy,
     gaxOptions?: CallOptions
   ): Promise<SetIamPolicyResponse>;
+  setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
   setIamPolicy(
     policy: Policy,
     gaxOptions: CallOptions,
     callback: SetIamPolicyCallback
   ): void;
-  setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
   /**
    * @param {object} [gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
