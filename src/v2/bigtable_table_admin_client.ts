@@ -469,8 +469,8 @@ export class BigtableTableAdminClient {
    *   Required. The unique name of the instance in which to create the table.
    *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.tableId
-   *   Required. The name by which the new table should be referred to within the
-   *   parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *   Required. The name by which the new table should be referred to within the parent
+   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    *   Maximum 50 characters.
    * @param {google.bigtable.admin.v2.Table} request.table
    *   Required. The Table to create.
@@ -752,10 +752,10 @@ export class BigtableTableAdminClient {
    *   Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {number[]} request.modifications
-   *   Required. Modifications to be atomically applied to the specified table's
-   *   families. Entries are applied in order, meaning that earlier modifications
-   *   can be masked by later ones (in the case of repeated updates to the same
-   *   family, for example).
+   *   Required. Modifications to be atomically applied to the specified table's families.
+   *   Entries are applied in order, meaning that earlier modifications can be
+   *   masked by later ones (in the case of repeated updates to the same family,
+   *   for example).
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -940,8 +940,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the Table for which to create a consistency
-   *   token. Values are of the form
+   *   Required. The unique name of the Table for which to create a consistency token.
+   *   Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -1039,8 +1039,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the Table for which to check replication
-   *   consistency. Values are of the form
+   *   Required. The unique name of the Table for which to check replication consistency.
+   *   Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {string} request.consistencyToken
    *   Required. The token created using GenerateConsistencyToken for the Table.
@@ -1559,7 +1559,7 @@ export class BigtableTableAdminClient {
     >
   ): void;
   /**
-   * Gets the access control policy for a resource.
+   * Gets the access control policy for a Table or Backup resource.
    * Returns an empty policy if the resource exists but does not have a policy
    * set.
    *
@@ -1732,7 +1732,7 @@ export class BigtableTableAdminClient {
     >
   ): void;
   /**
-   * Returns permissions that the caller has on the specified table resource.
+   * Returns permissions that the caller has on the specified Table or Backup resource.
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -1843,12 +1843,12 @@ export class BigtableTableAdminClient {
    *   Required. The unique name of the instance in which to create the table.
    *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.tableId
-   *   Required. The name by which the new table should be referred to within the
-   *   parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *   Required. The name by which the new table should be referred to within the parent
+   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    * @param {string} request.sourceSnapshot
-   *   Required. The unique name of the snapshot from which to restore the table.
-   *   The snapshot and the table must be in the same instance. Values are of the
-   *   form
+   *   Required. The unique name of the snapshot from which to restore the table. The
+   *   snapshot and the table must be in the same instance.
+   *   Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -2002,9 +2002,9 @@ export class BigtableTableAdminClient {
    *   Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    * @param {string} request.snapshotId
-   *   Required. The ID by which the new snapshot should be referred to within the
-   *   parent cluster, e.g., `mysnapshot` of the form:
-   *   `{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*` rather than
+   *   Required. The ID by which the new snapshot should be referred to within the parent
+   *   cluster, e.g., `mysnapshot` of the form: `{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*`
+   *   rather than
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/mysnapshot`.
    * @param {google.protobuf.Duration} request.ttl
    *   The amount of time that the new snapshot can stay active after it is
@@ -2141,14 +2141,14 @@ export class BigtableTableAdminClient {
     >
   ): void;
   /**
-   * Starts creating a new Cloud Bigtable Backup. The returned backup
+   * Starts creating a new Cloud Bigtable Backup.  The returned backup
    * {@link google.longrunning.Operation|long-running operation} can be used to
    * track creation of the backup. The
    * {@link google.longrunning.Operation.metadata|metadata} field type is
    * {@link google.bigtable.admin.v2.CreateBackupMetadata|CreateBackupMetadata}. The
    * {@link google.longrunning.Operation.response|response} field type is
-   * {@link google.bigtable.admin.v2.Backup|Backup}, if successful. Cancelling the
-   * returned operation will stop the creation and delete the backup.
+   * {@link google.bigtable.admin.v2.Backup|Backup}, if successful. Cancelling the returned operation will stop the
+   * creation and delete the backup.
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -2294,11 +2294,11 @@ export class BigtableTableAdminClient {
   ): void;
   /**
    * Create a new table by restoring from a completed backup. The new table
-   * must be in the same instance as the instance containing the backup. The
+   * must be in the same instance as the instance containing the backup.  The
    * returned table {@link google.longrunning.Operation|long-running operation} can
-   * be used to track the progress of the operation, and to cancel it. The
+   * be used to track the progress of the operation, and to cancel it.  The
    * {@link google.longrunning.Operation.metadata|metadata} field type is
-   * {@link google.bigtable.admin.RestoreTableMetadata|RestoreTableMetadata}. The
+   * {@link google.bigtable.admin.RestoreTableMetadata|RestoreTableMetadata}.  The
    * {@link google.longrunning.Operation.response|response} type is
    * {@link google.bigtable.admin.v2.Table|Table}, if successful.
    *
@@ -2314,7 +2314,7 @@ export class BigtableTableAdminClient {
    *   `parent` forms the full table name of the form
    *   `projects/<project>/instances/<instance>/tables/<table_id>`.
    * @param {string} request.backup
-   *   Name of the backup from which to restore. Values are of the form
+   *   Name of the backup from which to restore.  Values are of the form
    *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -2440,8 +2440,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be
-   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be listed.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
    *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
@@ -2534,8 +2534,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be
-   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be listed.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
    *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
@@ -2586,8 +2586,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be
-   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be listed.
+   *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
    *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
@@ -2669,8 +2669,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be
-   *   listed. Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be listed.
+   *   Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -2756,8 +2756,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be
-   *   listed. Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be listed.
+   *   Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -2801,8 +2801,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be
-   *   listed. Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be listed.
+   *   Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -2872,7 +2872,7 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The cluster to list backups from. Values are of the
+   *   Required. The cluster to list backups from.  Values are of the
    *   form `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list backups for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -2881,7 +2881,7 @@ export class BigtableTableAdminClient {
    *   The expression must specify the field name, a comparison operator,
    *   and the value that you want to use for filtering. The value must be a
    *   string, a number, or a boolean. The comparison operator must be
-   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
+   *   <, >, <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
    *   roughly synonymous with equality. Filter rules are case insensitive.
    *
    *   The fields eligible for filtering are:
@@ -2911,9 +2911,8 @@ export class BigtableTableAdminClient {
    *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
    * @param {string} request.orderBy
    *   An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in
-   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
-   *   https://aip.dev/132#ordering.
+   *   The string value should specify one or more fields in {@link google.bigtable.admin.v2.Backup|Backup}. The full
+   *   syntax is described at https://aip.dev/132#ordering.
    *
    *   Fields supported are:
    *      * name
@@ -2936,10 +2935,9 @@ export class BigtableTableAdminClient {
    *   less, defaults to the server's maximum allowed page size.
    * @param {string} request.pageToken
    *   If non-empty, `page_token` should contain a
-   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
-   *   from a previous
-   *   {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
-   *   same `parent` and with the same `filter`.
+   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token} from a
+   *   previous {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the same `parent` and with the same
+   *   `filter`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -3017,7 +3015,7 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The cluster to list backups from. Values are of the
+   *   Required. The cluster to list backups from.  Values are of the
    *   form `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list backups for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -3026,7 +3024,7 @@ export class BigtableTableAdminClient {
    *   The expression must specify the field name, a comparison operator,
    *   and the value that you want to use for filtering. The value must be a
    *   string, a number, or a boolean. The comparison operator must be
-   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
+   *   <, >, <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
    *   roughly synonymous with equality. Filter rules are case insensitive.
    *
    *   The fields eligible for filtering are:
@@ -3056,9 +3054,8 @@ export class BigtableTableAdminClient {
    *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
    * @param {string} request.orderBy
    *   An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in
-   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
-   *   https://aip.dev/132#ordering.
+   *   The string value should specify one or more fields in {@link google.bigtable.admin.v2.Backup|Backup}. The full
+   *   syntax is described at https://aip.dev/132#ordering.
    *
    *   Fields supported are:
    *      * name
@@ -3081,10 +3078,9 @@ export class BigtableTableAdminClient {
    *   less, defaults to the server's maximum allowed page size.
    * @param {string} request.pageToken
    *   If non-empty, `page_token` should contain a
-   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
-   *   from a previous
-   *   {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
-   *   same `parent` and with the same `filter`.
+   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token} from a
+   *   previous {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the same `parent` and with the same
+   *   `filter`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
@@ -3120,7 +3116,7 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The cluster to list backups from. Values are of the
+   *   Required. The cluster to list backups from.  Values are of the
    *   form `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list backups for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -3129,7 +3125,7 @@ export class BigtableTableAdminClient {
    *   The expression must specify the field name, a comparison operator,
    *   and the value that you want to use for filtering. The value must be a
    *   string, a number, or a boolean. The comparison operator must be
-   *   <, >, <=, >=, !=, =, or :. Colon ‘:’ represents a HAS operator which is
+   *   <, >, <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
    *   roughly synonymous with equality. Filter rules are case insensitive.
    *
    *   The fields eligible for filtering are:
@@ -3159,9 +3155,8 @@ export class BigtableTableAdminClient {
    *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
    * @param {string} request.orderBy
    *   An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in
-   *   {@link google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
-   *   https://aip.dev/132#ordering.
+   *   The string value should specify one or more fields in {@link google.bigtable.admin.v2.Backup|Backup}. The full
+   *   syntax is described at https://aip.dev/132#ordering.
    *
    *   Fields supported are:
    *      * name
@@ -3184,10 +3179,9 @@ export class BigtableTableAdminClient {
    *   less, defaults to the server's maximum allowed page size.
    * @param {string} request.pageToken
    *   If non-empty, `page_token` should contain a
-   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
-   *   from a previous
-   *   {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
-   *   same `parent` and with the same `filter`.
+   *   {@link google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token} from a
+   *   previous {@link google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the same `parent` and with the same
+   *   `filter`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Object}

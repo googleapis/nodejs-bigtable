@@ -1259,7 +1259,7 @@ export class BigtableInstanceAdminClient {
    *   Required. The unique name of the app profile to be deleted. Values are of the form
    *   `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
    * @param {boolean} request.ignoreWarnings
-   *   If true, ignore safety checks when deleting the app profile.
+   *   Required. If true, ignore safety checks when deleting the app profile.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.

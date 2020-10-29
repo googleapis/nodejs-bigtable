@@ -4,15 +4,15 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/nodejs-bigtable.git",
-        "sha": "a14ccbaf26eeb80e83f4ce65ba2b02bb11dc22fa"
+        "sha": "b8e93255d451e5b347da117480cc73cb83ae0a5f"
       }
     },
     {
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "4c5071b615d96ef9dfd6a63d8429090f1f2872bb",
-        "internalRef": "327369997"
+        "sha": "ccd6462d31e6422fd188b6590aa8d0ad03e7d9a3",
+        "internalRef": "339464550"
       }
     },
     {

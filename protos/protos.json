@@ -567,7 +567,10 @@
                         },
                         "ignoreWarnings": {
                           "type": "bool",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
                         }
                       }
                     },
@@ -878,9 +881,9 @@
                           "options": {
                             "(google.api.http).post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups",
                             "(google.api.http).body": "backup",
+                            "(google.api.method_signature)": "parent,backup_id,backup",
                             "(google.longrunning.operation_info).response_type": "Backup",
-                            "(google.longrunning.operation_info).metadata_type": "CreateBackupMetadata",
-                            "(google.api.method_signature)": "parent,backup_id,backup"
+                            "(google.longrunning.operation_info).metadata_type": "CreateBackupMetadata"
                           }
                         },
                         "GetBackup": {
@@ -932,6 +935,8 @@
                           "options": {
                             "(google.api.http).post": "/v2/{resource=projects/*/instances/*/tables/*}:getIamPolicy",
                             "(google.api.http).body": "*",
+                            "(google.api.http).additional_bindings.post": "/v2/{resource=projects/*/instances/*/clusters/*/backups/*}:getIamPolicy",
+                            "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource"
                           }
                         },
@@ -956,6 +961,82 @@
                             "(google.api.http).additional_bindings.body": "*",
                             "(google.api.method_signature)": "resource,permissions"
                           }
+                        }
+                      }
+                    },
+                    "RestoreTableRequest": {
+                      "oneofs": {
+                        "source": {
+                          "oneof": [
+                            "backup"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                          }
+                        },
+                        "tableId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "backup": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
+                          }
+                        }
+                      }
+                    },
+                    "RestoreTableMetadata": {
+                      "oneofs": {
+                        "sourceInfo": {
+                          "oneof": [
+                            "backupInfo"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "sourceType": {
+                          "type": "RestoreSourceType",
+                          "id": 2
+                        },
+                        "backupInfo": {
+                          "type": "BackupInfo",
+                          "id": 3
+                        },
+                        "optimizeTableOperationName": {
+                          "type": "string",
+                          "id": 4
+                        },
+                        "progress": {
+                          "type": "OperationProgress",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "OptimizeRestoredTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "progress": {
+                          "type": "OperationProgress",
+                          "id": 2
                         }
                       }
                     },
@@ -1388,18 +1469,6 @@
                         }
                       }
                     },
-                    "GetBackupRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
-                          }
-                        }
-                      }
-                    },
                     "UpdateBackupRequest": {
                       "fields": {
                         "backup": {
@@ -1414,6 +1483,18 @@
                           "id": 2,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "GetBackupRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
                           }
                         }
                       }
@@ -1467,72 +1548,6 @@
                         },
                         "nextPageToken": {
                           "type": "string",
-                          "id": 2
-                        }
-                      }
-                    },
-                    "RestoreTableRequest": {
-                      "oneofs": {
-                        "source": {
-                          "oneof": [
-                            "backup"
-                          ]
-                        }
-                      },
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "tableId": {
-                          "type": "string",
-                          "id": 2
-                        },
-                        "backup": {
-                          "type": "string",
-                          "id": 3
-                        }
-                      }
-                    },
-                    "RestoreTableMetadata": {
-                      "oneofs": {
-                        "sourceInfo": {
-                          "oneof": [
-                            "backupInfo"
-                          ]
-                        }
-                      },
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "sourceType": {
-                          "type": "RestoreSourceType",
-                          "id": 2
-                        },
-                        "backupInfo": {
-                          "type": "BackupInfo",
-                          "id": 3
-                        },
-                        "optimizeTableOperationName": {
-                          "type": "string",
-                          "id": 4
-                        },
-                        "progress": {
-                          "type": "OperationProgress",
-                          "id": 5
-                        }
-                      }
-                    },
-                    "OptimizeRestoredTableMetadata": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "progress": {
-                          "type": "OperationProgress",
                           "id": 2
                         }
                       }
