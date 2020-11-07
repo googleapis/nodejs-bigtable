@@ -20,7 +20,7 @@ import {Bigtable} from '@google-cloud/bigtable';
 
 // check that the client class type name can be used
 function doStuffWithBigtable(client: Bigtable) {
-  client.close();
+  // client.close();
 }
 
 function main() {
