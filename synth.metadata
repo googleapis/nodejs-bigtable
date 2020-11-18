@@ -3,8 +3,16 @@
     {
       "git": {
         "name": ".",
-        "remote": "git@github.com:googleapis/nodejs-bigtable.git",
+        "remote": "https://github.com/googleapis/nodejs-bigtable.git",
         "sha": "49102b4ac63c28c46aea7f27e85efd67035dc399"
+      }
+    },
+    {
+      "git": {
+        "name": "googleapis",
+        "remote": "https://github.com/googleapis/googleapis.git",
+        "sha": "ccd6462d31e6422fd188b6590aa8d0ad03e7d9a3",
+        "internalRef": "339464550"
       }
     },
     {
