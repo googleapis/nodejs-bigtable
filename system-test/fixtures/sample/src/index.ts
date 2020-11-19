@@ -18,15 +18,8 @@
 
 import {Bigtable} from '@google-cloud/bigtable';
 
-// check that the client class type name can be used
-function doStuffWithBigtable(client: Bigtable) {
-  // client.close();
-}
-
 function main() {
-  // check that the client instance can be created
-  const bigtableClient = new Bigtable();
-  doStuffWithBigtable(bigtableClient);
+  new Bigtable();
 }
 
 main();
