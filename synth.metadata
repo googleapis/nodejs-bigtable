@@ -4,15 +4,15 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/nodejs-bigtable.git",
-        "sha": "59a0d269d5196991dd395e671d7d5f54ce449005"
+        "sha": "49102b4ac63c28c46aea7f27e85efd67035dc399"
       }
     },
     {
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "b759c563bacf9cd15749be4d2bdd276d3f48ee29",
-        "internalRef": "341102751"
+        "sha": "ccd6462d31e6422fd188b6590aa8d0ad03e7d9a3",
+        "internalRef": "339464550"
       }
     },
     {
@@ -96,6 +96,7 @@
     "README.md",
     "api-extractor.json",
     "linkinator.config.json",
+    "package-lock.json.1955001207",
     "protos/google/bigtable/admin/v2/bigtable_instance_admin.proto",
     "protos/google/bigtable/admin/v2/bigtable_table_admin.proto",
     "protos/google/bigtable/admin/v2/common.proto",
@@ -108,6 +109,7 @@
     "protos/protos.json",
     "renovate.json",
     "samples/README.md",
+    "samples/package-lock.json.1658066032",
     "src/v2/bigtable_client.ts",
     "src/v2/bigtable_client_config.json",
     "src/v2/bigtable_instance_admin_client.ts",
