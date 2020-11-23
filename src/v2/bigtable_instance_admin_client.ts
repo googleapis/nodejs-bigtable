@@ -16,6 +16,7 @@
 // ** https://github.com/googleapis/gapic-generator-typescript **
 // ** All changes to this file may be overwritten. **
 
+/* global window */
 import * as gax from 'google-gax';
 import {
   Callback,
@@ -31,6 +32,11 @@ import * as path from 'path';
 import {Transform} from 'stream';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import * as protos from '../../protos/protos';
+/**
+ * Client JSON configuration object, loaded from
+ * `src/v2/bigtable_instance_admin_client_config.json`.
+ * This file defines retry strategy and timeouts for all API methods in this library.
+ */
 import * as gapicConfig from './bigtable_instance_admin_client_config.json';
 import {operationsProtos} from 'google-gax';
 const version = require('../../../package.json').version;
@@ -87,9 +93,9 @@ export class BigtableInstanceAdminClient {
    *     your project ID will be detected automatically.
    * @param {string} [options.apiEndpoint] - The domain name of the
    *     API remote host.
-   * @param {gax.ClientConfig} [options.clientConfig] - client configuration override.
-   *     TODO(@alexander-fenster): link to gax documentation.
-   * @param {boolean} fallback - Use HTTP fallback mode.
+   * @param {gax.ClientConfig} [options.clientConfig] - Client configuration override.
+   *     Follows the structure of {@link gapicConfig}.
+   * @param {boolean} [options.fallback] - Use HTTP fallback mode.
    *     In fallback mode, a special browser-compatible transport implementation is used
    *     instead of gRPC transport. In browser context (if the `window` object is defined)
    *     the fallback mode is enabled automatically; set `options.fallback` to `false`
@@ -103,7 +109,9 @@ export class BigtableInstanceAdminClient {
       opts?.servicePath || opts?.apiEndpoint || staticMembers.servicePath;
     const port = opts?.port || staticMembers.port;
     const clientConfig = opts?.clientConfig ?? {};
-    const fallback = opts?.fallback ?? typeof window !== 'undefined';
+    const fallback =
+      opts?.fallback ??
+      (typeof window !== 'undefined' && typeof window?.fetch === 'function');
     opts = Object.assign({servicePath, port, clientConfig, fallback}, opts);
 
     // If scopes are unset in options and we're connecting to a non-default endpoint, set scopes just in case.
@@ -433,7 +441,7 @@ export class BigtableInstanceAdminClient {
   // -------------------
   getInstance(
     request: protos.google.bigtable.admin.v2.IGetInstanceRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IInstance,
@@ -443,7 +451,7 @@ export class BigtableInstanceAdminClient {
   >;
   getInstance(
     request: protos.google.bigtable.admin.v2.IGetInstanceRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.bigtable.admin.v2.IInstance,
       protos.google.bigtable.admin.v2.IGetInstanceRequest | null | undefined,
@@ -479,7 +487,7 @@ export class BigtableInstanceAdminClient {
   getInstance(
     request: protos.google.bigtable.admin.v2.IGetInstanceRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.bigtable.admin.v2.IInstance,
           | protos.google.bigtable.admin.v2.IGetInstanceRequest
@@ -500,12 +508,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -520,7 +528,7 @@ export class BigtableInstanceAdminClient {
   }
   listInstances(
     request: protos.google.bigtable.admin.v2.IListInstancesRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IListInstancesResponse,
@@ -530,7 +538,7 @@ export class BigtableInstanceAdminClient {
   >;
   listInstances(
     request: protos.google.bigtable.admin.v2.IListInstancesRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.bigtable.admin.v2.IListInstancesResponse,
       protos.google.bigtable.admin.v2.IListInstancesRequest | null | undefined,
@@ -568,7 +576,7 @@ export class BigtableInstanceAdminClient {
   listInstances(
     request: protos.google.bigtable.admin.v2.IListInstancesRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.bigtable.admin.v2.IListInstancesResponse,
           | protos.google.bigtable.admin.v2.IListInstancesRequest
@@ -589,12 +597,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -609,7 +617,7 @@ export class BigtableInstanceAdminClient {
   }
   updateInstance(
     request: protos.google.bigtable.admin.v2.IInstance,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IInstance,
@@ -619,7 +627,7 @@ export class BigtableInstanceAdminClient {
   >;
   updateInstance(
     request: protos.google.bigtable.admin.v2.IInstance,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.bigtable.admin.v2.IInstance,
       protos.google.bigtable.admin.v2.IInstance | null | undefined,
@@ -678,7 +686,7 @@ export class BigtableInstanceAdminClient {
   updateInstance(
     request: protos.google.bigtable.admin.v2.IInstance,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.bigtable.admin.v2.IInstance,
           protos.google.bigtable.admin.v2.IInstance | null | undefined,
@@ -697,12 +705,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -717,7 +725,7 @@ export class BigtableInstanceAdminClient {
   }
   deleteInstance(
     request: protos.google.bigtable.admin.v2.IDeleteInstanceRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -727,7 +735,7 @@ export class BigtableInstanceAdminClient {
   >;
   deleteInstance(
     request: protos.google.bigtable.admin.v2.IDeleteInstanceRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteInstanceRequest | null | undefined,
@@ -763,7 +771,7 @@ export class BigtableInstanceAdminClient {
   deleteInstance(
     request: protos.google.bigtable.admin.v2.IDeleteInstanceRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.protobuf.IEmpty,
           | protos.google.bigtable.admin.v2.IDeleteInstanceRequest
@@ -784,12 +792,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -804,7 +812,7 @@ export class BigtableInstanceAdminClient {
   }
   getCluster(
     request: protos.google.bigtable.admin.v2.IGetClusterRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.ICluster,
@@ -814,7 +822,7 @@ export class BigtableInstanceAdminClient {
   >;
   getCluster(
     request: protos.google.bigtable.admin.v2.IGetClusterRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.bigtable.admin.v2.ICluster,
       protos.google.bigtable.admin.v2.IGetClusterRequest | null | undefined,
@@ -850,7 +858,7 @@ export class BigtableInstanceAdminClient {
   getCluster(
     request: protos.google.bigtable.admin.v2.IGetClusterRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.bigtable.admin.v2.ICluster,
           protos.google.bigtable.admin.v2.IGetClusterRequest | null | undefined,
@@ -869,12 +877,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -889,7 +897,7 @@ export class BigtableInstanceAdminClient {
   }
   listClusters(
     request: protos.google.bigtable.admin.v2.IListClustersRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IListClustersResponse,
@@ -899,7 +907,7 @@ export class BigtableInstanceAdminClient {
   >;
   listClusters(
     request: protos.google.bigtable.admin.v2.IListClustersRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.bigtable.admin.v2.IListClustersResponse,
       protos.google.bigtable.admin.v2.IListClustersRequest | null | undefined,
@@ -939,7 +947,7 @@ export class BigtableInstanceAdminClient {
   listClusters(
     request: protos.google.bigtable.admin.v2.IListClustersRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.bigtable.admin.v2.IListClustersResponse,
           | protos.google.bigtable.admin.v2.IListClustersRequest
@@ -960,12 +968,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -980,7 +988,7 @@ export class BigtableInstanceAdminClient {
   }
   deleteCluster(
     request: protos.google.bigtable.admin.v2.IDeleteClusterRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -990,7 +998,7 @@ export class BigtableInstanceAdminClient {
   >;
   deleteCluster(
     request: protos.google.bigtable.admin.v2.IDeleteClusterRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteClusterRequest | null | undefined,
@@ -1026,7 +1034,7 @@ export class BigtableInstanceAdminClient {
   deleteCluster(
     request: protos.google.bigtable.admin.v2.IDeleteClusterRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.protobuf.IEmpty,
           | protos.google.bigtable.admin.v2.IDeleteClusterRequest
@@ -1047,12 +1055,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1067,7 +1075,7 @@ export class BigtableInstanceAdminClient {
   }
   createAppProfile(
     request: protos.google.bigtable.admin.v2.ICreateAppProfileRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IAppProfile,
@@ -1077,7 +1085,7 @@ export class BigtableInstanceAdminClient {
   >;
   createAppProfile(
     request: protos.google.bigtable.admin.v2.ICreateAppProfileRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.bigtable.admin.v2.IAppProfile,
       | protos.google.bigtable.admin.v2.ICreateAppProfileRequest
@@ -1127,7 +1135,7 @@ export class BigtableInstanceAdminClient {
   createAppProfile(
     request: protos.google.bigtable.admin.v2.ICreateAppProfileRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.bigtable.admin.v2.IAppProfile,
           | protos.google.bigtable.admin.v2.ICreateAppProfileRequest
@@ -1150,12 +1158,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1170,7 +1178,7 @@ export class BigtableInstanceAdminClient {
   }
   getAppProfile(
     request: protos.google.bigtable.admin.v2.IGetAppProfileRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IAppProfile,
@@ -1180,7 +1188,7 @@ export class BigtableInstanceAdminClient {
   >;
   getAppProfile(
     request: protos.google.bigtable.admin.v2.IGetAppProfileRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.bigtable.admin.v2.IAppProfile,
       protos.google.bigtable.admin.v2.IGetAppProfileRequest | null | undefined,
@@ -1216,7 +1224,7 @@ export class BigtableInstanceAdminClient {
   getAppProfile(
     request: protos.google.bigtable.admin.v2.IGetAppProfileRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.bigtable.admin.v2.IAppProfile,
           | protos.google.bigtable.admin.v2.IGetAppProfileRequest
@@ -1237,12 +1245,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1257,7 +1265,7 @@ export class BigtableInstanceAdminClient {
   }
   deleteAppProfile(
     request: protos.google.bigtable.admin.v2.IDeleteAppProfileRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.protobuf.IEmpty,
@@ -1267,7 +1275,7 @@ export class BigtableInstanceAdminClient {
   >;
   deleteAppProfile(
     request: protos.google.bigtable.admin.v2.IDeleteAppProfileRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.protobuf.IEmpty,
       | protos.google.bigtable.admin.v2.IDeleteAppProfileRequest
@@ -1309,7 +1317,7 @@ export class BigtableInstanceAdminClient {
   deleteAppProfile(
     request: protos.google.bigtable.admin.v2.IDeleteAppProfileRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.protobuf.IEmpty,
           | protos.google.bigtable.admin.v2.IDeleteAppProfileRequest
@@ -1332,12 +1340,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1352,7 +1360,7 @@ export class BigtableInstanceAdminClient {
   }
   getIamPolicy(
     request: protos.google.iam.v1.IGetIamPolicyRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.iam.v1.IPolicy,
@@ -1362,7 +1370,7 @@ export class BigtableInstanceAdminClient {
   >;
   getIamPolicy(
     request: protos.google.iam.v1.IGetIamPolicyRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.IGetIamPolicyRequest | null | undefined,
@@ -1402,7 +1410,7 @@ export class BigtableInstanceAdminClient {
   getIamPolicy(
     request: protos.google.iam.v1.IGetIamPolicyRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.iam.v1.IPolicy,
           protos.google.iam.v1.IGetIamPolicyRequest | null | undefined,
@@ -1421,12 +1429,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1441,7 +1449,7 @@ export class BigtableInstanceAdminClient {
   }
   setIamPolicy(
     request: protos.google.iam.v1.ISetIamPolicyRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.iam.v1.IPolicy,
@@ -1451,7 +1459,7 @@ export class BigtableInstanceAdminClient {
   >;
   setIamPolicy(
     request: protos.google.iam.v1.ISetIamPolicyRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.ISetIamPolicyRequest | null | undefined,
@@ -1493,7 +1501,7 @@ export class BigtableInstanceAdminClient {
   setIamPolicy(
     request: protos.google.iam.v1.ISetIamPolicyRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.iam.v1.IPolicy,
           protos.google.iam.v1.ISetIamPolicyRequest | null | undefined,
@@ -1512,12 +1520,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1532,7 +1540,7 @@ export class BigtableInstanceAdminClient {
   }
   testIamPermissions(
     request: protos.google.iam.v1.ITestIamPermissionsRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.iam.v1.ITestIamPermissionsResponse,
@@ -1542,7 +1550,7 @@ export class BigtableInstanceAdminClient {
   >;
   testIamPermissions(
     request: protos.google.iam.v1.ITestIamPermissionsRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       protos.google.iam.v1.ITestIamPermissionsResponse,
       protos.google.iam.v1.ITestIamPermissionsRequest | null | undefined,
@@ -1583,7 +1591,7 @@ export class BigtableInstanceAdminClient {
   testIamPermissions(
     request: protos.google.iam.v1.ITestIamPermissionsRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           protos.google.iam.v1.ITestIamPermissionsResponse,
           protos.google.iam.v1.ITestIamPermissionsRequest | null | undefined,
@@ -1602,12 +1610,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1623,7 +1631,7 @@ export class BigtableInstanceAdminClient {
 
   createInstance(
     request: protos.google.bigtable.admin.v2.ICreateInstanceRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       LROperation<
@@ -1636,7 +1644,7 @@ export class BigtableInstanceAdminClient {
   >;
   createInstance(
     request: protos.google.bigtable.admin.v2.ICreateInstanceRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       LROperation<
         protos.google.bigtable.admin.v2.IInstance,
@@ -1694,7 +1702,7 @@ export class BigtableInstanceAdminClient {
   createInstance(
     request: protos.google.bigtable.admin.v2.ICreateInstanceRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           LROperation<
             protos.google.bigtable.admin.v2.IInstance,
@@ -1722,12 +1730,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1779,7 +1787,7 @@ export class BigtableInstanceAdminClient {
   }
   partialUpdateInstance(
     request: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       LROperation<
@@ -1792,7 +1800,7 @@ export class BigtableInstanceAdminClient {
   >;
   partialUpdateInstance(
     request: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       LROperation<
         protos.google.bigtable.admin.v2.IInstance,
@@ -1840,7 +1848,7 @@ export class BigtableInstanceAdminClient {
   partialUpdateInstance(
     request: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           LROperation<
             protos.google.bigtable.admin.v2.IInstance,
@@ -1868,12 +1876,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -1925,7 +1933,7 @@ export class BigtableInstanceAdminClient {
   }
   createCluster(
     request: protos.google.bigtable.admin.v2.ICreateClusterRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       LROperation<
@@ -1938,7 +1946,7 @@ export class BigtableInstanceAdminClient {
   >;
   createCluster(
     request: protos.google.bigtable.admin.v2.ICreateClusterRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       LROperation<
         protos.google.bigtable.admin.v2.ICluster,
@@ -1991,7 +1999,7 @@ export class BigtableInstanceAdminClient {
   createCluster(
     request: protos.google.bigtable.admin.v2.ICreateClusterRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           LROperation<
             protos.google.bigtable.admin.v2.ICluster,
@@ -2019,12 +2027,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -2076,7 +2084,7 @@ export class BigtableInstanceAdminClient {
   }
   updateCluster(
     request: protos.google.bigtable.admin.v2.ICluster,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       LROperation<
@@ -2089,7 +2097,7 @@ export class BigtableInstanceAdminClient {
   >;
   updateCluster(
     request: protos.google.bigtable.admin.v2.ICluster,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       LROperation<
         protos.google.bigtable.admin.v2.ICluster,
@@ -2149,7 +2157,7 @@ export class BigtableInstanceAdminClient {
   updateCluster(
     request: protos.google.bigtable.admin.v2.ICluster,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           LROperation<
             protos.google.bigtable.admin.v2.ICluster,
@@ -2177,12 +2185,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -2234,7 +2242,7 @@ export class BigtableInstanceAdminClient {
   }
   updateAppProfile(
     request: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       LROperation<
@@ -2247,7 +2255,7 @@ export class BigtableInstanceAdminClient {
   >;
   updateAppProfile(
     request: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: Callback<
       LROperation<
         protos.google.bigtable.admin.v2.IAppProfile,
@@ -2296,7 +2304,7 @@ export class BigtableInstanceAdminClient {
   updateAppProfile(
     request: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | Callback<
           LROperation<
             protos.google.bigtable.admin.v2.IAppProfile,
@@ -2324,12 +2332,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -2381,7 +2389,7 @@ export class BigtableInstanceAdminClient {
   }
   listAppProfiles(
     request: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Promise<
     [
       protos.google.bigtable.admin.v2.IAppProfile[],
@@ -2391,7 +2399,7 @@ export class BigtableInstanceAdminClient {
   >;
   listAppProfiles(
     request: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
-    options: gax.CallOptions,
+    options: CallOptions,
     callback: PaginationCallback<
       protos.google.bigtable.admin.v2.IListAppProfilesRequest,
       | protos.google.bigtable.admin.v2.IListAppProfilesResponse
@@ -2449,7 +2457,7 @@ export class BigtableInstanceAdminClient {
   listAppProfiles(
     request: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
     optionsOrCallback?:
-      | gax.CallOptions
+      | CallOptions
       | PaginationCallback<
           protos.google.bigtable.admin.v2.IListAppProfilesRequest,
           | protos.google.bigtable.admin.v2.IListAppProfilesResponse
@@ -2472,12 +2480,12 @@ export class BigtableInstanceAdminClient {
     ]
   > | void {
     request = request || {};
-    let options: gax.CallOptions;
+    let options: CallOptions;
     if (typeof optionsOrCallback === 'function' && callback === undefined) {
       callback = optionsOrCallback;
       options = {};
     } else {
-      options = optionsOrCallback as gax.CallOptions;
+      options = optionsOrCallback as CallOptions;
     }
     options = options || {};
     options.otherArgs = options.otherArgs || {};
@@ -2527,7 +2535,7 @@ export class BigtableInstanceAdminClient {
    */
   listAppProfilesStream(
     request?: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): Transform {
     request = request || {};
     options = options || {};
@@ -2589,7 +2597,7 @@ export class BigtableInstanceAdminClient {
    */
   listAppProfilesAsync(
     request?: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
-    options?: gax.CallOptions
+    options?: CallOptions
   ): AsyncIterable<protos.google.bigtable.admin.v2.IAppProfile> {
     request = request || {};
     options = options || {};
