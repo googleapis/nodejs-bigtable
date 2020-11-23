@@ -14,6 +14,9 @@
 Cloud Bigtable Client Library for Node.js
 
 
+A comprehensive list of changes in each version may be found in
+[the CHANGELOG](https://github.com/googleapis/nodejs-bigtable/blob/master/CHANGELOG.md).
+
 * [Cloud Bigtable Node.js Client API Reference][client-docs]
 * [Cloud Bigtable Documentation][product-docs]
 * [github.com/googleapis/nodejs-bigtable](https://github.com/googleapis/nodejs-bigtable)
@@ -87,6 +90,12 @@ has instructions for running the samples.
 
 | Sample                      | Source Code                       | Try it |
 | --------------------------- | --------------------------------- | ------ |
+| Backups.create | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.create.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.create.js,samples/README.md) |
+| Backups.delete | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.delete.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.delete.js,samples/README.md) |
+| Backups.get | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.get.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.get.js,samples/README.md) |
+| Backups.list | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.list.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.list.js,samples/README.md) |
+| Backups.restore | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.restore.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.restore.js,samples/README.md) |
+| Backups.update | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.update.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.update.js,samples/README.md) |
 | Filter Snippets | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/filterSnippets.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/filterSnippets.js,samples/README.md) |
 | Instances | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/instances.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md) |
 | Quickstart | [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/quickstart.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/quickstart.js,samples/README.md) |

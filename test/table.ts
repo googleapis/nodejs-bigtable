@@ -234,6 +234,135 @@ describe('Bigtable/Table', () => {
     });
   });
 
+  describe('createBackup', () => {
+    const BACKUP_ID = 'backup-id';
+    const CONFIG = {a: 'b'};
+
+    const READY_CLUSTER_ID = 'cluster-id';
+    const REPLICATION_STATES = new Map();
+    REPLICATION_STATES.set('a', {replicationState: 'NOT_READY'});
+    REPLICATION_STATES.set(READY_CLUSTER_ID, {replicationState: 'READY'});
+
+    it('should throw if an id is not provided', () => {
+      assert.throws(() => {
+        table.createBackup();
+      }, /An id is required to create a backup\./);
+    });
+
+    it('should throw if a configuration object is not provided', () => {
+      assert.throws(() => {
+        table.createBackup(BACKUP_ID);
+      }, /A configuration object is required\./);
+    });
+
+    it('should get replication states', done => {
+      table.getReplicationStates = () => {
+        done();
+      };
+
+      table.createBackup(BACKUP_ID, CONFIG, assert.ifError);
+    });
+
+    it('should pass gaxOptions when getting replication states', done => {
+      const config = {gaxOptions: {}};
+
+      table.getReplicationStates = (gaxOptions: {}) => {
+        assert.strictEqual(gaxOptions, config.gaxOptions);
+        done();
+      };
+
+      table.createBackup(BACKUP_ID, config, assert.ifError);
+    });
+
+    it('should execute callback with error if getting replication states fails', done => {
+      const error = new Error('Error.');
+
+      table.getReplicationStates = (gaxOptions: {}, callback: Function) => {
+        callback(error);
+      };
+
+      table.createBackup(BACKUP_ID, CONFIG, (err: Error) => {
+        assert.strictEqual(err, error);
+        done();
+      });
+    });
+
+    it('should create a Cluster with the id of the first available cluster', done => {
+      table.instance.cluster = (id: string) => {
+        assert.strictEqual(id, READY_CLUSTER_ID);
+        setImmediate(done);
+        return {createBackup: () => {}};
+      };
+
+      table.getReplicationStates = (gaxOptions: {}, callback: Function) => {
+        callback(null, REPLICATION_STATES);
+      };
+
+      table.createBackup(BACKUP_ID, CONFIG, assert.ifError);
+    });
+
+    it('should accept READY_OPTIMIZING status', done => {
+      const readyClusterId = 'unique-cluster-id';
+      const replicationStates = new Map();
+      replicationStates.set('a', {replicationState: 'NOT_READY'});
+      replicationStates.set(readyClusterId, {
+        replicationState: 'READY_OPTIMIZING',
+      });
+
+      table.instance.cluster = (id: string) => {
+        assert.strictEqual(id, readyClusterId);
+        setImmediate(done);
+        return {createBackup: () => {}};
+      };
+
+      table.getReplicationStates = (gaxOptions: {}, callback: Function) => {
+        callback(null, replicationStates);
+      };
+
+      table.createBackup(BACKUP_ID, CONFIG, assert.ifError);
+    });
+
+    it('should return error if no clusters are available', done => {
+      const replicationStates = new Map();
+      replicationStates.set('a', {replicationState: 'NOT_READY'});
+      replicationStates.set('b', {replicationState: 'NOT_READY'});
+
+      table.getReplicationStates = (gaxOptions: {}, callback: Function) => {
+        callback(null, replicationStates);
+      };
+
+      table.createBackup(BACKUP_ID, CONFIG, (err: Error) => {
+        assert.strictEqual(
+          err.message,
+          'No ready clusters eligible for backup.'
+        );
+        done();
+      });
+    });
+
+    it('should correctly create a Backup from the Cluster', done => {
+      table.instance.cluster = () => {
+        return {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          createBackup: (id: string, config: any, callback: Function) => {
+            assert.strictEqual(id, BACKUP_ID);
+            assert.deepStrictEqual(config, {
+              table: table.name,
+              ...CONFIG,
+            });
+            callback(); // done()
+          },
+        };
+      };
+
+      table.getReplicationStates = (gaxOptions: {}, callback: Function) => {
+        callback(null, REPLICATION_STATES);
+      };
+
+      table.createBackup(BACKUP_ID, CONFIG, done);
+    });
+  });
+
   describe('createPrefixRange', () => {
     it('should create a range from the prefix', () => {
       assert.deepStrictEqual(Table.createPrefixRange('start'), {
@@ -1103,6 +1232,29 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(reqOptsCalls.length, 1);
           done();
         });
+      });
+
+      it('should not retry over maxRetries', done => {
+        const error = new Error('retry me!') as ServiceError;
+        error.code = 4;
+
+        emitters = [
+          (((stream: Writable) => {
+            stream.emit('error', error);
+            stream.end();
+          }) as {}) as EventEmitter,
+        ];
+
+        table.maxRetries = 0;
+        table
+          .createReadStream()
+          .on('error', (err: ServiceError) => {
+            assert.strictEqual(err, error);
+            assert.strictEqual(reqOptsCalls.length, 1);
+            done();
+          })
+          .on('end', done)
+          .resume();
       });
 
       it('should have a range which starts after the last read key', done => {
@@ -2500,7 +2652,7 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.client, 'BigtableClient');
         assert.strictEqual(config.method, 'sampleRowKeys');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
-        assert.strictEqual(config.gaxOpts, undefined);
+        assert.deepStrictEqual(config.gaxOpts, {});
 
         setImmediate(done);
 
@@ -2532,7 +2684,7 @@ describe('Bigtable/Table', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       table.bigtable.request = (config: any) => {
-        assert.strictEqual(config.gaxOpts, gaxOptions);
+        assert.deepStrictEqual(config.gaxOpts, gaxOptions);
 
         setImmediate(done);
 

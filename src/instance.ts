@@ -12,10 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {paginator, ResourceStream} from '@google-cloud/paginator';
 import {promisifyAll} from '@google-cloud/promisify';
+import {Transform} from 'stream';
 import arrify = require('arrify');
 import * as is from 'is';
+import * as extend from 'extend';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pumpify = require('pumpify');
+
 import snakeCase = require('lodash.snakecase');
 import {
   AppProfile,
@@ -25,6 +29,11 @@ import {
   GetAppProfilesCallback,
   GetAppProfilesResponse,
 } from './app-profile';
+import {
+  GetBackupsCallback,
+  GetBackupsOptions,
+  GetBackupsResponse,
+} from './backup';
 import {
   Cluster,
   CreateClusterOptions,
@@ -57,6 +66,7 @@ import {CallOptions, Operation} from 'google-gax';
 import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
+import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -136,6 +146,12 @@ export type SetInstanceMetadataCallback = (
 ) => void;
 export type SetInstanceMetadataResponse = [google.protobuf.Empty];
 
+export interface CreateTableFromBackupConfig {
+  table: string;
+  backup: Backup | string;
+  gaxOptions?: CallOptions;
+}
+
 /**
  * Create an Instance object to interact with a Cloud Bigtable instance.
  *
@@ -155,7 +171,6 @@ export class Instance {
   id: string;
   name: string;
   metadata?: google.bigtable.admin.v2.IInstance;
-  getTablesStream!: (options?: GetTablesOptions) => ResourceStream<Table>;
   constructor(bigtable: Bigtable, id: string) {
     this.bigtable = bigtable;
 
@@ -651,21 +666,33 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     optionsOrCallback?: CallOptions | GetAppProfilesCallback,
     cb?: GetAppProfilesCallback
   ): void | Promise<GetAppProfilesResponse> {
-    const gaxOptions =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const gaxOpts =
+      typeof optionsOrCallback === 'object'
+        ? extend(true, {}, optionsOrCallback)
+        : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts = {
+    const reqOpts: google.bigtable.admin.v2.IListAppProfilesRequest = {
       parent: this.name,
     };
+
+    if (is.number(gaxOpts.pageSize)) {
+      reqOpts.pageSize = gaxOpts.pageSize;
+    }
+    delete gaxOpts.pageSize;
+
+    if (gaxOpts.pageToken) {
+      reqOpts.pageToken = gaxOpts.pageToken;
+    }
+    delete gaxOpts.pageToken;
 
     this.bigtable.request<google.bigtable.admin.v2.IAppProfile[]>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'listAppProfiles',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts,
       },
       (err, resp) => {
         if (err) {
@@ -682,6 +709,163 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         callback(null, appProfiles, resp);
       }
     );
+  }
+
+  /**
+   * Get {@link AppProfile} objects for all the App Profiles in your
+   * Cloud Bigtable instance as a readable object stream.
+   *
+   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     {@link Instance#getAppProfiles} for a complete list of options.
+   * @returns {stream}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   *
+   * instance.getAppProfilesStream()
+   *   .on('error', console.error)
+   *   .on('data', function(appProfile) {
+   *     // appProfile is a AppProfile object.
+   *   })
+   *   .on('end', () => {
+   *     // All appProfiles retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * instance.getAppProfilesStream()
+   *   .on('data', function(appProfile) {
+   *     this.end();
+   *   });
+   */
+  getAppProfilesStream(gaxOptions: CallOptions = {}): NodeJS.ReadableStream {
+    const reqOpts: google.bigtable.admin.v2.IListAppProfilesRequest = {
+      parent: this.name,
+    };
+    const gaxOpts = extend(true, {}, gaxOptions);
+
+    if (is.number(gaxOpts.pageSize)) {
+      reqOpts.pageSize = gaxOpts.pageSize;
+    }
+    delete gaxOpts.pageSize;
+
+    if (gaxOpts.pageToken) {
+      reqOpts.pageToken = gaxOpts.pageToken;
+    }
+    delete gaxOpts.pageToken;
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const transformToAppProfile = (
+      chunk: google.bigtable.admin.v2.IAppProfile,
+      enc: string,
+      callback: Function
+    ) => {
+      const appProfile = self.appProfile(chunk.name!.split('/').pop()!);
+      appProfile.metadata = chunk;
+      callback(null, appProfile);
+    };
+    let failedLocations: string[] = [];
+    const flush = (callback: Function) => {
+      if (failedLocations.length > 0) {
+        callback(
+          new Error(
+            `Resources from the following locations are currently not available\n${JSON.stringify(
+              failedLocations
+            )}`
+          )
+        );
+      } else {
+        callback();
+      }
+    };
+    const stream = this.bigtable.request({
+      client: 'BigtableInstanceAdminClient',
+      method: 'listAppProfilesStream',
+      reqOpts,
+      gaxOpts,
+    });
+    stream.on('response', apiResp => {
+      if (arrify(apiResp.failedLocations).length > 0) {
+        failedLocations = failedLocations.concat(apiResp.failedLocations);
+      }
+    });
+    return pumpify.obj([
+      stream,
+      new Transform({
+        objectMode: true,
+        transform: transformToAppProfile,
+        flush,
+      }),
+    ]);
+  }
+
+  getBackups(options?: GetBackupsOptions): Promise<GetBackupsResponse>;
+  getBackups(options: GetBackupsOptions, callback: GetBackupsCallback): void;
+  getBackups(callback: GetBackupsCallback): void;
+  /**
+   * Get Cloud Bigtable Backup instances within this instance. This returns both
+   * completed and pending backups.
+   *
+   * @param {GetBackupsOptions | GetBackupsCallback} [optionsOrCallback]
+   * @param {GetBackupsResponse} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Backup[]} callback.backups All matching Backup instances.
+   * @param {object} callback.apiResponse The full API response.
+   * @return {void | Promise<ListBackupsResponse>}
+   *
+   * @example <caption>include:samples/backups.list.js</caption>
+   * region_tag:bigtable_list_backups
+   */
+  getBackups(
+    optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
+    cb?: GetBackupsCallback
+  ): void | Promise<GetBackupsResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    this.cluster('-').getBackups(options, callback);
+  }
+
+  /**
+   * Get Cloud Bigtable Backup instances within this instance. This returns both
+   * completed and pending backups as a readable stream.
+   *
+   * @param {GetBackupsOptions} [options] Configuration object. See
+   *     {@link Instance#getBackups} for a complete list of options.
+   * @returns {ReadableStream<Backup>}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   *
+   * instance.getBackupsStream()
+   *   .on('error', console.error)
+   *   .on('data', function(backup) {
+   *     // backup is a Backup object.
+   *   })
+   *   .on('end', () => {
+   *     // All backups retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * instance.getBackupsStream()
+   *   .on('data', function(backup) {
+   *     this.end();
+   *   });
+   */
+  getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
+    return this.cluster('-').getBackupsStream(options);
   }
 
   getClusters(options?: CallOptions): Promise<GetClustersResponse>;
@@ -877,10 +1061,26 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts = Object.assign({}, options, {
+    const gaxOpts = extend(true, {}, options.gaxOptions);
+    let reqOpts = Object.assign({}, options, {
       parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     });
+
+    // Copy over pageSize and pageToken values from gaxOptions.
+    // However values set on options take precedence.
+    if (gaxOpts) {
+      reqOpts = extend(
+        {},
+        {
+          pageSize: gaxOpts.pageSize,
+          pageToken: gaxOpts.pageToken,
+        },
+        reqOpts
+      );
+      delete gaxOpts.pageSize;
+      delete gaxOpts.pageToken;
+    }
 
     delete (reqOpts as GetTablesOptions).gaxOptions;
 
@@ -889,7 +1089,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         client: 'BigtableTableAdminClient',
         method: 'listTables',
         reqOpts,
-        gaxOpts: options.gaxOptions,
+        gaxOpts,
       },
       (...args) => {
         if (args[1]) {
@@ -903,6 +1103,140 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         callback(...args);
       }
     );
+  }
+
+  /**
+   * Get {@link Table} objects for all the tables in your Cloud Bigtable
+   * instance as a readable object stream.
+   *
+   * @param {object} [options] Query object. See
+   *     {@link Instance#getTables} for a complete list of options.
+   * @returns {stream}
+   *
+   * @example
+   * const {Bigtable} = require('@google-cloud/bigtable');
+   * const bigtable = new Bigtable();
+   * const instance = bigtable.instance('my-instance');
+   *
+   * instance.getTablesStream()
+   *   .on('error', console.error)
+   *   .on('data', function(table) {
+   *     // table is a Table object.
+   *   })
+   *   .on('end', () => {
+   *     // All tables retrieved.
+   *   });
+   *
+   * //-
+   * // If you anticipate many results, you can end a stream early to prevent
+   * // unnecessary processing and API requests.
+   * //-
+   * instance.getTablesStream()
+   *   .on('data', function(table) {
+   *     this.end();
+   *   });
+   */
+  getTablesStream(options: GetTablesOptions = {}): NodeJS.ReadableStream {
+    const gaxOpts = extend(true, {}, options.gaxOptions);
+    let reqOpts = Object.assign({}, options, {
+      parent: this.name,
+      view: Table.VIEWS[options.view || 'unspecified'],
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (reqOpts as any).gaxOptions;
+
+    // Copy over pageSize and pageToken values from gaxOptions.
+    // However values set on options take precedence.
+    if (gaxOpts) {
+      reqOpts = extend(
+        {},
+        {
+          pageSize: gaxOpts.pageSize,
+          pageToken: gaxOpts.pageToken,
+        },
+        reqOpts
+      );
+      delete gaxOpts.pageSize;
+      delete gaxOpts.pageToken;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    const transformToTable = (
+      chunk: google.bigtable.admin.v2.ITable,
+      enc: string,
+      callback: Function
+    ) => {
+      const table = self.table(chunk.name!.split('/').pop()!);
+      table.metadata = chunk;
+      callback(null, table);
+    };
+    return pumpify.obj([
+      this.bigtable.request({
+        client: 'BigtableTableAdminClient',
+        method: 'listTablesStream',
+        reqOpts,
+        gaxOpts,
+      }),
+      new Transform({objectMode: true, transform: transformToTable}),
+    ]);
+  }
+
+  createTableFromBackup(
+    config: CreateTableFromBackupConfig
+  ): Promise<RestoreTableResponse>;
+  createTableFromBackup(
+    config: CreateTableFromBackupConfig,
+    callback: RestoreTableCallback
+  ): void;
+  /**
+   * Create a new table by restoring from a completed backup.
+   *
+   * The new table must be in the same instance as the instance containing
+   * the backup. The returned table
+   * {@link google.longrunning.Operation|long-running operation} can be used
+   * to track the progress of the operation, and to cancel it.
+   *
+   * @param {CreateTableFromBackupConfig} config Configuration object.
+   * @param {Backup | string} config.backup The name of the backup from which to
+   *     restore of the form
+   *     `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`,
+   *     or a Backup instance.
+   * @param {string} config.table The id of the table to create and restore to.
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {RestoreTableCallback} [cb]
+   * @return {void | Promise<RestoreTableResponse>}
+   *
+   * @example <caption>include:samples/backups.restore.js</caption>
+   * region_tag:bigtable_restore_backup
+   */
+  createTableFromBackup(
+    config: CreateTableFromBackupConfig,
+    callback?: RestoreTableCallback
+  ): void | Promise<RestoreTableResponse> {
+    if (!config.table) {
+      throw new Error('A table id is required to restore from a backup.');
+    }
+
+    let backup: Backup;
+
+    if (config.backup instanceof Backup) {
+      backup = config.backup;
+    } else {
+      try {
+        const clusterId = config.backup.match(/clusters\/([^/]+)/)![1];
+        backup = this.cluster(clusterId).backup(config.backup);
+      } catch (e) {
+        throw new Error(
+          'A complete backup name (path) is required or a Backup object.'
+        );
+      }
+    }
+
+    backup.restore(config.table, config.gaxOptions!, callback!);
   }
 
   setIamPolicy(
@@ -1104,52 +1438,20 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
   }
 }
 
-/**
- * Get {@link Table} objects for all the tables in your Cloud Bigtable
- * instance as a readable object stream.
- *
- * @param {object} [query] Configuration object. See
- *     {@link Instance#getTables} for a complete list of options.
- * @returns {stream}
- *
- * @example
- * const {Bigtable} = require('@google-cloud/bigtable');
- * const bigtable = new Bigtable();
- * const instance = bigtable.instance('my-instance');
- *
- * instance.getTablesStream()
- *   .on('error', console.error)
- *   .on('data', function(table) {
- *     // table is a Table object.
- *   })
- *   .on('end', () => {
- *     // All tables retrieved.
- *   });
- *
- * //-
- * // If you anticipate many results, you can end a stream early to prevent
- * // unnecessary processing and API requests.
- * //-
- * instance.getTablesStream()
- *   .on('data', function(table) {
- *     this.end();
- *   });
- */
-Instance.prototype.getTablesStream = paginator.streamify<Table>('getTables');
-
-/*! Developer Documentation
- *
- * These methods can be auto-paginated.
- */
-paginator.extend(Instance, ['getTables']);
-
 /*! Developer Documentation
  *
  * All async methods (except for streams) will return a Promise in the event
  * that a callback is omitted.
  */
 promisifyAll(Instance, {
-  exclude: ['appProfile', 'cluster', 'table'],
+  exclude: [
+    'appProfile',
+    'cluster',
+    'table',
+    'getBackupsStream',
+    'getTablesStream',
+    'getAppProfilesStream',
+  ],
 });
 
 /**

@@ -36,8 +36,6 @@ import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const retryRequest = require('retry-request');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -753,6 +751,12 @@ export class Bigtable {
       });
     };
 
+    const gapicStreamingMethods = {
+      listAppProfilesStream: true,
+      listBackupsStream: true,
+      listTablesStream: true,
+    };
+
     if (isStreamMode) {
       stream = streamEvents(new PassThrough({objectMode: true}));
       stream.abort = () => {
@@ -760,9 +764,11 @@ export class Bigtable {
           gaxStream.cancel();
         }
       };
-
-      stream.once('reading', makeRequestStream);
-
+      if (config.method! in gapicStreamingMethods) {
+        stream.once('reading', makeGapicStreamRequest);
+      } else {
+        stream.once('reading', makeRequestStream);
+      }
       return stream;
     } else {
       makeRequestCallback();
@@ -779,32 +785,47 @@ export class Bigtable {
     }
 
     function makeRequestStream() {
+      const retryRequestOptions = Object.assign(
+        {
+          currentRetryAttempt: 0,
+          noResponseRetries: 0,
+          objectMode: true,
+          shouldRetryFn: shouldRetryRequest,
+        },
+        config.retryOpts
+      );
+
+      config.gaxOpts = Object.assign(config.gaxOpts || {}, {
+        retryRequestOptions,
+      });
       prepareGaxRequest((err, requestFn) => {
         if (err) {
           stream.destroy(err);
           return;
         }
 
-        // @TODO: remove `retry-request` when gax supports retryable
-        // streams.
-        // https://github.com/googleapis/gax-nodejs/blob/ec0c8b0805c31d8a91ea69cb19fe50f42a38bf87/lib/streaming.js#L230
-        const retryOpts = Object.assign(
-          {
-            currentRetryAttempt: 0,
-            noResponseRetries: 0,
-            objectMode: true,
-            shouldRetryFn: shouldRetryRequest,
-            request() {
-              gaxStream = requestFn!();
-              return gaxStream;
-            },
-          },
-          config.retryOpts
-        );
-
-        retryRequest(null, retryOpts)
+        gaxStream = requestFn!();
+        gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('request', stream.emit.bind(stream, 'request'))
+          .pipe(stream);
+      });
+    }
+
+    function makeGapicStreamRequest() {
+      prepareGaxRequest((err, requestFn) => {
+        if (err) {
+          stream.destroy(err);
+          return;
+        }
+        gaxStream = requestFn!();
+        gaxStream
+          .on('error', (err: Error) => {
+            stream.destroy(err);
+          })
+          .on('response', response => {
+            stream.emit('response', response);
+          })
           .pipe(stream);
       });
     }
@@ -937,6 +958,26 @@ export {
   SetAppProfileMetadataResponse,
 } from './app-profile';
 export {
+  Backup,
+  BackupTimestamp,
+  DeleteBackupCallback,
+  DeleteBackupResponse,
+  GenericBackupCallback,
+  GetBackupCallback,
+  GetBackupResponse,
+  GetBackupsCallback,
+  GetBackupsOptions,
+  GetBackupsResponse,
+  IBackup,
+  ModifiableBackupFields,
+  RestoreTableCallback,
+  RestoreTableResponse,
+  BackupSetMetadataCallback,
+  BackupSetMetadataResponse,
+  BackupGetMetadataCallback,
+  BackupGetMetadataResponse,
+} from './backup';
+export {
   Chunk,
   ChunkTransformer,
   Data,
@@ -951,6 +992,8 @@ export {
   IOperation,
   ApiResponse,
   BooleanResponse,
+  CreateBackupCallback,
+  CreateBackupResponse,
   CreateClusterCallback,
   CreateClusterOptions,
   CreateClusterResponse,

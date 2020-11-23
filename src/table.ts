@@ -16,14 +16,13 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {decorateStatus} from './decorateStatus';
-import {PassThrough} from 'stream';
+import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
 import * as is from 'is';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
-import * as through from 'through2';
 
 import {
   Family,
@@ -39,6 +38,8 @@ import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
+import {ModifiableBackupFields} from './backup';
+import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 
@@ -181,6 +182,8 @@ export interface GetTablesOptions {
    * 'full'. Default: 'name'.
    */
   view?: 'name' | 'schema' | 'full';
+  pageSize?: number;
+  pageToken?: string;
 }
 
 export interface GetRowsOptions {
@@ -367,6 +370,10 @@ export interface PrefixRange {
   end?: BoundData | string;
 }
 
+export interface CreateBackupConfig extends ModifiableBackupFields {
+  gaxOptions?: CallOptions;
+}
+
 /**
  * Create a Table object to interact with a Cloud Bigtable table.
  *
@@ -509,6 +516,90 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const options =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     this.instance.createTable(this.id, options, callback);
+  }
+
+  createBackup(
+    id: string,
+    config: CreateBackupConfig
+  ): Promise<CreateBackupResponse>;
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback: CreateBackupCallback
+  ): void;
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback: CreateBackupCallback
+  ): void;
+  /**
+   * Backup a table with cluster auto selection.
+   *
+   * Backups of tables originate from a specific cluster. This is a helper
+   * around `Cluster.createBackup` that automatically selects the first ready
+   * cluster from which a backup can be performed.
+   *
+   * NOTE: This will make two API requests to first determine the most
+   * appropriate cluster, then create the backup. This could lead to a race
+   * condition if other requests are simultaneously sent or if the cluster
+   * availability state changes between each call.
+   *
+   * @param {string} id A unique ID for the backup.
+   * @param {CreateBackupConfig} config Metadata to set on the Backup.
+   * @param {BackupTimestamp} config.expireTime When the backup will be
+   *   automatically deleted.
+   * @param {CallOptions} [config.gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {CreateBackupCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Backup} callback.backup The newly created Backup.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
+   * @return {void | Promise<CreateBackupResponse>}
+   */
+  createBackup(
+    id: string,
+    config: CreateBackupConfig,
+    callback?: CreateBackupCallback
+  ): void | Promise<CreateBackupResponse> {
+    if (!id) {
+      throw new TypeError('An id is required to create a backup.');
+    }
+
+    if (!config) {
+      throw new TypeError('A configuration object is required.');
+    }
+
+    this.getReplicationStates(config.gaxOptions!, (err, stateMap) => {
+      if (err) {
+        callback!(err);
+        return;
+      }
+
+      const [clusterId] =
+        [...stateMap!.entries()].find(([, clusterState]) => {
+          return (
+            clusterState.replicationState === 'READY' ||
+            clusterState.replicationState === 'READY_OPTIMIZING'
+          );
+        }) || [];
+
+      if (!clusterId) {
+        callback!(new Error('No ready clusters eligible for backup.'));
+        return;
+      }
+
+      this.instance.cluster(clusterId).createBackup(
+        id,
+        {
+          table: this.name,
+          ...config,
+        },
+        callback!
+      );
+    });
   }
 
   createFamily(
@@ -810,10 +901,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       requestStream!.on('request', () => numRequestsMade++);
 
-      rowStream = pumpify.obj([
-        requestStream,
-        chunkTransformer,
-        through.obj((rowData, enc, next) => {
+      const toRowStream = new Transform({
+        transform: (rowData, _, next) => {
           if (
             chunkTransformer._destroyed ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -826,8 +915,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           const row = this.row(rowData.key);
           row.data = rowData.data;
           next(null, row);
-        }),
-      ]);
+        },
+        objectMode: true,
+      });
+
+      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
       rowStream.on('error', (error: ServiceError) => {
         if (IGNORED_STATUS_CODES.has(error.code)) {
@@ -1561,19 +1653,24 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       appProfileId: this.bigtable.appProfileId,
     };
 
+    const rowKeysStream = new Transform({
+      transform(key, enc, next) {
+        next(null, {
+          key: key.rowKey,
+          offset: key.offsetBytes,
+        });
+      },
+      objectMode: true,
+    });
+
     return pumpify.obj([
       this.bigtable.request({
         client: 'BigtableClient',
         method: 'sampleRowKeys',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: Object.assign({}, gaxOptions),
       }),
-      through.obj((key, enc, next) => {
-        next(null, {
-          key: key.rowKey,
-          offset: key.offsetBytes,
-        });
-      }),
+      rowKeysStream,
     ]);
   }
 
@@ -1581,12 +1678,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     policy: Policy,
     gaxOptions?: CallOptions
   ): Promise<SetIamPolicyResponse>;
+  setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
   setIamPolicy(
     policy: Policy,
     gaxOptions: CallOptions,
     callback: SetIamPolicyCallback
   ): void;
-  setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
   /**
    * @param {object} [gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.

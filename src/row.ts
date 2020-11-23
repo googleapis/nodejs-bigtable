@@ -17,7 +17,7 @@ import arrify = require('arrify');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const dotProp = require('dot-prop');
 import {Filter, RawFilter} from './filter';
-import {Mutation, ConvertFromBytesUserOptions, Bytes} from './mutation';
+import {Mutation, ConvertFromBytesUserOptions, Bytes, Data} from './mutation';
 import {Bigtable} from '.';
 import {
   Table,
@@ -57,7 +57,7 @@ export interface Family {
 }
 export interface FilterConfigOption {
   method?: string;
-  data?: string[];
+  data?: Data;
 }
 export interface FilterConfig {
   gaxOptions?: CallOptions;

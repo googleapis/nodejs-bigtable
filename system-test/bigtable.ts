@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {replaceProjectIdToken} from '@google-cloud/projectify';
+import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
 import * as uuid from 'uuid';
 
-import {Bigtable} from '../src';
+import {Backup, Bigtable, Instance} from '../src';
 import {AppProfile} from '../src/app-profile.js';
 import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
@@ -35,6 +37,15 @@ describe('Bigtable', () => {
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
   const CLUSTER_ID = generateId('cluster');
 
+  async function reapBackups(instance: Instance) {
+    const [backups] = await instance.getBackups();
+    return Promise.all(
+      backups.map(backup => {
+        return backup.delete({timeout: 50 * 1000});
+      })
+    );
+  }
+
   async function reapInstances() {
     const [instances] = await bigtable.getInstances();
     const testInstances = instances
@@ -46,9 +57,17 @@ describe('Bigtable', () => {
         return !timeCreated || timeCreated <= oneHourAgo;
       });
     const q = new Q({concurrency: 5});
+    // need to delete backups first due to instance deletion precondition
+    await Promise.all(testInstances.map(instance => reapBackups(instance)));
     await Promise.all(
       testInstances.map(instance => {
-        q.add(() => instance.delete());
+        q.add(async () => {
+          try {
+            await instance.delete();
+          } catch (e) {
+            console.log(`Error deleting instance: ${instance.id}`);
+          }
+        });
       })
     );
   }
@@ -78,7 +97,8 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    await INSTANCE.delete().catch(console.error);
+    await reapBackups(INSTANCE);
+    await INSTANCE.delete();
   });
 
   describe('instances', () => {
@@ -115,7 +135,7 @@ describe('Bigtable', () => {
       const policyProperties = ['version', 'bindings', 'etag'];
       const [policy] = await INSTANCE.getIamPolicy();
       policyProperties.forEach(property => {
-        assert.strictEqual(Object.keys(policy).includes(property), true);
+        assert(property in policy);
       });
     });
 
@@ -149,7 +169,7 @@ describe('Bigtable', () => {
 
       const [policy] = await instance.getIamPolicy();
       const [updatedPolicy] = await instance.setIamPolicy(policy);
-      assert.notStrictEqual(updatedPolicy, null);
+      Object.keys(policy).forEach(key => assert(key in updatedPolicy));
 
       await instance.delete();
     });
@@ -159,6 +179,21 @@ describe('Bigtable', () => {
     it('should retrieve a list of app profiles', async () => {
       const [appProfiles] = await INSTANCE.getAppProfiles();
       assert(appProfiles[0] instanceof AppProfile);
+      assert(appProfiles.length > 0);
+    });
+
+    it('should retrieve a list of app profiles in stream mode', done => {
+      const appProfiles: AppProfile[] = [];
+      INSTANCE.getAppProfilesStream()
+        .on('error', done)
+        .on('data', appProfile => {
+          assert(appProfile instanceof AppProfile);
+          appProfiles.push(appProfile);
+        })
+        .on('end', () => {
+          assert(appProfiles.length > 0);
+          done();
+        });
     });
 
     it('should check if an app profile exists', async () => {
@@ -290,7 +325,7 @@ describe('Bigtable', () => {
       const policyProperties = ['version', 'bindings', 'etag'];
       const [policy] = await TABLE.getIamPolicy();
       policyProperties.forEach(property => {
-        assert.strictEqual(Object.keys(policy).includes(property), true);
+        assert(property in policy);
       });
     });
 
@@ -309,7 +344,7 @@ describe('Bigtable', () => {
 
       const [policy] = await table.getIamPolicy();
       const [updatedPolicy] = await table.setIamPolicy(policy);
-      assert.notStrictEqual(updatedPolicy, null);
+      Object.keys(policy).forEach(key => assert(key in updatedPolicy));
 
       await table.delete();
     });
@@ -1093,6 +1128,162 @@ describe('Bigtable', () => {
       await table.truncate();
       const [rows] = await table.getRows();
       assert.strictEqual(rows.length, 0);
+    });
+  });
+
+  describe('backups', () => {
+    const CLUSTER = INSTANCE.cluster(CLUSTER_ID);
+    let BACKUP: Backup;
+
+    // For these tests, two backups are needed. The backups are labeled for what
+    // they are intended to originate/interact from/with, but this is just for
+    // testing and the naming convention used here does not actually influence
+    // the real functionality - it is just a way to keep things organized!
+    const backupIdFromCluster = generateId('backup');
+    let backupNameFromCluster: string;
+    const restoreTableIdFromCluster = generateId('table');
+
+    const backupIdFromTable = generateId('backup');
+    let backupNameFromTable: string;
+
+    // The minimum backup expiry time is 6 hours. The times here each have a 2
+    // hour padding to tolerate latency and clock drift. Also, while the time
+    // implementation for backups in this client accepts any of a Timestamp
+    // Struct, Date, or PreciseDate, to keep things easy this uses PreciseDate.
+    const expireTime = new PreciseDate(PreciseDate.now() + 8 * 60 * 60 * 1000);
+    const updateExpireTime = new PreciseDate(
+      expireTime.getTime() + 2 + 60 * 60 * 1000
+    );
+
+    before(async () => {
+      const [backup, op] = await CLUSTER.createBackup(backupIdFromCluster, {
+        table: TABLE,
+        expireTime,
+      });
+      BACKUP = backup;
+      await op.promise();
+      backupNameFromCluster = replaceProjectIdToken(
+        `${CLUSTER.name}/backups/${backupIdFromCluster}`,
+        bigtable.projectId
+      );
+      backupNameFromTable = replaceProjectIdToken(
+        `${CLUSTER.name}/backups/${backupIdFromTable}`,
+        bigtable.projectId
+      );
+    });
+
+    it('should create backup of a table (from cluster)', async () => {
+      await BACKUP.getMetadata();
+
+      assert.strictEqual(BACKUP.metadata!.name, backupNameFromCluster);
+
+      assert.deepStrictEqual(BACKUP.expireDate, expireTime);
+    });
+
+    it('should create backup of a table (from table)', async () => {
+      const [backup, op] = await TABLE.createBackup(backupIdFromTable, {
+        expireTime,
+      });
+      await op.promise();
+      await backup.getMetadata();
+
+      assert.strictEqual(backup.metadata!.name, backupNameFromTable);
+
+      assert.deepStrictEqual(backup.expireDate, expireTime);
+    });
+
+    it('should get a specific backup (cluster)', async () => {
+      const [backup] = await CLUSTER.backup(backupIdFromCluster).get();
+      assert.strictEqual(backup.metadata!.name, backupNameFromCluster);
+      assert.strictEqual(backup.metadata!.state, 'READY');
+    });
+
+    it('should get backups in an instance', async () => {
+      const [backups] = await INSTANCE.getBackups();
+      assert(Array.isArray(backups));
+      assert(backups.length > 0);
+      assert(backups.some(backup => backup.id === BACKUP.id));
+    });
+
+    it('should get backups in an instance as a stream', done => {
+      const backups: Backup[] = [];
+
+      INSTANCE.getBackupsStream()
+        .on('error', done)
+        .on('data', backup => {
+          backups.push(backup);
+        })
+        .on('end', () => {
+          assert(backups.length > 0);
+          done();
+        });
+    });
+
+    it('should get backups in a cluster', async () => {
+      const [backups] = await CLUSTER.getBackups();
+      assert(Array.isArray(backups));
+      assert(backups.length > 0);
+      assert(backups.some(backup => backup.id === BACKUP.id));
+    });
+
+    it('should get backups in a cluster as a stream', done => {
+      const backups: Backup[] = [];
+
+      CLUSTER.getBackupsStream()
+        .on('error', done)
+        .on('data', backup => {
+          backups.push(backup);
+        })
+        .on('end', () => {
+          assert(backups.length > 0);
+          done();
+        });
+    });
+
+    it('should restore a backup (cluster)', async () => {
+      const backup = CLUSTER.backup(backupIdFromCluster);
+      const [table, op] = await backup.restore(restoreTableIdFromCluster);
+      await op.promise();
+
+      const restoredTableId = table.name?.split('/').pop();
+      assert.strictEqual(restoredTableId, restoreTableIdFromCluster);
+    });
+
+    it('should update a backup (cluster)', async () => {
+      const backup = CLUSTER.backup(backupIdFromCluster);
+      const [metadata] = await backup.setMetadata({
+        expireTime: updateExpireTime,
+      });
+
+      assert.strictEqual(metadata.name, backupNameFromCluster);
+      assert.deepStrictEqual(backup.expireDate, updateExpireTime);
+    });
+
+    it('should get an Iam Policy for the backup', async () => {
+      const policyProperties = ['version', 'bindings', 'etag'];
+      const [policy] = await BACKUP.getIamPolicy();
+
+      policyProperties.forEach(property => {
+        assert(property in policy);
+      });
+    });
+
+    it('should test Iam permissions for the backup', async () => {
+      const permissions = ['bigtable.backups.get', 'bigtable.backups.delete'];
+      const [grantedPermissions] = await BACKUP.testIamPermissions(permissions);
+      assert.strictEqual(grantedPermissions.length, permissions.length);
+      permissions.forEach(permission => {
+        assert.strictEqual(grantedPermissions.includes(permission), true);
+      });
+    });
+
+    it('should set Iam Policy on the backup', async () => {
+      const backup = CLUSTER.backup(backupIdFromCluster);
+
+      const [policy] = await backup.getIamPolicy();
+      const [updatedPolicy] = await backup.setIamPolicy(policy);
+
+      Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
   });
 });
