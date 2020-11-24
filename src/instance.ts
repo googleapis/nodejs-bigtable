@@ -1142,21 +1142,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       view: Table.VIEWS[options.view || 'unspecified'],
     });
 
-    // Copy over pageSize and pageToken values from gaxOptions.
-    // However values set on options take precedence.
-    if (gaxOpts) {
-      reqOpts = extend(
-        {},
-        {
-          pageSize: gaxOpts.pageSize,
-          pageToken: gaxOpts.pageToken,
-        },
-        reqOpts
-      );
-      delete gaxOpts.pageSize;
-      delete gaxOpts.pageToken;
-    }
-
     delete (reqOpts as GetTablesOptions).gaxOptions;
 
     // Copy over pageSize and pageToken values from gaxOptions.
