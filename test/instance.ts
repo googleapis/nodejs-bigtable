@@ -1526,7 +1526,7 @@ describe('Bigtable/Instance', () => {
       const expectedGaxOpts = {timeout: 1000};
       console.log('inside the test');
       console.log(JSON.stringify(Table.VIEWS));
-  
+
       const expectedReqOpts = Object.assign(
         {},
         {gaxOptions},

@@ -1903,9 +1903,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const reqOpts = {
       name: this.name,
     };
-    this.bigtable.request<
-      google.bigtable.admin.v2.IGenerateConsistencyTokenResponse
-    >(
+    this.bigtable.request<google.bigtable.admin.v2.IGenerateConsistencyTokenResponse>(
       {
         client: 'BigtableTableAdminClient',
         method: 'generateConsistencyToken',
