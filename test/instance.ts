@@ -92,11 +92,11 @@ class FakeTable extends Table {
 describe('Bigtable/Instance', () => {
   const INSTANCE_ID = 'my-instance';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const BIGTABLE = {
+  const BIGTABLE = ({
     projectName: 'projects/my-project',
     projectId: 'my-project',
     request: () => {},
-  } as Bigtable;
+  } as {}) as Bigtable;
   const INSTANCE_NAME = `${BIGTABLE.projectName}/instances/${INSTANCE_ID}`;
   const APP_PROFILE_ID = 'my-app-profile';
   const CLUSTER_ID = 'my-cluster';
@@ -1524,6 +1524,9 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageSize, pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
+      console.log('inside the test');
+      console.log(JSON.stringify(Table.VIEWS));
+  
       const expectedReqOpts = Object.assign(
         {},
         {gaxOptions},
@@ -1724,7 +1727,7 @@ describe('Bigtable/Instance', () => {
         callback(...response);
       };
       instance.getTables((...args) => {
-        assert.strictEqual(args[2], response[2]);
+        assert.deepStrictEqual(args[2], response[2]);
         assert.strictEqual(args[3], response[3]);
         done();
       });
@@ -1764,8 +1767,7 @@ describe('Bigtable/Instance', () => {
     const views = ((FakeTable as any).VIEWS = {
       unspecified: 0,
       name: 1,
-      schema: 2,
-      full: 4,
+      replication: 3,
     });
     let returnStream: PassThrough;
     beforeEach(() => {
