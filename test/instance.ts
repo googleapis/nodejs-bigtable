@@ -1216,7 +1216,6 @@ describe('Bigtable/Instance', () => {
         .getAppProfilesStream()
         .on('error', err => {
           assert.strictEqual(appProfiles.length, counter);
-          console.log(err.message);
           assert.deepStrictEqual(
             err,
             new Error(
@@ -1524,8 +1523,6 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageSize, pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      console.log('inside the test');
-      console.log(JSON.stringify(Table.VIEWS));
 
       const expectedReqOpts = Object.assign(
         {},
