@@ -585,8 +585,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     ]);
   }
 
-  getMetadata(): Promise<GetClusterMetadataResponse>;
-  getMetadata(gaxOptions: CallOptions): Promise<GetClusterMetadataResponse>;
+  getMetadata(gaxOptions?: CallOptions): Promise<GetClusterMetadataResponse>;
   getMetadata(callback: GetClusterMetadataCallback): void;
   getMetadata(
     gaxOptions: CallOptions,
