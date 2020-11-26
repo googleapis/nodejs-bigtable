@@ -14,7 +14,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@google-cloud/bigtable": "^3.2.0",
+    "@google-cloud/bigtable": "^4.0.0",
     "uuid": "^8.0.0",
     "yargs": "^16.0.0"
   },

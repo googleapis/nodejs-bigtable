@@ -4,6 +4,27 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.0.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.2.0...v4.0.0) (2020-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove failedLocation from getInstancesCallback/Response (#755)
+
+### Features
+
+* **protos:** update BigtableTableAdmin GetIamPolicy, change DeleteAppProfileRequest.ignore_warnings to REQUIRED ([59a0d26](https://www.github.com/googleapis/nodejs-bigtable/commit/59a0d269d5196991dd395e671d7d5f54ce449005))
+
+
+### Bug Fixes
+
+* **browser:** check for fetch on window ([#824](https://www.github.com/googleapis/nodejs-bigtable/issues/824)) ([a38cbcc](https://www.github.com/googleapis/nodejs-bigtable/commit/a38cbcca1660bc40fe137acb973bf62f3c55754e))
+
+
+### Reverts
+
+* remove failedLocation from getInstancesCallback/Response ([#755](https://www.github.com/googleapis/nodejs-bigtable/issues/755)) ([d37fe9e](https://www.github.com/googleapis/nodejs-bigtable/commit/d37fe9ecdadde8d335fc1f83ab5ac3c3f5813e0d))
+
 ## [3.2.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.1.1...v3.2.0) (2020-11-07)
 
 
