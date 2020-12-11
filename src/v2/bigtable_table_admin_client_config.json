@@ -35,18 +35,17 @@
           "retry_params_name": "default"
         },
         "CreateTableFromSnapshot": {
-          "timeout_millis": 60000,
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
         "ListTables": {
           "timeout_millis": 60000,
-          "retry_codes_name": "idempotent",
+          "retry_codes_name": "non_idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "GetTable": {
           "timeout_millis": 60000,
-          "retry_codes_name": "idempotent",
+          "retry_codes_name": "non_idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "DeleteTable": {
@@ -75,13 +74,12 @@
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "SnapshotTable": {
-          "timeout_millis": 60000,
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
         "GetSnapshot": {
           "timeout_millis": 60000,
-          "retry_codes_name": "idempotent",
+          "retry_codes_name": "non_idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "ListSnapshots": {
@@ -99,20 +97,24 @@
           "retry_params_name": "default"
         },
         "GetBackup": {
+          "timeout_millis": 60000,
           "retry_codes_name": "non_idempotent",
-          "retry_params_name": "default"
+          "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "UpdateBackup": {
+          "timeout_millis": 60000,
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
         "DeleteBackup": {
+          "timeout_millis": 60000,
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
         "ListBackups": {
+          "timeout_millis": 60000,
           "retry_codes_name": "non_idempotent",
-          "retry_params_name": "default"
+          "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "RestoreTable": {
           "retry_codes_name": "non_idempotent",
