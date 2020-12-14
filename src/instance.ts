@@ -1228,7 +1228,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     } else {
       try {
         const clusterId = config.backup.match(/clusters\/([^/]+)/)![1];
-        backup = this.cluster(clusterId).backup(config.backup);
+        const instanceId = config.backup.match(/instances\/([^/]+)/)![1];
+        if (instanceId !== this.id) {
+          backup = this.bigtable
+            .instance(instanceId)
+            .cluster(clusterId)
+            .backup(config.backup);
+        } else {
+          backup = this.cluster(clusterId).backup(config.backup);
+        }
       } catch (e) {
         throw new Error(
           'A complete backup name (path) is required or a Backup object.'
@@ -1236,7 +1244,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       }
     }
 
-    backup.restore(config.table, config.gaxOptions!, callback!);
+    backup.restoreTo(
+      {tableId: config.table, instance: this, gaxOptions: config.gaxOptions!},
+      callback!
+    );
   }
 
   setIamPolicy(
