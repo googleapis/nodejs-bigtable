@@ -540,9 +540,6 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<RestoreTableResponse>}
-   *
-   * @example <caption>include:samples/backups.restore.js</caption>
-   * region_tag:bigtable_restore_backup
    */
   restoreTo(
     config: RestoreTableConfig,
