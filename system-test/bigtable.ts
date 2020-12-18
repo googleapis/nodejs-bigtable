@@ -32,6 +32,7 @@ const PREFIX = 'gcloud-tests-';
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
+  const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
   const TABLE = INSTANCE.table(generateId('table'));
   const APP_PROFILE_ID = generateId('appProfile');
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
@@ -74,18 +75,10 @@ describe('Bigtable', () => {
 
   before(async () => {
     await reapInstances();
-    const [, operation] = await INSTANCE.create({
-      clusters: [
-        {
-          id: CLUSTER_ID,
-          location: 'us-central1-c',
-          nodes: 3,
-        },
-      ],
-      labels: {
-        time_created: Date.now(),
-      },
-    });
+    const [, operation] = await INSTANCE.create(
+      createInstanceConfig(CLUSTER_ID, 'us-central1-c', 3, Date.now())
+    );
+
     await operation.promise();
     await TABLE.create({
       families: ['follows', 'traits'],
@@ -97,8 +90,8 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    await reapBackups(INSTANCE);
-    await INSTANCE.delete();
+    await Promise.all([reapBackups(INSTANCE), reapBackups(DIFF_INSTANCE)]);
+    await Promise.all([await INSTANCE.delete(), DIFF_INSTANCE.delete()]);
   });
 
   describe('instances', () => {
@@ -1249,6 +1242,25 @@ describe('Bigtable', () => {
       assert.strictEqual(restoredTableId, restoreTableIdFromCluster);
     });
 
+    it('should restore a backup to a different instance', async () => {
+      const [, operation] = await DIFF_INSTANCE.create(
+        createInstanceConfig(generateId('d-clust'), 'us-east1-c', 3, Date.now())
+      );
+      await operation.promise();
+      const [iExists] = await DIFF_INSTANCE.exists();
+      assert.strictEqual(iExists, true);
+
+      const backup = CLUSTER.backup(backupIdFromCluster);
+      const [table, op] = await backup.restoreTo({
+        tableId: restoreTableIdFromCluster,
+        instance: DIFF_INSTANCE,
+      });
+      await op.promise();
+      const [tExists] = await table.exists();
+      assert.strictEqual(tExists, true);
+      assert.strictEqual(table.id, restoreTableIdFromCluster);
+    });
+
     it('should update a backup (cluster)', async () => {
       const backup = CLUSTER.backup(backupIdFromCluster);
       const [metadata] = await backup.setMetadata({
@@ -1290,4 +1302,23 @@ describe('Bigtable', () => {
 
 function generateId(resourceType: string) {
   return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
+}
+function createInstanceConfig(
+  clusterId: string,
+  location: string,
+  nodes: number,
+  time_created: number
+) {
+  return {
+    clusters: [
+      {
+        id: clusterId,
+        location: location,
+        nodes: nodes,
+      },
+    ],
+    labels: {
+      time_created: time_created,
+    },
+  };
 }
