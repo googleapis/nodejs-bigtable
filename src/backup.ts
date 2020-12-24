@@ -532,7 +532,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     If omitted the instance containing the backup will be used instead.
    * @param {CallOptions} [gaxOptions] Request configuration options,
    *     outlined here:
-   *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   *     https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html.
    * @param {RestoreTableCallback} [callback] The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {Table} callback.table The newly created Table.
