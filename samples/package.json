@@ -8,7 +8,7 @@
     "*.js",
     "functions/*.js",
     "hello-world/*.js",
-    "document-snippets/*.js"
+    "api-reference-doc-snippets/*.js"
   ],
   "engines": {
     "node": ">=12"

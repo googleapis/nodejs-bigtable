@@ -17,7 +17,7 @@ async function main(
   tableId = 'YOUR_TABLE_ID',
   backupId = 'YOUR_BACKUP_ID'
 ) {
-  // [START bigtable_restore_backups]
+  // [START bigtable_api_restore_backups]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
@@ -41,7 +41,7 @@ async function main(
   }
 
   await restoreBackup();
-  // [END bigtable_restore_backup]
+  // [END bigtable_api_restore_backup]
 }
 
 const args = process.argv.slice(2);

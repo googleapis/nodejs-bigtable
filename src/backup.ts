@@ -259,7 +259,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @return {void | Promise<CreateBackupResponse>}
    *
    * @example <caption>include:samples/backups.create.js</caption>
-   * region_tag:bigtable_create_backup
+   * region_tag:bigtable_api_create_backup
    */
   create(
     config: CreateBackupConfig,
@@ -281,7 +281,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @return {void | Promise<DeleteBackupResponse>}
    *
    * @example <caption>include:samples/backups.delete.js</caption>
-   * region_tag:bigtable_delete_backup
+   * region_tag:bigtable_api_delete_backup
    */
   delete(
     gaxOptionsOrCallback?: CallOptions | DeleteBackupCallback,
@@ -355,7 +355,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {object} callback.apiResponse The full API response.
    *
    * @example <caption>include:samples/backups.get.js</caption>
-   * region_tag:bigtable_get_backup
+   * region_tag:bigtable_api_get_backup
    */
   get(
     gaxOptionsOrCallback?: CallOptions | GetBackupCallback,
@@ -392,8 +392,8 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_table_Iam_policy
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_table_Iam_policy
    */
   getIamPolicy(
     optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
@@ -424,7 +424,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {object} callback.apiResponse The full API response.
    *
    * @example <caption>include:samples/backups.get.js</caption>
-   * region_tag:bigtable_get_backup
+   * region_tag:bigtable_api_get_backup
    */
   getMetadata(
     gaxOptionsOrCallback?: CallOptions | BackupGetMetadataCallback,
@@ -483,7 +483,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @return {void | Promise<RestoreTableResponse>}
    *
    * @example <caption>include:samples/backups.restore.js</caption>
-   * region_tag:bigtable_restore_backup
+   * region_tag:bigtable_api_restore_backup
    */
   restore(
     tableId: string,
@@ -538,8 +538,8 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_set_instance_Iam_policy
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_set_instance_Iam_policy
    */
   setIamPolicy(
     policy: Policy,
@@ -578,7 +578,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @return {void | Promise<BackupSetMetadataResponse>}
    *
    * @example <caption>include:samples/backups.update.js</caption>
-   * region_tag:bigtable_update_backup
+   * region_tag:bigtable_api_update_backup
    */
   setMetadata(
     metadata: ModifiableBackupFields,
@@ -644,8 +644,8 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {string[]} permissions A subset of permissions that the caller is
    *     allowed.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_test_table_Iam_permissions
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_test_table_Iam_permissions
    */
   testIamPermissions(
     permissions: string | string[],

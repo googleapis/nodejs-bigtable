@@ -17,7 +17,7 @@ async function main(
   tableId = 'YOUR_TABLE_ID',
   clusterId = 'YOUR_CLUSTER_ID'
 ) {
-  // [START bigtable_list_backups]
+  // [START bigtable_api_list_backups]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
@@ -44,7 +44,7 @@ async function main(
   }
 
   await listBackups();
-  // [END bigtable_list_backups]
+  // [END bigtable_api_list_backups]
 }
 
 const args = process.argv.slice(2);

@@ -928,7 +928,7 @@ promisifyAll(Bigtable, {
  * });
  *
  * @example <caption>include:samples/quickstart.js</caption>
- * region_tag:bigtable_quickstart
+ * region_tag:bigtable_api_quickstart
  * Full quickstart example:
  */
 

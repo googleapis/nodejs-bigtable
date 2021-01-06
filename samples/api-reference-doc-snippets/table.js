@@ -20,7 +20,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_create_table]
+    // [START bigtable_api_create_table]
     table
       .create()
       .then(result => {
@@ -30,14 +30,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_create_table]
+    // [END bigtable_api_create_table]
   },
 
   existsTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_exists_table]
+    // [START bigtable_api_exists_table]
     table
       .exists()
       .then(result => {
@@ -46,14 +46,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_exists_table]
+    // [END bigtable_api_exists_table]
   },
 
   getTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_get_table]
+    // [START bigtable_api_get_table]
     table
       .get()
       .then(result => {
@@ -63,14 +63,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_table]
+    // [END bigtable_api_get_table]
   },
 
   getMetadata: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_get_table_meta]
+    // [START bigtable_api_get_table_meta]
     table
       .getMetadata()
       .then(result => {
@@ -80,14 +80,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_table_meta]
+    // [END bigtable_api_get_table_meta]
   },
 
   createFamily: (instanceId, tableId, familyId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_create_family]
+    // [START bigtable_api_create_family]
     const options = {};
     // options.rule = {
     //   age: {
@@ -107,14 +107,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_create_table]
+    // [END bigtable_api_create_table]
   },
 
   getFamilies: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_get_families]
+    // [START bigtable_api_get_families]
     table
       .getFamilies()
       .then(result => {
@@ -123,14 +123,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_families]
+    // [END bigtable_api_get_families]
   },
 
   insertRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_insert_rows]
+    // [START bigtable_api_insert_rows]
     const entries = [
       {
         key: 'alincoln',
@@ -150,14 +150,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_insert_rows]
+    // [END bigtable_api_insert_rows]
   },
 
   getRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_get_rows]
+    // [START bigtable_api_get_rows]
     const options = {
       keys: ['alincoln', 'gwashington'],
     };
@@ -169,14 +169,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_rows]
+    // [END bigtable_api_get_rows]
   },
 
   mutate: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_mutate_rows]
+    // [START bigtable_api_mutate_rows]
     const entries = [
       {
         method: 'delete',
@@ -191,14 +191,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_mutate_rows]
+    // [END bigtable_api_mutate_rows]
   },
 
   createReadStream: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_table_readstream]
+    // [START bigtable_api_table_readstream]
     table
       .createReadStream()
       .on('error', err => {
@@ -276,14 +276,14 @@ const snippets = {
     //   ]
     // });
     //
-    // [END bigtable_table_readstream]
+    // [END bigtable_api_table_readstream]
   },
 
   sampleRowKeys: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_sample_row_keys]
+    // [START bigtable_api_sample_row_keys]
     table
       .sampleRowKeys()
       .then(result => {
@@ -292,11 +292,11 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_sample_row_keys]
+    // [END bigtable_api_sample_row_keys]
   },
 
   getIamPolicy: (instanceId, tableId) => {
-    // [START bigtable_get_table_Iam_policy]
+    // [START bigtable_api_get_table_Iam_policy]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -310,11 +310,11 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_table_Iam_policy]
+    // [END bigtable_api_get_table_Iam_policy]
   },
 
   setIamPolicy: (instanceId, tableId) => {
-    // [START bigtable_set_table_Iam_policy]
+    // [START bigtable_api_set_table_Iam_policy]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -337,11 +337,11 @@ const snippets = {
       .catch(err => {
         // Handle the error
       });
-    // [END bigtable_set_table_Iam_policy]
+    // [END bigtable_api_set_table_Iam_policy]
   },
 
   testIamPermissions: (instanceId, tableId) => {
-    // [START bigtable_test_table_Iam_permissions]
+    // [START bigtable_api_test_table_Iam_permissions]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -356,14 +356,14 @@ const snippets = {
       .catch(err => {
         // Handle the error
       });
-    // [END bigtable_test_table_Iam_permissions]
+    // [END bigtable_api_test_table_Iam_permissions]
   },
 
   delRows: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_del_rows]
+    // [START bigtable_api_del_rows]
     table
       .deleteRows('alincoln')
       .then(result => {
@@ -372,14 +372,14 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_del_rows]
+    // [END bigtable_api_del_rows]
   },
 
   delTable: (instanceId, tableId) => {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_del_table]
+    // [START bigtable_api_del_table]
     table
       .delete()
       .then(result => {
@@ -388,7 +388,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_del_table]
+    // [END bigtable_api_del_table]
   },
 };
 

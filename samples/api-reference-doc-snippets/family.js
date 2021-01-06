@@ -14,7 +14,7 @@
 
 const snippets = {
   createColmFamily: (instanceId, tableId, familyId) => {
-    // [START bigtable_create_family]
+    // [START bigtable_api_create_family]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -30,10 +30,10 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_create_family]
+    // [END bigtable_api_create_family]
   },
   existsFamily: (instanceId, tableId, familyId) => {
-    // [START bigtable_exists_family]
+    // [START bigtable_api_exists_family]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -48,10 +48,10 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_exists_family]
+    // [END bigtable_api_exists_family]
   },
   getFamily: (instanceId, tableId, familyId) => {
-    // [START bigtable_get_family]
+    // [START bigtable_api_get_family]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -67,10 +67,10 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_family]
+    // [END bigtable_api_get_family]
   },
   getMetadata: (instanceId, tableId, familyId) => {
-    // [START bigtable_get_family_meta]
+    // [START bigtable_api_get_family_meta]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -86,10 +86,10 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_family_meta]
+    // [END bigtable_api_get_family_meta]
   },
   setMetadata: (instanceId, tableId, familyId) => {
-    // [START bigtable_set_family_meta]
+    // [START bigtable_api_set_family_meta]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -111,10 +111,10 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_set_family_meta]
+    // [END bigtable_api_set_family_meta]
   },
   delFamily: (instanceId, tableId, familyId) => {
-    // [START bigtable_del_family]
+    // [START bigtable_api_del_family]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -129,7 +129,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_del_family]
+    // [END bigtable_api_del_family]
   },
 };
 

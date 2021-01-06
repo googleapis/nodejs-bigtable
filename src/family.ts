@@ -216,8 +216,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @param {Family} callback.family The metadata.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/family.js</caption>
-   * region_tag:bigtable_create_family
+   * @example <caption>include:samples/api-reference-doc-snippets/family.js</caption>
+   * region_tag:bigtable_api_create_family
    */
   create(
     options?: CreateFamilyOptions | CreateFamilyCallback,
@@ -242,8 +242,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/family.js</caption>
-   * region_tag:bigtable_del_family
+   * @example <caption>include:samples/api-reference-doc-snippets/family.js</caption>
+   * region_tag:bigtable_api_del_family
    */
   delete(
     gaxOptions?: CallOptions | DeleteFamilyCallback,
@@ -284,8 +284,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    *     request.
    * @param {boolean} callback.exists Whether the family exists or not.
    *
-   * @example <caption>include:samples/document-snippets/family.js</caption>
-   * region_tag:bigtable_exists_family
+   * @example <caption>include:samples/api-reference-doc-snippets/family.js</caption>
+   * region_tag:bigtable_api_exists_family
    */
   exists(
     opts?: CallOptions | FamilyExistsCallback,
@@ -329,8 +329,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @param {Family} callback.family The Family object.
    * @param {object} callback.apiResponse The resource as it exists in the API.
    *
-   * @example <caption>include:samples/document-snippets/family.js</caption>
-   * region_tag:bigtable_get_family
+   * @example <caption>include:samples/api-reference-doc-snippets/family.js</caption>
+   * region_tag:bigtable_api_get_family
    */
   get(
     opts?: GetFamilyOptions | GetFamilyCallback,
@@ -373,8 +373,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    *     request.
    * @param {object} callback.metadata The metadata.
    *
-   * @example <caption>include:samples/document-snippets/family.js</caption>
-   * region_tag:bigtable_get_family_meta
+   * @example <caption>include:samples/api-reference-doc-snippets/family.js</caption>
+   * region_tag:bigtable_api_get_family_meta
    */
   getMetadata(
     opts?: CallOptions | GetFamilyMetadataCallback,
@@ -432,8 +432,8 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/family.js</caption>
-   * region_tag:bigtable_set_family_meta
+   * @example <caption>include:samples/api-reference-doc-snippets/family.js</caption>
+   * region_tag:bigtable_api_set_family_meta
    */
   setMetadata(
     metadata: SetFamilyMetadataOptions,
