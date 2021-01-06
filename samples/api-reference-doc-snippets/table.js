@@ -107,7 +107,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_api_create_table]
+    // [END bigtable_api_create_family]
   },
 
   getFamilies: (instanceId, tableId) => {

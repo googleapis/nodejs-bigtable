@@ -267,7 +267,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<CreateBackupResponse>}
    *
-   * @example <caption>include:samples/backups.create.js</caption>
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.create.js</caption>
    * region_tag:bigtable_api_create_backup
    */
   createBackup(
@@ -461,7 +461,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<ListBackupsResponse>}
    *
-   * @example <caption>include:samples/backups.list.js</caption>
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.list.js</caption>
    * region_tag:bigtable_api_list_backups
    */
   getBackups(

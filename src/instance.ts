@@ -819,7 +819,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<ListBackupsResponse>}
    *
-   * @example <caption>include:samples/backups.list.js</caption>
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.list.js</caption>
    * region_tag:bigtable_api_list_backups
    */
   getBackups(
@@ -1210,7 +1210,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {RestoreTableCallback} [cb]
    * @return {void | Promise<RestoreTableResponse>}
    *
-   * @example <caption>include:samples/backups.restore.js</caption>
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.restore.js</caption>
    * region_tag:bigtable_api_restore_backup
    */
   createTableFromBackup(
