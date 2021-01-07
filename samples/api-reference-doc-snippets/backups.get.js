@@ -18,11 +18,11 @@ async function main(
   clusterId = 'YOUR_CLUSTER_ID',
   backupId = 'YOUR_BACKUP_ID'
 ) {
-  // [START bigtable_delete_backup]
+  // [START bigtable_api_get_backup]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
-  async function deleteBackup() {
+  async function getBackup() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
@@ -33,14 +33,26 @@ async function main(
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const cluster = table.cluster(clusterId);
+
+    // Create a reference to the backup before performing operations on it.
     const backup = cluster.backup(backupId);
 
-    await backup.delete();
-    console.log(`Backup ${backupId} was deleted successfully.`);
+    // Get the backup's metadata, with information such as when it will expire
+    // and how big it is.
+    const [metadata] = await backup.getMetadata();
+    console.log(`The backup is ${metadata.sizeBytes} bytes.`);
+
+    // Time properties have Date helpers to convert to a `PreciseDate`.
+    console.log(
+      `The backup will auto-delete at ${metadata.expireDate.toISOString()}`
+    );
+    console.log(
+      `The backup finished being created at ${metadata.endTime.toISOString()}`
+    );
   }
 
-  await deleteBackup();
-  // [END bigtable_delete_backup]
+  await getBackup();
+  // [END bigtable_api_get_backup]
 }
 
 const args = process.argv.slice(2);

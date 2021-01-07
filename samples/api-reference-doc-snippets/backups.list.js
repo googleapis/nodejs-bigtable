@@ -15,33 +15,36 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  backupId = 'YOUR_BACKUP_ID'
+  clusterId = 'YOUR_CLUSTER_ID'
 ) {
-  // [START bigtable_restore_backups]
+  // [START bigtable_api_list_backups]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
-  async function restoreBackup() {
+  async function listBackups() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
     // const tableId = 'YOUR_TABLE_ID';
-    // const backupId = 'YOUR_BACKUP_ID';
+    // const clusterId = 'YOUR_CLUSTER_ID';
     const instance = bigtable.instance(instanceId);
+    const table = instance.table(tableId);
+    const cluster = table.cluster(clusterId);
 
-    // Restore a table to an instance.
-    const [table, operation] = await instance.createTableFromBackup({
-      table: tableId,
-      backup: backupId,
-    });
+    const [backupsFromInstance] = await instance.listBackups();
+    console.log(
+      `${backupsFromInstance.length} backups returned from the instance.`
+    );
 
-    await operation.promise();
-    console.log(`Table restored to ${table.id} successfully.`);
+    const [backupsFromCluster] = await cluster.listBackups();
+    console.log(
+      `${backupsFromCluster.length} backups returned from the cluster.`
+    );
   }
 
-  await restoreBackup();
-  // [END bigtable_restore_backup]
+  await listBackups();
+  // [END bigtable_api_list_backups]
 }
 
 const args = process.argv.slice(2);
