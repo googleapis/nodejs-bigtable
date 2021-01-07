@@ -257,8 +257,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_create_instance
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_create_instance
    */
   create(
     options: InstanceOptions,
@@ -301,8 +301,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {?error} callback.err An error returned while making this request.
    * @param {Cluster} callback.appProfile The newly created app profile.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_create_app_profile
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_create_app_profile
    */
   createAppProfile(
     id: string,
@@ -381,8 +381,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_create_cluster
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_create_cluster
    */
   createCluster(
     id: string,
@@ -462,8 +462,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {Table} callback.table The newly created table.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_create_table
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_create_table
    */
   createTable(
     id: string,
@@ -562,8 +562,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_del_instance
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_del_instance
    */
   delete(
     optionsOrCallback?: CallOptions | DeleteInstanceCallback,
@@ -600,8 +600,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     request.
    * @param {boolean} callback.exists Whether the instance exists or not.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_exists_instance
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_exists_instance
    */
   exists(
     optionsOrCallback?: CallOptions | InstanceExistsCallback,
@@ -637,8 +637,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {Instance} callback.instance The Instance object.
    * @param {object} callback.apiResponse The resource as it exists in the API.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_instance
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_instance
    */
   get(
     optionsOrCallback?: CallOptions | GetInstanceCallback,
@@ -703,8 +703,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     AppProfile information could not be retrieved.
    *     Values are of the form `projects/<project>/locations/<zone_id>`
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_app_profiles
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_app_profiles
    */
   getAppProfiles(
     optionsOrCallback?: GetAppProfilesOptions | GetAppProfilesCallback,
@@ -883,8 +883,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<ListBackupsResponse>}
    *
-   * @example <caption>include:samples/backups.list.js</caption>
-   * region_tag:bigtable_list_backups
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.list.js</caption>
+   * region_tag:bigtable_api_list_backups
    */
   getBackups(
     optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
@@ -949,8 +949,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     Cluster information could not be retrieved.
    *     Values are of the form `projects/<project>/locations/<zone_id>`
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_clusters
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_clusters
    */
   getClusters(
     optionsOrCallback?: CallOptions | GetClustersCallback,
@@ -1005,8 +1005,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_instance_Iam_policy
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_instance_Iam_policy
    */
   getIamPolicy(
     optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
@@ -1063,8 +1063,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     request.
    * @param {object} callback.metadata The metadata.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_instance_metadata
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_instance_metadata
    */
   getMetadata(
     optionsOrCallback?: CallOptions | GetInstanceMetadataCallback,
@@ -1115,8 +1115,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @property {object} callback.nextQuery A query object to receive more results.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_tables
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_tables
    */
   getTables(
     optionsOrCallback?: GetTablesOptions | GetTablesCallback,
@@ -1292,8 +1292,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {RestoreTableCallback} [cb]
    * @return {void | Promise<RestoreTableResponse>}
    *
-   * @example <caption>include:samples/backups.restore.js</caption>
-   * region_tag:bigtable_restore_backup
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.restore.js</caption>
+   * region_tag:bigtable_api_restore_backup
    */
   createTableFromBackup(
     config: CreateTableFromBackupConfig,
@@ -1338,8 +1338,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_set_instance_Iam_policy
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_set_instance_Iam_policy
    */
   setIamPolicy(
     policy: Policy,
@@ -1405,8 +1405,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_set_meta_data
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_set_meta_data
    */
   setMetadata(
     metadata: SetInstanceMetatdataOptions,
@@ -1481,8 +1481,8 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {string[]} permissions A subset of permissions that the caller is
    *     allowed.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_test_instance_Iam_permissions
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_test_instance_Iam_permissions
    */
   testIamPermissions(
     permissions: string | string[],

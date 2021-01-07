@@ -224,8 +224,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_create_cluster
+   * @example <caption>include:samples/api-reference-doc-snippets/cluster.js</caption>
+   * region_tag:bigtable_api_create_cluster
    */
   create(
     options: CreateClusterOptions,
@@ -262,8 +262,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<CreateBackupResponse>}
    *
-   * @example <caption>include:samples/backups.create.js</caption>
-   * region_tag:bigtable_create_backup
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.create.js</caption>
+   * region_tag:bigtable_api_create_backup
    */
   createBackup(
     id: string,
@@ -336,8 +336,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_delete_cluster
+   * @example <caption>include:samples/api-reference-doc-snippets/cluster.js</caption>
+   * region_tag:bigtable_api_delete_cluster
    */
   delete(
     gaxOptionsOrCallback?: CallOptions | DeleteClusterCallback,
@@ -377,8 +377,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     request.
    * @param {boolean} callback.exists Whether the cluster exists or not.
    *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_exists_cluster
+   * @example <caption>include:samples/api-reference-doc-snippets/cluster.js</caption>
+   * region_tag:bigtable_api_exists_cluster
    */
   exists(
     gaxOptionsOrCallback?: CallOptions | ExistsClusterCallback,
@@ -420,8 +420,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_get_cluster
+   * @example <caption>include:samples/api-reference-doc-snippets/cluster.js</caption>
+   * region_tag:bigtable_api_get_cluster
    */
   get(
     gaxOptionsOrCallback?: CallOptions | GetClusterCallback,
@@ -456,8 +456,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<ListBackupsResponse>}
    *
-   * @example <caption>include:samples/backups.list.js</caption>
-   * region_tag:bigtable_list_backups
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.list.js</caption>
+   * region_tag:bigtable_api_list_backups
    */
   getBackups(
     optionsOrCallback?: GetBackupsOptions | GetBackupsCallback,
@@ -607,8 +607,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @param {object} callback.metadata The metadata.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_get_meta
+   * @example <caption>include:samples/api-reference-doc-snippets/cluster.js</caption>
+   * region_tag:bigtable_api_cluster_get_meta
    */
   getMetadata(
     gaxOptionsOrCallback?: CallOptions | GetClusterMetadataCallback,
@@ -665,8 +665,8 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/cluster.js</caption>
-   * region_tag:bigtable_cluster_set_meta
+   * @example <caption>include:samples/api-reference-doc-snippets/cluster.js</caption>
+   * region_tag:bigtable_api_cluster_set_meta
    */
   setMetadata(
     metadata: SetClusterMetadataOptions,

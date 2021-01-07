@@ -36,7 +36,7 @@
     "lint": "gts check",
     "prepare": "npm run compile",
     "samples-test": "cd samples/ && npm link ../ && npm install && npm test && cd ../",
-    "snippet-test": "mocha samples/document-snippets/tests/*.js --timeout 600000",
+    "snippet-test": "mocha samples/api-reference-doc-snippets/tests/*.js --timeout 600000",
     "presystem-test": "npm run compile",
     "system-test": "mocha build/system-test --timeout 600000",
     "pretest": "npm run compile",

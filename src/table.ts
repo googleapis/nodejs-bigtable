@@ -506,8 +506,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {Table} callback.table The newly created table.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_create_table
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_create_table
    */
   create(
     optionsOrCallback?: CreateTableOptions | CreateTableCallback,
@@ -644,8 +644,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {Family} callback.family The newly created Family.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_create_family
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_create_family
    */
   createFamily(
     id: string,
@@ -718,8 +718,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {string} [options.start] Start value for key range.
    * @returns {stream}
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_table_readstream
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
     const options = opts || {};
@@ -960,8 +960,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_del_table
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_del_table
    */
   delete(
     optionsOrCallback?: CallOptions | DeleteTableCallback,
@@ -1007,8 +1007,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?error} callback.err An error returned while making this request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_del_rows
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_del_rows
    */
   deleteRows(
     prefix: string,
@@ -1050,8 +1050,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *     request.
    * @param {boolean} callback.exists Whether the table exists or not.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_exists_table
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_exists_table
    */
   exists(
     optionsOrCallback?: CallOptions | TableExistsCallback,
@@ -1116,8 +1116,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {Table} callback.table The Table object.
    * @param {object} callback.apiResponse The resource as it exists in the API.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_get_table
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_get_table
    */
   get(
     optionsOrCallback?: GetTableOptions | GetTableCallback,
@@ -1163,8 +1163,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_get_table_Iam_policy
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_table_Iam_policy
    */
   getIamPolicy(
     optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
@@ -1218,8 +1218,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {Family[]} callback.families The list of families.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_get_families
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_get_families
    */
   getFamilies(
     optionsOrCallback?: CallOptions | GetFamiliesCallback,
@@ -1322,8 +1322,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *     request.
    * @param {object} callback.metadata The table's metadata.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_get_table_meta
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_get_table_meta
    */
   getMetadata(
     optionsOrCallback?: GetMetadataOptions | GetMetadataCallback,
@@ -1371,8 +1371,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?error} callback.err An error returned while making this request.
    * @param {Row[]} callback.rows List of Row objects.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_get_rows
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_get_rows
    */
   getRows(
     optionsOrCallback?: GetRowsOptions | GetRowsCallback,
@@ -1416,8 +1416,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *     failures. It's possible for part of your request to be completed
    *     successfully, while the other part was not.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_insert_rows
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_insert_rows
    */
   insert(
     entries: Entry | Entry[],
@@ -1463,8 +1463,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *     failures. It's possible for part of your request to be completed
    *     successfully, while the other part was not.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_mutate_rows
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_mutate_rows
    */
   mutate(
     entriesRaw: Entry | Entry[],
@@ -1604,8 +1604,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?error} callback.err An error returned while making this request.
    * @param {object[]} callback.keys The list of keys.
    *
-   * @example <caption>include:samples/document-snippets/table.js</caption>
-   * region_tag:bigtable_sample_row_keys
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_sample_row_keys
    */
   sampleRowKeys(
     optionsOrCallback?: CallOptions | SampleRowKeysCallback,
@@ -1693,8 +1693,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {?error} callback.error An error returned while making this request.
    * @param {Policy} policy The policy.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_set_table_Iam_policy
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_set_table_Iam_policy
    */
   setIamPolicy(
     policy: Policy,
@@ -1754,8 +1754,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {string[]} permissions A subset of permissions that the caller is
    *     allowed.
    *
-   * @example <caption>include:samples/document-snippets/instance.js</caption>
-   * region_tag:bigtable_test_table_Iam_permissions
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_test_table_Iam_permissions
    */
   testIamPermissions(
     permissions: string | string[],
