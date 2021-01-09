@@ -19,7 +19,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_create_row]
+    // [START bigtable_api_create_row]
     const row = table.row('samplerow');
 
     row
@@ -30,7 +30,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_create_row]
+    // [END bigtable_api_create_row]
   },
 
   createRules: (instanceId, tableId) => {
@@ -39,7 +39,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_create_rules]
+    // [START bigtable_api_create_rules]
     const row = table.row('samplerow');
     // -
     // Add an increment amount to an existing value, if the targeted cell is
@@ -72,7 +72,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_create_rules]
+    // [END bigtable_api_create_rules]
   },
 
   deleteAllCells: (instanceId, tableId) => {
@@ -81,7 +81,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_delete_all_cells]
+    // [START bigtable_api_delete_all_cells]
     const row = table.row('samplerow');
     row
       .delete()
@@ -91,7 +91,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_delete_all_cells]
+    // [END bigtable_api_delete_all_cells]
   },
 
   deleteCells: (instanceId, tableId) => {
@@ -100,7 +100,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_delete_particular_cells]
+    // [START bigtable_api_delete_particular_cells]
     const row = table.row('samplerow');
 
     // Delete selective cell within a family.
@@ -119,7 +119,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_delete_particular_cells]
+    // [END bigtable_api_delete_particular_cells]
   },
 
   exists: (instanceId, tableId) => {
@@ -128,7 +128,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_row_exists]
+    // [START bigtable_api_row_exists]
     const row = table.row('samplerow');
 
     row
@@ -139,7 +139,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_row_exists]
+    // [END bigtable_api_row_exists]
   },
 
   filter: (instanceId, tableId) => {
@@ -148,7 +148,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_row_filter]
+    // [START bigtable_api_row_filter]
     const row = table.row('samplerow');
 
     const filter = [
@@ -186,7 +186,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_row_filter]
+    // [END bigtable_api_row_filter]
   },
 
   get: (instanceId, tableId) => {
@@ -195,7 +195,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_get_row]
+    // [START bigtable_api_get_row]
     const row = table.row('samplerow');
 
     row
@@ -223,7 +223,7 @@ const snippets = {
     //     // Handle the error.
     //   });
 
-    // [END bigtable_get_row]
+    // [END bigtable_api_get_row]
   },
 
   getMetadata: (instanceId, tableId) => {
@@ -232,7 +232,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_get_row_meta]
+    // [START bigtable_api_get_row_meta]
     const row = table.row('samplerow');
 
     row
@@ -244,7 +244,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_row_meta]
+    // [END bigtable_api_get_row_meta]
   },
 
   increment: (instanceId, tableId) => {
@@ -253,7 +253,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_row_increment]
+    // [START bigtable_api_row_increment]
     const row = table.row('samplerow');
 
     // Specify a custom amount to increment the column by.
@@ -280,7 +280,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_row_increment]
+    // [END bigtable_api_row_increment]
   },
 
   save: (instanceId, tableId) => {
@@ -289,7 +289,7 @@ const snippets = {
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
 
-    // [START bigtable_row_save]
+    // [START bigtable_api_row_save]
     const row = table.row('samplerow');
     const entry = {
       follows: {
@@ -304,7 +304,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_row_save]
+    // [END bigtable_api_row_save]
   },
 };
 
