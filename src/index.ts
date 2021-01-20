@@ -392,6 +392,8 @@ export class Bigtable {
         libName: 'gccl',
         libVersion: PKG.version,
         scopes,
+        'grpc.keepalive_time_ms': 30000,
+        'grpc.keepalive_timeout_ms': 10000,
       },
       options
     );
