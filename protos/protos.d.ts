@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -3755,6 +3755,324 @@ export namespace google {
                     type TestIamPermissionsCallback = (error: (Error|null), response?: google.iam.v1.TestIamPermissionsResponse) => void;
                 }
 
+                /** Properties of a RestoreTableRequest. */
+                interface IRestoreTableRequest {
+
+                    /** RestoreTableRequest parent */
+                    parent?: (string|null);
+
+                    /** RestoreTableRequest tableId */
+                    tableId?: (string|null);
+
+                    /** RestoreTableRequest backup */
+                    backup?: (string|null);
+                }
+
+                /** Represents a RestoreTableRequest. */
+                class RestoreTableRequest implements IRestoreTableRequest {
+
+                    /**
+                     * Constructs a new RestoreTableRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IRestoreTableRequest);
+
+                    /** RestoreTableRequest parent. */
+                    public parent: string;
+
+                    /** RestoreTableRequest tableId. */
+                    public tableId: string;
+
+                    /** RestoreTableRequest backup. */
+                    public backup: string;
+
+                    /** RestoreTableRequest source. */
+                    public source?: "backup";
+
+                    /**
+                     * Creates a new RestoreTableRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns RestoreTableRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IRestoreTableRequest): google.bigtable.admin.v2.RestoreTableRequest;
+
+                    /**
+                     * Encodes the specified RestoreTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableRequest.verify|verify} messages.
+                     * @param message RestoreTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IRestoreTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified RestoreTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableRequest.verify|verify} messages.
+                     * @param message RestoreTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IRestoreTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a RestoreTableRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns RestoreTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.RestoreTableRequest;
+
+                    /**
+                     * Decodes a RestoreTableRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns RestoreTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.RestoreTableRequest;
+
+                    /**
+                     * Verifies a RestoreTableRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a RestoreTableRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns RestoreTableRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.RestoreTableRequest;
+
+                    /**
+                     * Creates a plain object from a RestoreTableRequest message. Also converts values to other types if specified.
+                     * @param message RestoreTableRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.RestoreTableRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this RestoreTableRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of a RestoreTableMetadata. */
+                interface IRestoreTableMetadata {
+
+                    /** RestoreTableMetadata name */
+                    name?: (string|null);
+
+                    /** RestoreTableMetadata sourceType */
+                    sourceType?: (google.bigtable.admin.v2.RestoreSourceType|keyof typeof google.bigtable.admin.v2.RestoreSourceType|null);
+
+                    /** RestoreTableMetadata backupInfo */
+                    backupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
+
+                    /** RestoreTableMetadata optimizeTableOperationName */
+                    optimizeTableOperationName?: (string|null);
+
+                    /** RestoreTableMetadata progress */
+                    progress?: (google.bigtable.admin.v2.IOperationProgress|null);
+                }
+
+                /** Represents a RestoreTableMetadata. */
+                class RestoreTableMetadata implements IRestoreTableMetadata {
+
+                    /**
+                     * Constructs a new RestoreTableMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IRestoreTableMetadata);
+
+                    /** RestoreTableMetadata name. */
+                    public name: string;
+
+                    /** RestoreTableMetadata sourceType. */
+                    public sourceType: (google.bigtable.admin.v2.RestoreSourceType|keyof typeof google.bigtable.admin.v2.RestoreSourceType);
+
+                    /** RestoreTableMetadata backupInfo. */
+                    public backupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
+
+                    /** RestoreTableMetadata optimizeTableOperationName. */
+                    public optimizeTableOperationName: string;
+
+                    /** RestoreTableMetadata progress. */
+                    public progress?: (google.bigtable.admin.v2.IOperationProgress|null);
+
+                    /** RestoreTableMetadata sourceInfo. */
+                    public sourceInfo?: "backupInfo";
+
+                    /**
+                     * Creates a new RestoreTableMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns RestoreTableMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IRestoreTableMetadata): google.bigtable.admin.v2.RestoreTableMetadata;
+
+                    /**
+                     * Encodes the specified RestoreTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableMetadata.verify|verify} messages.
+                     * @param message RestoreTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IRestoreTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified RestoreTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableMetadata.verify|verify} messages.
+                     * @param message RestoreTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IRestoreTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a RestoreTableMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns RestoreTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.RestoreTableMetadata;
+
+                    /**
+                     * Decodes a RestoreTableMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns RestoreTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.RestoreTableMetadata;
+
+                    /**
+                     * Verifies a RestoreTableMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a RestoreTableMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns RestoreTableMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.RestoreTableMetadata;
+
+                    /**
+                     * Creates a plain object from a RestoreTableMetadata message. Also converts values to other types if specified.
+                     * @param message RestoreTableMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.RestoreTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this RestoreTableMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of an OptimizeRestoredTableMetadata. */
+                interface IOptimizeRestoredTableMetadata {
+
+                    /** OptimizeRestoredTableMetadata name */
+                    name?: (string|null);
+
+                    /** OptimizeRestoredTableMetadata progress */
+                    progress?: (google.bigtable.admin.v2.IOperationProgress|null);
+                }
+
+                /** Represents an OptimizeRestoredTableMetadata. */
+                class OptimizeRestoredTableMetadata implements IOptimizeRestoredTableMetadata {
+
+                    /**
+                     * Constructs a new OptimizeRestoredTableMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata);
+
+                    /** OptimizeRestoredTableMetadata name. */
+                    public name: string;
+
+                    /** OptimizeRestoredTableMetadata progress. */
+                    public progress?: (google.bigtable.admin.v2.IOperationProgress|null);
+
+                    /**
+                     * Creates a new OptimizeRestoredTableMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns OptimizeRestoredTableMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
+
+                    /**
+                     * Encodes the specified OptimizeRestoredTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.OptimizeRestoredTableMetadata.verify|verify} messages.
+                     * @param message OptimizeRestoredTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified OptimizeRestoredTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.OptimizeRestoredTableMetadata.verify|verify} messages.
+                     * @param message OptimizeRestoredTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an OptimizeRestoredTableMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns OptimizeRestoredTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
+
+                    /**
+                     * Decodes an OptimizeRestoredTableMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns OptimizeRestoredTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
+
+                    /**
+                     * Verifies an OptimizeRestoredTableMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an OptimizeRestoredTableMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns OptimizeRestoredTableMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
+
+                    /**
+                     * Creates a plain object from an OptimizeRestoredTableMetadata message. Also converts values to other types if specified.
+                     * @param message OptimizeRestoredTableMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.OptimizeRestoredTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this OptimizeRestoredTableMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
                 /** Properties of a CreateTableRequest. */
                 interface ICreateTableRequest {
 
@@ -6035,96 +6353,6 @@ export namespace google {
                     public toJSON(): { [k: string]: any };
                 }
 
-                /** Properties of a GetBackupRequest. */
-                interface IGetBackupRequest {
-
-                    /** GetBackupRequest name */
-                    name?: (string|null);
-                }
-
-                /** Represents a GetBackupRequest. */
-                class GetBackupRequest implements IGetBackupRequest {
-
-                    /**
-                     * Constructs a new GetBackupRequest.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.IGetBackupRequest);
-
-                    /** GetBackupRequest name. */
-                    public name: string;
-
-                    /**
-                     * Creates a new GetBackupRequest instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns GetBackupRequest instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.IGetBackupRequest): google.bigtable.admin.v2.GetBackupRequest;
-
-                    /**
-                     * Encodes the specified GetBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.GetBackupRequest.verify|verify} messages.
-                     * @param message GetBackupRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.IGetBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified GetBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GetBackupRequest.verify|verify} messages.
-                     * @param message GetBackupRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.IGetBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes a GetBackupRequest message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns GetBackupRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.GetBackupRequest;
-
-                    /**
-                     * Decodes a GetBackupRequest message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns GetBackupRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.GetBackupRequest;
-
-                    /**
-                     * Verifies a GetBackupRequest message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates a GetBackupRequest message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns GetBackupRequest
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.GetBackupRequest;
-
-                    /**
-                     * Creates a plain object from a GetBackupRequest message. Also converts values to other types if specified.
-                     * @param message GetBackupRequest
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.GetBackupRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this GetBackupRequest to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-                }
-
                 /** Properties of an UpdateBackupRequest. */
                 interface IUpdateBackupRequest {
 
@@ -6216,6 +6444,96 @@ export namespace google {
 
                     /**
                      * Converts this UpdateBackupRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of a GetBackupRequest. */
+                interface IGetBackupRequest {
+
+                    /** GetBackupRequest name */
+                    name?: (string|null);
+                }
+
+                /** Represents a GetBackupRequest. */
+                class GetBackupRequest implements IGetBackupRequest {
+
+                    /**
+                     * Constructs a new GetBackupRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IGetBackupRequest);
+
+                    /** GetBackupRequest name. */
+                    public name: string;
+
+                    /**
+                     * Creates a new GetBackupRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns GetBackupRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IGetBackupRequest): google.bigtable.admin.v2.GetBackupRequest;
+
+                    /**
+                     * Encodes the specified GetBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.GetBackupRequest.verify|verify} messages.
+                     * @param message GetBackupRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IGetBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified GetBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GetBackupRequest.verify|verify} messages.
+                     * @param message GetBackupRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IGetBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a GetBackupRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns GetBackupRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.GetBackupRequest;
+
+                    /**
+                     * Decodes a GetBackupRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns GetBackupRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.GetBackupRequest;
+
+                    /**
+                     * Verifies a GetBackupRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a GetBackupRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns GetBackupRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.GetBackupRequest;
+
+                    /**
+                     * Creates a plain object from a GetBackupRequest message. Also converts values to other types if specified.
+                     * @param message GetBackupRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.GetBackupRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this GetBackupRequest to JSON.
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
@@ -6516,324 +6834,6 @@ export namespace google {
 
                     /**
                      * Converts this ListBackupsResponse to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-                }
-
-                /** Properties of a RestoreTableRequest. */
-                interface IRestoreTableRequest {
-
-                    /** RestoreTableRequest parent */
-                    parent?: (string|null);
-
-                    /** RestoreTableRequest tableId */
-                    tableId?: (string|null);
-
-                    /** RestoreTableRequest backup */
-                    backup?: (string|null);
-                }
-
-                /** Represents a RestoreTableRequest. */
-                class RestoreTableRequest implements IRestoreTableRequest {
-
-                    /**
-                     * Constructs a new RestoreTableRequest.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.IRestoreTableRequest);
-
-                    /** RestoreTableRequest parent. */
-                    public parent: string;
-
-                    /** RestoreTableRequest tableId. */
-                    public tableId: string;
-
-                    /** RestoreTableRequest backup. */
-                    public backup: string;
-
-                    /** RestoreTableRequest source. */
-                    public source?: "backup";
-
-                    /**
-                     * Creates a new RestoreTableRequest instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns RestoreTableRequest instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.IRestoreTableRequest): google.bigtable.admin.v2.RestoreTableRequest;
-
-                    /**
-                     * Encodes the specified RestoreTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableRequest.verify|verify} messages.
-                     * @param message RestoreTableRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.IRestoreTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified RestoreTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableRequest.verify|verify} messages.
-                     * @param message RestoreTableRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.IRestoreTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes a RestoreTableRequest message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns RestoreTableRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.RestoreTableRequest;
-
-                    /**
-                     * Decodes a RestoreTableRequest message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns RestoreTableRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.RestoreTableRequest;
-
-                    /**
-                     * Verifies a RestoreTableRequest message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates a RestoreTableRequest message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns RestoreTableRequest
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.RestoreTableRequest;
-
-                    /**
-                     * Creates a plain object from a RestoreTableRequest message. Also converts values to other types if specified.
-                     * @param message RestoreTableRequest
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.RestoreTableRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this RestoreTableRequest to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-                }
-
-                /** Properties of a RestoreTableMetadata. */
-                interface IRestoreTableMetadata {
-
-                    /** RestoreTableMetadata name */
-                    name?: (string|null);
-
-                    /** RestoreTableMetadata sourceType */
-                    sourceType?: (google.bigtable.admin.v2.RestoreSourceType|keyof typeof google.bigtable.admin.v2.RestoreSourceType|null);
-
-                    /** RestoreTableMetadata backupInfo */
-                    backupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
-
-                    /** RestoreTableMetadata optimizeTableOperationName */
-                    optimizeTableOperationName?: (string|null);
-
-                    /** RestoreTableMetadata progress */
-                    progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-                }
-
-                /** Represents a RestoreTableMetadata. */
-                class RestoreTableMetadata implements IRestoreTableMetadata {
-
-                    /**
-                     * Constructs a new RestoreTableMetadata.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.IRestoreTableMetadata);
-
-                    /** RestoreTableMetadata name. */
-                    public name: string;
-
-                    /** RestoreTableMetadata sourceType. */
-                    public sourceType: (google.bigtable.admin.v2.RestoreSourceType|keyof typeof google.bigtable.admin.v2.RestoreSourceType);
-
-                    /** RestoreTableMetadata backupInfo. */
-                    public backupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
-
-                    /** RestoreTableMetadata optimizeTableOperationName. */
-                    public optimizeTableOperationName: string;
-
-                    /** RestoreTableMetadata progress. */
-                    public progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-
-                    /** RestoreTableMetadata sourceInfo. */
-                    public sourceInfo?: "backupInfo";
-
-                    /**
-                     * Creates a new RestoreTableMetadata instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns RestoreTableMetadata instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.IRestoreTableMetadata): google.bigtable.admin.v2.RestoreTableMetadata;
-
-                    /**
-                     * Encodes the specified RestoreTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableMetadata.verify|verify} messages.
-                     * @param message RestoreTableMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.IRestoreTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified RestoreTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.RestoreTableMetadata.verify|verify} messages.
-                     * @param message RestoreTableMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.IRestoreTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes a RestoreTableMetadata message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns RestoreTableMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.RestoreTableMetadata;
-
-                    /**
-                     * Decodes a RestoreTableMetadata message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns RestoreTableMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.RestoreTableMetadata;
-
-                    /**
-                     * Verifies a RestoreTableMetadata message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates a RestoreTableMetadata message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns RestoreTableMetadata
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.RestoreTableMetadata;
-
-                    /**
-                     * Creates a plain object from a RestoreTableMetadata message. Also converts values to other types if specified.
-                     * @param message RestoreTableMetadata
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.RestoreTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this RestoreTableMetadata to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-                }
-
-                /** Properties of an OptimizeRestoredTableMetadata. */
-                interface IOptimizeRestoredTableMetadata {
-
-                    /** OptimizeRestoredTableMetadata name */
-                    name?: (string|null);
-
-                    /** OptimizeRestoredTableMetadata progress */
-                    progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-                }
-
-                /** Represents an OptimizeRestoredTableMetadata. */
-                class OptimizeRestoredTableMetadata implements IOptimizeRestoredTableMetadata {
-
-                    /**
-                     * Constructs a new OptimizeRestoredTableMetadata.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata);
-
-                    /** OptimizeRestoredTableMetadata name. */
-                    public name: string;
-
-                    /** OptimizeRestoredTableMetadata progress. */
-                    public progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-
-                    /**
-                     * Creates a new OptimizeRestoredTableMetadata instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns OptimizeRestoredTableMetadata instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
-
-                    /**
-                     * Encodes the specified OptimizeRestoredTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.OptimizeRestoredTableMetadata.verify|verify} messages.
-                     * @param message OptimizeRestoredTableMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified OptimizeRestoredTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.OptimizeRestoredTableMetadata.verify|verify} messages.
-                     * @param message OptimizeRestoredTableMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.IOptimizeRestoredTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes an OptimizeRestoredTableMetadata message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns OptimizeRestoredTableMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
-
-                    /**
-                     * Decodes an OptimizeRestoredTableMetadata message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns OptimizeRestoredTableMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
-
-                    /**
-                     * Verifies an OptimizeRestoredTableMetadata message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates an OptimizeRestoredTableMetadata message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns OptimizeRestoredTableMetadata
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.OptimizeRestoredTableMetadata;
-
-                    /**
-                     * Creates a plain object from an OptimizeRestoredTableMetadata message. Also converts values to other types if specified.
-                     * @param message OptimizeRestoredTableMetadata
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.OptimizeRestoredTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this OptimizeRestoredTableMetadata to JSON.
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
@@ -12033,6 +12033,9 @@ export namespace google {
 
             /** ResourceDescriptor singular */
             singular?: (string|null);
+
+            /** ResourceDescriptor style */
+            style?: (google.api.ResourceDescriptor.Style[]|null);
         }
 
         /** Represents a ResourceDescriptor. */
@@ -12061,6 +12064,9 @@ export namespace google {
 
             /** ResourceDescriptor singular. */
             public singular: string;
+
+            /** ResourceDescriptor style. */
+            public style: google.api.ResourceDescriptor.Style[];
 
             /**
              * Creates a new ResourceDescriptor instance using the specified properties.
@@ -12140,6 +12146,12 @@ export namespace google {
                 HISTORY_UNSPECIFIED = 0,
                 ORIGINALLY_SINGLE_PATTERN = 1,
                 FUTURE_MULTI_PATTERN = 2
+            }
+
+            /** Style enum. */
+            enum Style {
+                STYLE_UNSPECIFIED = 0,
+                DECLARATIVE_FRIENDLY = 1
             }
         }
 

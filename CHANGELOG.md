@@ -4,6 +4,25 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.2.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.1.1...v3.2.0) (2020-11-07)
+
+
+### Features
+
+* add backup level IAM policy controls ([#799](https://www.github.com/googleapis/nodejs-bigtable/issues/799)) ([0f3b8b3](https://www.github.com/googleapis/nodejs-bigtable/commit/0f3b8b3042001f9c47dc1f153c94f1b19a625504))
+
+
+### Bug Fixes
+
+* do not modify options object, use defaultScopes ([#819](https://www.github.com/googleapis/nodejs-bigtable/issues/819)) ([8ad7ab1](https://www.github.com/googleapis/nodejs-bigtable/commit/8ad7ab191e41f18ff2de9803d520f1c05a4940b5))
+
+### [3.1.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.1.0...v3.1.1) (2020-10-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency dot-prop to v6 ([#806](https://www.github.com/googleapis/nodejs-bigtable/issues/806)) ([edf65be](https://www.github.com/googleapis/nodejs-bigtable/commit/edf65bee1b75faac44a6ce15cdf7fab14a3a4405))
+
 ## [3.1.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.0.1...v3.1.0) (2020-09-10)
 
 

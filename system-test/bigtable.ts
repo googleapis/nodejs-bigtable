@@ -103,9 +103,8 @@ describe('Bigtable', () => {
 
   describe('instances', () => {
     it('should get a list of instances', async () => {
-      const [instances, failedLocations] = await bigtable.getInstances();
+      const [instances] = await bigtable.getInstances();
       assert(instances.length > 0);
-      assert(Array.isArray(failedLocations));
     });
 
     it('should check if an instance exists', async () => {
@@ -136,7 +135,7 @@ describe('Bigtable', () => {
       const policyProperties = ['version', 'bindings', 'etag'];
       const [policy] = await INSTANCE.getIamPolicy();
       policyProperties.forEach(property => {
-        assert.strictEqual(Object.keys(policy).includes(property), true);
+        assert(property in policy);
       });
     });
 
@@ -170,7 +169,7 @@ describe('Bigtable', () => {
 
       const [policy] = await instance.getIamPolicy();
       const [updatedPolicy] = await instance.setIamPolicy(policy);
-      assert.notStrictEqual(updatedPolicy, null);
+      Object.keys(policy).forEach(key => assert(key in updatedPolicy));
 
       await instance.delete();
     });
@@ -326,7 +325,7 @@ describe('Bigtable', () => {
       const policyProperties = ['version', 'bindings', 'etag'];
       const [policy] = await TABLE.getIamPolicy();
       policyProperties.forEach(property => {
-        assert.strictEqual(Object.keys(policy).includes(property), true);
+        assert(property in policy);
       });
     });
 
@@ -345,7 +344,7 @@ describe('Bigtable', () => {
 
       const [policy] = await table.getIamPolicy();
       const [updatedPolicy] = await table.setIamPolicy(policy);
-      assert.notStrictEqual(updatedPolicy, null);
+      Object.keys(policy).forEach(key => assert(key in updatedPolicy));
 
       await table.delete();
     });
@@ -1258,6 +1257,33 @@ describe('Bigtable', () => {
 
       assert.strictEqual(metadata.name, backupNameFromCluster);
       assert.deepStrictEqual(backup.expireDate, updateExpireTime);
+    });
+
+    it('should get an Iam Policy for the backup', async () => {
+      const policyProperties = ['version', 'bindings', 'etag'];
+      const [policy] = await BACKUP.getIamPolicy();
+
+      policyProperties.forEach(property => {
+        assert(property in policy);
+      });
+    });
+
+    it('should test Iam permissions for the backup', async () => {
+      const permissions = ['bigtable.backups.get', 'bigtable.backups.delete'];
+      const [grantedPermissions] = await BACKUP.testIamPermissions(permissions);
+      assert.strictEqual(grantedPermissions.length, permissions.length);
+      permissions.forEach(permission => {
+        assert.strictEqual(grantedPermissions.includes(permission), true);
+      });
+    });
+
+    it('should set Iam Policy on the backup', async () => {
+      const backup = CLUSTER.backup(backupIdFromCluster);
+
+      const [policy] = await backup.getIamPolicy();
+      const [updatedPolicy] = await backup.setIamPolicy(policy);
+
+      Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
   });
 });

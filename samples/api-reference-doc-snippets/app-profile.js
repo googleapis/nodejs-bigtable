@@ -14,7 +14,7 @@
 
 const snippets = {
   create: (instanceId, appProfileId) => {
-    // [START bigtable_create_app_profile]
+    // [START bigtable_api_create_app_profile]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -33,11 +33,11 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_create_app_profile]
+    // [END bigtable_api_create_app_profile]
   },
 
   delete: (instanceId, appProfileId) => {
-    // [START bigtable_delete_app_profile]
+    // [START bigtable_api_delete_app_profile]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -51,11 +51,11 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_delete_app_profile]
+    // [END bigtable_api_delete_app_profile]
   },
 
   exists: (instanceId, appProfileId) => {
-    // [START bigtable_exists_app_profile]
+    // [START bigtable_api_exists_app_profile]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -69,11 +69,11 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_exists_app_profile]
+    // [END bigtable_api_exists_app_profile]
   },
 
   get: (instanceId, appProfileId) => {
-    // [START bigtable_get_app_profile]
+    // [START bigtable_api_get_app_profile]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -88,11 +88,11 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_get_app_profile]
+    // [END bigtable_api_get_app_profile]
   },
 
   getMeta: (instanceId, appProfileId) => {
-    // [START bigtable_app_profile_get_meta]
+    // [START bigtable_api_app_profile_get_meta]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -107,11 +107,11 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_app_profile_get_meta]
+    // [END bigtable_api_app_profile_get_meta]
   },
 
   setMeta: (instanceId, appProfileId, clusterId) => {
-    // [START bigtable_app_profile_set_meta]
+    // [START bigtable_api_app_profile_set_meta]
     const {Bigtable} = require('@google-cloud/bigtable');
     const bigtable = new Bigtable();
     const instance = bigtable.instance(instanceId);
@@ -132,7 +132,7 @@ const snippets = {
       .catch(err => {
         // Handle the error.
       });
-    // [END bigtable_app_profile_set_meta]
+    // [END bigtable_api_app_profile_set_meta]
   },
 };
 

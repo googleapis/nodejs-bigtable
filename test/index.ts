@@ -571,7 +571,7 @@ describe('Bigtable', () => {
       });
     });
 
-    it('should return an array of instance objects and failed locations', done => {
+    it('should return an array of instance objects', done => {
       const response = {
         instances: [
           {
@@ -581,7 +581,6 @@ describe('Bigtable', () => {
             name: 'b',
           },
         ],
-        failedLocations: ['projects/<project>/locations/<zone_id>'],
       };
       const fakeInstances = [{}, {}];
       bigtable.request = (config: {}, callback: Function) => {
@@ -594,18 +593,12 @@ describe('Bigtable', () => {
       };
 
       bigtable.getInstances(
-        (
-          err: Error,
-          instances: Instance[],
-          failedLocations: string[],
-          apiResponse: {}
-        ) => {
+        (err: Error, instances: Instance[], apiResponse: {}) => {
           assert.ifError(err);
           assert.strictEqual(instances[0], fakeInstances[0]);
           assert.strictEqual(instances[0].metadata, response.instances[0]);
           assert.strictEqual(instances[1], fakeInstances[1]);
           assert.strictEqual(instances[1].metadata, response.instances[1]);
-          assert.strictEqual(failedLocations, response.failedLocations);
           assert.strictEqual(apiResponse, response);
           done();
         }

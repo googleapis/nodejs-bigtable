@@ -16,7 +16,19 @@ import {PreciseDate} from '@google-cloud/precise-date';
 import {promisifyAll} from '@google-cloud/promisify';
 import snakeCase = require('lodash.snakecase');
 import {google} from '../protos/protos';
-import {Bigtable, Cluster, Table} from './';
+import {
+  Bigtable,
+  Cluster,
+  GetIamPolicyCallback,
+  GetIamPolicyOptions,
+  GetIamPolicyResponse,
+  Policy,
+  SetIamPolicyCallback,
+  SetIamPolicyResponse,
+  TestIamPermissionsCallback,
+  TestIamPermissionsResponse,
+} from './';
+import {Table} from '../src/table';
 import {
   CreateBackupConfig,
   CreateBackupCallback,
@@ -245,6 +257,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<CreateBackupResponse>}
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.create.js</caption>
+   * region_tag:bigtable_api_create_backup
    */
   create(
     config: CreateBackupConfig,
@@ -264,6 +279,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param {?error} callback.err An error returned while making this request.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<DeleteBackupResponse>}
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.delete.js</caption>
+   * region_tag:bigtable_api_delete_backup
    */
   delete(
     gaxOptionsOrCallback?: CallOptions | DeleteBackupCallback,
@@ -335,6 +353,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     request.
    * @param {Backup} callback.backup The Backup instance.
    * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.get.js</caption>
+   * region_tag:bigtable_api_get_backup
    */
   get(
     gaxOptionsOrCallback?: CallOptions | GetBackupCallback,
@@ -353,6 +374,38 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     );
   }
 
+  getIamPolicy(options?: GetIamPolicyOptions): Promise<GetIamPolicyResponse>;
+  getIamPolicy(
+    options: GetIamPolicyOptions,
+    callback: GetIamPolicyCallback
+  ): void;
+  /**
+   * @param {object} [options] Configuration object.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {number} [options.requestedPolicyVersion] The policy format version
+   *     to be returned. Valid values are 0, 1, and 3. Requests specifying an
+   *     invalid value will be rejected. Requests for policies with any
+   *     conditional bindings must specify version 3. Policies without any
+   *     conditional bindings may specify any valid value or leave the field unset.
+   * @param {function} [cb] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Policy} policy The policy.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_get_table_Iam_policy
+   */
+  getIamPolicy(
+    optionsOrCallback?: GetIamPolicyOptions | GetIamPolicyCallback,
+    cb?: GetIamPolicyCallback
+  ): void | Promise<GetIamPolicyResponse> {
+    const options =
+      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    const callback =
+      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    Table.prototype.getIamPolicy.call(this, options, callback);
+  }
+
   getMetadata(gaxOptions?: CallOptions): Promise<BackupGetMetadataResponse>;
   getMetadata(callback: BackupGetMetadataCallback): void;
   getMetadata(
@@ -369,6 +422,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     request.
    * @param {object} callback.metadata The metadata.
    * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.get.js</caption>
+   * region_tag:bigtable_api_get_backup
    */
   getMetadata(
     gaxOptionsOrCallback?: CallOptions | BackupGetMetadataCallback,
@@ -425,6 +481,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    *     to check the status of the request.
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<RestoreTableResponse>}
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.restore.js</caption>
+   * region_tag:bigtable_api_restore_backup
    */
   restore(
     tableId: string,
@@ -462,6 +521,38 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     );
   }
 
+  setIamPolicy(
+    policy: Policy,
+    gaxOptions?: CallOptions
+  ): Promise<SetIamPolicyResponse>;
+  setIamPolicy(
+    policy: Policy,
+    gaxOptions: CallOptions,
+    callback: SetIamPolicyCallback
+  ): void;
+  setIamPolicy(policy: Policy, callback: SetIamPolicyCallback): void;
+  /**
+   * @param {object} [gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {Policy} policy The policy.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_set_instance_Iam_policy
+   */
+  setIamPolicy(
+    policy: Policy,
+    gaxOptionsOrCallback?: CallOptions | SetIamPolicyCallback,
+    cb?: SetIamPolicyCallback
+  ): void | Promise<SetIamPolicyResponse> {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    const callback =
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    Table.prototype.setIamPolicy.call(this, policy, gaxOptions, callback);
+  }
+
   setMetadata(
     metadata: ModifiableBackupFields,
     gaxOptions?: CallOptions
@@ -485,6 +576,9 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param
    * @param {object} callback.apiResponse The full API response.
    * @return {void | Promise<BackupSetMetadataResponse>}
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/backups.update.js</caption>
+   * region_tag:bigtable_api_update_backup
    */
   setMetadata(
     metadata: ModifiableBackupFields,
@@ -524,6 +618,49 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
 
         callback(err, this.metadata!, resp!);
       }
+    );
+  }
+
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptions?: CallOptions
+  ): Promise<TestIamPermissionsResponse>;
+  testIamPermissions(
+    permissions: string | string[],
+    callback: TestIamPermissionsCallback
+  ): void;
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptions: CallOptions,
+    callback: TestIamPermissionsCallback
+  ): void;
+  /**
+   *
+   * @param {string | string[]} permissions The permission(s) to test for.
+   * @param {object} [gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {function} [callback] The callback function.
+   * @param {?error} callback.error An error returned while making this request.
+   * @param {string[]} permissions A subset of permissions that the caller is
+   *     allowed.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
+   * region_tag:bigtable_api_test_table_Iam_permissions
+   */
+  testIamPermissions(
+    permissions: string | string[],
+    gaxOptionsOrCallback?: CallOptions | TestIamPermissionsCallback,
+    cb?: TestIamPermissionsCallback
+  ): void | Promise<TestIamPermissionsResponse> {
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+    const callback =
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    Table.prototype.testIamPermissions.call(
+      this,
+      permissions,
+      gaxOptions,
+      callback
     );
   }
 }
