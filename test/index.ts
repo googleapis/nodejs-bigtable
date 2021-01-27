@@ -148,6 +148,38 @@ describe('Bigtable', () => {
       assert.deepStrictEqual(bigtable.api, {});
     });
 
+    it('should set grpc keepalive options', () => {
+      const bigtable = Bigtable();
+      assert.strictEqual(
+        bigtable.options.BigtableClient['grpc.keepalive_time_ms'],
+        30000
+      );
+      assert.strictEqual(
+        bigtable.options.BigtableClient['grpc.keepalive_timeout_ms'],
+        10000
+      );
+
+      assert.strictEqual(
+        bigtable.options.BigtableInstanceAdminClient['grpc.keepalive_time_ms'],
+        30000
+      );
+      assert.strictEqual(
+        bigtable.options.BigtableInstanceAdminClient[
+          'grpc.keepalive_timeout_ms'
+        ],
+        10000
+      );
+
+      assert.strictEqual(
+        bigtable.options.BigtableTableAdminClient['grpc.keepalive_time_ms'],
+        30000
+      );
+      assert.strictEqual(
+        bigtable.options.BigtableTableAdminClient['grpc.keepalive_timeout_ms'],
+        10000
+      );
+    });
+
     it('should cache a local google-auth-library instance', () => {
       const fakeGoogleAuthInstance = {};
       const options = {
@@ -163,6 +195,8 @@ describe('Bigtable', () => {
               libName: 'gccl',
               libVersion: PKG.version,
               scopes: EXPECTED_SCOPES,
+              'grpc.keepalive_time_ms': 30000,
+              'grpc.keepalive_timeout_ms': 10000,
             },
             options
           )
@@ -185,38 +219,37 @@ describe('Bigtable', () => {
       };
 
       const bigtable = new Bigtable(options);
-      const defaultOptions = {
-        a: 'b',
-        c: 'd',
-        libName: 'gccl',
-        libVersion: PKG.version,
-        scopes: EXPECTED_SCOPES,
-      };
+      const expectedOptions = Object.assign(
+        {
+          port: 443,
+          sslCreds: undefined,
+          libName: 'gccl',
+          libVersion: PKG.version,
+          scopes: EXPECTED_SCOPES,
+          'grpc.keepalive_time_ms': 30000,
+          'grpc.keepalive_timeout_ms': 10000,
+        },
+        options
+      );
 
       assert.deepStrictEqual(bigtable.options, {
         BigtableClient: Object.assign(
           {
             servicePath: 'bigtable.googleapis.com',
-            port: 443,
-            sslCreds: undefined,
           },
-          defaultOptions
+          expectedOptions
         ),
         BigtableInstanceAdminClient: Object.assign(
           {
             servicePath: 'bigtableadmin.googleapis.com',
-            port: 443,
-            sslCreds: undefined,
           },
-          defaultOptions
+          expectedOptions
         ),
         BigtableTableAdminClient: Object.assign(
           {
             servicePath: 'bigtableadmin.googleapis.com',
-            port: 443,
-            sslCreds: undefined,
           },
-          defaultOptions
+          expectedOptions
         ),
       });
     });
@@ -227,10 +260,21 @@ describe('Bigtable', () => {
       const options = {
         a: 'b',
         c: 'd',
-        libName: 'gccl',
-        libVersion: PKG.version,
-        scopes: EXPECTED_SCOPES,
       };
+
+      const expectedOptions = Object.assign(
+        {
+          servicePath: 'override',
+          port: 8080,
+          sslCreds: grpc.credentials.createInsecure(),
+          libName: 'gccl',
+          libVersion: PKG.version,
+          scopes: EXPECTED_SCOPES,
+          'grpc.keepalive_time_ms': 30000,
+          'grpc.keepalive_timeout_ms': 10000,
+        },
+        options
+      );
 
       const bigtable = new Bigtable(options);
 
@@ -240,30 +284,9 @@ describe('Bigtable', () => {
       );
 
       assert.deepStrictEqual(bigtable.options, {
-        BigtableClient: Object.assign(
-          {
-            servicePath: 'override',
-            port: 8080,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
-        BigtableInstanceAdminClient: Object.assign(
-          {
-            servicePath: 'override',
-            port: 8080,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
-        BigtableTableAdminClient: Object.assign(
-          {
-            servicePath: 'override',
-            port: 8080,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+        BigtableClient: expectedOptions,
+        BigtableInstanceAdminClient: expectedOptions,
+        BigtableTableAdminClient: expectedOptions,
       });
     });
 
@@ -272,40 +295,30 @@ describe('Bigtable', () => {
         apiEndpoint: 'customEndpoint:9090',
         a: 'b',
         c: 'd',
-        libName: 'gccl',
-        libVersion: PKG.version,
-        scopes: EXPECTED_SCOPES,
       };
+
+      const expectedOptions = Object.assign(
+        {
+          servicePath: 'customEndpoint',
+          port: 9090,
+          sslCreds: grpc.credentials.createInsecure(),
+          libName: 'gccl',
+          libVersion: PKG.version,
+          scopes: EXPECTED_SCOPES,
+          'grpc.keepalive_time_ms': 30000,
+          'grpc.keepalive_timeout_ms': 10000,
+        },
+        options
+      );
 
       const bigtable = new Bigtable(options);
 
       assert.strictEqual(bigtable.customEndpoint, options.apiEndpoint);
 
       assert.deepStrictEqual(bigtable.options, {
-        BigtableClient: Object.assign(
-          {
-            servicePath: 'customEndpoint',
-            port: 9090,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
-        BigtableInstanceAdminClient: Object.assign(
-          {
-            servicePath: 'customEndpoint',
-            port: 9090,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
-        BigtableTableAdminClient: Object.assign(
-          {
-            servicePath: 'customEndpoint',
-            port: 9090,
-            sslCreds: grpc.credentials.createInsecure(),
-          },
-          options
-        ),
+        BigtableClient: expectedOptions,
+        BigtableInstanceAdminClient: expectedOptions,
+        BigtableTableAdminClient: expectedOptions,
       });
     });
 
