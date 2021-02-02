@@ -9,5 +9,6 @@
   "repo": "googleapis/nodejs-bigtable",
   "distribution_name": "@google-cloud/bigtable",
   "api_id": "bigtable.googleapis.com",
-  "requires_billing": true
+  "requires_billing": true,
+  "codeowner_team": "@googleapis/api-bigtable"
 }
