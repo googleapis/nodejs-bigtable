@@ -24,7 +24,7 @@
     "mocha": "^8.0.0",
     "snap-shot-it": "^7.9.1",
     "request": "^2.88.0",
-    "requestretry": "^4.1.0"
+    "requestretry": "^5.0.0"
   },
   "scripts": {
     "test": "mocha --timeout=60000",
