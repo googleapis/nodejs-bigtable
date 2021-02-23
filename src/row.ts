@@ -345,8 +345,8 @@ export class Row {
    * @param {Row} callback.row The newly created row object.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_create_row
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_create_row
    */
   create(
     optionsOrCallback?: CreateRowOptions | CreateRowCallback,
@@ -400,8 +400,8 @@ export class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_create_rules
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_create_rules
    */
   createRules(
     rules: Rule | Rule[],
@@ -467,8 +467,8 @@ export class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_delete_all_cells
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_delete_all_cells
    */
   delete(
     optionsOrCallback?: CallOptions | MutateCallback,
@@ -507,8 +507,8 @@ export class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_delete_particular_cells
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_delete_particular_cells
    */
   deleteCells(
     columns: string[],
@@ -541,8 +541,8 @@ export class Row {
    *     request.
    * @param {boolean} callback.exists Whether the row exists or not.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_row_exists
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_exists
    */
   exists(
     optionsOrCallback?: CallOptions | RowExistsCallback,
@@ -607,8 +607,8 @@ export class Row {
    *     request.
    * @param {boolean} callback.matched Whether a match was found or not.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_row_filter
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_filter
    */
   filter(
     filter: RawFilter,
@@ -682,8 +682,8 @@ export class Row {
    *     request.
    * @param {Row} callback.row The updated Row object.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_get_row
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_get_row
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   get<T = any | Row>(
@@ -787,8 +787,8 @@ export class Row {
    *     request.
    * @param {object} callback.metadata The row's metadata.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_get_row_meta
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_get_row_meta
    */
   getMetadata(
     optionsOrCallback?: GetRowOptions | GetRowMetadataCallback,
@@ -841,8 +841,8 @@ export class Row {
    * @param {number} callback.value The updated value of the column.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_row_increment
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_increment
    */
   increment(
     column: string,
@@ -900,8 +900,8 @@ export class Row {
    *     request.
    * @param {object} callback.apiResponse The full API response.
    *
-   * @example <caption>include:samples/document-snippets/row.js</caption>
-   * region_tag:bigtable_row_save
+   * @example <caption>include:samples/api-reference-doc-snippets/row.js</caption>
+   * region_tag:bigtable_api_row_save
    */
   save(
     entry: Entry,

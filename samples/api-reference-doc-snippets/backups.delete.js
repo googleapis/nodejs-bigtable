@@ -15,36 +15,32 @@
 async function main(
   instanceId = 'YOUR_INSTANCE_ID',
   tableId = 'YOUR_TABLE_ID',
-  clusterId = 'YOUR_CLUSTER_ID'
+  clusterId = 'YOUR_CLUSTER_ID',
+  backupId = 'YOUR_BACKUP_ID'
 ) {
-  // [START bigtable_list_backups]
+  // [START bigtable_api_delete_backup]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
-  async function listBackups() {
+  async function deleteBackup() {
     /**
      * TODO(developer): Uncomment these variables before running the sample.
      */
     // const instanceId = 'YOUR_INSTANCE_ID';
     // const tableId = 'YOUR_TABLE_ID';
     // const clusterId = 'YOUR_CLUSTER_ID';
+    // const backupId = 'YOUR_BACKUP_ID';
     const instance = bigtable.instance(instanceId);
     const table = instance.table(tableId);
     const cluster = table.cluster(clusterId);
+    const backup = cluster.backup(backupId);
 
-    const [backupsFromInstance] = await instance.listBackups();
-    console.log(
-      `${backupsFromInstance.length} backups returned from the instance.`
-    );
-
-    const [backupsFromCluster] = await cluster.listBackups();
-    console.log(
-      `${backupsFromCluster.length} backups returned from the cluster.`
-    );
+    await backup.delete();
+    console.log(`Backup ${backupId} was deleted successfully.`);
   }
 
-  await listBackups();
-  // [END bigtable_list_backups]
+  await deleteBackup();
+  // [END bigtable_api_delete_backup]
 }
 
 const args = process.argv.slice(2);
