@@ -32,12 +32,12 @@
         "ReadRows": {
           "timeout_millis": 43200000,
           "retry_codes_name": "non_idempotent",
-          "retry_params_name": "default"
+          "retry_params_name": "5af39a0f6db447f61c4f695240caeccb74f78362"
         },
         "SampleRowKeys": {
           "timeout_millis": 60000,
           "retry_codes_name": "non_idempotent",
-          "retry_params_name": "default"
+          "retry_params_name": "5af39a0f6db447f61c4f695240caeccb74f78362"
         },
         "MutateRow": {
           "timeout_millis": 60000,
@@ -47,17 +47,17 @@
         "MutateRows": {
           "timeout_millis": 600000,
           "retry_codes_name": "non_idempotent",
-          "retry_params_name": "default"
+          "retry_params_name": "5af39a0f6db447f61c4f695240caeccb74f78362"
         },
         "CheckAndMutateRow": {
           "timeout_millis": 20000,
           "retry_codes_name": "non_idempotent",
-          "retry_params_name": "default"
+          "retry_params_name": "5af39a0f6db447f61c4f695240caeccb74f78362"
         },
         "ReadModifyWriteRow": {
           "timeout_millis": 20000,
           "retry_codes_name": "non_idempotent",
-          "retry_params_name": "default"
+          "retry_params_name": "5af39a0f6db447f61c4f695240caeccb74f78362"
         }
       }
     }
