@@ -14,7 +14,9 @@
                     "java_outer_classname": "TableProto",
                     "java_package": "com.google.bigtable.admin.v2",
                     "php_namespace": "Google\\Cloud\\Bigtable\\Admin\\V2",
-                    "ruby_package": "Google::Cloud::Bigtable::Admin::V2"
+                    "ruby_package": "Google::Cloud::Bigtable::Admin::V2",
+                    "(google.api.resource_definition).type": "cloudkms.googleapis.com/CryptoKeyVersion",
+                    "(google.api.resource_definition).pattern": "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}"
                   },
                   "nested": {
                     "BigtableInstanceAdmin": {
@@ -889,9 +891,27 @@
                         "defaultStorageType": {
                           "type": "StorageType",
                           "id": 5
+                        },
+                        "encryptionConfig": {
+                          "type": "EncryptionConfig",
+                          "id": 6,
+                          "options": {
+                            "(google.api.field_behavior)": "IMMUTABLE"
+                          }
                         }
                       },
                       "nested": {
+                        "EncryptionConfig": {
+                          "fields": {
+                            "kmsKeyName": {
+                              "type": "string",
+                              "id": 1,
+                              "options": {
+                                "(google.api.resource_reference).type": "cloudkms.googleapis.com/CryptoKey"
+                              }
+                            }
+                          }
+                        },
                         "State": {
                           "values": {
                             "STATE_NOT_KNOWN": 0,
@@ -2099,6 +2119,14 @@
                             "replicationState": {
                               "type": "ReplicationState",
                               "id": 1
+                            },
+                            "encryptionInfo": {
+                              "rule": "repeated",
+                              "type": "EncryptionInfo",
+                              "id": 2,
+                              "options": {
+                                "(google.api.field_behavior)": "OUTPUT_ONLY"
+                              }
                             }
                           },
                           "nested": {
@@ -2126,6 +2154,7 @@
                             "NAME_ONLY": 1,
                             "SCHEMA_VIEW": 2,
                             "REPLICATION_VIEW": 3,
+                            "ENCRYPTION_VIEW": 5,
                             "FULL": 4
                           }
                         }
@@ -2185,6 +2214,41 @@
                               "type": "GcRule",
                               "id": 1
                             }
+                          }
+                        }
+                      }
+                    },
+                    "EncryptionInfo": {
+                      "fields": {
+                        "encryptionType": {
+                          "type": "EncryptionType",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "encryptionStatus": {
+                          "type": "google.rpc.Status",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "kmsKeyVersion": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY",
+                            "(google.api.resource_reference).type": "cloudkms.googleapis.com/CryptoKeyVersion"
+                          }
+                        }
+                      },
+                      "nested": {
+                        "EncryptionType": {
+                          "values": {
+                            "ENCRYPTION_TYPE_UNSPECIFIED": 0,
+                            "GOOGLE_DEFAULT_ENCRYPTION": 1,
+                            "CUSTOMER_MANAGED_ENCRYPTION": 2
                           }
                         }
                       }
@@ -2285,6 +2349,13 @@
                         "state": {
                           "type": "State",
                           "id": 7,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "encryptionInfo": {
+                          "type": "EncryptionInfo",
+                          "id": 9,
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
