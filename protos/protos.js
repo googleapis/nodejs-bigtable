@@ -6134,6 +6134,7 @@
                          * @property {google.bigtable.admin.v2.Cluster.State|null} [state] Cluster state
                          * @property {number|null} [serveNodes] Cluster serveNodes
                          * @property {google.bigtable.admin.v2.StorageType|null} [defaultStorageType] Cluster defaultStorageType
+                         * @property {google.bigtable.admin.v2.Cluster.IEncryptionConfig|null} [encryptionConfig] Cluster encryptionConfig
                          */
     
                         /**
@@ -6192,6 +6193,14 @@
                         Cluster.prototype.defaultStorageType = 0;
     
                         /**
+                         * Cluster encryptionConfig.
+                         * @member {google.bigtable.admin.v2.Cluster.IEncryptionConfig|null|undefined} encryptionConfig
+                         * @memberof google.bigtable.admin.v2.Cluster
+                         * @instance
+                         */
+                        Cluster.prototype.encryptionConfig = null;
+    
+                        /**
                          * Creates a new Cluster instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.Cluster
@@ -6225,6 +6234,8 @@
                                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.serveNodes);
                             if (message.defaultStorageType != null && Object.hasOwnProperty.call(message, "defaultStorageType"))
                                 writer.uint32(/* id 5, wireType 0 =*/40).int32(message.defaultStorageType);
+                            if (message.encryptionConfig != null && Object.hasOwnProperty.call(message, "encryptionConfig"))
+                                $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.encode(message.encryptionConfig, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
                             return writer;
                         };
     
@@ -6273,6 +6284,9 @@
                                     break;
                                 case 5:
                                     message.defaultStorageType = reader.int32();
+                                    break;
+                                case 6:
+                                    message.encryptionConfig = $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.decode(reader, reader.uint32());
                                     break;
                                 default:
                                     reader.skipType(tag & 7);
@@ -6338,6 +6352,11 @@
                                 case 2:
                                     break;
                                 }
+                            if (message.encryptionConfig != null && message.hasOwnProperty("encryptionConfig")) {
+                                var error = $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.verify(message.encryptionConfig);
+                                if (error)
+                                    return "encryptionConfig." + error;
+                            }
                             return null;
                         };
     
@@ -6395,6 +6414,11 @@
                                 message.defaultStorageType = 2;
                                 break;
                             }
+                            if (object.encryptionConfig != null) {
+                                if (typeof object.encryptionConfig !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Cluster.encryptionConfig: object expected");
+                                message.encryptionConfig = $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.fromObject(object.encryptionConfig);
+                            }
                             return message;
                         };
     
@@ -6417,6 +6441,7 @@
                                 object.state = options.enums === String ? "STATE_NOT_KNOWN" : 0;
                                 object.serveNodes = 0;
                                 object.defaultStorageType = options.enums === String ? "STORAGE_TYPE_UNSPECIFIED" : 0;
+                                object.encryptionConfig = null;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -6428,6 +6453,8 @@
                                 object.serveNodes = message.serveNodes;
                             if (message.defaultStorageType != null && message.hasOwnProperty("defaultStorageType"))
                                 object.defaultStorageType = options.enums === String ? $root.google.bigtable.admin.v2.StorageType[message.defaultStorageType] : message.defaultStorageType;
+                            if (message.encryptionConfig != null && message.hasOwnProperty("encryptionConfig"))
+                                object.encryptionConfig = $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.toObject(message.encryptionConfig, options);
                             return object;
                         };
     
@@ -6441,6 +6468,193 @@
                         Cluster.prototype.toJSON = function toJSON() {
                             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                         };
+    
+                        Cluster.EncryptionConfig = (function() {
+    
+                            /**
+                             * Properties of an EncryptionConfig.
+                             * @memberof google.bigtable.admin.v2.Cluster
+                             * @interface IEncryptionConfig
+                             * @property {string|null} [kmsKeyName] EncryptionConfig kmsKeyName
+                             */
+    
+                            /**
+                             * Constructs a new EncryptionConfig.
+                             * @memberof google.bigtable.admin.v2.Cluster
+                             * @classdesc Represents an EncryptionConfig.
+                             * @implements IEncryptionConfig
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.Cluster.IEncryptionConfig=} [properties] Properties to set
+                             */
+                            function EncryptionConfig(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * EncryptionConfig kmsKeyName.
+                             * @member {string} kmsKeyName
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @instance
+                             */
+                            EncryptionConfig.prototype.kmsKeyName = "";
+    
+                            /**
+                             * Creates a new EncryptionConfig instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IEncryptionConfig=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.Cluster.EncryptionConfig} EncryptionConfig instance
+                             */
+                            EncryptionConfig.create = function create(properties) {
+                                return new EncryptionConfig(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified EncryptionConfig message. Does not implicitly {@link google.bigtable.admin.v2.Cluster.EncryptionConfig.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IEncryptionConfig} message EncryptionConfig message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            EncryptionConfig.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.kmsKeyName != null && Object.hasOwnProperty.call(message, "kmsKeyName"))
+                                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.kmsKeyName);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified EncryptionConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Cluster.EncryptionConfig.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IEncryptionConfig} message EncryptionConfig message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            EncryptionConfig.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes an EncryptionConfig message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.Cluster.EncryptionConfig} EncryptionConfig
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            EncryptionConfig.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Cluster.EncryptionConfig();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.kmsKeyName = reader.string();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes an EncryptionConfig message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.Cluster.EncryptionConfig} EncryptionConfig
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            EncryptionConfig.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies an EncryptionConfig message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            EncryptionConfig.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.kmsKeyName != null && message.hasOwnProperty("kmsKeyName"))
+                                    if (!$util.isString(message.kmsKeyName))
+                                        return "kmsKeyName: string expected";
+                                return null;
+                            };
+    
+                            /**
+                             * Creates an EncryptionConfig message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.Cluster.EncryptionConfig} EncryptionConfig
+                             */
+                            EncryptionConfig.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.Cluster.EncryptionConfig)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.Cluster.EncryptionConfig();
+                                if (object.kmsKeyName != null)
+                                    message.kmsKeyName = String(object.kmsKeyName);
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from an EncryptionConfig message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.EncryptionConfig} message EncryptionConfig
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            EncryptionConfig.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults)
+                                    object.kmsKeyName = "";
+                                if (message.kmsKeyName != null && message.hasOwnProperty("kmsKeyName"))
+                                    object.kmsKeyName = message.kmsKeyName;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this EncryptionConfig to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.Cluster.EncryptionConfig
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            EncryptionConfig.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return EncryptionConfig;
+                        })();
     
                         /**
                          * State enum.
@@ -10103,6 +10317,7 @@
                                 case 1:
                                 case 2:
                                 case 3:
+                                case 5:
                                 case 4:
                                     break;
                                 }
@@ -10145,6 +10360,10 @@
                             case "REPLICATION_VIEW":
                             case 3:
                                 message.view = 3;
+                                break;
+                            case "ENCRYPTION_VIEW":
+                            case 5:
+                                message.view = 5;
                                 break;
                             case "FULL":
                             case 4:
@@ -10588,6 +10807,7 @@
                                 case 1:
                                 case 2:
                                 case 3:
+                                case 5:
                                 case 4:
                                     break;
                                 }
@@ -10624,6 +10844,10 @@
                             case "REPLICATION_VIEW":
                             case 3:
                                 message.view = 3;
+                                break;
+                            case "ENCRYPTION_VIEW":
+                            case 5:
+                                message.view = 5;
                                 break;
                             case "FULL":
                             case 4:
@@ -16014,6 +16238,7 @@
                              * @memberof google.bigtable.admin.v2.Table
                              * @interface IClusterState
                              * @property {google.bigtable.admin.v2.Table.ClusterState.ReplicationState|null} [replicationState] ClusterState replicationState
+                             * @property {Array.<google.bigtable.admin.v2.IEncryptionInfo>|null} [encryptionInfo] ClusterState encryptionInfo
                              */
     
                             /**
@@ -16025,6 +16250,7 @@
                              * @param {google.bigtable.admin.v2.Table.IClusterState=} [properties] Properties to set
                              */
                             function ClusterState(properties) {
+                                this.encryptionInfo = [];
                                 if (properties)
                                     for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
@@ -16038,6 +16264,14 @@
                              * @instance
                              */
                             ClusterState.prototype.replicationState = 0;
+    
+                            /**
+                             * ClusterState encryptionInfo.
+                             * @member {Array.<google.bigtable.admin.v2.IEncryptionInfo>} encryptionInfo
+                             * @memberof google.bigtable.admin.v2.Table.ClusterState
+                             * @instance
+                             */
+                            ClusterState.prototype.encryptionInfo = $util.emptyArray;
     
                             /**
                              * Creates a new ClusterState instance using the specified properties.
@@ -16065,6 +16299,9 @@
                                     writer = $Writer.create();
                                 if (message.replicationState != null && Object.hasOwnProperty.call(message, "replicationState"))
                                     writer.uint32(/* id 1, wireType 0 =*/8).int32(message.replicationState);
+                                if (message.encryptionInfo != null && message.encryptionInfo.length)
+                                    for (var i = 0; i < message.encryptionInfo.length; ++i)
+                                        $root.google.bigtable.admin.v2.EncryptionInfo.encode(message.encryptionInfo[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                                 return writer;
                             };
     
@@ -16101,6 +16338,11 @@
                                     switch (tag >>> 3) {
                                     case 1:
                                         message.replicationState = reader.int32();
+                                        break;
+                                    case 2:
+                                        if (!(message.encryptionInfo && message.encryptionInfo.length))
+                                            message.encryptionInfo = [];
+                                        message.encryptionInfo.push($root.google.bigtable.admin.v2.EncryptionInfo.decode(reader, reader.uint32()));
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -16149,6 +16391,15 @@
                                     case 5:
                                         break;
                                     }
+                                if (message.encryptionInfo != null && message.hasOwnProperty("encryptionInfo")) {
+                                    if (!Array.isArray(message.encryptionInfo))
+                                        return "encryptionInfo: array expected";
+                                    for (var i = 0; i < message.encryptionInfo.length; ++i) {
+                                        var error = $root.google.bigtable.admin.v2.EncryptionInfo.verify(message.encryptionInfo[i]);
+                                        if (error)
+                                            return "encryptionInfo." + error;
+                                    }
+                                }
                                 return null;
                             };
     
@@ -16190,6 +16441,16 @@
                                     message.replicationState = 5;
                                     break;
                                 }
+                                if (object.encryptionInfo) {
+                                    if (!Array.isArray(object.encryptionInfo))
+                                        throw TypeError(".google.bigtable.admin.v2.Table.ClusterState.encryptionInfo: array expected");
+                                    message.encryptionInfo = [];
+                                    for (var i = 0; i < object.encryptionInfo.length; ++i) {
+                                        if (typeof object.encryptionInfo[i] !== "object")
+                                            throw TypeError(".google.bigtable.admin.v2.Table.ClusterState.encryptionInfo: object expected");
+                                        message.encryptionInfo[i] = $root.google.bigtable.admin.v2.EncryptionInfo.fromObject(object.encryptionInfo[i]);
+                                    }
+                                }
                                 return message;
                             };
     
@@ -16206,10 +16467,17 @@
                                 if (!options)
                                     options = {};
                                 var object = {};
+                                if (options.arrays || options.defaults)
+                                    object.encryptionInfo = [];
                                 if (options.defaults)
                                     object.replicationState = options.enums === String ? "STATE_NOT_KNOWN" : 0;
                                 if (message.replicationState != null && message.hasOwnProperty("replicationState"))
                                     object.replicationState = options.enums === String ? $root.google.bigtable.admin.v2.Table.ClusterState.ReplicationState[message.replicationState] : message.replicationState;
+                                if (message.encryptionInfo && message.encryptionInfo.length) {
+                                    object.encryptionInfo = [];
+                                    for (var j = 0; j < message.encryptionInfo.length; ++j)
+                                        object.encryptionInfo[j] = $root.google.bigtable.admin.v2.EncryptionInfo.toObject(message.encryptionInfo[j], options);
+                                }
                                 return object;
                             };
     
@@ -16271,6 +16539,7 @@
                          * @property {number} NAME_ONLY=1 NAME_ONLY value
                          * @property {number} SCHEMA_VIEW=2 SCHEMA_VIEW value
                          * @property {number} REPLICATION_VIEW=3 REPLICATION_VIEW value
+                         * @property {number} ENCRYPTION_VIEW=5 ENCRYPTION_VIEW value
                          * @property {number} FULL=4 FULL value
                          */
                         Table.View = (function() {
@@ -16279,6 +16548,7 @@
                             values[valuesById[1] = "NAME_ONLY"] = 1;
                             values[valuesById[2] = "SCHEMA_VIEW"] = 2;
                             values[valuesById[3] = "REPLICATION_VIEW"] = 3;
+                            values[valuesById[5] = "ENCRYPTION_VIEW"] = 5;
                             values[valuesById[4] = "FULL"] = 4;
                             return values;
                         })();
@@ -17201,6 +17471,277 @@
                         return GcRule;
                     })();
     
+                    v2.EncryptionInfo = (function() {
+    
+                        /**
+                         * Properties of an EncryptionInfo.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IEncryptionInfo
+                         * @property {google.bigtable.admin.v2.EncryptionInfo.EncryptionType|null} [encryptionType] EncryptionInfo encryptionType
+                         * @property {google.rpc.IStatus|null} [encryptionStatus] EncryptionInfo encryptionStatus
+                         * @property {string|null} [kmsKeyVersion] EncryptionInfo kmsKeyVersion
+                         */
+    
+                        /**
+                         * Constructs a new EncryptionInfo.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an EncryptionInfo.
+                         * @implements IEncryptionInfo
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IEncryptionInfo=} [properties] Properties to set
+                         */
+                        function EncryptionInfo(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * EncryptionInfo encryptionType.
+                         * @member {google.bigtable.admin.v2.EncryptionInfo.EncryptionType} encryptionType
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @instance
+                         */
+                        EncryptionInfo.prototype.encryptionType = 0;
+    
+                        /**
+                         * EncryptionInfo encryptionStatus.
+                         * @member {google.rpc.IStatus|null|undefined} encryptionStatus
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @instance
+                         */
+                        EncryptionInfo.prototype.encryptionStatus = null;
+    
+                        /**
+                         * EncryptionInfo kmsKeyVersion.
+                         * @member {string} kmsKeyVersion
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @instance
+                         */
+                        EncryptionInfo.prototype.kmsKeyVersion = "";
+    
+                        /**
+                         * Creates a new EncryptionInfo instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IEncryptionInfo=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.EncryptionInfo} EncryptionInfo instance
+                         */
+                        EncryptionInfo.create = function create(properties) {
+                            return new EncryptionInfo(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified EncryptionInfo message. Does not implicitly {@link google.bigtable.admin.v2.EncryptionInfo.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IEncryptionInfo} message EncryptionInfo message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        EncryptionInfo.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.kmsKeyVersion != null && Object.hasOwnProperty.call(message, "kmsKeyVersion"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.kmsKeyVersion);
+                            if (message.encryptionType != null && Object.hasOwnProperty.call(message, "encryptionType"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.encryptionType);
+                            if (message.encryptionStatus != null && Object.hasOwnProperty.call(message, "encryptionStatus"))
+                                $root.google.rpc.Status.encode(message.encryptionStatus, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified EncryptionInfo message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.EncryptionInfo.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.IEncryptionInfo} message EncryptionInfo message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        EncryptionInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an EncryptionInfo message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.EncryptionInfo} EncryptionInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        EncryptionInfo.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.EncryptionInfo();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 3:
+                                    message.encryptionType = reader.int32();
+                                    break;
+                                case 4:
+                                    message.encryptionStatus = $root.google.rpc.Status.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.kmsKeyVersion = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an EncryptionInfo message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.EncryptionInfo} EncryptionInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        EncryptionInfo.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an EncryptionInfo message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        EncryptionInfo.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.encryptionType != null && message.hasOwnProperty("encryptionType"))
+                                switch (message.encryptionType) {
+                                default:
+                                    return "encryptionType: enum value expected";
+                                case 0:
+                                case 1:
+                                case 2:
+                                    break;
+                                }
+                            if (message.encryptionStatus != null && message.hasOwnProperty("encryptionStatus")) {
+                                var error = $root.google.rpc.Status.verify(message.encryptionStatus);
+                                if (error)
+                                    return "encryptionStatus." + error;
+                            }
+                            if (message.kmsKeyVersion != null && message.hasOwnProperty("kmsKeyVersion"))
+                                if (!$util.isString(message.kmsKeyVersion))
+                                    return "kmsKeyVersion: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an EncryptionInfo message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.EncryptionInfo} EncryptionInfo
+                         */
+                        EncryptionInfo.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.EncryptionInfo)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.EncryptionInfo();
+                            switch (object.encryptionType) {
+                            case "ENCRYPTION_TYPE_UNSPECIFIED":
+                            case 0:
+                                message.encryptionType = 0;
+                                break;
+                            case "GOOGLE_DEFAULT_ENCRYPTION":
+                            case 1:
+                                message.encryptionType = 1;
+                                break;
+                            case "CUSTOMER_MANAGED_ENCRYPTION":
+                            case 2:
+                                message.encryptionType = 2;
+                                break;
+                            }
+                            if (object.encryptionStatus != null) {
+                                if (typeof object.encryptionStatus !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.EncryptionInfo.encryptionStatus: object expected");
+                                message.encryptionStatus = $root.google.rpc.Status.fromObject(object.encryptionStatus);
+                            }
+                            if (object.kmsKeyVersion != null)
+                                message.kmsKeyVersion = String(object.kmsKeyVersion);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an EncryptionInfo message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @static
+                         * @param {google.bigtable.admin.v2.EncryptionInfo} message EncryptionInfo
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        EncryptionInfo.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.kmsKeyVersion = "";
+                                object.encryptionType = options.enums === String ? "ENCRYPTION_TYPE_UNSPECIFIED" : 0;
+                                object.encryptionStatus = null;
+                            }
+                            if (message.kmsKeyVersion != null && message.hasOwnProperty("kmsKeyVersion"))
+                                object.kmsKeyVersion = message.kmsKeyVersion;
+                            if (message.encryptionType != null && message.hasOwnProperty("encryptionType"))
+                                object.encryptionType = options.enums === String ? $root.google.bigtable.admin.v2.EncryptionInfo.EncryptionType[message.encryptionType] : message.encryptionType;
+                            if (message.encryptionStatus != null && message.hasOwnProperty("encryptionStatus"))
+                                object.encryptionStatus = $root.google.rpc.Status.toObject(message.encryptionStatus, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this EncryptionInfo to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.EncryptionInfo
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        EncryptionInfo.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * EncryptionType enum.
+                         * @name google.bigtable.admin.v2.EncryptionInfo.EncryptionType
+                         * @enum {number}
+                         * @property {number} ENCRYPTION_TYPE_UNSPECIFIED=0 ENCRYPTION_TYPE_UNSPECIFIED value
+                         * @property {number} GOOGLE_DEFAULT_ENCRYPTION=1 GOOGLE_DEFAULT_ENCRYPTION value
+                         * @property {number} CUSTOMER_MANAGED_ENCRYPTION=2 CUSTOMER_MANAGED_ENCRYPTION value
+                         */
+                        EncryptionInfo.EncryptionType = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "ENCRYPTION_TYPE_UNSPECIFIED"] = 0;
+                            values[valuesById[1] = "GOOGLE_DEFAULT_ENCRYPTION"] = 1;
+                            values[valuesById[2] = "CUSTOMER_MANAGED_ENCRYPTION"] = 2;
+                            return values;
+                        })();
+    
+                        return EncryptionInfo;
+                    })();
+    
                     v2.Snapshot = (function() {
     
                         /**
@@ -17597,6 +18138,7 @@
                          * @property {google.protobuf.ITimestamp|null} [endTime] Backup endTime
                          * @property {number|Long|null} [sizeBytes] Backup sizeBytes
                          * @property {google.bigtable.admin.v2.Backup.State|null} [state] Backup state
+                         * @property {google.bigtable.admin.v2.IEncryptionInfo|null} [encryptionInfo] Backup encryptionInfo
                          */
     
                         /**
@@ -17671,6 +18213,14 @@
                         Backup.prototype.state = 0;
     
                         /**
+                         * Backup encryptionInfo.
+                         * @member {google.bigtable.admin.v2.IEncryptionInfo|null|undefined} encryptionInfo
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.encryptionInfo = null;
+    
+                        /**
                          * Creates a new Backup instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.Backup
@@ -17708,6 +18258,8 @@
                                 writer.uint32(/* id 6, wireType 0 =*/48).int64(message.sizeBytes);
                             if (message.state != null && Object.hasOwnProperty.call(message, "state"))
                                 writer.uint32(/* id 7, wireType 0 =*/56).int32(message.state);
+                            if (message.encryptionInfo != null && Object.hasOwnProperty.call(message, "encryptionInfo"))
+                                $root.google.bigtable.admin.v2.EncryptionInfo.encode(message.encryptionInfo, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
                             return writer;
                         };
     
@@ -17762,6 +18314,9 @@
                                     break;
                                 case 7:
                                     message.state = reader.int32();
+                                    break;
+                                case 9:
+                                    message.encryptionInfo = $root.google.bigtable.admin.v2.EncryptionInfo.decode(reader, reader.uint32());
                                     break;
                                 default:
                                     reader.skipType(tag & 7);
@@ -17831,6 +18386,11 @@
                                 case 2:
                                     break;
                                 }
+                            if (message.encryptionInfo != null && message.hasOwnProperty("encryptionInfo")) {
+                                var error = $root.google.bigtable.admin.v2.EncryptionInfo.verify(message.encryptionInfo);
+                                if (error)
+                                    return "encryptionInfo." + error;
+                            }
                             return null;
                         };
     
@@ -17888,6 +18448,11 @@
                                 message.state = 2;
                                 break;
                             }
+                            if (object.encryptionInfo != null) {
+                                if (typeof object.encryptionInfo !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Backup.encryptionInfo: object expected");
+                                message.encryptionInfo = $root.google.bigtable.admin.v2.EncryptionInfo.fromObject(object.encryptionInfo);
+                            }
                             return message;
                         };
     
@@ -17916,6 +18481,7 @@
                                 } else
                                     object.sizeBytes = options.longs === String ? "0" : 0;
                                 object.state = options.enums === String ? "STATE_UNSPECIFIED" : 0;
+                                object.encryptionInfo = null;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -17934,6 +18500,8 @@
                                     object.sizeBytes = options.longs === String ? $util.Long.prototype.toString.call(message.sizeBytes) : options.longs === Number ? new $util.LongBits(message.sizeBytes.low >>> 0, message.sizeBytes.high >>> 0).toNumber() : message.sizeBytes;
                             if (message.state != null && message.hasOwnProperty("state"))
                                 object.state = options.enums === String ? $root.google.bigtable.admin.v2.Backup.State[message.state] : message.state;
+                            if (message.encryptionInfo != null && message.hasOwnProperty("encryptionInfo"))
+                                object.encryptionInfo = $root.google.bigtable.admin.v2.EncryptionInfo.toObject(message.encryptionInfo, options);
                             return object;
                         };
     
