@@ -40,12 +40,12 @@
         },
         "ListTables": {
           "timeout_millis": 60000,
-          "retry_codes_name": "non_idempotent",
+          "retry_codes_name": "idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "GetTable": {
           "timeout_millis": 60000,
-          "retry_codes_name": "non_idempotent",
+          "retry_codes_name": "idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "DeleteTable": {
@@ -79,7 +79,7 @@
         },
         "GetSnapshot": {
           "timeout_millis": 60000,
-          "retry_codes_name": "non_idempotent",
+          "retry_codes_name": "idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "ListSnapshots": {
@@ -98,7 +98,7 @@
         },
         "GetBackup": {
           "timeout_millis": 60000,
-          "retry_codes_name": "non_idempotent",
+          "retry_codes_name": "idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "UpdateBackup": {
@@ -113,7 +113,7 @@
         },
         "ListBackups": {
           "timeout_millis": 60000,
-          "retry_codes_name": "non_idempotent",
+          "retry_codes_name": "idempotent",
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "RestoreTable": {
