@@ -613,7 +613,7 @@ export class Bigtable {
    * @property {object} 2 The full API response.
    *     Note: 'failedLocations' property may contain locations from which
    *     Instance information could not be retrieved.
-   *     Values are of the form `projects/<project>/locations/<zone_id>
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    */
   /**
    * @callback GetInstancesCallback
@@ -623,7 +623,7 @@ export class Bigtable {
    * @param {object} apiResponse The full API response.
    *     Note: 'failedLocations' property may contain locations from which
    *     Instance information could not be retrieved.
-   *     Values are of the form `projects/<project>/locations/<zone_id>
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    */
   /**
    * Get Instance objects for all of your Cloud Bigtable instances.
