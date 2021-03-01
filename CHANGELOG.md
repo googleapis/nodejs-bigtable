@@ -7,10 +7,6 @@
 ### [3.2.3](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.2.0...v3.2.3) (2021-02-26)
 
 
-### ⚠ BREAKING CHANGES
-
-* remove failedLocation from getInstancesCallback/Response (#755)
-
 ### Features
 
 * add CMEK fields ([#845](https://www.github.com/googleapis/nodejs-bigtable/issues/845)) ([0381fb7](https://www.github.com/googleapis/nodejs-bigtable/commit/0381fb7da68492b85f8a3359d5fb97ca4898810e))
@@ -24,11 +20,6 @@
 * Renaming region tags to not conflict with documentation snippets ([#834](https://www.github.com/googleapis/nodejs-bigtable/issues/834)) ([5d3e8f7](https://www.github.com/googleapis/nodejs-bigtable/commit/5d3e8f721c2a32a33bf41baa1ed237fb90f7cbd6))
 * rollback to v3 release line ([#847](https://www.github.com/googleapis/nodejs-bigtable/issues/847)) ([815b7f8](https://www.github.com/googleapis/nodejs-bigtable/commit/815b7f85d48fe3d760e4987cefae95e6fd586c44))
 * set keepalive configuration ([#836](https://www.github.com/googleapis/nodejs-bigtable/issues/836)) ([8105dea](https://www.github.com/googleapis/nodejs-bigtable/commit/8105dea272de44e69915d3e62e5b5add106b54cb))
-
-
-### Reverts
-
-* remove failedLocation from getInstancesCallback/Response ([#755](https://www.github.com/googleapis/nodejs-bigtable/issues/755)) ([d37fe9e](https://www.github.com/googleapis/nodejs-bigtable/commit/d37fe9ecdadde8d335fc1f83ab5ac3c3f5813e0d))
 
 ## [3.2.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.1.1...v3.2.0) (2020-11-07)
 
