@@ -47,11 +47,13 @@ export interface GetInstancesCallback {
   (
     err: ServiceError | null,
     result?: Instance[],
+    failedLocations?: string[],
     response?: google.bigtable.admin.v2.IListInstancesResponse
   ): void;
 }
 export type GetInstancesResponse = [
   Instance[],
+  string[],
   google.bigtable.admin.v2.IListInstancesResponse
 ];
 
@@ -607,7 +609,8 @@ export class Bigtable {
   /**
    * @typedef {array} GetInstancesResponse
    * @property {Instance[]} 0 Array of {@link Instance} instances.
-   * @property {object} 1 The full API response.
+   * @property {string[]} 1 locations from which Instance information could not be retrieved
+   * @property {object} 2 The full API response.
    *     Note: 'failedLocations' property may contain locations from which
    *     Instance information could not be retrieved.
    *     Values are of the form `projects/<project>/locations/<zone_id>`
@@ -616,6 +619,7 @@ export class Bigtable {
    * @callback GetInstancesCallback
    * @param {?Error} err Request error, if any.
    * @param {Instance[]} instances Array of {@link Instance} instances.
+   * @param {string[]} locations from which Instance information could not be retrieved
    * @param {object} apiResponse The full API response.
    *     Note: 'failedLocations' property may contain locations from which
    *     Instance information could not be retrieved.
@@ -646,7 +650,7 @@ export class Bigtable {
    * </caption>
    * bigtable.getInstances().then(function(data) {
    *   const instances = data[0];
-   *   const fullResponse = data[1];
+   *   const fullResponse = data[2];
    *
    *   if (fullResponse.failedLocations.length > 0) {
    *     // These locations contain instances which could not be retrieved.
@@ -686,7 +690,7 @@ export class Bigtable {
           instance.metadata = instanceData;
           return instance;
         });
-        callback!(null, instances, resp);
+        callback!(null, instances, resp.failedLocations, resp);
       }
     );
   }

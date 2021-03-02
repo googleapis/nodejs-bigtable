@@ -2141,6 +2141,8 @@ export class BigtableInstanceAdminClient {
    *   (`CreationOnly`)
    *   The type of storage used by this cluster to serve its
    *   parent instance's tables, unless explicitly overridden.
+   * @param {google.bigtable.admin.v2.Cluster.EncryptionConfig} request.encryptionConfig
+   *   Immutable. The encryption configuration for CMEK-protected clusters.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
