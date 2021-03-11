@@ -11890,9 +11890,6 @@ export namespace google {
 
             /** Http rules */
             rules?: (google.api.IHttpRule[]|null);
-
-            /** Http fullyDecodeReservedExpansion */
-            fullyDecodeReservedExpansion?: (boolean|null);
         }
 
         /** Represents a Http. */
@@ -11906,9 +11903,6 @@ export namespace google {
 
             /** Http rules. */
             public rules: google.api.IHttpRule[];
-
-            /** Http fullyDecodeReservedExpansion. */
-            public fullyDecodeReservedExpansion: boolean;
 
             /**
              * Creates a new Http instance using the specified properties.
@@ -12008,9 +12002,6 @@ export namespace google {
             /** HttpRule body */
             body?: (string|null);
 
-            /** HttpRule responseBody */
-            responseBody?: (string|null);
-
             /** HttpRule additionalBindings */
             additionalBindings?: (google.api.IHttpRule[]|null);
         }
@@ -12047,9 +12038,6 @@ export namespace google {
 
             /** HttpRule body. */
             public body: string;
-
-            /** HttpRule responseBody. */
-            public responseBody: string;
 
             /** HttpRule additionalBindings. */
             public additionalBindings: google.api.IHttpRule[];
@@ -12877,9 +12865,6 @@ export namespace google {
 
                 /** ExtensionRange end */
                 end?: (number|null);
-
-                /** ExtensionRange options */
-                options?: (google.protobuf.IExtensionRangeOptions|null);
             }
 
             /** Represents an ExtensionRange. */
@@ -12896,9 +12881,6 @@ export namespace google {
 
                 /** ExtensionRange end. */
                 public end: number;
-
-                /** ExtensionRange options. */
-                public options?: (google.protobuf.IExtensionRangeOptions|null);
 
                 /**
                  * Creates a new ExtensionRange instance using the specified properties.
@@ -13068,96 +13050,6 @@ export namespace google {
             }
         }
 
-        /** Properties of an ExtensionRangeOptions. */
-        interface IExtensionRangeOptions {
-
-            /** ExtensionRangeOptions uninterpretedOption */
-            uninterpretedOption?: (google.protobuf.IUninterpretedOption[]|null);
-        }
-
-        /** Represents an ExtensionRangeOptions. */
-        class ExtensionRangeOptions implements IExtensionRangeOptions {
-
-            /**
-             * Constructs a new ExtensionRangeOptions.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.protobuf.IExtensionRangeOptions);
-
-            /** ExtensionRangeOptions uninterpretedOption. */
-            public uninterpretedOption: google.protobuf.IUninterpretedOption[];
-
-            /**
-             * Creates a new ExtensionRangeOptions instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns ExtensionRangeOptions instance
-             */
-            public static create(properties?: google.protobuf.IExtensionRangeOptions): google.protobuf.ExtensionRangeOptions;
-
-            /**
-             * Encodes the specified ExtensionRangeOptions message. Does not implicitly {@link google.protobuf.ExtensionRangeOptions.verify|verify} messages.
-             * @param message ExtensionRangeOptions message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.protobuf.IExtensionRangeOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified ExtensionRangeOptions message, length delimited. Does not implicitly {@link google.protobuf.ExtensionRangeOptions.verify|verify} messages.
-             * @param message ExtensionRangeOptions message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.protobuf.IExtensionRangeOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes an ExtensionRangeOptions message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns ExtensionRangeOptions
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.ExtensionRangeOptions;
-
-            /**
-             * Decodes an ExtensionRangeOptions message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns ExtensionRangeOptions
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.ExtensionRangeOptions;
-
-            /**
-             * Verifies an ExtensionRangeOptions message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates an ExtensionRangeOptions message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns ExtensionRangeOptions
-             */
-            public static fromObject(object: { [k: string]: any }): google.protobuf.ExtensionRangeOptions;
-
-            /**
-             * Creates a plain object from an ExtensionRangeOptions message. Also converts values to other types if specified.
-             * @param message ExtensionRangeOptions
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.protobuf.ExtensionRangeOptions, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this ExtensionRangeOptions to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
-        }
-
         /** Properties of a FieldDescriptorProto. */
         interface IFieldDescriptorProto {
 
@@ -13190,9 +13082,6 @@ export namespace google {
 
             /** FieldDescriptorProto options */
             options?: (google.protobuf.IFieldOptions|null);
-
-            /** FieldDescriptorProto proto3Optional */
-            proto3Optional?: (boolean|null);
         }
 
         /** Represents a FieldDescriptorProto. */
@@ -13233,9 +13122,6 @@ export namespace google {
 
             /** FieldDescriptorProto options. */
             public options?: (google.protobuf.IFieldOptions|null);
-
-            /** FieldDescriptorProto proto3Optional. */
-            public proto3Optional: boolean;
 
             /**
              * Creates a new FieldDescriptorProto instance using the specified properties.
@@ -13447,12 +13333,6 @@ export namespace google {
 
             /** EnumDescriptorProto options */
             options?: (google.protobuf.IEnumOptions|null);
-
-            /** EnumDescriptorProto reservedRange */
-            reservedRange?: (google.protobuf.EnumDescriptorProto.IEnumReservedRange[]|null);
-
-            /** EnumDescriptorProto reservedName */
-            reservedName?: (string[]|null);
         }
 
         /** Represents an EnumDescriptorProto. */
@@ -13472,12 +13352,6 @@ export namespace google {
 
             /** EnumDescriptorProto options. */
             public options?: (google.protobuf.IEnumOptions|null);
-
-            /** EnumDescriptorProto reservedRange. */
-            public reservedRange: google.protobuf.EnumDescriptorProto.IEnumReservedRange[];
-
-            /** EnumDescriptorProto reservedName. */
-            public reservedName: string[];
 
             /**
              * Creates a new EnumDescriptorProto instance using the specified properties.
@@ -13548,105 +13422,6 @@ export namespace google {
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };
-        }
-
-        namespace EnumDescriptorProto {
-
-            /** Properties of an EnumReservedRange. */
-            interface IEnumReservedRange {
-
-                /** EnumReservedRange start */
-                start?: (number|null);
-
-                /** EnumReservedRange end */
-                end?: (number|null);
-            }
-
-            /** Represents an EnumReservedRange. */
-            class EnumReservedRange implements IEnumReservedRange {
-
-                /**
-                 * Constructs a new EnumReservedRange.
-                 * @param [properties] Properties to set
-                 */
-                constructor(properties?: google.protobuf.EnumDescriptorProto.IEnumReservedRange);
-
-                /** EnumReservedRange start. */
-                public start: number;
-
-                /** EnumReservedRange end. */
-                public end: number;
-
-                /**
-                 * Creates a new EnumReservedRange instance using the specified properties.
-                 * @param [properties] Properties to set
-                 * @returns EnumReservedRange instance
-                 */
-                public static create(properties?: google.protobuf.EnumDescriptorProto.IEnumReservedRange): google.protobuf.EnumDescriptorProto.EnumReservedRange;
-
-                /**
-                 * Encodes the specified EnumReservedRange message. Does not implicitly {@link google.protobuf.EnumDescriptorProto.EnumReservedRange.verify|verify} messages.
-                 * @param message EnumReservedRange message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encode(message: google.protobuf.EnumDescriptorProto.IEnumReservedRange, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Encodes the specified EnumReservedRange message, length delimited. Does not implicitly {@link google.protobuf.EnumDescriptorProto.EnumReservedRange.verify|verify} messages.
-                 * @param message EnumReservedRange message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encodeDelimited(message: google.protobuf.EnumDescriptorProto.IEnumReservedRange, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Decodes an EnumReservedRange message from the specified reader or buffer.
-                 * @param reader Reader or buffer to decode from
-                 * @param [length] Message length if known beforehand
-                 * @returns EnumReservedRange
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.EnumDescriptorProto.EnumReservedRange;
-
-                /**
-                 * Decodes an EnumReservedRange message from the specified reader or buffer, length delimited.
-                 * @param reader Reader or buffer to decode from
-                 * @returns EnumReservedRange
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.EnumDescriptorProto.EnumReservedRange;
-
-                /**
-                 * Verifies an EnumReservedRange message.
-                 * @param message Plain object to verify
-                 * @returns `null` if valid, otherwise the reason why it is not
-                 */
-                public static verify(message: { [k: string]: any }): (string|null);
-
-                /**
-                 * Creates an EnumReservedRange message from a plain object. Also converts values to their respective internal types.
-                 * @param object Plain object
-                 * @returns EnumReservedRange
-                 */
-                public static fromObject(object: { [k: string]: any }): google.protobuf.EnumDescriptorProto.EnumReservedRange;
-
-                /**
-                 * Creates a plain object from an EnumReservedRange message. Also converts values to other types if specified.
-                 * @param message EnumReservedRange
-                 * @param [options] Conversion options
-                 * @returns Plain object
-                 */
-                public static toObject(message: google.protobuf.EnumDescriptorProto.EnumReservedRange, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                /**
-                 * Converts this EnumReservedRange to JSON.
-                 * @returns JSON object
-                 */
-                public toJSON(): { [k: string]: any };
-            }
         }
 
         /** Properties of an EnumValueDescriptorProto. */
@@ -14006,9 +13781,6 @@ export namespace google {
             /** FileOptions pyGenericServices */
             pyGenericServices?: (boolean|null);
 
-            /** FileOptions phpGenericServices */
-            phpGenericServices?: (boolean|null);
-
             /** FileOptions deprecated */
             deprecated?: (boolean|null);
 
@@ -14026,15 +13798,6 @@ export namespace google {
 
             /** FileOptions phpClassPrefix */
             phpClassPrefix?: (string|null);
-
-            /** FileOptions phpNamespace */
-            phpNamespace?: (string|null);
-
-            /** FileOptions phpMetadataNamespace */
-            phpMetadataNamespace?: (string|null);
-
-            /** FileOptions rubyPackage */
-            rubyPackage?: (string|null);
 
             /** FileOptions uninterpretedOption */
             uninterpretedOption?: (google.protobuf.IUninterpretedOption[]|null);
@@ -14082,9 +13845,6 @@ export namespace google {
             /** FileOptions pyGenericServices. */
             public pyGenericServices: boolean;
 
-            /** FileOptions phpGenericServices. */
-            public phpGenericServices: boolean;
-
             /** FileOptions deprecated. */
             public deprecated: boolean;
 
@@ -14102,15 +13862,6 @@ export namespace google {
 
             /** FileOptions phpClassPrefix. */
             public phpClassPrefix: string;
-
-            /** FileOptions phpNamespace. */
-            public phpNamespace: string;
-
-            /** FileOptions phpMetadataNamespace. */
-            public phpMetadataNamespace: string;
-
-            /** FileOptions rubyPackage. */
-            public rubyPackage: string;
 
             /** FileOptions uninterpretedOption. */
             public uninterpretedOption: google.protobuf.IUninterpretedOption[];
@@ -14869,9 +14620,6 @@ export namespace google {
 
             /** MethodOptions .google.api.methodSignature */
             ".google.api.methodSignature"?: (string[]|null);
-
-            /** MethodOptions .google.longrunning.operationInfo */
-            ".google.longrunning.operationInfo"?: (google.longrunning.IOperationInfo|null);
         }
 
         /** Represents a MethodOptions. */
@@ -15798,102 +15546,6 @@ export namespace google {
             public toJSON(): { [k: string]: any };
         }
 
-        /** Properties of a Duration. */
-        interface IDuration {
-
-            /** Duration seconds */
-            seconds?: (number|Long|string|null);
-
-            /** Duration nanos */
-            nanos?: (number|null);
-        }
-
-        /** Represents a Duration. */
-        class Duration implements IDuration {
-
-            /**
-             * Constructs a new Duration.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.protobuf.IDuration);
-
-            /** Duration seconds. */
-            public seconds: (number|Long|string);
-
-            /** Duration nanos. */
-            public nanos: number;
-
-            /**
-             * Creates a new Duration instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns Duration instance
-             */
-            public static create(properties?: google.protobuf.IDuration): google.protobuf.Duration;
-
-            /**
-             * Encodes the specified Duration message. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
-             * @param message Duration message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.protobuf.IDuration, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified Duration message, length delimited. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
-             * @param message Duration message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.protobuf.IDuration, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes a Duration message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns Duration
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.Duration;
-
-            /**
-             * Decodes a Duration message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns Duration
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.Duration;
-
-            /**
-             * Verifies a Duration message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates a Duration message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns Duration
-             */
-            public static fromObject(object: { [k: string]: any }): google.protobuf.Duration;
-
-            /**
-             * Creates a plain object from a Duration message. Also converts values to other types if specified.
-             * @param message Duration
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.protobuf.Duration, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this Duration to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
-        }
-
         /** Properties of an Empty. */
         interface IEmpty {
         }
@@ -16063,6 +15715,102 @@ export namespace google {
 
             /**
              * Converts this FieldMask to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a Duration. */
+        interface IDuration {
+
+            /** Duration seconds */
+            seconds?: (number|Long|string|null);
+
+            /** Duration nanos */
+            nanos?: (number|null);
+        }
+
+        /** Represents a Duration. */
+        class Duration implements IDuration {
+
+            /**
+             * Constructs a new Duration.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: google.protobuf.IDuration);
+
+            /** Duration seconds. */
+            public seconds: (number|Long|string);
+
+            /** Duration nanos. */
+            public nanos: number;
+
+            /**
+             * Creates a new Duration instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns Duration instance
+             */
+            public static create(properties?: google.protobuf.IDuration): google.protobuf.Duration;
+
+            /**
+             * Encodes the specified Duration message. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
+             * @param message Duration message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: google.protobuf.IDuration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified Duration message, length delimited. Does not implicitly {@link google.protobuf.Duration.verify|verify} messages.
+             * @param message Duration message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: google.protobuf.IDuration, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a Duration message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns Duration
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.Duration;
+
+            /**
+             * Decodes a Duration message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns Duration
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.Duration;
+
+            /**
+             * Verifies a Duration message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a Duration message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns Duration
+             */
+            public static fromObject(object: { [k: string]: any }): google.protobuf.Duration;
+
+            /**
+             * Creates a plain object from a Duration message. Also converts values to other types if specified.
+             * @param message Duration
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: google.protobuf.Duration, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this Duration to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };
@@ -17073,9 +16821,6 @@ export namespace google {
 
                 /** GetIamPolicyRequest resource */
                 resource?: (string|null);
-
-                /** GetIamPolicyRequest options */
-                options?: (google.iam.v1.IGetPolicyOptions|null);
             }
 
             /** Represents a GetIamPolicyRequest. */
@@ -17089,9 +16834,6 @@ export namespace google {
 
                 /** GetIamPolicyRequest resource. */
                 public resource: string;
-
-                /** GetIamPolicyRequest options. */
-                public options?: (google.iam.v1.IGetPolicyOptions|null);
 
                 /**
                  * Creates a new GetIamPolicyRequest instance using the specified properties.
@@ -17350,96 +17092,6 @@ export namespace google {
                 public toJSON(): { [k: string]: any };
             }
 
-            /** Properties of a GetPolicyOptions. */
-            interface IGetPolicyOptions {
-
-                /** GetPolicyOptions requestedPolicyVersion */
-                requestedPolicyVersion?: (number|null);
-            }
-
-            /** Represents a GetPolicyOptions. */
-            class GetPolicyOptions implements IGetPolicyOptions {
-
-                /**
-                 * Constructs a new GetPolicyOptions.
-                 * @param [properties] Properties to set
-                 */
-                constructor(properties?: google.iam.v1.IGetPolicyOptions);
-
-                /** GetPolicyOptions requestedPolicyVersion. */
-                public requestedPolicyVersion: number;
-
-                /**
-                 * Creates a new GetPolicyOptions instance using the specified properties.
-                 * @param [properties] Properties to set
-                 * @returns GetPolicyOptions instance
-                 */
-                public static create(properties?: google.iam.v1.IGetPolicyOptions): google.iam.v1.GetPolicyOptions;
-
-                /**
-                 * Encodes the specified GetPolicyOptions message. Does not implicitly {@link google.iam.v1.GetPolicyOptions.verify|verify} messages.
-                 * @param message GetPolicyOptions message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encode(message: google.iam.v1.IGetPolicyOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Encodes the specified GetPolicyOptions message, length delimited. Does not implicitly {@link google.iam.v1.GetPolicyOptions.verify|verify} messages.
-                 * @param message GetPolicyOptions message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encodeDelimited(message: google.iam.v1.IGetPolicyOptions, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Decodes a GetPolicyOptions message from the specified reader or buffer.
-                 * @param reader Reader or buffer to decode from
-                 * @param [length] Message length if known beforehand
-                 * @returns GetPolicyOptions
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.iam.v1.GetPolicyOptions;
-
-                /**
-                 * Decodes a GetPolicyOptions message from the specified reader or buffer, length delimited.
-                 * @param reader Reader or buffer to decode from
-                 * @returns GetPolicyOptions
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.iam.v1.GetPolicyOptions;
-
-                /**
-                 * Verifies a GetPolicyOptions message.
-                 * @param message Plain object to verify
-                 * @returns `null` if valid, otherwise the reason why it is not
-                 */
-                public static verify(message: { [k: string]: any }): (string|null);
-
-                /**
-                 * Creates a GetPolicyOptions message from a plain object. Also converts values to their respective internal types.
-                 * @param object Plain object
-                 * @returns GetPolicyOptions
-                 */
-                public static fromObject(object: { [k: string]: any }): google.iam.v1.GetPolicyOptions;
-
-                /**
-                 * Creates a plain object from a GetPolicyOptions message. Also converts values to other types if specified.
-                 * @param message GetPolicyOptions
-                 * @param [options] Conversion options
-                 * @returns Plain object
-                 */
-                public static toObject(message: google.iam.v1.GetPolicyOptions, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                /**
-                 * Converts this GetPolicyOptions to JSON.
-                 * @returns JSON object
-                 */
-                public toJSON(): { [k: string]: any };
-            }
-
             /** Properties of a Policy. */
             interface IPolicy {
 
@@ -17550,9 +17202,6 @@ export namespace google {
 
                 /** Binding members */
                 members?: (string[]|null);
-
-                /** Binding condition */
-                condition?: (google.type.IExpr|null);
             }
 
             /** Represents a Binding. */
@@ -17569,9 +17218,6 @@ export namespace google {
 
                 /** Binding members. */
                 public members: string[];
-
-                /** Binding condition. */
-                public condition?: (google.type.IExpr|null);
 
                 /**
                  * Creates a new Binding instance using the specified properties.
@@ -17649,9 +17295,6 @@ export namespace google {
 
                 /** PolicyDelta bindingDeltas */
                 bindingDeltas?: (google.iam.v1.IBindingDelta[]|null);
-
-                /** PolicyDelta auditConfigDeltas */
-                auditConfigDeltas?: (google.iam.v1.IAuditConfigDelta[]|null);
             }
 
             /** Represents a PolicyDelta. */
@@ -17665,9 +17308,6 @@ export namespace google {
 
                 /** PolicyDelta bindingDeltas. */
                 public bindingDeltas: google.iam.v1.IBindingDelta[];
-
-                /** PolicyDelta auditConfigDeltas. */
-                public auditConfigDeltas: google.iam.v1.IAuditConfigDelta[];
 
                 /**
                  * Creates a new PolicyDelta instance using the specified properties.
@@ -17751,9 +17391,6 @@ export namespace google {
 
                 /** BindingDelta member */
                 member?: (string|null);
-
-                /** BindingDelta condition */
-                condition?: (google.type.IExpr|null);
             }
 
             /** Represents a BindingDelta. */
@@ -17773,9 +17410,6 @@ export namespace google {
 
                 /** BindingDelta member. */
                 public member: string;
-
-                /** BindingDelta condition. */
-                public condition?: (google.type.IExpr|null);
 
                 /**
                  * Creates a new BindingDelta instance using the specified properties.
@@ -17857,236 +17491,6 @@ export namespace google {
                     REMOVE = 2
                 }
             }
-
-            /** Properties of an AuditConfigDelta. */
-            interface IAuditConfigDelta {
-
-                /** AuditConfigDelta action */
-                action?: (google.iam.v1.AuditConfigDelta.Action|keyof typeof google.iam.v1.AuditConfigDelta.Action|null);
-
-                /** AuditConfigDelta service */
-                service?: (string|null);
-
-                /** AuditConfigDelta exemptedMember */
-                exemptedMember?: (string|null);
-
-                /** AuditConfigDelta logType */
-                logType?: (string|null);
-            }
-
-            /** Represents an AuditConfigDelta. */
-            class AuditConfigDelta implements IAuditConfigDelta {
-
-                /**
-                 * Constructs a new AuditConfigDelta.
-                 * @param [properties] Properties to set
-                 */
-                constructor(properties?: google.iam.v1.IAuditConfigDelta);
-
-                /** AuditConfigDelta action. */
-                public action: (google.iam.v1.AuditConfigDelta.Action|keyof typeof google.iam.v1.AuditConfigDelta.Action);
-
-                /** AuditConfigDelta service. */
-                public service: string;
-
-                /** AuditConfigDelta exemptedMember. */
-                public exemptedMember: string;
-
-                /** AuditConfigDelta logType. */
-                public logType: string;
-
-                /**
-                 * Creates a new AuditConfigDelta instance using the specified properties.
-                 * @param [properties] Properties to set
-                 * @returns AuditConfigDelta instance
-                 */
-                public static create(properties?: google.iam.v1.IAuditConfigDelta): google.iam.v1.AuditConfigDelta;
-
-                /**
-                 * Encodes the specified AuditConfigDelta message. Does not implicitly {@link google.iam.v1.AuditConfigDelta.verify|verify} messages.
-                 * @param message AuditConfigDelta message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encode(message: google.iam.v1.IAuditConfigDelta, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Encodes the specified AuditConfigDelta message, length delimited. Does not implicitly {@link google.iam.v1.AuditConfigDelta.verify|verify} messages.
-                 * @param message AuditConfigDelta message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encodeDelimited(message: google.iam.v1.IAuditConfigDelta, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Decodes an AuditConfigDelta message from the specified reader or buffer.
-                 * @param reader Reader or buffer to decode from
-                 * @param [length] Message length if known beforehand
-                 * @returns AuditConfigDelta
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.iam.v1.AuditConfigDelta;
-
-                /**
-                 * Decodes an AuditConfigDelta message from the specified reader or buffer, length delimited.
-                 * @param reader Reader or buffer to decode from
-                 * @returns AuditConfigDelta
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.iam.v1.AuditConfigDelta;
-
-                /**
-                 * Verifies an AuditConfigDelta message.
-                 * @param message Plain object to verify
-                 * @returns `null` if valid, otherwise the reason why it is not
-                 */
-                public static verify(message: { [k: string]: any }): (string|null);
-
-                /**
-                 * Creates an AuditConfigDelta message from a plain object. Also converts values to their respective internal types.
-                 * @param object Plain object
-                 * @returns AuditConfigDelta
-                 */
-                public static fromObject(object: { [k: string]: any }): google.iam.v1.AuditConfigDelta;
-
-                /**
-                 * Creates a plain object from an AuditConfigDelta message. Also converts values to other types if specified.
-                 * @param message AuditConfigDelta
-                 * @param [options] Conversion options
-                 * @returns Plain object
-                 */
-                public static toObject(message: google.iam.v1.AuditConfigDelta, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                /**
-                 * Converts this AuditConfigDelta to JSON.
-                 * @returns JSON object
-                 */
-                public toJSON(): { [k: string]: any };
-            }
-
-            namespace AuditConfigDelta {
-
-                /** Action enum. */
-                enum Action {
-                    ACTION_UNSPECIFIED = 0,
-                    ADD = 1,
-                    REMOVE = 2
-                }
-            }
-        }
-    }
-
-    /** Namespace type. */
-    namespace type {
-
-        /** Properties of an Expr. */
-        interface IExpr {
-
-            /** Expr expression */
-            expression?: (string|null);
-
-            /** Expr title */
-            title?: (string|null);
-
-            /** Expr description */
-            description?: (string|null);
-
-            /** Expr location */
-            location?: (string|null);
-        }
-
-        /** Represents an Expr. */
-        class Expr implements IExpr {
-
-            /**
-             * Constructs a new Expr.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.type.IExpr);
-
-            /** Expr expression. */
-            public expression: string;
-
-            /** Expr title. */
-            public title: string;
-
-            /** Expr description. */
-            public description: string;
-
-            /** Expr location. */
-            public location: string;
-
-            /**
-             * Creates a new Expr instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns Expr instance
-             */
-            public static create(properties?: google.type.IExpr): google.type.Expr;
-
-            /**
-             * Encodes the specified Expr message. Does not implicitly {@link google.type.Expr.verify|verify} messages.
-             * @param message Expr message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.type.IExpr, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified Expr message, length delimited. Does not implicitly {@link google.type.Expr.verify|verify} messages.
-             * @param message Expr message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.type.IExpr, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes an Expr message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns Expr
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.type.Expr;
-
-            /**
-             * Decodes an Expr message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns Expr
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.type.Expr;
-
-            /**
-             * Verifies an Expr message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates an Expr message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns Expr
-             */
-            public static fromObject(object: { [k: string]: any }): google.type.Expr;
-
-            /**
-             * Creates a plain object from an Expr message. Also converts values to other types if specified.
-             * @param message Expr
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.type.Expr, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this Expr to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
         }
     }
 
@@ -18168,20 +17572,6 @@ export namespace google {
              * @returns Promise
              */
             public cancelOperation(request: google.longrunning.ICancelOperationRequest): Promise<google.protobuf.Empty>;
-
-            /**
-             * Calls WaitOperation.
-             * @param request WaitOperationRequest message or plain object
-             * @param callback Node-style callback called with the error, if any, and Operation
-             */
-            public waitOperation(request: google.longrunning.IWaitOperationRequest, callback: google.longrunning.Operations.WaitOperationCallback): void;
-
-            /**
-             * Calls WaitOperation.
-             * @param request WaitOperationRequest message or plain object
-             * @returns Promise
-             */
-            public waitOperation(request: google.longrunning.IWaitOperationRequest): Promise<google.longrunning.Operation>;
         }
 
         namespace Operations {
@@ -18213,13 +17603,6 @@ export namespace google {
              * @param [response] Empty
              */
             type CancelOperationCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
-
-            /**
-             * Callback as used by {@link google.longrunning.Operations#waitOperation}.
-             * @param error Error, if any
-             * @param [response] Operation
-             */
-            type WaitOperationCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
         }
 
         /** Properties of an Operation. */
@@ -18808,198 +18191,6 @@ export namespace google {
 
             /**
              * Converts this DeleteOperationRequest to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
-        }
-
-        /** Properties of a WaitOperationRequest. */
-        interface IWaitOperationRequest {
-
-            /** WaitOperationRequest name */
-            name?: (string|null);
-
-            /** WaitOperationRequest timeout */
-            timeout?: (google.protobuf.IDuration|null);
-        }
-
-        /** Represents a WaitOperationRequest. */
-        class WaitOperationRequest implements IWaitOperationRequest {
-
-            /**
-             * Constructs a new WaitOperationRequest.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.longrunning.IWaitOperationRequest);
-
-            /** WaitOperationRequest name. */
-            public name: string;
-
-            /** WaitOperationRequest timeout. */
-            public timeout?: (google.protobuf.IDuration|null);
-
-            /**
-             * Creates a new WaitOperationRequest instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns WaitOperationRequest instance
-             */
-            public static create(properties?: google.longrunning.IWaitOperationRequest): google.longrunning.WaitOperationRequest;
-
-            /**
-             * Encodes the specified WaitOperationRequest message. Does not implicitly {@link google.longrunning.WaitOperationRequest.verify|verify} messages.
-             * @param message WaitOperationRequest message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.longrunning.IWaitOperationRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified WaitOperationRequest message, length delimited. Does not implicitly {@link google.longrunning.WaitOperationRequest.verify|verify} messages.
-             * @param message WaitOperationRequest message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.longrunning.IWaitOperationRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes a WaitOperationRequest message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns WaitOperationRequest
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.longrunning.WaitOperationRequest;
-
-            /**
-             * Decodes a WaitOperationRequest message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns WaitOperationRequest
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.longrunning.WaitOperationRequest;
-
-            /**
-             * Verifies a WaitOperationRequest message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates a WaitOperationRequest message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns WaitOperationRequest
-             */
-            public static fromObject(object: { [k: string]: any }): google.longrunning.WaitOperationRequest;
-
-            /**
-             * Creates a plain object from a WaitOperationRequest message. Also converts values to other types if specified.
-             * @param message WaitOperationRequest
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.longrunning.WaitOperationRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this WaitOperationRequest to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
-        }
-
-        /** Properties of an OperationInfo. */
-        interface IOperationInfo {
-
-            /** OperationInfo responseType */
-            responseType?: (string|null);
-
-            /** OperationInfo metadataType */
-            metadataType?: (string|null);
-        }
-
-        /** Represents an OperationInfo. */
-        class OperationInfo implements IOperationInfo {
-
-            /**
-             * Constructs a new OperationInfo.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.longrunning.IOperationInfo);
-
-            /** OperationInfo responseType. */
-            public responseType: string;
-
-            /** OperationInfo metadataType. */
-            public metadataType: string;
-
-            /**
-             * Creates a new OperationInfo instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns OperationInfo instance
-             */
-            public static create(properties?: google.longrunning.IOperationInfo): google.longrunning.OperationInfo;
-
-            /**
-             * Encodes the specified OperationInfo message. Does not implicitly {@link google.longrunning.OperationInfo.verify|verify} messages.
-             * @param message OperationInfo message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.longrunning.IOperationInfo, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified OperationInfo message, length delimited. Does not implicitly {@link google.longrunning.OperationInfo.verify|verify} messages.
-             * @param message OperationInfo message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.longrunning.IOperationInfo, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes an OperationInfo message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns OperationInfo
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.longrunning.OperationInfo;
-
-            /**
-             * Decodes an OperationInfo message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns OperationInfo
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.longrunning.OperationInfo;
-
-            /**
-             * Verifies an OperationInfo message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates an OperationInfo message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns OperationInfo
-             */
-            public static fromObject(object: { [k: string]: any }): google.longrunning.OperationInfo;
-
-            /**
-             * Creates a plain object from an OperationInfo message. Also converts values to other types if specified.
-             * @param message OperationInfo
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.longrunning.OperationInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this OperationInfo to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };

@@ -3331,10 +3331,6 @@
                   "rule": "repeated",
                   "type": "HttpRule",
                   "id": 1
-                },
-                "fullyDecodeReservedExpansion": {
-                  "type": "bool",
-                  "id": 2
                 }
               }
             },
@@ -3383,10 +3379,6 @@
                 "body": {
                   "type": "string",
                   "id": 7
-                },
-                "responseBody": {
-                  "type": "string",
-                  "id": 12
                 },
                 "additionalBindings": {
                   "rule": "repeated",
@@ -3521,12 +3513,11 @@
         },
         "protobuf": {
           "options": {
-            "go_package": "google.golang.org/protobuf/types/descriptorpb",
+            "go_package": "github.com/golang/protobuf/protoc-gen-go/descriptor;descriptor",
             "java_package": "com.google.protobuf",
             "java_outer_classname": "DescriptorProtos",
             "csharp_namespace": "Google.Protobuf.Reflection",
             "objc_class_prefix": "GPB",
-            "cc_enable_arenas": true,
             "optimize_for": "SPEED"
           },
           "nested": {
@@ -3665,10 +3656,6 @@
                     "end": {
                       "type": "int32",
                       "id": 2
-                    },
-                    "options": {
-                      "type": "ExtensionRangeOptions",
-                      "id": 3
                     }
                   }
                 },
@@ -3685,21 +3672,6 @@
                   }
                 }
               }
-            },
-            "ExtensionRangeOptions": {
-              "fields": {
-                "uninterpretedOption": {
-                  "rule": "repeated",
-                  "type": "UninterpretedOption",
-                  "id": 999
-                }
-              },
-              "extensions": [
-                [
-                  1000,
-                  536870911
-                ]
-              ]
             },
             "FieldDescriptorProto": {
               "fields": {
@@ -3742,10 +3714,6 @@
                 "options": {
                   "type": "FieldOptions",
                   "id": 8
-                },
-                "proto3Optional": {
-                  "type": "bool",
-                  "id": 17
                 }
               },
               "nested": {
@@ -3806,30 +3774,6 @@
                 "options": {
                   "type": "EnumOptions",
                   "id": 3
-                },
-                "reservedRange": {
-                  "rule": "repeated",
-                  "type": "EnumReservedRange",
-                  "id": 4
-                },
-                "reservedName": {
-                  "rule": "repeated",
-                  "type": "string",
-                  "id": 5
-                }
-              },
-              "nested": {
-                "EnumReservedRange": {
-                  "fields": {
-                    "start": {
-                      "type": "int32",
-                      "id": 1
-                    },
-                    "end": {
-                      "type": "int32",
-                      "id": 2
-                    }
-                  }
                 }
               }
             },
@@ -3963,13 +3907,6 @@
                     "default": false
                   }
                 },
-                "phpGenericServices": {
-                  "type": "bool",
-                  "id": 42,
-                  "options": {
-                    "default": false
-                  }
-                },
                 "deprecated": {
                   "type": "bool",
                   "id": 23,
@@ -3981,7 +3918,7 @@
                   "type": "bool",
                   "id": 31,
                   "options": {
-                    "default": true
+                    "default": false
                   }
                 },
                 "objcClassPrefix": {
@@ -3999,18 +3936,6 @@
                 "phpClassPrefix": {
                   "type": "string",
                   "id": 40
-                },
-                "phpNamespace": {
-                  "type": "string",
-                  "id": 41
-                },
-                "phpMetadataNamespace": {
-                  "type": "string",
-                  "id": 44
-                },
-                "rubyPackage": {
-                  "type": "string",
-                  "id": 45
                 },
                 "uninterpretedOption": {
                   "rule": "repeated",
@@ -4438,18 +4363,6 @@
                 }
               }
             },
-            "Duration": {
-              "fields": {
-                "seconds": {
-                  "type": "int64",
-                  "id": 1
-                },
-                "nanos": {
-                  "type": "int32",
-                  "id": 2
-                }
-              }
-            },
             "Empty": {
               "fields": {}
             },
@@ -4459,6 +4372,18 @@
                   "rule": "repeated",
                   "type": "string",
                   "id": 1
+                }
+              }
+            },
+            "Duration": {
+              "fields": {
+                "seconds": {
+                  "type": "int64",
+                  "id": 1
+                },
+                "nanos": {
+                  "type": "int32",
+                  "id": 2
                 }
               }
             },
@@ -4550,9 +4475,6 @@
               },
               "nested": {
                 "IAMPolicy": {
-                  "options": {
-                    "(google.api.default_host)": "iam-meta-api.googleapis.com"
-                  },
                   "methods": {
                     "SetIamPolicy": {
                       "requestType": "SetIamPolicyRequest",
@@ -4608,18 +4530,11 @@
                   "fields": {
                     "resource": {
                       "type": "string",
-                      "id": 1,
-                      "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "*"
-                      }
+                      "id": 1
                     },
                     "policy": {
                       "type": "Policy",
-                      "id": 2,
-                      "options": {
-                        "(google.api.field_behavior)": "REQUIRED"
-                      }
+                      "id": 2
                     }
                   }
                 },
@@ -4627,15 +4542,7 @@
                   "fields": {
                     "resource": {
                       "type": "string",
-                      "id": 1,
-                      "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "*"
-                      }
-                    },
-                    "options": {
-                      "type": "GetPolicyOptions",
-                      "id": 2
+                      "id": 1
                     }
                   }
                 },
@@ -4643,19 +4550,12 @@
                   "fields": {
                     "resource": {
                       "type": "string",
-                      "id": 1,
-                      "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "*"
-                      }
+                      "id": 1
                     },
                     "permissions": {
                       "rule": "repeated",
                       "type": "string",
-                      "id": 2,
-                      "options": {
-                        "(google.api.field_behavior)": "REQUIRED"
-                      }
+                      "id": 2
                     }
                   }
                 },
@@ -4664,14 +4564,6 @@
                     "permissions": {
                       "rule": "repeated",
                       "type": "string",
-                      "id": 1
-                    }
-                  }
-                },
-                "GetPolicyOptions": {
-                  "fields": {
-                    "requestedPolicyVersion": {
-                      "type": "int32",
                       "id": 1
                     }
                   }
@@ -4703,10 +4595,6 @@
                       "rule": "repeated",
                       "type": "string",
                       "id": 2
-                    },
-                    "condition": {
-                      "type": "google.type.Expr",
-                      "id": 3
                     }
                   }
                 },
@@ -4716,11 +4604,6 @@
                       "rule": "repeated",
                       "type": "BindingDelta",
                       "id": 1
-                    },
-                    "auditConfigDeltas": {
-                      "rule": "repeated",
-                      "type": "AuditConfigDelta",
-                      "id": 2
                     }
                   }
                 },
@@ -4737,10 +4620,6 @@
                     "member": {
                       "type": "string",
                       "id": 3
-                    },
-                    "condition": {
-                      "type": "google.type.Expr",
-                      "id": 4
                     }
                   },
                   "nested": {
@@ -4752,66 +4631,6 @@
                       }
                     }
                   }
-                },
-                "AuditConfigDelta": {
-                  "fields": {
-                    "action": {
-                      "type": "Action",
-                      "id": 1
-                    },
-                    "service": {
-                      "type": "string",
-                      "id": 2
-                    },
-                    "exemptedMember": {
-                      "type": "string",
-                      "id": 3
-                    },
-                    "logType": {
-                      "type": "string",
-                      "id": 4
-                    }
-                  },
-                  "nested": {
-                    "Action": {
-                      "values": {
-                        "ACTION_UNSPECIFIED": 0,
-                        "ADD": 1,
-                        "REMOVE": 2
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "type": {
-          "options": {
-            "go_package": "google.golang.org/genproto/googleapis/type/expr;expr",
-            "java_multiple_files": true,
-            "java_outer_classname": "ExprProto",
-            "java_package": "com.google.type",
-            "objc_class_prefix": "GTP"
-          },
-          "nested": {
-            "Expr": {
-              "fields": {
-                "expression": {
-                  "type": "string",
-                  "id": 1
-                },
-                "title": {
-                  "type": "string",
-                  "id": 2
-                },
-                "description": {
-                  "type": "string",
-                  "id": 3
-                },
-                "location": {
-                  "type": "string",
-                  "id": 4
                 }
               }
             }
@@ -4819,40 +4638,26 @@
         },
         "longrunning": {
           "options": {
-            "cc_enable_arenas": true,
             "csharp_namespace": "Google.LongRunning",
             "go_package": "google.golang.org/genproto/googleapis/longrunning;longrunning",
             "java_multiple_files": true,
             "java_outer_classname": "OperationsProto",
-            "java_package": "com.google.longrunning",
-            "php_namespace": "Google\\LongRunning"
+            "java_package": "com.google.longrunning"
           },
           "nested": {
-            "operationInfo": {
-              "type": "google.longrunning.OperationInfo",
-              "id": 1049,
-              "extend": "google.protobuf.MethodOptions"
-            },
             "Operations": {
-              "options": {
-                "(google.api.default_host)": "longrunning.googleapis.com"
-              },
               "methods": {
                 "ListOperations": {
                   "requestType": "ListOperationsRequest",
                   "responseType": "ListOperationsResponse",
                   "options": {
-                    "(google.api.http).get": "/v1/{name=operations}",
-                    "(google.api.method_signature)": "name,filter"
+                    "(google.api.http).get": "/v1/{name=operations}"
                   },
                   "parsedOptions": [
                     {
                       "(google.api.http)": {
                         "get": "/v1/{name=operations}"
                       }
-                    },
-                    {
-                      "(google.api.method_signature)": "name,filter"
                     }
                   ]
                 },
@@ -4860,17 +4665,13 @@
                   "requestType": "GetOperationRequest",
                   "responseType": "Operation",
                   "options": {
-                    "(google.api.http).get": "/v1/{name=operations/**}",
-                    "(google.api.method_signature)": "name"
+                    "(google.api.http).get": "/v1/{name=operations/**}"
                   },
                   "parsedOptions": [
                     {
                       "(google.api.http)": {
                         "get": "/v1/{name=operations/**}"
                       }
-                    },
-                    {
-                      "(google.api.method_signature)": "name"
                     }
                   ]
                 },
@@ -4878,17 +4679,13 @@
                   "requestType": "DeleteOperationRequest",
                   "responseType": "google.protobuf.Empty",
                   "options": {
-                    "(google.api.http).delete": "/v1/{name=operations/**}",
-                    "(google.api.method_signature)": "name"
+                    "(google.api.http).delete": "/v1/{name=operations/**}"
                   },
                   "parsedOptions": [
                     {
                       "(google.api.http)": {
                         "delete": "/v1/{name=operations/**}"
                       }
-                    },
-                    {
-                      "(google.api.method_signature)": "name"
                     }
                   ]
                 },
@@ -4897,8 +4694,7 @@
                   "responseType": "google.protobuf.Empty",
                   "options": {
                     "(google.api.http).post": "/v1/{name=operations/**}:cancel",
-                    "(google.api.http).body": "*",
-                    "(google.api.method_signature)": "name"
+                    "(google.api.http).body": "*"
                   },
                   "parsedOptions": [
                     {
@@ -4906,15 +4702,8 @@
                         "post": "/v1/{name=operations/**}:cancel",
                         "body": "*"
                       }
-                    },
-                    {
-                      "(google.api.method_signature)": "name"
                     }
                   ]
-                },
-                "WaitOperation": {
-                  "requestType": "WaitOperationRequest",
-                  "responseType": "Operation"
                 }
               }
             },
@@ -5006,36 +4795,11 @@
                   "id": 1
                 }
               }
-            },
-            "WaitOperationRequest": {
-              "fields": {
-                "name": {
-                  "type": "string",
-                  "id": 1
-                },
-                "timeout": {
-                  "type": "google.protobuf.Duration",
-                  "id": 2
-                }
-              }
-            },
-            "OperationInfo": {
-              "fields": {
-                "responseType": {
-                  "type": "string",
-                  "id": 1
-                },
-                "metadataType": {
-                  "type": "string",
-                  "id": 2
-                }
-              }
             }
           }
         },
         "rpc": {
           "options": {
-            "cc_enable_arenas": true,
             "go_package": "google.golang.org/genproto/googleapis/rpc/status;status",
             "java_multiple_files": true,
             "java_outer_classname": "StatusProto",
