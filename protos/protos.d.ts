@@ -2751,6 +2751,9 @@ export namespace google {
 
                     /** Cluster defaultStorageType */
                     defaultStorageType?: (google.bigtable.admin.v2.StorageType|keyof typeof google.bigtable.admin.v2.StorageType|null);
+
+                    /** Cluster encryptionConfig */
+                    encryptionConfig?: (google.bigtable.admin.v2.Cluster.IEncryptionConfig|null);
                 }
 
                 /** Represents a Cluster. */
@@ -2776,6 +2779,9 @@ export namespace google {
 
                     /** Cluster defaultStorageType. */
                     public defaultStorageType: (google.bigtable.admin.v2.StorageType|keyof typeof google.bigtable.admin.v2.StorageType);
+
+                    /** Cluster encryptionConfig. */
+                    public encryptionConfig?: (google.bigtable.admin.v2.Cluster.IEncryptionConfig|null);
 
                     /**
                      * Creates a new Cluster instance using the specified properties.
@@ -2849,6 +2855,96 @@ export namespace google {
                 }
 
                 namespace Cluster {
+
+                    /** Properties of an EncryptionConfig. */
+                    interface IEncryptionConfig {
+
+                        /** EncryptionConfig kmsKeyName */
+                        kmsKeyName?: (string|null);
+                    }
+
+                    /** Represents an EncryptionConfig. */
+                    class EncryptionConfig implements IEncryptionConfig {
+
+                        /**
+                         * Constructs a new EncryptionConfig.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.Cluster.IEncryptionConfig);
+
+                        /** EncryptionConfig kmsKeyName. */
+                        public kmsKeyName: string;
+
+                        /**
+                         * Creates a new EncryptionConfig instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns EncryptionConfig instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.Cluster.IEncryptionConfig): google.bigtable.admin.v2.Cluster.EncryptionConfig;
+
+                        /**
+                         * Encodes the specified EncryptionConfig message. Does not implicitly {@link google.bigtable.admin.v2.Cluster.EncryptionConfig.verify|verify} messages.
+                         * @param message EncryptionConfig message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.Cluster.IEncryptionConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified EncryptionConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Cluster.EncryptionConfig.verify|verify} messages.
+                         * @param message EncryptionConfig message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.Cluster.IEncryptionConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes an EncryptionConfig message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns EncryptionConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.Cluster.EncryptionConfig;
+
+                        /**
+                         * Decodes an EncryptionConfig message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns EncryptionConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.Cluster.EncryptionConfig;
+
+                        /**
+                         * Verifies an EncryptionConfig message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates an EncryptionConfig message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns EncryptionConfig
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.Cluster.EncryptionConfig;
+
+                        /**
+                         * Creates a plain object from an EncryptionConfig message. Also converts values to other types if specified.
+                         * @param message EncryptionConfig
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.Cluster.EncryptionConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this EncryptionConfig to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+                    }
 
                     /** State enum. */
                     enum State {
@@ -7065,6 +7161,9 @@ export namespace google {
 
                         /** ClusterState replicationState */
                         replicationState?: (google.bigtable.admin.v2.Table.ClusterState.ReplicationState|keyof typeof google.bigtable.admin.v2.Table.ClusterState.ReplicationState|null);
+
+                        /** ClusterState encryptionInfo */
+                        encryptionInfo?: (google.bigtable.admin.v2.IEncryptionInfo[]|null);
                     }
 
                     /** Represents a ClusterState. */
@@ -7078,6 +7177,9 @@ export namespace google {
 
                         /** ClusterState replicationState. */
                         public replicationState: (google.bigtable.admin.v2.Table.ClusterState.ReplicationState|keyof typeof google.bigtable.admin.v2.Table.ClusterState.ReplicationState);
+
+                        /** ClusterState encryptionInfo. */
+                        public encryptionInfo: google.bigtable.admin.v2.IEncryptionInfo[];
 
                         /**
                          * Creates a new ClusterState instance using the specified properties.
@@ -7175,6 +7277,7 @@ export namespace google {
                         NAME_ONLY = 1,
                         SCHEMA_VIEW = 2,
                         REPLICATION_VIEW = 3,
+                        ENCRYPTION_VIEW = 5,
                         FULL = 4
                     }
                 }
@@ -7563,6 +7666,118 @@ export namespace google {
                     }
                 }
 
+                /** Properties of an EncryptionInfo. */
+                interface IEncryptionInfo {
+
+                    /** EncryptionInfo encryptionType */
+                    encryptionType?: (google.bigtable.admin.v2.EncryptionInfo.EncryptionType|keyof typeof google.bigtable.admin.v2.EncryptionInfo.EncryptionType|null);
+
+                    /** EncryptionInfo encryptionStatus */
+                    encryptionStatus?: (google.rpc.IStatus|null);
+
+                    /** EncryptionInfo kmsKeyVersion */
+                    kmsKeyVersion?: (string|null);
+                }
+
+                /** Represents an EncryptionInfo. */
+                class EncryptionInfo implements IEncryptionInfo {
+
+                    /**
+                     * Constructs a new EncryptionInfo.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IEncryptionInfo);
+
+                    /** EncryptionInfo encryptionType. */
+                    public encryptionType: (google.bigtable.admin.v2.EncryptionInfo.EncryptionType|keyof typeof google.bigtable.admin.v2.EncryptionInfo.EncryptionType);
+
+                    /** EncryptionInfo encryptionStatus. */
+                    public encryptionStatus?: (google.rpc.IStatus|null);
+
+                    /** EncryptionInfo kmsKeyVersion. */
+                    public kmsKeyVersion: string;
+
+                    /**
+                     * Creates a new EncryptionInfo instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns EncryptionInfo instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IEncryptionInfo): google.bigtable.admin.v2.EncryptionInfo;
+
+                    /**
+                     * Encodes the specified EncryptionInfo message. Does not implicitly {@link google.bigtable.admin.v2.EncryptionInfo.verify|verify} messages.
+                     * @param message EncryptionInfo message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IEncryptionInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified EncryptionInfo message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.EncryptionInfo.verify|verify} messages.
+                     * @param message EncryptionInfo message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IEncryptionInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an EncryptionInfo message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns EncryptionInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.EncryptionInfo;
+
+                    /**
+                     * Decodes an EncryptionInfo message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns EncryptionInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.EncryptionInfo;
+
+                    /**
+                     * Verifies an EncryptionInfo message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an EncryptionInfo message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns EncryptionInfo
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.EncryptionInfo;
+
+                    /**
+                     * Creates a plain object from an EncryptionInfo message. Also converts values to other types if specified.
+                     * @param message EncryptionInfo
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.EncryptionInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this EncryptionInfo to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                namespace EncryptionInfo {
+
+                    /** EncryptionType enum. */
+                    enum EncryptionType {
+                        ENCRYPTION_TYPE_UNSPECIFIED = 0,
+                        GOOGLE_DEFAULT_ENCRYPTION = 1,
+                        CUSTOMER_MANAGED_ENCRYPTION = 2
+                    }
+                }
+
                 /** Properties of a Snapshot. */
                 interface ISnapshot {
 
@@ -7722,6 +7937,9 @@ export namespace google {
 
                     /** Backup state */
                     state?: (google.bigtable.admin.v2.Backup.State|keyof typeof google.bigtable.admin.v2.Backup.State|null);
+
+                    /** Backup encryptionInfo */
+                    encryptionInfo?: (google.bigtable.admin.v2.IEncryptionInfo|null);
                 }
 
                 /** Represents a Backup. */
@@ -7753,6 +7971,9 @@ export namespace google {
 
                     /** Backup state. */
                     public state: (google.bigtable.admin.v2.Backup.State|keyof typeof google.bigtable.admin.v2.Backup.State);
+
+                    /** Backup encryptionInfo. */
+                    public encryptionInfo?: (google.bigtable.admin.v2.IEncryptionInfo|null);
 
                     /**
                      * Creates a new Backup instance using the specified properties.
