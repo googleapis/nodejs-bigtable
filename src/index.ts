@@ -709,7 +709,7 @@ export class Bigtable {
           instance.metadata = instanceData;
           return instance;
         });
-        callback!(null, instances, resp.failedLocations, resp);
+        callback!(null, instances, resp!.failedLocations!, resp);
       }
     );
   }

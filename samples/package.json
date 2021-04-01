@@ -22,9 +22,9 @@
     "@google-cloud/functions-framework": "^1.5.1",
     "chai": "^4.2.0",
     "mocha": "^8.0.0",
-    "snap-shot-it": "^7.9.1",
     "request": "^2.88.0",
-    "requestretry": "^5.0.0"
+    "requestretry": "^5.0.0",
+    "snap-shot-it": "^7.9.1"
   },
   "scripts": {
     "test": "mocha --timeout=60000",
