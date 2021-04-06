@@ -349,6 +349,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {object} options Cluster creation options.
    * @param {object} [options.gaxOptions]  Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {object} [options.encryption] CMEK configuration options.
+   * @param {string} options.encryption.kmsKeyName The KMS key name.
+   * @param {string} [options.key] Alias for `options.encryption.kmsKeyName`.
    * @param {string} options.location The location where this cluster's nodes
    *     and storage reside. For best performance clients should be located as
    *     as close as possible to this cluster. Currently only zones are
@@ -387,6 +390,25 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     if (!is.empty(options)) {
       reqOpts.cluster = {};
+    }
+
+    if (
+      typeof options.key !== 'undefined' &&
+      typeof options.encryption !== 'undefined'
+    ) {
+      throw new Error(
+        'The cluster cannot have both `encryption` and `key` defined.'
+      );
+    }
+
+    if (options.key) {
+      reqOpts.cluster!.encryptionConfig = {
+        kmsKeyName: options.key,
+      };
+    }
+
+    if (options.encryption) {
+      reqOpts.cluster!.encryptionConfig = options.encryption;
     }
 
     if (options.location) {

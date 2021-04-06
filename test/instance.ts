@@ -414,6 +414,54 @@ describe('Bigtable/Instance', () => {
       instance.createCluster(CLUSTER_ID, options, assert.ifError);
     });
 
+    it('should respect the key option', done => {
+      const key = 'kms-key-name';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.deepStrictEqual(config.reqOpts.cluster.encryptionConfig, {
+          kmsKeyName: key,
+        });
+        done();
+      };
+
+      instance.createCluster(
+        CLUSTER_ID,
+        {key} as CreateClusterOptions,
+        assert.ifError
+      );
+    });
+
+    it('should handle clusters with an encryption object', done => {
+      const key = 'kms-key-name';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (instance.bigtable.request as Function) = (config: any) => {
+        assert.deepStrictEqual(config.reqOpts.cluster.encryptionConfig, {
+          kmsKeyName: key,
+        });
+        done();
+      };
+
+      instance.createCluster(
+        CLUSTER_ID,
+        {encryption: {kmsKeyName: key}} as CreateClusterOptions,
+        assert.ifError
+      );
+    });
+
+    it('should throw if both an encryption object and a key are provided', () => {
+      const key = 'kms-key-name';
+
+      assert.throws(() => {
+        instance.createCluster(
+          CLUSTER_ID,
+          {encryption: {kmsKeyName: key}, key} as CreateClusterOptions,
+          assert.ifError
+        );
+      }, /The cluster cannot have both `encryption` and `key` defined\./);
+    });
+
     it('should execute callback with arguments from GAPIC', done => {
       const response = {};
       sandbox

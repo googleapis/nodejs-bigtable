@@ -81,6 +81,8 @@ export type SetClusterMetadataCallback = GenericOperationCallback<
   Operation | null | undefined
 >;
 export interface BasicClusterConfig {
+  encryption?: google.bigtable.admin.v2.Cluster.IEncryptionConfig;
+  key?: string;
   location: string;
   nodes: number;
   storage?: string;

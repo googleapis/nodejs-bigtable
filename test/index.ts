@@ -460,6 +460,95 @@ describe('Bigtable', () => {
       bigtable.createInstance(INSTANCE_ID, OPTIONS, assert.ifError);
     });
 
+    it('should handle clusters with a CMEK key', done => {
+      const key = 'kms-key-name';
+
+      FakeCluster.getLocation_ = () => {};
+      FakeCluster.getStorageType_ = () => {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      bigtable.request = (config: any) => {
+        assert.deepStrictEqual(
+          config.reqOpts.clusters['my-cluster'].encryptionConfig,
+          {
+            kmsKeyName: key,
+          }
+        );
+        done();
+      };
+
+      bigtable.createInstance(
+        INSTANCE_ID,
+        {
+          clusters: [
+            {
+              id: 'my-cluster',
+              key,
+            },
+          ],
+        },
+        assert.ifError
+      );
+    });
+
+    it('should handle clusters with an encryption object', done => {
+      const key = 'kms-key-name';
+
+      FakeCluster.getLocation_ = () => {};
+      FakeCluster.getStorageType_ = () => {};
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      bigtable.request = (config: any) => {
+        assert.deepStrictEqual(
+          config.reqOpts.clusters['my-cluster'].encryptionConfig,
+          {
+            kmsKeyName: key,
+          }
+        );
+        done();
+      };
+
+      bigtable.createInstance(
+        INSTANCE_ID,
+        {
+          clusters: [
+            {
+              id: 'my-cluster',
+              encryption: {
+                kmsKeyName: key,
+              },
+            },
+          ],
+        },
+        assert.ifError
+      );
+    });
+
+    it('should throw if both an encryption object and a key are provided', () => {
+      const key = 'kms-key-name';
+
+      FakeCluster.getLocation_ = () => {};
+      FakeCluster.getStorageType_ = () => {};
+
+      assert.throws(() => {
+        bigtable.createInstance(
+          INSTANCE_ID,
+          {
+            clusters: [
+              {
+                id: 'my-cluster',
+                encryption: {
+                  kmsKeyName: key,
+                },
+                key,
+              },
+            ],
+          },
+          assert.ifError
+        );
+      }, /A cluster was provided with both `encryption` and `key` defined\./);
+    });
+
     it('should return an error to the callback', done => {
       const error = new Error('err');
       bigtable.request = (config: {}, callback: Function) => {

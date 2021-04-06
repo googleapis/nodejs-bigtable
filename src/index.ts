@@ -577,11 +577,30 @@ export class Bigtable {
         );
       }
 
+      if (
+        typeof cluster.key !== 'undefined' &&
+        typeof cluster.encryption !== 'undefined'
+      ) {
+        throw new Error(
+          'A cluster was provided with both `encryption` and `key` defined.'
+        );
+      }
+
       clusters[cluster.id!] = {
         location: Cluster.getLocation_(this.projectId, cluster.location!),
         serveNodes: cluster.nodes,
         defaultStorageType: Cluster.getStorageType_(cluster.storage!),
       };
+
+      if (cluster.key) {
+        clusters[cluster.id!].encryptionConfig = {
+          kmsKeyName: cluster.key,
+        };
+      }
+
+      if (cluster.encryption) {
+        clusters[cluster.id!].encryptionConfig = cluster.encryption;
+      }
 
       return clusters;
     }, {} as {[index: string]: google.bigtable.admin.v2.ICluster});
