@@ -622,7 +622,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * it's possible for reads to return a cell even if it matches the active
    * expression for its family.
    *
-   * @see [Garbage Collection Proto Docs]{@link https://github.com/googleapis/googleapis/blob/master/google/bigtable/admin/table/v1/bigtable_table_data.proto#L59}
+   * @see [Garbage Collection Proto Docs]{@link https://github.com/googleapis/googleapis/blob/3b236df084cf9222c529a2890f90e3a4ff0f2dfd/google/bigtable/admin/v2/table.proto#L184}
    *
    * @throws {error} If a name is not provided.
    *
