@@ -8,13 +8,13 @@
     "*.js",
     "functions/*.js",
     "hello-world/*.js",
-    "document-snippets/*.js"
+    "api-reference-doc-snippets/*.js"
   ],
   "engines": {
     "node": ">=12"
   },
   "dependencies": {
-    "@google-cloud/bigtable": "^3.2.0",
+    "@google-cloud/bigtable": "^3.3.0",
     "uuid": "^8.0.0",
     "yargs": "^16.0.0"
   },
@@ -24,7 +24,7 @@
     "mocha": "^8.0.0",
     "snap-shot-it": "^7.9.1",
     "request": "^2.88.0",
-    "requestretry": "^4.1.0"
+    "requestretry": "^5.0.0"
   },
   "scripts": {
     "test": "mocha --timeout=60000",

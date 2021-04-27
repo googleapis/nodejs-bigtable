@@ -4,22 +4,22 @@
       "git": {
         "name": ".",
         "remote": "https://github.com/googleapis/nodejs-bigtable.git",
-        "sha": "d37fe9ecdadde8d335fc1f83ab5ac3c3f5813e0d"
+        "sha": "39ea6f43f02919e52d3f882ca5f5144421ff5ae4"
       }
     },
     {
       "git": {
         "name": "googleapis",
         "remote": "https://github.com/googleapis/googleapis.git",
-        "sha": "d189e871205fea665a9648f7c4676f027495ccaf",
-        "internalRef": "345596855"
+        "sha": "458338f8ca444e43b9df96b984b68f3978852b74",
+        "internalRef": "361301101"
       }
     },
     {
       "git": {
         "name": "synthtool",
         "remote": "https://github.com/googleapis/synthtool.git",
-        "sha": "15013eff642a7e7e855aed5a29e6e83c39beba2a"
+        "sha": "c6706ee5d693e9ae5967614170732646590d8374"
       }
     }
   ],

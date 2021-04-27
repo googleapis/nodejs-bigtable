@@ -12,12 +12,6 @@
 
 * [Before you begin](#before-you-begin)
 * [Samples](#samples)
-  * [Backups.create](#backups.create)
-  * [Backups.delete](#backups.delete)
-  * [Backups.get](#backups.get)
-  * [Backups.list](#backups.list)
-  * [Backups.restore](#backups.restore)
-  * [Backups.update](#backups.update)
   * [Filter Snippets](#filter-snippets)
   * [Instances](#instances)
   * [Quickstart](#quickstart)
@@ -40,108 +34,6 @@ Before running the samples, make sure you've followed the steps outlined in
 `cd ..`
 
 ## Samples
-
-
-
-### Backups.create
-
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.create.js).
-
-[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.create.js,samples/README.md)
-
-__Usage:__
-
-
-`node samples/backups.create.js`
-
-
------
-
-
-
-
-### Backups.delete
-
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.delete.js).
-
-[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.delete.js,samples/README.md)
-
-__Usage:__
-
-
-`node samples/backups.delete.js`
-
-
------
-
-
-
-
-### Backups.get
-
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.get.js).
-
-[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.get.js,samples/README.md)
-
-__Usage:__
-
-
-`node samples/backups.get.js`
-
-
------
-
-
-
-
-### Backups.list
-
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.list.js).
-
-[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.list.js,samples/README.md)
-
-__Usage:__
-
-
-`node samples/backups.list.js`
-
-
------
-
-
-
-
-### Backups.restore
-
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.restore.js).
-
-[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.restore.js,samples/README.md)
-
-__Usage:__
-
-
-`node samples/backups.restore.js`
-
-
------
-
-
-
-
-### Backups.update
-
-View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/master/samples/backups.update.js).
-
-[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/backups.update.js,samples/README.md)
-
-__Usage:__
-
-
-`node samples/backups.update.js`
-
-
------
-
 
 
 

@@ -5,6 +5,5 @@
 # https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
 
-# The api-bigtable team is the default owner for anything not
-# explicitly taken by someone else.
-*            @googleapis/api-bigtable @googleapis/yoshi-nodejs
+# The yoshi-nodejs team is the default owner for nodejs repositories.
+*     @googleapis/yoshi-nodejs @googleapis/api-bigtable
