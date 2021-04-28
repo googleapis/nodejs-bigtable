@@ -53,7 +53,7 @@
     "arrify": "^2.0.0",
     "concat-stream": "^2.0.0",
     "dot-prop": "^6.0.0",
-    "escape-string-regexp": "^4.0.0",
+    "escape-string-regexp": "^5.0.0",
     "extend": "^3.0.2",
     "google-gax": "^2.9.2",
     "is": "^3.0.1",
