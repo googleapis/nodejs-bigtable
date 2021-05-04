@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.4.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.3.1...v3.4.0) (2021-05-04)
+
+
+### Features
+
+* implement restore table to a different instance feature ([#830](https://www.github.com/googleapis/nodejs-bigtable/issues/830)) ([#863](https://www.github.com/googleapis/nodejs-bigtable/issues/863)) ([c900b0a](https://www.github.com/googleapis/nodejs-bigtable/commit/c900b0a2bce3d91decbac716da879953966af8c9))
+
 ### [3.3.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.3.0...v3.3.1) (2021-04-20)
 
 
