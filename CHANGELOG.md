@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [3.3.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.3.0...v3.3.1) (2021-04-20)
+
+
+### Bug Fixes
+
+* remove common protos ([#853](https://www.github.com/googleapis/nodejs-bigtable/issues/853)) ([d08f481](https://www.github.com/googleapis/nodejs-bigtable/commit/d08f4816205dd5562c280779d5f4c6708cb792be))
+
 ## [3.3.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.2.0...v3.3.0) (2021-03-08)
 
 
