@@ -32,6 +32,7 @@ import {
 import {Bigtable, RequestOptions} from '../src';
 import {PassThrough} from 'stream';
 import * as pumpify from 'pumpify';
+import {RestoreTableCallback, RestoreTableConfig} from '../src/backup';
 
 const sandbox = sinon.createSandbox();
 
@@ -562,13 +563,10 @@ describe('Bigtable/Instance', () => {
       const backup = new FakeBackup() as any;
       const table = 'table';
 
-      backup.restore = (
-        _table: string,
-        gaxOptions: object,
-        callback: Function
-      ) => {
-        assert.strictEqual(_table, table);
-        assert.strictEqual(typeof gaxOptions, 'undefined');
+      backup.restoreTo = (config: RestoreTableConfig, callback: Function) => {
+        assert.strictEqual(config.tableId, table);
+        assert.strictEqual(config.instance, instance);
+        assert.strictEqual(typeof config.gaxOptions, 'undefined');
         callback(); // done()
       };
 
@@ -584,7 +582,7 @@ describe('Bigtable/Instance', () => {
     it('should create a Backup using the provided name', done => {
       const clusterId = 'my-cluster';
       const backupId = 'my-backup';
-      const backup = `/clusters/${clusterId}/backups/${backupId}`;
+      const backup = `instances/${instance.id}/clusters/${clusterId}/backups/${backupId}`;
       const table = 'table';
 
       (instance.cluster as Function) = (id: string) => {
@@ -593,14 +591,52 @@ describe('Bigtable/Instance', () => {
           backup: (id: string) => {
             assert.strictEqual(id, backup);
             return {
-              restore: (
-                _table: string,
-                gaxOptions: object,
-                callback: Function
-              ) => {
-                assert.strictEqual(_table, table);
-                assert.strictEqual(typeof gaxOptions, 'undefined');
+              restoreTo: (config: RestoreTableConfig, callback: Function) => {
+                assert.strictEqual(config.tableId, table);
+                assert.strictEqual(config.instance, instance);
+                assert.strictEqual(typeof config.gaxOptions, 'undefined');
                 callback(); // done()
+              },
+            };
+          },
+        };
+      };
+
+      instance.createTableFromBackup(
+        {
+          table,
+          backup,
+        },
+        done
+      );
+    });
+
+    it('should respect a Backup from a different instance', done => {
+      const diffInstanceId = 'diff-instance';
+      const clusterId = 'my-cluster';
+      const backupId = 'my-backup';
+      const backup = `instances/${diffInstanceId}/clusters/${clusterId}/backups/${backupId}`;
+      const table = 'table';
+
+      (instance.bigtable.instance as Function) = (id: string) => {
+        assert.strictEqual(id, diffInstanceId);
+        return {
+          cluster: (id: string) => {
+            assert.strictEqual(id, clusterId);
+            return {
+              backup: (id: string) => {
+                assert.strictEqual(id, backup);
+                return {
+                  restoreTo: (
+                    config: RestoreTableConfig,
+                    callback: Function
+                  ) => {
+                    assert.strictEqual(config.tableId, table);
+                    assert.strictEqual(config.instance, instance);
+                    assert.strictEqual(typeof config.gaxOptions, 'undefined');
+                    callback(); // done()
+                  },
+                };
               },
             };
           },
@@ -637,8 +673,8 @@ describe('Bigtable/Instance', () => {
       const table = 'table';
       const gaxOptions = {};
 
-      backup.restore = (table: string, _gaxOptions: object) => {
-        assert.strictEqual(_gaxOptions, gaxOptions);
+      backup.restoreTo = (config: RestoreTableConfig) => {
+        assert.strictEqual(config.gaxOptions, gaxOptions);
         done();
       };
 

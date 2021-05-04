@@ -36,6 +36,7 @@ import {
   IOperation,
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
+import {Instance} from './instance';
 
 type IEmpty = google.protobuf.IEmpty;
 export type IBackup = google.bigtable.admin.v2.IBackup;
@@ -86,6 +87,12 @@ export type BackupSetMetadataCallback = (
   resp: IBackup
 ) => void;
 export type BackupSetMetadataResponse = [IBackup, IBackup];
+
+export interface RestoreTableConfig {
+  tableId: string;
+  instance?: Instance | string;
+  gaxOptions?: CallOptions;
+}
 
 export type RestoreTableCallback = (
   err: ServiceError | null,
@@ -491,9 +498,63 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     cb?: RestoreTableCallback
   ): void | Promise<RestoreTableResponse> {
     const gaxOpts =
-      typeof gaxOptionsOrCallback === 'object' ? gaxOptionsOrCallback : {};
+      typeof gaxOptionsOrCallback === 'object'
+        ? gaxOptionsOrCallback
+        : undefined;
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+
+    this.restoreTo(
+      {
+        tableId,
+        instance: this.cluster.instance,
+        gaxOptions: gaxOpts,
+      },
+      callback
+    );
+  }
+
+  restoreTo(config: RestoreTableConfig): Promise<RestoreTableResponse>;
+  restoreTo(config: RestoreTableConfig, callback: RestoreTableCallback): void;
+  /**
+   * Create a new table by restoring from this completed backup.
+   *
+   * The returned
+   * {@link google.longrunning.Operation|long-running operation} can be used
+   * to track the progress of the operation, and to cancel it.
+   *
+   * @param {RestoreTableConfig} config Configuration object.
+   * @param {string} tableId The id of the table to create and restore to. This
+   *     table must not already exist.
+   * @param {Instance|string} [instance] Instance in which the new table will
+   *     be created and restored to. Instance must be in the same project as the
+   *     project containing backup.
+   *     If omitted the instance containing the backup will be used instead.
+   * @param {CallOptions} [gaxOptions] Request configuration options,
+   *     outlined here:
+   *     https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html.
+   * @param {RestoreTableCallback} [callback] The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Table} callback.table The newly created Table.
+   * @param {Operation} callback.operation An operation object that can be used
+   *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
+   * @return {void | Promise<RestoreTableResponse>}
+   */
+  restoreTo(
+    config: RestoreTableConfig,
+    callback?: RestoreTableCallback
+  ): void | Promise<RestoreTableResponse> {
+    let parent: string;
+    if (config.instance) {
+      if (config.instance instanceof Instance) {
+        parent = config.instance.name;
+      } else {
+        parent = this.bigtable.instance(config.instance).name;
+      }
+    } else {
+      parent = this.cluster.instance.name;
+    }
 
     this.bigtable.request<
       LROperation<
@@ -505,18 +566,18 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         client: 'BigtableTableAdminClient',
         method: 'restoreTable',
         reqOpts: {
-          parent: this.cluster.instance.name,
-          tableId,
+          parent,
+          tableId: config.tableId,
           backup: this.name,
         },
-        gaxOpts,
+        gaxOpts: config.gaxOptions,
       },
       (err, ...args) => {
         if (err) {
-          callback(err, undefined, ...args);
+          callback!(err, undefined, ...args);
           return;
         }
-        callback(err, this.cluster.instance.table(tableId), ...args);
+        callback!(err, this.cluster.instance.table(config.tableId), ...args);
       }
     );
   }
