@@ -169,6 +169,99 @@ describe('Bigtable', () => {
     });
   });
 
+  describe('CMEK', () => {
+    let kmsKeyName: string;
+
+    const CMEK_INSTANCE = bigtable.instance(generateId('instance'));
+    const CMEK_CLUSTER = CMEK_INSTANCE.cluster(generateId('cluster'));
+
+    const cryptoKeyId = generateId('key');
+    const keyRingId = generateId('key-ring');
+    let keyRingsBaseUrl: string;
+    let cryptoKeyVersionName: string;
+
+    before(async () => {
+      const projectId = await bigtable.auth.getProjectId();
+      kmsKeyName = `projects/${projectId}/locations/us-central1/keyRings/${keyRingId}/cryptoKeys/${cryptoKeyId}`;
+      keyRingsBaseUrl = `https://cloudkms.googleapis.com/v1/projects/${projectId}/locations/us-central1/keyRings`;
+
+      await bigtable.auth.request({
+        method: 'POST',
+        url: keyRingsBaseUrl,
+        params: {keyRingId},
+      });
+
+      const resp = await bigtable.auth.request({
+        method: 'POST',
+        url: `${keyRingsBaseUrl}/${keyRingId}/cryptoKeys`,
+        params: {cryptoKeyId},
+        data: {purpose: 'ENCRYPT_DECRYPT'},
+      });
+      cryptoKeyVersionName = resp.data.primary.name;
+
+      const [_, operation] = await CMEK_INSTANCE.create({
+        clusters: [
+          {
+            id: CMEK_CLUSTER.id,
+            location: 'us-central1-a',
+            nodes: 3,
+            key: kmsKeyName,
+          },
+        ],
+        labels: {
+          time_created: Date.now(),
+        },
+      });
+      await operation.promise();
+    });
+
+    after(async () => {
+      await bigtable.auth.request({
+        method: 'POST',
+        url: `${keyRingsBaseUrl}/${keyRingId}/cryptoKeys/${cryptoKeyId}/cryptoKeyVersions/${cryptoKeyVersionName
+          .split('/')
+          .pop()}:destroy`,
+        params: {name: cryptoKeyVersionName},
+      });
+    });
+
+    it('should have created an instance', async () => {
+      const [metadata] = await CMEK_CLUSTER.getMetadata();
+      assert.deepStrictEqual(metadata.encryptionConfig, {kmsKeyName});
+    });
+
+    it('should create a cluster', async () => {
+      const cluster = CMEK_INSTANCE.cluster(generateId('cluster'));
+
+      const [_, operation] = await cluster.create({
+        location: 'us-central1-b',
+        nodes: 3,
+        key: kmsKeyName,
+      });
+      await operation.promise();
+
+      const [metadata] = await cluster.getMetadata();
+      assert.deepStrictEqual(metadata.encryptionConfig, {kmsKeyName});
+    });
+
+    it('should fail if key not provided', async () => {
+      const cluster = CMEK_INSTANCE.cluster(generateId('cluster'));
+
+      try {
+        const [_, operation] = await cluster.create({
+          location: 'us-central1-b',
+          nodes: 3,
+        });
+        await operation.promise();
+        throw new Error('Cluster creation should not have succeeded');
+      } catch (e) {
+        assert(
+          e.message.includes('All clusters must specify the same CMEK key')
+        );
+      }
+    });
+  });
+
   describe('appProfiles', () => {
     it('should retrieve a list of app profiles', async () => {
       const [appProfiles] = await INSTANCE.getAppProfiles();
