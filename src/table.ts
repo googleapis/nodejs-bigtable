@@ -37,7 +37,7 @@ import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
 import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex} from '.';
-import {Instance} from './instance';
+import {Instance, PagedOptions} from './instance';
 import {ModifiableBackupFields} from './backup';
 import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
@@ -165,9 +165,9 @@ export interface CreateTableOptions {
 export type CreateTableCallback = (
   err: ServiceError | null,
   table?: Table,
-  apiResponse?: google.bigtable.admin.v2.Table
+  apiResponse?: google.bigtable.admin.v2.ITable
 ) => void;
-export type CreateTableResponse = [Table, google.bigtable.admin.v2.Table];
+export type CreateTableResponse = [Table, google.bigtable.admin.v2.ITable];
 
 export type TableExistsCallback = (
   err: ServiceError | null,
@@ -175,15 +175,12 @@ export type TableExistsCallback = (
 ) => void;
 export type TableExistsResponse = [boolean];
 
-export interface GetTablesOptions {
-  gaxOptions?: CallOptions;
+export interface GetTablesOptions extends PagedOptions {
   /**
-   * View over the table's fields. Possible options are 'name', 'schema' or
-   * 'full'. Default: 'name'.
+   * View over the table's fields.
+   * Possible options are 'name' (default) or 'replication' only.
    */
-  view?: 'name' | 'schema' | 'full';
-  pageSize?: number;
-  pageToken?: string;
+  view?: 'name' | 'replication';
 }
 
 export interface GetRowsOptions {
@@ -318,7 +315,7 @@ export type DeleteRowsCallback = (
 export type DeleteRowsResponse = [google.protobuf.Empty];
 export type GetMetadataCallback = (
   err: ServiceError | null,
-  apiResponse: google.bigtable.admin.v2.ITable
+  apiResponse?: google.bigtable.admin.v2.ITable
 ) => void;
 export type GetMetadataResponse = [google.bigtable.admin.v2.Table];
 export type GetTableCallback = (
@@ -330,9 +327,14 @@ export type GetTableResponse = [Table, google.bigtable.admin.v2.Table];
 export type GetTablesCallback = (
   err: ServiceError | null,
   tables?: Table[],
-  apiResponse?: google.bigtable.admin.v2.ITable[]
+  nextQuery?: GetTablesOptions | null,
+  apiResponse?: google.bigtable.admin.v2.IListTablesResponse | null
 ) => void;
-export type GetTablesResponse = [Table[], google.bigtable.admin.v2.Table[]];
+export type GetTablesResponse = [
+  Table[],
+  GetTablesOptions,
+  google.bigtable.admin.v2.Table[]
+];
 export type GetFamiliesCallback = (
   err: ServiceError | null,
   families?: Family[],
@@ -674,7 +676,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       modifications: [mod],
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.ITable>(
       {
         client: 'BigtableTableAdminClient',
         method: 'modifyColumnFamilies',
@@ -687,7 +689,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           return;
         }
         const family = this.family(id);
-        family.metadata = resp;
+        family.metadata = resp!.columnFamilies![id];
         callback(null, family, resp);
       }
     );
@@ -1186,7 +1188,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
     }
 
-    this.bigtable.request(
+    this.bigtable.request<google.iam.v1.IPolicy>(
       {
         client: 'BigtableTableAdminClient',
         method: 'getIamPolicy',
@@ -1198,7 +1200,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback!(err);
           return;
         }
-        callback!(null, Table.decodePolicyEtag(resp));
+        callback!(null, Table.decodePolicyEtag(resp as Policy));
       }
     );
   }
@@ -1232,12 +1234,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         callback(err);
         return;
       }
-      const families = Object.keys(metadata.columnFamilies!).map(familyId => {
+      const families = Object.keys(metadata!.columnFamilies!).map(familyId => {
         const family = this.family(familyId);
-        family.metadata = metadata.columnFamilies![familyId];
+        family.metadata = metadata!.columnFamilies![familyId];
         return family;
       });
-      callback(null, families, metadata.columnFamilies!);
+      callback(null, families, metadata!.columnFamilies!);
     });
   }
 
@@ -1298,8 +1300,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         string,
         google.bigtable.admin.v2.Table.IClusterState
       >();
-      Object.keys(metadata.clusterStates!).map(clusterId =>
-        clusterStates.set(clusterId, metadata.clusterStates![clusterId])
+      Object.keys(metadata!.clusterStates!).map(clusterId =>
+        clusterStates.set(clusterId, metadata!.clusterStates![clusterId])
       );
       callback(null, clusterStates, metadata);
     });
@@ -1335,7 +1337,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       name: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
     };
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.ITable>(
       {
         client: 'BigtableTableAdminClient',
         method: 'getTable',
@@ -1713,7 +1715,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       resource: this.name,
       policy,
     };
-    this.bigtable.request(
+    this.bigtable.request<google.iam.v1.IPolicy>(
       {
         client: 'BigtableTableAdminClient',
         method: 'setIamPolicy',
@@ -1724,7 +1726,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         if (err) {
           callback!(err);
         }
-        callback!(null, Table.decodePolicyEtag(resp));
+        callback!(null, Table.decodePolicyEtag(resp as Policy));
       }
     );
   }
@@ -1772,7 +1774,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       permissions: arrify(permissions),
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.iam.v1.ITestIamPermissionsResponse>(
       {
         client: 'BigtableTableAdminClient',
         method: 'testIamPermissions',
@@ -1784,7 +1786,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback!(err);
           return;
         }
-        callback!(null, resp.permissions);
+        callback!(null, resp!.permissions!);
       }
     );
   }
@@ -1901,7 +1903,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const reqOpts = {
       name: this.name,
     };
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.IGenerateConsistencyTokenResponse>(
       {
         client: 'BigtableTableAdminClient',
         method: 'generateConsistencyToken',
@@ -1912,7 +1914,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback!(err);
           return;
         }
-        callback!(null, res.consistencyToken);
+        callback!(null, res!.consistencyToken!);
       }
     );
   }
@@ -1934,7 +1936,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       name: this.name,
       consistencyToken: token,
     };
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.ICheckConsistencyResponse>(
       {
         client: 'BigtableTableAdminClient',
         method: 'checkConsistency',
@@ -1945,7 +1947,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           callback!(err);
           return;
         }
-        callback!(null, res.consistent);
+        callback!(null, res!.consistent!);
       }
     );
   }

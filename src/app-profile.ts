@@ -17,7 +17,12 @@ import * as is from 'is';
 import snakeCase = require('lodash.snakecase');
 import {Cluster} from './cluster';
 import {Bigtable} from '.';
-import {Instance} from './instance';
+import {
+  GetAppProfilesOptions,
+  Instance,
+  LROCallback,
+  SetInstanceMetadataResponse,
+} from './instance';
 import {CallOptions} from 'google-gax';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
@@ -29,7 +34,7 @@ export interface AppProfileOptions {
    * value is required when creating the app profile and optional when setting
    * the metadata.
    */
-  routing?: 'any' | Cluster;
+  routing: 'any' | Cluster;
   /**
    * Whether or not CheckAndMutateRow and ReadModifyWriteRow requests are
    * allowed by this app profile. It is unsafe to send these requests to the
@@ -86,11 +91,9 @@ export type AppProfileExistsCallback = (
 export type AppProfileExistsResponse = [boolean];
 export type GetAppProfileMetadataCallback = (
   err: ServiceError | null,
-  metadata?: google.bigtable.admin.v2.IAppProfile,
-  apiResponse?: google.bigtable.admin.v2.IAppProfile
+  metadata?: google.bigtable.admin.v2.IAppProfile
 ) => void;
 export type GetAppProfileMetadataResponse = [
-  google.bigtable.admin.v2.IAppProfile,
   google.bigtable.admin.v2.IAppProfile
 ];
 export type GetAppProfileCallback = (
@@ -105,17 +108,16 @@ export type GetAppProfileResponse = [
 export type GetAppProfilesCallback = (
   err: ServiceError | null,
   appProfiles?: AppProfile[],
-  apiResponse?: google.bigtable.admin.v2.IAppProfile[]
+  nextQuery?: GetAppProfilesOptions | null,
+  apiResponse?: google.bigtable.admin.v2.IListAppProfilesResponse
 ) => void;
 export type GetAppProfilesResponse = [
   AppProfile[],
-  google.bigtable.admin.v2.IAppProfile[]
+  GetAppProfilesOptions,
+  google.bigtable.admin.v2.IListAppProfilesResponse
 ];
-export type SetAppProfileMetadataCallback = (
-  err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
-) => void;
-export type SetAppProfileMetadataResponse = [google.protobuf.Empty];
+export type SetAppProfileMetadataCallback = LROCallback;
+export type SetAppProfileMetadataResponse = SetInstanceMetadataResponse;
 
 /**
  * Create an app profile object to interact with your app profile.
@@ -223,7 +225,6 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
 
   create(options: AppProfileOptions): Promise<CreateAppProfileResponse>;
   create(options: AppProfileOptions, callback: CreateAppProfileCallback): void;
-  create(callback: CreateAppProfileCallback): void;
   /**
    * Create an app profile.
    *
@@ -234,14 +235,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * region_tag:bigtable_api_create_app_profile
    */
   create(
-    optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
-    cb?: CreateAppProfileCallback
+    options: AppProfileOptions,
+    callback?: CreateAppProfileCallback
   ): void | Promise<CreateAppProfileResponse> {
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    this.instance.createAppProfile(this.id, options, callback);
+    this.instance.createAppProfile(this.id, options, callback!);
   }
 
   delete(options?: DeleteAppProfileOptions): Promise<DeleteAppProfileResponse>;
@@ -392,7 +389,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    this.bigtable.request<google.bigtable.admin.v2.AppProfile>(
+    this.bigtable.request<google.bigtable.admin.v2.IAppProfile>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'getAppProfile',
@@ -405,7 +402,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         if (resp) {
           this.metadata = resp;
         }
-        callback(err, resp, resp);
+        callback(err, resp);
       }
     );
   }

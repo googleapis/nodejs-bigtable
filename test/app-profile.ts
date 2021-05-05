@@ -176,22 +176,6 @@ describe('Bigtable/AppProfile', () => {
 
       appProfile.create(options, done);
     });
-
-    it('should not require options', done => {
-      appProfile.instance.createAppProfile = (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        id: any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        options: any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        callback: any
-      ) => {
-        assert.deepStrictEqual(options, {});
-        callback();
-      };
-
-      appProfile.create(done);
-    });
   });
 
   describe('delete', () => {
@@ -409,7 +393,7 @@ describe('Bigtable/AppProfile', () => {
     });
 
     it('should execute callback with original arguments', done => {
-      const args = [{}, {}, {}];
+      const args = [{}, {}];
 
       appProfile.bigtable.request = (config: {}, callback: Function) => {
         callback(...args);
@@ -464,6 +448,16 @@ describe('Bigtable/AppProfile', () => {
       };
 
       appProfile.setMetadata(options, assert.ifError);
+    });
+
+    it('should accept gaxOptions options', done => {
+      const gaxOptions = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      appProfile.bigtable.request = (config: any) => {
+        assert.strictEqual(config.gaxOpts, gaxOptions);
+        done();
+      };
+      appProfile.setMetadata({}, gaxOptions, assert.ifError);
     });
 
     describe('should respect the routing option when', () => {

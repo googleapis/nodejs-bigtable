@@ -181,19 +181,6 @@ describe('Bigtable/Cluster', () => {
 
       cluster.create(options, done);
     });
-
-    it('should not require options', done => {
-      cluster.instance.createCluster = (
-        id: string,
-        options: {},
-        callback: Function
-      ) => {
-        assert.deepStrictEqual(options, {});
-        callback(); // done()
-      };
-
-      cluster.create(done);
-    });
   });
 
   describe('createBackup', () => {

@@ -26,6 +26,7 @@ import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
+import {GetAppProfilesOptions} from '../src/instance';
 
 const PREFIX = 'gcloud-tests-';
 
@@ -120,7 +121,8 @@ describe('Bigtable', () => {
       const metadata = {
         displayName: 'metadata-test',
       };
-      await INSTANCE.setMetadata(metadata);
+      const [operation] = await INSTANCE.setMetadata(metadata);
+      await operation.promise();
       const [metadata_] = await INSTANCE.getMetadata();
       assert.strictEqual(metadata.displayName, metadata_.displayName);
     });
@@ -190,6 +192,32 @@ describe('Bigtable', () => {
         });
     });
 
+    it('should paginate to retrieve a list of app profiles', async () => {
+      let allAppProfiles: AppProfile[] = [];
+      const pageSize = 1;
+      let calledTimes = 0;
+      let getAppProfilesOptions: GetAppProfilesOptions = {
+        gaxOptions: {autoPaginate: false},
+        pageSize,
+      };
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const [appProfiles, next] = await INSTANCE.getAppProfiles(
+          getAppProfilesOptions
+        );
+        calledTimes++;
+        assert.strictEqual(appProfiles.length, pageSize);
+        allAppProfiles = [...allAppProfiles, ...appProfiles];
+        if (!next) {
+          break;
+        }
+        getAppProfilesOptions = next;
+      }
+      assert(allAppProfiles[0] instanceof AppProfile);
+      // This assert relies that pageSize = 1.
+      assert.strictEqual(calledTimes, allAppProfiles.length);
+    });
+
     it('should check if an app profile exists', async () => {
       const [exists] = await APP_PROFILE.exists();
       assert.strictEqual(exists, true);
@@ -229,7 +257,8 @@ describe('Bigtable', () => {
         allowTransactionalWrites: true,
         description: 'My Updated App Profile',
       };
-      await APP_PROFILE.setMetadata(options);
+      const [operation] = await APP_PROFILE.setMetadata(options);
+      await operation.promise();
       const [updatedAppProfile] = await APP_PROFILE.get();
       assert.strictEqual(
         updatedAppProfile.metadata!.description,
