@@ -51,6 +51,16 @@ class FakeTable extends Table {
   }
 }
 
+class FakeInstance extends instanceTypes.Instance {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  calledWith_: Array<{}>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(...args: [Bigtable, string]) {
+    super(...args);
+    this.calledWith_ = args;
+  }
+}
+
 describe('Bigtable/Backup', () => {
   const BACKUP_ID = 'my-backup';
   let CLUSTER: clusterTypes.Cluster;
@@ -64,6 +74,7 @@ describe('Bigtable/Backup', () => {
     Backup = proxyquire('../src/backup.js', {
       '@google-cloud/promisify': fakePromisify,
       './table.js': {Table: FakeTable},
+      './instance.js': {Instance: FakeInstance},
       pumpify,
     }).Backup;
   });
@@ -406,6 +417,40 @@ describe('Bigtable/Backup', () => {
   });
 
   describe('restore', () => {
+    it('should delegate to Backup#restoreTo()', done => {
+      const tableId = 'table-id';
+      const callback = assert.ifError;
+
+      backup.restoreTo = (
+        config: backupTypes.RestoreTableConfig,
+        cb: backupTypes.RestoreTableCallback
+      ) => {
+        assert.strictEqual(config.tableId, tableId);
+        assert.strictEqual(config.instance, backup.cluster.instance);
+        assert.strictEqual(config.gaxOptions, undefined);
+        assert.strictEqual(cb, callback);
+        done();
+      };
+
+      backup.restore(tableId, callback);
+    });
+
+    it('should accept gaxOptions', done => {
+      const tableId = 'table-id';
+      const gaxOptions = {};
+
+      backup.restoreTo = (config: backupTypes.RestoreTableConfig) => {
+        assert.strictEqual(config.tableId, tableId);
+        assert.strictEqual(config.instance, backup.cluster.instance);
+        assert.strictEqual(config.gaxOptions, gaxOptions);
+        done();
+      };
+
+      backup.restore(tableId, gaxOptions, assert.ifError);
+    });
+  });
+
+  describe('restoreTo', () => {
     it('should send the correct request', done => {
       const tableId = 'table-id';
 
@@ -418,11 +463,66 @@ describe('Bigtable/Backup', () => {
           tableId,
           backup: backup.name,
         });
-        assert.deepStrictEqual(config.gaxOpts, {});
+        assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
 
-      backup.restore(tableId, assert.ifError);
+      (backup as backupTypes.Backup).restoreTo({tableId}, assert.ifError);
+    });
+
+    it('should accept instance as instanceId', done => {
+      const tableId = 'table-id';
+      const instance = 'diff-instance';
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.deepStrictEqual(
+          config.reqOpts.parent.match(/instances\/([^/]+)/)![1],
+          instance
+        );
+        done();
+      };
+      backup.bigtable.instance = (id: string) => {
+        return new instanceTypes.Instance(backup.bigtable, id);
+      };
+
+      (backup as backupTypes.Backup).restoreTo(
+        {tableId, instance},
+        assert.ifError
+      );
+    });
+
+    it('should accept instance as instanceName', done => {
+      const tableId = 'table-id';
+      const instance = `${backup.bigtable.projectName}/instances/diff-instance`;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.deepStrictEqual(config.reqOpts.parent, instance);
+        done();
+      };
+      backup.bigtable.instance = (name: string) => {
+        return new instanceTypes.Instance(backup.bigtable, name);
+      };
+
+      (backup as backupTypes.Backup).restoreTo(
+        {tableId, instance},
+        assert.ifError
+      );
+    });
+
+    it('should accept instance as Instance object', done => {
+      const tableId = 'table-id';
+      const instanceName = `${backup.bigtable.projectName}/instances/diff-instance`;
+      const instance = new FakeInstance(backup.bigtable, instanceName);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      backup.bigtable.request = (config: any) => {
+        assert.deepStrictEqual(config.reqOpts.parent, instance.name);
+        done();
+      };
+
+      backup.restoreTo({tableId, instance}, assert.ifError);
     });
 
     it('should accept gaxOptions', done => {
@@ -434,7 +534,10 @@ describe('Bigtable/Backup', () => {
         done();
       };
 
-      backup.restore(tableId, gaxOptions, assert.ifError);
+      (backup as backupTypes.Backup).restoreTo(
+        {tableId, gaxOptions},
+        assert.ifError
+      );
     });
 
     it('should execute callback with error', done => {
@@ -446,8 +549,8 @@ describe('Bigtable/Backup', () => {
         callback(error, ...args);
       };
 
-      backup.restore(
-        tableId,
+      backup.restoreTo(
+        {tableId},
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (err: Error | null, table: {}, ..._args: any[]) => {
           assert.strictEqual(err, error);
@@ -474,8 +577,8 @@ describe('Bigtable/Backup', () => {
         callback(null, ...args);
       };
 
-      backup.restore(
-        tableId,
+      backup.restoreTo(
+        {tableId},
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (err: Error | null, table: {}, ..._args: any[]) => {
           assert.ifError(err);
