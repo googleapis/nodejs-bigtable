@@ -109,15 +109,27 @@ export interface InstanceOptions {
 }
 
 export type IInstance = google.bigtable.admin.v2.IInstance;
-export interface LongRunningResourceCallback<Resource> {
+export interface SetInstanceMetatdataOptions {
+  displayName?: string;
+  type?: 'production';
+  labels?: {[k: string]: string};
+}
+export interface LROCallback {
   (
     err: ServiceError | null,
-    resource?: Resource,
     operation?: Operation,
     apiResponse?: IOperation
   ): void;
 }
-export type CreateInstanceCallback = LongRunningResourceCallback<Instance>;
+export interface LROResourceCallback<Resource> extends LROCallback {
+  (
+    err: ServiceError | null,
+    resource: Resource,
+    operation?: Operation,
+    apiResponse?: IOperation
+  ): void;
+}
+export type CreateInstanceCallback = LROResourceCallback<Instance>;
 export type CreateInstanceResponse = [Instance, Operation, IOperation];
 export type DeleteInstanceCallback = (
   err: ServiceError | null,
@@ -140,11 +152,15 @@ export type GetInstanceMetadataCallback = (
   metadata?: IInstance
 ) => void;
 export type GetInstanceMetadataResponse = [IInstance];
-export type SetInstanceMetadataCallback = (
-  err: ServiceError | null,
-  apiResponse?: google.protobuf.Empty
-) => void;
-export type SetInstanceMetadataResponse = [google.protobuf.Empty];
+export type SetInstanceMetadataCallback = LROCallback;
+export type SetInstanceMetadataResponse = [Operation, IOperation];
+export interface PagedOptions {
+  autoPaginate?: boolean;
+  pageSize?: number;
+  pageToken?: string;
+  gaxOptions?: CallOptions;
+}
+export type GetAppProfilesOptions = PagedOptions;
 
 export interface CreateTableFromBackupConfig {
   table: string;
@@ -253,14 +269,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
   createAppProfile(
     id: string,
-    options?: AppProfileOptions
+    options: AppProfileOptions
   ): Promise<CreateAppProfileResponse>;
   createAppProfile(
     id: string,
     options: AppProfileOptions,
     callback: CreateAppProfileCallback
   ): void;
-  createAppProfile(id: string, callback: CreateAppProfileCallback): void;
   /**
    * Create an app profile.
    *
@@ -291,13 +306,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    */
   createAppProfile(
     id: string,
-    optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
-    cb?: CreateAppProfileCallback
+    options: AppProfileOptions,
+    callback?: CreateAppProfileCallback
   ): void | Promise<CreateAppProfileResponse> {
-    const options =
-      typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
+    if (typeof options !== 'object') {
+      throw new Error(
+        'A configuration object is required to create an appProfile.'
+      );
+    }
     if (!options.routing) {
       throw new Error('An app profile must contain a routing policy.');
     }
@@ -308,39 +324,38 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       parent: this.name,
       appProfileId: id,
       appProfile,
-    } as google.bigtable.admin.v2.CreateAppProfileRequest;
+    } as google.bigtable.admin.v2.ICreateAppProfileRequest;
 
     if (is.boolean(options.ignoreWarnings)) {
       reqOpts.ignoreWarnings = options.ignoreWarnings!;
     }
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.IAppProfile>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'createAppProfile',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (...args) => {
-        if (args[1]) {
-          args.splice(1, 0, this.appProfile(id));
+      (err, ...args) => {
+        if (err) {
+          callback!(err);
+          return;
         }
-
-        callback(...args);
+        callback!(null, this.appProfile(id), ...args);
       }
     );
   }
 
   createCluster(
     id: string,
-    options?: CreateClusterOptions
+    options: CreateClusterOptions
   ): Promise<CreateClusterResponse>;
   createCluster(
     id: string,
     options: CreateClusterOptions,
     callback: CreateClusterCallback
   ): void;
-  createCluster(id: string, callback: CreateClusterCallback): void;
   /**
    * Create a cluster.
    *
@@ -364,60 +379,54 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *     cluster.
    * @param {Operation} callback.operation An operation object that can be used
    *     to check the status of the request.
+   * @param {object} callback.apiResponse The full API response.
    *
    * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
    * region_tag:bigtable_api_create_cluster
    */
   createCluster(
     id: string,
-    optionsOrCallback?: CreateClusterOptions | CreateClusterCallback,
-    cb?: CreateClusterCallback
+    options: CreateClusterOptions,
+    callback?: CreateClusterCallback
   ): void | Promise<CreateClusterResponse> {
-    const options =
-      typeof optionsOrCallback === 'object'
-        ? optionsOrCallback
-        : ({} as CreateClusterOptions);
-    const callback =
-      typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-
+    if (typeof options !== 'object') {
+      throw new Error(
+        'A configuration object is required to create a cluster.'
+      );
+    }
+    if (!options.location) {
+      throw new Error('A cluster location must be provided.');
+    }
+    if (!options.nodes) {
+      throw new Error('A cluster node count must be provided.');
+    }
     const reqOpts = {
       parent: this.name,
       clusterId: id,
-    } as google.bigtable.admin.v2.CreateClusterRequest;
+      cluster: {
+        location: Cluster.getLocation_(
+          this.bigtable.projectId,
+          options.location
+        ),
+        serveNodes: options.nodes,
+        defaultStorageType: Cluster.getStorageType_(options.storage!),
+      },
+    } as google.bigtable.admin.v2.ICreateClusterRequest;
 
-    if (!is.empty(options)) {
-      reqOpts.cluster = {};
-    }
-
-    if (options.location) {
-      reqOpts.cluster!.location = Cluster.getLocation_(
-        this.bigtable.projectId,
-        options.location
-      );
-    }
-
-    if (options.nodes) {
-      reqOpts.cluster!.serveNodes = options.nodes;
-    }
-
-    if (options.storage) {
-      const storageType = Cluster.getStorageType_(options.storage);
-      reqOpts.cluster!.defaultStorageType = storageType;
-    }
-
-    this.bigtable.request(
+    this.bigtable.request<void>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'createCluster',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (...args) => {
-        if (args[1]) {
-          args.splice(1, 0, this.cluster(id));
+      (err, ...args) => {
+        if (err) {
+          callback!(err);
+          return;
         }
 
-        callback(...args);
+        callback!(null, this.cluster(id), ...args);
       }
     );
   }
@@ -489,15 +498,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     if (options.families) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const columnFamilies = (options.families as any[]).reduce(
+      const columnFamilies = (arrify(options.families) as any[]).reduce(
         (families, family) => {
           if (typeof family === 'string') {
             family = {
               name: family,
             };
           }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const columnFamily: any = (families[family.name] = {});
+          const columnFamily: google.bigtable.admin.v2.IColumnFamily = (families[
+            family.name
+          ] = {});
           if (family.rule) {
             columnFamily.gcRule = Family.formatRule_(family.rule);
           }
@@ -509,21 +519,22 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       reqOpts.table!.columnFamilies = columnFamilies;
     }
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.ITable>(
       {
         client: 'BigtableTableAdminClient',
         method: 'createTable',
         reqOpts,
         gaxOpts: options.gaxOptions,
       },
-      (...args) => {
-        if (args[1]) {
-          const table = this.table(args[1].name.split('/').pop());
-          table.metadata = args[1];
-          args.splice(1, 0, table);
+      (err, ...args) => {
+        if (err) {
+          callback!(err);
+          return;
         }
+        const table = this.table(args[0]!.name!.split('/').pop() as string);
+        table.metadata = args[0];
 
-        callback(...args);
+        callback(null, table, ...args);
       }
     );
   }
@@ -563,7 +574,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    this.bigtable.request(
+    this.bigtable.request<google.protobuf.Empty>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'deleteInstance',
@@ -646,67 +657,120 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     });
   }
 
-  getAppProfiles(options?: CallOptions): Promise<GetAppProfilesResponse>;
-  getAppProfiles(options: CallOptions, callback: GetAppProfilesCallback): void;
+  getAppProfiles(
+    options?: GetAppProfilesOptions
+  ): Promise<GetAppProfilesResponse>;
+  getAppProfiles(
+    options: GetAppProfilesOptions,
+    callback: GetAppProfilesCallback
+  ): void;
   getAppProfiles(callback: GetAppProfilesCallback): void;
+  /**
+   * @typedef {array} GetAppProfilesResponse
+   * @property {AppProfile[]} 0 Array of {@link Instance} instances.
+   * @property {object} 1 nextQuery A query object to receive more results.
+   * @property {object} 2 The full API response.
+   *     Note: 'failedLocations' property may contain locations from which
+   *     AppProfile information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
+   */
+  /**
+   * @callback GetAppProfilesCallback
+   * @param {?Error} err Request error, if any.
+   * @param {AppProfile[]} instances Array of {@link Instance} instances.
+   * @param {object} nextQuery A query object to receive more results.
+   * @param {object} apiResponse The full API response.
+   *     Note: 'failedLocations' property may contain locations from which
+   *     AppProfile information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
+   */
   /**
    * Get App Profile objects for this instance.
    *
-   * @param {object} [gaxOptions] Request configuration options, outlined here:
+   * @param {object} [options] Query object.
+   * @param {boolean} [options.autoPaginate=true] Have pagination handled.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
+   * @param {number} [options.pageSize] Maximum number of results per page.
+   * @param {string} [options.pageToken] A previously-returned page token
+   *     representing part of a larger set of results to view.
    * @param {function} callback The callback function.
    * @param {?error} callback.error An error returned while making this request.
    * @param {AppProfile[]} callback.appProfiles List of all AppProfiles.
+   * @param {object} callback.nextQuery A query object to receive more results.
    * @param {object} callback.apiResponse The full API response.
+   *     Note: 'failedLocations' property may contain locations from which
+   *     AppProfile information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    *
    * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
    * region_tag:bigtable_api_get_app_profiles
    */
   getAppProfiles(
-    optionsOrCallback?: CallOptions | GetAppProfilesCallback,
+    optionsOrCallback?: GetAppProfilesOptions | GetAppProfilesCallback,
     cb?: GetAppProfilesCallback
   ): void | Promise<GetAppProfilesResponse> {
-    const gaxOpts =
+    const options =
       typeof optionsOrCallback === 'object'
-        ? extend(true, {}, optionsOrCallback)
-        : {};
+        ? optionsOrCallback
+        : ({} as GetAppProfilesOptions);
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts: google.bigtable.admin.v2.IListAppProfilesRequest = {
-      parent: this.name,
-    };
-
-    if (is.number(gaxOpts.pageSize)) {
-      reqOpts.pageSize = gaxOpts.pageSize;
+    const gaxOpts = extend(true, {}, options.gaxOptions);
+    // Copy over autoPaginate value from options.
+    // However values set on options.gaxOptions take precedence.
+    if (
+      is.boolean(options.autoPaginate) &&
+      is.undefined(gaxOpts.autoPaginate)
+    ) {
+      gaxOpts.autoPaginate = options.autoPaginate;
     }
-    delete gaxOpts.pageSize;
 
-    if (gaxOpts.pageToken) {
-      reqOpts.pageToken = gaxOpts.pageToken;
+    let reqOpts = extend({}, options, {parent: this.name});
+    delete reqOpts.gaxOptions;
+
+    // Copy over pageSize and pageToken values from gaxOptions.
+    // However values set on options take precedence.
+    if (gaxOpts) {
+      reqOpts = extend(
+        {},
+        {
+          pageSize: gaxOpts.pageSize,
+          pageToken: gaxOpts.pageToken,
+        },
+        reqOpts
+      );
+      delete gaxOpts.pageSize;
+      delete gaxOpts.pageToken;
     }
-    delete gaxOpts.pageToken;
 
-    this.bigtable.request<google.bigtable.admin.v2.IAppProfile[]>(
+    this.bigtable.request<
+      google.bigtable.admin.v2.IAppProfile,
+      google.bigtable.admin.v2.IListAppProfilesResponse
+    >(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'listAppProfiles',
         reqOpts,
         gaxOpts,
       },
-      (err, resp) => {
+      (err, IAppProfiles, nextPageRequest, apiResponse) => {
         if (err) {
           callback(err);
           return;
         }
-        const appProfiles = resp!.map(appProfileObj => {
+        const appProfiles = IAppProfiles!.map(appProfileObj => {
           const appProfile = this.appProfile(
             appProfileObj.name!.split('/').pop()!
           );
           appProfile.metadata = appProfileObj;
           return appProfile;
         });
-        callback(null, appProfiles, resp);
+        const nextQuery = nextPageRequest!
+          ? extend({}, options, nextPageRequest!)
+          : null;
+        callback(null, appProfiles, nextQuery, apiResponse!);
       }
     );
   }
@@ -880,7 +944,12 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {?error} callback.error An error returned while making this request.
    * @param {Cluster[]} callback.clusters List of all
    *     Clusters.
+   * @param {string[]} callback.failedLocations Locations from which Cluster
+   *     information could not be retrieved
    * @param {object} callback.apiResponse The full API response.
+   *     Note: 'failedLocations' property may contain locations from which
+   *     Cluster information could not be retrieved.
+   *     Values are of the form `projects/<project>/locations/<zone_id>`
    *
    * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
    * region_tag:bigtable_api_get_clusters
@@ -963,7 +1032,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       };
     }
 
-    this.bigtable.request(
+    this.bigtable.request<google.iam.v1.Policy>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'getIamPolicy',
@@ -975,7 +1044,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           callback!(err);
           return;
         }
-        callback!(null, Table.decodePolicyEtag(resp));
+        callback!(null, Table.decodePolicyEtag(resp as Policy));
       }
     );
   }
@@ -1033,12 +1102,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * Get Table objects for all the tables in your Cloud Bigtable instance.
    *
    * @param {object} [options] Query object.
-   * @param {boolean} [options.autoPaginate=true] Have pagination handled
-   *     automatically.
+   * @param {boolean} [options.autoPaginate=true] Have pagination handled.
    * @param {object} [options.gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
-   * @param {number} [options.maxApiCalls] Maximum number of API calls to make.
-   * @param {number} [options.maxResults] Maximum number of items to return.
+   * @property {number} [options.pageSize] Maximum number of results per page.
    * @param {string} [options.pageToken] A previously-returned page token
    *     representing part of a larger set of results to view.
    * @param {string} [options.view] View over the table's fields. Possible options
@@ -1047,6 +1114,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {?error} callback.err An error returned while making this request.
    * @param {Table[]} callback.tables List of all Table objects.These objects contains
    *     only table name & id but is not a complete representation of a table.
+   * @property {object} callback.nextQuery A query object to receive more results.
    * @param {object} callback.apiResponse The full API response.
    *
    * @example <caption>include:samples/api-reference-doc-snippets/instance.js</caption>
@@ -1062,6 +1130,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
     const gaxOpts = extend(true, {}, options.gaxOptions);
+    // Copy over autoPaginate value from options.
+    // However values set on options.gaxOptions take precedence.
+    if (
+      is.boolean(options.autoPaginate) &&
+      is.undefined(gaxOpts.autoPaginate)
+    ) {
+      gaxOpts.autoPaginate = options.autoPaginate;
+    }
+
     let reqOpts = Object.assign({}, options, {
       parent: this.name,
       view: Table.VIEWS[options.view || 'unspecified'],
@@ -1084,23 +1161,30 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     delete (reqOpts as GetTablesOptions).gaxOptions;
 
-    this.bigtable.request<Table[]>(
+    this.bigtable.request<
+      google.bigtable.admin.v2.ITable,
+      google.bigtable.admin.v2.IListTablesResponse
+    >(
       {
         client: 'BigtableTableAdminClient',
         method: 'listTables',
         reqOpts,
         gaxOpts,
       },
-      (...args) => {
-        if (args[1]) {
-          args[1] = args[1].map(tableObj => {
-            const table = this.table(tableObj.name!.split('/').pop()!);
-            table.metadata = tableObj;
-            return table;
-          });
+      (err, ITables, nextPageRequest, ...args) => {
+        if (err) {
+          callback!(err);
+          return;
         }
-
-        callback(...args);
+        const tables = ITables!.map(tableObj => {
+          const table = this.table(tableObj.name!.split('/').pop()!);
+          table.metadata = tableObj;
+          return table;
+        });
+        const nextQuery = nextPageRequest!
+          ? extend({}, options, nextPageRequest!)
+          : null;
+        callback(null, tables, nextQuery, ...args);
       }
     );
   }
@@ -1290,7 +1374,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       policy,
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.iam.v1.IPolicy>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'setIamPolicy',
@@ -1300,22 +1384,26 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       (err, resp) => {
         if (err) {
           callback!(err);
+          return;
         }
-        callback!(null, Table.decodePolicyEtag(resp));
+        callback!(null, Table.decodePolicyEtag(resp as Policy));
       }
     );
   }
 
   setMetadata(
-    metadata: IInstance,
+    metadata: SetInstanceMetatdataOptions,
     options?: CallOptions
   ): Promise<SetInstanceMetadataResponse>;
   setMetadata(
-    metadata: IInstance,
+    metadata: SetInstanceMetatdataOptions,
     options: CallOptions,
     callback: SetInstanceMetadataCallback
   ): void;
-  setMetadata(metadata: IInstance, callback: SetInstanceMetadataCallback): void;
+  setMetadata(
+    metadata: SetInstanceMetatdataOptions,
+    callback: SetInstanceMetadataCallback
+  ): void;
   /**
    * Set the instance metadata.
    *
@@ -1334,7 +1422,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * region_tag:bigtable_api_set_meta_data
    */
   setMetadata(
-    metadata: IInstance,
+    metadata: SetInstanceMetatdataOptions,
     optionsOrCallback?: CallOptions | SetInstanceMetadataCallback,
     cb?: SetInstanceMetadataCallback
   ): void | Promise<SetInstanceMetadataResponse> {
@@ -1363,12 +1451,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         reqOpts,
         gaxOpts: gaxOptions,
       },
-      (...args) => {
-        if (args[1]) {
-          this.metadata = args[1];
-        }
-        callback(...args);
-      }
+      callback
     );
   }
 
@@ -1431,7 +1514,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       permissions: arrify(permissions),
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.iam.v1.ITestIamPermissionsResponse>(
       {
         client: 'BigtableInstanceAdminClient',
         method: 'testIamPermissions',
@@ -1443,7 +1526,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
           callback!(err);
           return;
         }
-        callback!(null, resp.permissions);
+        callback!(null, resp!.permissions!);
       }
     );
   }
