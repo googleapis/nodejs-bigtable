@@ -175,12 +175,15 @@ describe('Bigtable', () => {
     const CMEK_INSTANCE = bigtable.instance(generateId('instance'));
     const CMEK_CLUSTER = CMEK_INSTANCE.cluster(generateId('cluster'));
 
+    const cryptoKeyId = generateId('key');
+    const keyRingId = generateId('key-ring');
+    let keyRingsBaseUrl: string;
+    let cryptoKeyVersionName: string;
+
     before(async () => {
       const projectId = await bigtable.auth.getProjectId();
-      const cryptoKeyId = generateId('key');
-      const keyRingId = generateId('key');
-      const keyRingsBaseUrl = `https://cloudkms.googleapis.com/v1/projects/${projectId}/locations/us-central1/keyRings`;
       kmsKeyName = `projects/${projectId}/locations/us-central1/keyRings/${keyRingId}/cryptoKeys/${cryptoKeyId}`;
+      keyRingsBaseUrl = `https://cloudkms.googleapis.com/v1/projects/${projectId}/locations/us-central1/keyRings`;
 
       await bigtable.auth.request({
         method: 'POST',
@@ -188,12 +191,13 @@ describe('Bigtable', () => {
         params: {keyRingId},
       });
 
-      await bigtable.auth.request({
+      const resp = await bigtable.auth.request({
         method: 'POST',
         url: `${keyRingsBaseUrl}/${keyRingId}/cryptoKeys`,
         params: {cryptoKeyId},
         data: {purpose: 'ENCRYPT_DECRYPT'},
       });
+      cryptoKeyVersionName = resp.data.primary.name;
 
       const [_, operation] = await CMEK_INSTANCE.create({
         clusters: [
@@ -209,6 +213,16 @@ describe('Bigtable', () => {
         },
       });
       await operation.promise();
+    });
+
+    after(async () => {
+      await bigtable.auth.request({
+        method: 'POST',
+        url: `${keyRingsBaseUrl}/${keyRingId}/cryptoKeys/${cryptoKeyId}/cryptoKeyVersions/${cryptoKeyVersionName
+          .split('/')
+          .pop()}:destroy`,
+        params: {name: cryptoKeyVersionName},
+      });
     });
 
     it('should have created an instance', async () => {
