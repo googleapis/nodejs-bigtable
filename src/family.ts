@@ -457,7 +457,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
       modifications: [mod],
     };
 
-    this.bigtable.request(
+    this.bigtable.request<google.bigtable.admin.v2.ITable>(
       {
         client: 'BigtableTableAdminClient',
         method: 'modifyColumnFamilies',
@@ -470,7 +470,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
           return;
         }
 
-        this.metadata = resp.columnFamilies[this.id];
+        this.metadata = resp!.columnFamilies![this.id];
         callback(null, this.metadata, resp);
       }
     );
