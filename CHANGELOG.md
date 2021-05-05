@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.5.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.4.0...v3.5.0) (2021-05-05)
+
+
+### Features
+
+* implement support for clusters with CMEK encryption ([#855](https://www.github.com/googleapis/nodejs-bigtable/issues/855)) ([0d5d8e6](https://www.github.com/googleapis/nodejs-bigtable/commit/0d5d8e66bb3ce7947903795a5ea0c74362327ebf))
+
 ## [3.4.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.3.1...v3.4.0) (2021-05-04)
 
 
