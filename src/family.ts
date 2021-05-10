@@ -22,7 +22,8 @@ import {google} from '../protos/protos';
 
 export type IColumnFamily = google.bigtable.admin.v2.IColumnFamily;
 export type IGcRule = google.bigtable.admin.v2.IGcRule;
-export type IModification = google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification;
+export type IModification =
+  google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification;
 export type ITable = google.bigtable.admin.v2.ITable;
 
 export interface RequestCallback<R> {

@@ -52,7 +52,7 @@ describe('Bigtable', () => {
     const testInstances = instances
       .filter(i => i.id.match(PREFIX))
       .filter(i => {
-        const timeCreated = (i.metadata!.labels!.time_created as {}) as Date;
+        const timeCreated = i.metadata!.labels!.time_created as {} as Date;
         // Only delete stale resources.
         const oneHourAgo = new Date(Date.now() - 3600000);
         return !timeCreated || timeCreated <= oneHourAgo;

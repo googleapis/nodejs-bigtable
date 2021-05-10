@@ -832,10 +832,10 @@ describe('Bigtable/Table', () => {
 
         it('should transform the prefix into a range', done => {
           const fakeRange = {};
-          const fakePrefixRange = ({
+          const fakePrefixRange = {
             start: 'a',
             end: 'b',
-          } as {}) as tblTypes.PrefixRange;
+          } as {} as tblTypes.PrefixRange;
 
           const fakePrefix = 'abc';
 
@@ -866,10 +866,10 @@ describe('Bigtable/Table', () => {
 
         it('should accept multiple prefixes', done => {
           const prefixes = ['abc', 'def'];
-          const prefixRanges = ([
+          const prefixRanges = [
             {start: 'abc', end: 'abd'},
             {start: 'def', end: 'deg'},
-          ] as {}) as tblTypes.PrefixRange[];
+          ] as {} as tblTypes.PrefixRange[];
           const prefixSpy = sandbox
             .stub(Table, 'createPrefixRange')
             .callsFake(() => {
@@ -1203,13 +1203,13 @@ describe('Bigtable/Table', () => {
 
       it('should do a retry the stream is interrupted', done => {
         emitters = [
-          (((stream: Writable) => {
+          ((stream: Writable) => {
             stream.emit('error', makeRetryableError());
             stream.end();
-          }) as {}) as EventEmitter,
-          (((stream: Writable) => {
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
             stream.end();
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
         callCreateReadStream(null, () => {
           assert.strictEqual(reqOptsCalls.length, 2);
@@ -1219,14 +1219,14 @@ describe('Bigtable/Table', () => {
 
       it('should not retry CANCELLED errors', done => {
         emitters = [
-          (((stream: Writable) => {
+          ((stream: Writable) => {
             const cancelledError = new Error(
               'do not retry me!'
             ) as ServiceError;
             cancelledError.code = 1;
             stream.emit('error', cancelledError);
             stream.end();
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
         callCreateReadStream(null, () => {
           assert.strictEqual(reqOptsCalls.length, 1);
@@ -1239,10 +1239,10 @@ describe('Bigtable/Table', () => {
         error.code = 4;
 
         emitters = [
-          (((stream: Writable) => {
+          ((stream: Writable) => {
             stream.emit('error', error);
             stream.end();
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
 
         table.maxRetries = 0;
@@ -1260,13 +1260,13 @@ describe('Bigtable/Table', () => {
       it('should have a range which starts after the last read key', done => {
         emitters = [
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (((stream: any) => {
+          ((stream: any) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          }) as {}) as EventEmitter,
-          (((stream: Writable) => {
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
             stream.end();
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
 
         callCreateReadStream(null, () => {
@@ -1280,13 +1280,13 @@ describe('Bigtable/Table', () => {
 
       it('should move the active range start to after the last read key', done => {
         emitters = [
-          (((stream: Duplex) => {
+          ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          }) as {}) as EventEmitter,
-          (((stream: Writable) => {
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
             stream.end();
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
 
         callCreateReadStream({ranges: [{start: 'a'}]}, () => {
@@ -1302,15 +1302,15 @@ describe('Bigtable/Table', () => {
 
       it('should remove ranges which were already read', done => {
         emitters = [
-          (((stream: Duplex) => {
+          ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
             stream.emit('error', makeRetryableError());
-          }) as {}) as EventEmitter,
-          (((stream: Duplex) => {
+          }) as {} as EventEmitter,
+          ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
             stream.end();
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
 
         const options = {
@@ -1334,13 +1334,13 @@ describe('Bigtable/Table', () => {
 
       it('should remove the keys which were already read', done => {
         emitters = [
-          (((stream: Duplex) => {
+          ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          }) as {}) as EventEmitter,
-          (((stream: Duplex) => {
+          }) as {} as EventEmitter,
+          ((stream: Duplex) => {
             stream.end([{key: 'c'}]);
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
 
         callCreateReadStream({keys: ['a', 'b']}, () => {
@@ -1352,14 +1352,14 @@ describe('Bigtable/Table', () => {
 
       it('should remove `keys` if they were all read', done => {
         emitters = [
-          (((stream: Duplex) => {
+          ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
             stream.emit('error', makeRetryableError());
-          }) as {}) as EventEmitter,
-          (((stream: Duplex) => {
+          }) as {} as EventEmitter,
+          ((stream: Duplex) => {
             stream.push([{key: 'c'}]);
             stream.end();
-          }) as {}) as EventEmitter,
+          }) as {} as EventEmitter,
         ];
 
         callCreateReadStream({keys: ['a']}, () => {
