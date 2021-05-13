@@ -116,6 +116,11 @@ export class Mutation {
 
       if (Number.isSafeInteger(num)) {
         return num;
+      } else {
+        const dblVal = buf.readDoubleBE();
+        if (Number(dblVal) === dblVal && dblVal % 1 !== 0) {
+          return dblVal;
+        }
       }
     }
 
