@@ -123,6 +123,15 @@ describe('Bigtable/Mutation', () => {
         assert.strictEqual(Math.PI, decoded);
       });
 
+      it('should convert a base64 encoded double number when true', () => {
+        var view = new DataView(new ArrayBuffer(8));
+        view.setFloat64(0, 1.0);
+        const encoded = Buffer.from(view.buffer).toString('base64');
+        const decoded = Mutation.convertFromBytes(encoded, {isPossibleNumber: true,});
+
+        assert.strictEqual(1.0, decoded);
+      });
+
       it('should not convert a base64 encoded double number when false', () => {
         var view = new DataView(new ArrayBuffer(8));
         view.setFloat64(0, Math.PI);
