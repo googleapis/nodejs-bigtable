@@ -614,8 +614,8 @@ describe('Bigtable/ChunkTransformer', () => {
       );
     });
     it('should decode numbers', () => {
-      const RealChunkTransformer =
-        require('../src/chunktransformer.js').ChunkTransformer;
+      const RealChunkTransformer = require('../src/chunktransformer.js')
+        .ChunkTransformer;
       chunkTransformer = new RealChunkTransformer({decode: true});
       resetSpy = sinon.spy(chunkTransformer, 'reset');
       commitSpy = sinon.spy(chunkTransformer, 'commit');

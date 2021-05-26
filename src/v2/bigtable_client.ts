@@ -231,14 +231,13 @@ export class BigtableClient {
     ];
     for (const methodName of bigtableStubMethods) {
       const callPromise = this.bigtableStub.then(
-        stub =>
-          (...args: Array<{}>) => {
-            if (this._terminated) {
-              return Promise.reject('The client has already been closed.');
-            }
-            const func = stub[methodName];
-            return func.apply(stub, args);
-          },
+        stub => (...args: Array<{}>) => {
+          if (this._terminated) {
+            return Promise.reject('The client has already been closed.');
+          }
+          const func = stub[methodName];
+          return func.apply(stub, args);
+        },
         (err: Error | null | undefined) => () => {
           throw err;
         }
@@ -405,10 +404,11 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
-      });
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName || '',
+    });
     this.initialize();
     return this.innerApiCalls.mutateRow(request, options, callback);
   }
@@ -515,10 +515,11 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
-      });
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName || '',
+    });
     this.initialize();
     return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
@@ -616,10 +617,11 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
-      });
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName || '',
+    });
     this.initialize();
     return this.innerApiCalls.readModifyWriteRow(request, options, callback);
   }
@@ -668,10 +670,11 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
-      });
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName || '',
+    });
     this.initialize();
     return this.innerApiCalls.readRows(request, options);
   }
@@ -711,10 +714,11 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
-      });
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName || '',
+    });
     this.initialize();
     return this.innerApiCalls.sampleRowKeys(request, options);
   }
@@ -757,10 +761,11 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
-      });
+    options.otherArgs.headers[
+      'x-goog-request-params'
+    ] = gax.routingHeader.fromParams({
+      table_name: request.tableName || '',
+    });
     this.initialize();
     return this.innerApiCalls.mutateRows(request, options);
   }

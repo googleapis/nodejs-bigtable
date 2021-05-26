@@ -73,7 +73,7 @@ describe('Read Row Acceptance tests', () => {
           objectMode: true,
         });
 
-        (stream as {} as AbortableDuplex).abort = () => {};
+        ((stream as {}) as AbortableDuplex).abort = () => {};
 
         setImmediate(() => {
           test.chunks_base64

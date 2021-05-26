@@ -1305,7 +1305,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         : callback!;
 
     if (policy.etag !== null && policy.etag !== undefined) {
-      (policy.etag as {} as Buffer) = Buffer.from(policy.etag);
+      ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
     }
     const reqOpts = {
       resource: this.name,
