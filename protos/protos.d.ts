@@ -3880,7 +3880,7 @@ export namespace google {
                     public tableId: string;
 
                     /** RestoreTableRequest backup. */
-                    public backup: string;
+                    public backup?: (string|null);
 
                     /** RestoreTableRequest source. */
                     public source?: "backup";
@@ -4498,10 +4498,10 @@ export namespace google {
                     public name: string;
 
                     /** DropRowRangeRequest rowKeyPrefix. */
-                    public rowKeyPrefix: (Uint8Array|string);
+                    public rowKeyPrefix?: (Uint8Array|string|null);
 
                     /** DropRowRangeRequest deleteAllDataFromTable. */
-                    public deleteAllDataFromTable: boolean;
+                    public deleteAllDataFromTable?: (boolean|null);
 
                     /** DropRowRangeRequest target. */
                     public target?: ("rowKeyPrefix"|"deleteAllDataFromTable");
@@ -5100,7 +5100,7 @@ export namespace google {
                         public update?: (google.bigtable.admin.v2.IColumnFamily|null);
 
                         /** Modification drop. */
-                        public drop: boolean;
+                        public drop?: (boolean|null);
 
                         /** Modification mod. */
                         public mod?: ("create"|"update"|"drop");
@@ -7398,7 +7398,7 @@ export namespace google {
                     constructor(properties?: google.bigtable.admin.v2.IGcRule);
 
                     /** GcRule maxNumVersions. */
-                    public maxNumVersions: number;
+                    public maxNumVersions?: (number|null);
 
                     /** GcRule maxAge. */
                     public maxAge?: (google.protobuf.IDuration|null);
@@ -8593,10 +8593,10 @@ export namespace google {
                     public valueSize: number;
 
                     /** CellChunk resetRow. */
-                    public resetRow: boolean;
+                    public resetRow?: (boolean|null);
 
                     /** CellChunk commitRow. */
-                    public commitRow: boolean;
+                    public commitRow?: (boolean|null);
 
                     /** CellChunk rowStatus. */
                     public rowStatus?: ("resetRow"|"commitRow");
@@ -10271,16 +10271,16 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.IRowRange);
 
                 /** RowRange startKeyClosed. */
-                public startKeyClosed: (Uint8Array|string);
+                public startKeyClosed?: (Uint8Array|string|null);
 
                 /** RowRange startKeyOpen. */
-                public startKeyOpen: (Uint8Array|string);
+                public startKeyOpen?: (Uint8Array|string|null);
 
                 /** RowRange endKeyOpen. */
-                public endKeyOpen: (Uint8Array|string);
+                public endKeyOpen?: (Uint8Array|string|null);
 
                 /** RowRange endKeyClosed. */
-                public endKeyClosed: (Uint8Array|string);
+                public endKeyClosed?: (Uint8Array|string|null);
 
                 /** RowRange startKey. */
                 public startKey?: ("startKeyClosed"|"startKeyOpen");
@@ -10487,16 +10487,16 @@ export namespace google {
                 public familyName: string;
 
                 /** ColumnRange startQualifierClosed. */
-                public startQualifierClosed: (Uint8Array|string);
+                public startQualifierClosed?: (Uint8Array|string|null);
 
                 /** ColumnRange startQualifierOpen. */
-                public startQualifierOpen: (Uint8Array|string);
+                public startQualifierOpen?: (Uint8Array|string|null);
 
                 /** ColumnRange endQualifierClosed. */
-                public endQualifierClosed: (Uint8Array|string);
+                public endQualifierClosed?: (Uint8Array|string|null);
 
                 /** ColumnRange endQualifierOpen. */
-                public endQualifierOpen: (Uint8Array|string);
+                public endQualifierOpen?: (Uint8Array|string|null);
 
                 /** ColumnRange startQualifier. */
                 public startQualifier?: ("startQualifierClosed"|"startQualifierOpen");
@@ -10697,16 +10697,16 @@ export namespace google {
                 constructor(properties?: google.bigtable.v2.IValueRange);
 
                 /** ValueRange startValueClosed. */
-                public startValueClosed: (Uint8Array|string);
+                public startValueClosed?: (Uint8Array|string|null);
 
                 /** ValueRange startValueOpen. */
-                public startValueOpen: (Uint8Array|string);
+                public startValueOpen?: (Uint8Array|string|null);
 
                 /** ValueRange endValueClosed. */
-                public endValueClosed: (Uint8Array|string);
+                public endValueClosed?: (Uint8Array|string|null);
 
                 /** ValueRange endValueOpen. */
-                public endValueOpen: (Uint8Array|string);
+                public endValueOpen?: (Uint8Array|string|null);
 
                 /** ValueRange startValue. */
                 public startValue?: ("startValueClosed"|"startValueOpen");
@@ -10865,25 +10865,25 @@ export namespace google {
                 public condition?: (google.bigtable.v2.RowFilter.ICondition|null);
 
                 /** RowFilter sink. */
-                public sink: boolean;
+                public sink?: (boolean|null);
 
                 /** RowFilter passAllFilter. */
-                public passAllFilter: boolean;
+                public passAllFilter?: (boolean|null);
 
                 /** RowFilter blockAllFilter. */
-                public blockAllFilter: boolean;
+                public blockAllFilter?: (boolean|null);
 
                 /** RowFilter rowKeyRegexFilter. */
-                public rowKeyRegexFilter: (Uint8Array|string);
+                public rowKeyRegexFilter?: (Uint8Array|string|null);
 
                 /** RowFilter rowSampleFilter. */
-                public rowSampleFilter: number;
+                public rowSampleFilter?: (number|null);
 
                 /** RowFilter familyNameRegexFilter. */
-                public familyNameRegexFilter: string;
+                public familyNameRegexFilter?: (string|null);
 
                 /** RowFilter columnQualifierRegexFilter. */
-                public columnQualifierRegexFilter: (Uint8Array|string);
+                public columnQualifierRegexFilter?: (Uint8Array|string|null);
 
                 /** RowFilter columnRangeFilter. */
                 public columnRangeFilter?: (google.bigtable.v2.IColumnRange|null);
@@ -10892,25 +10892,25 @@ export namespace google {
                 public timestampRangeFilter?: (google.bigtable.v2.ITimestampRange|null);
 
                 /** RowFilter valueRegexFilter. */
-                public valueRegexFilter: (Uint8Array|string);
+                public valueRegexFilter?: (Uint8Array|string|null);
 
                 /** RowFilter valueRangeFilter. */
                 public valueRangeFilter?: (google.bigtable.v2.IValueRange|null);
 
                 /** RowFilter cellsPerRowOffsetFilter. */
-                public cellsPerRowOffsetFilter: number;
+                public cellsPerRowOffsetFilter?: (number|null);
 
                 /** RowFilter cellsPerRowLimitFilter. */
-                public cellsPerRowLimitFilter: number;
+                public cellsPerRowLimitFilter?: (number|null);
 
                 /** RowFilter cellsPerColumnLimitFilter. */
-                public cellsPerColumnLimitFilter: number;
+                public cellsPerColumnLimitFilter?: (number|null);
 
                 /** RowFilter stripValueTransformer. */
-                public stripValueTransformer: boolean;
+                public stripValueTransformer?: (boolean|null);
 
                 /** RowFilter applyLabelTransformer. */
-                public applyLabelTransformer: string;
+                public applyLabelTransformer?: (string|null);
 
                 /** RowFilter filter. */
                 public filter?: ("chain"|"interleave"|"condition"|"sink"|"passAllFilter"|"blockAllFilter"|"rowKeyRegexFilter"|"rowSampleFilter"|"familyNameRegexFilter"|"columnQualifierRegexFilter"|"columnRangeFilter"|"timestampRangeFilter"|"valueRegexFilter"|"valueRangeFilter"|"cellsPerRowOffsetFilter"|"cellsPerRowLimitFilter"|"cellsPerColumnLimitFilter"|"stripValueTransformer"|"applyLabelTransformer");
@@ -11801,10 +11801,10 @@ export namespace google {
                 public columnQualifier: (Uint8Array|string);
 
                 /** ReadModifyWriteRule appendValue. */
-                public appendValue: (Uint8Array|string);
+                public appendValue?: (Uint8Array|string|null);
 
                 /** ReadModifyWriteRule incrementAmount. */
-                public incrementAmount: (number|Long|string);
+                public incrementAmount?: (number|Long|string|null);
 
                 /** ReadModifyWriteRule rule. */
                 public rule?: ("appendValue"|"incrementAmount");
@@ -12028,19 +12028,19 @@ export namespace google {
             public selector: string;
 
             /** HttpRule get. */
-            public get: string;
+            public get?: (string|null);
 
             /** HttpRule put. */
-            public put: string;
+            public put?: (string|null);
 
             /** HttpRule post. */
-            public post: string;
+            public post?: (string|null);
 
             /** HttpRule delete. */
-            public delete: string;
+            public delete?: (string|null);
 
             /** HttpRule patch. */
-            public patch: string;
+            public patch?: (string|null);
 
             /** HttpRule custom. */
             public custom?: (google.api.ICustomHttpPattern|null);

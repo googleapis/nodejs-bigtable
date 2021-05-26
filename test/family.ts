@@ -34,7 +34,7 @@ const sandbox = sinon.createSandbox();
 
 describe('Bigtable/Family', () => {
   const FAMILY_ID = 'family-test';
-  const TABLE = ({
+  const TABLE = {
     bigtable: {
       request: () => {},
     },
@@ -42,7 +42,7 @@ describe('Bigtable/Family', () => {
     name: 'projects/my-project/instances/my-inststance/tables/my-table',
     getFamilies: () => {},
     createFamily: () => {},
-  } as {}) as Table;
+  } as {} as Table;
 
   const FAMILY_NAME = `${TABLE.name}/columnFamilies/${FAMILY_ID}`;
   let Family: typeof fm.Family;
