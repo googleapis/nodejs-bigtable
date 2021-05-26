@@ -356,11 +356,11 @@ export class Row {
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const entry = {
+    const entry = ({
       key: this.id,
       data: options.entry,
       method: Mutation.methods.INSERT,
-    } as {} as Entry;
+    } as {}) as Entry;
     this.data = {};
     this.table.mutate(
       entry,
@@ -478,12 +478,12 @@ export class Row {
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const mutation = {
+    const mutation = ({
       key: this.id,
       method: Mutation.methods.DELETE,
-    } as {} as Entry;
+    } as {}) as Entry;
     this.data = {};
-    this.table.mutate(mutation, gaxOptions as {} as MutateOptions, callback);
+    this.table.mutate(mutation, (gaxOptions as {}) as MutateOptions, callback);
   }
 
   deleteCells(
@@ -519,11 +519,11 @@ export class Row {
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const mutation = {
+    const mutation = ({
       key: this.id,
       data: arrify(columns),
       method: Mutation.methods.DELETE,
-    } as {} as Entry;
+    } as {}) as Entry;
     this.data = {};
     this.table.mutate(mutation, gaxOptions as MutateOptions, callback);
   }
@@ -766,7 +766,7 @@ export class Row {
       if (columns.length > 0) {
         callback(null, row.data);
       } else {
-        (callback as {} as GetRowCallback<Row>)(null, this);
+        ((callback as {}) as GetRowCallback<Row>)(null, this);
       }
     });
   }
@@ -912,13 +912,13 @@ export class Row {
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
-    const mutation = {
+    const mutation = ({
       key: this.id,
       data: entry,
       method: Mutation.methods.INSERT,
-    } as {} as Entry;
+    } as {}) as Entry;
     this.data = {};
-    this.table.mutate(mutation, gaxOptions as {} as MutateOptions, callback);
+    this.table.mutate(mutation, (gaxOptions as {}) as MutateOptions, callback);
   }
 }
 

@@ -865,9 +865,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rows = {};
 
         if (rowKeys) {
-          reqOpts.rows.rowKeys = rowKeys.map(
+          reqOpts.rows.rowKeys = (rowKeys.map(
             Mutation.convertToBytes
-          ) as {} as Uint8Array[];
+          ) as {}) as Uint8Array[];
         }
 
         if (ranges.length) {
@@ -1707,7 +1707,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         : callback!;
 
     if (policy.etag !== null && policy.etag !== undefined) {
-      (policy.etag as {} as Buffer) = Buffer.from(policy.etag);
+      ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
     }
     const reqOpts = {
       resource: this.name,

@@ -28,9 +28,10 @@ import {PassThrough} from 'stream';
 import {protobuf, LROperation, operationsProtos} from 'google-gax';
 
 function generateSampleMessage<T extends object>(instance: T) {
-  const filledObject = (
-    instance.constructor as typeof protobuf.Message
-  ).toObject(instance as protobuf.Message<T>, {defaults: true});
+  const filledObject = (instance.constructor as typeof protobuf.Message).toObject(
+    instance as protobuf.Message<T>,
+    {defaults: true}
+  );
   return (instance.constructor as typeof protobuf.Message).fromObject(
     filledObject
   ) as T;
@@ -280,8 +281,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
-      client.innerApiCalls.createTable =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.createTable = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.createTable(
           request,
@@ -391,8 +393,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
-      client.innerApiCalls.getTable =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.getTable = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.getTable(
           request,
@@ -499,8 +502,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
-      client.innerApiCalls.deleteTable =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.deleteTable = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.deleteTable(
           request,
@@ -579,8 +583,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
-      client.innerApiCalls.modifyColumnFamilies =
-        stubSimpleCall(expectedResponse);
+      client.innerApiCalls.modifyColumnFamilies = stubSimpleCall(
+        expectedResponse
+      );
       const [response] = await client.modifyColumnFamilies(request);
       assert.deepStrictEqual(response, expectedResponse);
       assert(
@@ -611,8 +616,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
-      client.innerApiCalls.modifyColumnFamilies =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.modifyColumnFamilies = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.modifyColumnFamilies(
           request,
@@ -722,8 +728,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
-      client.innerApiCalls.dropRowRange =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.dropRowRange = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.dropRowRange(
           request,
@@ -802,8 +809,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenResponse()
       );
-      client.innerApiCalls.generateConsistencyToken =
-        stubSimpleCall(expectedResponse);
+      client.innerApiCalls.generateConsistencyToken = stubSimpleCall(
+        expectedResponse
+      );
       const [response] = await client.generateConsistencyToken(request);
       assert.deepStrictEqual(response, expectedResponse);
       assert(
@@ -834,8 +842,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenResponse()
       );
-      client.innerApiCalls.generateConsistencyToken =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.generateConsistencyToken = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.generateConsistencyToken(
           request,
@@ -948,8 +957,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyResponse()
       );
-      client.innerApiCalls.checkConsistency =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.checkConsistency = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.checkConsistency(
           request,
@@ -1059,8 +1069,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Snapshot()
       );
-      client.innerApiCalls.getSnapshot =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.getSnapshot = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.getSnapshot(
           request,
@@ -1170,8 +1181,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
-      client.innerApiCalls.deleteSnapshot =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.deleteSnapshot = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.deleteSnapshot(
           request,
@@ -1281,8 +1293,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
-      client.innerApiCalls.getBackup =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.getBackup = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.getBackup(
           request,
@@ -1391,8 +1404,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
-      client.innerApiCalls.updateBackup =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.updateBackup = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.updateBackup(
           request,
@@ -1503,8 +1517,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
-      client.innerApiCalls.deleteBackup =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.deleteBackup = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.deleteBackup(
           request,
@@ -1614,8 +1629,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
-      client.innerApiCalls.getIamPolicy =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.getIamPolicy = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.getIamPolicy(
           request,
@@ -1725,8 +1741,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
-      client.innerApiCalls.setIamPolicy =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.setIamPolicy = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.setIamPolicy(
           request,
@@ -1805,8 +1822,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
-      client.innerApiCalls.testIamPermissions =
-        stubSimpleCall(expectedResponse);
+      client.innerApiCalls.testIamPermissions = stubSimpleCall(
+        expectedResponse
+      );
       const [response] = await client.testIamPermissions(request);
       assert.deepStrictEqual(response, expectedResponse);
       assert(
@@ -1837,8 +1855,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
-      client.innerApiCalls.testIamPermissions =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.testIamPermissions = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.testIamPermissions(
           request,
@@ -1917,8 +1936,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.createTableFromSnapshot =
-        stubLongRunningCall(expectedResponse);
+      client.innerApiCalls.createTableFromSnapshot = stubLongRunningCall(
+        expectedResponse
+      );
       const [operation] = await client.createTableFromSnapshot(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
@@ -1950,8 +1970,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.createTableFromSnapshot =
-        stubLongRunningCallWithCallback(expectedResponse);
+      client.innerApiCalls.createTableFromSnapshot = stubLongRunningCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.createTableFromSnapshot(
           request,
@@ -2064,10 +2085,9 @@ describe('v2.BigtableTableAdminClient', () => {
       expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
 
       client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
-      const decodedOperation =
-        await client.checkCreateTableFromSnapshotProgress(
-          expectedResponse.name
-        );
+      const decodedOperation = await client.checkCreateTableFromSnapshotProgress(
+        expectedResponse.name
+      );
       assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
       assert(decodedOperation.metadata);
       assert((client.operationsClient.getOperation as SinonStub).getCall(0));
@@ -2115,8 +2135,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.snapshotTable =
-        stubLongRunningCall(expectedResponse);
+      client.innerApiCalls.snapshotTable = stubLongRunningCall(
+        expectedResponse
+      );
       const [operation] = await client.snapshotTable(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
@@ -2148,8 +2169,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.snapshotTable =
-        stubLongRunningCallWithCallback(expectedResponse);
+      client.innerApiCalls.snapshotTable = stubLongRunningCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.snapshotTable(
           request,
@@ -2341,8 +2363,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.createBackup =
-        stubLongRunningCallWithCallback(expectedResponse);
+      client.innerApiCalls.createBackup = stubLongRunningCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.createBackup(
           request,
@@ -2531,8 +2554,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.restoreTable =
-        stubLongRunningCallWithCallback(expectedResponse);
+      client.innerApiCalls.restoreTable = stubLongRunningCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.restoreTable(
           request,
@@ -2724,8 +2748,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
       ];
-      client.innerApiCalls.listTables =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.listTables = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.listTables(
           request,
@@ -2797,8 +2822,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
       ];
-      client.descriptors.page.listTables.createStream =
-        stubPageStreamingCall(expectedResponse);
+      client.descriptors.page.listTables.createStream = stubPageStreamingCall(
+        expectedResponse
+      );
       const stream = client.listTablesStream(request);
       const promise = new Promise((resolve, reject) => {
         const responses: protos.google.bigtable.admin.v2.Table[] = [];
@@ -2886,8 +2912,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
       ];
-      client.descriptors.page.listTables.asyncIterate =
-        stubAsyncIterationCall(expectedResponse);
+      client.descriptors.page.listTables.asyncIterate = stubAsyncIterationCall(
+        expectedResponse
+      );
       const responses: protos.google.bigtable.admin.v2.ITable[] = [];
       const iterable = client.listTablesAsync(request);
       for await (const resource of iterable) {
@@ -3003,8 +3030,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
       ];
-      client.innerApiCalls.listSnapshots =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.listSnapshots = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.listSnapshots(
           request,
@@ -3076,8 +3104,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
       ];
-      client.descriptors.page.listSnapshots.createStream =
-        stubPageStreamingCall(expectedResponse);
+      client.descriptors.page.listSnapshots.createStream = stubPageStreamingCall(
+        expectedResponse
+      );
       const stream = client.listSnapshotsStream(request);
       const promise = new Promise((resolve, reject) => {
         const responses: protos.google.bigtable.admin.v2.Snapshot[] = [];
@@ -3102,9 +3131,10 @@ describe('v2.BigtableTableAdminClient', () => {
           .calledWith(client.innerApiCalls.listSnapshots, request)
       );
       assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.createStream as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        (client.descriptors.page.listSnapshots
+          .createStream as SinonStub).getCall(0).args[2].otherArgs.headers[
+          'x-goog-request-params'
+        ],
         expectedHeaderRequestParams
       );
     });
@@ -3121,8 +3151,10 @@ describe('v2.BigtableTableAdminClient', () => {
       request.parent = '';
       const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('expected');
-      client.descriptors.page.listSnapshots.createStream =
-        stubPageStreamingCall(undefined, expectedError);
+      client.descriptors.page.listSnapshots.createStream = stubPageStreamingCall(
+        undefined,
+        expectedError
+      );
       const stream = client.listSnapshotsStream(request);
       const promise = new Promise((resolve, reject) => {
         const responses: protos.google.bigtable.admin.v2.Snapshot[] = [];
@@ -3146,9 +3178,10 @@ describe('v2.BigtableTableAdminClient', () => {
           .calledWith(client.innerApiCalls.listSnapshots, request)
       );
       assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.createStream as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        (client.descriptors.page.listSnapshots
+          .createStream as SinonStub).getCall(0).args[2].otherArgs.headers[
+          'x-goog-request-params'
+        ],
         expectedHeaderRequestParams
       );
     });
@@ -3169,8 +3202,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
       ];
-      client.descriptors.page.listSnapshots.asyncIterate =
-        stubAsyncIterationCall(expectedResponse);
+      client.descriptors.page.listSnapshots.asyncIterate = stubAsyncIterationCall(
+        expectedResponse
+      );
       const responses: protos.google.bigtable.admin.v2.ISnapshot[] = [];
       const iterable = client.listSnapshotsAsync(request);
       for await (const resource of iterable) {
@@ -3178,15 +3212,15 @@ describe('v2.BigtableTableAdminClient', () => {
       }
       assert.deepStrictEqual(responses, expectedResponse);
       assert.deepStrictEqual(
-        (
-          client.descriptors.page.listSnapshots.asyncIterate as SinonStub
-        ).getCall(0).args[1],
+        (client.descriptors.page.listSnapshots
+          .asyncIterate as SinonStub).getCall(0).args[1],
         request
       );
       assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.asyncIterate as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        (client.descriptors.page.listSnapshots
+          .asyncIterate as SinonStub).getCall(0).args[2].otherArgs.headers[
+          'x-goog-request-params'
+        ],
         expectedHeaderRequestParams
       );
     });
@@ -3203,8 +3237,10 @@ describe('v2.BigtableTableAdminClient', () => {
       request.parent = '';
       const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('expected');
-      client.descriptors.page.listSnapshots.asyncIterate =
-        stubAsyncIterationCall(undefined, expectedError);
+      client.descriptors.page.listSnapshots.asyncIterate = stubAsyncIterationCall(
+        undefined,
+        expectedError
+      );
       const iterable = client.listSnapshotsAsync(request);
       await assert.rejects(async () => {
         const responses: protos.google.bigtable.admin.v2.ISnapshot[] = [];
@@ -3213,15 +3249,15 @@ describe('v2.BigtableTableAdminClient', () => {
         }
       });
       assert.deepStrictEqual(
-        (
-          client.descriptors.page.listSnapshots.asyncIterate as SinonStub
-        ).getCall(0).args[1],
+        (client.descriptors.page.listSnapshots
+          .asyncIterate as SinonStub).getCall(0).args[1],
         request
       );
       assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.asyncIterate as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        (client.descriptors.page.listSnapshots
+          .asyncIterate as SinonStub).getCall(0).args[2].otherArgs.headers[
+          'x-goog-request-params'
+        ],
         expectedHeaderRequestParams
       );
     });
@@ -3284,8 +3320,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
       ];
-      client.innerApiCalls.listBackups =
-        stubSimpleCallWithCallback(expectedResponse);
+      client.innerApiCalls.listBackups = stubSimpleCallWithCallback(
+        expectedResponse
+      );
       const promise = new Promise((resolve, reject) => {
         client.listBackups(
           request,
@@ -3357,8 +3394,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
       ];
-      client.descriptors.page.listBackups.createStream =
-        stubPageStreamingCall(expectedResponse);
+      client.descriptors.page.listBackups.createStream = stubPageStreamingCall(
+        expectedResponse
+      );
       const stream = client.listBackupsStream(request);
       const promise = new Promise((resolve, reject) => {
         const responses: protos.google.bigtable.admin.v2.Backup[] = [];
@@ -3452,8 +3490,9 @@ describe('v2.BigtableTableAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
       ];
-      client.descriptors.page.listBackups.asyncIterate =
-        stubAsyncIterationCall(expectedResponse);
+      client.descriptors.page.listBackups.asyncIterate = stubAsyncIterationCall(
+        expectedResponse
+      );
       const responses: protos.google.bigtable.admin.v2.IBackup[] = [];
       const iterable = client.listBackupsAsync(request);
       for await (const resource of iterable) {

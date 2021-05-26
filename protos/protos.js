@@ -8425,11 +8425,11 @@
     
                         /**
                          * RestoreTableRequest backup.
-                         * @member {string|null|undefined} backup
+                         * @member {string} backup
                          * @memberof google.bigtable.admin.v2.RestoreTableRequest
                          * @instance
                          */
-                        RestoreTableRequest.prototype.backup = null;
+                        RestoreTableRequest.prototype.backup = "";
     
                         // OneOf field names bound to virtual getters and setters
                         var $oneOfFields;
@@ -9911,19 +9911,19 @@
     
                         /**
                          * DropRowRangeRequest rowKeyPrefix.
-                         * @member {Uint8Array|null|undefined} rowKeyPrefix
+                         * @member {Uint8Array} rowKeyPrefix
                          * @memberof google.bigtable.admin.v2.DropRowRangeRequest
                          * @instance
                          */
-                        DropRowRangeRequest.prototype.rowKeyPrefix = null;
+                        DropRowRangeRequest.prototype.rowKeyPrefix = $util.newBuffer([]);
     
                         /**
                          * DropRowRangeRequest deleteAllDataFromTable.
-                         * @member {boolean|null|undefined} deleteAllDataFromTable
+                         * @member {boolean} deleteAllDataFromTable
                          * @memberof google.bigtable.admin.v2.DropRowRangeRequest
                          * @instance
                          */
-                        DropRowRangeRequest.prototype.deleteAllDataFromTable = null;
+                        DropRowRangeRequest.prototype.deleteAllDataFromTable = false;
     
                         // OneOf field names bound to virtual getters and setters
                         var $oneOfFields;
@@ -11363,11 +11363,11 @@
     
                             /**
                              * Modification drop.
-                             * @member {boolean|null|undefined} drop
+                             * @member {boolean} drop
                              * @memberof google.bigtable.admin.v2.ModifyColumnFamiliesRequest.Modification
                              * @instance
                              */
-                            Modification.prototype.drop = null;
+                            Modification.prototype.drop = false;
     
                             // OneOf field names bound to virtual getters and setters
                             var $oneOfFields;
@@ -16777,11 +16777,11 @@
     
                         /**
                          * GcRule maxNumVersions.
-                         * @member {number|null|undefined} maxNumVersions
+                         * @member {number} maxNumVersions
                          * @memberof google.bigtable.admin.v2.GcRule
                          * @instance
                          */
-                        GcRule.prototype.maxNumVersions = null;
+                        GcRule.prototype.maxNumVersions = 0;
     
                         /**
                          * GcRule maxAge.
@@ -19675,19 +19675,19 @@
     
                         /**
                          * CellChunk resetRow.
-                         * @member {boolean|null|undefined} resetRow
+                         * @member {boolean} resetRow
                          * @memberof google.bigtable.v2.ReadRowsResponse.CellChunk
                          * @instance
                          */
-                        CellChunk.prototype.resetRow = null;
+                        CellChunk.prototype.resetRow = false;
     
                         /**
                          * CellChunk commitRow.
-                         * @member {boolean|null|undefined} commitRow
+                         * @member {boolean} commitRow
                          * @memberof google.bigtable.v2.ReadRowsResponse.CellChunk
                          * @instance
                          */
-                        CellChunk.prototype.commitRow = null;
+                        CellChunk.prototype.commitRow = false;
     
                         // OneOf field names bound to virtual getters and setters
                         var $oneOfFields;
@@ -23886,35 +23886,35 @@
     
                     /**
                      * RowRange startKeyClosed.
-                     * @member {Uint8Array|null|undefined} startKeyClosed
+                     * @member {Uint8Array} startKeyClosed
                      * @memberof google.bigtable.v2.RowRange
                      * @instance
                      */
-                    RowRange.prototype.startKeyClosed = null;
+                    RowRange.prototype.startKeyClosed = $util.newBuffer([]);
     
                     /**
                      * RowRange startKeyOpen.
-                     * @member {Uint8Array|null|undefined} startKeyOpen
+                     * @member {Uint8Array} startKeyOpen
                      * @memberof google.bigtable.v2.RowRange
                      * @instance
                      */
-                    RowRange.prototype.startKeyOpen = null;
+                    RowRange.prototype.startKeyOpen = $util.newBuffer([]);
     
                     /**
                      * RowRange endKeyOpen.
-                     * @member {Uint8Array|null|undefined} endKeyOpen
+                     * @member {Uint8Array} endKeyOpen
                      * @memberof google.bigtable.v2.RowRange
                      * @instance
                      */
-                    RowRange.prototype.endKeyOpen = null;
+                    RowRange.prototype.endKeyOpen = $util.newBuffer([]);
     
                     /**
                      * RowRange endKeyClosed.
-                     * @member {Uint8Array|null|undefined} endKeyClosed
+                     * @member {Uint8Array} endKeyClosed
                      * @memberof google.bigtable.v2.RowRange
                      * @instance
                      */
-                    RowRange.prototype.endKeyClosed = null;
+                    RowRange.prototype.endKeyClosed = $util.newBuffer([]);
     
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
@@ -24455,35 +24455,35 @@
     
                     /**
                      * ColumnRange startQualifierClosed.
-                     * @member {Uint8Array|null|undefined} startQualifierClosed
+                     * @member {Uint8Array} startQualifierClosed
                      * @memberof google.bigtable.v2.ColumnRange
                      * @instance
                      */
-                    ColumnRange.prototype.startQualifierClosed = null;
+                    ColumnRange.prototype.startQualifierClosed = $util.newBuffer([]);
     
                     /**
                      * ColumnRange startQualifierOpen.
-                     * @member {Uint8Array|null|undefined} startQualifierOpen
+                     * @member {Uint8Array} startQualifierOpen
                      * @memberof google.bigtable.v2.ColumnRange
                      * @instance
                      */
-                    ColumnRange.prototype.startQualifierOpen = null;
+                    ColumnRange.prototype.startQualifierOpen = $util.newBuffer([]);
     
                     /**
                      * ColumnRange endQualifierClosed.
-                     * @member {Uint8Array|null|undefined} endQualifierClosed
+                     * @member {Uint8Array} endQualifierClosed
                      * @memberof google.bigtable.v2.ColumnRange
                      * @instance
                      */
-                    ColumnRange.prototype.endQualifierClosed = null;
+                    ColumnRange.prototype.endQualifierClosed = $util.newBuffer([]);
     
                     /**
                      * ColumnRange endQualifierOpen.
-                     * @member {Uint8Array|null|undefined} endQualifierOpen
+                     * @member {Uint8Array} endQualifierOpen
                      * @memberof google.bigtable.v2.ColumnRange
                      * @instance
                      */
-                    ColumnRange.prototype.endQualifierOpen = null;
+                    ColumnRange.prototype.endQualifierOpen = $util.newBuffer([]);
     
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
@@ -25017,35 +25017,35 @@
     
                     /**
                      * ValueRange startValueClosed.
-                     * @member {Uint8Array|null|undefined} startValueClosed
+                     * @member {Uint8Array} startValueClosed
                      * @memberof google.bigtable.v2.ValueRange
                      * @instance
                      */
-                    ValueRange.prototype.startValueClosed = null;
+                    ValueRange.prototype.startValueClosed = $util.newBuffer([]);
     
                     /**
                      * ValueRange startValueOpen.
-                     * @member {Uint8Array|null|undefined} startValueOpen
+                     * @member {Uint8Array} startValueOpen
                      * @memberof google.bigtable.v2.ValueRange
                      * @instance
                      */
-                    ValueRange.prototype.startValueOpen = null;
+                    ValueRange.prototype.startValueOpen = $util.newBuffer([]);
     
                     /**
                      * ValueRange endValueClosed.
-                     * @member {Uint8Array|null|undefined} endValueClosed
+                     * @member {Uint8Array} endValueClosed
                      * @memberof google.bigtable.v2.ValueRange
                      * @instance
                      */
-                    ValueRange.prototype.endValueClosed = null;
+                    ValueRange.prototype.endValueClosed = $util.newBuffer([]);
     
                     /**
                      * ValueRange endValueOpen.
-                     * @member {Uint8Array|null|undefined} endValueOpen
+                     * @member {Uint8Array} endValueOpen
                      * @memberof google.bigtable.v2.ValueRange
                      * @instance
                      */
-                    ValueRange.prototype.endValueOpen = null;
+                    ValueRange.prototype.endValueOpen = $util.newBuffer([]);
     
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
@@ -25366,59 +25366,59 @@
     
                     /**
                      * RowFilter sink.
-                     * @member {boolean|null|undefined} sink
+                     * @member {boolean} sink
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.sink = null;
+                    RowFilter.prototype.sink = false;
     
                     /**
                      * RowFilter passAllFilter.
-                     * @member {boolean|null|undefined} passAllFilter
+                     * @member {boolean} passAllFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.passAllFilter = null;
+                    RowFilter.prototype.passAllFilter = false;
     
                     /**
                      * RowFilter blockAllFilter.
-                     * @member {boolean|null|undefined} blockAllFilter
+                     * @member {boolean} blockAllFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.blockAllFilter = null;
+                    RowFilter.prototype.blockAllFilter = false;
     
                     /**
                      * RowFilter rowKeyRegexFilter.
-                     * @member {Uint8Array|null|undefined} rowKeyRegexFilter
+                     * @member {Uint8Array} rowKeyRegexFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.rowKeyRegexFilter = null;
+                    RowFilter.prototype.rowKeyRegexFilter = $util.newBuffer([]);
     
                     /**
                      * RowFilter rowSampleFilter.
-                     * @member {number|null|undefined} rowSampleFilter
+                     * @member {number} rowSampleFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.rowSampleFilter = null;
+                    RowFilter.prototype.rowSampleFilter = 0;
     
                     /**
                      * RowFilter familyNameRegexFilter.
-                     * @member {string|null|undefined} familyNameRegexFilter
+                     * @member {string} familyNameRegexFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.familyNameRegexFilter = null;
+                    RowFilter.prototype.familyNameRegexFilter = "";
     
                     /**
                      * RowFilter columnQualifierRegexFilter.
-                     * @member {Uint8Array|null|undefined} columnQualifierRegexFilter
+                     * @member {Uint8Array} columnQualifierRegexFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.columnQualifierRegexFilter = null;
+                    RowFilter.prototype.columnQualifierRegexFilter = $util.newBuffer([]);
     
                     /**
                      * RowFilter columnRangeFilter.
@@ -25438,11 +25438,11 @@
     
                     /**
                      * RowFilter valueRegexFilter.
-                     * @member {Uint8Array|null|undefined} valueRegexFilter
+                     * @member {Uint8Array} valueRegexFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.valueRegexFilter = null;
+                    RowFilter.prototype.valueRegexFilter = $util.newBuffer([]);
     
                     /**
                      * RowFilter valueRangeFilter.
@@ -25454,43 +25454,43 @@
     
                     /**
                      * RowFilter cellsPerRowOffsetFilter.
-                     * @member {number|null|undefined} cellsPerRowOffsetFilter
+                     * @member {number} cellsPerRowOffsetFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.cellsPerRowOffsetFilter = null;
+                    RowFilter.prototype.cellsPerRowOffsetFilter = 0;
     
                     /**
                      * RowFilter cellsPerRowLimitFilter.
-                     * @member {number|null|undefined} cellsPerRowLimitFilter
+                     * @member {number} cellsPerRowLimitFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.cellsPerRowLimitFilter = null;
+                    RowFilter.prototype.cellsPerRowLimitFilter = 0;
     
                     /**
                      * RowFilter cellsPerColumnLimitFilter.
-                     * @member {number|null|undefined} cellsPerColumnLimitFilter
+                     * @member {number} cellsPerColumnLimitFilter
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.cellsPerColumnLimitFilter = null;
+                    RowFilter.prototype.cellsPerColumnLimitFilter = 0;
     
                     /**
                      * RowFilter stripValueTransformer.
-                     * @member {boolean|null|undefined} stripValueTransformer
+                     * @member {boolean} stripValueTransformer
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.stripValueTransformer = null;
+                    RowFilter.prototype.stripValueTransformer = false;
     
                     /**
                      * RowFilter applyLabelTransformer.
-                     * @member {string|null|undefined} applyLabelTransformer
+                     * @member {string} applyLabelTransformer
                      * @memberof google.bigtable.v2.RowFilter
                      * @instance
                      */
-                    RowFilter.prototype.applyLabelTransformer = null;
+                    RowFilter.prototype.applyLabelTransformer = "";
     
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
@@ -27952,19 +27952,19 @@
     
                     /**
                      * ReadModifyWriteRule appendValue.
-                     * @member {Uint8Array|null|undefined} appendValue
+                     * @member {Uint8Array} appendValue
                      * @memberof google.bigtable.v2.ReadModifyWriteRule
                      * @instance
                      */
-                    ReadModifyWriteRule.prototype.appendValue = null;
+                    ReadModifyWriteRule.prototype.appendValue = $util.newBuffer([]);
     
                     /**
                      * ReadModifyWriteRule incrementAmount.
-                     * @member {number|Long|null|undefined} incrementAmount
+                     * @member {number|Long} incrementAmount
                      * @memberof google.bigtable.v2.ReadModifyWriteRule
                      * @instance
                      */
-                    ReadModifyWriteRule.prototype.incrementAmount = null;
+                    ReadModifyWriteRule.prototype.incrementAmount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
     
                     // OneOf field names bound to virtual getters and setters
                     var $oneOfFields;
@@ -28498,43 +28498,43 @@
     
                 /**
                  * HttpRule get.
-                 * @member {string|null|undefined} get
+                 * @member {string} get
                  * @memberof google.api.HttpRule
                  * @instance
                  */
-                HttpRule.prototype.get = null;
+                HttpRule.prototype.get = "";
     
                 /**
                  * HttpRule put.
-                 * @member {string|null|undefined} put
+                 * @member {string} put
                  * @memberof google.api.HttpRule
                  * @instance
                  */
-                HttpRule.prototype.put = null;
+                HttpRule.prototype.put = "";
     
                 /**
                  * HttpRule post.
-                 * @member {string|null|undefined} post
+                 * @member {string} post
                  * @memberof google.api.HttpRule
                  * @instance
                  */
-                HttpRule.prototype.post = null;
+                HttpRule.prototype.post = "";
     
                 /**
                  * HttpRule delete.
-                 * @member {string|null|undefined} delete
+                 * @member {string} delete
                  * @memberof google.api.HttpRule
                  * @instance
                  */
-                HttpRule.prototype["delete"] = null;
+                HttpRule.prototype["delete"] = "";
     
                 /**
                  * HttpRule patch.
-                 * @member {string|null|undefined} patch
+                 * @member {string} patch
                  * @memberof google.api.HttpRule
                  * @instance
                  */
-                HttpRule.prototype.patch = null;
+                HttpRule.prototype.patch = "";
     
                 /**
                  * HttpRule custom.

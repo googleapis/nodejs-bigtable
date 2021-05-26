@@ -808,7 +808,7 @@ describe('Bigtable/Instance', () => {
 
     it('should return error if code is not 5', done => {
       const error = new Error('Error.') as ServiceError;
-      error.code = 'NOT-5' as {} as number;
+      error.code = ('NOT-5' as {}) as number;
       sandbox.stub(instance, 'getMetadata').callsArgWith(1, error);
       instance.exists(err => {
         assert.strictEqual(err, error);
@@ -1142,10 +1142,12 @@ describe('Bigtable/Instance', () => {
     it('should return an array of AppProfile objects', done => {
       const response = [
         {
-          name: '/projects/my-project/instances/my-instance/appProfiles/my-appProfile-a',
+          name:
+            '/projects/my-project/instances/my-instance/appProfiles/my-appProfile-a',
         },
         {
-          name: '/projects/my-project/instances/my-instance/appProfiles/my-appProfile-a',
+          name:
+            '/projects/my-project/instances/my-instance/appProfiles/my-appProfile-a',
         },
       ];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
