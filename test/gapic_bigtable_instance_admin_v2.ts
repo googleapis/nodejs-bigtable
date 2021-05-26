@@ -28,10 +28,9 @@ import {PassThrough} from 'stream';
 import {protobuf, LROperation, operationsProtos} from 'google-gax';
 
 function generateSampleMessage<T extends object>(instance: T) {
-  const filledObject = (instance.constructor as typeof protobuf.Message).toObject(
-    instance as protobuf.Message<T>,
-    {defaults: true}
-  );
+  const filledObject = (
+    instance.constructor as typeof protobuf.Message
+  ).toObject(instance as protobuf.Message<T>, {defaults: true});
   return (instance.constructor as typeof protobuf.Message).fromObject(
     filledObject
   ) as T;
@@ -166,49 +165,46 @@ describe('v2.BigtableInstanceAdminClient', () => {
   });
 
   it('should create a client with no option', () => {
-    const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient();
+    const client =
+      new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient();
     assert(client);
   });
 
   it('should create a client with gRPC fallback', () => {
-    const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-      {
+    const client =
+      new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
         fallback: true,
-      }
-    );
+      });
     assert(client);
   });
 
   it('has initialize method and supports deferred initialization', async () => {
-    const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-      {
+    const client =
+      new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
-      }
-    );
+      });
     assert.strictEqual(client.bigtableInstanceAdminStub, undefined);
     await client.initialize();
     assert(client.bigtableInstanceAdminStub);
   });
 
   it('has close method', () => {
-    const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-      {
+    const client =
+      new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
-      }
-    );
+      });
     client.close();
   });
 
   it('has getProjectId method', async () => {
     const fakeProjectId = 'fake-project-id';
-    const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-      {
+    const client =
+      new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
-      }
-    );
+      });
     client.auth.getProjectId = sinon.stub().resolves(fakeProjectId);
     const result = await client.getProjectId();
     assert.strictEqual(result, fakeProjectId);
@@ -217,12 +213,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   it('has getProjectId method with callback', async () => {
     const fakeProjectId = 'fake-project-id';
-    const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-      {
+    const client =
+      new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
-      }
-    );
+      });
     client.auth.getProjectId = sinon
       .stub()
       .callsArgWith(0, null, fakeProjectId);
@@ -241,12 +236,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('getInstance', () => {
     it('invokes getInstance without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
@@ -274,12 +268,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getInstance without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
@@ -296,9 +289,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
       );
-      client.innerApiCalls.getInstance = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.getInstance =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.getInstance(
           request,
@@ -324,12 +316,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getInstance with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
@@ -359,12 +350,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('listInstances', () => {
     it('invokes listInstances without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
@@ -392,12 +382,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listInstances without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
@@ -414,9 +403,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesResponse()
       );
-      client.innerApiCalls.listInstances = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.listInstances =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.listInstances(
           request,
@@ -442,12 +430,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listInstances with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
@@ -477,12 +464,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('updateInstance', () => {
     it('invokes updateInstance without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
@@ -510,12 +496,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateInstance without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
@@ -532,9 +517,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
       );
-      client.innerApiCalls.updateInstance = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.updateInstance =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.updateInstance(
           request,
@@ -560,12 +544,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateInstance with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
@@ -595,12 +578,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('deleteInstance', () => {
     it('invokes deleteInstance without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
@@ -628,12 +610,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteInstance without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
@@ -650,9 +631,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
-      client.innerApiCalls.deleteInstance = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.deleteInstance =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.deleteInstance(
           request,
@@ -678,12 +658,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteInstance with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
@@ -713,12 +692,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('getCluster', () => {
     it('invokes getCluster without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetClusterRequest()
@@ -746,12 +724,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getCluster without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetClusterRequest()
@@ -768,9 +745,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
       );
-      client.innerApiCalls.getCluster = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.getCluster =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.getCluster(
           request,
@@ -796,12 +772,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getCluster with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetClusterRequest()
@@ -831,12 +806,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('listClusters', () => {
     it('invokes listClusters without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersRequest()
@@ -864,12 +838,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listClusters without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersRequest()
@@ -886,9 +859,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersResponse()
       );
-      client.innerApiCalls.listClusters = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.listClusters =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.listClusters(
           request,
@@ -914,12 +886,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listClusters with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersRequest()
@@ -949,12 +920,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('deleteCluster', () => {
     it('invokes deleteCluster without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
@@ -982,12 +952,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteCluster without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
@@ -1004,9 +973,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
-      client.innerApiCalls.deleteCluster = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.deleteCluster =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.deleteCluster(
           request,
@@ -1032,12 +1000,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteCluster with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
@@ -1067,12 +1034,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('createAppProfile', () => {
     it('invokes createAppProfile without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
@@ -1100,12 +1066,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createAppProfile without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
@@ -1122,9 +1087,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.AppProfile()
       );
-      client.innerApiCalls.createAppProfile = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.createAppProfile =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.createAppProfile(
           request,
@@ -1150,12 +1114,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createAppProfile with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
@@ -1185,12 +1148,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('getAppProfile', () => {
     it('invokes getAppProfile without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
@@ -1218,12 +1180,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getAppProfile without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
@@ -1240,9 +1201,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.AppProfile()
       );
-      client.innerApiCalls.getAppProfile = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.getAppProfile =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.getAppProfile(
           request,
@@ -1268,12 +1228,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getAppProfile with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
@@ -1303,12 +1262,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('deleteAppProfile', () => {
     it('invokes deleteAppProfile without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
@@ -1336,12 +1294,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteAppProfile without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
@@ -1358,9 +1315,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
-      client.innerApiCalls.deleteAppProfile = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.deleteAppProfile =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.deleteAppProfile(
           request,
@@ -1386,12 +1342,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes deleteAppProfile with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
@@ -1421,12 +1376,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('getIamPolicy', () => {
     it('invokes getIamPolicy without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
@@ -1454,12 +1408,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getIamPolicy without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
@@ -1476,9 +1429,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
-      client.innerApiCalls.getIamPolicy = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.getIamPolicy =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.getIamPolicy(
           request,
@@ -1504,12 +1456,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes getIamPolicy with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
@@ -1539,12 +1490,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('setIamPolicy', () => {
     it('invokes setIamPolicy without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
@@ -1572,12 +1522,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes setIamPolicy without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
@@ -1594,9 +1543,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
-      client.innerApiCalls.setIamPolicy = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.setIamPolicy =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.setIamPolicy(
           request,
@@ -1622,12 +1570,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes setIamPolicy with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
@@ -1657,12 +1604,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('testIamPermissions', () => {
     it('invokes testIamPermissions without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
@@ -1679,9 +1625,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
-      client.innerApiCalls.testIamPermissions = stubSimpleCall(
-        expectedResponse
-      );
+      client.innerApiCalls.testIamPermissions =
+        stubSimpleCall(expectedResponse);
       const [response] = await client.testIamPermissions(request);
       assert.deepStrictEqual(response, expectedResponse);
       assert(
@@ -1692,12 +1637,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes testIamPermissions without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
@@ -1714,9 +1658,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
-      client.innerApiCalls.testIamPermissions = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.testIamPermissions =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.testIamPermissions(
           request,
@@ -1742,12 +1685,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes testIamPermissions with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
@@ -1777,12 +1719,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('createInstance', () => {
     it('invokes createInstance without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
@@ -1799,9 +1740,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.createInstance = stubLongRunningCall(
-        expectedResponse
-      );
+      client.innerApiCalls.createInstance =
+        stubLongRunningCall(expectedResponse);
       const [operation] = await client.createInstance(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
@@ -1813,12 +1753,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createInstance without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
@@ -1835,9 +1774,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.createInstance = stubLongRunningCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.createInstance =
+        stubLongRunningCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.createInstance(
           request,
@@ -1870,12 +1808,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createInstance with call error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
@@ -1903,12 +1840,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createInstance with LRO error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
@@ -1938,12 +1874,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkCreateInstanceProgress without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
@@ -1962,12 +1897,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkCreateInstanceProgress with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedError = new Error('expected');
 
@@ -1985,12 +1919,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('partialUpdateInstance', () => {
     it('invokes partialUpdateInstance without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.PartialUpdateInstanceRequest()
@@ -2008,9 +1941,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.partialUpdateInstance = stubLongRunningCall(
-        expectedResponse
-      );
+      client.innerApiCalls.partialUpdateInstance =
+        stubLongRunningCall(expectedResponse);
       const [operation] = await client.partialUpdateInstance(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
@@ -2022,12 +1954,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes partialUpdateInstance without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.PartialUpdateInstanceRequest()
@@ -2045,9 +1976,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.partialUpdateInstance = stubLongRunningCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.partialUpdateInstance =
+        stubLongRunningCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.partialUpdateInstance(
           request,
@@ -2080,12 +2010,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes partialUpdateInstance with call error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.PartialUpdateInstanceRequest()
@@ -2117,12 +2046,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes partialUpdateInstance with LRO error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.PartialUpdateInstanceRequest()
@@ -2153,12 +2081,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkPartialUpdateInstanceProgress without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
@@ -2177,12 +2104,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkPartialUpdateInstanceProgress with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedError = new Error('expected');
 
@@ -2200,12 +2126,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('createCluster', () => {
     it('invokes createCluster without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
@@ -2222,9 +2147,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.createCluster = stubLongRunningCall(
-        expectedResponse
-      );
+      client.innerApiCalls.createCluster =
+        stubLongRunningCall(expectedResponse);
       const [operation] = await client.createCluster(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
@@ -2236,12 +2160,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createCluster without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
@@ -2258,9 +2181,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.createCluster = stubLongRunningCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.createCluster =
+        stubLongRunningCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.createCluster(
           request,
@@ -2293,12 +2215,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createCluster with call error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
@@ -2326,12 +2247,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes createCluster with LRO error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
@@ -2361,12 +2281,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkCreateClusterProgress without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
@@ -2385,12 +2304,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkCreateClusterProgress with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedError = new Error('expected');
 
@@ -2408,12 +2326,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('updateCluster', () => {
     it('invokes updateCluster without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
@@ -2430,9 +2347,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.updateCluster = stubLongRunningCall(
-        expectedResponse
-      );
+      client.innerApiCalls.updateCluster =
+        stubLongRunningCall(expectedResponse);
       const [operation] = await client.updateCluster(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
@@ -2444,12 +2360,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateCluster without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
@@ -2466,9 +2381,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.updateCluster = stubLongRunningCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.updateCluster =
+        stubLongRunningCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.updateCluster(
           request,
@@ -2501,12 +2415,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateCluster with call error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
@@ -2534,12 +2447,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateCluster with LRO error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
@@ -2569,12 +2481,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkUpdateClusterProgress without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
@@ -2593,12 +2504,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkUpdateClusterProgress with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedError = new Error('expected');
 
@@ -2616,12 +2526,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('updateAppProfile', () => {
     it('invokes updateAppProfile without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
@@ -2639,9 +2548,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.updateAppProfile = stubLongRunningCall(
-        expectedResponse
-      );
+      client.innerApiCalls.updateAppProfile =
+        stubLongRunningCall(expectedResponse);
       const [operation] = await client.updateAppProfile(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
@@ -2653,12 +2561,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateAppProfile without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
@@ -2676,9 +2583,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
-      client.innerApiCalls.updateAppProfile = stubLongRunningCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.updateAppProfile =
+        stubLongRunningCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.updateAppProfile(
           request,
@@ -2711,12 +2617,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateAppProfile with call error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
@@ -2745,12 +2650,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes updateAppProfile with LRO error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
@@ -2781,12 +2685,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkUpdateAppProfileProgress without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedResponse = generateSampleMessage(
         new operationsProtos.google.longrunning.Operation()
@@ -2805,12 +2708,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes checkUpdateAppProfileProgress with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const expectedError = new Error('expected');
 
@@ -2828,12 +2730,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
 
   describe('listAppProfiles', () => {
     it('invokes listAppProfiles without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
@@ -2863,12 +2764,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listAppProfiles without error using callback', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
@@ -2887,9 +2787,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
       ];
-      client.innerApiCalls.listAppProfiles = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.listAppProfiles =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.listAppProfiles(
           request,
@@ -2915,12 +2814,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listAppProfiles with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
@@ -2948,12 +2846,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
 
     it('invokes listAppProfilesStream without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
@@ -2965,9 +2862,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
       ];
-      client.descriptors.page.listAppProfiles.createStream = stubPageStreamingCall(
-        expectedResponse
-      );
+      client.descriptors.page.listAppProfiles.createStream =
+        stubPageStreamingCall(expectedResponse);
       const stream = client.listAppProfilesStream(request);
       const promise = new Promise((resolve, reject) => {
         const responses: protos.google.bigtable.admin.v2.AppProfile[] = [];
@@ -2992,21 +2888,19 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(client.innerApiCalls.listAppProfiles, request)
       );
       assert.strictEqual(
-        (client.descriptors.page.listAppProfiles
-          .createStream as SinonStub).getCall(0).args[2].otherArgs.headers[
-          'x-goog-request-params'
-        ],
+        (
+          client.descriptors.page.listAppProfiles.createStream as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
         expectedHeaderRequestParams
       );
     });
 
     it('invokes listAppProfilesStream with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
@@ -3014,10 +2908,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       request.parent = '';
       const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('expected');
-      client.descriptors.page.listAppProfiles.createStream = stubPageStreamingCall(
-        undefined,
-        expectedError
-      );
+      client.descriptors.page.listAppProfiles.createStream =
+        stubPageStreamingCall(undefined, expectedError);
       const stream = client.listAppProfilesStream(request);
       const promise = new Promise((resolve, reject) => {
         const responses: protos.google.bigtable.admin.v2.AppProfile[] = [];
@@ -3041,21 +2933,19 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(client.innerApiCalls.listAppProfiles, request)
       );
       assert.strictEqual(
-        (client.descriptors.page.listAppProfiles
-          .createStream as SinonStub).getCall(0).args[2].otherArgs.headers[
-          'x-goog-request-params'
-        ],
+        (
+          client.descriptors.page.listAppProfiles.createStream as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
         expectedHeaderRequestParams
       );
     });
 
     it('uses async iteration with listAppProfiles without error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
@@ -3067,9 +2957,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
         generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.AppProfile()),
       ];
-      client.descriptors.page.listAppProfiles.asyncIterate = stubAsyncIterationCall(
-        expectedResponse
-      );
+      client.descriptors.page.listAppProfiles.asyncIterate =
+        stubAsyncIterationCall(expectedResponse);
       const responses: protos.google.bigtable.admin.v2.IAppProfile[] = [];
       const iterable = client.listAppProfilesAsync(request);
       for await (const resource of iterable) {
@@ -3077,26 +2966,25 @@ describe('v2.BigtableInstanceAdminClient', () => {
       }
       assert.deepStrictEqual(responses, expectedResponse);
       assert.deepStrictEqual(
-        (client.descriptors.page.listAppProfiles
-          .asyncIterate as SinonStub).getCall(0).args[1],
+        (
+          client.descriptors.page.listAppProfiles.asyncIterate as SinonStub
+        ).getCall(0).args[1],
         request
       );
       assert.strictEqual(
-        (client.descriptors.page.listAppProfiles
-          .asyncIterate as SinonStub).getCall(0).args[2].otherArgs.headers[
-          'x-goog-request-params'
-        ],
+        (
+          client.descriptors.page.listAppProfiles.asyncIterate as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
         expectedHeaderRequestParams
       );
     });
 
     it('uses async iteration with listAppProfiles with error', async () => {
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
@@ -3104,10 +2992,8 @@ describe('v2.BigtableInstanceAdminClient', () => {
       request.parent = '';
       const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('expected');
-      client.descriptors.page.listAppProfiles.asyncIterate = stubAsyncIterationCall(
-        undefined,
-        expectedError
-      );
+      client.descriptors.page.listAppProfiles.asyncIterate =
+        stubAsyncIterationCall(undefined, expectedError);
       const iterable = client.listAppProfilesAsync(request);
       await assert.rejects(async () => {
         const responses: protos.google.bigtable.admin.v2.IAppProfile[] = [];
@@ -3116,15 +3002,15 @@ describe('v2.BigtableInstanceAdminClient', () => {
         }
       });
       assert.deepStrictEqual(
-        (client.descriptors.page.listAppProfiles
-          .asyncIterate as SinonStub).getCall(0).args[1],
+        (
+          client.descriptors.page.listAppProfiles.asyncIterate as SinonStub
+        ).getCall(0).args[1],
         request
       );
       assert.strictEqual(
-        (client.descriptors.page.listAppProfiles
-          .asyncIterate as SinonStub).getCall(0).args[2].otherArgs.headers[
-          'x-goog-request-params'
-        ],
+        (
+          client.descriptors.page.listAppProfiles.asyncIterate as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
         expectedHeaderRequestParams
       );
     });
@@ -3138,12 +3024,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
         instance: 'instanceValue',
         app_profile: 'appProfileValue',
       };
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       client.pathTemplates.appProfilePathTemplate.render = sinon
         .stub()
@@ -3205,12 +3090,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
         cluster: 'clusterValue',
         backup: 'backupValue',
       };
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       client.pathTemplates.backupPathTemplate.render = sinon
         .stub()
@@ -3282,12 +3166,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
         instance: 'instanceValue',
         cluster: 'clusterValue',
       };
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       client.pathTemplates.clusterPathTemplate.render = sinon
         .stub()
@@ -3347,12 +3230,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
         project: 'projectValue',
         instance: 'instanceValue',
       };
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       client.pathTemplates.instancePathTemplate.render = sinon
         .stub()
@@ -3397,12 +3279,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const expectedParameters = {
         project: 'projectValue',
       };
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       client.pathTemplates.projectPathTemplate.render = sinon
         .stub()
@@ -3440,12 +3321,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
         cluster: 'clusterValue',
         snapshot: 'snapshotValue',
       };
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       client.pathTemplates.snapshotPathTemplate.render = sinon
         .stub()
@@ -3517,12 +3397,11 @@ describe('v2.BigtableInstanceAdminClient', () => {
         instance: 'instanceValue',
         table: 'tableValue',
       };
-      const client = new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient(
-        {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
           credentials: {client_email: 'bogus', private_key: 'bogus'},
           projectId: 'bogus',
-        }
-      );
+        });
       client.initialize();
       client.pathTemplates.tablePathTemplate.render = sinon
         .stub()

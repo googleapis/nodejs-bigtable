@@ -28,10 +28,9 @@ import {PassThrough} from 'stream';
 import {protobuf} from 'google-gax';
 
 function generateSampleMessage<T extends object>(instance: T) {
-  const filledObject = (instance.constructor as typeof protobuf.Message).toObject(
-    instance as protobuf.Message<T>,
-    {defaults: true}
-  );
+  const filledObject = (
+    instance.constructor as typeof protobuf.Message
+  ).toObject(instance as protobuf.Message<T>, {defaults: true});
   return (instance.constructor as typeof protobuf.Message).fromObject(
     filledObject
   ) as T;
@@ -207,9 +206,8 @@ describe('v2.BigtableClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowResponse()
       );
-      client.innerApiCalls.mutateRow = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.mutateRow =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.mutateRow(
           request,
@@ -316,9 +314,8 @@ describe('v2.BigtableClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowResponse()
       );
-      client.innerApiCalls.checkAndMutateRow = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.checkAndMutateRow =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.checkAndMutateRow(
           request,
@@ -397,9 +394,8 @@ describe('v2.BigtableClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowResponse()
       );
-      client.innerApiCalls.readModifyWriteRow = stubSimpleCall(
-        expectedResponse
-      );
+      client.innerApiCalls.readModifyWriteRow =
+        stubSimpleCall(expectedResponse);
       const [response] = await client.readModifyWriteRow(request);
       assert.deepStrictEqual(response, expectedResponse);
       assert(
@@ -430,9 +426,8 @@ describe('v2.BigtableClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowResponse()
       );
-      client.innerApiCalls.readModifyWriteRow = stubSimpleCallWithCallback(
-        expectedResponse
-      );
+      client.innerApiCalls.readModifyWriteRow =
+        stubSimpleCallWithCallback(expectedResponse);
       const promise = new Promise((resolve, reject) => {
         client.readModifyWriteRow(
           request,
@@ -599,9 +594,8 @@ describe('v2.BigtableClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysResponse()
       );
-      client.innerApiCalls.sampleRowKeys = stubServerStreamingCall(
-        expectedResponse
-      );
+      client.innerApiCalls.sampleRowKeys =
+        stubServerStreamingCall(expectedResponse);
       const stream = client.sampleRowKeys(request);
       const promise = new Promise((resolve, reject) => {
         stream.on(
@@ -689,9 +683,8 @@ describe('v2.BigtableClient', () => {
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsResponse()
       );
-      client.innerApiCalls.mutateRows = stubServerStreamingCall(
-        expectedResponse
-      );
+      client.innerApiCalls.mutateRows =
+        stubServerStreamingCall(expectedResponse);
       const stream = client.mutateRows(request);
       const promise = new Promise((resolve, reject) => {
         stream.on(
