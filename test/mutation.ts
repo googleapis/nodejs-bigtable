@@ -493,7 +493,7 @@ describe('Bigtable/Mutation', () => {
     });
 
     it('should encode delete mutations when method is delete', () => {
-      const fakeEncoded = ([{b: 'b'}] as {}) as IMutation[];
+      const fakeEncoded = [{b: 'b'}] as {} as IMutation[];
       const data = {
         key: 'b',
         method: 'delete',

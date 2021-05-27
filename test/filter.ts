@@ -101,7 +101,7 @@ describe('Bigtable/Filter', () => {
     it('should throw an error for unknown types', () => {
       const errorReg = /Can't convert to RegExp String from unknown type\./;
       assert.throws(() => {
-        Filter.convertToRegExpString((true as {}) as string);
+        Filter.convertToRegExpString(true as {} as string);
       }, errorReg);
     });
   });
@@ -432,7 +432,7 @@ describe('Bigtable/Filter', () => {
         assert.strictEqual(value, row.sample);
         done();
       };
-      filter.row((row as {}) as Row);
+      filter.row(row as {} as Row);
     });
 
     it('should set the cells per row offset filter', done => {

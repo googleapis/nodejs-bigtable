@@ -364,7 +364,7 @@ export class ChunkTransformer extends Transform {
           userOptions: this.options,
         }
       );
-      this.qualifiers = this.family[(qualifierName as {}) as string] = [];
+      this.qualifiers = this.family[qualifierName as {} as string] = [];
       this.qualifier = {
         value: Mutation.convertFromBytes(chunk.value! as Bytes, {
           userOptions: this.options,
