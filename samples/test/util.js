@@ -66,7 +66,7 @@ async function createTestInstance() {
       {
         id: clusterId,
         location: 'us-central1-c',
-        nodes: 3,
+        nodes: 1,
       },
     ],
     labels: {
