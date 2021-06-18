@@ -33,6 +33,7 @@ describe('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
   const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
+  const CMEK_INSTANCE = bigtable.instance(generateId('cmek'));
   const TABLE = INSTANCE.table(generateId('table'));
   const APP_PROFILE_ID = generateId('appProfile');
   const APP_PROFILE = INSTANCE.appProfile(APP_PROFILE_ID);
@@ -40,10 +41,17 @@ describe('Bigtable', () => {
 
   async function reapBackups(instance: Instance) {
     const [backups] = await instance.getBackups();
+    const q = new Q({concurrency: 5});
     return Promise.all(
-      backups.map(backup => {
-        return backup.delete({timeout: 50 * 1000});
-      })
+        backups.map(backup => {
+          q.add(async () => {
+            try {
+              await backup.delete({timeout: 50 * 1000});
+            } catch (e) {
+              console.log(`Error deleting backup: ${backup.id}`);
+            }
+          });
+        })
     );
   }
 
@@ -90,8 +98,22 @@ describe('Bigtable', () => {
   });
 
   after(async () => {
-    await Promise.all([reapBackups(INSTANCE), reapBackups(DIFF_INSTANCE)]);
-    await Promise.all([await INSTANCE.delete(), DIFF_INSTANCE.delete()]);
+    const q = new Q({concurrency: 5});
+    const instances = [INSTANCE, DIFF_INSTANCE, CMEK_INSTANCE];
+
+    // need to delete backups first due to instance deletion precondition
+    await Promise.all(instances.map(instance => reapBackups(instance)));
+    await Promise.all(
+        instances.map(instance => {
+          q.add(async () => {
+            try {
+              await instance.delete();
+            } catch (e) {
+              console.log(`Error deleting instance: ${instance.id}`);
+            }
+          });
+        })
+    );
   });
 
   describe('instances', () => {
@@ -172,7 +194,6 @@ describe('Bigtable', () => {
   describe('CMEK', () => {
     let kmsKeyName: string;
 
-    const CMEK_INSTANCE = bigtable.instance(generateId('instance'));
     const CMEK_CLUSTER = CMEK_INSTANCE.cluster(generateId('cluster'));
 
     const cryptoKeyId = generateId('key');
