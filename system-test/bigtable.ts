@@ -43,15 +43,15 @@ describe('Bigtable', () => {
     const [backups] = await instance.getBackups();
     const q = new Q({concurrency: 5});
     return Promise.all(
-        backups.map(backup => {
-          q.add(async () => {
-            try {
-              await backup.delete({timeout: 50 * 1000});
-            } catch (e) {
-              console.log(`Error deleting backup: ${backup.id}`);
-            }
-          });
-        })
+      backups.map(backup => {
+        q.add(async () => {
+          try {
+            await backup.delete({timeout: 50 * 1000});
+          } catch (e) {
+            console.log(`Error deleting backup: ${backup.id}`);
+          }
+        });
+      })
     );
   }
 
@@ -104,15 +104,15 @@ describe('Bigtable', () => {
     // need to delete backups first due to instance deletion precondition
     await Promise.all(instances.map(instance => reapBackups(instance)));
     await Promise.all(
-        instances.map(instance => {
-          q.add(async () => {
-            try {
-              await instance.delete();
-            } catch (e) {
-              console.log(`Error deleting instance: ${instance.id}`);
-            }
-          });
-        })
+      instances.map(instance => {
+        q.add(async () => {
+          try {
+            await instance.delete();
+          } catch (e) {
+            console.log(`Error deleting instance: ${instance.id}`);
+          }
+        });
+      })
     );
   });
 
