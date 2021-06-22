@@ -27,11 +27,11 @@ import {
   PaginationCallback,
   GaxCall,
 } from 'google-gax';
-import * as path from 'path';
 
 import {Transform} from 'stream';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import * as protos from '../../protos/protos';
+import jsonProtos = require('../../protos/protos.json');
 /**
  * Client JSON configuration object, loaded from
  * `src/v2/bigtable_table_admin_client_config.json`.
@@ -146,27 +146,14 @@ export class BigtableTableAdminClient {
     }
     if (!opts.fallback) {
       clientHeader.push(`grpc/${this._gaxGrpc.grpcVersion}`);
+    } else if (opts.fallback === 'rest') {
+      clientHeader.push(`rest/${this._gaxGrpc.grpcVersion}`);
     }
     if (opts.libName && opts.libVersion) {
       clientHeader.push(`${opts.libName}/${opts.libVersion}`);
     }
     // Load the applicable protos.
-    // For Node.js, pass the path to JSON proto file.
-    // For browsers, pass the JSON content.
-
-    const nodejsProtoPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'protos',
-      'protos.json'
-    );
-    this._protos = this._gaxGrpc.loadProto(
-      opts.fallback
-        ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-          require('../../protos/protos.json')
-        : nodejsProtoPath
-    );
+    this._protos = this._gaxGrpc.loadProtoJSON(jsonProtos);
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
@@ -213,15 +200,11 @@ export class BigtableTableAdminClient {
       ),
     };
 
+    const protoFilesRoot = this._gaxModule.protobuf.Root.fromJSON(jsonProtos);
+
     // This API contains "long-running operations", which return a
     // an Operation object that allows for tracking of the operation,
     // rather than holding a request open.
-    const protoFilesRoot = opts.fallback
-      ? this._gaxModule.protobuf.Root.fromJSON(
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          require('../../protos/protos.json')
-        )
-      : this._gaxModule.protobuf.loadSync(nodejsProtoPath);
 
     this.operationsClient = this._gaxModule
       .lro({
@@ -442,7 +425,7 @@ export class BigtableTableAdminClient {
   // -- Service calls --
   // -------------------
   createTable(
-    request: protos.google.bigtable.admin.v2.ICreateTableRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateTableRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -512,7 +495,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.createTable(request);
    */
   createTable(
-    request: protos.google.bigtable.admin.v2.ICreateTableRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateTableRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -553,7 +536,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.createTable(request, options, callback);
   }
   getTable(
-    request: protos.google.bigtable.admin.v2.IGetTableRequest,
+    request?: protos.google.bigtable.admin.v2.IGetTableRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -602,7 +585,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.getTable(request);
    */
   getTable(
-    request: protos.google.bigtable.admin.v2.IGetTableRequest,
+    request?: protos.google.bigtable.admin.v2.IGetTableRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -641,7 +624,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.getTable(request, options, callback);
   }
   deleteTable(
-    request: protos.google.bigtable.admin.v2.IDeleteTableRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteTableRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -687,7 +670,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.deleteTable(request);
    */
   deleteTable(
-    request: protos.google.bigtable.admin.v2.IDeleteTableRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteTableRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -728,7 +711,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.deleteTable(request, options, callback);
   }
   modifyColumnFamilies(
-    request: protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
+    request?: protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -786,7 +769,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.modifyColumnFamilies(request);
    */
   modifyColumnFamilies(
-    request: protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
+    request?: protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -829,7 +812,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.modifyColumnFamilies(request, options, callback);
   }
   dropRowRange(
-    request: protos.google.bigtable.admin.v2.IDropRowRangeRequest,
+    request?: protos.google.bigtable.admin.v2.IDropRowRangeRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -882,7 +865,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.dropRowRange(request);
    */
   dropRowRange(
-    request: protos.google.bigtable.admin.v2.IDropRowRangeRequest,
+    request?: protos.google.bigtable.admin.v2.IDropRowRangeRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -923,7 +906,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.dropRowRange(request, options, callback);
   }
   generateConsistencyToken(
-    request: protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
+    request?: protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -979,7 +962,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.generateConsistencyToken(request);
    */
   generateConsistencyToken(
-    request: protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
+    request?: protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1029,7 +1012,7 @@ export class BigtableTableAdminClient {
     );
   }
   checkConsistency(
-    request: protos.google.bigtable.admin.v2.ICheckConsistencyRequest,
+    request?: protos.google.bigtable.admin.v2.ICheckConsistencyRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1083,7 +1066,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.checkConsistency(request);
    */
   checkConsistency(
-    request: protos.google.bigtable.admin.v2.ICheckConsistencyRequest,
+    request?: protos.google.bigtable.admin.v2.ICheckConsistencyRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1126,7 +1109,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.checkConsistency(request, options, callback);
   }
   getSnapshot(
-    request: protos.google.bigtable.admin.v2.IGetSnapshotRequest,
+    request?: protos.google.bigtable.admin.v2.IGetSnapshotRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1178,7 +1161,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.getSnapshot(request);
    */
   getSnapshot(
-    request: protos.google.bigtable.admin.v2.IGetSnapshotRequest,
+    request?: protos.google.bigtable.admin.v2.IGetSnapshotRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1219,7 +1202,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.getSnapshot(request, options, callback);
   }
   deleteSnapshot(
-    request: protos.google.bigtable.admin.v2.IDeleteSnapshotRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteSnapshotRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1271,7 +1254,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.deleteSnapshot(request);
    */
   deleteSnapshot(
-    request: protos.google.bigtable.admin.v2.IDeleteSnapshotRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteSnapshotRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1312,7 +1295,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.deleteSnapshot(request, options, callback);
   }
   getBackup(
-    request: protos.google.bigtable.admin.v2.IGetBackupRequest,
+    request?: protos.google.bigtable.admin.v2.IGetBackupRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1358,7 +1341,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.getBackup(request);
    */
   getBackup(
-    request: protos.google.bigtable.admin.v2.IGetBackupRequest,
+    request?: protos.google.bigtable.admin.v2.IGetBackupRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1397,7 +1380,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.getBackup(request, options, callback);
   }
   updateBackup(
-    request: protos.google.bigtable.admin.v2.IUpdateBackupRequest,
+    request?: protos.google.bigtable.admin.v2.IUpdateBackupRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1450,7 +1433,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.updateBackup(request);
    */
   updateBackup(
-    request: protos.google.bigtable.admin.v2.IUpdateBackupRequest,
+    request?: protos.google.bigtable.admin.v2.IUpdateBackupRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1491,7 +1474,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.updateBackup(request, options, callback);
   }
   deleteBackup(
-    request: protos.google.bigtable.admin.v2.IDeleteBackupRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteBackupRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1537,7 +1520,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.deleteBackup(request);
    */
   deleteBackup(
-    request: protos.google.bigtable.admin.v2.IDeleteBackupRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteBackupRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1578,7 +1561,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.deleteBackup(request, options, callback);
   }
   getIamPolicy(
-    request: protos.google.iam.v1.IGetIamPolicyRequest,
+    request?: protos.google.iam.v1.IGetIamPolicyRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1628,7 +1611,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.getIamPolicy(request);
    */
   getIamPolicy(
-    request: protos.google.iam.v1.IGetIamPolicyRequest,
+    request?: protos.google.iam.v1.IGetIamPolicyRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1667,7 +1650,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.getIamPolicy(request, options, callback);
   }
   setIamPolicy(
-    request: protos.google.iam.v1.ISetIamPolicyRequest,
+    request?: protos.google.iam.v1.ISetIamPolicyRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1718,7 +1701,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.setIamPolicy(request);
    */
   setIamPolicy(
-    request: protos.google.iam.v1.ISetIamPolicyRequest,
+    request?: protos.google.iam.v1.ISetIamPolicyRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1757,7 +1740,7 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.setIamPolicy(request, options, callback);
   }
   testIamPermissions(
-    request: protos.google.iam.v1.ITestIamPermissionsRequest,
+    request?: protos.google.iam.v1.ITestIamPermissionsRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1807,7 +1790,7 @@ export class BigtableTableAdminClient {
    * const [response] = await client.testIamPermissions(request);
    */
   testIamPermissions(
-    request: protos.google.iam.v1.ITestIamPermissionsRequest,
+    request?: protos.google.iam.v1.ITestIamPermissionsRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1847,7 +1830,7 @@ export class BigtableTableAdminClient {
   }
 
   createTableFromSnapshot(
-    request: protos.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1919,7 +1902,7 @@ export class BigtableTableAdminClient {
    * const [response] = await operation.promise();
    */
   createTableFromSnapshot(
-    request: protos.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateTableFromSnapshotRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -2008,7 +1991,7 @@ export class BigtableTableAdminClient {
     >;
   }
   snapshotTable(
-    request: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
+    request?: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -2089,7 +2072,7 @@ export class BigtableTableAdminClient {
    * const [response] = await operation.promise();
    */
   snapshotTable(
-    request: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
+    request?: protos.google.bigtable.admin.v2.ISnapshotTableRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -2174,7 +2157,7 @@ export class BigtableTableAdminClient {
     >;
   }
   createBackup(
-    request: protos.google.bigtable.admin.v2.ICreateBackupRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateBackupRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -2248,7 +2231,7 @@ export class BigtableTableAdminClient {
    * const [response] = await operation.promise();
    */
   createBackup(
-    request: protos.google.bigtable.admin.v2.ICreateBackupRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateBackupRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -2333,7 +2316,7 @@ export class BigtableTableAdminClient {
     >;
   }
   restoreTable(
-    request: protos.google.bigtable.admin.v2.IRestoreTableRequest,
+    request?: protos.google.bigtable.admin.v2.IRestoreTableRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -2370,7 +2353,7 @@ export class BigtableTableAdminClient {
   ): void;
   /**
    * Create a new table by restoring from a completed backup. The new table
-   * must be in the same instance as the instance containing the backup.  The
+   * must be in the same project as the instance containing the backup.  The
    * returned table {@link google.longrunning.Operation|long-running operation} can
    * be used to track the progress of the operation, and to cancel it.  The
    * {@link google.longrunning.Operation.metadata|metadata} field type is
@@ -2382,8 +2365,8 @@ export class BigtableTableAdminClient {
    *   The request object that will be sent.
    * @param {string} request.parent
    *   Required. The name of the instance in which to create the restored
-   *   table. This instance must be the parent of the source backup. Values are
-   *   of the form `projects/<project>/instances/<instance>`.
+   *   table. This instance must be in the same project as the source backup.
+   *   Values are of the form `projects/<project>/instances/<instance>`.
    * @param {string} request.tableId
    *   Required. The id of the table to create and restore to. This
    *   table must not already exist. The `table_id` appended to
@@ -2406,7 +2389,7 @@ export class BigtableTableAdminClient {
    * const [response] = await operation.promise();
    */
   restoreTable(
-    request: protos.google.bigtable.admin.v2.IRestoreTableRequest,
+    request?: protos.google.bigtable.admin.v2.IRestoreTableRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -2491,7 +2474,7 @@ export class BigtableTableAdminClient {
     >;
   }
   listTables(
-    request: protos.google.bigtable.admin.v2.IListTablesRequest,
+    request?: protos.google.bigtable.admin.v2.IListTablesRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -2554,7 +2537,7 @@ export class BigtableTableAdminClient {
    *   for more details and examples.
    */
   listTables(
-    request: protos.google.bigtable.admin.v2.IListTablesRequest,
+    request?: protos.google.bigtable.admin.v2.IListTablesRequest,
     optionsOrCallback?:
       | CallOptions
       | PaginationCallback<
@@ -2712,7 +2695,7 @@ export class BigtableTableAdminClient {
     ) as AsyncIterable<protos.google.bigtable.admin.v2.ITable>;
   }
   listSnapshots(
-    request: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
+    request?: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -2774,7 +2757,7 @@ export class BigtableTableAdminClient {
    *   for more details and examples.
    */
   listSnapshots(
-    request: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
+    request?: protos.google.bigtable.admin.v2.IListSnapshotsRequest,
     optionsOrCallback?:
       | CallOptions
       | PaginationCallback<
@@ -2918,7 +2901,7 @@ export class BigtableTableAdminClient {
     ) as AsyncIterable<protos.google.bigtable.admin.v2.ISnapshot>;
   }
   listBackups(
-    request: protos.google.bigtable.admin.v2.IListBackupsRequest,
+    request?: protos.google.bigtable.admin.v2.IListBackupsRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -3031,7 +3014,7 @@ export class BigtableTableAdminClient {
    *   for more details and examples.
    */
   listBackups(
-    request: protos.google.bigtable.admin.v2.IListBackupsRequest,
+    request?: protos.google.bigtable.admin.v2.IListBackupsRequest,
     optionsOrCallback?:
       | CallOptions
       | PaginationCallback<
