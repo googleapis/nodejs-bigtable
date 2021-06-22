@@ -19,9 +19,9 @@
 /* global window */
 import * as gax from 'google-gax';
 import {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
-import * as path from 'path';
 
 import * as protos from '../../protos/protos';
+import jsonProtos = require('../../protos/protos.json');
 /**
  * Client JSON configuration object, loaded from
  * `src/v2/bigtable_client_config.json`.
@@ -131,27 +131,14 @@ export class BigtableClient {
     }
     if (!opts.fallback) {
       clientHeader.push(`grpc/${this._gaxGrpc.grpcVersion}`);
+    } else if (opts.fallback === 'rest') {
+      clientHeader.push(`rest/${this._gaxGrpc.grpcVersion}`);
     }
     if (opts.libName && opts.libVersion) {
       clientHeader.push(`${opts.libName}/${opts.libVersion}`);
     }
     // Load the applicable protos.
-    // For Node.js, pass the path to JSON proto file.
-    // For browsers, pass the JSON content.
-
-    const nodejsProtoPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'protos',
-      'protos.json'
-    );
-    this._protos = this._gaxGrpc.loadProto(
-      opts.fallback
-        ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-          require('../../protos/protos.json')
-        : nodejsProtoPath
-    );
+    this._protos = this._gaxGrpc.loadProtoJSON(jsonProtos);
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
@@ -318,7 +305,7 @@ export class BigtableClient {
   // -- Service calls --
   // -------------------
   mutateRow(
-    request: protos.google.bigtable.v2.IMutateRowRequest,
+    request?: protos.google.bigtable.v2.IMutateRowRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -374,7 +361,7 @@ export class BigtableClient {
    * const [response] = await client.mutateRow(request);
    */
   mutateRow(
-    request: protos.google.bigtable.v2.IMutateRowRequest,
+    request?: protos.google.bigtable.v2.IMutateRowRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -413,7 +400,7 @@ export class BigtableClient {
     return this.innerApiCalls.mutateRow(request, options, callback);
   }
   checkAndMutateRow(
-    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -482,7 +469,7 @@ export class BigtableClient {
    * const [response] = await client.checkAndMutateRow(request);
    */
   checkAndMutateRow(
-    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -523,7 +510,7 @@ export class BigtableClient {
     return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
   readModifyWriteRow(
-    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -583,7 +570,7 @@ export class BigtableClient {
    * const [response] = await client.readModifyWriteRow(request);
    */
   readModifyWriteRow(
-    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
