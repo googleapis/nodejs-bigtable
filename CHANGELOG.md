@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [3.5.2](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.1...v3.5.2) (2021-06-29)
+
+
+### Bug Fixes
+
+* **deps:** google-gax v2.17.0 with mTLS ([#907](https://www.github.com/googleapis/nodejs-bigtable/issues/907)) ([cf661df](https://www.github.com/googleapis/nodejs-bigtable/commit/cf661df12da9dfd02e97d343a2110ce6099891b9))
+
 ### [3.5.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.0...v3.5.1) (2021-06-22)
 
 
