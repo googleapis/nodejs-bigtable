@@ -395,7 +395,7 @@ describe('Bigtable/Row', () => {
 
     it('should use the encoding scheme provided', () => {
       const formatOptions = {
-        encoding: 'binary',
+        encoding: 'binary' as BufferEncoding,
       };
 
       (FakeMutation.convertFromBytes as Function) = sandbox.spy(

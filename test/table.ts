@@ -1165,7 +1165,7 @@ describe('Bigtable/Table', () => {
         );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (FakeMutation as any).convertToBytes = (value: {}) => {
+        (FakeMutation as any).convertToBytes = (value: string) => {
           return Buffer.from(value);
         };
 
