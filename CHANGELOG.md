@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [3.5.4](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.3...v3.5.4) (2021-07-21)
+
+
+### Bug Fixes
+
+* Updating WORKSPACE files to use the newest version of the Typescript generator. ([#914](https://www.github.com/googleapis/nodejs-bigtable/issues/914)) ([f5292e1](https://www.github.com/googleapis/nodejs-bigtable/commit/f5292e1a6899213f229ddaa18cdf13b239487de4))
+
 ### [3.5.3](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.2...v3.5.3) (2021-07-12)
 
 
