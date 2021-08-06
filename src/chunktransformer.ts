@@ -61,7 +61,7 @@ class TransformError extends Error {
 
 /**
  * Enum for chunk formatter Row state.
- * NEW_ROW: inital state or state after commitRow or resetRow
+ * NEW_ROW: initial state or state after commitRow or resetRow
  * ROW_IN_PROGRESS: state after first valid chunk without commitRow or resetRow
  * CELL_IN_PROGRESS: state when valueSize > 0(partial cell)
  */
