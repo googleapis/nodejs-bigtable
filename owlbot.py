@@ -22,6 +22,9 @@ import shutil
 
 logging.basicConfig(level=logging.DEBUG)
 
+node.owlbot_main(
+  templates_excludes=[".github/auto-approve.yml"])
+  
 staging = Path("owl-bot-staging")
 
 if staging.is_dir():
@@ -61,6 +64,3 @@ templates = common_templates.node_library(
 s.copy(templates)
 
 node.postprocess_gapic_library_hermetic()
-
-node.owlbot_main(
-  templates_excludes=[".github/auto-approve.yml"])
