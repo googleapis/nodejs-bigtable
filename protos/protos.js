@@ -6995,6 +6995,7 @@
                              * Properties of a MultiClusterRoutingUseAny.
                              * @memberof google.bigtable.admin.v2.AppProfile
                              * @interface IMultiClusterRoutingUseAny
+                             * @property {Array.<string>|null} [clusterIds] MultiClusterRoutingUseAny clusterIds
                              */
     
                             /**
@@ -7006,11 +7007,20 @@
                              * @param {google.bigtable.admin.v2.AppProfile.IMultiClusterRoutingUseAny=} [properties] Properties to set
                              */
                             function MultiClusterRoutingUseAny(properties) {
+                                this.clusterIds = [];
                                 if (properties)
                                     for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
                                             this[keys[i]] = properties[keys[i]];
                             }
+    
+                            /**
+                             * MultiClusterRoutingUseAny clusterIds.
+                             * @member {Array.<string>} clusterIds
+                             * @memberof google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny
+                             * @instance
+                             */
+                            MultiClusterRoutingUseAny.prototype.clusterIds = $util.emptyArray;
     
                             /**
                              * Creates a new MultiClusterRoutingUseAny instance using the specified properties.
@@ -7036,6 +7046,9 @@
                             MultiClusterRoutingUseAny.encode = function encode(message, writer) {
                                 if (!writer)
                                     writer = $Writer.create();
+                                if (message.clusterIds != null && message.clusterIds.length)
+                                    for (var i = 0; i < message.clusterIds.length; ++i)
+                                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.clusterIds[i]);
                                 return writer;
                             };
     
@@ -7070,6 +7083,11 @@
                                 while (reader.pos < end) {
                                     var tag = reader.uint32();
                                     switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.clusterIds && message.clusterIds.length))
+                                            message.clusterIds = [];
+                                        message.clusterIds.push(reader.string());
+                                        break;
                                     default:
                                         reader.skipType(tag & 7);
                                         break;
@@ -7105,6 +7123,13 @@
                             MultiClusterRoutingUseAny.verify = function verify(message) {
                                 if (typeof message !== "object" || message === null)
                                     return "object expected";
+                                if (message.clusterIds != null && message.hasOwnProperty("clusterIds")) {
+                                    if (!Array.isArray(message.clusterIds))
+                                        return "clusterIds: array expected";
+                                    for (var i = 0; i < message.clusterIds.length; ++i)
+                                        if (!$util.isString(message.clusterIds[i]))
+                                            return "clusterIds: string[] expected";
+                                }
                                 return null;
                             };
     
@@ -7119,7 +7144,15 @@
                             MultiClusterRoutingUseAny.fromObject = function fromObject(object) {
                                 if (object instanceof $root.google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny)
                                     return object;
-                                return new $root.google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny();
+                                var message = new $root.google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny();
+                                if (object.clusterIds) {
+                                    if (!Array.isArray(object.clusterIds))
+                                        throw TypeError(".google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.clusterIds: array expected");
+                                    message.clusterIds = [];
+                                    for (var i = 0; i < object.clusterIds.length; ++i)
+                                        message.clusterIds[i] = String(object.clusterIds[i]);
+                                }
+                                return message;
                             };
     
                             /**
@@ -7131,8 +7164,18 @@
                              * @param {$protobuf.IConversionOptions} [options] Conversion options
                              * @returns {Object.<string,*>} Plain object
                              */
-                            MultiClusterRoutingUseAny.toObject = function toObject() {
-                                return {};
+                            MultiClusterRoutingUseAny.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.arrays || options.defaults)
+                                    object.clusterIds = [];
+                                if (message.clusterIds && message.clusterIds.length) {
+                                    object.clusterIds = [];
+                                    for (var j = 0; j < message.clusterIds.length; ++j)
+                                        object.clusterIds[j] = message.clusterIds[j];
+                                }
+                                return object;
                             };
     
                             /**
