@@ -4,6 +4,19 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.6.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.4...v3.6.0) (2021-08-19)
+
+
+### Features
+
+* Publish new fields to support cluster group routing for Cloud Bigtable ([#928](https://www.github.com/googleapis/nodejs-bigtable/issues/928)) ([52ce890](https://www.github.com/googleapis/nodejs-bigtable/commit/52ce89019fa3f4365f06692db6d7ce3d28aa74a6))
+
+
+### Bug Fixes
+
+* **build:** migrate to using main branch ([#925](https://www.github.com/googleapis/nodejs-bigtable/issues/925)) ([135391f](https://www.github.com/googleapis/nodejs-bigtable/commit/135391f4462744d02f51a7351ef8edd8e39034ad))
+* **deps:** google-gax v2.24.1 ([#927](https://www.github.com/googleapis/nodejs-bigtable/issues/927)) ([4869718](https://www.github.com/googleapis/nodejs-bigtable/commit/48697180ed43109e310ae924c8dda0b6a43c5a36))
+
 ### [3.5.4](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.3...v3.5.4) (2021-07-21)
 
 
