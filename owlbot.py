@@ -23,8 +23,9 @@ import shutil
 logging.basicConfig(level=logging.DEBUG)
 
 node.owlbot_main(
+  staging_excludes=[".github/auto-approve.yml"],
   templates_excludes=[".github/auto-approve.yml"])
-  
+
 staging = Path("owl-bot-staging")
 
 if staging.is_dir():
