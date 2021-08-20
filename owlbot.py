@@ -22,10 +22,6 @@ import shutil
 
 logging.basicConfig(level=logging.DEBUG)
 
-node.owlbot_main(
-  staging_excludes=[".github/auto-approve.yml"],
-  templates_excludes=[".github/auto-approve.yml"])
-
 staging = Path("owl-bot-staging")
 
 if staging.is_dir():
@@ -62,6 +58,8 @@ common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library(
   source_location='build/src'
 )
-s.copy(templates)
+s.copy(templates,excludes=[
+  '.github/auto-approve.yml'
+])
 
 node.postprocess_gapic_library_hermetic()
