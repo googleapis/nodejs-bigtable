@@ -58,6 +58,8 @@ common_templates = gcp.CommonTemplates()
 templates = common_templates.node_library(
   source_location='build/src'
 )
-s.copy(templates)
+s.copy(templates,excludes=[
+  '.github/auto-approve.yml'
+])
 
 node.postprocess_gapic_library_hermetic()
