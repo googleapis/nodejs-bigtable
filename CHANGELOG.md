@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.7.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.6.0...v3.7.0) (2021-09-27)
+
+
+### Features
+
+* turns on self-signed JWT feature flag ([#931](https://www.github.com/googleapis/nodejs-bigtable/issues/931)) ([e16df4b](https://www.github.com/googleapis/nodejs-bigtable/commit/e16df4b482a9d9888a02d8b82250ca1bb01bc18a))
+
 ## [3.6.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.4...v3.6.0) (2021-08-19)
 
 
