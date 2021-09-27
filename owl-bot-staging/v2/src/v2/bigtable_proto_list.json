@@ -1,0 +1,4 @@
+[
+  "../../protos/google/bigtable/v2/bigtable.proto",
+  "../../protos/google/bigtable/v2/data.proto"
+]
