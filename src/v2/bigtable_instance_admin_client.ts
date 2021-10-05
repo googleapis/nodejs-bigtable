@@ -27,11 +27,11 @@ import {
   PaginationCallback,
   GaxCall,
 } from 'google-gax';
-import * as path from 'path';
 
 import {Transform} from 'stream';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import * as protos from '../../protos/protos';
+import jsonProtos = require('../../protos/protos.json');
 /**
  * Client JSON configuration object, loaded from
  * `src/v2/bigtable_instance_admin_client_config.json`.
@@ -51,6 +51,7 @@ const version = require('../../../package.json').version;
 export class BigtableInstanceAdminClient {
   private _terminated = false;
   private _opts: ClientOptions;
+  private _providedCustomServicePath: boolean;
   private _gaxModule: typeof gax | typeof gax.fallback;
   private _gaxGrpc: gax.GrpcClient | gax.fallback.GrpcClient;
   private _protos: {};
@@ -62,6 +63,7 @@ export class BigtableInstanceAdminClient {
     longrunning: {},
     batching: {},
   };
+  warn: (code: string, message: string, warnType?: string) => void;
   innerApiCalls: {[name: string]: Function};
   pathTemplates: {[name: string]: gax.PathTemplate};
   operationsClient: gax.OperationsClient;
@@ -107,6 +109,9 @@ export class BigtableInstanceAdminClient {
       .constructor as typeof BigtableInstanceAdminClient;
     const servicePath =
       opts?.servicePath || opts?.apiEndpoint || staticMembers.servicePath;
+    this._providedCustomServicePath = !!(
+      opts?.servicePath || opts?.apiEndpoint
+    );
     const port = opts?.port || staticMembers.port;
     const clientConfig = opts?.clientConfig ?? {};
     const fallback =
@@ -131,6 +136,12 @@ export class BigtableInstanceAdminClient {
     // Save the auth object to the client, for use by other methods.
     this.auth = this._gaxGrpc.auth as gax.GoogleAuth;
 
+    // Set useJWTAccessWithScope on the auth object.
+    this.auth.useJWTAccessWithScope = true;
+
+    // Set defaultServicePath on the auth object.
+    this.auth.defaultServicePath = staticMembers.servicePath;
+
     // Set the default scopes in auth client if needed.
     if (servicePath === staticMembers.servicePath) {
       this.auth.defaultScopes = staticMembers.scopes;
@@ -145,27 +156,14 @@ export class BigtableInstanceAdminClient {
     }
     if (!opts.fallback) {
       clientHeader.push(`grpc/${this._gaxGrpc.grpcVersion}`);
+    } else if (opts.fallback === 'rest') {
+      clientHeader.push(`rest/${this._gaxGrpc.grpcVersion}`);
     }
     if (opts.libName && opts.libVersion) {
       clientHeader.push(`${opts.libName}/${opts.libVersion}`);
     }
     // Load the applicable protos.
-    // For Node.js, pass the path to JSON proto file.
-    // For browsers, pass the JSON content.
-
-    const nodejsProtoPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'protos',
-      'protos.json'
-    );
-    this._protos = this._gaxGrpc.loadProto(
-      opts.fallback
-        ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-          require('../../protos/protos.json')
-        : nodejsProtoPath
-    );
+    this._protos = this._gaxGrpc.loadProtoJSON(jsonProtos);
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
@@ -205,15 +203,11 @@ export class BigtableInstanceAdminClient {
       ),
     };
 
+    const protoFilesRoot = this._gaxModule.protobuf.Root.fromJSON(jsonProtos);
+
     // This API contains "long-running operations", which return a
     // an Operation object that allows for tracking of the operation,
     // rather than holding a request open.
-    const protoFilesRoot = opts.fallback
-      ? this._gaxModule.protobuf.Root.fromJSON(
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          require('../../protos/protos.json')
-        )
-      : this._gaxModule.protobuf.loadSync(nodejsProtoPath);
 
     this.operationsClient = this._gaxModule
       .lro({
@@ -294,6 +288,9 @@ export class BigtableInstanceAdminClient {
     // of calling the API is handled in `google-gax`, with this code
     // merely providing the destination and request information.
     this.innerApiCalls = {};
+
+    // Add a warn function to the client constructor so it can be easily tested.
+    this.warn = gax.warn;
   }
 
   /**
@@ -322,7 +319,8 @@ export class BigtableInstanceAdminClient {
           )
         : // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.bigtable.admin.v2.BigtableInstanceAdmin,
-      this._opts
+      this._opts,
+      this._providedCustomServicePath
     ) as Promise<{[method: string]: Function}>;
 
     // Iterate over each of the methods that the service provides
@@ -350,13 +348,14 @@ export class BigtableInstanceAdminClient {
     ];
     for (const methodName of bigtableInstanceAdminStubMethods) {
       const callPromise = this.bigtableInstanceAdminStub.then(
-        stub => (...args: Array<{}>) => {
-          if (this._terminated) {
-            return Promise.reject('The client has already been closed.');
-          }
-          const func = stub[methodName];
-          return func.apply(stub, args);
-        },
+        stub =>
+          (...args: Array<{}>) => {
+            if (this._terminated) {
+              return Promise.reject('The client has already been closed.');
+            }
+            const func = stub[methodName];
+            return func.apply(stub, args);
+          },
         (err: Error | null | undefined) => () => {
           throw err;
         }
@@ -440,7 +439,7 @@ export class BigtableInstanceAdminClient {
   // -- Service calls --
   // -------------------
   getInstance(
-    request: protos.google.bigtable.admin.v2.IGetInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.IGetInstanceRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -485,7 +484,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.getInstance(request);
    */
   getInstance(
-    request: protos.google.bigtable.admin.v2.IGetInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.IGetInstanceRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -518,16 +517,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.getInstance(request, options, callback);
   }
   listInstances(
-    request: protos.google.bigtable.admin.v2.IListInstancesRequest,
+    request?: protos.google.bigtable.admin.v2.IListInstancesRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -574,7 +572,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.listInstances(request);
    */
   listInstances(
-    request: protos.google.bigtable.admin.v2.IListInstancesRequest,
+    request?: protos.google.bigtable.admin.v2.IListInstancesRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -607,16 +605,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
     this.initialize();
     return this.innerApiCalls.listInstances(request, options, callback);
   }
   updateInstance(
-    request: protos.google.bigtable.admin.v2.IInstance,
+    request?: protos.google.bigtable.admin.v2.IInstance,
     options?: CallOptions
   ): Promise<
     [
@@ -684,7 +681,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.updateInstance(request);
    */
   updateInstance(
-    request: protos.google.bigtable.admin.v2.IInstance,
+    request?: protos.google.bigtable.admin.v2.IInstance,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -715,16 +712,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.updateInstance(request, options, callback);
   }
   deleteInstance(
-    request: protos.google.bigtable.admin.v2.IDeleteInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteInstanceRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -769,7 +765,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.deleteInstance(request);
    */
   deleteInstance(
-    request: protos.google.bigtable.admin.v2.IDeleteInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteInstanceRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -802,16 +798,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.deleteInstance(request, options, callback);
   }
   getCluster(
-    request: protos.google.bigtable.admin.v2.IGetClusterRequest,
+    request?: protos.google.bigtable.admin.v2.IGetClusterRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -856,7 +851,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.getCluster(request);
    */
   getCluster(
-    request: protos.google.bigtable.admin.v2.IGetClusterRequest,
+    request?: protos.google.bigtable.admin.v2.IGetClusterRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -887,16 +882,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.getCluster(request, options, callback);
   }
   listClusters(
-    request: protos.google.bigtable.admin.v2.IListClustersRequest,
+    request?: protos.google.bigtable.admin.v2.IListClustersRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -945,7 +939,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.listClusters(request);
    */
   listClusters(
-    request: protos.google.bigtable.admin.v2.IListClustersRequest,
+    request?: protos.google.bigtable.admin.v2.IListClustersRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -978,16 +972,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
     this.initialize();
     return this.innerApiCalls.listClusters(request, options, callback);
   }
   deleteCluster(
-    request: protos.google.bigtable.admin.v2.IDeleteClusterRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteClusterRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1032,7 +1025,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.deleteCluster(request);
    */
   deleteCluster(
-    request: protos.google.bigtable.admin.v2.IDeleteClusterRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteClusterRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1065,16 +1058,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.deleteCluster(request, options, callback);
   }
   createAppProfile(
-    request: protos.google.bigtable.admin.v2.ICreateAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateAppProfileRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1133,7 +1125,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.createAppProfile(request);
    */
   createAppProfile(
-    request: protos.google.bigtable.admin.v2.ICreateAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateAppProfileRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1168,16 +1160,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
     this.initialize();
     return this.innerApiCalls.createAppProfile(request, options, callback);
   }
   getAppProfile(
-    request: protos.google.bigtable.admin.v2.IGetAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.IGetAppProfileRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1222,7 +1213,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.getAppProfile(request);
    */
   getAppProfile(
-    request: protos.google.bigtable.admin.v2.IGetAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.IGetAppProfileRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1255,16 +1246,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.getAppProfile(request, options, callback);
   }
   deleteAppProfile(
-    request: protos.google.bigtable.admin.v2.IDeleteAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteAppProfileRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1315,7 +1305,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.deleteAppProfile(request);
    */
   deleteAppProfile(
-    request: protos.google.bigtable.admin.v2.IDeleteAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.IDeleteAppProfileRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1350,16 +1340,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.deleteAppProfile(request, options, callback);
   }
   getIamPolicy(
-    request: protos.google.iam.v1.IGetIamPolicyRequest,
+    request?: protos.google.iam.v1.IGetIamPolicyRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1408,7 +1397,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.getIamPolicy(request);
    */
   getIamPolicy(
-    request: protos.google.iam.v1.IGetIamPolicyRequest,
+    request?: protos.google.iam.v1.IGetIamPolicyRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1439,16 +1428,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      resource: request.resource || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        resource: request.resource || '',
+      });
     this.initialize();
     return this.innerApiCalls.getIamPolicy(request, options, callback);
   }
   setIamPolicy(
-    request: protos.google.iam.v1.ISetIamPolicyRequest,
+    request?: protos.google.iam.v1.ISetIamPolicyRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1499,7 +1487,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.setIamPolicy(request);
    */
   setIamPolicy(
-    request: protos.google.iam.v1.ISetIamPolicyRequest,
+    request?: protos.google.iam.v1.ISetIamPolicyRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1530,16 +1518,15 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      resource: request.resource || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        resource: request.resource || '',
+      });
     this.initialize();
     return this.innerApiCalls.setIamPolicy(request, options, callback);
   }
   testIamPermissions(
-    request: protos.google.iam.v1.ITestIamPermissionsRequest,
+    request?: protos.google.iam.v1.ITestIamPermissionsRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1589,7 +1576,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await client.testIamPermissions(request);
    */
   testIamPermissions(
-    request: protos.google.iam.v1.ITestIamPermissionsRequest,
+    request?: protos.google.iam.v1.ITestIamPermissionsRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1620,17 +1607,16 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      resource: request.resource || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        resource: request.resource || '',
+      });
     this.initialize();
     return this.innerApiCalls.testIamPermissions(request, options, callback);
   }
 
   createInstance(
-    request: protos.google.bigtable.admin.v2.ICreateInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateInstanceRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1700,7 +1686,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await operation.promise();
    */
   createInstance(
-    request: protos.google.bigtable.admin.v2.ICreateInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateInstanceRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1740,11 +1726,10 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
     this.initialize();
     return this.innerApiCalls.createInstance(request, options, callback);
   }
@@ -1786,7 +1771,7 @@ export class BigtableInstanceAdminClient {
     >;
   }
   partialUpdateInstance(
-    request: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1846,7 +1831,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await operation.promise();
    */
   partialUpdateInstance(
-    request: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
+    request?: protos.google.bigtable.admin.v2.IPartialUpdateInstanceRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -1886,11 +1871,10 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      'instance.name': request.instance!.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'instance.name': request.instance!.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.partialUpdateInstance(request, options, callback);
   }
@@ -1932,7 +1916,7 @@ export class BigtableInstanceAdminClient {
     >;
   }
   createCluster(
-    request: protos.google.bigtable.admin.v2.ICreateClusterRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateClusterRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -1997,7 +1981,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await operation.promise();
    */
   createCluster(
-    request: protos.google.bigtable.admin.v2.ICreateClusterRequest,
+    request?: protos.google.bigtable.admin.v2.ICreateClusterRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -2037,11 +2021,10 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
     this.initialize();
     return this.innerApiCalls.createCluster(request, options, callback);
   }
@@ -2083,7 +2066,7 @@ export class BigtableInstanceAdminClient {
     >;
   }
   updateCluster(
-    request: protos.google.bigtable.admin.v2.ICluster,
+    request?: protos.google.bigtable.admin.v2.ICluster,
     options?: CallOptions
   ): Promise<
     [
@@ -2157,7 +2140,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await operation.promise();
    */
   updateCluster(
-    request: protos.google.bigtable.admin.v2.ICluster,
+    request?: protos.google.bigtable.admin.v2.ICluster,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -2197,11 +2180,10 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      name: request.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        name: request.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.updateCluster(request, options, callback);
   }
@@ -2243,7 +2225,7 @@ export class BigtableInstanceAdminClient {
     >;
   }
   updateAppProfile(
-    request: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -2304,7 +2286,7 @@ export class BigtableInstanceAdminClient {
    * const [response] = await operation.promise();
    */
   updateAppProfile(
-    request: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
+    request?: protos.google.bigtable.admin.v2.IUpdateAppProfileRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -2344,11 +2326,10 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      'app_profile.name': request.appProfile!.name || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        'app_profile.name': request.appProfile!.name || '',
+      });
     this.initialize();
     return this.innerApiCalls.updateAppProfile(request, options, callback);
   }
@@ -2390,7 +2371,7 @@ export class BigtableInstanceAdminClient {
     >;
   }
   listAppProfiles(
-    request: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
+    request?: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -2457,7 +2438,7 @@ export class BigtableInstanceAdminClient {
    *   for more details and examples.
    */
   listAppProfiles(
-    request: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
+    request?: protos.google.bigtable.admin.v2.IListAppProfilesRequest,
     optionsOrCallback?:
       | CallOptions
       | PaginationCallback<
@@ -2492,11 +2473,10 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
     this.initialize();
     return this.innerApiCalls.listAppProfiles(request, options, callback);
   }
@@ -2543,12 +2523,12 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
-    const callSettings = new gax.CallSettings(options);
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
+    const defaultCallSettings = this._defaults['listAppProfiles'];
+    const callSettings = defaultCallSettings.merge(options);
     this.initialize();
     return this.descriptors.page.listAppProfiles.createStream(
       this.innerApiCalls.listAppProfiles as gax.GaxCall,
@@ -2605,17 +2585,17 @@ export class BigtableInstanceAdminClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      parent: request.parent || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
     options = options || {};
-    const callSettings = new gax.CallSettings(options);
+    const defaultCallSettings = this._defaults['listAppProfiles'];
+    const callSettings = defaultCallSettings.merge(options);
     this.initialize();
     return this.descriptors.page.listAppProfiles.asyncIterate(
       this.innerApiCalls['listAppProfiles'] as GaxCall,
-      (request as unknown) as RequestType,
+      request as unknown as RequestType,
       callSettings
     ) as AsyncIterable<protos.google.bigtable.admin.v2.IAppProfile>;
   }
@@ -2978,6 +2958,7 @@ export class BigtableInstanceAdminClient {
       return this.bigtableInstanceAdminStub!.then(stub => {
         this._terminated = true;
         stub.close();
+        this.operationsClient.close();
       });
     }
     return Promise.resolve();

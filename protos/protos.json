@@ -960,7 +960,13 @@
                       },
                       "nested": {
                         "MultiClusterRoutingUseAny": {
-                          "fields": {}
+                          "fields": {
+                            "clusterIds": {
+                              "rule": "repeated",
+                              "type": "string",
+                              "id": 1
+                            }
+                          }
                         },
                         "SingleClusterRouting": {
                           "fields": {

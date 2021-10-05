@@ -865,9 +865,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rows = {};
 
         if (rowKeys) {
-          reqOpts.rows.rowKeys = (rowKeys.map(
+          reqOpts.rows.rowKeys = rowKeys.map(
             Mutation.convertToBytes
-          ) as {}) as Uint8Array[];
+          ) as {} as Uint8Array[];
         }
 
         if (ranges.length) {
@@ -1207,7 +1207,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   getFamilies(gaxOptions: CallOptions, callback: GetFamiliesCallback): void;
   getFamilies(callback: GetFamiliesCallback): void;
   /**
-   * Get Family objects for all the column familes in your table.
+   * Get Family objects for all the column families in your table.
    *
    * @param {object} [gaxOptions] Request configuration options, outlined here:
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
@@ -1707,7 +1707,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         : callback!;
 
     if (policy.etag !== null && policy.etag !== undefined) {
-      ((policy.etag as {}) as Buffer) = Buffer.from(policy.etag);
+      (policy.etag as {} as Buffer) = Buffer.from(policy.etag);
     }
     const reqOpts = {
       resource: this.name,

@@ -179,7 +179,7 @@ describe('Bigtable/Row', () => {
     });
 
     it('should inherit the row key', () => {
-      const chunks = ([
+      const chunks = [
         {
           rowKey: 'unconvertedKey',
         },
@@ -200,7 +200,7 @@ describe('Bigtable/Row', () => {
           },
           commitRow: true,
         },
-      ] as {}) as Chunk[];
+      ] as {} as Chunk[];
 
       const rows = Row.formatChunks_(chunks);
 
@@ -395,7 +395,7 @@ describe('Bigtable/Row', () => {
 
     it('should use the encoding scheme provided', () => {
       const formatOptions = {
-        encoding: 'binary',
+        encoding: 'binary' as BufferEncoding,
       };
 
       (FakeMutation.convertFromBytes as Function) = sandbox.spy(
@@ -450,7 +450,7 @@ describe('Bigtable/Row', () => {
     });
 
     it('should discard old data when reset row is found', () => {
-      const chunks = ([
+      const chunks = [
         {
           rowKey: 'unconvertedKey',
           familyName: {
@@ -483,7 +483,7 @@ describe('Bigtable/Row', () => {
         {
           commitRow: true,
         },
-      ] as {}) as Chunk[];
+      ] as {} as Chunk[];
 
       const rows = Row.formatChunks_(chunks);
 
@@ -851,22 +851,22 @@ describe('Bigtable/Row', () => {
   });
 
   describe('filter', () => {
-    const mutations = ([
+    const mutations = [
       {
         method: 'insert',
         data: {
           a: 'a',
         },
       },
-    ] as {}) as rw.FilterConfigOption[];
+    ] as {} as rw.FilterConfigOption[];
 
-    const fakeMutations = ({
+    const fakeMutations = {
       mutations: [
         {
           a: 'b',
         },
       ],
-    } as {}) as {mutations: rw.FilterConfigOption};
+    } as {} as {mutations: rw.FilterConfigOption};
 
     beforeEach(() => {
       FakeMutation.parse.resetHistory();

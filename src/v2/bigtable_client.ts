@@ -19,9 +19,9 @@
 /* global window */
 import * as gax from 'google-gax';
 import {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
-import * as path from 'path';
 
 import * as protos from '../../protos/protos';
+import jsonProtos = require('../../protos/protos.json');
 /**
  * Client JSON configuration object, loaded from
  * `src/v2/bigtable_client_config.json`.
@@ -39,6 +39,7 @@ const version = require('../../../package.json').version;
 export class BigtableClient {
   private _terminated = false;
   private _opts: ClientOptions;
+  private _providedCustomServicePath: boolean;
   private _gaxModule: typeof gax | typeof gax.fallback;
   private _gaxGrpc: gax.GrpcClient | gax.fallback.GrpcClient;
   private _protos: {};
@@ -50,6 +51,7 @@ export class BigtableClient {
     longrunning: {},
     batching: {},
   };
+  warn: (code: string, message: string, warnType?: string) => void;
   innerApiCalls: {[name: string]: Function};
   pathTemplates: {[name: string]: gax.PathTemplate};
   bigtableStub?: Promise<{[name: string]: Function}>;
@@ -93,6 +95,9 @@ export class BigtableClient {
     const staticMembers = this.constructor as typeof BigtableClient;
     const servicePath =
       opts?.servicePath || opts?.apiEndpoint || staticMembers.servicePath;
+    this._providedCustomServicePath = !!(
+      opts?.servicePath || opts?.apiEndpoint
+    );
     const port = opts?.port || staticMembers.port;
     const clientConfig = opts?.clientConfig ?? {};
     const fallback =
@@ -117,6 +122,12 @@ export class BigtableClient {
     // Save the auth object to the client, for use by other methods.
     this.auth = this._gaxGrpc.auth as gax.GoogleAuth;
 
+    // Set useJWTAccessWithScope on the auth object.
+    this.auth.useJWTAccessWithScope = true;
+
+    // Set defaultServicePath on the auth object.
+    this.auth.defaultServicePath = staticMembers.servicePath;
+
     // Set the default scopes in auth client if needed.
     if (servicePath === staticMembers.servicePath) {
       this.auth.defaultScopes = staticMembers.scopes;
@@ -131,27 +142,14 @@ export class BigtableClient {
     }
     if (!opts.fallback) {
       clientHeader.push(`grpc/${this._gaxGrpc.grpcVersion}`);
+    } else if (opts.fallback === 'rest') {
+      clientHeader.push(`rest/${this._gaxGrpc.grpcVersion}`);
     }
     if (opts.libName && opts.libVersion) {
       clientHeader.push(`${opts.libName}/${opts.libVersion}`);
     }
     // Load the applicable protos.
-    // For Node.js, pass the path to JSON proto file.
-    // For browsers, pass the JSON content.
-
-    const nodejsProtoPath = path.join(
-      __dirname,
-      '..',
-      '..',
-      'protos',
-      'protos.json'
-    );
-    this._protos = this._gaxGrpc.loadProto(
-      opts.fallback
-        ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-          require('../../protos/protos.json')
-        : nodejsProtoPath
-    );
+    this._protos = this._gaxGrpc.loadProtoJSON(jsonProtos);
 
     // This API contains "path templates"; forward-slash-separated
     // identifiers to uniquely identify resources within the API.
@@ -188,6 +186,9 @@ export class BigtableClient {
     // of calling the API is handled in `google-gax`, with this code
     // merely providing the destination and request information.
     this.innerApiCalls = {};
+
+    // Add a warn function to the client constructor so it can be easily tested.
+    this.warn = gax.warn;
   }
 
   /**
@@ -216,7 +217,8 @@ export class BigtableClient {
           )
         : // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (this._protos as any).google.bigtable.v2.Bigtable,
-      this._opts
+      this._opts,
+      this._providedCustomServicePath
     ) as Promise<{[method: string]: Function}>;
 
     // Iterate over each of the methods that the service provides
@@ -231,13 +233,14 @@ export class BigtableClient {
     ];
     for (const methodName of bigtableStubMethods) {
       const callPromise = this.bigtableStub.then(
-        stub => (...args: Array<{}>) => {
-          if (this._terminated) {
-            return Promise.reject('The client has already been closed.');
-          }
-          const func = stub[methodName];
-          return func.apply(stub, args);
-        },
+        stub =>
+          (...args: Array<{}>) => {
+            if (this._terminated) {
+              return Promise.reject('The client has already been closed.');
+            }
+            const func = stub[methodName];
+            return func.apply(stub, args);
+          },
         (err: Error | null | undefined) => () => {
           throw err;
         }
@@ -317,7 +320,7 @@ export class BigtableClient {
   // -- Service calls --
   // -------------------
   mutateRow(
-    request: protos.google.bigtable.v2.IMutateRowRequest,
+    request?: protos.google.bigtable.v2.IMutateRowRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -373,7 +376,7 @@ export class BigtableClient {
    * const [response] = await client.mutateRow(request);
    */
   mutateRow(
-    request: protos.google.bigtable.v2.IMutateRowRequest,
+    request?: protos.google.bigtable.v2.IMutateRowRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -404,16 +407,15 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        table_name: request.tableName || '',
+      });
     this.initialize();
     return this.innerApiCalls.mutateRow(request, options, callback);
   }
   checkAndMutateRow(
-    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -482,7 +484,7 @@ export class BigtableClient {
    * const [response] = await client.checkAndMutateRow(request);
    */
   checkAndMutateRow(
-    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -515,16 +517,15 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        table_name: request.tableName || '',
+      });
     this.initialize();
     return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
   readModifyWriteRow(
-    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     options?: CallOptions
   ): Promise<
     [
@@ -584,7 +585,7 @@ export class BigtableClient {
    * const [response] = await client.readModifyWriteRow(request);
    */
   readModifyWriteRow(
-    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     optionsOrCallback?:
       | CallOptions
       | Callback<
@@ -617,11 +618,10 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        table_name: request.tableName || '',
+      });
     this.initialize();
     return this.innerApiCalls.readModifyWriteRow(request, options, callback);
   }
@@ -670,11 +670,10 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        table_name: request.tableName || '',
+      });
     this.initialize();
     return this.innerApiCalls.readRows(request, options);
   }
@@ -714,11 +713,10 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        table_name: request.tableName || '',
+      });
     this.initialize();
     return this.innerApiCalls.sampleRowKeys(request, options);
   }
@@ -761,11 +759,10 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers[
-      'x-goog-request-params'
-    ] = gax.routingHeader.fromParams({
-      table_name: request.tableName || '',
-    });
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        table_name: request.tableName || '',
+      });
     this.initialize();
     return this.innerApiCalls.mutateRows(request, options);
   }

@@ -3077,6 +3077,9 @@ export namespace google {
 
                     /** Properties of a MultiClusterRoutingUseAny. */
                     interface IMultiClusterRoutingUseAny {
+
+                        /** MultiClusterRoutingUseAny clusterIds */
+                        clusterIds?: (string[]|null);
                     }
 
                     /** Represents a MultiClusterRoutingUseAny. */
@@ -3087,6 +3090,9 @@ export namespace google {
                          * @param [properties] Properties to set
                          */
                         constructor(properties?: google.bigtable.admin.v2.AppProfile.IMultiClusterRoutingUseAny);
+
+                        /** MultiClusterRoutingUseAny clusterIds. */
+                        public clusterIds: string[];
 
                         /**
                          * Creates a new MultiClusterRoutingUseAny instance using the specified properties.

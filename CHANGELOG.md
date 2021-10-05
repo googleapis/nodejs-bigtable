@@ -4,6 +4,55 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.7.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.6.0...v3.7.0) (2021-09-27)
+
+
+### Features
+
+* turns on self-signed JWT feature flag ([#931](https://www.github.com/googleapis/nodejs-bigtable/issues/931)) ([e16df4b](https://www.github.com/googleapis/nodejs-bigtable/commit/e16df4b482a9d9888a02d8b82250ca1bb01bc18a))
+
+## [3.6.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.4...v3.6.0) (2021-08-19)
+
+
+### Features
+
+* Publish new fields to support cluster group routing for Cloud Bigtable ([#928](https://www.github.com/googleapis/nodejs-bigtable/issues/928)) ([52ce890](https://www.github.com/googleapis/nodejs-bigtable/commit/52ce89019fa3f4365f06692db6d7ce3d28aa74a6))
+
+
+### Bug Fixes
+
+* **build:** migrate to using main branch ([#925](https://www.github.com/googleapis/nodejs-bigtable/issues/925)) ([135391f](https://www.github.com/googleapis/nodejs-bigtable/commit/135391f4462744d02f51a7351ef8edd8e39034ad))
+* **deps:** google-gax v2.24.1 ([#927](https://www.github.com/googleapis/nodejs-bigtable/issues/927)) ([4869718](https://www.github.com/googleapis/nodejs-bigtable/commit/48697180ed43109e310ae924c8dda0b6a43c5a36))
+
+### [3.5.4](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.3...v3.5.4) (2021-07-21)
+
+
+### Bug Fixes
+
+* Updating WORKSPACE files to use the newest version of the Typescript generator. ([#914](https://www.github.com/googleapis/nodejs-bigtable/issues/914)) ([f5292e1](https://www.github.com/googleapis/nodejs-bigtable/commit/f5292e1a6899213f229ddaa18cdf13b239487de4))
+
+### [3.5.3](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.2...v3.5.3) (2021-07-12)
+
+
+### Bug Fixes
+
+* **deps:** google-gax v2.17.1 ([#912](https://www.github.com/googleapis/nodejs-bigtable/issues/912)) ([18198ab](https://www.github.com/googleapis/nodejs-bigtable/commit/18198ab199b4b88847eca70f9087032723c4a324))
+
+### [3.5.2](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.1...v3.5.2) (2021-06-29)
+
+
+### Bug Fixes
+
+* **deps:** google-gax v2.17.0 with mTLS ([#907](https://www.github.com/googleapis/nodejs-bigtable/issues/907)) ([cf661df](https://www.github.com/googleapis/nodejs-bigtable/commit/cf661df12da9dfd02e97d343a2110ce6099891b9))
+
+### [3.5.1](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.5.0...v3.5.1) (2021-06-22)
+
+
+### Bug Fixes
+
+* **deps:** require google-gax v2.12.0 ([#873](https://www.github.com/googleapis/nodejs-bigtable/issues/873)) ([9b7c8ca](https://www.github.com/googleapis/nodejs-bigtable/commit/9b7c8ca3acfa5957924735304d6f7f2e8a91bd04))
+* make request optional in all cases ([#901](https://www.github.com/googleapis/nodejs-bigtable/issues/901)) ([0591d53](https://www.github.com/googleapis/nodejs-bigtable/commit/0591d53efeb4b6e5c8f5188e8186e7272932f0e1))
+
 ## [3.5.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.4.0...v3.5.0) (2021-05-05)
 
 

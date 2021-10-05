@@ -272,10 +272,10 @@ export class Filter {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     arrify(filters).forEach((filterObj: any) => {
       const key = Object.keys(filterObj)[0];
-      if (typeof ((filter as {}) as Fn)[key] !== 'function') {
+      if (typeof (filter as {} as Fn)[key] !== 'function') {
         throw new FilterError(key);
       }
-      ((filter as {}) as Fn)[key](filterObj[key]);
+      (filter as {} as Fn)[key](filterObj[key]);
     });
     return filter.toProto();
   }

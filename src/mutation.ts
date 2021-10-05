@@ -40,7 +40,7 @@ export interface ConvertFromBytesOptions {
 }
 export interface ConvertFromBytesUserOptions {
   decode?: boolean;
-  encoding?: string;
+  encoding?: BufferEncoding;
 }
 export interface MutationConstructorObj {
   key: string;

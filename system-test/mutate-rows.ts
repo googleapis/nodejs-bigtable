@@ -14,11 +14,10 @@
 
 import {Bigtable} from '../src';
 import {Test} from './testTypes';
-const {
-  tests,
-} = require('../../system-test/data/mutate-rows-retry-test.json') as {
-  tests: Test[];
-};
+const {tests} =
+  require('../../system-test/data/mutate-rows-retry-test.json') as {
+    tests: Test[];
+  };
 
 import * as assert from 'assert';
 import {afterEach, beforeEach, describe, it} from 'mocha';
@@ -112,7 +111,7 @@ describe('Bigtable/Table', () => {
           mutationCallTimes.push(new Date().getTime());
           const emitter = new PassThrough({objectMode: true});
           dispatch(emitter, responses!.shift());
-          return (emitter as {}) as CancellableStream;
+          return emitter as {} as CancellableStream;
         },
       } as BigtableClient;
     });
