@@ -1217,6 +1217,25 @@ describe('Bigtable/Table', () => {
         });
       });
 
+      it('should retry the stream on internal rst_stream errors', done => {
+        emitters = [
+          ((stream: Writable) => {
+            const error = new Error('Received RST_STREAM with code 2 (Internal server error)') as ServiceError;
+            error.code = 13; // INTERNAL
+            stream.emit('error', error);
+            stream.end();
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
+            stream.end();
+          }) as {} as EventEmitter,
+        ];
+
+        callCreateReadStream(null, () => {
+          assert.strictEqual(reqOptsCalls.length, 2);
+          done();
+        });
+      })
+
       it('should not retry CANCELLED errors', done => {
         emitters = [
           ((stream: Writable) => {
