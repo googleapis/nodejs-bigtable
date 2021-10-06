@@ -931,14 +931,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           return;
         }
         rowStream.unpipe(userStream);
-        
+
         // Under normal conditions RST_STREAM errors will get wrapped as UNAVAILABLE.
         // However if the RST_STREAM occurs further upstream, it can come down
         // as an INTERNAL. This is a workaround to enable retrying those errors.
         let effectiveCode = error.code;
-        if (effectiveCode == INTERNAL_STATUS_CODE) {
-          const errMsg = (error.message || "").toLowerCase();
-          if (errMsg.indexOf("rst stream") > -1 || errMsg.indexOf("rst_stream") > -1) {
+        if (effectiveCode === INTERNAL_STATUS_CODE) {
+          const errMsg = (error.message || '').toLowerCase();
+          if (
+            errMsg.indexOf('rst stream') > -1 ||
+            errMsg.indexOf('rst_stream') > -1
+          ) {
             effectiveCode = UNAVAILABLE_STATUS_CODE;
           }
         }
