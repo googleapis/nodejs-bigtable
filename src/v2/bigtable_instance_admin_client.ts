@@ -670,6 +670,10 @@ export class BigtableInstanceAdminClient {
    *     the regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}`.
    *   * No more than 64 labels can be associated with a given resource.
    *   * Keys and values must both be under 128 bytes.
+   * @param {google.protobuf.Timestamp} request.createTime
+   *   Output only. A server-assigned timestamp representing when this Instance was created.
+   *   For instances created before this field was added (August 2021), this value
+   *   is `seconds: 0, nanos: 1`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.

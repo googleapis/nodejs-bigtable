@@ -14,7 +14,7 @@
 
 'use strict';
 
-function main(name, displayName) {
+function main(name, displayName, createTime) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateInstance_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -52,6 +52,12 @@ function main(name, displayName) {
    *  * Keys and values must both be under 128 bytes.
    */
   // const labels = 1234
+  /**
+   *  Output only. A server-assigned timestamp representing when this Instance was created.
+   *  For instances created before this field was added (August 2021), this value
+   *  is `seconds: 0, nanos: 1`.
+   */
+  // const createTime = ''
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
@@ -64,6 +70,7 @@ function main(name, displayName) {
     const request = {
       name,
       displayName,
+      createTime,
     };
 
     // Run request
