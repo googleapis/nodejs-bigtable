@@ -473,7 +473,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {object} [options.gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {string[]} [options.splits] Initial
-   *    [split keys](https://cloud.google.com/bigtable/docs/managing-tables#splits).
+   *    {@link https://cloud.google.com/bigtable/docs/managing-tables#splits| split keys}.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {Table} callback.table The newly created table.
