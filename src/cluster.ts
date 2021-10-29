@@ -118,10 +118,12 @@ export type GetClusterMetadataCallback = (
  * @param {string} id Id of the cluster.
  *
  * @example
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const cluster = instance.cluster('my-cluster');
+ * ```
  */
 export class Cluster {
   bigtable: Bigtable;
@@ -159,8 +161,10 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @returns {string}
    *
    * @example
+   * ```
    * Cluster.getLocation_('my-project', 'us-central1-b');
    * // 'projects/my-project/locations/us-central1-b'
+   * ```
    */
   static getLocation_(project: string, location: string): string {
     if (location.includes('/')) {
@@ -184,8 +188,10 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @returns {number}
    *
    * @example
+   * ```
    * Cluster.getStorageType_('ssd');
    * // 1
+   * ```
    */
   static getStorageType_(type: string): number {
     const storageTypes: {[k: string]: number} = {
@@ -541,6 +547,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * @returns {ReadableStream<Backup>}
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
@@ -563,6 +570,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    *   .on('data', function(backup) {
    *     this.end();
    *   });
+   * ```
    */
   getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
     const {gaxOptions, ...restOptions} = options || {};
