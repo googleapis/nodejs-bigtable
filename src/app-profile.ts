@@ -125,10 +125,12 @@ export type SetAppProfileMetadataResponse = [google.protobuf.Empty];
  * @param {string} name Name of the app profile.
  *
  * @example
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const appProfile = instance.appProfile('my-app-profile');
+ * ```
  */
 export class AppProfile {
   bigtable: Bigtable;
@@ -166,6 +168,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * @returns {object}
    *
    * @example
+   * ```
    * // Any cluster routing:
    * Family.formatAppProfile_({
    *   routing: 'any',
@@ -190,6 +193,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * //   },
    * //   description: 'My App Profile',
    * // }
+   * ```
    */
   static formatAppProfile_(
     options: AppProfileOptions
@@ -230,8 +234,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * @param {object} [options] See {@link Instance#createAppProfile}.
    *
    * @example
+   * ```
    * <caption>include:samples/api-reference-doc-snippets/app-profile.js</caption>
    * region_tag:bigtable_api_create_app_profile
+   * ```
    */
   create(
     optionsOrCallback?: AppProfileOptions | CreateAppProfileCallback,
@@ -264,8 +270,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
+   * ```
    * <caption>include:samples/api-reference-doc-snippets/app-profile.js</caption>
    * region_tag:bigtable_api_delete_app_profile
+   * ```
    */
   delete(
     optionsOrCallback?: DeleteAppProfileOptions | DeleteAppProfileCallback,
@@ -309,8 +317,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * @param {boolean} callback.exists Whether the app profile exists or not.
    *
    * @example
+   * ```
    * <caption>include:samples/api-reference-doc-snippets/app-profile.js</caption>
    * region_tag:bigtable_api_exists_app_profile
+   * ```
    */
   exists(
     optionsOrCallback?: CallOptions | AppProfileExistsCallback,
@@ -343,8 +353,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    *     https://googleapis.github.io/gax-nodejs/CallSettings.html.
    *
    * @example
+   * ```
    * <caption>include:samples/api-reference-doc-snippets/app-profile.js</caption>
    * region_tag:bigtable_api_get_app_profile
+   * ```
    */
   get(
     optionsOrCallback?: CallOptions | GetAppProfileCallback,
@@ -381,8 +393,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
+   * ```
    * <caption>include:samples/api-reference-doc-snippets/app-profile.js</caption>
    * region_tag:bigtable_api_app_profile_get_meta
+   * ```
    */
   getMetadata(
     optionsOrCallback?: CallOptions | GetAppProfileMetadataCallback,
@@ -435,8 +449,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
+   * ```
    * <caption>include:samples/api-reference-doc-snippets/app-profile.js</caption>
    * region_tag:bigtable_api_app_profile_set_meta
+   * ```
    */
   setMetadata(
     metadata: AppProfileOptions,

@@ -149,11 +149,13 @@ export type GetBackupsCallback = (
  * @param {string} name Name of the backup.
  *
  * @example
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const cluster = instance.cluster('my-cluster');
  * const backup = cluster.backup('my-backup');
+ * ```
  */
 export class Backup {
   bigtable: Bigtable;

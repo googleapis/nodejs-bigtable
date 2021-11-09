@@ -146,11 +146,13 @@ export class RowError extends Error {
  * @param {string} key The key for this row.
  *
  * @example
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
  * const row = table.row('gwashington');
+ * ```
  */
 export class Row {
   bigtable: Bigtable;
@@ -185,6 +187,7 @@ export class Row {
    * @param {object} [options] Formatting options.
    *
    * @example
+   * ```
    * Row.formatChunks_(chunks);
    * // {
    * //   follows: {
@@ -195,6 +198,7 @@ export class Row {
    * //     ]
    * //   }
    * // }
+   * ```
    */
   static formatChunks_(chunks: Chunk[], options?: ConvertFromBytesUserOptions) {
     const rows: Row[] = [];
@@ -270,6 +274,7 @@ export class Row {
    * @param {object} [options] Formatting options.
    *
    * @example
+   * ```
    * const families = [
    *   {
    *     name: 'follows',
@@ -296,6 +301,7 @@ export class Row {
    * //     ]
    * //   }
    * // }
+   * ```
    */
   static formatFamilies_(
     families: google.bigtable.v2.IFamily[],

@@ -161,9 +161,11 @@ export interface CreateTableFromBackupConfig {
  * @param {string} id Id of the instance.
  *
  * @example
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
+ * ```
  */
 
 export class Instance {
@@ -199,8 +201,10 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @returns {number}
    *
    * @example
+   * ```
    * Instance.getTypeType_('production');
    * // 1
+   * ```
    */
   static getTypeType_(type?: string): number {
     const types = {
@@ -469,7 +473,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @param {object} [options.gaxOptions] Request configuration options, outlined
    *     here: https://googleapis.github.io/gax-nodejs/CallSettings.html.
    * @param {string[]} [options.splits] Initial
-   *    [split keys](https://cloud.google.com/bigtable/docs/managing-tables#splits).
+   *    {@link https://cloud.google.com/bigtable/docs/managing-tables#splits| split keys}.
    * @param {function} callback The callback function.
    * @param {?error} callback.err An error returned while making this request.
    * @param {Table} callback.table The newly created table.
@@ -743,6 +747,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @returns {stream}
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
@@ -764,6 +769,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *   .on('data', function(appProfile) {
    *     this.end();
    *   });
+   * ```
    */
   getAppProfilesStream(gaxOptions: CallOptions = {}): NodeJS.ReadableStream {
     const reqOpts: google.bigtable.admin.v2.IListAppProfilesRequest = {
@@ -864,6 +870,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @returns {ReadableStream<Backup>}
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
@@ -885,6 +892,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *   .on('data', function(backup) {
    *     this.end();
    *   });
+   * ```
    */
   getBackupsStream(options?: GetBackupsOptions): NodeJS.ReadableStream {
     return this.cluster('-').getBackupsStream(options);
@@ -1136,6 +1144,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @returns {stream}
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
@@ -1157,6 +1166,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    *   .on('data', function(table) {
    *     this.end();
    *   });
+   * ```
    */
   getTablesStream(options: GetTablesOptions = {}): NodeJS.ReadableStream {
     const gaxOpts = extend(true, {}, options.gaxOptions);
@@ -1401,10 +1411,12 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
    * @returns {Table}
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
    * const table = instance.table('presidents');
+   * ```
    */
   table(id: string): Table {
     return new Table(this, id);

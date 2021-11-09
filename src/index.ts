@@ -136,18 +136,23 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * @class
  * @param {ClientConfig} [options] Configuration options.
  *
- * @example <caption>Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:</caption>
+ * @example Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  *
- * @example <caption>Create a client with <a href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit credentials</a>:</caption>
+ * ```
+ * @example Create a client with <a href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit credentials</a>:
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable({
  *   projectId: 'your-project-id',
  *   keyFilename: '/path/to/keyfile.json'
  * });
  *
- * @example <caption>The Bigtable Emulator</caption>
+ * ```
+ * @example The Bigtable Emulator
+ * ```
  * // Make sure you have the {@link https://cloud.google.com/sdk/downloads gcloud SDK installed}, then run:
  * $ gcloud beta emulators bigtable start
  *
@@ -156,7 +161,9 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * $ $(gcloud beta emulators bigtable env-init)
  *
- * @example <caption>Creating a Bigtable Instance and Cluster</caption>
+ * ```
+ * @example Creating a Bigtable Instance and Cluster
+ * ```
  *
  * // Before you create your table, you first need to create a Bigtable Instance
  * // and cluster for the table to be served from.
@@ -189,14 +196,18 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  * // {@link https://cloud.google.com/bigtable/docs/creating-instance official Bigtable documentation}
  * // for more information.
  *
- * @example <caption>Creating Tables</caption>
+ * ```
+ * @example Creating Tables
+ * ```
  * // After creating your instance and enabling the Bigtable APIs, you are now
  * // ready to create your table with {@link Instance#createTable}.
  * instance.createTable('prezzy', function(err, table) {
  *   // `table` is your newly created Table object.
  * });
  *
- * @example <caption>Creating Column Families</caption>
+ * ```
+ * @example Creating Column Families
+ * ```
  * // Column families are used to group together various pieces of data within
  * // your table. You can think of column families as a mechanism to categorize
  * // all of your data.
@@ -216,7 +227,9 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * instance.createTable('prezzy', options, function(err, table) {});
  *
- * @example <caption>Creating Rows</caption>
+ * ```
+ * @example Creating Rows
+ * ```
  * // New rows can be created within your table using
  * // {@link Table#insert}. You must provide a unique key for each row
  * // to be inserted, this key can then be used to retrieve your row at a later
@@ -243,7 +256,9 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   }
  * });
  *
- * @example <caption>Retrieving Rows</caption>
+ * ```
+ * @example Retrieving Rows
+ * ```
  * // If you're anticipating a large number of rows to be returned, we suggest
  * // using the {@link Table#getRows} streaming API.
  * table.createReadStream()
@@ -275,7 +290,9 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   // `row.data` is now populated.
  * });
  *
- * @example <caption>Accessing Row Data</caption>
+ * ```
+ * @example Accessing Row Data
+ * ```
  * // When retrieving rows, upon success the `row.data` property will be
  * // populated by an object. That object will contain additional objects
  * // for each family in your table that the row has data for.
@@ -312,7 +329,9 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *   filter: filter
  * }, callback);
  *
- * @example <caption>Deleting Row Data</caption>
+ * ```
+ * @example Deleting Row Data
+ * ```
  * // We can delete all of an individual row's cells using {@link Row#delete}.
  * const callback = err => {
  *   if (!err) {
@@ -331,7 +350,9 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *
  * row.delete(cells, callback);
  *
- * @example <caption>Deleting Rows</caption>
+ * ```
+ * @example Deleting Rows
+ * ```
  * // If you wish to delete multiple rows entirely, we can do so with
  * // {@link Table#deleteRows}. You can provide this method with a
  * // row key prefix.
@@ -351,6 +372,7 @@ export interface BigtableOptions extends gax.GoogleAuthOptions {
  *     // All rows were deleted successfully.
  *   }
  * });
+ * ```
  */
 export class Bigtable {
   customEndpoint?: string;
@@ -503,6 +525,7 @@ export class Bigtable {
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    *
@@ -541,6 +564,7 @@ export class Bigtable {
    *   const operation = data[1];
    *   const apiResponse = data[2];
    * });
+   * ```
    */
   createInstance(
     id: string,
@@ -653,6 +677,7 @@ export class Bigtable {
    * @returns {Promise<GetInstancesResponse>}
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    *
@@ -665,8 +690,9 @@ export class Bigtable {
    *   }
    * });
    *
-   * @example <caption>If the callback is omitted, we'll return a Promise.
-   * </caption>
+   * ```
+   * @example If the callback is omitted, we'll return a Promise.
+   * ```
    * bigtable.getInstances().then(function(data) {
    *   const instances = data[0];
    *   const fullResponse = data[2];
@@ -676,6 +702,7 @@ export class Bigtable {
    *     const failedLocations = fullResponse.failedLocations;
    *   }
    * });
+   * ```
    */
   getInstances(
     gaxOptionsOrCallback?: CallOptions | GetInstancesCallback,
@@ -937,21 +964,29 @@ promisifyAll(Bigtable, {
  * @module {constructor} @google-cloud/bigtable
  * @alias nodejs-bigtable
  *
- * @example <caption>Install the client library with <a href="https://www.npmjs.com/">npm</a>:</caption>
+ * @example Install the client library with <a href="https://www.npmjs.com/">npm</a>:
+ * ```
  * npm install --save @google-cloud/bigtable
  *
- * @example <caption>Import the client library</caption>
+ * ```
+ * @example Import the client library
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  *
- * @example <caption>Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:</caption>
+ * ```
+ * @example Create a client that uses <a href="https://cloud.google.com/docs/authentication/production#providing_credentials_to_your_application">Application Default Credentials (ADC)</a>:
+ * ```
  * const bigtable = new Bigtable();
  *
- * @example <caption>Create a client with <a href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit credentials</a>:</caption>
+ * ```
+ * @example Create a client with <a href="https://cloud.google.com/docs/authentication/production#obtaining_and_providing_service_account_credentials_manually">explicit credentials</a>:
+ * ```
  * const bigtable = new Bigtable({
  *   projectId: 'your-project-id',
  *   keyFilename: '/path/to/keyfile.json'
  * });
  *
+ * ```
  * @example <caption>include:samples/quickstart.js</caption>
  * region_tag:bigtable_quickstart
  * Full quickstart example:
