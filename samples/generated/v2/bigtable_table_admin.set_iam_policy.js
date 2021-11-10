@@ -30,7 +30,7 @@ function main(resource, policy) {
    *  valid policy but certain Cloud Platform services (such as Projects)
    *  might reject them.
    */
-  // const policy = ''
+  // const policy = {}
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
@@ -38,7 +38,7 @@ function main(resource, policy) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function setIamPolicy() {
+  async function callSetIamPolicy() {
     // Construct request
     const request = {
       resource,
@@ -50,7 +50,7 @@ function main(resource, policy) {
     console.log(response);
   }
 
-  setIamPolicy();
+  callSetIamPolicy();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_SetIamPolicy_async]
 }
 

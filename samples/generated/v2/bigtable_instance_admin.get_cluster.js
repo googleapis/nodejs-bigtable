@@ -31,7 +31,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function getCluster() {
+  async function callGetCluster() {
     // Construct request
     const request = {
       name,
@@ -42,7 +42,7 @@ function main(name) {
     console.log(response);
   }
 
-  getCluster();
+  callGetCluster();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_GetCluster_async]
 }
 

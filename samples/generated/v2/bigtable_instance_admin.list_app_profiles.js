@@ -48,7 +48,7 @@ function main(parent) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function listAppProfiles() {
+  async function callListAppProfiles() {
     // Construct request
     const request = {
       parent,
@@ -61,7 +61,7 @@ function main(parent) {
     }
   }
 
-  listAppProfiles();
+  callListAppProfiles();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_ListAppProfiles_async]
 }
 

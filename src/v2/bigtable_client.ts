@@ -319,6 +319,35 @@ export class BigtableClient {
   // -------------------
   // -- Service calls --
   // -------------------
+  /**
+   * Mutates a row atomically. Cells already present in the row are left
+   * unchanged unless explicitly changed by `mutation`.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table to which the mutation should be applied.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {Buffer} request.rowKey
+   *   Required. The key of the row to which the mutation should be applied.
+   * @param {number[]} request.mutations
+   *   Required. Changes to be atomically applied to the specified row. Entries are applied
+   *   in order, meaning that earlier mutations can be masked by later ones.
+   *   Must contain at least one entry and at most 100000.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [MutateRowResponse]{@link google.bigtable.v2.MutateRowResponse}.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable.mutate_row.js</caption>
+   * region_tag:bigtable_v2_generated_Bigtable_MutateRow_async
+   */
   mutateRow(
     request?: protos.google.bigtable.v2.IMutateRowRequest,
     options?: CallOptions
@@ -346,35 +375,6 @@ export class BigtableClient {
       {} | null | undefined
     >
   ): void;
-  /**
-   * Mutates a row atomically. Cells already present in the row are left
-   * unchanged unless explicitly changed by `mutation`.
-   *
-   * @param {Object} request
-   *   The request object that will be sent.
-   * @param {string} request.tableName
-   *   Required. The unique name of the table to which the mutation should be applied.
-   *   Values are of the form
-   *   `projects/<project>/instances/<instance>/tables/<table>`.
-   * @param {string} request.appProfileId
-   *   This value specifies routing for replication. If not specified, the
-   *   "default" application profile will be used.
-   * @param {Buffer} request.rowKey
-   *   Required. The key of the row to which the mutation should be applied.
-   * @param {number[]} request.mutations
-   *   Required. Changes to be atomically applied to the specified row. Entries are applied
-   *   in order, meaning that earlier mutations can be masked by later ones.
-   *   Must contain at least one entry and at most 100000.
-   * @param {object} [options]
-   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
-   * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing [MutateRowResponse]{@link google.bigtable.v2.MutateRowResponse}.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
-   *   for more details and examples.
-   * @example
-   * const [response] = await client.mutateRow(request);
-   */
   mutateRow(
     request?: protos.google.bigtable.v2.IMutateRowRequest,
     optionsOrCallback?:
@@ -414,33 +414,6 @@ export class BigtableClient {
     this.initialize();
     return this.innerApiCalls.mutateRow(request, options, callback);
   }
-  checkAndMutateRow(
-    request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
-    options?: CallOptions
-  ): Promise<
-    [
-      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
-      protos.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
-      {} | undefined
-    ]
-  >;
-  checkAndMutateRow(
-    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
-    options: CallOptions,
-    callback: Callback<
-      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
-      protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
-      {} | null | undefined
-    >
-  ): void;
-  checkAndMutateRow(
-    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
-    callback: Callback<
-      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
-      protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
-      {} | null | undefined
-    >
-  ): void;
   /**
    * Mutates a row atomically based on the output of a predicate Reader filter.
    *
@@ -480,9 +453,36 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
    *   for more details and examples.
-   * @example
-   * const [response] = await client.checkAndMutateRow(request);
+   * @example <caption>include:samples/generated/v2/bigtable.check_and_mutate_row.js</caption>
+   * region_tag:bigtable_v2_generated_Bigtable_CheckAndMutateRow_async
    */
+  checkAndMutateRow(
+    request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
+      {} | undefined
+    ]
+  >;
+  checkAndMutateRow(
+    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    options: CallOptions,
+    callback: Callback<
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  checkAndMutateRow(
+    request: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
+    callback: Callback<
+      protos.google.bigtable.v2.ICheckAndMutateRowResponse,
+      protos.google.bigtable.v2.ICheckAndMutateRowRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
   checkAndMutateRow(
     request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
     optionsOrCallback?:
@@ -524,33 +524,6 @@ export class BigtableClient {
     this.initialize();
     return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
-  readModifyWriteRow(
-    request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
-    options?: CallOptions
-  ): Promise<
-    [
-      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
-      protos.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
-      {} | undefined
-    ]
-  >;
-  readModifyWriteRow(
-    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
-    options: CallOptions,
-    callback: Callback<
-      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
-      protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
-      {} | null | undefined
-    >
-  ): void;
-  readModifyWriteRow(
-    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
-    callback: Callback<
-      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
-      protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
-      {} | null | undefined
-    >
-  ): void;
   /**
    * Modifies a row atomically on the server. The method reads the latest
    * existing timestamp and value from the specified columns and writes a new
@@ -581,9 +554,36 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
    *   for more details and examples.
-   * @example
-   * const [response] = await client.readModifyWriteRow(request);
+   * @example <caption>include:samples/generated/v2/bigtable.read_modify_write_row.js</caption>
+   * region_tag:bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async
    */
+  readModifyWriteRow(
+    request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
+      {} | undefined
+    ]
+  >;
+  readModifyWriteRow(
+    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    options: CallOptions,
+    callback: Callback<
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  readModifyWriteRow(
+    request: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
+    callback: Callback<
+      protos.google.bigtable.v2.IReadModifyWriteRowResponse,
+      protos.google.bigtable.v2.IReadModifyWriteRowRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
   readModifyWriteRow(
     request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
     optionsOrCallback?:
@@ -657,10 +657,8 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
    *   for more details and examples.
-   * @example
-   * const stream = client.readRows(request);
-   * stream.on('data', (response) => { ... });
-   * stream.on('end', () => { ... });
+   * @example <caption>include:samples/generated/v2/bigtable.read_rows.js</caption>
+   * region_tag:bigtable_v2_generated_Bigtable_ReadRows_async
    */
   readRows(
     request?: protos.google.bigtable.v2.IReadRowsRequest,
@@ -700,10 +698,8 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
    *   for more details and examples.
-   * @example
-   * const stream = client.sampleRowKeys(request);
-   * stream.on('data', (response) => { ... });
-   * stream.on('end', () => { ... });
+   * @example <caption>include:samples/generated/v2/bigtable.sample_row_keys.js</caption>
+   * region_tag:bigtable_v2_generated_Bigtable_SampleRowKeys_async
    */
   sampleRowKeys(
     request?: protos.google.bigtable.v2.ISampleRowKeysRequest,
@@ -746,10 +742,8 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
    *   for more details and examples.
-   * @example
-   * const stream = client.mutateRows(request);
-   * stream.on('data', (response) => { ... });
-   * stream.on('end', () => { ... });
+   * @example <caption>include:samples/generated/v2/bigtable.mutate_rows.js</caption>
+   * region_tag:bigtable_v2_generated_Bigtable_MutateRows_async
    */
   mutateRows(
     request?: protos.google.bigtable.v2.IMutateRowsRequest,
