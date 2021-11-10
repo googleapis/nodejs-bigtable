@@ -32,7 +32,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function deleteTable() {
+  async function callDeleteTable() {
     // Construct request
     const request = {
       name,
@@ -43,7 +43,7 @@ function main(name) {
     console.log(response);
   }
 
-  deleteTable();
+  callDeleteTable();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_DeleteTable_async]
 }
 

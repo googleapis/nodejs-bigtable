@@ -32,7 +32,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function deleteBackup() {
+  async function callDeleteBackup() {
     // Construct request
     const request = {
       name,
@@ -43,7 +43,7 @@ function main(name) {
     console.log(response);
   }
 
-  deleteBackup();
+  callDeleteBackup();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_DeleteBackup_async]
 }
 

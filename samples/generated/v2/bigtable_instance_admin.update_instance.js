@@ -34,11 +34,11 @@ function main(name, displayName, createTime) {
    *  (`OutputOnly`)
    *  The current state of the instance.
    */
-  // const state = ''
+  // const state = {}
   /**
    *  The type of the instance. Defaults to `PRODUCTION`.
    */
-  // const type = ''
+  // const type = {}
   /**
    *  Labels are a flexible and lightweight mechanism for organizing cloud
    *  resources into groups that reflect a customer's organizational needs and
@@ -57,7 +57,7 @@ function main(name, displayName, createTime) {
    *  For instances created before this field was added (August 2021), this value
    *  is `seconds: 0, nanos: 1`.
    */
-  // const createTime = ''
+  // const createTime = {}
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
@@ -65,7 +65,7 @@ function main(name, displayName, createTime) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function updateInstance() {
+  async function callUpdateInstance() {
     // Construct request
     const request = {
       name,
@@ -78,7 +78,7 @@ function main(name, displayName, createTime) {
     console.log(response);
   }
 
-  updateInstance();
+  callUpdateInstance();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateInstance_async]
 }
 

@@ -35,7 +35,7 @@ function main(parent, appProfileId, appProfile) {
    *  Required. The app profile to be created.
    *  Fields marked `OutputOnly` will be ignored.
    */
-  // const appProfile = ''
+  // const appProfile = {}
   /**
    *  If true, ignore safety checks when creating the app profile.
    */
@@ -47,7 +47,7 @@ function main(parent, appProfileId, appProfile) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function createAppProfile() {
+  async function callCreateAppProfile() {
     // Construct request
     const request = {
       parent,
@@ -60,7 +60,7 @@ function main(parent, appProfileId, appProfile) {
     console.log(response);
   }
 
-  createAppProfile();
+  callCreateAppProfile();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateAppProfile_async]
 }
 

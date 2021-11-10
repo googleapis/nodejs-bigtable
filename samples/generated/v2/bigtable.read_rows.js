@@ -33,12 +33,12 @@ function main(tableName) {
   /**
    *  The row keys and/or ranges to read. If not specified, reads from all rows.
    */
-  // const rows = ''
+  // const rows = {}
   /**
    *  The filter to apply to the contents of the specified row(s). If unset,
    *  reads the entirety of each row.
    */
-  // const filter = ''
+  // const filter = {}
   /**
    *  The read will terminate after committing to N rows' worth of results. The
    *  default (zero) is to return all results.
@@ -51,7 +51,7 @@ function main(tableName) {
   // Instantiates a client
   const bigtableClient = new BigtableClient();
 
-  async function readRows() {
+  async function callReadRows() {
     // Construct request
     const request = {
       tableName,
@@ -70,7 +70,7 @@ function main(tableName) {
     });
   }
 
-  readRows();
+  callReadRows();
   // [END bigtable_v2_generated_Bigtable_ReadRows_async]
 }
 

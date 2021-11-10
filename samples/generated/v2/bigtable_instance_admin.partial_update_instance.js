@@ -22,12 +22,12 @@ function main(instance, updateMask) {
   /**
    *  Required. The Instance which will (partially) replace the current value.
    */
-  // const instance = ''
+  // const instance = {}
   /**
    *  Required. The subset of Instance fields which should be replaced.
    *  Must be explicitly set.
    */
-  // const updateMask = ''
+  // const updateMask = {}
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
@@ -35,7 +35,7 @@ function main(instance, updateMask) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function partialUpdateInstance() {
+  async function callPartialUpdateInstance() {
     // Construct request
     const request = {
       instance,
@@ -48,7 +48,7 @@ function main(instance, updateMask) {
     console.log(response);
   }
 
-  partialUpdateInstance();
+  callPartialUpdateInstance();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateInstance_async]
 }
 

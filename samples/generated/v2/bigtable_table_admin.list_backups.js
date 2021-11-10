@@ -59,7 +59,7 @@ function main(parent) {
   // const filter = 'abc123'
   /**
    *  An expression for specifying the sort order of the results of the request.
-   *  The string value should specify one or more fields in [Backup][google.bigtable.admin.v2.Backup]. The full
+   *  The string value should specify one or more fields in Backup google.bigtable.admin.v2.Backup. The full
    *  syntax is described at https://aip.dev/132#ordering.
    *  Fields supported are:
    *     * name
@@ -84,8 +84,8 @@ function main(parent) {
   // const pageSize = 1234
   /**
    *  If non-empty, `page_token` should contain a
-   *  [next_page_token][google.bigtable.admin.v2.ListBackupsResponse.next_page_token] from a
-   *  previous [ListBackupsResponse][google.bigtable.admin.v2.ListBackupsResponse] to the same `parent` and with the same
+   *  next_page_token google.bigtable.admin.v2.ListBackupsResponse.next_page_token  from a
+   *  previous ListBackupsResponse google.bigtable.admin.v2.ListBackupsResponse  to the same `parent` and with the same
    *  `filter`.
    */
   // const pageToken = 'abc123'
@@ -96,7 +96,7 @@ function main(parent) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function listBackups() {
+  async function callListBackups() {
     // Construct request
     const request = {
       parent,
@@ -109,7 +109,7 @@ function main(parent) {
     }
   }
 
-  listBackups();
+  callListBackups();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_ListBackups_async]
 }
 

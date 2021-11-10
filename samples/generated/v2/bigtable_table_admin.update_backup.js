@@ -25,7 +25,7 @@ function main(backup, updateMask) {
    *  Update is only supported for the following fields:
    *   * `backup.expire_time`.
    */
-  // const backup = ''
+  // const backup = {}
   /**
    *  Required. A mask specifying which fields (e.g. `expire_time`) in the
    *  Backup resource should be updated. This mask is relative to the Backup
@@ -33,7 +33,7 @@ function main(backup, updateMask) {
    *  specified; this prevents any future fields from being erased accidentally
    *  by clients that do not know about them.
    */
-  // const updateMask = ''
+  // const updateMask = {}
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
@@ -41,7 +41,7 @@ function main(backup, updateMask) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function updateBackup() {
+  async function callUpdateBackup() {
     // Construct request
     const request = {
       backup,
@@ -53,7 +53,7 @@ function main(backup, updateMask) {
     console.log(response);
   }
 
-  updateBackup();
+  callUpdateBackup();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_UpdateBackup_async]
 }
 

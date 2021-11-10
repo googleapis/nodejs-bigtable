@@ -37,7 +37,7 @@ function main(tableName) {
   // Instantiates a client
   const bigtableClient = new BigtableClient();
 
-  async function sampleRowKeys() {
+  async function callSampleRowKeys() {
     // Construct request
     const request = {
       tableName,
@@ -56,7 +56,7 @@ function main(tableName) {
     });
   }
 
-  sampleRowKeys();
+  callSampleRowKeys();
   // [END bigtable_v2_generated_Bigtable_SampleRowKeys_async]
 }
 

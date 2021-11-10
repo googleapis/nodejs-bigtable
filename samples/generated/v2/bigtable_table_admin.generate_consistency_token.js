@@ -32,7 +32,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function generateConsistencyToken() {
+  async function callGenerateConsistencyToken() {
     // Construct request
     const request = {
       name,
@@ -43,7 +43,7 @@ function main(name) {
     console.log(response);
   }
 
-  generateConsistencyToken();
+  callGenerateConsistencyToken();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_GenerateConsistencyToken_async]
 }
 

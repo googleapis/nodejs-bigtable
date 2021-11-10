@@ -44,7 +44,7 @@ function main(parent, tableId) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function restoreTable() {
+  async function callRestoreTable() {
     // Construct request
     const request = {
       parent,
@@ -57,7 +57,7 @@ function main(parent, tableId) {
     console.log(response);
   }
 
-  restoreTable();
+  callRestoreTable();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async]
 }
 
