@@ -382,10 +382,12 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  * @param {string} id Unique identifier of the table.
  *
  * @example
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
+ * ```
  */
 export class Table {
   bigtable: Bigtable;
@@ -436,12 +438,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {string} name The table name.
    *
    * @example
+   * ```
    * Table.formatName_(
    *   'projects/my-project/zones/my-zone/instances/my-instance',
    *   'my-table'
    * );
    * //
    * 'projects/my-project/zones/my-zone/instances/my-instance/tables/my-table'
+   * ```
    */
   static formatName_(instanceName: string, id: string) {
     if (id.includes('/')) {
@@ -459,6 +463,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {object} range
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
@@ -471,6 +476,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * //     inclusive: false
    * //   }
    * // }
+   * ```
    */
   static createPrefixRange(start: string): PrefixRange {
     const prefix = start.replace(new RegExp('[\xff]+$'), '');
@@ -1085,7 +1091,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {Family}
    *
    * @example
+   * ```
    * const family = table.family('my-family');
+   * ```
    */
   family(id: string): Family {
     if (!id) {
@@ -1260,6 +1268,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const bigtable = new Bigtable();
    * const instance = bigtable.instance('my-instance');
@@ -1276,6 +1285,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *   const clusterStates = data[0];
    *   const apiResponse = data[1];
    * });
+   * ```
    */
   getReplicationStates(
     optionsOrCallback?: CallOptions | GetReplicationStatesCallback,
@@ -1579,7 +1589,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {Row}
    *
    * @example
+   * ```
    * const row = table.row('lincoln');
+   * ```
    */
   row(key: string): Row {
     if (!key) {
@@ -1632,6 +1644,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @returns {stream}
    *
    * @example
+   * ```
    * table.sampleRowKeysStream()
    *   .on('error', console.error)
    *   .on('data', function(key) {
@@ -1646,6 +1659,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    *   .on('data', function(key) {
    *     this.end();
    *   });
+   * ```
    */
   sampleRowKeysStream(gaxOptions?: CallOptions) {
     const reqOpts = {
@@ -1802,6 +1816,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * @param {object} callback.apiResponse The full API response.
    *
    * @example
+   * ```
    * table.truncate(function(err, apiResponse) {});
    *
    * //-
@@ -1810,6 +1825,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * table.truncate().then(function(data) {
    *   const apiResponse = data[0];
    * });
+   * ```
    */
   truncate(
     optionsOrCallback?: CallOptions | TruncateCallback,
