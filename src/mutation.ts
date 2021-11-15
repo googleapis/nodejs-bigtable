@@ -74,6 +74,7 @@ export interface ValueObj {
  * @param {object} mutation
  *
  * @example
+ * ```
  * const mutation = new Mutation({
  *   key: 'gwashington',
  *   method: 'insert',
@@ -81,6 +82,7 @@ export interface ValueObj {
  *     jadams: 1
  *   }
  * });
+ * ```
  */
 export class Mutation {
   key: string;
@@ -185,6 +187,7 @@ export class Mutation {
    * @returns {object[]}
    *
    * @example
+   * ```
    * Mutation.encodeSetCell({
    *   follows: {
    *     gwashington: 1,
@@ -208,6 +211,7 @@ export class Mutation {
    * //     }
    * //   }
    * // ]
+   * ```
    * @private
    */
   static encodeSetCell(data: Data): SetCellObj[] {
@@ -259,6 +263,7 @@ export class Mutation {
    * @returns {object}
    *
    * @example
+   * ```
    * Mutation.encodeDelete([
    *   'follows:gwashington'
    * ]);
@@ -296,6 +301,7 @@ export class Mutation {
    *     }
    *   }
    * ]);
+   * ```
    * @private
    */
   static encodeDelete(data?: Data | Data[]): IMutation[] {
@@ -369,11 +375,13 @@ export class Mutation {
    * @returns {object}
    *
    * @example
+   * ```
    * Mutation.parseColumnName('follows:gwashington');
    * // {
    * //  family: 'follows',
    * //  qualifier: 'gwashington'
    * // }
+   * ```
    * @private
    */
   static parseColumnName(columnName: string): ParsedColumn {

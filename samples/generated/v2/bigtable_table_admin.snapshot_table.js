@@ -44,7 +44,7 @@ function main(name, cluster, snapshotId) {
    *  amount of time a snapshot can stay active is 7 days. If 'ttl' is not
    *  specified, the default value of 24 hours will be used.
    */
-  // const ttl = ''
+  // const ttl = {}
   /**
    *  Description of the snapshot.
    */
@@ -56,7 +56,7 @@ function main(name, cluster, snapshotId) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function snapshotTable() {
+  async function callSnapshotTable() {
     // Construct request
     const request = {
       name,
@@ -70,7 +70,7 @@ function main(name, cluster, snapshotId) {
     console.log(response);
   }
 
-  snapshotTable();
+  callSnapshotTable();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_SnapshotTable_async]
 }
 

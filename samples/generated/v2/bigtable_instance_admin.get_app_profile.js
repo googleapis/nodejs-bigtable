@@ -31,7 +31,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function getAppProfile() {
+  async function callGetAppProfile() {
     // Construct request
     const request = {
       name,
@@ -42,7 +42,7 @@ function main(name) {
     console.log(response);
   }
 
-  getAppProfile();
+  callGetAppProfile();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_GetAppProfile_async]
 }
 

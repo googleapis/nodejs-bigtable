@@ -28,7 +28,7 @@ function main(parent) {
    *  The view to be applied to the returned tables' fields.
    *  Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
    */
-  // const view = ''
+  // const view = {}
   /**
    *  Maximum number of results per page.
    *  A page_size of zero lets the server choose the number of items to return.
@@ -50,7 +50,7 @@ function main(parent) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function listTables() {
+  async function callListTables() {
     // Construct request
     const request = {
       parent,
@@ -63,7 +63,7 @@ function main(parent) {
     }
   }
 
-  listTables();
+  callListTables();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_ListTables_async]
 }
 

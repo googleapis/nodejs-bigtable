@@ -133,8 +133,10 @@ export class Filter {
    * @returns {string}
    *
    * @example
+   * ```
    * const regexString = Filter.convertToRegExpString(['a', 'b', 'c']);
    * // => '(a|b|c)'
+   * ```
    */
   static convertToRegExpString(
     regex:
@@ -185,6 +187,7 @@ export class Filter {
    * @returns {object}
    *
    * @example
+   * ```
    * const {Bigtable} = require('@google-cloud/bigtable');
    * const Filter = Bigtable.Filter;
    *
@@ -207,6 +210,7 @@ export class Filter {
    * // => {
    * //   startTest2Exclusive: 'value3'
    * // }
+   * ```
    */
   static createRange(
     start: BoundData | null,
@@ -244,6 +248,7 @@ export class Filter {
    * @returns {object}
    *
    * @example
+   * ```
    * const filter = Filter.parse([
    *   {
    *     family: 'my-family',
@@ -263,6 +268,7 @@ export class Filter {
    * //     ]
    * //   }
    * // }
+   * ```
    */
   static parse(filters: RawFilter[] | RawFilter) {
     interface Fn {
@@ -288,6 +294,7 @@ export class Filter {
    * Assign true for enabling passAllFilter and false for enabling blockAllFilter
    *
    * @example
+   * ```
    * //-
    * // Matches all cells, regardless of input. Functionally equivalent to
    * // leaving `filter` unset, but included for completeness.
@@ -303,6 +310,7 @@ export class Filter {
    * const filter = {
    *   all: false
    * };
+   * ```
    */
   all(pass: boolean): void {
     const filterName = pass ? 'passAllFilter' : 'blockAllFilter';
@@ -320,6 +328,7 @@ export class Filter {
    * present in a binary qualifier.
    *
    * @example
+   * ```
    * //-
    * // Using the following filter, we would retrieve the `tjefferson` and
    * // `gwashington` columns.
@@ -426,6 +435,7 @@ export class Filter {
    *     }
    *   }
    * ];
+   * ```
    */
   column(column: RegExp | string | {}): void {
     let col: Column;
@@ -469,6 +479,7 @@ export class Filter {
    * @param {object} condition Condition to filter.
    *
    * @example
+   * ```
    * //-
    * // In the following example we're creating a filter that will check if
    * // `gwashington` follows `tjefferson`. If he does, we'll get all of the
@@ -508,6 +519,7 @@ export class Filter {
    *     }
    *   }
    * ];
+   * ```
    */
   condition(condition: Condition) {
     this.set('condition', {
@@ -528,11 +540,13 @@ export class Filter {
    * @param {regex} family Expression to filter family
    *
    * @example
+   * ```
    * const filter = [
    *   {
    *     family: 'follows'
    *   }
    * ];
+   * ```
    */
   family(
     family:
@@ -559,6 +573,7 @@ export class Filter {
    * All interleaved filters are executed atomically.
    *
    * @example
+   * ```
    * //-
    * // In the following example, we're creating a filter that will retrieve
    * // results for entries that were either created between December 17th, 2015
@@ -586,6 +601,7 @@ export class Filter {
    *     ]
    *   }
    * ];
+   * ```
    */
   interleave(filters: RawFilter[]): void {
     this.set('interleave', {
@@ -610,9 +626,11 @@ export class Filter {
    * may be relaxed in the future.
    *
    * @example
+   * ```
    * const filter = {
    *   label: 'my-label'
    * };
+   * ```
    */
   label(label: string): void {
     this.set('applyLabelTransformer', label);
@@ -631,6 +649,7 @@ export class Filter {
    * binary key.
    *
    * @example
+   * ```
    * //-
    * // In the following example we'll use a regular expression to match all
    * // row keys ending with the letters "on", which would then yield
@@ -722,6 +741,7 @@ export class Filter {
    *     }
    *   }
    * ];
+   * ```
    */
   row(row: Row | string | RegExp | string[]): void {
     let r: Row;
@@ -777,6 +797,7 @@ export class Filter {
    * @param {boolean} sink
    *
    * @example
+   * ```
    * //-
    * // Using the following filter, a copy of every cell that reaches the sink is
    * // present in the final result, despite being excluded by the qualifier
@@ -816,6 +837,7 @@ export class Filter {
    * // passed through the {@link Filter#label} and sink. Note that one
    * // copy has label "prezzy" while the other does not.
    * //-
+   * ```
    */
   sink(sink: boolean): void {
     this.set('sink', sink);
@@ -827,6 +849,7 @@ export class Filter {
    * @param {object} time Start and End time Object
    *
    * @example
+   * ```
    * const filter = [
    *   {
    *     time: {
@@ -835,6 +858,7 @@ export class Filter {
    *     }
    *   }
    * ];
+   * ```
    */
   time(time: Time): void {
     const range = Mutation.createTimeRange(time.start, time.end);
@@ -871,6 +895,7 @@ export class Filter {
    * @param {?string|string[]|object} value Value to filter cells
    *
    * @example
+   * ```
    * const filter = [
    *   {
    *     value: /[0-9]/
@@ -957,6 +982,7 @@ export class Filter {
    *     }
    *   }
    * ];
+   * ```
    */
   value(value: string | string[] | ValueFilter): void {
     let v: ValueFilter;

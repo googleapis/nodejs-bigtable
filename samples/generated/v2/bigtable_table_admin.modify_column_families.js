@@ -39,7 +39,7 @@ function main(name, modifications) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function modifyColumnFamilies() {
+  async function callModifyColumnFamilies() {
     // Construct request
     const request = {
       name,
@@ -51,7 +51,7 @@ function main(name, modifications) {
     console.log(response);
   }
 
-  modifyColumnFamilies();
+  callModifyColumnFamilies();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_ModifyColumnFamilies_async]
 }
 

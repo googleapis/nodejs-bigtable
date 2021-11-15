@@ -43,7 +43,7 @@ function main(tableName, entries) {
   // Instantiates a client
   const bigtableClient = new BigtableClient();
 
-  async function mutateRows() {
+  async function callMutateRows() {
     // Construct request
     const request = {
       tableName,
@@ -63,7 +63,7 @@ function main(tableName, entries) {
     });
   }
 
-  mutateRows();
+  callMutateRows();
   // [END bigtable_v2_generated_Bigtable_MutateRows_async]
 }
 

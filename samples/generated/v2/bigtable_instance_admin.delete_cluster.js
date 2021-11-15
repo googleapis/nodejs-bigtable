@@ -31,7 +31,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function deleteCluster() {
+  async function callDeleteCluster() {
     // Construct request
     const request = {
       name,
@@ -42,7 +42,7 @@ function main(name) {
     console.log(response);
   }
 
-  deleteCluster();
+  callDeleteCluster();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteCluster_async]
 }
 

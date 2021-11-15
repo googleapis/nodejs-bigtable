@@ -2620,6 +2620,9 @@ export namespace google {
 
                     /** Instance labels */
                     labels?: ({ [k: string]: string }|null);
+
+                    /** Instance createTime */
+                    createTime?: (google.protobuf.ITimestamp|null);
                 }
 
                 /** Represents an Instance. */
@@ -2645,6 +2648,9 @@ export namespace google {
 
                     /** Instance labels. */
                     public labels: { [k: string]: string };
+
+                    /** Instance createTime. */
+                    public createTime?: (google.protobuf.ITimestamp|null);
 
                     /**
                      * Creates a new Instance instance using the specified properties.
@@ -12238,7 +12244,8 @@ export namespace google {
             OUTPUT_ONLY = 3,
             INPUT_ONLY = 4,
             IMMUTABLE = 5,
-            UNORDERED_LIST = 6
+            UNORDERED_LIST = 6,
+            NON_EMPTY_DEFAULT = 7
         }
 
         /** Properties of a ResourceDescriptor. */

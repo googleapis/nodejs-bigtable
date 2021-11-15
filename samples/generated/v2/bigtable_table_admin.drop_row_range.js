@@ -41,7 +41,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function dropRowRange() {
+  async function callDropRowRange() {
     // Construct request
     const request = {
       name,
@@ -52,7 +52,7 @@ function main(name) {
     console.log(response);
   }
 
-  dropRowRange();
+  callDropRowRange();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_DropRowRange_async]
 }
 

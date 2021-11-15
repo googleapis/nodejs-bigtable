@@ -35,7 +35,7 @@ function main(name, ignoreWarnings) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function deleteAppProfile() {
+  async function callDeleteAppProfile() {
     // Construct request
     const request = {
       name,
@@ -47,7 +47,7 @@ function main(name, ignoreWarnings) {
     console.log(response);
   }
 
-  deleteAppProfile();
+  callDeleteAppProfile();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteAppProfile_async]
 }
 

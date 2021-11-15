@@ -462,7 +462,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         }
                       }
@@ -526,7 +526,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         }
                       }
@@ -538,7 +538,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "clusterId": {
@@ -564,7 +564,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
                           }
                         }
                       }
@@ -576,7 +576,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "pageToken": {
@@ -610,7 +610,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
                           }
                         }
                       }
@@ -686,7 +686,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "appProfileId": {
@@ -716,7 +716,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/AppProfile"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AppProfile"
                           }
                         }
                       }
@@ -728,7 +728,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "pageSize": {
@@ -788,7 +788,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/AppProfile"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AppProfile"
                           }
                         },
                         "ignoreWarnings": {
@@ -805,7 +805,7 @@
                     },
                     "Instance": {
                       "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/Instance",
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/Instance",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
                       },
                       "fields": {
@@ -835,6 +835,13 @@
                           "keyType": "string",
                           "type": "string",
                           "id": 5
+                        },
+                        "createTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 7,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         }
                       },
                       "nested": {
@@ -856,7 +863,7 @@
                     },
                     "Cluster": {
                       "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/Cluster",
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/Cluster",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}"
                       },
                       "fields": {
@@ -925,7 +932,7 @@
                     },
                     "AppProfile": {
                       "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/AppProfile",
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/AppProfile",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/appProfiles/{app_profile}"
                       },
                       "oneofs": {
@@ -1491,7 +1498,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "tableId": {
@@ -1505,7 +1512,7 @@
                           "type": "string",
                           "id": 3,
                           "options": {
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
                           }
                         }
                       }
@@ -1560,7 +1567,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "tableId": {
@@ -1601,7 +1608,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "tableId": {
@@ -1616,7 +1623,7 @@
                           "id": 3,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Snapshot"
                           }
                         }
                       }
@@ -1636,7 +1643,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
                         },
                         "rowKeyPrefix": {
@@ -1656,7 +1663,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Instance"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
                           }
                         },
                         "view": {
@@ -1693,7 +1700,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
                         },
                         "view": {
@@ -1709,7 +1716,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
                         }
                       }
@@ -1721,7 +1728,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
                         },
                         "modifications": {
@@ -1772,7 +1779,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
                         }
                       }
@@ -1792,7 +1799,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
                         },
                         "consistencyToken": {
@@ -1819,7 +1826,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
                         },
                         "cluster": {
@@ -1827,7 +1834,7 @@
                           "id": 2,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
                           }
                         },
                         "snapshotId": {
@@ -1854,7 +1861,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Snapshot"
                           }
                         }
                       }
@@ -1866,7 +1873,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
                           }
                         },
                         "pageSize": {
@@ -1899,7 +1906,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Snapshot"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Snapshot"
                           }
                         }
                       }
@@ -1943,7 +1950,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
                           }
                         },
                         "backupId": {
@@ -2007,7 +2014,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
                           }
                         }
                       }
@@ -2019,7 +2026,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Backup"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
                           }
                         }
                       }
@@ -2031,7 +2038,7 @@
                           "id": 1,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtable.googleapis.com/Cluster"
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
                           }
                         },
                         "filter": {
@@ -2092,7 +2099,7 @@
                     },
                     "Table": {
                       "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/Table",
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/Table",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}"
                       },
                       "fields": {
@@ -2261,7 +2268,7 @@
                     },
                     "Snapshot": {
                       "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/Snapshot",
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/Snapshot",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}"
                       },
                       "fields": {
@@ -2306,7 +2313,7 @@
                     },
                     "Backup": {
                       "options": {
-                        "(google.api.resource).type": "bigtable.googleapis.com/Backup",
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/Backup",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}"
                       },
                       "fields": {
@@ -2422,7 +2429,7 @@
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtable.googleapis.com/Table",
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Table",
                 "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
               },
               "nested": {
@@ -2580,7 +2587,7 @@
                       "id": 1,
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                       }
                     },
                     "appProfileId": {
@@ -2672,7 +2679,7 @@
                       "id": 1,
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                       }
                     },
                     "appProfileId": {
@@ -2700,7 +2707,7 @@
                       "id": 1,
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                       }
                     },
                     "appProfileId": {
@@ -2734,7 +2741,7 @@
                       "id": 1,
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                       }
                     },
                     "appProfileId": {
@@ -2799,7 +2806,7 @@
                       "id": 1,
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                       }
                     },
                     "appProfileId": {
@@ -2844,7 +2851,7 @@
                       "id": 1,
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED",
-                        "(google.api.resource_reference).type": "bigtable.googleapis.com/Table"
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                       }
                     },
                     "appProfileId": {
@@ -3443,7 +3450,8 @@
                 "OUTPUT_ONLY": 3,
                 "INPUT_ONLY": 4,
                 "IMMUTABLE": 5,
-                "UNORDERED_LIST": 6
+                "UNORDERED_LIST": 6,
+                "NON_EMPTY_DEFAULT": 7
               }
             },
             "resourceReference": {
@@ -4086,6 +4094,18 @@
                 ]
               ],
               "reserved": [
+                [
+                  4,
+                  4
+                ],
+                [
+                  5,
+                  5
+                ],
+                [
+                  6,
+                  6
+                ],
                 [
                   8,
                   8

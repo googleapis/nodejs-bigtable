@@ -98,11 +98,13 @@ export class FamilyError extends Error {
  * @param {string} id
  *
  * @example
+ * ```
  * const {Bigtable} = require('@google-cloud/bigtable');
  * const bigtable = new Bigtable();
  * const instance = bigtable.instance('my-instance');
  * const table = instance.table('prezzy');
  * const family = table.family('follows');
+ * ```
  */
 export class Family {
   bigtable: Bigtable;
@@ -139,6 +141,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * @returns {object}
    *
    * @example
+   * ```
    * Family.formatRule({
    *   age: {
    *     seconds: 10000,
@@ -161,6 +164,7 @@ Please use the format 'follows' or '${table.name}/columnFamilies/my-family'.`);
    * //     ]
    * //   }
    * // }
+   * ```
    */
   static formatRule_(ruleObj: GcRule): IGcRule {
     const rules: IGcRule[] = [];

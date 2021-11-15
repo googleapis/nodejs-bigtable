@@ -43,7 +43,7 @@ function main(parent, tableId, sourceSnapshot) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function createTableFromSnapshot() {
+  async function callCreateTableFromSnapshot() {
     // Construct request
     const request = {
       parent,
@@ -57,7 +57,7 @@ function main(parent, tableId, sourceSnapshot) {
     console.log(response);
   }
 
-  createTableFromSnapshot();
+  callCreateTableFromSnapshot();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_CreateTableFromSnapshot_async]
 }
 
