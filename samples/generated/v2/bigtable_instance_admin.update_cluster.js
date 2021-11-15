@@ -14,7 +14,7 @@
 
 'use strict';
 
-function main(name, state, serveNodes, encryptionConfig) {
+function main(name, state, encryptionConfig) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateCluster_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -37,10 +37,14 @@ function main(name, state, serveNodes, encryptionConfig) {
    */
   // const state = {}
   /**
-   *  Required. The number of nodes allocated to this cluster. More nodes enable
-   *  higher throughput and more consistent performance.
+   *  The number of nodes allocated to this cluster. More nodes enable higher
+   *  throughput and more consistent performance.
    */
   // const serveNodes = 1234
+  /**
+   *  Configuration for this cluster.
+   */
+  // const clusterConfig = {}
   /**
    *  (`CreationOnly`)
    *  The type of storage used by this cluster to serve its
@@ -63,7 +67,6 @@ function main(name, state, serveNodes, encryptionConfig) {
     const request = {
       name,
       state,
-      serveNodes,
       encryptionConfig,
     };
 

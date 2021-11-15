@@ -12,40 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 'use strict';
 
-function main(name) {
-  // [START bigtableadmin_v2_generated_BigtableTableAdmin_GetBackup_async]
+function main(cluster, updateMask) {
+  // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateCluster_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. Name of the backup.
-   *  Values are of the form
-   *  `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}`.
+   *  Required. The Cluster which contains the partial updates to be applied, subject to
+   *  the update_mask.
    */
-  // const name = 'abc123'
+  // const cluster = {}
+  /**
+   *  Required. The subset of Cluster fields which should be replaced.
+   */
+  // const updateMask = {}
 
   // Imports the Admin library
-  const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
+  const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
 
   // Instantiates a client
-  const adminClient = new BigtableTableAdminClient();
+  const adminClient = new BigtableInstanceAdminClient();
 
-  async function callGetBackup() {
+  async function callPartialUpdateCluster() {
     // Construct request
     const request = {
-      name,
+      cluster,
+      updateMask,
     };
 
     // Run request
-    const response = await adminClient.getBackup(request);
+    const [operation] = await adminClient.partialUpdateCluster(request);
+    const [response] = await operation.promise();
     console.log(response);
   }
 
-  callGetBackup();
-  // [END bigtableadmin_v2_generated_BigtableTableAdmin_GetBackup_async]
+  callPartialUpdateCluster();
+  // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateCluster_async]
 }
 
 process.on('unhandledRejection', err => {
