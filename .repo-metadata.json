@@ -12,5 +12,5 @@
   "requires_billing": true,
   "codeowner_team": "@googleapis/api-bigtable",
   "api_shortname": "bigtable",
-  "library_type": ""
+  "library_type": "GAPIC_COMBO"
 }
