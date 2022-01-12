@@ -1545,7 +1545,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           gaxOpts: options.gaxOptions,
           retryOpts,
         })
-        .on('request', () => numRequestsMade++)
         .on('error', (err: ServiceError) => {
           if (numRequestsMade === 0) {
             callback(err); // Likely a "projectId not detected" error.
@@ -1575,6 +1574,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           });
         })
         .on('end', onBatchResponse);
+        numRequestsMade++;
     };
 
     makeNextBatchRequest();

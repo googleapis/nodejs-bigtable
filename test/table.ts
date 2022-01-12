@@ -2471,7 +2471,6 @@ describe('Bigtable/Table', () => {
           });
 
           setImmediate(() => {
-            stream.emit('request');
             stream.end({entries: fakeStatuses});
           });
 
