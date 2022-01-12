@@ -905,8 +905,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       activeRequestStream = requestStream!;
 
-      requestStream!.on('request', () => numRequestsMade++);
-
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
           if (
@@ -945,6 +943,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
       });
       rowStream.pipe(userStream);
+      numRequestsMade++;
     };
 
     makeNewRequest();
