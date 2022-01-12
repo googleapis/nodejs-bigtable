@@ -6,7 +6,6 @@
 
 
 [![npm version](https://img.shields.io/npm/v/@google-cloud/bigtable.svg)](https://www.npmjs.org/package/@google-cloud/bigtable)
-[![codecov](https://img.shields.io/codecov/c/github/googleapis/nodejs-bigtable/main.svg?style=flat)](https://codecov.io/gh/googleapis/nodejs-bigtable)
 
 
 
