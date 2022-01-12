@@ -1574,7 +1574,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           });
         })
         .on('end', onBatchResponse);
-        numRequestsMade++;
+      numRequestsMade++;
     };
 
     makeNextBatchRequest();
