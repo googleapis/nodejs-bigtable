@@ -1502,6 +1502,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const onBatchResponse = (
       err: ServiceError | PartialFailureError | null
     ) => {
+      // TODO: enable retries when the entire RPC fails
       if (err) {
         // The error happened before a request was even made, don't retry.
         callback(err);
@@ -1546,6 +1547,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           retryOpts,
         })
         .on('error', (err: ServiceError) => {
+          // TODO: this check doesn't actually do anything, onBatchResponse
+          // currently doesn't retry RPC errors, only entry failures
           if (numRequestsMade === 0) {
             callback(err); // Likely a "projectId not detected" error.
             return;
