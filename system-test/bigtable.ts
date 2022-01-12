@@ -276,9 +276,7 @@ describe('Bigtable', () => {
         await operation.promise();
         throw new Error('Cluster creation should not have succeeded');
       } catch (e) {
-        assert(
-          e.message.includes('default keys and CMEKs are not allowed')
-        );
+        assert(e.message.includes('default keys and CMEKs are not allowed'));
       }
     });
   });
