@@ -166,13 +166,14 @@ export class ChunkTransformer extends Transform {
    * @public
    * @param {error} err error if any
    */
-  destroy(err?: Error): void {
-    if (this._destroyed) return;
+  destroy(err?: Error): this {
+    if (this._destroyed) return this;
     this._destroyed = true;
     if (err) {
       this.emit('error', err);
     }
     this.emit('close');
+    return this
   }
 
   /**
