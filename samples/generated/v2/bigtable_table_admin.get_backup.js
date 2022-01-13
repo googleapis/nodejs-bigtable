@@ -32,7 +32,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function getBackup() {
+  async function callGetBackup() {
     // Construct request
     const request = {
       name,
@@ -43,7 +43,7 @@ function main(name) {
     console.log(response);
   }
 
-  getBackup();
+  callGetBackup();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_GetBackup_async]
 }
 

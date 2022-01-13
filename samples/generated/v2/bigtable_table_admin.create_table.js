@@ -33,7 +33,7 @@ function main(parent, tableId, table) {
   /**
    *  Required. The Table to create.
    */
-  // const table = ''
+  // const table = {}
   /**
    *  The optional list of row keys that will be used to initially split the
    *  table into several tablets (tablets are similar to HBase regions).
@@ -41,7 +41,7 @@ function main(parent, tableId, table) {
    *  spanning the key ranges: `[, s1), [s1, s2), [s2, )`.
    *  Example:
    *  * Row keys := `["a", "apple", "custom", "customer_1", "customer_2",`
-   *                 `"other", "zz"]`
+   *                 `"other", "zz"`
    *  * initial_split_keys := `["apple", "customer_1", "customer_2", "other"]`
    *  * Key assignment:
    *      - Tablet 1 `[, apple)                => {"a"}.`
@@ -58,7 +58,7 @@ function main(parent, tableId, table) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function createTable() {
+  async function callCreateTable() {
     // Construct request
     const request = {
       parent,
@@ -71,7 +71,7 @@ function main(parent, tableId, table) {
     console.log(response);
   }
 
-  createTable();
+  callCreateTable();
   // [END bigtableadmin_v2_generated_BigtableTableAdmin_CreateTable_async]
 }
 

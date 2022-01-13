@@ -35,7 +35,7 @@ function main(parent, clusterId, cluster) {
    *  Required. The cluster to be created.
    *  Fields marked `OutputOnly` must be left blank.
    */
-  // const cluster = ''
+  // const cluster = {}
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
@@ -43,7 +43,7 @@ function main(parent, clusterId, cluster) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function createCluster() {
+  async function callCreateCluster() {
     // Construct request
     const request = {
       parent,
@@ -57,7 +57,7 @@ function main(parent, clusterId, cluster) {
     console.log(response);
   }
 
-  createCluster();
+  callCreateCluster();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateCluster_async]
 }
 

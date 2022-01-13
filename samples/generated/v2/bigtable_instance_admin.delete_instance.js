@@ -31,7 +31,7 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function deleteInstance() {
+  async function callDeleteInstance() {
     // Construct request
     const request = {
       name,
@@ -42,7 +42,7 @@ function main(name) {
     console.log(response);
   }
 
-  deleteInstance();
+  callDeleteInstance();
   // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_DeleteInstance_async]
 }
 
