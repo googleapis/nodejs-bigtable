@@ -1187,7 +1187,6 @@ describe('Bigtable/Table', () => {
           (stream as any).abort = () => {};
 
           setImmediate(() => {
-            stream.emit('request');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (emitters!.shift() as any)(stream);
           });
@@ -2372,7 +2371,6 @@ describe('Bigtable/Table', () => {
             });
 
             setImmediate(() => {
-              stream.emit('request');
               stream.emit('error', error);
             });
 
@@ -2471,7 +2469,6 @@ describe('Bigtable/Table', () => {
           });
 
           setImmediate(() => {
-            stream.emit('request');
             stream.end({entries: fakeStatuses});
           });
 
@@ -2526,7 +2523,6 @@ describe('Bigtable/Table', () => {
           });
 
           setImmediate(() => {
-            stream.emit('request');
             stream.end({entries: fakeStatuses.shift()});
           });
 
