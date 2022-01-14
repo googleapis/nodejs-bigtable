@@ -887,15 +887,15 @@ export class Bigtable {
    * Terminate grpc channels and close all the clients.
    */
   close(): Promise<void> | Promise<void[]> {
-    let combined = []
+    const combined = [];
     if (this.api['BigtableInstanceAdminClient']) {
-        combined.push(this.api['BigtableInstanceAdminClient'].close());
+      combined.push(this.api['BigtableInstanceAdminClient'].close());
     }
     if (this.api['BigtableTableAdminClient']) {
-        combined.push(this.api['BigtableTableAdminClient'].close());
+      combined.push(this.api['BigtableTableAdminClient'].close());
     }
     if (this.api['BigtableClient']) {
-        combined.push(this.api['BigtableClient'].close());
+      combined.push(this.api['BigtableClient'].close());
     }
     if (combined.length == 0) {
       return Promise.resolve();
