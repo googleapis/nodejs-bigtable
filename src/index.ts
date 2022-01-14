@@ -897,7 +897,7 @@ export class Bigtable {
     if (this.api['BigtableClient']) {
       combined.push(this.api['BigtableClient'].close());
     }
-    if (combined.length == 0) {
+    if (combined.length === 0) {
       return Promise.resolve();
     } else {
       return Promise.all(combined);
