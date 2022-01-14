@@ -239,6 +239,34 @@
                             }
                           ]
                         },
+                        "PartialUpdateCluster": {
+                          "requestType": "PartialUpdateClusterRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{cluster.name=projects/*/instances/*/clusters/*}",
+                            "(google.api.http).body": "cluster",
+                            "(google.api.method_signature)": "cluster,update_mask",
+                            "(google.longrunning.operation_info).response_type": "Cluster",
+                            "(google.longrunning.operation_info).metadata_type": "PartialUpdateClusterMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "patch": "/v2/{cluster.name=projects/*/instances/*/clusters/*}",
+                                "body": "cluster"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "cluster,update_mask"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Cluster",
+                                "metadata_type": "PartialUpdateClusterMetadata"
+                              }
+                            }
+                          ]
+                        },
                         "DeleteCluster": {
                           "requestType": "DeleteClusterRequest",
                           "responseType": "google.protobuf.Empty",
@@ -679,6 +707,40 @@
                         }
                       }
                     },
+                    "PartialUpdateClusterMetadata": {
+                      "fields": {
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 1
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "originalRequest": {
+                          "type": "PartialUpdateClusterRequest",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "PartialUpdateClusterRequest": {
+                      "fields": {
+                        "cluster": {
+                          "type": "Cluster",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
                     "CreateAppProfileRequest": {
                       "fields": {
                         "parent": {
@@ -861,10 +923,43 @@
                         }
                       }
                     },
+                    "AutoscalingTargets": {
+                      "fields": {
+                        "cpuUtilizationPercent": {
+                          "type": "int32",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "AutoscalingLimits": {
+                      "fields": {
+                        "minServeNodes": {
+                          "type": "int32",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "maxServeNodes": {
+                          "type": "int32",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
                     "Cluster": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Cluster",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}"
+                      },
+                      "oneofs": {
+                        "config": {
+                          "oneof": [
+                            "clusterConfig"
+                          ]
+                        }
                       },
                       "fields": {
                         "name": {
@@ -890,10 +985,11 @@
                         },
                         "serveNodes": {
                           "type": "int32",
-                          "id": 4,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
+                          "id": 4
+                        },
+                        "clusterConfig": {
+                          "type": "ClusterConfig",
+                          "id": 7
                         },
                         "defaultStorageType": {
                           "type": "StorageType",
@@ -908,6 +1004,32 @@
                         }
                       },
                       "nested": {
+                        "ClusterAutoscalingConfig": {
+                          "fields": {
+                            "autoscalingLimits": {
+                              "type": "AutoscalingLimits",
+                              "id": 1,
+                              "options": {
+                                "(google.api.field_behavior)": "REQUIRED"
+                              }
+                            },
+                            "autoscalingTargets": {
+                              "type": "AutoscalingTargets",
+                              "id": 2,
+                              "options": {
+                                "(google.api.field_behavior)": "REQUIRED"
+                              }
+                            }
+                          }
+                        },
+                        "ClusterConfig": {
+                          "fields": {
+                            "clusterAutoscalingConfig": {
+                              "type": "ClusterAutoscalingConfig",
+                              "id": 1
+                            }
+                          }
+                        },
                         "EncryptionConfig": {
                           "fields": {
                             "kmsKeyName": {

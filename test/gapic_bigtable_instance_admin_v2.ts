@@ -2524,6 +2524,210 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
   });
 
+  describe('partialUpdateCluster', () => {
+    it('invokes partialUpdateCluster without error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
+      );
+      request.cluster = {};
+      request.cluster.name = '';
+      const expectedHeaderRequestParams = 'cluster.name=';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedResponse = generateSampleMessage(
+        new protos.google.longrunning.Operation()
+      );
+      client.innerApiCalls.partialUpdateCluster =
+        stubLongRunningCall(expectedResponse);
+      const [operation] = await client.partialUpdateCluster(request);
+      const [response] = await operation.promise();
+      assert.deepStrictEqual(response, expectedResponse);
+      assert(
+        (client.innerApiCalls.partialUpdateCluster as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions, undefined)
+      );
+    });
+
+    it('invokes partialUpdateCluster without error using callback', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
+      );
+      request.cluster = {};
+      request.cluster.name = '';
+      const expectedHeaderRequestParams = 'cluster.name=';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedResponse = generateSampleMessage(
+        new protos.google.longrunning.Operation()
+      );
+      client.innerApiCalls.partialUpdateCluster =
+        stubLongRunningCallWithCallback(expectedResponse);
+      const promise = new Promise((resolve, reject) => {
+        client.partialUpdateCluster(
+          request,
+          (
+            err?: Error | null,
+            result?: LROperation<
+              protos.google.bigtable.admin.v2.ICluster,
+              protos.google.bigtable.admin.v2.IPartialUpdateClusterMetadata
+            > | null
+          ) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+      });
+      const operation = (await promise) as LROperation<
+        protos.google.bigtable.admin.v2.ICluster,
+        protos.google.bigtable.admin.v2.IPartialUpdateClusterMetadata
+      >;
+      const [response] = await operation.promise();
+      assert.deepStrictEqual(response, expectedResponse);
+      assert(
+        (client.innerApiCalls.partialUpdateCluster as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions /*, callback defined above */)
+      );
+    });
+
+    it('invokes partialUpdateCluster with call error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
+      );
+      request.cluster = {};
+      request.cluster.name = '';
+      const expectedHeaderRequestParams = 'cluster.name=';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedError = new Error('expected');
+      client.innerApiCalls.partialUpdateCluster = stubLongRunningCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(client.partialUpdateCluster(request), expectedError);
+      assert(
+        (client.innerApiCalls.partialUpdateCluster as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions, undefined)
+      );
+    });
+
+    it('invokes partialUpdateCluster with LRO error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
+      );
+      request.cluster = {};
+      request.cluster.name = '';
+      const expectedHeaderRequestParams = 'cluster.name=';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedError = new Error('expected');
+      client.innerApiCalls.partialUpdateCluster = stubLongRunningCall(
+        undefined,
+        undefined,
+        expectedError
+      );
+      const [operation] = await client.partialUpdateCluster(request);
+      await assert.rejects(operation.promise(), expectedError);
+      assert(
+        (client.innerApiCalls.partialUpdateCluster as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions, undefined)
+      );
+    });
+
+    it('invokes checkPartialUpdateClusterProgress without error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const expectedResponse = generateSampleMessage(
+        new operationsProtos.google.longrunning.Operation()
+      );
+      expectedResponse.name = 'test';
+      expectedResponse.response = {type_url: 'url', value: Buffer.from('')};
+      expectedResponse.metadata = {type_url: 'url', value: Buffer.from('')};
+
+      client.operationsClient.getOperation = stubSimpleCall(expectedResponse);
+      const decodedOperation = await client.checkPartialUpdateClusterProgress(
+        expectedResponse.name
+      );
+      assert.deepStrictEqual(decodedOperation.name, expectedResponse.name);
+      assert(decodedOperation.metadata);
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+
+    it('invokes checkPartialUpdateClusterProgress with error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const expectedError = new Error('expected');
+
+      client.operationsClient.getOperation = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(
+        client.checkPartialUpdateClusterProgress(''),
+        expectedError
+      );
+      assert((client.operationsClient.getOperation as SinonStub).getCall(0));
+    });
+  });
+
   describe('updateAppProfile', () => {
     it('invokes updateAppProfile without error', async () => {
       const client =
