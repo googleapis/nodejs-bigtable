@@ -884,6 +884,27 @@ export class Bigtable {
   }
 
   /**
+   * Terminate grpc channels and close all the clients.
+   */
+  close(): Promise<void> | Promise<void[]> {
+    let combined = []
+    if (this.api['BigtableInstanceAdminClient']) {
+        combined.push(this.api['BigtableInstanceAdminClient'].close());
+    }
+    if (this.api['BigtableTableAdminClient']) {
+        combined.push(this.api['BigtableTableAdminClient'].close());
+    }
+    if (this.api['BigtableClient']) {
+        combined.push(this.api['BigtableClient'].close());
+    }
+    if (combined.length == 0) {
+      return Promise.resolve();
+    } else {
+      return Promise.all(combined);
+    }
+  }
+
+  /**
    * Determine and localize the project ID. If a user provides an ID, we bypass
    * checking with the auth client for an ID.
    *
