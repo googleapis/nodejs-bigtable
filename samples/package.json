@@ -19,7 +19,7 @@
     "yargs": "^16.0.0"
   },
   "devDependencies": {
-    "@google-cloud/functions-framework": "^1.5.1",
+    "@google-cloud/functions-framework": "^2.0.0",
     "chai": "^4.2.0",
     "mocha": "^8.0.0",
     "snap-shot-it": "^7.9.1",
