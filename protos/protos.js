@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -424,6 +424,39 @@
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @instance
                          * @param {google.bigtable.admin.v2.ICluster} request Cluster message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateCluster}.
+                         * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
+                         * @typedef PartialUpdateClusterCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls PartialUpdateCluster.
+                         * @function partialUpdateCluster
+                         * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterRequest} request PartialUpdateClusterRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableInstanceAdmin.PartialUpdateClusterCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableInstanceAdmin.prototype.partialUpdateCluster = function partialUpdateCluster(request, callback) {
+                            return this.rpcCall(partialUpdateCluster, $root.google.bigtable.admin.v2.PartialUpdateClusterRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "PartialUpdateCluster" });
+    
+                        /**
+                         * Calls PartialUpdateCluster.
+                         * @function partialUpdateCluster
+                         * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterRequest} request PartialUpdateClusterRequest message or plain object
                          * @returns {Promise<google.longrunning.Operation>} Promise
                          * @variation 2
                          */
@@ -4183,6 +4216,473 @@
                         return UpdateClusterMetadata;
                     })();
     
+                    v2.PartialUpdateClusterMetadata = (function() {
+    
+                        /**
+                         * Properties of a PartialUpdateClusterMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IPartialUpdateClusterMetadata
+                         * @property {google.protobuf.ITimestamp|null} [requestTime] PartialUpdateClusterMetadata requestTime
+                         * @property {google.protobuf.ITimestamp|null} [finishTime] PartialUpdateClusterMetadata finishTime
+                         * @property {google.bigtable.admin.v2.IPartialUpdateClusterRequest|null} [originalRequest] PartialUpdateClusterMetadata originalRequest
+                         */
+    
+                        /**
+                         * Constructs a new PartialUpdateClusterMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a PartialUpdateClusterMetadata.
+                         * @implements IPartialUpdateClusterMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterMetadata=} [properties] Properties to set
+                         */
+                        function PartialUpdateClusterMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * PartialUpdateClusterMetadata requestTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} requestTime
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @instance
+                         */
+                        PartialUpdateClusterMetadata.prototype.requestTime = null;
+    
+                        /**
+                         * PartialUpdateClusterMetadata finishTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} finishTime
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @instance
+                         */
+                        PartialUpdateClusterMetadata.prototype.finishTime = null;
+    
+                        /**
+                         * PartialUpdateClusterMetadata originalRequest.
+                         * @member {google.bigtable.admin.v2.IPartialUpdateClusterRequest|null|undefined} originalRequest
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @instance
+                         */
+                        PartialUpdateClusterMetadata.prototype.originalRequest = null;
+    
+                        /**
+                         * Creates a new PartialUpdateClusterMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterMetadata} PartialUpdateClusterMetadata instance
+                         */
+                        PartialUpdateClusterMetadata.create = function create(properties) {
+                            return new PartialUpdateClusterMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified PartialUpdateClusterMetadata message. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterMetadata} message PartialUpdateClusterMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        PartialUpdateClusterMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.requestTime != null && Object.hasOwnProperty.call(message, "requestTime"))
+                                $root.google.protobuf.Timestamp.encode(message.requestTime, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.finishTime != null && Object.hasOwnProperty.call(message, "finishTime"))
+                                $root.google.protobuf.Timestamp.encode(message.finishTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.originalRequest != null && Object.hasOwnProperty.call(message, "originalRequest"))
+                                $root.google.bigtable.admin.v2.PartialUpdateClusterRequest.encode(message.originalRequest, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified PartialUpdateClusterMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterMetadata} message PartialUpdateClusterMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        PartialUpdateClusterMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a PartialUpdateClusterMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterMetadata} PartialUpdateClusterMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        PartialUpdateClusterMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.PartialUpdateClusterMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.requestTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.finishTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    message.originalRequest = $root.google.bigtable.admin.v2.PartialUpdateClusterRequest.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a PartialUpdateClusterMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterMetadata} PartialUpdateClusterMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        PartialUpdateClusterMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a PartialUpdateClusterMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        PartialUpdateClusterMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.requestTime != null && message.hasOwnProperty("requestTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.requestTime);
+                                if (error)
+                                    return "requestTime." + error;
+                            }
+                            if (message.finishTime != null && message.hasOwnProperty("finishTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.finishTime);
+                                if (error)
+                                    return "finishTime." + error;
+                            }
+                            if (message.originalRequest != null && message.hasOwnProperty("originalRequest")) {
+                                var error = $root.google.bigtable.admin.v2.PartialUpdateClusterRequest.verify(message.originalRequest);
+                                if (error)
+                                    return "originalRequest." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a PartialUpdateClusterMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterMetadata} PartialUpdateClusterMetadata
+                         */
+                        PartialUpdateClusterMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.PartialUpdateClusterMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.PartialUpdateClusterMetadata();
+                            if (object.requestTime != null) {
+                                if (typeof object.requestTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.PartialUpdateClusterMetadata.requestTime: object expected");
+                                message.requestTime = $root.google.protobuf.Timestamp.fromObject(object.requestTime);
+                            }
+                            if (object.finishTime != null) {
+                                if (typeof object.finishTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.PartialUpdateClusterMetadata.finishTime: object expected");
+                                message.finishTime = $root.google.protobuf.Timestamp.fromObject(object.finishTime);
+                            }
+                            if (object.originalRequest != null) {
+                                if (typeof object.originalRequest !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.PartialUpdateClusterMetadata.originalRequest: object expected");
+                                message.originalRequest = $root.google.bigtable.admin.v2.PartialUpdateClusterRequest.fromObject(object.originalRequest);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a PartialUpdateClusterMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.PartialUpdateClusterMetadata} message PartialUpdateClusterMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        PartialUpdateClusterMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.requestTime = null;
+                                object.finishTime = null;
+                                object.originalRequest = null;
+                            }
+                            if (message.requestTime != null && message.hasOwnProperty("requestTime"))
+                                object.requestTime = $root.google.protobuf.Timestamp.toObject(message.requestTime, options);
+                            if (message.finishTime != null && message.hasOwnProperty("finishTime"))
+                                object.finishTime = $root.google.protobuf.Timestamp.toObject(message.finishTime, options);
+                            if (message.originalRequest != null && message.hasOwnProperty("originalRequest"))
+                                object.originalRequest = $root.google.bigtable.admin.v2.PartialUpdateClusterRequest.toObject(message.originalRequest, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this PartialUpdateClusterMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        PartialUpdateClusterMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return PartialUpdateClusterMetadata;
+                    })();
+    
+                    v2.PartialUpdateClusterRequest = (function() {
+    
+                        /**
+                         * Properties of a PartialUpdateClusterRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IPartialUpdateClusterRequest
+                         * @property {google.bigtable.admin.v2.ICluster|null} [cluster] PartialUpdateClusterRequest cluster
+                         * @property {google.protobuf.IFieldMask|null} [updateMask] PartialUpdateClusterRequest updateMask
+                         */
+    
+                        /**
+                         * Constructs a new PartialUpdateClusterRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a PartialUpdateClusterRequest.
+                         * @implements IPartialUpdateClusterRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterRequest=} [properties] Properties to set
+                         */
+                        function PartialUpdateClusterRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * PartialUpdateClusterRequest cluster.
+                         * @member {google.bigtable.admin.v2.ICluster|null|undefined} cluster
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @instance
+                         */
+                        PartialUpdateClusterRequest.prototype.cluster = null;
+    
+                        /**
+                         * PartialUpdateClusterRequest updateMask.
+                         * @member {google.protobuf.IFieldMask|null|undefined} updateMask
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @instance
+                         */
+                        PartialUpdateClusterRequest.prototype.updateMask = null;
+    
+                        /**
+                         * Creates a new PartialUpdateClusterRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterRequest} PartialUpdateClusterRequest instance
+                         */
+                        PartialUpdateClusterRequest.create = function create(properties) {
+                            return new PartialUpdateClusterRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified PartialUpdateClusterRequest message. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterRequest} message PartialUpdateClusterRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        PartialUpdateClusterRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.cluster != null && Object.hasOwnProperty.call(message, "cluster"))
+                                $root.google.bigtable.admin.v2.Cluster.encode(message.cluster, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.updateMask != null && Object.hasOwnProperty.call(message, "updateMask"))
+                                $root.google.protobuf.FieldMask.encode(message.updateMask, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified PartialUpdateClusterRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IPartialUpdateClusterRequest} message PartialUpdateClusterRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        PartialUpdateClusterRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a PartialUpdateClusterRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterRequest} PartialUpdateClusterRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        PartialUpdateClusterRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.PartialUpdateClusterRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.cluster = $root.google.bigtable.admin.v2.Cluster.decode(reader, reader.uint32());
+                                    break;
+                                case 2:
+                                    message.updateMask = $root.google.protobuf.FieldMask.decode(reader, reader.uint32());
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a PartialUpdateClusterRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterRequest} PartialUpdateClusterRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        PartialUpdateClusterRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a PartialUpdateClusterRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        PartialUpdateClusterRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.cluster != null && message.hasOwnProperty("cluster")) {
+                                var error = $root.google.bigtable.admin.v2.Cluster.verify(message.cluster);
+                                if (error)
+                                    return "cluster." + error;
+                            }
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask")) {
+                                var error = $root.google.protobuf.FieldMask.verify(message.updateMask);
+                                if (error)
+                                    return "updateMask." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a PartialUpdateClusterRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.PartialUpdateClusterRequest} PartialUpdateClusterRequest
+                         */
+                        PartialUpdateClusterRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.PartialUpdateClusterRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.PartialUpdateClusterRequest();
+                            if (object.cluster != null) {
+                                if (typeof object.cluster !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.PartialUpdateClusterRequest.cluster: object expected");
+                                message.cluster = $root.google.bigtable.admin.v2.Cluster.fromObject(object.cluster);
+                            }
+                            if (object.updateMask != null) {
+                                if (typeof object.updateMask !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.PartialUpdateClusterRequest.updateMask: object expected");
+                                message.updateMask = $root.google.protobuf.FieldMask.fromObject(object.updateMask);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a PartialUpdateClusterRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.PartialUpdateClusterRequest} message PartialUpdateClusterRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        PartialUpdateClusterRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.cluster = null;
+                                object.updateMask = null;
+                            }
+                            if (message.cluster != null && message.hasOwnProperty("cluster"))
+                                object.cluster = $root.google.bigtable.admin.v2.Cluster.toObject(message.cluster, options);
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask"))
+                                object.updateMask = $root.google.protobuf.FieldMask.toObject(message.updateMask, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this PartialUpdateClusterRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.PartialUpdateClusterRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        PartialUpdateClusterRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return PartialUpdateClusterRequest;
+                    })();
+    
                     v2.CreateAppProfileRequest = (function() {
     
                         /**
@@ -6150,6 +6650,403 @@
                         return Instance;
                     })();
     
+                    v2.AutoscalingTargets = (function() {
+    
+                        /**
+                         * Properties of an AutoscalingTargets.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IAutoscalingTargets
+                         * @property {number|null} [cpuUtilizationPercent] AutoscalingTargets cpuUtilizationPercent
+                         */
+    
+                        /**
+                         * Constructs a new AutoscalingTargets.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an AutoscalingTargets.
+                         * @implements IAutoscalingTargets
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IAutoscalingTargets=} [properties] Properties to set
+                         */
+                        function AutoscalingTargets(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * AutoscalingTargets cpuUtilizationPercent.
+                         * @member {number} cpuUtilizationPercent
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @instance
+                         */
+                        AutoscalingTargets.prototype.cpuUtilizationPercent = 0;
+    
+                        /**
+                         * Creates a new AutoscalingTargets instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {google.bigtable.admin.v2.IAutoscalingTargets=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.AutoscalingTargets} AutoscalingTargets instance
+                         */
+                        AutoscalingTargets.create = function create(properties) {
+                            return new AutoscalingTargets(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified AutoscalingTargets message. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingTargets.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {google.bigtable.admin.v2.IAutoscalingTargets} message AutoscalingTargets message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        AutoscalingTargets.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.cpuUtilizationPercent != null && Object.hasOwnProperty.call(message, "cpuUtilizationPercent"))
+                                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.cpuUtilizationPercent);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified AutoscalingTargets message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingTargets.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {google.bigtable.admin.v2.IAutoscalingTargets} message AutoscalingTargets message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        AutoscalingTargets.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an AutoscalingTargets message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.AutoscalingTargets} AutoscalingTargets
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        AutoscalingTargets.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.AutoscalingTargets();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 2:
+                                    message.cpuUtilizationPercent = reader.int32();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an AutoscalingTargets message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.AutoscalingTargets} AutoscalingTargets
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        AutoscalingTargets.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an AutoscalingTargets message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        AutoscalingTargets.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.cpuUtilizationPercent != null && message.hasOwnProperty("cpuUtilizationPercent"))
+                                if (!$util.isInteger(message.cpuUtilizationPercent))
+                                    return "cpuUtilizationPercent: integer expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an AutoscalingTargets message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.AutoscalingTargets} AutoscalingTargets
+                         */
+                        AutoscalingTargets.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.AutoscalingTargets)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.AutoscalingTargets();
+                            if (object.cpuUtilizationPercent != null)
+                                message.cpuUtilizationPercent = object.cpuUtilizationPercent | 0;
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an AutoscalingTargets message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @static
+                         * @param {google.bigtable.admin.v2.AutoscalingTargets} message AutoscalingTargets
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        AutoscalingTargets.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.cpuUtilizationPercent = 0;
+                            if (message.cpuUtilizationPercent != null && message.hasOwnProperty("cpuUtilizationPercent"))
+                                object.cpuUtilizationPercent = message.cpuUtilizationPercent;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this AutoscalingTargets to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        AutoscalingTargets.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return AutoscalingTargets;
+                    })();
+    
+                    v2.AutoscalingLimits = (function() {
+    
+                        /**
+                         * Properties of an AutoscalingLimits.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IAutoscalingLimits
+                         * @property {number|null} [minServeNodes] AutoscalingLimits minServeNodes
+                         * @property {number|null} [maxServeNodes] AutoscalingLimits maxServeNodes
+                         */
+    
+                        /**
+                         * Constructs a new AutoscalingLimits.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an AutoscalingLimits.
+                         * @implements IAutoscalingLimits
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IAutoscalingLimits=} [properties] Properties to set
+                         */
+                        function AutoscalingLimits(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * AutoscalingLimits minServeNodes.
+                         * @member {number} minServeNodes
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @instance
+                         */
+                        AutoscalingLimits.prototype.minServeNodes = 0;
+    
+                        /**
+                         * AutoscalingLimits maxServeNodes.
+                         * @member {number} maxServeNodes
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @instance
+                         */
+                        AutoscalingLimits.prototype.maxServeNodes = 0;
+    
+                        /**
+                         * Creates a new AutoscalingLimits instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {google.bigtable.admin.v2.IAutoscalingLimits=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.AutoscalingLimits} AutoscalingLimits instance
+                         */
+                        AutoscalingLimits.create = function create(properties) {
+                            return new AutoscalingLimits(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified AutoscalingLimits message. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingLimits.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {google.bigtable.admin.v2.IAutoscalingLimits} message AutoscalingLimits message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        AutoscalingLimits.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.minServeNodes != null && Object.hasOwnProperty.call(message, "minServeNodes"))
+                                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.minServeNodes);
+                            if (message.maxServeNodes != null && Object.hasOwnProperty.call(message, "maxServeNodes"))
+                                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.maxServeNodes);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified AutoscalingLimits message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingLimits.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {google.bigtable.admin.v2.IAutoscalingLimits} message AutoscalingLimits message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        AutoscalingLimits.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an AutoscalingLimits message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.AutoscalingLimits} AutoscalingLimits
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        AutoscalingLimits.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.AutoscalingLimits();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.minServeNodes = reader.int32();
+                                    break;
+                                case 2:
+                                    message.maxServeNodes = reader.int32();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an AutoscalingLimits message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.AutoscalingLimits} AutoscalingLimits
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        AutoscalingLimits.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an AutoscalingLimits message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        AutoscalingLimits.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.minServeNodes != null && message.hasOwnProperty("minServeNodes"))
+                                if (!$util.isInteger(message.minServeNodes))
+                                    return "minServeNodes: integer expected";
+                            if (message.maxServeNodes != null && message.hasOwnProperty("maxServeNodes"))
+                                if (!$util.isInteger(message.maxServeNodes))
+                                    return "maxServeNodes: integer expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an AutoscalingLimits message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.AutoscalingLimits} AutoscalingLimits
+                         */
+                        AutoscalingLimits.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.AutoscalingLimits)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.AutoscalingLimits();
+                            if (object.minServeNodes != null)
+                                message.minServeNodes = object.minServeNodes | 0;
+                            if (object.maxServeNodes != null)
+                                message.maxServeNodes = object.maxServeNodes | 0;
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an AutoscalingLimits message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @static
+                         * @param {google.bigtable.admin.v2.AutoscalingLimits} message AutoscalingLimits
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        AutoscalingLimits.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.minServeNodes = 0;
+                                object.maxServeNodes = 0;
+                            }
+                            if (message.minServeNodes != null && message.hasOwnProperty("minServeNodes"))
+                                object.minServeNodes = message.minServeNodes;
+                            if (message.maxServeNodes != null && message.hasOwnProperty("maxServeNodes"))
+                                object.maxServeNodes = message.maxServeNodes;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this AutoscalingLimits to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.AutoscalingLimits
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        AutoscalingLimits.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return AutoscalingLimits;
+                    })();
+    
                     v2.Cluster = (function() {
     
                         /**
@@ -6160,6 +7057,7 @@
                          * @property {string|null} [location] Cluster location
                          * @property {google.bigtable.admin.v2.Cluster.State|null} [state] Cluster state
                          * @property {number|null} [serveNodes] Cluster serveNodes
+                         * @property {google.bigtable.admin.v2.Cluster.IClusterConfig|null} [clusterConfig] Cluster clusterConfig
                          * @property {google.bigtable.admin.v2.StorageType|null} [defaultStorageType] Cluster defaultStorageType
                          * @property {google.bigtable.admin.v2.Cluster.IEncryptionConfig|null} [encryptionConfig] Cluster encryptionConfig
                          */
@@ -6212,6 +7110,14 @@
                         Cluster.prototype.serveNodes = 0;
     
                         /**
+                         * Cluster clusterConfig.
+                         * @member {google.bigtable.admin.v2.Cluster.IClusterConfig|null|undefined} clusterConfig
+                         * @memberof google.bigtable.admin.v2.Cluster
+                         * @instance
+                         */
+                        Cluster.prototype.clusterConfig = null;
+    
+                        /**
                          * Cluster defaultStorageType.
                          * @member {google.bigtable.admin.v2.StorageType} defaultStorageType
                          * @memberof google.bigtable.admin.v2.Cluster
@@ -6226,6 +7132,20 @@
                          * @instance
                          */
                         Cluster.prototype.encryptionConfig = null;
+    
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+    
+                        /**
+                         * Cluster config.
+                         * @member {"clusterConfig"|undefined} config
+                         * @memberof google.bigtable.admin.v2.Cluster
+                         * @instance
+                         */
+                        Object.defineProperty(Cluster.prototype, "config", {
+                            get: $util.oneOfGetter($oneOfFields = ["clusterConfig"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
     
                         /**
                          * Creates a new Cluster instance using the specified properties.
@@ -6263,6 +7183,8 @@
                                 writer.uint32(/* id 5, wireType 0 =*/40).int32(message.defaultStorageType);
                             if (message.encryptionConfig != null && Object.hasOwnProperty.call(message, "encryptionConfig"))
                                 $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.encode(message.encryptionConfig, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            if (message.clusterConfig != null && Object.hasOwnProperty.call(message, "clusterConfig"))
+                                $root.google.bigtable.admin.v2.Cluster.ClusterConfig.encode(message.clusterConfig, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
                             return writer;
                         };
     
@@ -6309,6 +7231,9 @@
                                 case 4:
                                     message.serveNodes = reader.int32();
                                     break;
+                                case 7:
+                                    message.clusterConfig = $root.google.bigtable.admin.v2.Cluster.ClusterConfig.decode(reader, reader.uint32());
+                                    break;
                                 case 5:
                                     message.defaultStorageType = reader.int32();
                                     break;
@@ -6350,6 +7275,7 @@
                         Cluster.verify = function verify(message) {
                             if (typeof message !== "object" || message === null)
                                 return "object expected";
+                            var properties = {};
                             if (message.name != null && message.hasOwnProperty("name"))
                                 if (!$util.isString(message.name))
                                     return "name: string expected";
@@ -6370,6 +7296,14 @@
                             if (message.serveNodes != null && message.hasOwnProperty("serveNodes"))
                                 if (!$util.isInteger(message.serveNodes))
                                     return "serveNodes: integer expected";
+                            if (message.clusterConfig != null && message.hasOwnProperty("clusterConfig")) {
+                                properties.config = 1;
+                                {
+                                    var error = $root.google.bigtable.admin.v2.Cluster.ClusterConfig.verify(message.clusterConfig);
+                                    if (error)
+                                        return "clusterConfig." + error;
+                                }
+                            }
                             if (message.defaultStorageType != null && message.hasOwnProperty("defaultStorageType"))
                                 switch (message.defaultStorageType) {
                                 default:
@@ -6427,6 +7361,11 @@
                             }
                             if (object.serveNodes != null)
                                 message.serveNodes = object.serveNodes | 0;
+                            if (object.clusterConfig != null) {
+                                if (typeof object.clusterConfig !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Cluster.clusterConfig: object expected");
+                                message.clusterConfig = $root.google.bigtable.admin.v2.Cluster.ClusterConfig.fromObject(object.clusterConfig);
+                            }
                             switch (object.defaultStorageType) {
                             case "STORAGE_TYPE_UNSPECIFIED":
                             case 0:
@@ -6482,6 +7421,11 @@
                                 object.defaultStorageType = options.enums === String ? $root.google.bigtable.admin.v2.StorageType[message.defaultStorageType] : message.defaultStorageType;
                             if (message.encryptionConfig != null && message.hasOwnProperty("encryptionConfig"))
                                 object.encryptionConfig = $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.toObject(message.encryptionConfig, options);
+                            if (message.clusterConfig != null && message.hasOwnProperty("clusterConfig")) {
+                                object.clusterConfig = $root.google.bigtable.admin.v2.Cluster.ClusterConfig.toObject(message.clusterConfig, options);
+                                if (options.oneofs)
+                                    object.config = "clusterConfig";
+                            }
                             return object;
                         };
     
@@ -6495,6 +7439,418 @@
                         Cluster.prototype.toJSON = function toJSON() {
                             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                         };
+    
+                        Cluster.ClusterAutoscalingConfig = (function() {
+    
+                            /**
+                             * Properties of a ClusterAutoscalingConfig.
+                             * @memberof google.bigtable.admin.v2.Cluster
+                             * @interface IClusterAutoscalingConfig
+                             * @property {google.bigtable.admin.v2.IAutoscalingLimits|null} [autoscalingLimits] ClusterAutoscalingConfig autoscalingLimits
+                             * @property {google.bigtable.admin.v2.IAutoscalingTargets|null} [autoscalingTargets] ClusterAutoscalingConfig autoscalingTargets
+                             */
+    
+                            /**
+                             * Constructs a new ClusterAutoscalingConfig.
+                             * @memberof google.bigtable.admin.v2.Cluster
+                             * @classdesc Represents a ClusterAutoscalingConfig.
+                             * @implements IClusterAutoscalingConfig
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig=} [properties] Properties to set
+                             */
+                            function ClusterAutoscalingConfig(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * ClusterAutoscalingConfig autoscalingLimits.
+                             * @member {google.bigtable.admin.v2.IAutoscalingLimits|null|undefined} autoscalingLimits
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @instance
+                             */
+                            ClusterAutoscalingConfig.prototype.autoscalingLimits = null;
+    
+                            /**
+                             * ClusterAutoscalingConfig autoscalingTargets.
+                             * @member {google.bigtable.admin.v2.IAutoscalingTargets|null|undefined} autoscalingTargets
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @instance
+                             */
+                            ClusterAutoscalingConfig.prototype.autoscalingTargets = null;
+    
+                            /**
+                             * Creates a new ClusterAutoscalingConfig instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig} ClusterAutoscalingConfig instance
+                             */
+                            ClusterAutoscalingConfig.create = function create(properties) {
+                                return new ClusterAutoscalingConfig(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified ClusterAutoscalingConfig message. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig} message ClusterAutoscalingConfig message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClusterAutoscalingConfig.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.autoscalingLimits != null && Object.hasOwnProperty.call(message, "autoscalingLimits"))
+                                    $root.google.bigtable.admin.v2.AutoscalingLimits.encode(message.autoscalingLimits, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                if (message.autoscalingTargets != null && Object.hasOwnProperty.call(message, "autoscalingTargets"))
+                                    $root.google.bigtable.admin.v2.AutoscalingTargets.encode(message.autoscalingTargets, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified ClusterAutoscalingConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig} message ClusterAutoscalingConfig message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClusterAutoscalingConfig.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a ClusterAutoscalingConfig message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig} ClusterAutoscalingConfig
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClusterAutoscalingConfig.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.autoscalingLimits = $root.google.bigtable.admin.v2.AutoscalingLimits.decode(reader, reader.uint32());
+                                        break;
+                                    case 2:
+                                        message.autoscalingTargets = $root.google.bigtable.admin.v2.AutoscalingTargets.decode(reader, reader.uint32());
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a ClusterAutoscalingConfig message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig} ClusterAutoscalingConfig
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClusterAutoscalingConfig.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a ClusterAutoscalingConfig message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            ClusterAutoscalingConfig.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.autoscalingLimits != null && message.hasOwnProperty("autoscalingLimits")) {
+                                    var error = $root.google.bigtable.admin.v2.AutoscalingLimits.verify(message.autoscalingLimits);
+                                    if (error)
+                                        return "autoscalingLimits." + error;
+                                }
+                                if (message.autoscalingTargets != null && message.hasOwnProperty("autoscalingTargets")) {
+                                    var error = $root.google.bigtable.admin.v2.AutoscalingTargets.verify(message.autoscalingTargets);
+                                    if (error)
+                                        return "autoscalingTargets." + error;
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a ClusterAutoscalingConfig message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig} ClusterAutoscalingConfig
+                             */
+                            ClusterAutoscalingConfig.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig();
+                                if (object.autoscalingLimits != null) {
+                                    if (typeof object.autoscalingLimits !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscalingLimits: object expected");
+                                    message.autoscalingLimits = $root.google.bigtable.admin.v2.AutoscalingLimits.fromObject(object.autoscalingLimits);
+                                }
+                                if (object.autoscalingTargets != null) {
+                                    if (typeof object.autoscalingTargets !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.autoscalingTargets: object expected");
+                                    message.autoscalingTargets = $root.google.bigtable.admin.v2.AutoscalingTargets.fromObject(object.autoscalingTargets);
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a ClusterAutoscalingConfig message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig} message ClusterAutoscalingConfig
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            ClusterAutoscalingConfig.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    object.autoscalingLimits = null;
+                                    object.autoscalingTargets = null;
+                                }
+                                if (message.autoscalingLimits != null && message.hasOwnProperty("autoscalingLimits"))
+                                    object.autoscalingLimits = $root.google.bigtable.admin.v2.AutoscalingLimits.toObject(message.autoscalingLimits, options);
+                                if (message.autoscalingTargets != null && message.hasOwnProperty("autoscalingTargets"))
+                                    object.autoscalingTargets = $root.google.bigtable.admin.v2.AutoscalingTargets.toObject(message.autoscalingTargets, options);
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this ClusterAutoscalingConfig to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            ClusterAutoscalingConfig.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return ClusterAutoscalingConfig;
+                        })();
+    
+                        Cluster.ClusterConfig = (function() {
+    
+                            /**
+                             * Properties of a ClusterConfig.
+                             * @memberof google.bigtable.admin.v2.Cluster
+                             * @interface IClusterConfig
+                             * @property {google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig|null} [clusterAutoscalingConfig] ClusterConfig clusterAutoscalingConfig
+                             */
+    
+                            /**
+                             * Constructs a new ClusterConfig.
+                             * @memberof google.bigtable.admin.v2.Cluster
+                             * @classdesc Represents a ClusterConfig.
+                             * @implements IClusterConfig
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterConfig=} [properties] Properties to set
+                             */
+                            function ClusterConfig(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * ClusterConfig clusterAutoscalingConfig.
+                             * @member {google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig|null|undefined} clusterAutoscalingConfig
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @instance
+                             */
+                            ClusterConfig.prototype.clusterAutoscalingConfig = null;
+    
+                            /**
+                             * Creates a new ClusterConfig instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterConfig=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterConfig} ClusterConfig instance
+                             */
+                            ClusterConfig.create = function create(properties) {
+                                return new ClusterConfig(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified ClusterConfig message. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterConfig.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterConfig} message ClusterConfig message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClusterConfig.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.clusterAutoscalingConfig != null && Object.hasOwnProperty.call(message, "clusterAutoscalingConfig"))
+                                    $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.encode(message.clusterAutoscalingConfig, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified ClusterConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterConfig.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.IClusterConfig} message ClusterConfig message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            ClusterConfig.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a ClusterConfig message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterConfig} ClusterConfig
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClusterConfig.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.Cluster.ClusterConfig();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.clusterAutoscalingConfig = $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.decode(reader, reader.uint32());
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a ClusterConfig message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterConfig} ClusterConfig
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            ClusterConfig.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a ClusterConfig message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            ClusterConfig.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.clusterAutoscalingConfig != null && message.hasOwnProperty("clusterAutoscalingConfig")) {
+                                    var error = $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.verify(message.clusterAutoscalingConfig);
+                                    if (error)
+                                        return "clusterAutoscalingConfig." + error;
+                                }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a ClusterConfig message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.Cluster.ClusterConfig} ClusterConfig
+                             */
+                            ClusterConfig.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.Cluster.ClusterConfig)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.Cluster.ClusterConfig();
+                                if (object.clusterAutoscalingConfig != null) {
+                                    if (typeof object.clusterAutoscalingConfig !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.Cluster.ClusterConfig.clusterAutoscalingConfig: object expected");
+                                    message.clusterAutoscalingConfig = $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.fromObject(object.clusterAutoscalingConfig);
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a ClusterConfig message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @static
+                             * @param {google.bigtable.admin.v2.Cluster.ClusterConfig} message ClusterConfig
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            ClusterConfig.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults)
+                                    object.clusterAutoscalingConfig = null;
+                                if (message.clusterAutoscalingConfig != null && message.hasOwnProperty("clusterAutoscalingConfig"))
+                                    object.clusterAutoscalingConfig = $root.google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.toObject(message.clusterAutoscalingConfig, options);
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this ClusterConfig to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.Cluster.ClusterConfig
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            ClusterConfig.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            return ClusterConfig;
+                        })();
     
                         Cluster.EncryptionConfig = (function() {
     

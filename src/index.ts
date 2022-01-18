@@ -884,6 +884,16 @@ export class Bigtable {
   }
 
   /**
+   * Terminate grpc channels and close all the clients.
+   */
+  close(): Promise<void[]> {
+    const combined = Object.keys(this.api).map(clientType =>
+      this.api[clientType].close()
+    );
+    return Promise.all(combined);
+  }
+
+  /**
    * Determine and localize the project ID. If a user provides an ID, we bypass
    * checking with the auth client for an ID.
    *

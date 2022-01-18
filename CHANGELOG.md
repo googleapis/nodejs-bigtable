@@ -4,6 +4,31 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.9.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.8.0...v3.9.0) (2022-01-18)
+
+
+### Features
+
+* add Autoscaling API ([#963](https://github.com/googleapis/nodejs-bigtable/issues/963)) ([86d21e8](https://github.com/googleapis/nodejs-bigtable/commit/86d21e8a63449bbf04e26612f44432e33043cc03))
+
+
+### Bug Fixes
+
+* add close() in the wrapper ([#986](https://github.com/googleapis/nodejs-bigtable/issues/986)) ([839f429](https://github.com/googleapis/nodejs-bigtable/commit/839f429f707bc7f528e49625af974cf2ab1bde38))
+
+## [3.8.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.7.0...v3.8.0) (2022-01-12)
+
+
+### Features
+
+* Add create_time to Instance ([#953](https://github.com/googleapis/nodejs-bigtable/issues/953)) ([de3fc03](https://github.com/googleapis/nodejs-bigtable/commit/de3fc035092a45e032d53aeaa352e98ad9233213))
+
+
+### Bug Fixes
+
+* **deps:** gax to 2.27.1 ([#949](https://github.com/googleapis/nodejs-bigtable/issues/949)) ([0111143](https://github.com/googleapis/nodejs-bigtable/commit/0111143eaee7c93aedb2891867a981f9d63c4f02))
+* fix retry logic in mutate and read ([#980](https://github.com/googleapis/nodejs-bigtable/issues/980)) ([bfa84e1](https://github.com/googleapis/nodejs-bigtable/commit/bfa84e1490d396456d8efbd0fced84b0c71f88a8))
+
 ## [3.7.0](https://www.github.com/googleapis/nodejs-bigtable/compare/v3.6.0...v3.7.0) (2021-09-27)
 
 
