@@ -890,9 +890,6 @@ export class Bigtable {
     const combined = Object.keys(this.api).map(clientType =>
       this.api[clientType].close()
     );
-    if (combined.length === 0) {
-      return Promise.resolve([]);
-    }
     return Promise.all(combined);
   }
 
