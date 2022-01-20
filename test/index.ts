@@ -1156,9 +1156,11 @@ describe('Bigtable', () => {
           if (err) {
             done();
           } else {
-            assert.fail('The request did not fail, but it should have because the connection closed');
+            assert.fail(
+              'The request did not fail, but it should have because the connection closed'
+            );
           }
-        })
+        });
       });
     });
   });
