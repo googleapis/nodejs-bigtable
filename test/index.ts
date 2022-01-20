@@ -1149,4 +1149,17 @@ describe('Bigtable', () => {
       });
     });
   });
+  describe('test the close function', () => {
+    it('request should fail after close is called', done => {
+      bigtable.close().then(() => {
+        bigtable.getInstances((err: Error) => {
+          if (err) {
+            done();
+          } else {
+            assert.fail('The request did not fail, but it should have because the connection closed');
+          }
+        })
+      });
+    });
+  });
 });
