@@ -1149,8 +1149,8 @@ describe('Bigtable', () => {
       });
     });
   });
-  describe('test the close function', () => {
-    it('request should fail after close is called', done => {
+  describe('close', () => {
+    it('should have failed request after close is called', done => {
       bigtable.close().then(() => {
         bigtable.getInstances((err: Error) => {
           if (err) {
