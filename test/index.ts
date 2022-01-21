@@ -1157,7 +1157,7 @@ describe('Bigtable', () => {
             done();
           } else {
             assert.fail(
-              'The request did not fail, but it should have because the connection closed'
+              'The request did not fail, but it should have because the connection is closed'
             );
           }
         });
