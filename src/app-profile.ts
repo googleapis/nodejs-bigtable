@@ -29,7 +29,7 @@ export interface AppProfileOptions {
    * value is required when creating the app profile and optional when setting
    * the metadata.
    */
-  routing?: 'any' | Cluster;
+  routing?: 'any' | Cluster | Array<Cluster>;
   /**
    * Whether or not CheckAndMutateRow and ReadModifyWriteRow requests are
    * allowed by this app profile. It is unsafe to send these requests to the
@@ -203,6 +203,10 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
     if (options.routing) {
       if (options.routing === 'any') {
         appProfile.multiClusterRoutingUseAny = {};
+      } else if (options.routing instanceof Array && options.routing.every(cluster => { return cluster instanceof Cluster })) {
+        appProfile.multiClusterRoutingUseAny = {
+          clusterIds: options.routing.map(cluster => cluster.id)
+        };
       } else if (options.routing instanceof Cluster) {
         appProfile.singleClusterRouting = {
           clusterId: options.routing.id,
@@ -213,7 +217,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         }
       } else {
         throw new Error(
-          'An app profile routing policy can only contain "any" or a `Cluster`.'
+          'An app profile routing policy can only contain "any", a `Cluster` or an array of `Cluster`s.'
         );
       }
     }
