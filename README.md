@@ -8,7 +8,7 @@
 [![npm version](https://img.shields.io/npm/v/@google-cloud/bigtable.svg)](https://www.npmjs.org/package/@google-cloud/bigtable)
 
 
-test
+
 
 Cloud Bigtable Client Library for Node.js
 
