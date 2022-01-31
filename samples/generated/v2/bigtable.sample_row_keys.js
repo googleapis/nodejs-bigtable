@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 'use strict';
 
 function main(tableName) {
@@ -45,15 +46,9 @@ function main(tableName) {
 
     // Run request
     const stream = await bigtableClient.sampleRowKeys(request);
-    stream.on('data', response => {
-      console.log(response);
-    });
-    stream.on('error', err => {
-      throw err;
-    });
-    stream.on('end', () => {
-      /* API call completed */
-    });
+    stream.on('data', (response) => { console.log(response) });
+    stream.on('error', (err) => { throw(err) });
+    stream.on('end', () => { /* API call completed */ });
   }
 
   callSampleRowKeys();
