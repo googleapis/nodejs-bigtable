@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,15 +34,13 @@ module.exports = {
   source: {
     excludePattern: '(^|\\/|\\\\)[._]',
     include: [
-      'build/src'
-    ],
-    exclude: [
-      'build/src/v2'
+      'build/src',
+      'protos'
     ],
     includePattern: '\\.js$'
   },
   templates: {
-    copyright: 'Copyright 2021 Google LLC',
+    copyright: 'Copyright 2022 Google LLC',
     includeDate: false,
     sourceFiles: false,
     systemName: '@google-cloud/bigtable',

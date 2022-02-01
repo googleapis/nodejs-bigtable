@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,8 +163,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -194,8 +193,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -241,8 +239,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -271,8 +268,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -302,8 +298,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -349,8 +344,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -382,8 +376,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -414,8 +407,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -461,8 +453,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -494,8 +485,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -537,8 +527,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -582,8 +571,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -626,8 +614,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -671,8 +658,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -715,8 +701,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
