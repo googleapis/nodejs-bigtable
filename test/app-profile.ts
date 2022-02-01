@@ -146,7 +146,7 @@ describe('Bigtable/AppProfile', () => {
 
       it('should throw for an invalid routing policy', () => {
         const errorReg =
-          /An app profile routing policy can only contain "any" or a `Cluster`\./;
+          /An app profile routing policy can only contain "any", a `Cluster` or an array of `Cluster`s\./;
 
         assert.throws(
           AppProfile.formatAppProfile_.bind(null, {
