@@ -106,6 +106,8 @@ describe('Bigtable/AppProfile', () => {
   });
 
   describe('formatAppProfile_', () => {
+    const errorReg = /An app profile routing policy can only contain "any", a `Cluster` or an array of `Cluster`s\./;
+
     it("should accept an 'any' cluster routing policy", () => {
       const formattedAppProfile = AppProfile.formatAppProfile_({
         routing: 'any',
@@ -125,6 +127,7 @@ describe('Bigtable/AppProfile', () => {
           clusterId,
         });
       });
+
       it('should accept allowTransactionalWrites', () => {
         const formattedAppProfile = AppProfile.formatAppProfile_({
           routing: cluster,
@@ -145,9 +148,6 @@ describe('Bigtable/AppProfile', () => {
       });
 
       it('should throw for an invalid routing policy', () => {
-        const errorReg =
-          /An app profile routing policy can only contain "any", a `Cluster` or an array of `Cluster`s\./;
-
         assert.throws(
           AppProfile.formatAppProfile_.bind(null, {
             routing: 'not-any',
@@ -158,16 +158,24 @@ describe('Bigtable/AppProfile', () => {
     });
 
     describe('with a multi cluster routing policy', () => {
-      const clusterIds = ['clusterId1', 'clusterId2'];
-      const clusters = clusterIds.map(clusterId => new FakeCluster(INSTANCE, clusterId));
-
       it('should use multi cluster routing when providing an array of clusters', () => {
+        const clusterIds = ['clusterId1', 'clusterId2'];
+        const clusters = clusterIds.map(clusterId => new FakeCluster(INSTANCE, clusterId));
         const formattedAppProfile = AppProfile.formatAppProfile_({
           routing: clusters,
         });
         assert.deepStrictEqual(formattedAppProfile.multiClusterRoutingUseAny, {
           clusterIds
         });
+      });
+      it('should ensure elements in the array are clusters', () => {
+        const notAllClusters = [new FakeCluster(INSTANCE, 'clusterId'), 'not a cluster'];
+        assert.throws(
+            AppProfile.formatAppProfile_.bind(null, {
+              routing: notAllClusters,
+            }),
+            errorReg
+        );
       });
     });
   });
