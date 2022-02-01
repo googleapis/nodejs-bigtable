@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+### [3.9.1](https://github.com/googleapis/nodejs-bigtable/compare/v3.9.0...v3.9.1) (2022-02-01)
+
+
+### Bug Fixes
+
+* update to latest generator with fix for regex bug ([#1000](https://github.com/googleapis/nodejs-bigtable/issues/1000)) ([6a26c07](https://github.com/googleapis/nodejs-bigtable/commit/6a26c07da47c8bcc4ccb399e9289f078e7827780))
+
 ## [3.9.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.8.0...v3.9.0) (2022-01-18)
 
 
