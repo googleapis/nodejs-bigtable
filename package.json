@@ -84,7 +84,7 @@
     "p-queue": "^6.0.2",
     "pack-n-play": "^1.0.0-2",
     "proxyquire": "^2.0.0",
-    "sinon": "^12.0.0",
+    "sinon": "^13.0.0",
     "ts-loader": "^9.0.0",
     "typescript": "^3.8.3",
     "uuid": "^8.0.0",
