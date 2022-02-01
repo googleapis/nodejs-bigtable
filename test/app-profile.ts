@@ -156,6 +156,20 @@ describe('Bigtable/AppProfile', () => {
         );
       });
     });
+
+    describe('with a multi cluster routing policy', () => {
+      const clusterIds = ['clusterId1', 'clusterId2'];
+      const clusters = clusterIds.map(clusterId => new FakeCluster(INSTANCE, clusterId));
+
+      it('should use multi cluster routing when providing an array of clusters', () => {
+        const formattedAppProfile = AppProfile.formatAppProfile_({
+          routing: clusters,
+        });
+        assert.deepStrictEqual(formattedAppProfile.multiClusterRoutingUseAny, {
+          clusterIds
+        });
+      });
+    });
   });
 
   describe('create', () => {
