@@ -203,9 +203,14 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
     if (options.routing) {
       if (options.routing === 'any') {
         appProfile.multiClusterRoutingUseAny = {};
-      } else if (options.routing instanceof Array && options.routing.every(cluster => { return cluster instanceof Cluster })) {
+      } else if (
+        options.routing instanceof Array &&
+        options.routing.every(cluster => {
+          return cluster instanceof Cluster;
+        })
+      ) {
         appProfile.multiClusterRoutingUseAny = {
-          clusterIds: options.routing.map(cluster => cluster.id)
+          clusterIds: options.routing.map(cluster => cluster.id),
         };
       } else if (options.routing instanceof Cluster) {
         appProfile.singleClusterRouting = {
