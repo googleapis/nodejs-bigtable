@@ -19,7 +19,7 @@
 /* global window */
 import * as gax from 'google-gax';
 import {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
-import { PassThrough } from 'stream';
+import {PassThrough} from 'stream';
 
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
@@ -240,7 +240,10 @@ export class BigtableClient {
               if (methodName in this.descriptors.stream) {
                 const stream = new PassThrough();
                 setImmediate(() => {
-                  stream.emit('error', new gax.GoogleError('The client has already been closed.'));
+                  stream.emit(
+                    'error',
+                    new gax.GoogleError('The client has already been closed.')
+                  );
                 });
                 return stream;
               }
