@@ -263,6 +263,22 @@ describe('Bigtable/Instance', () => {
         };
         instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
       });
+
+      it('an array of clusters', done => {
+        const clusterIds = ["my-cluster1", "my-cluster2"];
+        const clusters = clusterIds
+            .map(cluster => new FakeCluster({} as inst.Instance, cluster))
+        const options = {routing: clusters};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.bigtable.request as Function) = (config: any) => {
+          assert.deepStrictEqual(
+              config.reqOpts.appProfile.multiClusterRoutingUseAny,
+              {clusterIds: clusterIds}
+          );
+          done();
+        };
+        instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
+      });
     });
 
     it('should respect the allowTransactionalWrites option', done => {
