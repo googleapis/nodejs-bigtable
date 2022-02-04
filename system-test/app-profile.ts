@@ -1,11 +1,7 @@
 import {describe, it} from 'mocha';
 import {generateId} from './common';
 import {Bigtable} from '../src';
-import {CreateAppProfileResponse} from '../src';
-import * as inst from '../src/instance';
 import assert = require('assert');
-import {google} from '../protos/protos';
-import AppProfile = google.bigtable.admin.v2.AppProfile;
 
 describe('📦 App Profile', () => {
   describe('📦 Create a profile', () => {
