@@ -58,7 +58,10 @@ describe('📦 App Profile', () => {
       // This is for creating an app profile.
       const appProfileId = generateId('app-profile');
       const options = {
-        routing: [instance.cluster(clusterIds[1]), instance.cluster(clusterIds[2])],
+        routing: [
+          instance.cluster(clusterIds[1]),
+          instance.cluster(clusterIds[2]),
+        ],
       };
       await instance.createAppProfile(appProfileId, options);
       const appProfile = instance.appProfile(appProfileId);
