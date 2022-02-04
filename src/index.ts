@@ -751,7 +751,7 @@ export class Bigtable {
     return new Instance(this, name);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   request<T = any>(config?: any): AbortableDuplex;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(config?: any, callback?: RequestCallback<T>): void;
@@ -957,7 +957,7 @@ promisifyAll(Bigtable, {
  */
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-class-assign
 (Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

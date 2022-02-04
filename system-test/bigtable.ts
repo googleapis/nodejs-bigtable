@@ -220,6 +220,7 @@ describe('Bigtable', () => {
       });
       cryptoKeyVersionName = resp.data.primary.name;
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, operation] = await CMEK_INSTANCE.create({
         clusters: [
           {
@@ -254,6 +255,7 @@ describe('Bigtable', () => {
     it('should create a cluster', async () => {
       const cluster = CMEK_INSTANCE.cluster(generateId('cluster'));
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_, operation] = await cluster.create({
         location: 'us-central1-b',
         nodes: 3,
@@ -269,6 +271,7 @@ describe('Bigtable', () => {
       const cluster = CMEK_INSTANCE.cluster(generateId('cluster'));
 
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [_, operation] = await cluster.create({
           location: 'us-central1-b',
           nodes: 3,

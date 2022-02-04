@@ -522,6 +522,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
             const backupInstance =
               this.id === '-'
                 ? this.instance
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
                     .cluster(backup.name?.match(/clusters\/([^/]+)/)![1]!)
                     .backup(backup.name!.split('/').pop()!)
                 : this.backup(backup.name!.split('/').pop()!);
@@ -594,6 +595,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
           const backupInstance =
             this.id === '-'
               ? this.instance
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
                   .cluster(backup.name?.match(/clusters\/([^/]+)/)![1]!)
                   .backup(backup.name!.split('/').pop()!)
               : this.backup(backup.name!.split('/').pop()!);

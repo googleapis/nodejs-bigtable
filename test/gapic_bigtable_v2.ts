@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -163,8 +163,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -194,8 +193,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -241,8 +239,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -271,8 +268,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -302,8 +298,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -349,8 +344,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -382,8 +376,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -414,8 +407,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -461,8 +453,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -494,8 +485,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -537,8 +527,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -570,6 +559,32 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions)
       );
     });
+
+    it('invokes readRows with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.ReadRowsRequest()
+      );
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.readRows(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.ReadRowsResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+    });
   });
 
   describe('sampleRowKeys', () => {
@@ -582,8 +597,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -626,8 +640,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -659,6 +672,32 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions)
       );
     });
+
+    it('invokes sampleRowKeys with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.SampleRowKeysRequest()
+      );
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.sampleRowKeys(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.SampleRowKeysResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+    });
   });
 
   describe('mutateRows', () => {
@@ -671,8 +710,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -715,8 +753,7 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      request.tableName = '';
-      const expectedHeaderRequestParams = 'table_name=';
+      const expectedHeaderRequestParams = '';
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -747,6 +784,32 @@ describe('v2.BigtableClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions)
       );
+    });
+
+    it('invokes mutateRows with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.MutateRowsRequest()
+      );
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.mutateRows(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.MutateRowsResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
     });
   });
 

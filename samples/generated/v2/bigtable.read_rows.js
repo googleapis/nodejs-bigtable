@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+
 'use strict';
 
 function main(tableName) {
@@ -31,7 +32,8 @@ function main(tableName) {
    */
   // const appProfileId = 'abc123'
   /**
-   *  The row keys and/or ranges to read. If not specified, reads from all rows.
+   *  The row keys and/or ranges to read sequentially. If not specified, reads
+   *  from all rows.
    */
   // const rows = {}
   /**
@@ -40,7 +42,7 @@ function main(tableName) {
    */
   // const filter = {}
   /**
-   *  The read will terminate after committing to N rows' worth of results. The
+   *  The read will stop after committing to N rows' worth of results. The
    *  default (zero) is to return all results.
    */
   // const rowsLimit = 1234
@@ -59,15 +61,9 @@ function main(tableName) {
 
     // Run request
     const stream = await bigtableClient.readRows(request);
-    stream.on('data', response => {
-      console.log(response);
-    });
-    stream.on('error', err => {
-      throw err;
-    });
-    stream.on('end', () => {
-      /* API call completed */
-    });
+    stream.on('data', (response) => { console.log(response) });
+    stream.on('error', (err) => { throw(err) });
+    stream.on('end', () => { /* API call completed */ });
   }
 
   callReadRows();

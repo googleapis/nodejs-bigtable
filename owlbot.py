@@ -50,6 +50,7 @@ if staging.is_dir():
     for file in system_test_files:
         s.replace(file, 'BigtableClient', 'Bigtable')
         s.replace(file, 'client.close', '// client.close') # this does not work with the manual layer
+        s.replace(file, 'function doStuffWith', '// eslint-disable-next-line @typescript-eslint/no-unused-vars\nfunction doStuffWith')
 
     # The staging directory should never be merged into the main branch.
     shutil.rmtree(staging)

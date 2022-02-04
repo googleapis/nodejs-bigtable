@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,15 @@
 
 /* global window */
 import * as gax from 'google-gax';
-import {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
+import {
+  Callback,
+  CallOptions,
+  Descriptors,
+  ClientOptions,
+  GoogleError,
+} from 'google-gax';
 
+import {PassThrough} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
 /**
@@ -236,6 +243,16 @@ export class BigtableClient {
         stub =>
           (...args: Array<{}>) => {
             if (this._terminated) {
+              if (methodName in this.descriptors.stream) {
+                const stream = new PassThrough();
+                setImmediate(() => {
+                  stream.emit(
+                    'error',
+                    new GoogleError('The client has already been closed.')
+                  );
+                });
+                return stream;
+              }
               return Promise.reject('The client has already been closed.');
             }
             const func = stub[methodName];
@@ -407,10 +424,31 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
+    const routingParameter = {};
+    if (
+      typeof request.tableName !== 'undefined' &&
+      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
+        request.tableName!
+      )
+    ) {
+      Object.assign(routingParameter, {
+        table_name: request.tableName!.match(
+          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+        )![0],
       });
+    }
+
+    if (
+      typeof request.appProfileId !== 'undefined' &&
+      RegExp('[^/]+').test(request.appProfileId!)
+    ) {
+      Object.assign(routingParameter, {
+        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
+      });
+    }
+
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.mutateRow(request, options, callback);
   }
@@ -517,10 +555,31 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
+    const routingParameter = {};
+    if (
+      typeof request.tableName !== 'undefined' &&
+      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
+        request.tableName!
+      )
+    ) {
+      Object.assign(routingParameter, {
+        table_name: request.tableName!.match(
+          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+        )![0],
       });
+    }
+
+    if (
+      typeof request.appProfileId !== 'undefined' &&
+      RegExp('[^/]+').test(request.appProfileId!)
+    ) {
+      Object.assign(routingParameter, {
+        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
+      });
+    }
+
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
@@ -618,10 +677,31 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
+    const routingParameter = {};
+    if (
+      typeof request.tableName !== 'undefined' &&
+      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
+        request.tableName!
+      )
+    ) {
+      Object.assign(routingParameter, {
+        table_name: request.tableName!.match(
+          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+        )![0],
       });
+    }
+
+    if (
+      typeof request.appProfileId !== 'undefined' &&
+      RegExp('[^/]+').test(request.appProfileId!)
+    ) {
+      Object.assign(routingParameter, {
+        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
+      });
+    }
+
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.readModifyWriteRow(request, options, callback);
   }
@@ -643,12 +723,13 @@ export class BigtableClient {
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {google.bigtable.v2.RowSet} request.rows
-   *   The row keys and/or ranges to read. If not specified, reads from all rows.
+   *   The row keys and/or ranges to read sequentially. If not specified, reads
+   *   from all rows.
    * @param {google.bigtable.v2.RowFilter} request.filter
    *   The filter to apply to the contents of the specified row(s). If unset,
    *   reads the entirety of each row.
    * @param {number} request.rowsLimit
-   *   The read will terminate after committing to N rows' worth of results. The
+   *   The read will stop after committing to N rows' worth of results. The
    *   default (zero) is to return all results.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -668,10 +749,31 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
+    const routingParameter = {};
+    if (
+      typeof request.tableName !== 'undefined' &&
+      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
+        request.tableName!
+      )
+    ) {
+      Object.assign(routingParameter, {
+        table_name: request.tableName!.match(
+          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+        )![0],
       });
+    }
+
+    if (
+      typeof request.appProfileId !== 'undefined' &&
+      RegExp('[^/]+').test(request.appProfileId!)
+    ) {
+      Object.assign(routingParameter, {
+        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
+      });
+    }
+
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.readRows(request, options);
   }
@@ -709,10 +811,31 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
+    const routingParameter = {};
+    if (
+      typeof request.tableName !== 'undefined' &&
+      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
+        request.tableName!
+      )
+    ) {
+      Object.assign(routingParameter, {
+        table_name: request.tableName!.match(
+          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+        )![0],
       });
+    }
+
+    if (
+      typeof request.appProfileId !== 'undefined' &&
+      RegExp('[^/]+').test(request.appProfileId!)
+    ) {
+      Object.assign(routingParameter, {
+        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
+      });
+    }
+
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.sampleRowKeys(request, options);
   }
@@ -753,10 +876,31 @@ export class BigtableClient {
     options = options || {};
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
-    options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams({
-        table_name: request.tableName || '',
+    const routingParameter = {};
+    if (
+      typeof request.tableName !== 'undefined' &&
+      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
+        request.tableName!
+      )
+    ) {
+      Object.assign(routingParameter, {
+        table_name: request.tableName!.match(
+          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+        )![0],
       });
+    }
+
+    if (
+      typeof request.appProfileId !== 'undefined' &&
+      RegExp('[^/]+').test(request.appProfileId!)
+    ) {
+      Object.assign(routingParameter, {
+        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
+      });
+    }
+
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.mutateRows(request, options);
   }
