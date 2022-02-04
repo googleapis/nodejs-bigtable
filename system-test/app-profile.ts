@@ -58,10 +58,10 @@ describe('📦 App Profile', () => {
       // This is for creating an app profile.
       const appProfileId = generateId('app-profile');
       const options = {
-        routing: [
+        routing: new Set([
           instance.cluster(clusterIds[1]),
           instance.cluster(clusterIds[2]),
-        ],
+        ]),
       };
       await instance.createAppProfile(appProfileId, options);
       const appProfile = instance.appProfile(appProfileId);
@@ -70,8 +70,8 @@ describe('📦 App Profile', () => {
       const responseClusterIds =
         firstResponseItem.metadata?.multiClusterRoutingUseAny?.clusterIds;
       assert.deepStrictEqual(
-        responseClusterIds,
-        options.routing.map(cluster => cluster.id)
+        new Set(responseClusterIds),
+        new Set([...options.routing].map(cluster => cluster.id))
       );
       await instance.delete();
     });

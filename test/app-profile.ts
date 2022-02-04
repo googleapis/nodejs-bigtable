@@ -165,11 +165,12 @@ describe('Bigtable/AppProfile', () => {
           clusterId => new FakeCluster(INSTANCE, clusterId)
         );
         const formattedAppProfile = AppProfile.formatAppProfile_({
-          routing: clusters,
+          routing: new Set(clusters),
         });
-        assert.deepStrictEqual(formattedAppProfile.multiClusterRoutingUseAny, {
-          clusterIds,
-        });
+        assert.deepStrictEqual(
+          new Set(formattedAppProfile.multiClusterRoutingUseAny.clusterIds),
+          new Set(clusterIds)
+        );
       });
       it('should ensure elements in the array are clusters', () => {
         const notAllClusters = [

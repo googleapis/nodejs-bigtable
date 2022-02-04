@@ -262,7 +262,7 @@ describe('Bigtable/Instance', () => {
         const clusters = clusterIds.map(
           cluster => new FakeCluster({} as inst.Instance, cluster)
         );
-        const options = {routing: clusters};
+        const options = {routing: new Set(clusters)};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (instance.bigtable.request as Function) = (config: any) => {
           assert.deepStrictEqual(
