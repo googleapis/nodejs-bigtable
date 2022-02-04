@@ -21,7 +21,7 @@ import {ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
 import {AppProfile, AppProfileOptions} from '../src/app-profile';
-import {Cluster, CreateClusterOptions} from '../src/cluster';
+import {CreateClusterOptions} from '../src/cluster';
 import {Family} from '../src/family';
 import {
   Policy,
@@ -32,7 +32,8 @@ import {
 import {Bigtable, RequestOptions} from '../src';
 import {PassThrough} from 'stream';
 import * as pumpify from 'pumpify';
-import {RestoreTableCallback, RestoreTableConfig} from '../src/backup';
+import {FakeCluster} from '../system-test/common';
+import {RestoreTableConfig} from '../src/backup';
 
 const sandbox = sinon.createSandbox();
 
@@ -64,14 +65,6 @@ class FakeAppProfile extends AppProfile {
 }
 
 class FakeBackup {}
-
-class FakeCluster extends Cluster {
-  calledWith_: Array<{}>;
-  constructor(...args: [inst.Instance, string]) {
-    super(args[0], args[1]);
-    this.calledWith_ = args;
-  }
-}
 
 class FakeFamily extends Family {
   calledWith_: Array<{}>;
