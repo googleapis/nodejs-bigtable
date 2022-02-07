@@ -14,13 +14,14 @@
 
 import {describe, it} from 'mocha';
 import {generateId} from './common';
-import {Bigtable} from '../src';
+import {AppProfileOptions, Bigtable, Instance} from '../src';
+import {AppProfile} from '../src/app-profile';
 import assert = require('assert');
 
 describe('📦 App Profile', () => {
   const bigtable = new Bigtable();
   // Creates an instance with clusters passed in from the unit test
-  async function createWithClusters(instanceClusters: {id: string, location: string}[]) {
+  async function createWithClusters(instanceClusters: {id: string, location: string}[]): Promise<Instance> {
     const clustersWithNodes = instanceClusters.map(cluster => {
       return {
         ...cluster,
@@ -40,9 +41,15 @@ describe('📦 App Profile', () => {
     return instance
   }
 
+  async function createProfile(instance: Instance, appProfileId: string, options: AppProfileOptions) : Promise<AppProfile> {
+    await instance.createAppProfile(appProfileId, options);
+    const appProfile = instance.appProfile(appProfileId);
+    const getAppProfileResponse = await appProfile.get();
+    return getAppProfileResponse[0];
+  }
+
   describe('📦 Create a profile', () => {
     it('should create a profile with multiple clusters', async () => {
-
       const clusterIds = [
         generateId('cluster'),
         generateId('cluster'),
@@ -72,14 +79,9 @@ describe('📦 App Profile', () => {
           instance.cluster(clusterIds[2]),
         ]),
       };
-      await instance.createAppProfile(appProfileId, options);
-      const appProfile = instance.appProfile(appProfileId);
-      const getAppProfileResponse = await appProfile.get();
-      const firstResponseItem = getAppProfileResponse[0];
-      const responseClusterIds =
-        firstResponseItem.metadata?.multiClusterRoutingUseAny?.clusterIds;
+      const firstResponseItem = await createProfile(instance, appProfileId, options)
       assert.deepStrictEqual(
-        new Set(responseClusterIds),
+        new Set(firstResponseItem.metadata?.multiClusterRoutingUseAny?.clusterIds),
         new Set([...options.routing].map(cluster => cluster.id))
       );
       await instance.delete();
