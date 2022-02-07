@@ -95,7 +95,7 @@ describe('📦 App Profile', () => {
           []
       );
     });
-    it('should create a profile with one cluster and update it', async () => {
+    it('should ensure clusters match an updated profile', async () => {
       const options = {
         routing: instance.cluster(clusterIds[1])
       };
