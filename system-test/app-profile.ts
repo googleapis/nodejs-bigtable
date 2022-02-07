@@ -22,7 +22,8 @@ describe('📦 App Profile', () => {
   const bigtable = new Bigtable();
 
   // Creates an app profile and returns information containing the app profile response.
-  async function createProfile(instance: Instance, appProfileId: string, options: AppProfileOptions) : Promise<AppProfile> {
+  async function createProfile(instance: Instance, options: AppProfileOptions) : Promise<AppProfile> {
+    const appProfileId = generateId('app-profile');
     await instance.createAppProfile(appProfileId, options);
     const appProfile = instance.appProfile(appProfileId);
     const getAppProfileResponse = await appProfile.get();
@@ -59,21 +60,22 @@ describe('📦 App Profile', () => {
       await operation.promise();
     })
 
+    after(async () => {
+      await instance.delete();
+    })
+
     it('should create a profile with multiple clusters', async () => {
-      // Creates an app profile
-      const appProfileId = generateId('app-profile');
       const options = {
         routing: new Set([
           instance.cluster(clusterIds[1]),
           instance.cluster(clusterIds[2]),
         ]),
       };
-      const firstResponseItem = await createProfile(instance, appProfileId, options)
+      const appProfile = await createProfile(instance, options)
       assert.deepStrictEqual(
-          new Set(firstResponseItem.metadata?.multiClusterRoutingUseAny?.clusterIds),
+          new Set(appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds),
           new Set([...options.routing].map(cluster => cluster.id))
       );
-      await instance.delete();
     });
   });
 });
