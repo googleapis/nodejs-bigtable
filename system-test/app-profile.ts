@@ -59,11 +59,19 @@ describe('📦 App Profile', () => {
       });
       await operation.promise();
     })
-
     after(async () => {
       await instance.delete();
     })
-
+    it('should create a profile with a single cluster', async () => {
+      const options = {
+        routing: instance.cluster(clusterIds[1])
+      };
+      const appProfile = await createProfile(instance, options)
+      assert.deepStrictEqual(
+          appProfile.metadata?.singleClusterRouting?.clusterId,
+          options.routing.id
+      );
+    });
     it('should create a profile with multiple clusters', async () => {
       const options = {
         routing: new Set([
