@@ -49,7 +49,10 @@ describe('📦 App Profile', () => {
   }
 
   describe('📦 Create a profile', () => {
-    it('should create a profile with multiple clusters', async () => {
+    let instance: Instance
+    let clusterIds: string[]
+
+    before(async () => {
       // Creates an instance with clusters
       const instanceClusters = ['us-east1-c', 'us-central1-b', 'us-west1-b']
           .map(location => {
@@ -58,9 +61,11 @@ describe('📦 App Profile', () => {
               location,
             };
           })
-      const clusterIds = instanceClusters.map(cluster => cluster.id);
-      const instance = await createInstanceWithClusters(instanceClusters);
+      clusterIds = instanceClusters.map(cluster => cluster.id);
+      instance = await createInstanceWithClusters(instanceClusters);
+    })
 
+    it('should create a profile with multiple clusters', async () => {
       // Creates an app profile
       const appProfileId = generateId('app-profile');
       const options = {
@@ -71,8 +76,8 @@ describe('📦 App Profile', () => {
       };
       const firstResponseItem = await createProfile(instance, appProfileId, options)
       assert.deepStrictEqual(
-        new Set(firstResponseItem.metadata?.multiClusterRoutingUseAny?.clusterIds),
-        new Set([...options.routing].map(cluster => cluster.id))
+          new Set(firstResponseItem.metadata?.multiClusterRoutingUseAny?.clusterIds),
+          new Set([...options.routing].map(cluster => cluster.id))
       );
       await instance.delete();
     });
