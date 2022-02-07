@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {describe, it} from 'mocha';
+import {describe, it, before, after} from 'mocha';
 import {generateId} from './common';
 import {AppProfileOptions, Bigtable, Instance} from '../src';
 import {AppProfile} from '../src';
@@ -22,11 +22,14 @@ describe('📦 App Profile', () => {
   const bigtable = new Bigtable();
 
   describe('📦 Create a profile', () => {
-    let instance: Instance
-    let clusterIds: string[]
+    let instance: Instance;
+    let clusterIds: string[];
 
     // Creates an app profile and returns information containing the app profile response.
-    async function createProfile(instance: Instance, options: AppProfileOptions) : Promise<AppProfile> {
+    async function createProfile(
+      instance: Instance,
+      options: AppProfileOptions
+    ): Promise<AppProfile> {
       const appProfileId = generateId('app-profile');
       await instance.createAppProfile(appProfileId, options);
       const appProfile = instance.appProfile(appProfileId);
@@ -36,42 +39,45 @@ describe('📦 App Profile', () => {
 
     before(async () => {
       // Creates an instance with clusters
-      const instanceClusters = ['us-east1-c', 'us-central1-b', 'us-west1-b']
-          .map(location => {
-            return {
-              id: generateId('cluster'),
-              location,
-            };
-          })
+      const instanceClusters = [
+        'us-east1-c',
+        'us-central1-b',
+        'us-west1-b',
+      ].map(location => {
+        return {
+          id: generateId('cluster'),
+          location,
+        };
+      });
       clusterIds = instanceClusters.map(cluster => cluster.id);
       const instanceId = generateId('instance');
       instance = bigtable.instance(instanceId);
       const [, operation] = await instance.create({
         clusters: instanceClusters.map(cluster => {
-            return {
-              ...cluster,
-            nodes: 1
-          }
+          return {
+            ...cluster,
+            nodes: 1,
+          };
         }),
         labels: {
           time_created: Date.now(),
         },
       });
       await operation.promise();
-    })
+    });
 
     after(async () => {
       await instance.delete();
-    })
+    });
 
     it('should create a profile with a single cluster', async () => {
       const options = {
-        routing: instance.cluster(clusterIds[1])
+        routing: instance.cluster(clusterIds[1]),
       };
-      const appProfile = await createProfile(instance, options)
+      const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
-          appProfile.metadata?.singleClusterRouting?.clusterId,
-          options.routing.id
+        appProfile.metadata?.singleClusterRouting?.clusterId,
+        options.routing.id
       );
     });
 
@@ -82,27 +88,27 @@ describe('📦 App Profile', () => {
           instance.cluster(clusterIds[2]),
         ]),
       };
-      const appProfile = await createProfile(instance, options)
+      const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
-          new Set(appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds),
-          new Set([...options.routing].map(cluster => cluster.id))
+        new Set(appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds),
+        new Set([...options.routing].map(cluster => cluster.id))
       );
     });
 
     it('should create a profile with no clusters', async () => {
       const options: {routing: 'any'} = {
-        routing: 'any'
+        routing: 'any',
       };
-      const appProfile = await createProfile(instance, options)
+      const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
-          appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds,
-          []
+        appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds,
+        []
       );
     });
 
     it('should ensure clusters match an updated profile', async () => {
       const options = {
-        routing: instance.cluster(clusterIds[1])
+        routing: instance.cluster(clusterIds[1]),
       };
       const appProfile = await createProfile(instance, options);
       const newOptions = {
@@ -112,10 +118,12 @@ describe('📦 App Profile', () => {
         ]),
       };
       await appProfile.setMetadata(newOptions);
-      const appProfileAfterUpdate = (await appProfile.get())[0]
+      const appProfileAfterUpdate = (await appProfile.get())[0];
       assert.deepStrictEqual(
-          new Set(appProfileAfterUpdate.metadata?.multiClusterRoutingUseAny?.clusterIds),
-          new Set([...newOptions.routing].map(cluster => cluster.id))
+        new Set(
+          appProfileAfterUpdate.metadata?.multiClusterRoutingUseAny?.clusterIds
+        ),
+        new Set([...newOptions.routing].map(cluster => cluster.id))
       );
     });
   });
