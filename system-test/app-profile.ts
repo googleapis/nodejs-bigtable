@@ -21,14 +21,13 @@ import assert = require('assert');
 describe('📦 App Profile', () => {
   const bigtable = new Bigtable();
   // Creates an instance with clusters passed in from the unit test
-  async function createWithClusters(instanceClusters: {id: string, location: string}[]): Promise<Instance> {
+  async function createInstanceWithClusters(instanceClusters: {id: string, location: string}[]): Promise<Instance> {
     const clustersWithNodes = instanceClusters.map(cluster => {
       return {
         ...cluster,
         nodes: 1
       }
     })
-    // This is for creating a Bigtable instance.
     const instanceId = generateId('instance');
     const instance = bigtable.instance(instanceId);
     const [, operation] = await instance.create({
@@ -41,6 +40,7 @@ describe('📦 App Profile', () => {
     return instance
   }
 
+  // Creates an app profile and returns information containing the app profile response.
   async function createProfile(instance: Instance, appProfileId: string, options: AppProfileOptions) : Promise<AppProfile> {
     await instance.createAppProfile(appProfileId, options);
     const appProfile = instance.appProfile(appProfileId);
@@ -50,28 +50,18 @@ describe('📦 App Profile', () => {
 
   describe('📦 Create a profile', () => {
     it('should create a profile with multiple clusters', async () => {
-      const clusterIds = [
-        generateId('cluster'),
-        generateId('cluster'),
-        generateId('cluster'),
-      ];
-      const instanceClusters = [
-        {
-          id: clusterIds[0],
-          location: 'us-east1-c',
-        },
-        {
-          id: clusterIds[1],
-          location: 'us-central1-b',
-        },
-        {
-          id: clusterIds[2],
-          location: 'us-west1-b',
-        },
-      ];
-      const instance = await createWithClusters(instanceClusters);
+      // Creates an instance with clusters
+      const instanceClusters = ['us-east1-c', 'us-central1-b', 'us-west1-b']
+          .map(location => {
+            return {
+              id: generateId('cluster'),
+              location,
+            };
+          })
+      const clusterIds = instanceClusters.map(cluster => cluster.id);
+      const instance = await createInstanceWithClusters(instanceClusters);
 
-      // This is for creating an app profile.
+      // Creates an app profile
       const appProfileId = generateId('app-profile');
       const options = {
         routing: new Set([
