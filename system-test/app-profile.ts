@@ -85,5 +85,15 @@ describe('📦 App Profile', () => {
           new Set([...options.routing].map(cluster => cluster.id))
       );
     });
+    it('should create a profile with no clusters', async () => {
+      const options: {routing: 'any'} = {
+        routing: 'any'
+      };
+      const appProfile = await createProfile(instance, options)
+      assert.deepStrictEqual(
+          appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds,
+          []
+      );
+    });
   });
 });
