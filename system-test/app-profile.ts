@@ -15,30 +15,11 @@
 import {describe, it} from 'mocha';
 import {generateId} from './common';
 import {AppProfileOptions, Bigtable, Instance} from '../src';
-import {AppProfile} from '../src/app-profile';
+import {AppProfile} from '../src';
 import assert = require('assert');
 
 describe('📦 App Profile', () => {
   const bigtable = new Bigtable();
-  // Creates an instance with clusters passed in from the unit test
-  async function createInstanceWithClusters(instanceClusters: {id: string, location: string}[]): Promise<Instance> {
-    const clustersWithNodes = instanceClusters.map(cluster => {
-      return {
-        ...cluster,
-        nodes: 1
-      }
-    })
-    const instanceId = generateId('instance');
-    const instance = bigtable.instance(instanceId);
-    const [, operation] = await instance.create({
-      clusters: clustersWithNodes,
-      labels: {
-        time_created: Date.now(),
-      },
-    });
-    await operation.promise();
-    return instance
-  }
 
   // Creates an app profile and returns information containing the app profile response.
   async function createProfile(instance: Instance, appProfileId: string, options: AppProfileOptions) : Promise<AppProfile> {
@@ -62,7 +43,20 @@ describe('📦 App Profile', () => {
             };
           })
       clusterIds = instanceClusters.map(cluster => cluster.id);
-      instance = await createInstanceWithClusters(instanceClusters);
+      const instanceId = generateId('instance');
+      instance = bigtable.instance(instanceId);
+      const [, operation] = await instance.create({
+        clusters: instanceClusters.map(cluster => {
+            return {
+              ...cluster,
+            nodes: 1
+          }
+        }),
+        labels: {
+          time_created: Date.now(),
+        },
+      });
+      await operation.promise();
     })
 
     it('should create a profile with multiple clusters', async () => {
