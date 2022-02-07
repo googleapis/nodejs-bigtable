@@ -95,5 +95,23 @@ describe('📦 App Profile', () => {
           []
       );
     });
+    it('should create a profile with one cluster and update it', async () => {
+      const options = {
+        routing: instance.cluster(clusterIds[1])
+      };
+      const appProfile = await createProfile(instance, options);
+      const newOptions = {
+        routing: new Set([
+          instance.cluster(clusterIds[1]),
+          instance.cluster(clusterIds[2]),
+        ]),
+      };
+      await appProfile.setMetadata(newOptions);
+      const appProfileAfterUpdate = (await appProfile.get())[0]
+      assert.deepStrictEqual(
+          new Set(appProfileAfterUpdate.metadata?.multiClusterRoutingUseAny?.clusterIds),
+          new Set([...newOptions.routing].map(cluster => cluster.id))
+      );
+    });
   });
 });
