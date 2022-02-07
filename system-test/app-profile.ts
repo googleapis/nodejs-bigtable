@@ -18,42 +18,51 @@ import {Bigtable} from '../src';
 import assert = require('assert');
 
 describe('📦 App Profile', () => {
+  const bigtable = new Bigtable();
+  // Creates an instance with clusters passed in from the unit test
+  async function createWithClusters(instanceClusters: {id: string, location: string}[]) {
+    const clustersWithNodes = instanceClusters.map(cluster => {
+      return {
+        ...cluster,
+        nodes: 1
+      }
+    })
+    // This is for creating a Bigtable instance.
+    const instanceId = generateId('instance');
+    const instance = bigtable.instance(instanceId);
+    const [, operation] = await instance.create({
+      clusters: clustersWithNodes,
+      labels: {
+        time_created: Date.now(),
+      },
+    });
+    await operation.promise();
+    return instance
+  }
+
   describe('📦 Create a profile', () => {
     it('should create a profile with multiple clusters', async () => {
-      const bigtable = new Bigtable();
+
       const clusterIds = [
         generateId('cluster'),
         generateId('cluster'),
         generateId('cluster'),
       ];
-
-      // This is for creating a Bigtable instance.
-      const instanceId = generateId('instance');
-      const instance = bigtable.instance(instanceId);
       const instanceClusters = [
         {
           id: clusterIds[0],
           location: 'us-east1-c',
-          nodes: 1,
         },
         {
           id: clusterIds[1],
           location: 'us-central1-b',
-          nodes: 1,
         },
         {
           id: clusterIds[2],
           location: 'us-west1-b',
-          nodes: 1,
         },
       ];
-      const [, operation] = await instance.create({
-        clusters: instanceClusters,
-        labels: {
-          time_created: Date.now(),
-        },
-      });
-      await operation.promise();
+      const instance = await createWithClusters(instanceClusters);
 
       // This is for creating an app profile.
       const appProfileId = generateId('app-profile');
