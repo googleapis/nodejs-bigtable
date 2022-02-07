@@ -21,18 +21,18 @@ import assert = require('assert');
 describe('📦 App Profile', () => {
   const bigtable = new Bigtable();
 
-  // Creates an app profile and returns information containing the app profile response.
-  async function createProfile(instance: Instance, options: AppProfileOptions) : Promise<AppProfile> {
-    const appProfileId = generateId('app-profile');
-    await instance.createAppProfile(appProfileId, options);
-    const appProfile = instance.appProfile(appProfileId);
-    const getAppProfileResponse = await appProfile.get();
-    return getAppProfileResponse[0];
-  }
-
   describe('📦 Create a profile', () => {
     let instance: Instance
     let clusterIds: string[]
+
+    // Creates an app profile and returns information containing the app profile response.
+    async function createProfile(instance: Instance, options: AppProfileOptions) : Promise<AppProfile> {
+      const appProfileId = generateId('app-profile');
+      await instance.createAppProfile(appProfileId, options);
+      const appProfile = instance.appProfile(appProfileId);
+      const getAppProfileResponse = await appProfile.get();
+      return getAppProfileResponse[0];
+    }
 
     before(async () => {
       // Creates an instance with clusters
@@ -59,9 +59,11 @@ describe('📦 App Profile', () => {
       });
       await operation.promise();
     })
+
     after(async () => {
       await instance.delete();
     })
+
     it('should create a profile with a single cluster', async () => {
       const options = {
         routing: instance.cluster(clusterIds[1])
@@ -72,6 +74,7 @@ describe('📦 App Profile', () => {
           options.routing.id
       );
     });
+
     it('should create a profile with multiple clusters', async () => {
       const options = {
         routing: new Set([
@@ -85,6 +88,7 @@ describe('📦 App Profile', () => {
           new Set([...options.routing].map(cluster => cluster.id))
       );
     });
+
     it('should create a profile with no clusters', async () => {
       const options: {routing: 'any'} = {
         routing: 'any'
@@ -95,6 +99,7 @@ describe('📦 App Profile', () => {
           []
       );
     });
+
     it('should ensure clusters match an updated profile', async () => {
       const options = {
         routing: instance.cluster(clusterIds[1])
