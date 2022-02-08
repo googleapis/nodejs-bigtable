@@ -257,7 +257,7 @@ describe('Bigtable/Instance', () => {
         instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
       });
 
-      it('an array of clusters', done => {
+      it('an set of clusters', done => {
         const clusterIds = ['my-cluster1', 'my-cluster2'];
         const clusters = clusterIds.map(
           cluster => new FakeCluster({} as inst.Instance, cluster)
