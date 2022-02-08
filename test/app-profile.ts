@@ -107,7 +107,7 @@ describe('Bigtable/AppProfile', () => {
 
   describe('formatAppProfile_', () => {
     const errorReg =
-      /An app profile routing policy can only contain "any", a `Cluster` or an array of `Cluster`s\./;
+      /An app profile routing policy can only contain "any", a `Cluster` or a set of `Cluster`s\./;
 
     it("should accept an 'any' cluster routing policy", () => {
       const formattedAppProfile = AppProfile.formatAppProfile_({

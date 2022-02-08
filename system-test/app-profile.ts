@@ -111,6 +111,12 @@ describe('📦 App Profile', () => {
         routing: instance.cluster(clusterIds[1]),
       };
       const appProfile = await createProfile(instance, options);
+      assert.deepStrictEqual(
+          new Set(
+              appProfile.metadata?.singleClusterRouting?.clusterId
+          ),
+          clusterIds[1]
+      );
       const newOptions = {
         routing: new Set([
           instance.cluster(clusterIds[1]),
