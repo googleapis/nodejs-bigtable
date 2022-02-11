@@ -233,7 +233,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         }
       } else {
         throw new Error(
-          'An app profile routing policy can only contain "any", a `Cluster` or a set of `Cluster`s.'
+          'An app profile routing policy can only contain "any", a `Cluster` or a set of strings/`Cluster`s.'
         );
       }
     }
