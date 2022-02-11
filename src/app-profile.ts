@@ -21,6 +21,7 @@ import {Instance} from './instance';
 import {CallOptions} from 'google-gax';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
+import {string} from 'is';
 
 export interface AppProfileOptions {
   /**
@@ -29,7 +30,7 @@ export interface AppProfileOptions {
    * value is required when creating the app profile and optional when setting
    * the metadata.
    */
-  routing?: 'any' | Cluster | Set<Cluster>;
+  routing?: 'any' | Cluster | Set<Cluster> | Set<string>;
   /**
    * Whether or not CheckAndMutateRow and ReadModifyWriteRow requests are
    * allowed by this app profile. It is unsafe to send these requests to the
@@ -211,7 +212,16 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       ) {
         // Runs if routing is a set and every element in it is a cluster
         appProfile.multiClusterRoutingUseAny = {
-          clusterIds: [...options.routing].map(cluster => cluster.id),
+          clusterIds: [...options.routing].map(cluster => (cluster as Cluster).id),
+        };
+      } else if (
+          options.routing instanceof Set // &&
+          // [...options.routing].every(clusterId => {
+          //   return clusterId instanceof string;
+          // })
+      ) {
+        appProfile.multiClusterRoutingUseAny = {
+          clusterIds: ([...options.routing] as string[]),
         };
       } else if (options.routing instanceof Cluster) {
         appProfile.singleClusterRouting = {
