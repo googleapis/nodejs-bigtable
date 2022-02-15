@@ -366,6 +366,114 @@ describe('v2.BigtableClient', () => {
     });
   });
 
+  describe('pingAndWarm', () => {
+    it('invokes pingAndWarm without error', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.PingAndWarmRequest()
+      );
+      const expectedHeaderRequestParams = '';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedResponse = generateSampleMessage(
+        new protos.google.bigtable.v2.PingAndWarmResponse()
+      );
+      client.innerApiCalls.pingAndWarm = stubSimpleCall(expectedResponse);
+      const [response] = await client.pingAndWarm(request);
+      assert.deepStrictEqual(response, expectedResponse);
+      assert(
+        (client.innerApiCalls.pingAndWarm as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions, undefined)
+      );
+    });
+
+    it('invokes pingAndWarm without error using callback', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.PingAndWarmRequest()
+      );
+      const expectedHeaderRequestParams = '';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedResponse = generateSampleMessage(
+        new protos.google.bigtable.v2.PingAndWarmResponse()
+      );
+      client.innerApiCalls.pingAndWarm =
+        stubSimpleCallWithCallback(expectedResponse);
+      const promise = new Promise((resolve, reject) => {
+        client.pingAndWarm(
+          request,
+          (
+            err?: Error | null,
+            result?: protos.google.bigtable.v2.IPingAndWarmResponse | null
+          ) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+      });
+      const response = await promise;
+      assert.deepStrictEqual(response, expectedResponse);
+      assert(
+        (client.innerApiCalls.pingAndWarm as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions /*, callback defined above */)
+      );
+    });
+
+    it('invokes pingAndWarm with error', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.PingAndWarmRequest()
+      );
+      const expectedHeaderRequestParams = '';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedError = new Error('expected');
+      client.innerApiCalls.pingAndWarm = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(client.pingAndWarm(request), expectedError);
+      assert(
+        (client.innerApiCalls.pingAndWarm as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions, undefined)
+      );
+    });
+  });
+
   describe('readModifyWriteRow', () => {
     it('invokes readModifyWriteRow without error', async () => {
       const client = new bigtableModule.v2.BigtableClient({
@@ -559,32 +667,6 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions)
       );
     });
-
-    it('invokes readRows with closed client', async () => {
-      const client = new bigtableModule.v2.BigtableClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      client.initialize();
-      const request = generateSampleMessage(
-        new protos.google.bigtable.v2.ReadRowsRequest()
-      );
-      const expectedError = new Error('The client has already been closed.');
-      client.close();
-      const stream = client.readRows(request);
-      const promise = new Promise((resolve, reject) => {
-        stream.on(
-          'data',
-          (response: protos.google.bigtable.v2.ReadRowsResponse) => {
-            resolve(response);
-          }
-        );
-        stream.on('error', (err: Error) => {
-          reject(err);
-        });
-      });
-      await assert.rejects(promise, expectedError);
-    });
   });
 
   describe('sampleRowKeys', () => {
@@ -671,32 +753,6 @@ describe('v2.BigtableClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions)
       );
-    });
-
-    it('invokes sampleRowKeys with closed client', async () => {
-      const client = new bigtableModule.v2.BigtableClient({
-        credentials: {client_email: 'bogus', private_key: 'bogus'},
-        projectId: 'bogus',
-      });
-      client.initialize();
-      const request = generateSampleMessage(
-        new protos.google.bigtable.v2.SampleRowKeysRequest()
-      );
-      const expectedError = new Error('The client has already been closed.');
-      client.close();
-      const stream = client.sampleRowKeys(request);
-      const promise = new Promise((resolve, reject) => {
-        stream.on(
-          'data',
-          (response: protos.google.bigtable.v2.SampleRowKeysResponse) => {
-            resolve(response);
-          }
-        );
-        stream.on('error', (err: Error) => {
-          reject(err);
-        });
-      });
-      await assert.rejects(promise, expectedError);
     });
   });
 
@@ -785,35 +841,58 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions)
       );
     });
+  });
 
-    it('invokes mutateRows with closed client', async () => {
+  describe('Path templates', () => {
+    describe('instance', () => {
+      const fakePath = '/rendered/path/instance';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+      };
       const client = new bigtableModule.v2.BigtableClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
       client.initialize();
-      const request = generateSampleMessage(
-        new protos.google.bigtable.v2.MutateRowsRequest()
-      );
-      const expectedError = new Error('The client has already been closed.');
-      client.close();
-      const stream = client.mutateRows(request);
-      const promise = new Promise((resolve, reject) => {
-        stream.on(
-          'data',
-          (response: protos.google.bigtable.v2.MutateRowsResponse) => {
-            resolve(response);
-          }
-        );
-        stream.on('error', (err: Error) => {
-          reject(err);
-        });
-      });
-      await assert.rejects(promise, expectedError);
-    });
-  });
+      client.pathTemplates.instancePathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.instancePathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
 
-  describe('Path templates', () => {
+      it('instancePath', () => {
+        const result = client.instancePath('projectValue', 'instanceValue');
+        assert.strictEqual(result, fakePath);
+        assert(
+          (client.pathTemplates.instancePathTemplate.render as SinonStub)
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromInstanceName', () => {
+        const result = client.matchProjectFromInstanceName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.instancePathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromInstanceName', () => {
+        const result = client.matchInstanceFromInstanceName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.instancePathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
     describe('table', () => {
       const fakePath = '/rendered/path/table';
       const expectedParameters = {

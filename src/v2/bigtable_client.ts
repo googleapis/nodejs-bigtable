@@ -18,15 +18,8 @@
 
 /* global window */
 import * as gax from 'google-gax';
-import {
-  Callback,
-  CallOptions,
-  Descriptors,
-  ClientOptions,
-  GoogleError,
-} from 'google-gax';
+import {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
 
-import {PassThrough} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
 /**
@@ -162,6 +155,9 @@ export class BigtableClient {
     // identifiers to uniquely identify resources within the API.
     // Create useful helper objects for these.
     this.pathTemplates = {
+      instancePathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}'
+      ),
       tablePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/tables/{table}'
       ),
@@ -236,6 +232,7 @@ export class BigtableClient {
       'mutateRow',
       'mutateRows',
       'checkAndMutateRow',
+      'pingAndWarm',
       'readModifyWriteRow',
     ];
     for (const methodName of bigtableStubMethods) {
@@ -243,16 +240,6 @@ export class BigtableClient {
         stub =>
           (...args: Array<{}>) => {
             if (this._terminated) {
-              if (methodName in this.descriptors.stream) {
-                const stream = new PassThrough();
-                setImmediate(() => {
-                  stream.emit(
-                    'error',
-                    new GoogleError('The client has already been closed.')
-                  );
-                });
-                return stream;
-              }
               return Promise.reject('The client has already been closed.');
             }
             const func = stub[methodName];
@@ -584,6 +571,113 @@ export class BigtableClient {
     return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
   /**
+   * Warm up associated instance metadata for this connection.
+   * This call is not required but may be useful for connection keep-alive.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the instance to check permissions for as well as
+   *   respond. Values are of the form `projects/<project>/instances/<instance>`.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing [PingAndWarmResponse]{@link google.bigtable.v2.PingAndWarmResponse}.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable.ping_and_warm.js</caption>
+   * region_tag:bigtable_v2_generated_Bigtable_PingAndWarm_async
+   */
+  pingAndWarm(
+    request?: protos.google.bigtable.v2.IPingAndWarmRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      protos.google.bigtable.v2.IPingAndWarmResponse,
+      protos.google.bigtable.v2.IPingAndWarmRequest | undefined,
+      {} | undefined
+    ]
+  >;
+  pingAndWarm(
+    request: protos.google.bigtable.v2.IPingAndWarmRequest,
+    options: CallOptions,
+    callback: Callback<
+      protos.google.bigtable.v2.IPingAndWarmResponse,
+      protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  pingAndWarm(
+    request: protos.google.bigtable.v2.IPingAndWarmRequest,
+    callback: Callback<
+      protos.google.bigtable.v2.IPingAndWarmResponse,
+      protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  pingAndWarm(
+    request?: protos.google.bigtable.v2.IPingAndWarmRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          protos.google.bigtable.v2.IPingAndWarmResponse,
+          protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      protos.google.bigtable.v2.IPingAndWarmResponse,
+      protos.google.bigtable.v2.IPingAndWarmRequest | null | undefined,
+      {} | null | undefined
+    >
+  ): Promise<
+    [
+      protos.google.bigtable.v2.IPingAndWarmResponse,
+      protos.google.bigtable.v2.IPingAndWarmRequest | undefined,
+      {} | undefined
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    const routingParameter = {};
+    if (
+      typeof request.name !== 'undefined' &&
+      RegExp('(?<name>projects)/[^/]+/instances/[^/]+').test(request.name!)
+    ) {
+      Object.assign(routingParameter, {
+        name: request.name!.match(
+          RegExp('(?<name>projects/[^/]+/instances/[^/]+)')
+        )![0],
+      });
+    }
+
+    if (
+      typeof request.appProfileId !== 'undefined' &&
+      RegExp('[^/]+').test(request.appProfileId!)
+    ) {
+      Object.assign(routingParameter, {
+        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
+      });
+    }
+
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams(routingParameter);
+    this.initialize();
+    return this.innerApiCalls.pingAndWarm(request, options, callback);
+  }
+  /**
    * Modifies a row atomically on the server. The method reads the latest
    * existing timestamp and value from the specified columns and writes a new
    * entry based on pre-defined read/modify/write rules. The new value for the
@@ -908,6 +1002,42 @@ export class BigtableClient {
   // --------------------
   // -- Path templates --
   // --------------------
+
+  /**
+   * Return a fully-qualified instance resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @returns {string} Resource name string.
+   */
+  instancePath(project: string, instance: string) {
+    return this.pathTemplates.instancePathTemplate.render({
+      project: project,
+      instance: instance,
+    });
+  }
+
+  /**
+   * Parse the project from Instance resource.
+   *
+   * @param {string} instanceName
+   *   A fully-qualified path representing Instance resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromInstanceName(instanceName: string) {
+    return this.pathTemplates.instancePathTemplate.match(instanceName).project;
+  }
+
+  /**
+   * Parse the instance from Instance resource.
+   *
+   * @param {string} instanceName
+   *   A fully-qualified path representing Instance resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromInstanceName(instanceName: string) {
+    return this.pathTemplates.instancePathTemplate.match(instanceName).instance;
+  }
 
   /**
    * Return a fully-qualified table resource name string.
