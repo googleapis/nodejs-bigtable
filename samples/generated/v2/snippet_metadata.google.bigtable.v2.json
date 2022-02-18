@@ -16,13 +16,13 @@
       "title": "bigtable readRows Sample",
       "origin": "API_DEFINITION",
       "description": " Streams back the contents of all requested rows in key order, optionally applying the same Reader filter to each. Depending on their size, rows and cells may be broken up across multiple responses, but atomicity of each row will still be preserved. See the ReadRowsResponse documentation for details.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.read_rows.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 20,
-          "end": 69,
+          "start": 29,
+          "end": 78,
           "type": "FULL"
         }
       ],
@@ -72,13 +72,13 @@
       "title": "bigtable sampleRowKeys Sample",
       "origin": "API_DEFINITION",
       "description": " Returns a sample of row keys in the table. The returned row keys will delimit contiguous sections of the table of approximately equal size, which can be used to break up the data for distributed tasks like mapreduces.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.sample_row_keys.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 20,
-          "end": 54,
+          "start": 29,
+          "end": 63,
           "type": "FULL"
         }
       ],
@@ -116,13 +116,13 @@
       "title": "bigtable mutateRow Sample",
       "origin": "API_DEFINITION",
       "description": " Mutates a row atomically. Cells already present in the row are left unchanged unless explicitly changed by `mutation`.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.mutate_row.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 20,
-          "end": 64,
+          "start": 29,
+          "end": 73,
           "type": "FULL"
         }
       ],
@@ -168,13 +168,13 @@
       "title": "bigtable mutateRows Sample",
       "origin": "API_DEFINITION",
       "description": " Mutates multiple rows in a batch. Each individual row is mutated atomically as in MutateRow, but the entire batch is not executed atomically.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.mutate_rows.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 20,
-          "end": 61,
+          "start": 29,
+          "end": 70,
           "type": "FULL"
         }
       ],
@@ -216,13 +216,13 @@
       "title": "bigtable checkAndMutateRow Sample",
       "origin": "API_DEFINITION",
       "description": " Mutates a row atomically based on the output of a predicate Reader filter.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.check_and_mutate_row.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 20,
-          "end": 81,
+          "start": 29,
+          "end": 90,
           "type": "FULL"
         }
       ],
@@ -272,17 +272,61 @@
       }
     },
     {
+      "regionTag": "bigtable_v2_generated_Bigtable_PingAndWarm_async",
+      "title": "bigtable pingAndWarm Sample",
+      "origin": "API_DEFINITION",
+      "description": " Warm up associated instance metadata for this connection. This call is not required but may be useful for connection keep-alive.",
+      "canonical": false,
+      "file": "bigtable.ping_and_warm.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 29,
+          "end": 60,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "PingAndWarm",
+        "fullName": "google.bigtable.v2.Bigtable.PingAndWarm",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.PingAndWarmResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "PingAndWarm",
+          "fullName": "google.bigtable.v2.Bigtable.PingAndWarm",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
       "regionTag": "bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async",
       "title": "bigtable readModifyWriteRow Sample",
       "origin": "API_DEFINITION",
       "description": " Modifies a row atomically on the server. The method reads the latest existing timestamp and value from the specified columns and writes a new entry based on pre-defined read/modify/write rules. The new value for the timestamp is the greater of the existing timestamp or the current server time. The method returns the new contents of all modified cells.",
-      "canonical": true,
+      "canonical": false,
       "file": "bigtable.read_modify_write_row.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
-          "start": 20,
-          "end": 65,
+          "start": 29,
+          "end": 74,
           "type": "FULL"
         }
       ],

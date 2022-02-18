@@ -189,13 +189,29 @@ describe('v2.BigtableInstanceAdminClient', () => {
     assert(client.bigtableInstanceAdminStub);
   });
 
-  it('has close method', () => {
+  it('has close method for the initialized client', done => {
     const client =
       new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
         credentials: {client_email: 'bogus', private_key: 'bogus'},
         projectId: 'bogus',
       });
-    client.close();
+    client.initialize();
+    assert(client.bigtableInstanceAdminStub);
+    client.close().then(() => {
+      done();
+    });
+  });
+
+  it('has close method for the non-initialized client', done => {
+    const client =
+      new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+    assert.strictEqual(client.bigtableInstanceAdminStub, undefined);
+    client.close().then(() => {
+      done();
+    });
   });
 
   it('has getProjectId method', async () => {
@@ -346,6 +362,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes getInstance with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.GetInstanceRequest()
+      );
+      request.name = '';
+      const expectedHeaderRequestParams = 'name=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.getInstance(request), expectedError);
+    });
   });
 
   describe('listInstances', () => {
@@ -459,6 +492,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes listInstances with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListInstancesRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.listInstances(request), expectedError);
     });
   });
 
@@ -574,6 +624,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes updateInstance with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.Instance()
+      );
+      request.name = '';
+      const expectedHeaderRequestParams = 'name=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.updateInstance(request), expectedError);
+    });
   });
 
   describe('deleteInstance', () => {
@@ -687,6 +754,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes deleteInstance with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
+      );
+      request.name = '';
+      const expectedHeaderRequestParams = 'name=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.deleteInstance(request), expectedError);
     });
   });
 
@@ -802,6 +886,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes getCluster with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.GetClusterRequest()
+      );
+      request.name = '';
+      const expectedHeaderRequestParams = 'name=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.getCluster(request), expectedError);
+    });
   });
 
   describe('listClusters', () => {
@@ -915,6 +1016,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes listClusters with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListClustersRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.listClusters(request), expectedError);
     });
   });
 
@@ -1030,6 +1148,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes deleteCluster with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.DeleteClusterRequest()
+      );
+      request.name = '';
+      const expectedHeaderRequestParams = 'name=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.deleteCluster(request), expectedError);
+    });
   });
 
   describe('createAppProfile', () => {
@@ -1143,6 +1278,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes createAppProfile with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.createAppProfile(request), expectedError);
     });
   });
 
@@ -1258,6 +1410,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes getAppProfile with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.GetAppProfileRequest()
+      );
+      request.name = '';
+      const expectedHeaderRequestParams = 'name=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.getAppProfile(request), expectedError);
+    });
   });
 
   describe('deleteAppProfile', () => {
@@ -1371,6 +1540,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes deleteAppProfile with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
+      );
+      request.name = '';
+      const expectedHeaderRequestParams = 'name=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.deleteAppProfile(request), expectedError);
     });
   });
 
@@ -1486,6 +1672,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes getIamPolicy with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.iam.v1.GetIamPolicyRequest()
+      );
+      request.resource = '';
+      const expectedHeaderRequestParams = 'resource=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.getIamPolicy(request), expectedError);
+    });
   });
 
   describe('setIamPolicy', () => {
@@ -1599,6 +1802,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes setIamPolicy with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.iam.v1.SetIamPolicyRequest()
+      );
+      request.resource = '';
+      const expectedHeaderRequestParams = 'resource=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.setIamPolicy(request), expectedError);
     });
   });
 
@@ -1714,6 +1934,23 @@ describe('v2.BigtableInstanceAdminClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes testIamPermissions with closed client', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.iam.v1.TestIamPermissionsRequest()
+      );
+      request.resource = '';
+      const expectedHeaderRequestParams = 'resource=';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.testIamPermissions(request), expectedError);
     });
   });
 

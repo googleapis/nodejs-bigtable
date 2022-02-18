@@ -3593,9 +3593,8 @@ export class BigtableTableAdminClient {
    * @returns {Promise} A promise that resolves when the client is closed.
    */
   close(): Promise<void> {
-    this.initialize();
-    if (!this._terminated) {
-      return this.bigtableTableAdminStub!.then(stub => {
+    if (this.bigtableTableAdminStub && !this._terminated) {
+      return this.bigtableTableAdminStub.then(stub => {
         this._terminated = true;
         stub.close();
         this.operationsClient.close();
