@@ -18,8 +18,15 @@
 
 /* global window */
 import * as gax from 'google-gax';
-import {Callback, CallOptions, Descriptors, ClientOptions} from 'google-gax';
+import {
+  Callback,
+  CallOptions,
+  Descriptors,
+  ClientOptions,
+  GoogleError,
+} from 'google-gax';
 
+import {PassThrough} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
 /**
@@ -240,6 +247,16 @@ export class BigtableClient {
         stub =>
           (...args: Array<{}>) => {
             if (this._terminated) {
+              if (methodName in this.descriptors.stream) {
+                const stream = new PassThrough();
+                setImmediate(() => {
+                  stream.emit(
+                    'error',
+                    new GoogleError('The client has already been closed.')
+                  );
+                });
+                return stream;
+              }
               return Promise.reject('The client has already been closed.');
             }
             const func = stub[methodName];
@@ -349,8 +366,6 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
    *   for more details and examples.
-   * @example <caption>include:samples/generated/v2/bigtable.mutate_row.js</caption>
-   * region_tag:bigtable_v2_generated_Bigtable_MutateRow_async
    */
   mutateRow(
     request?: protos.google.bigtable.v2.IMutateRowRequest,
@@ -478,8 +493,6 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
    *   for more details and examples.
-   * @example <caption>include:samples/generated/v2/bigtable.check_and_mutate_row.js</caption>
-   * region_tag:bigtable_v2_generated_Bigtable_CheckAndMutateRow_async
    */
   checkAndMutateRow(
     request?: protos.google.bigtable.v2.ICheckAndMutateRowRequest,
@@ -589,8 +602,6 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
    *   for more details and examples.
-   * @example <caption>include:samples/generated/v2/bigtable.ping_and_warm.js</caption>
-   * region_tag:bigtable_v2_generated_Bigtable_PingAndWarm_async
    */
   pingAndWarm(
     request?: protos.google.bigtable.v2.IPingAndWarmRequest,
@@ -707,8 +718,6 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
    *   for more details and examples.
-   * @example <caption>include:samples/generated/v2/bigtable.read_modify_write_row.js</caption>
-   * region_tag:bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async
    */
   readModifyWriteRow(
     request?: protos.google.bigtable.v2.IReadModifyWriteRowRequest,
@@ -832,8 +841,6 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
    *   for more details and examples.
-   * @example <caption>include:samples/generated/v2/bigtable.read_rows.js</caption>
-   * region_tag:bigtable_v2_generated_Bigtable_ReadRows_async
    */
   readRows(
     request?: protos.google.bigtable.v2.IReadRowsRequest,
@@ -894,8 +901,6 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
    *   for more details and examples.
-   * @example <caption>include:samples/generated/v2/bigtable.sample_row_keys.js</caption>
-   * region_tag:bigtable_v2_generated_Bigtable_SampleRowKeys_async
    */
   sampleRowKeys(
     request?: protos.google.bigtable.v2.ISampleRowKeysRequest,
@@ -959,8 +964,6 @@ export class BigtableClient {
    *   Please see the
    *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
    *   for more details and examples.
-   * @example <caption>include:samples/generated/v2/bigtable.mutate_rows.js</caption>
-   * region_tag:bigtable_v2_generated_Bigtable_MutateRows_async
    */
   mutateRows(
     request?: protos.google.bigtable.v2.IMutateRowsRequest,
@@ -1095,9 +1098,8 @@ export class BigtableClient {
    * @returns {Promise} A promise that resolves when the client is closed.
    */
   close(): Promise<void> {
-    this.initialize();
-    if (!this._terminated) {
-      return this.bigtableStub!.then(stub => {
+    if (this.bigtableStub && !this._terminated) {
+      return this.bigtableStub.then(stub => {
         this._terminated = true;
         stub.close();
       });

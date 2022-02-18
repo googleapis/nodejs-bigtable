@@ -3114,9 +3114,8 @@ export class BigtableInstanceAdminClient {
    * @returns {Promise} A promise that resolves when the client is closed.
    */
   close(): Promise<void> {
-    this.initialize();
-    if (!this._terminated) {
-      return this.bigtableInstanceAdminStub!.then(stub => {
+    if (this.bigtableInstanceAdminStub && !this._terminated) {
+      return this.bigtableInstanceAdminStub.then(stub => {
         this._terminated = true;
         stub.close();
         this.operationsClient.close();

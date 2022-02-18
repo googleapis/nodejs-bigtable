@@ -111,12 +111,27 @@ describe('v2.BigtableClient', () => {
     assert(client.bigtableStub);
   });
 
-  it('has close method', () => {
+  it('has close method for the initialized client', done => {
     const client = new bigtableModule.v2.BigtableClient({
       credentials: {client_email: 'bogus', private_key: 'bogus'},
       projectId: 'bogus',
     });
-    client.close();
+    client.initialize();
+    assert(client.bigtableStub);
+    client.close().then(() => {
+      done();
+    });
+  });
+
+  it('has close method for the non-initialized client', done => {
+    const client = new bigtableModule.v2.BigtableClient({
+      credentials: {client_email: 'bogus', private_key: 'bogus'},
+      projectId: 'bogus',
+    });
+    assert.strictEqual(client.bigtableStub, undefined);
+    client.close().then(() => {
+      done();
+    });
   });
 
   it('has getProjectId method', async () => {
@@ -256,6 +271,21 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes mutateRow with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.MutateRowRequest()
+      );
+      const expectedHeaderRequestParams = '';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.mutateRow(request), expectedError);
+    });
   });
 
   describe('checkAndMutateRow', () => {
@@ -364,6 +394,21 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes checkAndMutateRow with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.CheckAndMutateRowRequest()
+      );
+      const expectedHeaderRequestParams = '';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.checkAndMutateRow(request), expectedError);
+    });
   });
 
   describe('pingAndWarm', () => {
@@ -471,6 +516,21 @@ describe('v2.BigtableClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions, undefined)
       );
+    });
+
+    it('invokes pingAndWarm with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.PingAndWarmRequest()
+      );
+      const expectedHeaderRequestParams = '';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.pingAndWarm(request), expectedError);
     });
   });
 
@@ -581,6 +641,21 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions, undefined)
       );
     });
+
+    it('invokes readModifyWriteRow with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
+      );
+      const expectedHeaderRequestParams = '';
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      await assert.rejects(client.readModifyWriteRow(request), expectedError);
+    });
   });
 
   describe('readRows', () => {
@@ -666,6 +741,32 @@ describe('v2.BigtableClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions)
       );
+    });
+
+    it('invokes readRows with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.ReadRowsRequest()
+      );
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.readRows(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.ReadRowsResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
     });
   });
 
@@ -754,6 +855,32 @@ describe('v2.BigtableClient', () => {
           .calledWith(request, expectedOptions)
       );
     });
+
+    it('invokes sampleRowKeys with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.SampleRowKeysRequest()
+      );
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.sampleRowKeys(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.SampleRowKeysResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+    });
   });
 
   describe('mutateRows', () => {
@@ -840,6 +967,32 @@ describe('v2.BigtableClient', () => {
           .getCall(0)
           .calledWith(request, expectedOptions)
       );
+    });
+
+    it('invokes mutateRows with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.MutateRowsRequest()
+      );
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.mutateRows(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.MutateRowsResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
     });
   });
 
