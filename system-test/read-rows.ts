@@ -146,7 +146,7 @@ describe('Bigtable/Table', () => {
     });
 
     afterEach(() => {
-      clock.uninstall();
+      clock.restore();
       stub.restore();
     });
 

@@ -8872,6 +8872,20 @@ export namespace google {
                 public checkAndMutateRow(request: google.bigtable.v2.ICheckAndMutateRowRequest): Promise<google.bigtable.v2.CheckAndMutateRowResponse>;
 
                 /**
+                 * Calls PingAndWarm.
+                 * @param request PingAndWarmRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and PingAndWarmResponse
+                 */
+                public pingAndWarm(request: google.bigtable.v2.IPingAndWarmRequest, callback: google.bigtable.v2.Bigtable.PingAndWarmCallback): void;
+
+                /**
+                 * Calls PingAndWarm.
+                 * @param request PingAndWarmRequest message or plain object
+                 * @returns Promise
+                 */
+                public pingAndWarm(request: google.bigtable.v2.IPingAndWarmRequest): Promise<google.bigtable.v2.PingAndWarmResponse>;
+
+                /**
                  * Calls ReadModifyWriteRow.
                  * @param request ReadModifyWriteRowRequest message or plain object
                  * @param callback Node-style callback called with the error, if any, and ReadModifyWriteRowResponse
@@ -8922,6 +8936,13 @@ export namespace google {
                  * @param [response] CheckAndMutateRowResponse
                  */
                 type CheckAndMutateRowCallback = (error: (Error|null), response?: google.bigtable.v2.CheckAndMutateRowResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.v2.Bigtable#pingAndWarm}.
+                 * @param error Error, if any
+                 * @param [response] PingAndWarmResponse
+                 */
+                type PingAndWarmCallback = (error: (Error|null), response?: google.bigtable.v2.PingAndWarmResponse) => void;
 
                 /**
                  * Callback as used by {@link google.bigtable.v2.Bigtable#readModifyWriteRow}.
@@ -10264,6 +10285,186 @@ export namespace google {
 
                 /**
                  * Converts this CheckAndMutateRowResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a PingAndWarmRequest. */
+            interface IPingAndWarmRequest {
+
+                /** PingAndWarmRequest name */
+                name?: (string|null);
+
+                /** PingAndWarmRequest appProfileId */
+                appProfileId?: (string|null);
+            }
+
+            /** Represents a PingAndWarmRequest. */
+            class PingAndWarmRequest implements IPingAndWarmRequest {
+
+                /**
+                 * Constructs a new PingAndWarmRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IPingAndWarmRequest);
+
+                /** PingAndWarmRequest name. */
+                public name: string;
+
+                /** PingAndWarmRequest appProfileId. */
+                public appProfileId: string;
+
+                /**
+                 * Creates a new PingAndWarmRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns PingAndWarmRequest instance
+                 */
+                public static create(properties?: google.bigtable.v2.IPingAndWarmRequest): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Encodes the specified PingAndWarmRequest message. Does not implicitly {@link google.bigtable.v2.PingAndWarmRequest.verify|verify} messages.
+                 * @param message PingAndWarmRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IPingAndWarmRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified PingAndWarmRequest message, length delimited. Does not implicitly {@link google.bigtable.v2.PingAndWarmRequest.verify|verify} messages.
+                 * @param message PingAndWarmRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IPingAndWarmRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a PingAndWarmRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns PingAndWarmRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Decodes a PingAndWarmRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns PingAndWarmRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Verifies a PingAndWarmRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a PingAndWarmRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns PingAndWarmRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Creates a plain object from a PingAndWarmRequest message. Also converts values to other types if specified.
+                 * @param message PingAndWarmRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.PingAndWarmRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this PingAndWarmRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a PingAndWarmResponse. */
+            interface IPingAndWarmResponse {
+            }
+
+            /** Represents a PingAndWarmResponse. */
+            class PingAndWarmResponse implements IPingAndWarmResponse {
+
+                /**
+                 * Constructs a new PingAndWarmResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IPingAndWarmResponse);
+
+                /**
+                 * Creates a new PingAndWarmResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns PingAndWarmResponse instance
+                 */
+                public static create(properties?: google.bigtable.v2.IPingAndWarmResponse): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Encodes the specified PingAndWarmResponse message. Does not implicitly {@link google.bigtable.v2.PingAndWarmResponse.verify|verify} messages.
+                 * @param message PingAndWarmResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IPingAndWarmResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified PingAndWarmResponse message, length delimited. Does not implicitly {@link google.bigtable.v2.PingAndWarmResponse.verify|verify} messages.
+                 * @param message PingAndWarmResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IPingAndWarmResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a PingAndWarmResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns PingAndWarmResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Decodes a PingAndWarmResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns PingAndWarmResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Verifies a PingAndWarmResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a PingAndWarmResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns PingAndWarmResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Creates a plain object from a PingAndWarmResponse message. Also converts values to other types if specified.
+                 * @param message PingAndWarmResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.PingAndWarmResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this PingAndWarmResponse to JSON.
                  * @returns JSON object
                  */
                 public toJSON(): { [k: string]: any };
