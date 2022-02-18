@@ -788,6 +788,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         activeRequestStream.abort();
       }
       end();
+      return userStream;
     };
 
     let chunkTransformer: ChunkTransformer;
