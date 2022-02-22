@@ -330,140 +330,140 @@ export namespace google {
                 namespace BigtableInstanceAdmin {
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createInstance}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateInstanceCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getInstance}.
                      * @param error Error, if any
                      * @param [response] Instance
                      */
                     type GetInstanceCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Instance) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listInstances}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listInstances}.
                      * @param error Error, if any
                      * @param [response] ListInstancesResponse
                      */
                     type ListInstancesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListInstancesResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateInstance}.
                      * @param error Error, if any
                      * @param [response] Instance
                      */
                     type UpdateInstanceCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Instance) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|partialUpdateInstance}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type PartialUpdateInstanceCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteInstance}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteInstanceCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createCluster}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getCluster}.
                      * @param error Error, if any
                      * @param [response] Cluster
                      */
                     type GetClusterCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Cluster) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listClusters}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listClusters}.
                      * @param error Error, if any
                      * @param [response] ListClustersResponse
                      */
                     type ListClustersCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListClustersResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateCluster}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type UpdateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|partialUpdateCluster}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type PartialUpdateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteCluster}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteClusterCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createAppProfile}.
                      * @param error Error, if any
                      * @param [response] AppProfile
                      */
                     type CreateAppProfileCallback = (error: (Error|null), response?: google.bigtable.admin.v2.AppProfile) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getAppProfile}.
                      * @param error Error, if any
                      * @param [response] AppProfile
                      */
                     type GetAppProfileCallback = (error: (Error|null), response?: google.bigtable.admin.v2.AppProfile) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listAppProfiles}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listAppProfiles}.
                      * @param error Error, if any
                      * @param [response] ListAppProfilesResponse
                      */
                     type ListAppProfilesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListAppProfilesResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateAppProfile}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type UpdateAppProfileCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteAppProfile}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteAppProfileCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type GetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#setIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|setIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type SetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#testIamPermissions}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|testIamPermissions}.
                      * @param error Error, if any
                      * @param [response] TestIamPermissionsResponse
                      */
@@ -4309,154 +4309,154 @@ export namespace google {
                 namespace BigtableTableAdmin {
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createTable}.
                      * @param error Error, if any
                      * @param [response] Table
                      */
                     type CreateTableCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Table) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createTableFromSnapshot}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createTableFromSnapshot}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateTableFromSnapshotCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listTables}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listTables}.
                      * @param error Error, if any
                      * @param [response] ListTablesResponse
                      */
                     type ListTablesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListTablesResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getTable}.
                      * @param error Error, if any
                      * @param [response] Table
                      */
                     type GetTableCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Table) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteTable}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteTableCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#modifyColumnFamilies}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|modifyColumnFamilies}.
                      * @param error Error, if any
                      * @param [response] Table
                      */
                     type ModifyColumnFamiliesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Table) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#dropRowRange}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|dropRowRange}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DropRowRangeCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#generateConsistencyToken}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|generateConsistencyToken}.
                      * @param error Error, if any
                      * @param [response] GenerateConsistencyTokenResponse
                      */
                     type GenerateConsistencyTokenCallback = (error: (Error|null), response?: google.bigtable.admin.v2.GenerateConsistencyTokenResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#checkConsistency}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|checkConsistency}.
                      * @param error Error, if any
                      * @param [response] CheckConsistencyResponse
                      */
                     type CheckConsistencyCallback = (error: (Error|null), response?: google.bigtable.admin.v2.CheckConsistencyResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#snapshotTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|snapshotTable}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type SnapshotTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getSnapshot}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getSnapshot}.
                      * @param error Error, if any
                      * @param [response] Snapshot
                      */
                     type GetSnapshotCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Snapshot) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listSnapshots}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listSnapshots}.
                      * @param error Error, if any
                      * @param [response] ListSnapshotsResponse
                      */
                     type ListSnapshotsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListSnapshotsResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteSnapshot}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteSnapshot}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteSnapshotCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createBackup}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateBackupCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getBackup}.
                      * @param error Error, if any
                      * @param [response] Backup
                      */
                     type GetBackupCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Backup) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#updateBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateBackup}.
                      * @param error Error, if any
                      * @param [response] Backup
                      */
                     type UpdateBackupCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Backup) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteBackup}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteBackupCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listBackups}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listBackups}.
                      * @param error Error, if any
                      * @param [response] ListBackupsResponse
                      */
                     type ListBackupsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListBackupsResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#restoreTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|restoreTable}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type RestoreTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type GetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#setIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|setIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type SetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#testIamPermissions}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|testIamPermissions}.
                      * @param error Error, if any
                      * @param [response] TestIamPermissionsResponse
                      */
@@ -8903,49 +8903,49 @@ export namespace google {
             namespace Bigtable {
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#readRows}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|readRows}.
                  * @param error Error, if any
                  * @param [response] ReadRowsResponse
                  */
                 type ReadRowsCallback = (error: (Error|null), response?: google.bigtable.v2.ReadRowsResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#sampleRowKeys}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|sampleRowKeys}.
                  * @param error Error, if any
                  * @param [response] SampleRowKeysResponse
                  */
                 type SampleRowKeysCallback = (error: (Error|null), response?: google.bigtable.v2.SampleRowKeysResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#mutateRow}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|mutateRow}.
                  * @param error Error, if any
                  * @param [response] MutateRowResponse
                  */
                 type MutateRowCallback = (error: (Error|null), response?: google.bigtable.v2.MutateRowResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#mutateRows}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|mutateRows}.
                  * @param error Error, if any
                  * @param [response] MutateRowsResponse
                  */
                 type MutateRowsCallback = (error: (Error|null), response?: google.bigtable.v2.MutateRowsResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#checkAndMutateRow}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|checkAndMutateRow}.
                  * @param error Error, if any
                  * @param [response] CheckAndMutateRowResponse
                  */
                 type CheckAndMutateRowCallback = (error: (Error|null), response?: google.bigtable.v2.CheckAndMutateRowResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#pingAndWarm}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|pingAndWarm}.
                  * @param error Error, if any
                  * @param [response] PingAndWarmResponse
                  */
                 type PingAndWarmCallback = (error: (Error|null), response?: google.bigtable.v2.PingAndWarmResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#readModifyWriteRow}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|readModifyWriteRow}.
                  * @param error Error, if any
                  * @param [response] ReadModifyWriteRowResponse
                  */
@@ -17954,21 +17954,21 @@ export namespace google {
             namespace IAMPolicy {
 
                 /**
-                 * Callback as used by {@link google.iam.v1.IAMPolicy#setIamPolicy}.
+                 * Callback as used by {@link google.iam.v1.IAMPolicy|setIamPolicy}.
                  * @param error Error, if any
                  * @param [response] Policy
                  */
                 type SetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                 /**
-                 * Callback as used by {@link google.iam.v1.IAMPolicy#getIamPolicy}.
+                 * Callback as used by {@link google.iam.v1.IAMPolicy|getIamPolicy}.
                  * @param error Error, if any
                  * @param [response] Policy
                  */
                 type GetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                 /**
-                 * Callback as used by {@link google.iam.v1.IAMPolicy#testIamPermissions}.
+                 * Callback as used by {@link google.iam.v1.IAMPolicy|testIamPermissions}.
                  * @param error Error, if any
                  * @param [response] TestIamPermissionsResponse
                  */
@@ -19190,35 +19190,35 @@ export namespace google {
         namespace Operations {
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#listOperations}.
+             * Callback as used by {@link google.longrunning.Operations|listOperations}.
              * @param error Error, if any
              * @param [response] ListOperationsResponse
              */
             type ListOperationsCallback = (error: (Error|null), response?: google.longrunning.ListOperationsResponse) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#getOperation}.
+             * Callback as used by {@link google.longrunning.Operations|getOperation}.
              * @param error Error, if any
              * @param [response] Operation
              */
             type GetOperationCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#deleteOperation}.
+             * Callback as used by {@link google.longrunning.Operations|deleteOperation}.
              * @param error Error, if any
              * @param [response] Empty
              */
             type DeleteOperationCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#cancelOperation}.
+             * Callback as used by {@link google.longrunning.Operations|cancelOperation}.
              * @param error Error, if any
              * @param [response] Empty
              */
             type CancelOperationCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#waitOperation}.
+             * Callback as used by {@link google.longrunning.Operations|waitOperation}.
              * @param error Error, if any
              * @param [response] Operation
              */

@@ -99,7 +99,7 @@
                         };
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createInstance}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createInstance}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef CreateInstanceCallback
                          * @type {function}
@@ -132,7 +132,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getInstance}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getInstance}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef GetInstanceCallback
                          * @type {function}
@@ -165,7 +165,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listInstances}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listInstances}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef ListInstancesCallback
                          * @type {function}
@@ -198,7 +198,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateInstance}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateInstance}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef UpdateInstanceCallback
                          * @type {function}
@@ -231,7 +231,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateInstance}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|partialUpdateInstance}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef PartialUpdateInstanceCallback
                          * @type {function}
@@ -264,7 +264,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteInstance}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteInstance}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef DeleteInstanceCallback
                          * @type {function}
@@ -297,7 +297,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createCluster}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createCluster}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef CreateClusterCallback
                          * @type {function}
@@ -330,7 +330,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getCluster}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getCluster}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef GetClusterCallback
                          * @type {function}
@@ -363,7 +363,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listClusters}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listClusters}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef ListClustersCallback
                          * @type {function}
@@ -396,7 +396,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateCluster}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateCluster}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef UpdateClusterCallback
                          * @type {function}
@@ -429,7 +429,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateCluster}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|partialUpdateCluster}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef PartialUpdateClusterCallback
                          * @type {function}
@@ -462,7 +462,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteCluster}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteCluster}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef DeleteClusterCallback
                          * @type {function}
@@ -495,7 +495,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createAppProfile}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createAppProfile}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef CreateAppProfileCallback
                          * @type {function}
@@ -528,7 +528,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getAppProfile}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getAppProfile}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef GetAppProfileCallback
                          * @type {function}
@@ -561,7 +561,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listAppProfiles}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listAppProfiles}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef ListAppProfilesCallback
                          * @type {function}
@@ -594,7 +594,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateAppProfile}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateAppProfile}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef UpdateAppProfileCallback
                          * @type {function}
@@ -627,7 +627,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteAppProfile}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteAppProfile}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef DeleteAppProfileCallback
                          * @type {function}
@@ -660,7 +660,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getIamPolicy}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getIamPolicy}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef GetIamPolicyCallback
                          * @type {function}
@@ -693,7 +693,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#setIamPolicy}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|setIamPolicy}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef SetIamPolicyCallback
                          * @type {function}
@@ -726,7 +726,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#testIamPermissions}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|testIamPermissions}.
                          * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
                          * @typedef TestIamPermissionsCallback
                          * @type {function}
@@ -9079,7 +9079,7 @@
                         };
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createTable}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createTable}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef CreateTableCallback
                          * @type {function}
@@ -9112,7 +9112,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createTableFromSnapshot}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createTableFromSnapshot}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef CreateTableFromSnapshotCallback
                          * @type {function}
@@ -9145,7 +9145,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listTables}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listTables}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef ListTablesCallback
                          * @type {function}
@@ -9178,7 +9178,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getTable}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getTable}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef GetTableCallback
                          * @type {function}
@@ -9211,7 +9211,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteTable}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteTable}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef DeleteTableCallback
                          * @type {function}
@@ -9244,7 +9244,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#modifyColumnFamilies}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|modifyColumnFamilies}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef ModifyColumnFamiliesCallback
                          * @type {function}
@@ -9277,7 +9277,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#dropRowRange}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|dropRowRange}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef DropRowRangeCallback
                          * @type {function}
@@ -9310,7 +9310,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#generateConsistencyToken}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|generateConsistencyToken}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef GenerateConsistencyTokenCallback
                          * @type {function}
@@ -9343,7 +9343,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#checkConsistency}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|checkConsistency}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef CheckConsistencyCallback
                          * @type {function}
@@ -9376,7 +9376,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#snapshotTable}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|snapshotTable}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef SnapshotTableCallback
                          * @type {function}
@@ -9409,7 +9409,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getSnapshot}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getSnapshot}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef GetSnapshotCallback
                          * @type {function}
@@ -9442,7 +9442,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listSnapshots}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listSnapshots}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef ListSnapshotsCallback
                          * @type {function}
@@ -9475,7 +9475,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteSnapshot}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteSnapshot}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef DeleteSnapshotCallback
                          * @type {function}
@@ -9508,7 +9508,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createBackup}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createBackup}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef CreateBackupCallback
                          * @type {function}
@@ -9541,7 +9541,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getBackup}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getBackup}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef GetBackupCallback
                          * @type {function}
@@ -9574,7 +9574,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#updateBackup}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateBackup}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef UpdateBackupCallback
                          * @type {function}
@@ -9607,7 +9607,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteBackup}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteBackup}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef DeleteBackupCallback
                          * @type {function}
@@ -9640,7 +9640,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listBackups}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listBackups}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef ListBackupsCallback
                          * @type {function}
@@ -9673,7 +9673,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#restoreTable}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|restoreTable}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef RestoreTableCallback
                          * @type {function}
@@ -9706,7 +9706,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getIamPolicy}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getIamPolicy}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef GetIamPolicyCallback
                          * @type {function}
@@ -9739,7 +9739,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#setIamPolicy}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|setIamPolicy}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef SetIamPolicyCallback
                          * @type {function}
@@ -9772,7 +9772,7 @@
                          */
     
                         /**
-                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#testIamPermissions}.
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|testIamPermissions}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef TestIamPermissionsCallback
                          * @type {function}
@@ -20273,7 +20273,7 @@
                     };
     
                     /**
-                     * Callback as used by {@link google.bigtable.v2.Bigtable#readRows}.
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|readRows}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef ReadRowsCallback
                      * @type {function}
@@ -20306,7 +20306,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.bigtable.v2.Bigtable#sampleRowKeys}.
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|sampleRowKeys}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef SampleRowKeysCallback
                      * @type {function}
@@ -20339,7 +20339,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.bigtable.v2.Bigtable#mutateRow}.
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|mutateRow}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef MutateRowCallback
                      * @type {function}
@@ -20372,7 +20372,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.bigtable.v2.Bigtable#mutateRows}.
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|mutateRows}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef MutateRowsCallback
                      * @type {function}
@@ -20405,7 +20405,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.bigtable.v2.Bigtable#checkAndMutateRow}.
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|checkAndMutateRow}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef CheckAndMutateRowCallback
                      * @type {function}
@@ -20438,7 +20438,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.bigtable.v2.Bigtable#pingAndWarm}.
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|pingAndWarm}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef PingAndWarmCallback
                      * @type {function}
@@ -20471,7 +20471,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.bigtable.v2.Bigtable#readModifyWriteRow}.
+                     * Callback as used by {@link google.bigtable.v2.Bigtable|readModifyWriteRow}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef ReadModifyWriteRowCallback
                      * @type {function}
@@ -43590,7 +43590,7 @@
                     };
     
                     /**
-                     * Callback as used by {@link google.iam.v1.IAMPolicy#setIamPolicy}.
+                     * Callback as used by {@link google.iam.v1.IAMPolicy|setIamPolicy}.
                      * @memberof google.iam.v1.IAMPolicy
                      * @typedef SetIamPolicyCallback
                      * @type {function}
@@ -43623,7 +43623,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.iam.v1.IAMPolicy#getIamPolicy}.
+                     * Callback as used by {@link google.iam.v1.IAMPolicy|getIamPolicy}.
                      * @memberof google.iam.v1.IAMPolicy
                      * @typedef GetIamPolicyCallback
                      * @type {function}
@@ -43656,7 +43656,7 @@
                      */
     
                     /**
-                     * Callback as used by {@link google.iam.v1.IAMPolicy#testIamPermissions}.
+                     * Callback as used by {@link google.iam.v1.IAMPolicy|testIamPermissions}.
                      * @memberof google.iam.v1.IAMPolicy
                      * @typedef TestIamPermissionsCallback
                      * @type {function}
@@ -46401,7 +46401,7 @@
                 };
     
                 /**
-                 * Callback as used by {@link google.longrunning.Operations#listOperations}.
+                 * Callback as used by {@link google.longrunning.Operations|listOperations}.
                  * @memberof google.longrunning.Operations
                  * @typedef ListOperationsCallback
                  * @type {function}
@@ -46434,7 +46434,7 @@
                  */
     
                 /**
-                 * Callback as used by {@link google.longrunning.Operations#getOperation}.
+                 * Callback as used by {@link google.longrunning.Operations|getOperation}.
                  * @memberof google.longrunning.Operations
                  * @typedef GetOperationCallback
                  * @type {function}
@@ -46467,7 +46467,7 @@
                  */
     
                 /**
-                 * Callback as used by {@link google.longrunning.Operations#deleteOperation}.
+                 * Callback as used by {@link google.longrunning.Operations|deleteOperation}.
                  * @memberof google.longrunning.Operations
                  * @typedef DeleteOperationCallback
                  * @type {function}
@@ -46500,7 +46500,7 @@
                  */
     
                 /**
-                 * Callback as used by {@link google.longrunning.Operations#cancelOperation}.
+                 * Callback as used by {@link google.longrunning.Operations|cancelOperation}.
                  * @memberof google.longrunning.Operations
                  * @typedef CancelOperationCallback
                  * @type {function}
@@ -46533,7 +46533,7 @@
                  */
     
                 /**
-                 * Callback as used by {@link google.longrunning.Operations#waitOperation}.
+                 * Callback as used by {@link google.longrunning.Operations|waitOperation}.
                  * @memberof google.longrunning.Operations
                  * @typedef WaitOperationCallback
                  * @type {function}

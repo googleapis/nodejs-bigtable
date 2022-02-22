@@ -97,15 +97,12 @@ describe('📦 App Profile', () => {
 
     it('should create a profile with multiple clusters using strings', async () => {
       const options = {
-        routing: new Set([
-          clusterIds[1],
-          clusterIds[2],
-        ]),
+        routing: new Set([clusterIds[1], clusterIds[2]]),
       };
       const appProfile = await createProfile(instance, options);
       assert.deepStrictEqual(
-          new Set(appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds),
-          new Set([...options.routing])
+        new Set(appProfile.metadata?.multiClusterRoutingUseAny?.clusterIds),
+        new Set([...options.routing])
       );
     });
 
