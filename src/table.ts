@@ -815,7 +815,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         };
         const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
         const greaterThanOrEqualTo = (lhs: string, rhs: string) =>
-          !lessThan(rhs, lhs);
+          !lessThan(lhs, rhs);
 
         if (ranges.length === 0) {
           ranges.push({
