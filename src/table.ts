@@ -895,6 +895,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
+      if (!reqOpts.rows && lastRowKey) {
+        return
+      }
+
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
         method: 'readRows',
