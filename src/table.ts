@@ -729,7 +729,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     let activeRequestStream: AbortableDuplex;
-    let rowKeys: string[] | null;
+    let rowKeys: string[];
     const ranges = options.ranges || [];
     let filter: {} | null;
     let rowsLimit: number;
@@ -749,11 +749,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       });
     }
 
-    if (options.keys) {
-      rowKeys = options.keys;
-    } else {
-      rowKeys = null;
-    }
+    rowKeys = options.keys || [];
 
     if (options.prefix) {
       if (options.ranges || options.start || options.end || options.prefixes) {
@@ -776,7 +772,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     }
 
     // If rowKeys and ranges are both empty, the request is a full table scan
-    if (!rowKeys && ranges.length === 0) {
+    if (rowKeys.length === 0 && ranges.length === 0) {
       ranges.push({});
     }
 
@@ -817,6 +813,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
+        // TODO: lhs and rhs type shouldn't be string, it could be
+        // string, number, utf8array, boolean or buffer. Fix the type
+        // and clean up the casting.
         const lessThan = (lhs: string, rhs: string) => {
           const lhsBytes = Mutation.convertToBytes(lhs);
           const rhsBytes = Mutation.convertToBytes(rhs);
@@ -856,14 +855,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
 
         // Remove rowKeys already read.
-        if (rowKeys) {
-          rowKeys = rowKeys.filter(rowKey =>
-            greaterThan(rowKey, lastRowKey as string)
-          );
-          if (rowKeys.length === 0) {
-            rowKeys = null;
-          }
-        }
+        rowKeys = rowKeys.filter(rowKey =>
+          greaterThan(rowKey, lastRowKey as string)
+        );
 
         // If there was a row limit in the original request and
         // we've already read all the rows, end the stream and
@@ -874,30 +868,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         // If all the row keys and ranges are read, end the stream
         // and do not retry.
-        if (!rowKeys && ranges.length === 0) {
+        if (rowKeys.length === 0 && ranges.length === 0) {
           userStream.end();
           return;
         }
       }
 
-      if (rowKeys || ranges.length) {
+      if (rowKeys.length || ranges.length) {
         reqOpts.rows = {};
 
-        if (rowKeys) {
-          reqOpts.rows.rowKeys = rowKeys.map(
-            Mutation.convertToBytes
-          ) as {} as Uint8Array[];
-        }
+        reqOpts.rows.rowKeys = rowKeys.map(
+          Mutation.convertToBytes
+        ) as {} as Uint8Array[];
 
-        if (ranges.length) {
-          reqOpts.rows.rowRanges = ranges.map(range =>
-            Filter.createRange(
-              range.start as BoundData,
-              range.end as BoundData,
-              'Key'
-            )
-          );
-        }
+        reqOpts.rows.rowRanges = ranges.map(range =>
+          Filter.createRange(
+            range.start as BoundData,
+            range.end as BoundData,
+            'Key'
+          )
+        );
       }
 
       if (filter) {

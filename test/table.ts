@@ -1268,11 +1268,12 @@ describe('Bigtable/Table', () => {
           }) as {} as EventEmitter,
         ];
 
-        let fullScan = {rowRanges: [{}]}
+        const fullScan = {rowKeys: [], rowRanges: [{}]};
 
         callCreateReadStream(null, () => {
           assert.deepStrictEqual(reqOptsCalls[0].rows, fullScan);
           assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowKeys: [],
             rowRanges: [{start: 'a', startInclusive: false}],
           });
           done();
@@ -1292,9 +1293,11 @@ describe('Bigtable/Table', () => {
 
         callCreateReadStream({ranges: [{start: 'a'}]}, () => {
           assert.deepStrictEqual(reqOptsCalls[0].rows, {
+            rowKeys: [],
             rowRanges: [{start: 'a', startInclusive: true}],
           });
           assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowKeys: [],
             rowRanges: [{start: 'a', startInclusive: false}],
           });
           done();
@@ -1324,9 +1327,11 @@ describe('Bigtable/Table', () => {
             {start: 'c', startInclusive: true},
           ];
           assert.deepStrictEqual(reqOptsCalls[0].rows, {
+            rowKeys: [],
             rowRanges: allRanges,
           });
           assert.deepStrictEqual(reqOptsCalls[1].rows, {
+            rowKeys: [],
             rowRanges: allRanges.slice(1),
           });
           done();
@@ -1351,10 +1356,10 @@ describe('Bigtable/Table', () => {
         });
       });
 
-      it ('should not retry if limit is reached', done => {
+      it('should not retry if limit is reached', done => {
         emitters = [
           ((stream: Duplex) => {
-            stream.push([{key: 'a'}])
+            stream.push([{key: 'a'}]);
             stream.push([{key: 'b'}]);
             stream.emit('error', makeRetryableError());
           }) as {} as EventEmitter,
@@ -1362,16 +1367,16 @@ describe('Bigtable/Table', () => {
 
         const options = {
           ranges: [{start: 'a', end: 'c'}],
-          limit: 2
+          limit: 2,
         };
 
         callCreateReadStream(options, () => {
           assert.strictEqual(reqOptsCalls.length, 1);
           done();
         });
-      });;
+      });
 
-      it ('should not retry if all the keys are read', done => {
+      it('should not retry if all the keys are read', done => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a'}]);
@@ -1383,7 +1388,7 @@ describe('Bigtable/Table', () => {
           assert.strictEqual(reqOptsCalls.length, 1);
           done();
         });
-      });;
+      });
 
       it('shouldn not retry if all the ranges are read', done => {
         emitters = [
@@ -1400,6 +1405,7 @@ describe('Bigtable/Table', () => {
         callCreateReadStream(options, () => {
           assert.strictEqual(reqOptsCalls.length, 1);
           assert.deepStrictEqual(reqOptsCalls[0].rows, {
+            rowKeys: [],
             rowRanges: [{start: 'a', end: 'c', startInclusive: true}],
           });
           done();
@@ -1409,7 +1415,7 @@ describe('Bigtable/Table', () => {
       it('shouldn not retry with keys and ranges', done => {
         emitters = [
           ((stream: Duplex) => {
-            stream.push([{key: 'a1'}])
+            stream.push([{key: 'a1'}]);
             stream.push([{key: 'd'}]);
             stream.emit('error', makeRetryableError());
           }) as {} as EventEmitter,
