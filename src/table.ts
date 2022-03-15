@@ -733,6 +733,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const ranges = options.ranges || [];
     let filter: {} | null;
     let rowsLimit: number;
+    let hasLimit = false;
     let rowsRead = 0;
     let numRequestsMade = 0;
 
@@ -750,6 +751,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     if (options.keys) {
       rowKeys = options.keys;
+    } else {
+      rowKeys = null;
     }
 
     if (options.prefix) {
@@ -772,12 +775,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       });
     }
 
+    // If rowKeys and ranges are both empty, the request is a full table scan
+    if (!rowKeys && ranges.length === 0) {
+      ranges.push({});
+    }
+
     if (options.filter) {
       filter = Filter.parse(options.filter);
     }
 
     if (options.limit) {
       rowsLimit = options.limit;
+      hasLimit = true;
     }
 
     const userStream = new PassThrough({objectMode: true});
@@ -814,45 +823,34 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
         };
         const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
-        const greaterThanOrEqualTo = (lhs: string, rhs: string) =>
-          !lessThan(rhs, lhs);
+        const lessThanOrEqualTo = (lhs: string, rhs: string) =>
+          !greaterThan(lhs, rhs);
 
-        if (ranges.length === 0) {
-          ranges.push({
-            start: {
-              value: lastRowKey,
-              inclusive: false,
-            },
-          });
-        } else {
-          // Readjust and/or remove ranges based on previous valid row reads.
-
-          // Iterate backward since items may need to be removed.
-          for (let index = ranges.length - 1; index >= 0; index--) {
-            const range = ranges[index];
-            const startValue = is.object(range.start)
-              ? (range.start as BoundData).value
-              : range.start;
-            const endValue = is.object(range.end)
-              ? (range.end as BoundData).value
-              : range.end;
-            const isWithinStart =
-              !startValue ||
-              greaterThanOrEqualTo(startValue as string, lastRowKey as string);
-            const isWithinEnd =
-              !endValue || lessThan(lastRowKey as string, endValue as string);
-            if (isWithinStart) {
-              if (isWithinEnd) {
-                // The lastRowKey is within this range, adjust the start
-                // value.
-                range.start = {
-                  value: lastRowKey,
-                  inclusive: false,
-                };
-              } else {
-                // The lastRowKey is past this range, remove this range.
-                ranges.splice(index, 1);
-              }
+        // Readjust and/or remove ranges based on previous valid row reads.
+        // Iterate backward since items may need to be removed.
+        for (let index = ranges.length - 1; index >= 0; index--) {
+          const range = ranges[index];
+          const startValue = is.object(range.start)
+            ? (range.start as BoundData).value
+            : range.start;
+          const endValue = is.object(range.end)
+            ? (range.end as BoundData).value
+            : range.end;
+          const startKeyIsRead =
+            !startValue ||
+            lessThanOrEqualTo(startValue as string, lastRowKey as string);
+          const endKeyIsNotRead =
+            !endValue || lessThan(lastRowKey as string, endValue as string);
+          if (startKeyIsRead) {
+            if (endKeyIsNotRead) {
+              // EndKey is not read, reset the range to start from lastRowKey open
+              range.start = {
+                value: lastRowKey,
+                inclusive: false,
+              };
+            } else {
+              // EndKey is read, remove this range
+              ranges.splice(index, 1);
             }
           }
         }
@@ -866,7 +864,22 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             rowKeys = null;
           }
         }
+
+        // If there was a row limit in the original request and
+        // we've already read all the rows, end the stream and
+        // do not retry.
+        if (hasLimit && rowsLimit === rowsRead) {
+          userStream.end();
+          return;
+        }
+        // If all the row keys and ranges are read, end the stream
+        // and do not retry.
+        if (!rowKeys && ranges.length === 0) {
+          userStream.end();
+          return;
+        }
       }
+
       if (rowKeys || ranges.length) {
         reqOpts.rows = {};
 
