@@ -1412,7 +1412,7 @@ describe('Bigtable/Table', () => {
         });
       });
 
-      it('shouldn not retry with keys and ranges', done => {
+      it('shouldn not retry with keys and ranges that are read', done => {
         emitters = [
           ((stream: Duplex) => {
             stream.push([{key: 'a1'}]);

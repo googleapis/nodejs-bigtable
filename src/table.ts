@@ -732,10 +732,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowKeys: string[];
     const ranges = options.ranges || [];
     let filter: {} | null;
-    let rowsLimit: number;
-    let hasLimit = false;
+    const rowsLimit = options.limit || 0;
+    const hasLimit = rowsLimit != 0;
     let rowsRead = 0;
     let numRequestsMade = 0;
+
+    rowKeys = options.keys || [];
 
     if (options.start || options.end) {
       if (options.ranges || options.prefix || options.prefixes) {
@@ -748,8 +750,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         end: options.end!,
       });
     }
-
-    rowKeys = options.keys || [];
 
     if (options.prefix) {
       if (options.ranges || options.start || options.end || options.prefixes) {
@@ -781,16 +781,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       filter = Filter.parse(options.filter);
     }
 
-    if (options.limit) {
-      rowsLimit = options.limit;
-      hasLimit = true;
-    }
-
     const userStream = new PassThrough({objectMode: true});
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
       rowStream?.unpipe(userStream);
       if (activeRequestStream) {
+        // TODO: properly end the stream instead of abort
         activeRequestStream.abort();
       }
       return end();
@@ -815,7 +811,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       if (lastRowKey) {
         // TODO: lhs and rhs type shouldn't be string, it could be
-        // string, number, utf8array, boolean or buffer. Fix the type
+        // string, number, Uint8Array, boolean. Fix the type
         // and clean up the casting.
         const lessThan = (lhs: string, rhs: string) => {
           const lhsBytes = Mutation.convertToBytes(lhs);
@@ -840,7 +836,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             !startValue ||
             lessThanOrEqualTo(startValue as string, lastRowKey as string);
           const endKeyIsNotRead =
-            !endValue || lessThan(lastRowKey as string, endValue as string);
+            !endValue || (endValue as Buffer).length === 0 ||
+            lessThan(lastRowKey as string, endValue as string);
           if (startKeyIsRead) {
             if (endKeyIsNotRead) {
               // EndKey is not read, reset the range to start from lastRowKey open
@@ -878,6 +875,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // Create the new reqOpts
       reqOpts.rows = {};
 
+      // TODO: preprocess all the keys and ranges to Bytes
       reqOpts.rows.rowKeys = rowKeys.map(
         Mutation.convertToBytes
       ) as {} as Uint8Array[];
@@ -894,7 +892,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.filter = filter;
       }
 
-      if (rowsLimit) {
+      if (hasLimit) {
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
