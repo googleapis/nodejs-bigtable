@@ -771,7 +771,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       });
     }
 
-    // If rowKeys and ranges are both empty, the request is a full table scan
+    // If rowKeys and ranges are both empty, the request is a full table scan.
+    // Add an empty range to simplify the resumption logic.
     if (rowKeys.length === 0 && ranges.length === 0) {
       ranges.push({});
     }
@@ -874,21 +875,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
       }
 
-      if (rowKeys.length || ranges.length) {
-        reqOpts.rows = {};
+      // Create the new reqOpts
+      reqOpts.rows = {};
 
-        reqOpts.rows.rowKeys = rowKeys.map(
-          Mutation.convertToBytes
-        ) as {} as Uint8Array[];
+      reqOpts.rows.rowKeys = rowKeys.map(
+        Mutation.convertToBytes
+      ) as {} as Uint8Array[];
 
-        reqOpts.rows.rowRanges = ranges.map(range =>
-          Filter.createRange(
-            range.start as BoundData,
-            range.end as BoundData,
-            'Key'
-          )
-        );
-      }
+      reqOpts.rows.rowRanges = ranges.map(range =>
+        Filter.createRange(
+          range.start as BoundData,
+          range.end as BoundData,
+          'Key'
+        )
+      );
 
       if (filter) {
         reqOpts.filter = filter;
