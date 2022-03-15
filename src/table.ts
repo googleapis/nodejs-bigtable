@@ -733,7 +733,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const ranges = options.ranges || [];
     let filter: {} | null;
     const rowsLimit = options.limit || 0;
-    const hasLimit = rowsLimit != 0;
+    const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
     let numRequestsMade = 0;
 
@@ -836,7 +836,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             !startValue ||
             lessThanOrEqualTo(startValue as string, lastRowKey as string);
           const endKeyIsNotRead =
-            !endValue || (endValue as Buffer).length === 0 ||
+            !endValue ||
+            (endValue as Buffer).length === 0 ||
             lessThan(lastRowKey as string, endValue as string);
           if (startKeyIsRead) {
             if (endKeyIsNotRead) {
