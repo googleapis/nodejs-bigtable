@@ -786,7 +786,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     userStream.end = () => {
       rowStream?.unpipe(userStream);
       if (activeRequestStream) {
-        // TODO: properly end the stream instead of abort
         activeRequestStream.abort();
       }
       return end();
