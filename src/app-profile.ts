@@ -235,7 +235,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
         }
       } else {
         throw new Error(
-            'An app profile routing policy can only contain "any" for multi cluster routing, a `Cluster` for single routing, or a set of clusterIds as strings or `Clusters` for multi cluster routing.'
+          'An app profile routing policy can only contain "any" for multi cluster routing, a `Cluster` for single routing, or a set of clusterIds as strings or `Clusters` for multi cluster routing.'
         );
       }
     }
