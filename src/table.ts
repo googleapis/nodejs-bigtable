@@ -926,26 +926,28 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
-      rowStream.on('error', (error: ServiceError) => {
-        rowStream.unpipe(userStream);
-        activeRequestStream = null;
-        if (IGNORED_STATUS_CODES.has(error.code)) {
-          // We ignore the `cancelled` "error", since we are the ones who cause
-          // it when the user calls `.abort()`.
-          userStream.end();
-          return;
-        }
-        if (
-          numRequestsMade <= maxRetries &&
-          RETRYABLE_STATUS_CODES.has(error.code)
-        ) {
-          makeNewRequest();
-        } else {
-          userStream.emit('error', error);
-        }
-      }).on('end', () => {
-        activeRequestStream = null;
-      });
+      rowStream
+        .on('error', (error: ServiceError) => {
+          rowStream.unpipe(userStream);
+          activeRequestStream = null;
+          if (IGNORED_STATUS_CODES.has(error.code)) {
+            // We ignore the `cancelled` "error", since we are the ones who cause
+            // it when the user calls `.abort()`.
+            userStream.end();
+            return;
+          }
+          if (
+            numRequestsMade <= maxRetries &&
+            RETRYABLE_STATUS_CODES.has(error.code)
+          ) {
+            makeNewRequest();
+          } else {
+            userStream.emit('error', error);
+          }
+        })
+        .on('end', () => {
+          activeRequestStream = null;
+        });
       rowStream.pipe(userStream);
       numRequestsMade++;
     };
