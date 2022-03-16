@@ -729,12 +729,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     let activeRequestStream: AbortableDuplex;
-    let rowKeys: string[] | null;
+    let rowKeys: string[];
     const ranges = options.ranges || [];
     let filter: {} | null;
-    let rowsLimit: number;
+    const rowsLimit = options.limit || 0;
+    const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
     let numRequestsMade = 0;
+
+    rowKeys = options.keys || [];
 
     if (options.start || options.end) {
       if (options.ranges || options.prefix || options.prefixes) {
@@ -746,10 +749,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         start: options.start!,
         end: options.end!,
       });
-    }
-
-    if (options.keys) {
-      rowKeys = options.keys;
     }
 
     if (options.prefix) {
@@ -772,12 +771,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       });
     }
 
-    if (options.filter) {
-      filter = Filter.parse(options.filter);
+    // If rowKeys and ranges are both empty, the request is a full table scan.
+    // Add an empty range to simplify the resumption logic.
+    if (rowKeys.length === 0 && ranges.length === 0) {
+      ranges.push({});
     }
 
-    if (options.limit) {
-      rowsLimit = options.limit;
+    if (options.filter) {
+      filter = Filter.parse(options.filter);
     }
 
     const userStream = new PassThrough({objectMode: true});
@@ -785,6 +786,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     userStream.end = () => {
       rowStream?.unpipe(userStream);
       if (activeRequestStream) {
+        // TODO: properly end the stream instead of abort
         activeRequestStream.abort();
       }
       return end();
@@ -808,90 +810,90 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
+        // TODO: lhs and rhs type shouldn't be string, it could be
+        // string, number, Uint8Array, boolean. Fix the type
+        // and clean up the casting.
         const lessThan = (lhs: string, rhs: string) => {
           const lhsBytes = Mutation.convertToBytes(lhs);
           const rhsBytes = Mutation.convertToBytes(rhs);
           return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
         };
         const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
-        const greaterThanOrEqualTo = (lhs: string, rhs: string) =>
-          !lessThan(rhs, lhs);
+        const lessThanOrEqualTo = (lhs: string, rhs: string) =>
+          !greaterThan(lhs, rhs);
 
-        if (ranges.length === 0) {
-          ranges.push({
-            start: {
-              value: lastRowKey,
-              inclusive: false,
-            },
-          });
-        } else {
-          // Readjust and/or remove ranges based on previous valid row reads.
-
-          // Iterate backward since items may need to be removed.
-          for (let index = ranges.length - 1; index >= 0; index--) {
-            const range = ranges[index];
-            const startValue = is.object(range.start)
-              ? (range.start as BoundData).value
-              : range.start;
-            const endValue = is.object(range.end)
-              ? (range.end as BoundData).value
-              : range.end;
-            const isWithinStart =
-              !startValue ||
-              greaterThanOrEqualTo(startValue as string, lastRowKey as string);
-            const isWithinEnd =
-              !endValue || lessThan(lastRowKey as string, endValue as string);
-            if (isWithinStart) {
-              if (isWithinEnd) {
-                // The lastRowKey is within this range, adjust the start
-                // value.
-                range.start = {
-                  value: lastRowKey,
-                  inclusive: false,
-                };
-              } else {
-                // The lastRowKey is past this range, remove this range.
-                ranges.splice(index, 1);
-              }
+        // Readjust and/or remove ranges based on previous valid row reads.
+        // Iterate backward since items may need to be removed.
+        for (let index = ranges.length - 1; index >= 0; index--) {
+          const range = ranges[index];
+          const startValue = is.object(range.start)
+            ? (range.start as BoundData).value
+            : range.start;
+          const endValue = is.object(range.end)
+            ? (range.end as BoundData).value
+            : range.end;
+          const startKeyIsRead =
+            !startValue ||
+            lessThanOrEqualTo(startValue as string, lastRowKey as string);
+          const endKeyIsNotRead =
+            !endValue ||
+            (endValue as Buffer).length === 0 ||
+            lessThan(lastRowKey as string, endValue as string);
+          if (startKeyIsRead) {
+            if (endKeyIsNotRead) {
+              // EndKey is not read, reset the range to start from lastRowKey open
+              range.start = {
+                value: lastRowKey,
+                inclusive: false,
+              };
+            } else {
+              // EndKey is read, remove this range
+              ranges.splice(index, 1);
             }
           }
         }
 
         // Remove rowKeys already read.
-        if (rowKeys) {
-          rowKeys = rowKeys.filter(rowKey =>
-            greaterThan(rowKey, lastRowKey as string)
-          );
-          if (rowKeys.length === 0) {
-            rowKeys = null;
-          }
+        rowKeys = rowKeys.filter(rowKey =>
+          greaterThan(rowKey, lastRowKey as string)
+        );
+
+        // If there was a row limit in the original request and
+        // we've already read all the rows, end the stream and
+        // do not retry.
+        if (hasLimit && rowsLimit === rowsRead) {
+          userStream.end();
+          return;
+        }
+        // If all the row keys and ranges are read, end the stream
+        // and do not retry.
+        if (rowKeys.length === 0 && ranges.length === 0) {
+          userStream.end();
+          return;
         }
       }
-      if (rowKeys || ranges.length) {
-        reqOpts.rows = {};
 
-        if (rowKeys) {
-          reqOpts.rows.rowKeys = rowKeys.map(
-            Mutation.convertToBytes
-          ) as {} as Uint8Array[];
-        }
+      // Create the new reqOpts
+      reqOpts.rows = {};
 
-        if (ranges.length) {
-          reqOpts.rows.rowRanges = ranges.map(range =>
-            Filter.createRange(
-              range.start as BoundData,
-              range.end as BoundData,
-              'Key'
-            )
-          );
-        }
-      }
+      // TODO: preprocess all the keys and ranges to Bytes
+      reqOpts.rows.rowKeys = rowKeys.map(
+        Mutation.convertToBytes
+      ) as {} as Uint8Array[];
+
+      reqOpts.rows.rowRanges = ranges.map(range =>
+        Filter.createRange(
+          range.start as BoundData,
+          range.end as BoundData,
+          'Key'
+        )
+      );
 
       if (filter) {
         reqOpts.filter = filter;
       }
 
-      if (rowsLimit) {
+      if (hasLimit) {
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
