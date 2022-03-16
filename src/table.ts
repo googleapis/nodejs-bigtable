@@ -943,7 +943,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         } else {
           userStream.emit('error', error);
         }
-      }).on('end', () => activeRequestStream = null);
+      }).on('end', () => {
+        activeRequestStream = null;
+      });
       rowStream.pipe(userStream);
       numRequestsMade++;
     };
