@@ -374,7 +374,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getInstance(request), expectedError);
@@ -505,7 +504,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
       );
       request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.listInstances(request), expectedError);
@@ -636,7 +634,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.Instance()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.updateInstance(request), expectedError);
@@ -767,7 +764,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteInstance(request), expectedError);
@@ -898,7 +894,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.GetClusterRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getCluster(request), expectedError);
@@ -1029,7 +1024,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.ListClustersRequest()
       );
       request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.listClusters(request), expectedError);
@@ -1160,7 +1154,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteCluster(request), expectedError);
@@ -1291,7 +1284,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
       );
       request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.createAppProfile(request), expectedError);
@@ -1422,7 +1414,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getAppProfile(request), expectedError);
@@ -1553,7 +1544,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteAppProfile(request), expectedError);
@@ -1684,7 +1674,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
       request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getIamPolicy(request), expectedError);
@@ -1815,7 +1804,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
       request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.setIamPolicy(request), expectedError);
@@ -1947,7 +1935,6 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
       request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.testIamPermissions(request), expectedError);
