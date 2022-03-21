@@ -522,7 +522,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
             const backupInstance =
               this.id === '-'
                 ? this.instance
-                    .cluster(backup.name?.match(/clusters\/([^/]+)/)![1]!)
+                    .cluster(backup.name!.match(/clusters\/([^/]+)/)![1]!)
                     .backup(backup.name!.split('/').pop()!)
                 : this.backup(backup.name!.split('/').pop()!);
             backupInstance.metadata = backup;
@@ -594,7 +594,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
           const backupInstance =
             this.id === '-'
               ? this.instance
-                  .cluster(backup.name?.match(/clusters\/([^/]+)/)![1]!)
+                  .cluster(backup.name!.match(/clusters\/([^/]+)/)![1]!)
                   .backup(backup.name!.split('/').pop()!)
               : this.backup(backup.name!.split('/').pop()!);
           backupInstance.metadata = backup;
