@@ -117,7 +117,7 @@ describe('Bigtable/Table', () => {
     });
 
     afterEach(() => {
-      clock.uninstall();
+      clock.restore();
     });
 
     tests.forEach(test => {

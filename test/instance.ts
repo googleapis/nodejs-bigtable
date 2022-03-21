@@ -32,7 +32,7 @@ import {
 import {Bigtable, RequestOptions} from '../src';
 import {PassThrough} from 'stream';
 import * as pumpify from 'pumpify';
-import {RestoreTableCallback, RestoreTableConfig} from '../src/backup';
+import {RestoreTableConfig} from '../src/backup';
 
 const sandbox = sinon.createSandbox();
 

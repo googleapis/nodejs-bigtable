@@ -24,32 +24,21 @@
  */ 
 'use strict';
 
-function main(tableName, rowKey, mutations) {
-  // [START bigtable_v2_generated_Bigtable_MutateRow_async]
+function main(name) {
+  // [START bigtable_v2_generated_Bigtable_PingAndWarm_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the mutation should be applied.
-   *  Values are of the form
-   *  `projects/<project>/instances/<instance>/tables/<table>`.
+   *  Required. The unique name of the instance to check permissions for as well as
+   *  respond. Values are of the form `projects/<project>/instances/<instance>`.
    */
-  // const tableName = 'abc123'
+  // const name = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
    */
   // const appProfileId = 'abc123'
-  /**
-   *  Required. The key of the row to which the mutation should be applied.
-   */
-  // const rowKey = 'Buffer.from('string')'
-  /**
-   *  Required. Changes to be atomically applied to the specified row. Entries are applied
-   *  in order, meaning that earlier mutations can be masked by later ones.
-   *  Must contain at least one entry and at most 100000.
-   */
-  // const mutations = 1234
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;
@@ -57,21 +46,19 @@ function main(tableName, rowKey, mutations) {
   // Instantiates a client
   const bigtableClient = new BigtableClient();
 
-  async function callMutateRow() {
+  async function callPingAndWarm() {
     // Construct request
     const request = {
-      tableName,
-      rowKey,
-      mutations,
+      name,
     };
 
     // Run request
-    const response = await bigtableClient.mutateRow(request);
+    const response = await bigtableClient.pingAndWarm(request);
     console.log(response);
   }
 
-  callMutateRow();
-  // [END bigtable_v2_generated_Bigtable_MutateRow_async]
+  callPingAndWarm();
+  // [END bigtable_v2_generated_Bigtable_PingAndWarm_async]
 }
 
 process.on('unhandledRejection', err => {
