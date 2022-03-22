@@ -751,7 +751,7 @@ export class Bigtable {
     return new Instance(this, name);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
   request<T = any>(config?: any): AbortableDuplex;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request<T = any>(config?: any, callback?: RequestCallback<T>): void;
@@ -884,6 +884,16 @@ export class Bigtable {
   }
 
   /**
+   * Terminate grpc channels and close all the clients.
+   */
+  close(): Promise<void[]> {
+    const combined = Object.keys(this.api).map(clientType =>
+      this.api[clientType].close()
+    );
+    return Promise.all(combined);
+  }
+
+  /**
    * Determine and localize the project ID. If a user provides an ID, we bypass
    * checking with the auth client for an ID.
    *
@@ -947,7 +957,7 @@ promisifyAll(Bigtable, {
  */
 
 // Allow creating a `Bigtable` instance without using the `new` keyword.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-class-assign
 (Bigtable as any) = new Proxy(Bigtable, {
   apply(target, thisArg, argumentsList) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

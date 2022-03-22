@@ -239,6 +239,34 @@
                             }
                           ]
                         },
+                        "PartialUpdateCluster": {
+                          "requestType": "PartialUpdateClusterRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{cluster.name=projects/*/instances/*/clusters/*}",
+                            "(google.api.http).body": "cluster",
+                            "(google.api.method_signature)": "cluster,update_mask",
+                            "(google.longrunning.operation_info).response_type": "Cluster",
+                            "(google.longrunning.operation_info).metadata_type": "PartialUpdateClusterMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "patch": "/v2/{cluster.name=projects/*/instances/*/clusters/*}",
+                                "body": "cluster"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "cluster,update_mask"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Cluster",
+                                "metadata_type": "PartialUpdateClusterMetadata"
+                              }
+                            }
+                          ]
+                        },
                         "DeleteCluster": {
                           "requestType": "DeleteClusterRequest",
                           "responseType": "google.protobuf.Empty",
@@ -679,6 +707,40 @@
                         }
                       }
                     },
+                    "PartialUpdateClusterMetadata": {
+                      "fields": {
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 1
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "originalRequest": {
+                          "type": "PartialUpdateClusterRequest",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "PartialUpdateClusterRequest": {
+                      "fields": {
+                        "cluster": {
+                          "type": "Cluster",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
                     "CreateAppProfileRequest": {
                       "fields": {
                         "parent": {
@@ -861,10 +923,43 @@
                         }
                       }
                     },
+                    "AutoscalingTargets": {
+                      "fields": {
+                        "cpuUtilizationPercent": {
+                          "type": "int32",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "AutoscalingLimits": {
+                      "fields": {
+                        "minServeNodes": {
+                          "type": "int32",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "maxServeNodes": {
+                          "type": "int32",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
                     "Cluster": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Cluster",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}"
+                      },
+                      "oneofs": {
+                        "config": {
+                          "oneof": [
+                            "clusterConfig"
+                          ]
+                        }
                       },
                       "fields": {
                         "name": {
@@ -890,10 +985,11 @@
                         },
                         "serveNodes": {
                           "type": "int32",
-                          "id": 4,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
+                          "id": 4
+                        },
+                        "clusterConfig": {
+                          "type": "ClusterConfig",
+                          "id": 7
                         },
                         "defaultStorageType": {
                           "type": "StorageType",
@@ -908,6 +1004,32 @@
                         }
                       },
                       "nested": {
+                        "ClusterAutoscalingConfig": {
+                          "fields": {
+                            "autoscalingLimits": {
+                              "type": "AutoscalingLimits",
+                              "id": 1,
+                              "options": {
+                                "(google.api.field_behavior)": "REQUIRED"
+                              }
+                            },
+                            "autoscalingTargets": {
+                              "type": "AutoscalingTargets",
+                              "id": 2,
+                              "options": {
+                                "(google.api.field_behavior)": "REQUIRED"
+                              }
+                            }
+                          }
+                        },
+                        "ClusterConfig": {
+                          "fields": {
+                            "clusterAutoscalingConfig": {
+                              "type": "ClusterAutoscalingConfig",
+                              "id": 1
+                            }
+                          }
+                        },
                         "EncryptionConfig": {
                           "fields": {
                             "kmsKeyName": {
@@ -2429,8 +2551,8 @@
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Table",
-                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Instance",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}"
               },
               "nested": {
                 "Bigtable": {
@@ -2446,6 +2568,8 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                         "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
@@ -2453,6 +2577,19 @@
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                             "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "table_name",
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
                           }
                         },
                         {
@@ -2469,12 +2606,27 @@
                       "responseStream": true,
                       "options": {
                         "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "table_name",
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
                           }
                         },
                         {
@@ -2491,6 +2643,8 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
                         "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
                         "(google.api.method_signature)": "table_name,row_key,mutations,app_profile_id"
                       },
                       "parsedOptions": [
@@ -2498,6 +2652,19 @@
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
                             "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "table_name",
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
                           }
                         },
                         {
@@ -2515,6 +2682,8 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
                         "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
                         "(google.api.method_signature)": "table_name,entries,app_profile_id"
                       },
                       "parsedOptions": [
@@ -2522,6 +2691,19 @@
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
                             "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "table_name",
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
                           }
                         },
                         {
@@ -2538,6 +2720,8 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:checkAndMutateRow",
                         "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
                         "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations,app_profile_id"
                       },
                       "parsedOptions": [
@@ -2548,10 +2732,61 @@
                           }
                         },
                         {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "table_name",
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
+                          }
+                        },
+                        {
                           "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations"
                         },
                         {
                           "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations,app_profile_id"
+                        }
+                      ]
+                    },
+                    "PingAndWarm": {
+                      "requestType": "PingAndWarmRequest",
+                      "responseType": "PingAndWarmResponse",
+                      "options": {
+                        "(google.api.http).post": "/v2/{name=projects/*/instances/*}:ping",
+                        "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{name=projects/*/instances/*}",
+                        "(google.api.method_signature)": "name,app_profile_id"
+                      },
+                      "parsedOptions": [
+                        {
+                          "(google.api.http)": {
+                            "post": "/v2/{name=projects/*/instances/*}:ping",
+                            "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "name",
+                                "path_template": "{name=projects/*/instances/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "(google.api.method_signature)": "name"
+                        },
+                        {
+                          "(google.api.method_signature)": "name,app_profile_id"
                         }
                       ]
                     },
@@ -2561,6 +2796,8 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
                         "(google.api.http).body": "*",
+                        "(google.api.routing).routing_parameters.field": "app_profile_id",
+                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
                         "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                       },
                       "parsedOptions": [
@@ -2568,6 +2805,19 @@
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
                             "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.routing)": {
+                            "routing_parameters": [
+                              {
+                                "field": "table_name",
+                                "path_template": "{table_name=projects/*/instances/*/tables/*}"
+                              },
+                              {
+                                "field": "app_profile_id"
+                              }
+                            ]
                           }
                         },
                         {
@@ -2843,6 +3093,25 @@
                       "id": 1
                     }
                   }
+                },
+                "PingAndWarmRequest": {
+                  "fields": {
+                    "name": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Instance"
+                      }
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2
+                    }
+                  }
+                },
+                "PingAndWarmResponse": {
+                  "fields": {}
                 },
                 "ReadModifyWriteRowRequest": {
                   "fields": {
@@ -3327,7 +3596,7 @@
           "options": {
             "go_package": "google.golang.org/genproto/googleapis/api/annotations;annotations",
             "java_multiple_files": true,
-            "java_outer_classname": "ResourceProto",
+            "java_outer_classname": "RoutingProto",
             "java_package": "com.google.api",
             "objc_class_prefix": "GAPI",
             "cc_enable_arenas": true
@@ -3526,6 +3795,32 @@
                   "id": 1
                 },
                 "childType": {
+                  "type": "string",
+                  "id": 2
+                }
+              }
+            },
+            "routing": {
+              "type": "google.api.RoutingRule",
+              "id": 72295729,
+              "extend": "google.protobuf.MethodOptions"
+            },
+            "RoutingRule": {
+              "fields": {
+                "routingParameters": {
+                  "rule": "repeated",
+                  "type": "RoutingParameter",
+                  "id": 2
+                }
+              }
+            },
+            "RoutingParameter": {
+              "fields": {
+                "field": {
+                  "type": "string",
+                  "id": 1
+                },
+                "pathTemplate": {
                   "type": "string",
                   "id": 2
                 }

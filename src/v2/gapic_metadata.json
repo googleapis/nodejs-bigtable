@@ -95,6 +95,11 @@
                 "updateCluster"
               ]
             },
+            "PartialUpdateCluster": {
+              "methods": [
+                "partialUpdateCluster"
+              ]
+            },
             "UpdateAppProfile": {
               "methods": [
                 "updateAppProfile"
@@ -195,6 +200,11 @@
             "UpdateCluster": {
               "methods": [
                 "updateCluster"
+              ]
+            },
+            "PartialUpdateCluster": {
+              "methods": [
+                "partialUpdateCluster"
               ]
             },
             "UpdateAppProfile": {

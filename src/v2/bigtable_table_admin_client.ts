@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -3593,9 +3593,8 @@ export class BigtableTableAdminClient {
    * @returns {Promise} A promise that resolves when the client is closed.
    */
   close(): Promise<void> {
-    this.initialize();
-    if (!this._terminated) {
-      return this.bigtableTableAdminStub!.then(stub => {
+    if (this.bigtableTableAdminStub && !this._terminated) {
+      return this.bigtableTableAdminStub.then(stub => {
         this._terminated = true;
         stub.close();
         this.operationsClient.close();

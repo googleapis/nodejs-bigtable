@@ -20,28 +20,20 @@
 
 'use strict';
 
-function main(parent, clusterId, cluster) {
-  // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateCluster_async]
+function main(cluster, updateMask) {
+  // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateCluster_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance in which to create the new cluster.
-   *  Values are of the form
-   *  `projects/{project}/instances/{instance}`.
-   */
-  // const parent = 'abc123'
-  /**
-   *  Required. The ID to be used when referring to the new cluster within its instance,
-   *  e.g., just `mycluster` rather than
-   *  `projects/myproject/instances/myinstance/clusters/mycluster`.
-   */
-  // const clusterId = 'abc123'
-  /**
-   *  Required. The cluster to be created.
-   *  Fields marked `OutputOnly` must be left blank.
+   *  Required. The Cluster which contains the partial updates to be applied, subject to
+   *  the update_mask.
    */
   // const cluster = {}
+  /**
+   *  Required. The subset of Cluster fields which should be replaced.
+   */
+  // const updateMask = {}
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
@@ -49,22 +41,21 @@ function main(parent, clusterId, cluster) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function callCreateCluster() {
+  async function callPartialUpdateCluster() {
     // Construct request
     const request = {
-      parent,
-      clusterId,
       cluster,
+      updateMask,
     };
 
     // Run request
-    const [operation] = await adminClient.createCluster(request);
+    const [operation] = await adminClient.partialUpdateCluster(request);
     const [response] = await operation.promise();
     console.log(response);
   }
 
-  callCreateCluster();
-  // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateCluster_async]
+  callPartialUpdateCluster();
+  // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_PartialUpdateCluster_async]
 }
 
 process.on('unhandledRejection', err => {
