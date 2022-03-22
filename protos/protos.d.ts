@@ -187,6 +187,20 @@ export namespace google {
                     public updateCluster(request: google.bigtable.admin.v2.ICluster): Promise<google.longrunning.Operation>;
 
                     /**
+                     * Calls PartialUpdateCluster.
+                     * @param request PartialUpdateClusterRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public partialUpdateCluster(request: google.bigtable.admin.v2.IPartialUpdateClusterRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.PartialUpdateClusterCallback): void;
+
+                    /**
+                     * Calls PartialUpdateCluster.
+                     * @param request PartialUpdateClusterRequest message or plain object
+                     * @returns Promise
+                     */
+                    public partialUpdateCluster(request: google.bigtable.admin.v2.IPartialUpdateClusterRequest): Promise<google.longrunning.Operation>;
+
+                    /**
                      * Calls DeleteCluster.
                      * @param request DeleteClusterRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Empty
@@ -384,6 +398,13 @@ export namespace google {
                      * @param [response] Operation
                      */
                     type UpdateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateCluster}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type PartialUpdateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
                      * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteCluster}.
@@ -1919,6 +1940,204 @@ export namespace google {
                     public toJSON(): { [k: string]: any };
                 }
 
+                /** Properties of a PartialUpdateClusterMetadata. */
+                interface IPartialUpdateClusterMetadata {
+
+                    /** PartialUpdateClusterMetadata requestTime */
+                    requestTime?: (google.protobuf.ITimestamp|null);
+
+                    /** PartialUpdateClusterMetadata finishTime */
+                    finishTime?: (google.protobuf.ITimestamp|null);
+
+                    /** PartialUpdateClusterMetadata originalRequest */
+                    originalRequest?: (google.bigtable.admin.v2.IPartialUpdateClusterRequest|null);
+                }
+
+                /** Represents a PartialUpdateClusterMetadata. */
+                class PartialUpdateClusterMetadata implements IPartialUpdateClusterMetadata {
+
+                    /**
+                     * Constructs a new PartialUpdateClusterMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IPartialUpdateClusterMetadata);
+
+                    /** PartialUpdateClusterMetadata requestTime. */
+                    public requestTime?: (google.protobuf.ITimestamp|null);
+
+                    /** PartialUpdateClusterMetadata finishTime. */
+                    public finishTime?: (google.protobuf.ITimestamp|null);
+
+                    /** PartialUpdateClusterMetadata originalRequest. */
+                    public originalRequest?: (google.bigtable.admin.v2.IPartialUpdateClusterRequest|null);
+
+                    /**
+                     * Creates a new PartialUpdateClusterMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns PartialUpdateClusterMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IPartialUpdateClusterMetadata): google.bigtable.admin.v2.PartialUpdateClusterMetadata;
+
+                    /**
+                     * Encodes the specified PartialUpdateClusterMetadata message. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterMetadata.verify|verify} messages.
+                     * @param message PartialUpdateClusterMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IPartialUpdateClusterMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified PartialUpdateClusterMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterMetadata.verify|verify} messages.
+                     * @param message PartialUpdateClusterMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IPartialUpdateClusterMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a PartialUpdateClusterMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns PartialUpdateClusterMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.PartialUpdateClusterMetadata;
+
+                    /**
+                     * Decodes a PartialUpdateClusterMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns PartialUpdateClusterMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.PartialUpdateClusterMetadata;
+
+                    /**
+                     * Verifies a PartialUpdateClusterMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a PartialUpdateClusterMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns PartialUpdateClusterMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.PartialUpdateClusterMetadata;
+
+                    /**
+                     * Creates a plain object from a PartialUpdateClusterMetadata message. Also converts values to other types if specified.
+                     * @param message PartialUpdateClusterMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.PartialUpdateClusterMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this PartialUpdateClusterMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of a PartialUpdateClusterRequest. */
+                interface IPartialUpdateClusterRequest {
+
+                    /** PartialUpdateClusterRequest cluster */
+                    cluster?: (google.bigtable.admin.v2.ICluster|null);
+
+                    /** PartialUpdateClusterRequest updateMask */
+                    updateMask?: (google.protobuf.IFieldMask|null);
+                }
+
+                /** Represents a PartialUpdateClusterRequest. */
+                class PartialUpdateClusterRequest implements IPartialUpdateClusterRequest {
+
+                    /**
+                     * Constructs a new PartialUpdateClusterRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IPartialUpdateClusterRequest);
+
+                    /** PartialUpdateClusterRequest cluster. */
+                    public cluster?: (google.bigtable.admin.v2.ICluster|null);
+
+                    /** PartialUpdateClusterRequest updateMask. */
+                    public updateMask?: (google.protobuf.IFieldMask|null);
+
+                    /**
+                     * Creates a new PartialUpdateClusterRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns PartialUpdateClusterRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IPartialUpdateClusterRequest): google.bigtable.admin.v2.PartialUpdateClusterRequest;
+
+                    /**
+                     * Encodes the specified PartialUpdateClusterRequest message. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterRequest.verify|verify} messages.
+                     * @param message PartialUpdateClusterRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IPartialUpdateClusterRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified PartialUpdateClusterRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.PartialUpdateClusterRequest.verify|verify} messages.
+                     * @param message PartialUpdateClusterRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IPartialUpdateClusterRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a PartialUpdateClusterRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns PartialUpdateClusterRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.PartialUpdateClusterRequest;
+
+                    /**
+                     * Decodes a PartialUpdateClusterRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns PartialUpdateClusterRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.PartialUpdateClusterRequest;
+
+                    /**
+                     * Verifies a PartialUpdateClusterRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a PartialUpdateClusterRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns PartialUpdateClusterRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.PartialUpdateClusterRequest;
+
+                    /**
+                     * Creates a plain object from a PartialUpdateClusterRequest message. Also converts values to other types if specified.
+                     * @param message PartialUpdateClusterRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.PartialUpdateClusterRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this PartialUpdateClusterRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
                 /** Properties of a CreateAppProfileRequest. */
                 interface ICreateAppProfileRequest {
 
@@ -2740,6 +2959,192 @@ export namespace google {
                     }
                 }
 
+                /** Properties of an AutoscalingTargets. */
+                interface IAutoscalingTargets {
+
+                    /** AutoscalingTargets cpuUtilizationPercent */
+                    cpuUtilizationPercent?: (number|null);
+                }
+
+                /** Represents an AutoscalingTargets. */
+                class AutoscalingTargets implements IAutoscalingTargets {
+
+                    /**
+                     * Constructs a new AutoscalingTargets.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IAutoscalingTargets);
+
+                    /** AutoscalingTargets cpuUtilizationPercent. */
+                    public cpuUtilizationPercent: number;
+
+                    /**
+                     * Creates a new AutoscalingTargets instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns AutoscalingTargets instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IAutoscalingTargets): google.bigtable.admin.v2.AutoscalingTargets;
+
+                    /**
+                     * Encodes the specified AutoscalingTargets message. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingTargets.verify|verify} messages.
+                     * @param message AutoscalingTargets message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IAutoscalingTargets, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified AutoscalingTargets message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingTargets.verify|verify} messages.
+                     * @param message AutoscalingTargets message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IAutoscalingTargets, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an AutoscalingTargets message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns AutoscalingTargets
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AutoscalingTargets;
+
+                    /**
+                     * Decodes an AutoscalingTargets message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns AutoscalingTargets
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AutoscalingTargets;
+
+                    /**
+                     * Verifies an AutoscalingTargets message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an AutoscalingTargets message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns AutoscalingTargets
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AutoscalingTargets;
+
+                    /**
+                     * Creates a plain object from an AutoscalingTargets message. Also converts values to other types if specified.
+                     * @param message AutoscalingTargets
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.AutoscalingTargets, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this AutoscalingTargets to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of an AutoscalingLimits. */
+                interface IAutoscalingLimits {
+
+                    /** AutoscalingLimits minServeNodes */
+                    minServeNodes?: (number|null);
+
+                    /** AutoscalingLimits maxServeNodes */
+                    maxServeNodes?: (number|null);
+                }
+
+                /** Represents an AutoscalingLimits. */
+                class AutoscalingLimits implements IAutoscalingLimits {
+
+                    /**
+                     * Constructs a new AutoscalingLimits.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IAutoscalingLimits);
+
+                    /** AutoscalingLimits minServeNodes. */
+                    public minServeNodes: number;
+
+                    /** AutoscalingLimits maxServeNodes. */
+                    public maxServeNodes: number;
+
+                    /**
+                     * Creates a new AutoscalingLimits instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns AutoscalingLimits instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IAutoscalingLimits): google.bigtable.admin.v2.AutoscalingLimits;
+
+                    /**
+                     * Encodes the specified AutoscalingLimits message. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingLimits.verify|verify} messages.
+                     * @param message AutoscalingLimits message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IAutoscalingLimits, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified AutoscalingLimits message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AutoscalingLimits.verify|verify} messages.
+                     * @param message AutoscalingLimits message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IAutoscalingLimits, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an AutoscalingLimits message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns AutoscalingLimits
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AutoscalingLimits;
+
+                    /**
+                     * Decodes an AutoscalingLimits message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns AutoscalingLimits
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AutoscalingLimits;
+
+                    /**
+                     * Verifies an AutoscalingLimits message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an AutoscalingLimits message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns AutoscalingLimits
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AutoscalingLimits;
+
+                    /**
+                     * Creates a plain object from an AutoscalingLimits message. Also converts values to other types if specified.
+                     * @param message AutoscalingLimits
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.AutoscalingLimits, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this AutoscalingLimits to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
                 /** Properties of a Cluster. */
                 interface ICluster {
 
@@ -2754,6 +3159,9 @@ export namespace google {
 
                     /** Cluster serveNodes */
                     serveNodes?: (number|null);
+
+                    /** Cluster clusterConfig */
+                    clusterConfig?: (google.bigtable.admin.v2.Cluster.IClusterConfig|null);
 
                     /** Cluster defaultStorageType */
                     defaultStorageType?: (google.bigtable.admin.v2.StorageType|keyof typeof google.bigtable.admin.v2.StorageType|null);
@@ -2783,11 +3191,17 @@ export namespace google {
                     /** Cluster serveNodes. */
                     public serveNodes: number;
 
+                    /** Cluster clusterConfig. */
+                    public clusterConfig?: (google.bigtable.admin.v2.Cluster.IClusterConfig|null);
+
                     /** Cluster defaultStorageType. */
                     public defaultStorageType: (google.bigtable.admin.v2.StorageType|keyof typeof google.bigtable.admin.v2.StorageType);
 
                     /** Cluster encryptionConfig. */
                     public encryptionConfig?: (google.bigtable.admin.v2.Cluster.IEncryptionConfig|null);
+
+                    /** Cluster config. */
+                    public config?: "clusterConfig";
 
                     /**
                      * Creates a new Cluster instance using the specified properties.
@@ -2861,6 +3275,192 @@ export namespace google {
                 }
 
                 namespace Cluster {
+
+                    /** Properties of a ClusterAutoscalingConfig. */
+                    interface IClusterAutoscalingConfig {
+
+                        /** ClusterAutoscalingConfig autoscalingLimits */
+                        autoscalingLimits?: (google.bigtable.admin.v2.IAutoscalingLimits|null);
+
+                        /** ClusterAutoscalingConfig autoscalingTargets */
+                        autoscalingTargets?: (google.bigtable.admin.v2.IAutoscalingTargets|null);
+                    }
+
+                    /** Represents a ClusterAutoscalingConfig. */
+                    class ClusterAutoscalingConfig implements IClusterAutoscalingConfig {
+
+                        /**
+                         * Constructs a new ClusterAutoscalingConfig.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig);
+
+                        /** ClusterAutoscalingConfig autoscalingLimits. */
+                        public autoscalingLimits?: (google.bigtable.admin.v2.IAutoscalingLimits|null);
+
+                        /** ClusterAutoscalingConfig autoscalingTargets. */
+                        public autoscalingTargets?: (google.bigtable.admin.v2.IAutoscalingTargets|null);
+
+                        /**
+                         * Creates a new ClusterAutoscalingConfig instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns ClusterAutoscalingConfig instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig): google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig;
+
+                        /**
+                         * Encodes the specified ClusterAutoscalingConfig message. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.verify|verify} messages.
+                         * @param message ClusterAutoscalingConfig message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified ClusterAutoscalingConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig.verify|verify} messages.
+                         * @param message ClusterAutoscalingConfig message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a ClusterAutoscalingConfig message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns ClusterAutoscalingConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig;
+
+                        /**
+                         * Decodes a ClusterAutoscalingConfig message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns ClusterAutoscalingConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig;
+
+                        /**
+                         * Verifies a ClusterAutoscalingConfig message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a ClusterAutoscalingConfig message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns ClusterAutoscalingConfig
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig;
+
+                        /**
+                         * Creates a plain object from a ClusterAutoscalingConfig message. Also converts values to other types if specified.
+                         * @param message ClusterAutoscalingConfig
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.Cluster.ClusterAutoscalingConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this ClusterAutoscalingConfig to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+                    }
+
+                    /** Properties of a ClusterConfig. */
+                    interface IClusterConfig {
+
+                        /** ClusterConfig clusterAutoscalingConfig */
+                        clusterAutoscalingConfig?: (google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig|null);
+                    }
+
+                    /** Represents a ClusterConfig. */
+                    class ClusterConfig implements IClusterConfig {
+
+                        /**
+                         * Constructs a new ClusterConfig.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.Cluster.IClusterConfig);
+
+                        /** ClusterConfig clusterAutoscalingConfig. */
+                        public clusterAutoscalingConfig?: (google.bigtable.admin.v2.Cluster.IClusterAutoscalingConfig|null);
+
+                        /**
+                         * Creates a new ClusterConfig instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns ClusterConfig instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.Cluster.IClusterConfig): google.bigtable.admin.v2.Cluster.ClusterConfig;
+
+                        /**
+                         * Encodes the specified ClusterConfig message. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterConfig.verify|verify} messages.
+                         * @param message ClusterConfig message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.Cluster.IClusterConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified ClusterConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Cluster.ClusterConfig.verify|verify} messages.
+                         * @param message ClusterConfig message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.Cluster.IClusterConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a ClusterConfig message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns ClusterConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.Cluster.ClusterConfig;
+
+                        /**
+                         * Decodes a ClusterConfig message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns ClusterConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.Cluster.ClusterConfig;
+
+                        /**
+                         * Verifies a ClusterConfig message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a ClusterConfig message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns ClusterConfig
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.Cluster.ClusterConfig;
+
+                        /**
+                         * Creates a plain object from a ClusterConfig message. Also converts values to other types if specified.
+                         * @param message ClusterConfig
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.Cluster.ClusterConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this ClusterConfig to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+                    }
 
                     /** Properties of an EncryptionConfig. */
                     interface IEncryptionConfig {
@@ -8272,6 +8872,20 @@ export namespace google {
                 public checkAndMutateRow(request: google.bigtable.v2.ICheckAndMutateRowRequest): Promise<google.bigtable.v2.CheckAndMutateRowResponse>;
 
                 /**
+                 * Calls PingAndWarm.
+                 * @param request PingAndWarmRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and PingAndWarmResponse
+                 */
+                public pingAndWarm(request: google.bigtable.v2.IPingAndWarmRequest, callback: google.bigtable.v2.Bigtable.PingAndWarmCallback): void;
+
+                /**
+                 * Calls PingAndWarm.
+                 * @param request PingAndWarmRequest message or plain object
+                 * @returns Promise
+                 */
+                public pingAndWarm(request: google.bigtable.v2.IPingAndWarmRequest): Promise<google.bigtable.v2.PingAndWarmResponse>;
+
+                /**
                  * Calls ReadModifyWriteRow.
                  * @param request ReadModifyWriteRowRequest message or plain object
                  * @param callback Node-style callback called with the error, if any, and ReadModifyWriteRowResponse
@@ -8322,6 +8936,13 @@ export namespace google {
                  * @param [response] CheckAndMutateRowResponse
                  */
                 type CheckAndMutateRowCallback = (error: (Error|null), response?: google.bigtable.v2.CheckAndMutateRowResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.v2.Bigtable#pingAndWarm}.
+                 * @param error Error, if any
+                 * @param [response] PingAndWarmResponse
+                 */
+                type PingAndWarmCallback = (error: (Error|null), response?: google.bigtable.v2.PingAndWarmResponse) => void;
 
                 /**
                  * Callback as used by {@link google.bigtable.v2.Bigtable#readModifyWriteRow}.
@@ -9664,6 +10285,186 @@ export namespace google {
 
                 /**
                  * Converts this CheckAndMutateRowResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a PingAndWarmRequest. */
+            interface IPingAndWarmRequest {
+
+                /** PingAndWarmRequest name */
+                name?: (string|null);
+
+                /** PingAndWarmRequest appProfileId */
+                appProfileId?: (string|null);
+            }
+
+            /** Represents a PingAndWarmRequest. */
+            class PingAndWarmRequest implements IPingAndWarmRequest {
+
+                /**
+                 * Constructs a new PingAndWarmRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IPingAndWarmRequest);
+
+                /** PingAndWarmRequest name. */
+                public name: string;
+
+                /** PingAndWarmRequest appProfileId. */
+                public appProfileId: string;
+
+                /**
+                 * Creates a new PingAndWarmRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns PingAndWarmRequest instance
+                 */
+                public static create(properties?: google.bigtable.v2.IPingAndWarmRequest): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Encodes the specified PingAndWarmRequest message. Does not implicitly {@link google.bigtable.v2.PingAndWarmRequest.verify|verify} messages.
+                 * @param message PingAndWarmRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IPingAndWarmRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified PingAndWarmRequest message, length delimited. Does not implicitly {@link google.bigtable.v2.PingAndWarmRequest.verify|verify} messages.
+                 * @param message PingAndWarmRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IPingAndWarmRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a PingAndWarmRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns PingAndWarmRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Decodes a PingAndWarmRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns PingAndWarmRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Verifies a PingAndWarmRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a PingAndWarmRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns PingAndWarmRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.PingAndWarmRequest;
+
+                /**
+                 * Creates a plain object from a PingAndWarmRequest message. Also converts values to other types if specified.
+                 * @param message PingAndWarmRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.PingAndWarmRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this PingAndWarmRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of a PingAndWarmResponse. */
+            interface IPingAndWarmResponse {
+            }
+
+            /** Represents a PingAndWarmResponse. */
+            class PingAndWarmResponse implements IPingAndWarmResponse {
+
+                /**
+                 * Constructs a new PingAndWarmResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IPingAndWarmResponse);
+
+                /**
+                 * Creates a new PingAndWarmResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns PingAndWarmResponse instance
+                 */
+                public static create(properties?: google.bigtable.v2.IPingAndWarmResponse): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Encodes the specified PingAndWarmResponse message. Does not implicitly {@link google.bigtable.v2.PingAndWarmResponse.verify|verify} messages.
+                 * @param message PingAndWarmResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IPingAndWarmResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified PingAndWarmResponse message, length delimited. Does not implicitly {@link google.bigtable.v2.PingAndWarmResponse.verify|verify} messages.
+                 * @param message PingAndWarmResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IPingAndWarmResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a PingAndWarmResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns PingAndWarmResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Decodes a PingAndWarmResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns PingAndWarmResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Verifies a PingAndWarmResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a PingAndWarmResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns PingAndWarmResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.PingAndWarmResponse;
+
+                /**
+                 * Creates a plain object from a PingAndWarmResponse message. Also converts values to other types if specified.
+                 * @param message PingAndWarmResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.PingAndWarmResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this PingAndWarmResponse to JSON.
                  * @returns JSON object
                  */
                 public toJSON(): { [k: string]: any };
@@ -12485,6 +13286,192 @@ export namespace google {
              */
             public toJSON(): { [k: string]: any };
         }
+
+        /** Properties of a RoutingRule. */
+        interface IRoutingRule {
+
+            /** RoutingRule routingParameters */
+            routingParameters?: (google.api.IRoutingParameter[]|null);
+        }
+
+        /** Represents a RoutingRule. */
+        class RoutingRule implements IRoutingRule {
+
+            /**
+             * Constructs a new RoutingRule.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: google.api.IRoutingRule);
+
+            /** RoutingRule routingParameters. */
+            public routingParameters: google.api.IRoutingParameter[];
+
+            /**
+             * Creates a new RoutingRule instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns RoutingRule instance
+             */
+            public static create(properties?: google.api.IRoutingRule): google.api.RoutingRule;
+
+            /**
+             * Encodes the specified RoutingRule message. Does not implicitly {@link google.api.RoutingRule.verify|verify} messages.
+             * @param message RoutingRule message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: google.api.IRoutingRule, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified RoutingRule message, length delimited. Does not implicitly {@link google.api.RoutingRule.verify|verify} messages.
+             * @param message RoutingRule message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: google.api.IRoutingRule, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a RoutingRule message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns RoutingRule
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.api.RoutingRule;
+
+            /**
+             * Decodes a RoutingRule message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns RoutingRule
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.api.RoutingRule;
+
+            /**
+             * Verifies a RoutingRule message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a RoutingRule message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns RoutingRule
+             */
+            public static fromObject(object: { [k: string]: any }): google.api.RoutingRule;
+
+            /**
+             * Creates a plain object from a RoutingRule message. Also converts values to other types if specified.
+             * @param message RoutingRule
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: google.api.RoutingRule, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this RoutingRule to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a RoutingParameter. */
+        interface IRoutingParameter {
+
+            /** RoutingParameter field */
+            field?: (string|null);
+
+            /** RoutingParameter pathTemplate */
+            pathTemplate?: (string|null);
+        }
+
+        /** Represents a RoutingParameter. */
+        class RoutingParameter implements IRoutingParameter {
+
+            /**
+             * Constructs a new RoutingParameter.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: google.api.IRoutingParameter);
+
+            /** RoutingParameter field. */
+            public field: string;
+
+            /** RoutingParameter pathTemplate. */
+            public pathTemplate: string;
+
+            /**
+             * Creates a new RoutingParameter instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns RoutingParameter instance
+             */
+            public static create(properties?: google.api.IRoutingParameter): google.api.RoutingParameter;
+
+            /**
+             * Encodes the specified RoutingParameter message. Does not implicitly {@link google.api.RoutingParameter.verify|verify} messages.
+             * @param message RoutingParameter message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: google.api.IRoutingParameter, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified RoutingParameter message, length delimited. Does not implicitly {@link google.api.RoutingParameter.verify|verify} messages.
+             * @param message RoutingParameter message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: google.api.IRoutingParameter, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a RoutingParameter message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns RoutingParameter
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.api.RoutingParameter;
+
+            /**
+             * Decodes a RoutingParameter message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns RoutingParameter
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.api.RoutingParameter;
+
+            /**
+             * Verifies a RoutingParameter message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a RoutingParameter message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns RoutingParameter
+             */
+            public static fromObject(object: { [k: string]: any }): google.api.RoutingParameter;
+
+            /**
+             * Creates a plain object from a RoutingParameter message. Also converts values to other types if specified.
+             * @param message RoutingParameter
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: google.api.RoutingParameter, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this RoutingParameter to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
     }
 
     /** Namespace protobuf. */
@@ -14882,6 +15869,9 @@ export namespace google {
 
             /** MethodOptions .google.api.methodSignature */
             ".google.api.methodSignature"?: (string[]|null);
+
+            /** MethodOptions .google.api.routing */
+            ".google.api.routing"?: (google.api.IRoutingRule|null);
 
             /** MethodOptions .google.longrunning.operationInfo */
             ".google.longrunning.operationInfo"?: (google.longrunning.IOperationInfo|null);
