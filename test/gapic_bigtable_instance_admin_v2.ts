@@ -3444,6 +3444,294 @@ describe('v2.BigtableInstanceAdminClient', () => {
     });
   });
 
+  describe('listHotTablets', () => {
+    it('invokes listHotTablets without error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedResponse = [
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+      ];
+      client.innerApiCalls.listHotTablets = stubSimpleCall(expectedResponse);
+      const [response] = await client.listHotTablets(request);
+      assert.deepStrictEqual(response, expectedResponse);
+      assert(
+        (client.innerApiCalls.listHotTablets as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions, undefined)
+      );
+    });
+
+    it('invokes listHotTablets without error using callback', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedResponse = [
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+      ];
+      client.innerApiCalls.listHotTablets =
+        stubSimpleCallWithCallback(expectedResponse);
+      const promise = new Promise((resolve, reject) => {
+        client.listHotTablets(
+          request,
+          (
+            err?: Error | null,
+            result?: protos.google.bigtable.admin.v2.IHotTablet[] | null
+          ) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+      });
+      const response = await promise;
+      assert.deepStrictEqual(response, expectedResponse);
+      assert(
+        (client.innerApiCalls.listHotTablets as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions /*, callback defined above */)
+      );
+    });
+
+    it('invokes listHotTablets with error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedOptions = {
+        otherArgs: {
+          headers: {
+            'x-goog-request-params': expectedHeaderRequestParams,
+          },
+        },
+      };
+      const expectedError = new Error('expected');
+      client.innerApiCalls.listHotTablets = stubSimpleCall(
+        undefined,
+        expectedError
+      );
+      await assert.rejects(client.listHotTablets(request), expectedError);
+      assert(
+        (client.innerApiCalls.listHotTablets as SinonStub)
+          .getCall(0)
+          .calledWith(request, expectedOptions, undefined)
+      );
+    });
+
+    it('invokes listHotTabletsStream without error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedResponse = [
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+      ];
+      client.descriptors.page.listHotTablets.createStream =
+        stubPageStreamingCall(expectedResponse);
+      const stream = client.listHotTabletsStream(request);
+      const promise = new Promise((resolve, reject) => {
+        const responses: protos.google.bigtable.admin.v2.HotTablet[] = [];
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.admin.v2.HotTablet) => {
+            responses.push(response);
+          }
+        );
+        stream.on('end', () => {
+          resolve(responses);
+        });
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      const responses = await promise;
+      assert.deepStrictEqual(responses, expectedResponse);
+      assert(
+        (client.descriptors.page.listHotTablets.createStream as SinonStub)
+          .getCall(0)
+          .calledWith(client.innerApiCalls.listHotTablets, request)
+      );
+      assert.strictEqual(
+        (
+          client.descriptors.page.listHotTablets.createStream as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        expectedHeaderRequestParams
+      );
+    });
+
+    it('invokes listHotTabletsStream with error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedError = new Error('expected');
+      client.descriptors.page.listHotTablets.createStream =
+        stubPageStreamingCall(undefined, expectedError);
+      const stream = client.listHotTabletsStream(request);
+      const promise = new Promise((resolve, reject) => {
+        const responses: protos.google.bigtable.admin.v2.HotTablet[] = [];
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.admin.v2.HotTablet) => {
+            responses.push(response);
+          }
+        );
+        stream.on('end', () => {
+          resolve(responses);
+        });
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+      assert(
+        (client.descriptors.page.listHotTablets.createStream as SinonStub)
+          .getCall(0)
+          .calledWith(client.innerApiCalls.listHotTablets, request)
+      );
+      assert.strictEqual(
+        (
+          client.descriptors.page.listHotTablets.createStream as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        expectedHeaderRequestParams
+      );
+    });
+
+    it('uses async iteration with listHotTablets without error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedResponse = [
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+        generateSampleMessage(new protos.google.bigtable.admin.v2.HotTablet()),
+      ];
+      client.descriptors.page.listHotTablets.asyncIterate =
+        stubAsyncIterationCall(expectedResponse);
+      const responses: protos.google.bigtable.admin.v2.IHotTablet[] = [];
+      const iterable = client.listHotTabletsAsync(request);
+      for await (const resource of iterable) {
+        responses.push(resource!);
+      }
+      assert.deepStrictEqual(responses, expectedResponse);
+      assert.deepStrictEqual(
+        (
+          client.descriptors.page.listHotTablets.asyncIterate as SinonStub
+        ).getCall(0).args[1],
+        request
+      );
+      assert.strictEqual(
+        (
+          client.descriptors.page.listHotTablets.asyncIterate as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        expectedHeaderRequestParams
+      );
+    });
+
+    it('uses async iteration with listHotTablets with error', async () => {
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
+      );
+      request.parent = '';
+      const expectedHeaderRequestParams = 'parent=';
+      const expectedError = new Error('expected');
+      client.descriptors.page.listHotTablets.asyncIterate =
+        stubAsyncIterationCall(undefined, expectedError);
+      const iterable = client.listHotTabletsAsync(request);
+      await assert.rejects(async () => {
+        const responses: protos.google.bigtable.admin.v2.IHotTablet[] = [];
+        for await (const resource of iterable) {
+          responses.push(resource!);
+        }
+      });
+      assert.deepStrictEqual(
+        (
+          client.descriptors.page.listHotTablets.asyncIterate as SinonStub
+        ).getCall(0).args[1],
+        request
+      );
+      assert.strictEqual(
+        (
+          client.descriptors.page.listHotTablets.asyncIterate as SinonStub
+        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
+        expectedHeaderRequestParams
+      );
+    });
+  });
+
   describe('Path templates', () => {
     describe('appProfile', () => {
       const fakePath = '/rendered/path/appProfile';
@@ -3646,6 +3934,83 @@ describe('v2.BigtableInstanceAdminClient', () => {
         assert.strictEqual(result, 'clusterValue');
         assert(
           (client.pathTemplates.clusterPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
+    describe('hotTablet', () => {
+      const fakePath = '/rendered/path/hotTablet';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+        cluster: 'clusterValue',
+        hot_tablet: 'hotTabletValue',
+      };
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      client.pathTemplates.hotTabletPathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.hotTabletPathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
+
+      it('hotTabletPath', () => {
+        const result = client.hotTabletPath(
+          'projectValue',
+          'instanceValue',
+          'clusterValue',
+          'hotTabletValue'
+        );
+        assert.strictEqual(result, fakePath);
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.render as SinonStub)
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromHotTabletName', () => {
+        const result = client.matchProjectFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromHotTabletName', () => {
+        const result = client.matchInstanceFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchClusterFromHotTabletName', () => {
+        const result = client.matchClusterFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'clusterValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchHotTabletFromHotTabletName', () => {
+        const result = client.matchHotTabletFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'hotTabletValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
             .getCall(-1)
             .calledWith(fakePath)
         );
