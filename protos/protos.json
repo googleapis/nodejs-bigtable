@@ -446,6 +446,24 @@
                               "(google.api.method_signature)": "resource,permissions"
                             }
                           ]
+                        },
+                        "ListHotTablets": {
+                          "requestType": "ListHotTabletsRequest",
+                          "responseType": "ListHotTabletsResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/clusters/*}/hotTablets",
+                            "(google.api.method_signature)": "parent"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "get": "/v2/{parent=projects/*/instances/*/clusters/*}/hotTablets"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "parent"
+                            }
+                          ]
                         }
                       }
                     },
@@ -865,6 +883,47 @@
                     "UpdateAppProfileMetadata": {
                       "fields": {}
                     },
+                    "ListHotTabletsRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
+                          }
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        },
+                        "pageSize": {
+                          "type": "int32",
+                          "id": 4
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 5
+                        }
+                      }
+                    },
+                    "ListHotTabletsResponse": {
+                      "fields": {
+                        "hotTablets": {
+                          "rule": "repeated",
+                          "type": "HotTablet",
+                          "id": 1
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
                     "Instance": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Instance",
@@ -1107,6 +1166,54 @@
                               "type": "bool",
                               "id": 2
                             }
+                          }
+                        }
+                      }
+                    },
+                    "HotTablet": {
+                      "options": {
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/HotTablet",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}"
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "tableName": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                          }
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "startKey": {
+                          "type": "string",
+                          "id": 5
+                        },
+                        "endKey": {
+                          "type": "string",
+                          "id": 6
+                        },
+                        "nodeCpuUsagePercent": {
+                          "type": "float",
+                          "id": 7,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
                         }
                       }

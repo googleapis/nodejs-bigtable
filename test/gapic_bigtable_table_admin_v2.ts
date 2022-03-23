@@ -3961,6 +3961,82 @@ describe('v2.BigtableTableAdminClient', () => {
       });
     });
 
+    describe('hotTablet', () => {
+      const fakePath = '/rendered/path/hotTablet';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+        cluster: 'clusterValue',
+        hot_tablet: 'hotTabletValue',
+      };
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      client.pathTemplates.hotTabletPathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.hotTabletPathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
+
+      it('hotTabletPath', () => {
+        const result = client.hotTabletPath(
+          'projectValue',
+          'instanceValue',
+          'clusterValue',
+          'hotTabletValue'
+        );
+        assert.strictEqual(result, fakePath);
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.render as SinonStub)
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromHotTabletName', () => {
+        const result = client.matchProjectFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromHotTabletName', () => {
+        const result = client.matchInstanceFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchClusterFromHotTabletName', () => {
+        const result = client.matchClusterFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'clusterValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchHotTabletFromHotTabletName', () => {
+        const result = client.matchHotTabletFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'hotTabletValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
     describe('instance', () => {
       const fakePath = '/rendered/path/instance';
       const expectedParameters = {

@@ -111,6 +111,13 @@
                 "listAppProfilesStream",
                 "listAppProfilesAsync"
               ]
+            },
+            "ListHotTablets": {
+              "methods": [
+                "listHotTablets",
+                "listHotTabletsStream",
+                "listHotTabletsAsync"
+              ]
             }
           }
         },
@@ -217,6 +224,13 @@
                 "listAppProfiles",
                 "listAppProfilesStream",
                 "listAppProfilesAsync"
+              ]
+            },
+            "ListHotTablets": {
+              "methods": [
+                "listHotTablets",
+                "listHotTabletsStream",
+                "listHotTabletsAsync"
               ]
             }
           }
