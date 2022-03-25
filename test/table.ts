@@ -1431,6 +1431,28 @@ describe('Bigtable/Table', () => {
           done();
         });
       });
+
+      it('should retry received rst stream errors', done => {
+        const rstStreamError = new Error('Received Rst_stream') as ServiceError;
+        rstStreamError.code = 13;
+        emitters = [
+          ((stream: Duplex) => {
+            stream.emit('error', rstStreamError);
+          }) as {} as EventEmitter,
+          ((stream: Duplex) => {
+            stream.end([{key: 'a'}]);
+          }) as {} as EventEmitter,
+        ];
+
+        const options = {
+          keys: ['a'],
+        };
+
+        callCreateReadStream(options, () => {
+          assert.strictEqual(reqOptsCalls.length, 2);
+          done();
+        });
+      });
     });
   });
 
