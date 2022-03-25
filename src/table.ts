@@ -46,6 +46,7 @@ import {Duplex} from 'stream';
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
 const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
+const IDEMPOTENT_RETRYABLE_STATUS_CODES = new Set([4, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
 
@@ -1507,13 +1508,26 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const onBatchResponse = (
       err: ServiceError | PartialFailureError | null
     ) => {
-      // TODO: enable retries when the entire RPC fails
       if (err) {
-        // The error happened before a request was even made, don't retry.
+        // Retry RPC level errors
+        if (!(err instanceof PartialFailureError)) {
+          const serviceError = err as ServiceError;
+          if (
+            numRequestsMade <= maxRetries &&
+            IDEMPOTENT_RETRYABLE_STATUS_CODES.has(serviceError.code)
+          ) {
+            console.log('RETRYING ' + err.code);
+            makeNextBatchRequest();
+            return;
+          }
+        }
         callback(err);
         return;
-      }
-      if (pendingEntryIndices.size !== 0 && numRequestsMade <= maxRetries) {
+      } else if (
+        pendingEntryIndices.size !== 0 &&
+        numRequestsMade <= maxRetries
+      ) {
+        console.log('RETRYING partial');
         makeNextBatchRequest();
         return;
       }
@@ -1552,8 +1566,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           retryOpts,
         })
         .on('error', (err: ServiceError) => {
-          // TODO: this check doesn't actually do anything, onBatchResponse
-          // currently doesn't retry RPC errors, only entry failures
+          // The error happened before a request was even made, don't retry.
           if (numRequestsMade === 0) {
             callback(err); // Likely a "projectId not detected" error.
             return;

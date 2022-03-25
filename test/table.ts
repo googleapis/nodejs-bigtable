@@ -2609,6 +2609,88 @@ describe('Bigtable/Table', () => {
         });
       });
     });
+
+    describe('rpc level retries', () => {
+      let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let entryRequests: any;
+
+      beforeEach(() => {
+        emitters = null; // This needs to be assigned in each test case.
+
+        entryRequests = [];
+
+        sandbox.stub(ds, 'decorateStatus').returns({} as DecoratedStatus);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        table.bigtable.request = (config: any) => {
+          entryRequests.push(config.reqOpts.entries);
+          const stream = new PassThrough({
+            objectMode: true,
+          });
+
+          setImmediate(() => {
+            (emitters!.shift() as any)(stream);
+          });
+
+          return stream;
+        };
+      });
+
+      it('should not retry unretriable errors', done => {
+        const unretriableError = new Error('not retryable') as ServiceError;
+        unretriableError.code = 10; // Aborted
+        emitters = [
+          ((stream: Writable) => {
+            stream.emit('error', unretriableError);
+          }) as {} as EventEmitter,
+        ];
+        table.maxRetries = 1;
+        table.mutate(entries, () => {
+          assert.strictEqual(entryRequests.length, 1);
+          done();
+        });
+      });
+
+      it('should retry retryable errors', done => {
+        const error = new Error('retryable') as ServiceError;
+        error.code = 14; // Unavailable
+        emitters = [
+          ((stream: Writable) => {
+            stream.emit('error', error);
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
+            stream.end();
+          }) as {} as EventEmitter,
+        ];
+        table.maxRetries = 1;
+        table.mutate(entries, () => {
+          assert.strictEqual(entryRequests.length, 2);
+          done();
+        });
+      });
+
+      it('should not retry more than maxRetries times', done => {
+        const error = new Error('retryable') as ServiceError;
+        error.code = 14; // Unavailable
+        emitters = [
+          ((stream: Writable) => {
+            stream.emit('error', error);
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
+            stream.emit('error', error);
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
+            stream.end();
+          }) as {} as EventEmitter,
+        ];
+        table.maxRetries = 1;
+        table.mutate(entries, () => {
+          assert.strictEqual(entryRequests.length, 2);
+          done();
+        });
+      });
+    });
   });
 
   describe('row', () => {
