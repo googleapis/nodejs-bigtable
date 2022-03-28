@@ -1516,7 +1516,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             numRequestsMade <= maxRetries &&
             IDEMPOTENT_RETRYABLE_STATUS_CODES.has(serviceError.code)
           ) {
-            console.log('RETRYING ' + err.code);
             makeNextBatchRequest();
             return;
           }
@@ -1527,7 +1526,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         pendingEntryIndices.size !== 0 &&
         numRequestsMade <= maxRetries
       ) {
-        console.log('RETRYING partial');
         makeNextBatchRequest();
         return;
       }
