@@ -1539,7 +1539,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (pendingEntryIndices.size === 0 || numRequestsMade > maxRetries) {
         return false;
       }
-      return err === null || IDEMPOTENT_RETRYABLE_STATUS_CODES.has(err.code);
+      return !err || IDEMPOTENT_RETRYABLE_STATUS_CODES.has(err.code);
     };
 
     const onBatchResponse = (err: ServiceError | null) => {
@@ -1555,6 +1555,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (mutationErrorsByEntryIndex.size !== 0) {
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         callback(new PartialFailureError(mutationErrors));
+        return;
       }
 
       callback(err);
