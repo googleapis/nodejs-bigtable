@@ -807,6 +807,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     const makeNewRequest = () => {
+      if (retryTimer) {
+        // Avoid cancelling an expired timer if the
+        // stream is cancelled in the middle of a retry
+        retryTimer = null;
+      }
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
@@ -1530,31 +1535,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
     const mutationErrorsByEntryIndex = new Map();
 
-    const onBatchResponse = (
-      err: ServiceError | PartialFailureError | null
-    ) => {
-      if (err) {
-        // Retry RPC level errors
-        if (!(err instanceof PartialFailureError)) {
-          const serviceError = err as ServiceError;
-          if (
-            numRequestsMade <= maxRetries &&
-            IDEMPOTENT_RETRYABLE_STATUS_CODES.has(serviceError.code)
-          ) {
-            const backOffSettings =
-              options.gaxOptions?.retry?.backoffSettings ||
-              DEFAULT_BACKOFF_SETTINGS;
-            const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
-            setTimeout(makeNextBatchRequest, nextDelay);
-            return;
-          }
-        }
-        callback(err);
-        return;
-      } else if (
-        pendingEntryIndices.size !== 0 &&
-        numRequestsMade <= maxRetries
-      ) {
+    const isRetryable = (err: ServiceError | null) => {
+      if (pendingEntryIndices.size === 0 || numRequestsMade > maxRetries) {
+        return false;
+      }
+      return err === null || IDEMPOTENT_RETRYABLE_STATUS_CODES.has(err.code);
+    };
+
+    const onBatchResponse = (err: ServiceError | null) => {
+      if (isRetryable(err as ServiceError)) {
         const backOffSettings =
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
@@ -1565,7 +1554,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       if (mutationErrorsByEntryIndex.size !== 0) {
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        err = new PartialFailureError(mutationErrors);
+        callback(new PartialFailureError(mutationErrors));
       }
 
       callback(err);
