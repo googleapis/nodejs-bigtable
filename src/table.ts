@@ -15,6 +15,7 @@
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
+import {BackoffSettings} from 'google-gax/build/src/gax';
 import {decorateStatus} from './decorateStatus';
 import {PassThrough, Transform} from 'stream';
 
@@ -49,6 +50,12 @@ const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
 const IDEMPOTENT_RETRYABLE_STATUS_CODES = new Set([4, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
+
+const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
+  initialRetryDelayMillis: 10,
+  retryDelayMultiplier: 2,
+  maxRetryDelayMillis: 60000,
+};
 
 /**
  * @typedef {object} Policy
@@ -737,6 +744,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
     let numRequestsMade = 0;
+    let retryTimer: NodeJS.Timeout | null;
 
     rowKeys = options.keys || [];
 
@@ -789,6 +797,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
       return end();
     };
 
@@ -807,6 +818,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: function (response: any) {
+          return false;
+        },
       };
 
       if (lastRowKey) {
@@ -941,13 +958,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             numRequestsMade <= maxRetries &&
             RETRYABLE_STATUS_CODES.has(error.code)
           ) {
-            makeNewRequest();
+            const backOffSettings =
+              options.gaxOptions?.retry?.backoffSettings ||
+              DEFAULT_BACKOFF_SETTINGS;
+            const nextRetryDelay = getNextDelay(
+              numRequestsMade,
+              backOffSettings
+            );
+            retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             userStream.emit('error', error);
           }
         })
         .on('end', () => {
           activeRequestStream = null;
+          retryTimer = null;
         });
       rowStream.pipe(userStream);
       numRequestsMade++;
@@ -1516,7 +1541,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             numRequestsMade <= maxRetries &&
             IDEMPOTENT_RETRYABLE_STATUS_CODES.has(serviceError.code)
           ) {
-            makeNextBatchRequest();
+            const backOffSettings =
+              options.gaxOptions?.retry?.backoffSettings ||
+              DEFAULT_BACKOFF_SETTINGS;
+            const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
+            setTimeout(makeNextBatchRequest, nextDelay);
             return;
           }
         }
@@ -1526,7 +1555,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         pendingEntryIndices.size !== 0 &&
         numRequestsMade <= maxRetries
       ) {
-        makeNextBatchRequest();
+        const backOffSettings =
+          options.gaxOptions?.retry?.backoffSettings ||
+          DEFAULT_BACKOFF_SETTINGS;
+        const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
+        setTimeout(makeNextBatchRequest, nextDelay);
         return;
       }
 
@@ -1553,6 +1586,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: function (response: any) {
+          return false;
+        },
       };
 
       this.bigtable
@@ -2007,6 +2046,17 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
+
+function getNextDelay(requestCount: number, config: BackoffSettings) {
+  // 0 - 100 ms jitter
+  const jitter = Math.floor(Math.random() * 100);
+  const calculatedNextRetryDelay =
+    config.initialRetryDelayMillis *
+      Math.pow(config.retryDelayMultiplier, Math.max(0, requestCount - 1)) +
+    jitter;
+
+  return Math.min(calculatedNextRetryDelay, config.maxRetryDelayMillis);
+}
 
 export interface GoogleInnerError {
   reason?: string;
