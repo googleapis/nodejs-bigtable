@@ -743,7 +743,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
-    let numRequestsMade = 0;
+    let numConsecutiveAttempt = 0;
     let retryTimer: NodeJS.Timeout | null;
 
     rowKeys = options.keys || [];
@@ -822,7 +822,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       } as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
+        currentRetryAttempt: numConsecutiveAttempt,
         // Handling retries in this client. Specify the retry options to
         // make sure nothing is retried in retry-request.
         noResponseRetries: 0,
@@ -938,7 +938,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          numRequestsMade = 0;
+          numConsecutiveAttempt = 0;
           rowsRead++;
           const row = this.row(rowData.key);
           row.data = rowData.data;
@@ -960,27 +960,28 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             return;
           }
           if (
-            numRequestsMade < maxRetries &&
+            numConsecutiveAttempt < maxRetries &&
             RETRYABLE_STATUS_CODES.has(error.code)
           ) {
             const backOffSettings =
               options.gaxOptions?.retry?.backoffSettings ||
               DEFAULT_BACKOFF_SETTINGS;
             const nextRetryDelay = getNextDelay(
-              numRequestsMade,
+              numConsecutiveAttempt,
               backOffSettings
             );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
+            numConsecutiveAttempt++;
           } else {
             userStream.emit('error', error);
           }
         })
+        .on('data', (_) => {numConsecutiveAttempt = 0})
         .on('end', () => {
           activeRequestStream = null;
           retryTimer = null;
         });
       rowStream.pipe(userStream);
-      numRequestsMade++;
     };
 
     makeNewRequest();
@@ -2048,12 +2049,14 @@ promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
 
-function getNextDelay(requestCount: number, config: BackoffSettings) {
+function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
   // 0 - 100 ms jitter
   const jitter = Math.floor(Math.random() * 100);
+  console.log("RETRY DELAY: " + config.initialRetryDelayMillis *
+  Math.pow(config.retryDelayMultiplier, numConsecutiveErrors));
   const calculatedNextRetryDelay =
     config.initialRetryDelayMillis *
-      Math.pow(config.retryDelayMultiplier, Math.max(0, requestCount - 1)) +
+      Math.pow(config.retryDelayMultiplier, numConsecutiveErrors) +
     jitter;
 
   return Math.min(calculatedNextRetryDelay, config.maxRetryDelayMillis);
