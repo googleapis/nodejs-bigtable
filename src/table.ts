@@ -976,7 +976,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.emit('error', error);
           }
         })
-        .on('data', (_) => {numConsecutiveAttempt = 0})
+        .on('data', _ => {
+          numConsecutiveAttempt = 0;
+        })
         .on('end', () => {
           activeRequestStream = null;
           retryTimer = null;
@@ -2052,8 +2054,6 @@ promisifyAll(Table, {
 function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
   // 0 - 100 ms jitter
   const jitter = Math.floor(Math.random() * 100);
-  console.log("RETRY DELAY: " + config.initialRetryDelayMillis *
-  Math.pow(config.retryDelayMultiplier, numConsecutiveErrors));
   const calculatedNextRetryDelay =
     config.initialRetryDelayMillis *
       Math.pow(config.retryDelayMultiplier, numConsecutiveErrors) +
