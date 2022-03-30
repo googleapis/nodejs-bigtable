@@ -108,8 +108,8 @@ describe('Bigtable/Table', () => {
           // Retry-request is not handling grpc errors correctly, so
           // we are handling retries in table.ts and disabling retries in
           // gax to avoid a request getting retried in multiple places.
-          // Re-enable this test after switching back to using the retry 
-          // logic in gax.
+          // Re-enable this test after switching back to using the retry
+          // logic in gax
           // assert.deepStrictEqual(
           //   options!.retryRequestOptions,
           //   retryRequestOptions
