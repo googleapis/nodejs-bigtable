@@ -826,7 +826,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         // Handling retries in this client. Specify the retry options to
         // make sure nothing is retried in retry-request.
         noResponseRetries: 0,
-        shouldRetryFn: function (response: any) {
+        shouldRetryFn: (_: any) => {
           return false;
         },
       };
@@ -960,7 +960,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             return;
           }
           if (
-            numRequestsMade <= maxRetries &&
+            numRequestsMade < maxRetries &&
             RETRYABLE_STATUS_CODES.has(error.code)
           ) {
             const backOffSettings =
@@ -1536,14 +1536,20 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const mutationErrorsByEntryIndex = new Map();
 
     const isRetryable = (err: ServiceError | null) => {
-      if (pendingEntryIndices.size === 0 || numRequestsMade > maxRetries) {
+      // Don't retry if there are no more entries or retry attempts,
+      // or the error happened before a request was made.
+      if (
+        pendingEntryIndices.size === 0 ||
+        numRequestsMade >= maxRetries ||
+        numRequestsMade === 0
+      ) {
         return false;
       }
       return !err || IDEMPOTENT_RETRYABLE_STATUS_CODES.has(err.code);
     };
 
     const onBatchResponse = (err: ServiceError | null) => {
-      if (isRetryable(err as ServiceError)) {
+      if (isRetryable(err)) {
         const backOffSettings =
           options.gaxOptions?.retry?.backoffSettings ||
           DEFAULT_BACKOFF_SETTINGS;
@@ -1552,10 +1558,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         return;
       }
 
-      if (mutationErrorsByEntryIndex.size !== 0) {
-        const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        callback(new PartialFailureError(mutationErrors));
-        return;
+      if (numRequestsMade !== 0) {
+        // If there's a race condition where all the mutations
+        // succeeded, but the server returned an error (like deadline
+        // exceeded), set error to null
+        if (pendingEntryIndices.size === 0 && err) {
+          err = null;
+        }
+
+        if (mutationErrorsByEntryIndex.size !== 0) {
+          const mutationErrors = Array.from(
+            mutationErrorsByEntryIndex.values()
+          );
+          callback(new PartialFailureError(mutationErrors));
+          return;
+        }
       }
 
       callback(err);
@@ -1579,7 +1596,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         // Handling retries in this client. Specify the retry options to
         // make sure nothing is retried in retry-request.
         noResponseRetries: 0,
-        shouldRetryFn: function (response: any) {
+        shouldRetryFn: (_: any) => {
           return false;
         },
       };
@@ -1593,12 +1610,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           retryOpts,
         })
         .on('error', (err: ServiceError) => {
-          // The error happened before a request was even made, don't retry.
-          if (numRequestsMade === 0) {
-            callback(err); // Likely a "projectId not detected" error.
-            return;
-          }
-
           onBatchResponse(err);
         })
         .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
