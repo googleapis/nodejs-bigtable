@@ -16,7 +16,7 @@
       ]
     }, {
       "name": "retries the failed mutations",
-      "max_retries": 3,
+      "max_retries": 4,
       "mutations_request": [
         { "method": "insert", "key": "foo", "data": {} },
         { "method": "insert", "key": "bar", "data": {} },
@@ -36,7 +36,7 @@
       ]
     }, {
       "name": "has a `PartialFailureError` error when an entry fails after the retries",
-      "max_retries": 3,
+      "max_retries": 4,
       "mutations_request": [
         { "method": "insert", "key": "foo", "data": {} },
         { "method": "insert", "key": "bar", "data": {} },
@@ -59,7 +59,7 @@
       ]
     }, {
       "name": "does not retry unretryable mutations",
-      "max_retries": 5,
+      "max_retries": 6,
       "mutations_request": [
         { "method": "insert", "key": "foo", "data": {} },
         { "method": "insert", "key": "bar", "data": {} },
@@ -91,7 +91,7 @@
       ]
     }, {
       "name": "considers network errors towards the retry count",
-      "max_retries": 3,
+      "max_retries": 4,
       "mutations_request": [
         { "method": "insert", "key": "foo", "data": {} },
         { "method": "insert", "key": "bar", "data": {} },
