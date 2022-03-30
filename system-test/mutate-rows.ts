@@ -104,10 +104,16 @@ describe('Bigtable/Table', () => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
           );
-          assert.deepStrictEqual(
-            options!.retryRequestOptions,
-            retryRequestOptions
-          );
+          // TODO: Currently retry options for retry-request are ignored.
+          // Retry-request is not handling grpc errors correctly, so
+          // we are handling retries in table.ts and disabling retries in
+          // gax to avoid a request getting retried in multiple places.
+          // Re-enable this test after switching back to using the retry 
+          // logic in gax.
+          // assert.deepStrictEqual(
+          //   options!.retryRequestOptions,
+          //   retryRequestOptions
+          // );
           mutationCallTimes.push(new Date().getTime());
           const emitter = new PassThrough({objectMode: true});
           dispatch(emitter, responses!.shift());
