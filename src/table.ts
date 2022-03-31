@@ -946,6 +946,19 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
+      // Retry on "received rst stream" errors
+      const isRstStreamError = (error: ServiceError): boolean => {
+        if (error.code === 13 && error.message) {
+          const error_message = (error.message || '').toLowerCase();
+          return (
+            error.code === 13 &&
+            (error_message.includes('rst_stream') ||
+              error_message.includes('rst stream'))
+          );
+        }
+        return false;
+      };
+
       rowStream
         .on('error', (error: ServiceError) => {
           rowStream.unpipe(userStream);
@@ -959,7 +972,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           numConsecutiveErrors++;
           if (
             numConsecutiveErrors <= maxRetries &&
-            RETRYABLE_STATUS_CODES.has(error.code)
+            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
           ) {
             const backOffSettings =
               options.gaxOptions?.retry?.backoffSettings ||
