@@ -930,13 +930,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // TODO: add this check for mutate
       const isRstStreamError = (error: ServiceError): boolean => {
         if (error.code === 13 && error.message) {
-          const error_message = error.message.toLowerCase();
-          if (
-            error_message.includes('rst_stream') ||
-            error_message.includes('rst stream')
-          ) {
-            return true;
-          }
+          const error_message = (error.message || '').toLowerCase();
+          return (
+            error.code === 13 &&
+            (error_message.includes('rst_stream') ||
+              error_message.includes('rst stream'))
+          );
         }
         return false;
       };
