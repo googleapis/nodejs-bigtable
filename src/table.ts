@@ -956,11 +956,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.end();
             return;
           }
+          numConsecutiveErrors++;
           if (
-            numConsecutiveErrors < maxRetries &&
+            numConsecutiveErrors <= maxRetries &&
             RETRYABLE_STATUS_CODES.has(error.code)
           ) {
-            numConsecutiveErrors++;
             const backOffSettings =
               options.gaxOptions?.retry?.backoffSettings ||
               DEFAULT_BACKOFF_SETTINGS;
