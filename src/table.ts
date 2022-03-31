@@ -807,11 +807,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     const makeNewRequest = () => {
-      if (retryTimer) {
-        // Avoid cancelling an expired timer if the
-        // stream is cancelled in the middle of a retry
-        retryTimer = null;
-      }
+      // Avoid cancelling an expired timer if user
+      // cancelled the stream in the middle of a retry
+      retryTimer = null;
+
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
