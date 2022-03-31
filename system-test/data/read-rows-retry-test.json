@@ -76,7 +76,7 @@
 
     {
       "name": "resets the retry counter after a successful read",
-      "max_retries": 3,
+      "max_retries": 4,
       "request_options": [
         { "rowKeys": [],
           "rowRanges": [{}]
@@ -211,7 +211,7 @@
 
     {
       "name": "does the previous 5 things in one giant test case",
-      "max_retries": 3,
+      "max_retries": 4,
       "createReadStream_options": {
         "limit": 10,
         "ranges": [{
