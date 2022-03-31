@@ -15,7 +15,7 @@
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
-import {decorateStatus} from './decorateStatus';
+import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -46,8 +46,15 @@ import {Duplex} from 'stream';
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
 const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
+const IDEMPOTENT_RETRYABLE_STATUS_CODES = new Set([4, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
+
+const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
+  initialRetryDelayMillis: 10,
+  retryDelayMultiplier: 2,
+  maxRetryDelayMillis: 60000,
+};
 
 /**
  * @typedef {object} Policy
@@ -735,7 +742,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
-    let numRequestsMade = 0;
+    let numConsecutiveErrors = 0;
+    let retryTimer: NodeJS.Timeout | null;
 
     rowKeys = options.keys || [];
 
@@ -788,6 +796,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
       return end();
     };
 
@@ -795,6 +806,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     const makeNewRequest = () => {
+      // Avoid cancelling an expired timer if user
+      // cancelled the stream in the middle of a retry
+      retryTimer = null;
+
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
@@ -805,7 +820,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       } as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
+        currentRetryAttempt: numConsecutiveErrors,
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: (_: any) => {
+          return false;
+        },
       };
 
       if (lastRowKey) {
@@ -915,7 +936,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          numRequestsMade = 0;
           rowsRead++;
           const row = this.row(rowData.key);
           row.data = rowData.data;
@@ -949,20 +969,32 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.end();
             return;
           }
+          numConsecutiveErrors++;
           if (
-            numRequestsMade <= maxRetries &&
+            numConsecutiveErrors <= maxRetries &&
             (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
           ) {
-            makeNewRequest();
+            const backOffSettings =
+              options.gaxOptions?.retry?.backoffSettings ||
+              DEFAULT_BACKOFF_SETTINGS;
+            const nextRetryDelay = getNextDelay(
+              numConsecutiveErrors,
+              backOffSettings
+            );
+            retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
             userStream.emit('error', error);
           }
+        })
+        .on('data', _ => {
+          // Reset error count after a successful read so the backoff
+          // time won't keep increasing when as stream had multiple errors
+          numConsecutiveErrors = 0;
         })
         .on('end', () => {
           activeRequestStream = null;
         });
       rowStream.pipe(userStream);
-      numRequestsMade++;
     };
 
     makeNewRequest();
@@ -1517,23 +1549,43 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
     const mutationErrorsByEntryIndex = new Map();
 
-    const onBatchResponse = (
-      err: ServiceError | PartialFailureError | null
-    ) => {
-      // TODO: enable retries when the entire RPC fails
-      if (err) {
-        // The error happened before a request was even made, don't retry.
+    const isRetryable = (err: ServiceError | null) => {
+      // Don't retry if there are no more entries or retry attempts
+      if (pendingEntryIndices.size === 0 || numRequestsMade >= maxRetries + 1) {
+        return false;
+      }
+      // If the error is empty but there are still outstanding mutations,
+      // it means that there are retryable errors in the mutate response
+      // even when the RPC succeeded
+      return !err || IDEMPOTENT_RETRYABLE_STATUS_CODES.has(err.code);
+    };
+
+    const onBatchResponse = (err: ServiceError | null) => {
+      // Return if the error happened before a request was made
+      if (numRequestsMade === 0) {
         callback(err);
         return;
       }
-      if (pendingEntryIndices.size !== 0 && numRequestsMade <= maxRetries) {
-        makeNextBatchRequest();
+
+      if (isRetryable(err)) {
+        const backOffSettings =
+          options.gaxOptions?.retry?.backoffSettings ||
+          DEFAULT_BACKOFF_SETTINGS;
+        const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
+        setTimeout(makeNextBatchRequest, nextDelay);
         return;
+      }
+
+      // If there's no more pending mutations, set the error
+      // to null
+      if (pendingEntryIndices.size === 0) {
+        err = null;
       }
 
       if (mutationErrorsByEntryIndex.size !== 0) {
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        err = new PartialFailureError(mutationErrors);
+        callback(new PartialFailureError(mutationErrors, err));
+        return;
       }
 
       callback(err);
@@ -1554,6 +1606,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: (_: any) => {
+          return false;
+        },
       };
 
       this.bigtable
@@ -1565,13 +1623,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           retryOpts,
         })
         .on('error', (err: ServiceError) => {
-          // TODO: this check doesn't actually do anything, onBatchResponse
-          // currently doesn't retry RPC errors, only entry failures
-          if (numRequestsMade === 0) {
-            callback(err); // Likely a "projectId not detected" error.
-            return;
-          }
-
           onBatchResponse(err);
         })
         .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
@@ -1585,13 +1636,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               mutationErrorsByEntryIndex.delete(originalEntriesIndex);
               return;
             }
-            if (!RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
+            if (!IDEMPOTENT_RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
               pendingEntryIndices.delete(originalEntriesIndex);
             }
-            const status = decorateStatus(entry.status);
+            const errorDetails = entry.status;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (status as any).entry = originalEntry;
-            mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
+            (errorDetails as any).entry = originalEntry;
+            mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
           });
         })
         .on('end', onBatchResponse);
@@ -2010,6 +2061,17 @@ promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
 
+function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
+  // 0 - 100 ms jitter
+  const jitter = Math.floor(Math.random() * 100);
+  const calculatedNextRetryDelay =
+    config.initialRetryDelayMillis *
+      Math.pow(config.retryDelayMultiplier, numConsecutiveErrors) +
+    jitter;
+
+  return Math.min(calculatedNextRetryDelay, config.maxRetryDelayMillis);
+}
+
 export interface GoogleInnerError {
   reason?: string;
   message?: string;
@@ -2017,7 +2079,7 @@ export interface GoogleInnerError {
 
 export class PartialFailureError extends Error {
   errors?: GoogleInnerError[];
-  constructor(errors: GoogleInnerError[]) {
+  constructor(errors: GoogleInnerError[], rpcError?: ServiceError | null) {
     super();
     this.errors = errors;
     this.name = 'PartialFailureError';
@@ -2030,5 +2092,8 @@ export class PartialFailureError extends Error {
       messages.push('\n');
     }
     this.message = messages.join('\n');
+    if (rpcError) {
+      this.message += 'Request failed with: ' + rpcError.message;
+    }
   }
 }
