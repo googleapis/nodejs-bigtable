@@ -17,18 +17,6 @@ import {describe, it} from 'mocha';
 import {shouldRetryRequest, decorateStatus} from '../src/decorateStatus';
 
 describe('decorateStatus', () => {
-  it('should attach the correct HTTP code', () => {
-    const grpcStatus = {code: 0};
-    const status = decorateStatus(grpcStatus);
-    assert.strictEqual(status!.message, 'OK');
-  });
-
-  it('should return null if the code doesnt match', () => {
-    const grpcStatus = {code: 999};
-    const status = decorateStatus(grpcStatus);
-    assert.strictEqual(status, null);
-  });
-
   it('should accept a basic message', () => {
     const message = 'QUACK!';
     const grpcStatus = {code: 1, message};

@@ -2595,12 +2595,12 @@ describe('Bigtable/Table', () => {
       });
 
       it('should succeed after a retry', done => {
-        table.maxRetries = 2;
+        table.maxRetries = 1;
         table.mutate(entries, done);
       });
 
       it('should retry the same failed entry', done => {
-        table.maxRetries = 2;
+        table.maxRetries = 1;
         table.mutate(entries, () => {
           assert.strictEqual(entryRequests[0].length, 2);
           assert.strictEqual(entryRequests[1].length, 1);
@@ -2645,7 +2645,7 @@ describe('Bigtable/Table', () => {
             stream.emit('error', unretriableError);
           }) as {} as EventEmitter,
         ];
-        table.maxRetries = 2;
+        table.maxRetries = 1;
         table.mutate(entries, () => {
           assert.strictEqual(entryRequests.length, 1);
           done();
@@ -2663,7 +2663,7 @@ describe('Bigtable/Table', () => {
             stream.end();
           }) as {} as EventEmitter,
         ];
-        table.maxRetries = 2;
+        table.maxRetries = 1;
         table.mutate(entries, () => {
           assert.strictEqual(entryRequests.length, 2);
           done();
@@ -2684,7 +2684,7 @@ describe('Bigtable/Table', () => {
             stream.end();
           }) as {} as EventEmitter,
         ];
-        table.maxRetries = 2;
+        table.maxRetries = 1;
         table.mutate(entries, () => {
           assert.strictEqual(entryRequests.length, 2);
           done();

@@ -16,6 +16,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
+import {decorateStatus} from './decorateStatus';
 import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -1538,10 +1539,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const isRetryable = (err: ServiceError | null) => {
       // Don't retry if there are no more entries or retry attempts
-      if (
-        pendingEntryIndices.size === 0 ||
-        numRequestsMade > maxRetries
-      ) {
+      if (pendingEntryIndices.size === 0 || numRequestsMade > maxRetries) {
         return false;
       }
       // If the error is empty but there are still outstanding mutations,
@@ -1573,9 +1571,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
 
       if (mutationErrorsByEntryIndex.size !== 0) {
-        const mutationErrors = Array.from(
-          mutationErrorsByEntryIndex.values()
-        );
+        const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         callback(new PartialFailureError(mutationErrors, err));
         return;
       }
@@ -1631,7 +1627,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             if (!IDEMPOTENT_RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
               pendingEntryIndices.delete(originalEntriesIndex);
             }
-            mutationErrorsByEntryIndex.set(originalEntriesIndex, entry.status);
+            const status = decorateStatus(entry.status);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (status as any).entry = originalEntry;
+            mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
           });
         })
         .on('end', onBatchResponse);
@@ -2082,7 +2081,7 @@ export class PartialFailureError extends Error {
     }
     this.message = messages.join('\n');
     if (rpcError) {
-      this.message += "Request failed with: " + rpcError.message;
+      this.message += 'Request failed with: ' + rpcError.message;
     }
   }
 }

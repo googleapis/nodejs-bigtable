@@ -15,30 +15,6 @@
 import * as extend from 'extend';
 import {google} from '../protos/protos';
 
-/**
- * @const {object} - A map of protobuf codes to HTTP status codes.
- * @private
- */
-const GRPC_ERROR_CODE_TO_HTTP = [
-  {code: 200, message: 'OK'},
-  {code: 499, message: 'Client Closed Request'},
-  {code: 500, message: 'Internal Server Error'},
-  {code: 400, message: 'Bad Request'},
-  {code: 504, message: 'Gateway Timeout'},
-  {code: 404, message: 'Not Found'},
-  {code: 409, message: 'Conflict'},
-  {code: 403, message: 'Forbidden'},
-  {code: 429, message: 'Too Many Requests'},
-  {code: 412, message: 'Precondition Failed'},
-  {code: 409, message: 'Conflict'},
-  {code: 400, message: 'Bad Request'},
-  {code: 501, message: 'Not Implemented'},
-  {code: 500, message: 'Internal Server Error'},
-  {code: 503, message: 'Service Unavailable'},
-  {code: 500, message: 'Internal Server Error'},
-  {code: 401, message: 'Unauthorized'},
-];
-
 export type DecoratedStatus = google.rpc.IStatus & {
   code: number;
   message: string;
@@ -56,9 +32,8 @@ export function decorateStatus(
   response?: google.rpc.IStatus | null
 ): DecoratedStatus | null {
   const obj = {};
-  if (response && GRPC_ERROR_CODE_TO_HTTP[response.code!]) {
-    const defaultResponseDetails = GRPC_ERROR_CODE_TO_HTTP[response.code!];
-    let message = defaultResponseDetails.message;
+  if (response && response.code) {
+    let message = '';
     if (response.message) {
       // gRPC error messages can be either stringified JSON or strings.
       try {
@@ -68,7 +43,7 @@ export function decorateStatus(
       }
     }
     return extend(true, obj, response, {
-      code: defaultResponseDetails.code,
+      code: response.code,
       message,
     });
   }
