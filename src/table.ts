@@ -1538,7 +1538,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     const isRetryable = (err: ServiceError | null) => {
       // Don't retry if there are no more entries or retry attempts
-      if (pendingEntryIndices.size === 0 || numRequestsMade > maxRetries) {
+      if (pendingEntryIndices.size === 0 || numRequestsMade >= maxRetries + 1) {
         return false;
       }
       // If the error is empty but there are still outstanding mutations,
