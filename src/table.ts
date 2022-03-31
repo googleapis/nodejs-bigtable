@@ -16,7 +16,6 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
-import {decorateStatus} from './decorateStatus';
 import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -961,6 +960,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             numConsecutiveErrors < maxRetries &&
             RETRYABLE_STATUS_CODES.has(error.code)
           ) {
+            numConsecutiveErrors++;
             const backOffSettings =
               options.gaxOptions?.retry?.backoffSettings ||
               DEFAULT_BACKOFF_SETTINGS;
@@ -969,7 +969,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               backOffSettings
             );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
-            numConsecutiveErrors++;
           } else {
             userStream.emit('error', error);
           }
@@ -979,7 +978,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         })
         .on('end', () => {
           activeRequestStream = null;
-          retryTimer = null;
         });
       rowStream.pipe(userStream);
     };
@@ -1626,10 +1624,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             if (!IDEMPOTENT_RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
               pendingEntryIndices.delete(originalEntriesIndex);
             }
-            const status = decorateStatus(entry.status);
+            const errorDetails = entry.status;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (status as any).entry = originalEntry;
-            mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
+            (errorDetails as any).entry = originalEntry;
+            mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
           });
         })
         .on('end', onBatchResponse);

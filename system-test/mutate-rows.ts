@@ -27,7 +27,6 @@ import {Entry, PartialFailureError} from '../src/table';
 import {CancellableStream, GrpcClient, GoogleAuth} from 'google-gax';
 import {BigtableClient} from '../src/v2';
 import {PassThrough} from 'stream';
-import {shouldRetryRequest} from '../src/decorateStatus';
 
 const {grpc} = new GrpcClient();
 
@@ -94,22 +93,22 @@ describe('Bigtable/Table', () => {
       responses = null;
       bigtable.api.BigtableClient = {
         mutateRows: (reqOpts, options) => {
-          const retryRequestOptions = {
-            noResponseRetries: 0,
-            objectMode: true,
-            shouldRetryFn: shouldRetryRequest,
-            currentRetryAttempt: currentRetryAttempt++,
-          };
-          mutationBatchesInvoked.push(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
-          );
           // TODO: Currently retry options for retry-request are ignored.
           // Retry-request is not handling grpc errors correctly, so
           // we are handling retries in table.ts and disabling retries in
           // gax to avoid a request getting retried in multiple places.
           // Re-enable this test after switching back to using the retry
           // logic in gax
+          // const retryRequestOptions = {
+          //   noResponseRetries: 0,
+          //   objectMode: true,
+          //   shouldRetryFn: shouldRetryRequest,
+          //   currentRetryAttempt: currentRetryAttempt++,
+          // };
+          mutationBatchesInvoked.push(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            reqOpts!.entries!.map(entry => (entry.rowKey as any).asciiSlice())
+          );
           // assert.deepStrictEqual(
           //   options!.retryRequestOptions,
           //   retryRequestOptions

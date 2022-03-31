@@ -20,7 +20,6 @@ import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
 import {PassThrough, Writable, Duplex} from 'stream';
 import {ServiceError} from 'google-gax';
-import {DecoratedStatus} from '../src/decorateStatus';
 
 import * as inst from '../src/instance';
 import {ChunkTransformer} from '../src/chunktransformer.js';
@@ -28,7 +27,6 @@ import {Family} from '../src/family.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 import * as tblTypes from '../src/table';
-import * as ds from '../src/decorateStatus.js';
 import {Bigtable} from '../src';
 import {EventEmitter} from 'events';
 
@@ -2457,17 +2455,17 @@ describe('Bigtable/Table', () => {
             index: 0,
             status: {
               code: 1,
+              message: 'CANCELLED',
             },
           },
           {
             index: 1,
             status: {
-              code: 1,
+              code: 10,
+              message: 'ABORTED',
             },
           },
         ];
-
-        const parsedStatuses = [{} as DecoratedStatus, {} as DecoratedStatus];
 
         beforeEach(() => {
           table.bigtable.request = () => {
@@ -2478,32 +2476,31 @@ describe('Bigtable/Table', () => {
             });
             return stream;
           };
-
-          let statusCount = 0;
-          sandbox.stub(ds, 'decorateStatus').callsFake(status => {
-            assert.strictEqual(status, fakeStatuses[statusCount].status);
-            return parsedStatuses[statusCount++];
-          });
         });
 
         it('should return a PartialFailureError', done => {
-          table.mutate(entries, (err: Error) => {
+          const newEntries = [
+            {
+              key: 'a',
+            },
+            {
+              key: 'b',
+            },
+          ];
+          table.mutate(newEntries, (err: Error) => {
             assert.strictEqual(err.name, 'PartialFailureError');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             assert.deepStrictEqual((err as any).errors, [
-              Object.assign(
-                {
-                  entry: entries[0],
-                },
-                parsedStatuses[0]
-              ),
-
-              Object.assign(
-                {
-                  entry: entries[1],
-                },
-                parsedStatuses[1]
-              ),
+              Object.assign({
+                entry: newEntries[0],
+                code: fakeStatuses[0].status.code,
+                message: fakeStatuses[0].status.message,
+              }),
+              Object.assign({
+                entry: newEntries[1],
+                code: fakeStatuses[1].status.code,
+                message: fakeStatuses[1].status.message,
+              }),
             ]);
 
             done();
@@ -2578,7 +2575,6 @@ describe('Bigtable/Table', () => {
             },
           ],
         ];
-        sandbox.stub(ds, 'decorateStatus').returns({} as DecoratedStatus);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           entryRequests.push(config.reqOpts.entries);
@@ -2621,7 +2617,6 @@ describe('Bigtable/Table', () => {
 
         entryRequests = [];
 
-        sandbox.stub(ds, 'decorateStatus').returns({} as DecoratedStatus);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
           entryRequests.push(config.reqOpts.entries);
