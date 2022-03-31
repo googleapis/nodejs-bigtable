@@ -841,11 +841,6 @@ export class Bigtable {
           currentRetryAttempt: 0,
           noResponseRetries: 0,
           objectMode: true,
-          // TODO: re-enable shouldRetryFn when the retry
-          // logic is fixed in gax / retry-request
-          shouldRetryFn: (_: any) => {
-            return false;
-          },
         },
         config.retryOpts
       );
