@@ -190,6 +190,8 @@ describe('Bigtable', () => {
         assert.deepStrictEqual(
           options_,
           Object.assign(
+            {},
+            options_,
             {
               libName: 'gccl',
               libVersion: PKG.version,
@@ -233,18 +235,24 @@ describe('Bigtable', () => {
 
       assert.deepStrictEqual(bigtable.options, {
         BigtableClient: Object.assign(
+          {},
+          bigtable.options['BigtableClient'],
           {
             servicePath: 'bigtable.googleapis.com',
           },
           expectedOptions
         ),
         BigtableInstanceAdminClient: Object.assign(
+          {},
+          bigtable.options['BigtableInstanceAdminClient'],
           {
             servicePath: 'bigtableadmin.googleapis.com',
           },
           expectedOptions
         ),
         BigtableTableAdminClient: Object.assign(
+          {},
+          bigtable.options['BigtableTableAdminClient'],
           {
             servicePath: 'bigtableadmin.googleapis.com',
           },
@@ -283,9 +291,21 @@ describe('Bigtable', () => {
       );
 
       assert.deepStrictEqual(bigtable.options, {
-        BigtableClient: expectedOptions,
-        BigtableInstanceAdminClient: expectedOptions,
-        BigtableTableAdminClient: expectedOptions,
+        BigtableClient: Object.assign(
+          {},
+          bigtable.options['BigtableClient'],
+          expectedOptions
+        ),
+        BigtableInstanceAdminClient: Object.assign(
+          {},
+          bigtable.options['BigtableInstanceAdminClient'],
+          expectedOptions
+        ),
+        BigtableTableAdminClient: Object.assign(
+          {},
+          bigtable.options['BigtableTableAdminClient'],
+          expectedOptions
+        ),
       });
     });
 
@@ -315,9 +335,21 @@ describe('Bigtable', () => {
       assert.strictEqual(bigtable.customEndpoint, options.apiEndpoint);
 
       assert.deepStrictEqual(bigtable.options, {
-        BigtableClient: expectedOptions,
-        BigtableInstanceAdminClient: expectedOptions,
-        BigtableTableAdminClient: expectedOptions,
+        BigtableClient: Object.assign(
+          {},
+          bigtable.options['BigtableClient'],
+          expectedOptions
+        ),
+        BigtableInstanceAdminClient: Object.assign(
+          {},
+          bigtable.options['BigtableInstanceAdminClient'],
+          expectedOptions
+        ),
+        BigtableTableAdminClient: Object.assign(
+          {},
+          bigtable.options['BigtableTableAdminClient'],
+          expectedOptions
+        ),
       });
     });
 
