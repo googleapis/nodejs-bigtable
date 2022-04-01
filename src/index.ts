@@ -16,7 +16,7 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
-import {GoogleAuth, CallOptions} from 'google-gax';
+import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
 
@@ -33,6 +33,7 @@ import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
+import grpcGcpModule = require('grpc-gcp');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -41,6 +42,11 @@ const streamEvents = require('stream-events');
 const PKG = require('../../package.json');
 
 const {grpc} = new gax.GrpcClient();
+
+// Enable channel pooling
+const grpcGcp = grpcGcpModule(gaxVendoredGrpc);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const gcpApiConfig = require('../../src/bigtable_grpc_config.json');
 
 export interface GetInstancesCallback {
   (
@@ -415,6 +421,9 @@ export class Bigtable {
         scopes,
         'grpc.keepalive_time_ms': 30000,
         'grpc.keepalive_timeout_ms': 10000,
+        'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
+        'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
+        'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig(gcpApiConfig),
       },
       options
     );
