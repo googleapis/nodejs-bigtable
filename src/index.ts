@@ -29,7 +29,6 @@ import {
   CreateInstanceResponse,
   IInstance,
 } from './instance';
-import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
@@ -842,7 +841,6 @@ export class Bigtable {
           currentRetryAttempt: 0,
           noResponseRetries: 0,
           objectMode: true,
-          shouldRetryFn: shouldRetryRequest,
         },
         config.retryOpts
       );
