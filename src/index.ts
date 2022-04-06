@@ -427,8 +427,8 @@ export class Bigtable {
     if (customEndpoint) {
       const customEndpointParts = customEndpoint.split(':');
       customEndpointBaseUrl = customEndpointParts[0];
-      customEndpointPort = customEndpointParts[1];
-      sslCreds = grpc.credentials.createInsecure()
+      customEndpointPort = Number(customEndpointParts[1]);
+      sslCreds = grpc.credentials.createInsecure();
     }
 
     const baseOptions = Object.assign({
@@ -476,7 +476,7 @@ export class Bigtable {
     };
 
     this.api = {};
-    this.auth = new GoogleAuth(options);
+    this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
