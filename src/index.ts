@@ -34,6 +34,7 @@ import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
+import base = Mocha.reporters.base;
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -45,8 +46,6 @@ const {grpc} = new gax.GrpcClient();
 
 // Enable channel pooling
 const grpcGcp = grpcGcpModule(gaxVendoredGrpc);
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const gcpApiConfig = require('../../src/bigtable_grpc_config.json');
 
 export interface GetInstancesCallback {
   (
@@ -414,20 +413,6 @@ export class Bigtable {
       }
     }
 
-    options = Object.assign(
-      {
-        libName: 'gccl',
-        libVersion: PKG.version,
-        scopes,
-        'grpc.keepalive_time_ms': 30000,
-        'grpc.keepalive_timeout_ms': 10000,
-        'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
-        'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
-        'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig(gcpApiConfig),
-      },
-      options
-    );
-
     const defaultBaseUrl = 'bigtable.googleapis.com';
     const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
 
@@ -437,48 +422,57 @@ export class Bigtable {
 
     let customEndpointBaseUrl;
     let customEndpointPort;
+    let sslCreds;
 
     if (customEndpoint) {
       const customEndpointParts = customEndpoint.split(':');
       customEndpointBaseUrl = customEndpointParts[0];
       customEndpointPort = customEndpointParts[1];
+      sslCreds = grpc.credentials.createInsecure()
     }
 
+    const baseOptions = Object.assign({
+      libName: 'gccl',
+      libVersion: PKG.version,
+      port: customEndpointPort || 443,
+      sslCreds,
+      scopes,
+      'grpc.keepalive_time_ms': 30000,
+      'grpc.keepalive_timeout_ms': 10000,
+    }) as gax.ClientOptions;
+
+    const dataOptions = Object.assign(
+      {},
+      baseOptions,
+      {
+        servicePath: customEndpointBaseUrl || defaultBaseUrl,
+        'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
+        'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
+        'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
+          channelPool: {
+            minxSize: 2,
+            maxSize: 4,
+            maxConcurrentStreamsLowWatermark: 10,
+            debugHeaderIntervalSecs: 600,
+          },
+        }),
+      },
+      options
+    ) as gax.ClientOptions;
+
+    const adminOptions = Object.assign(
+      {},
+      baseOptions,
+      {
+        servicePath: customEndpointBaseUrl || defaultAdminBaseUrl,
+      },
+      options
+    );
+
     this.options = {
-      BigtableClient: Object.assign(
-        {
-          servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
-          port: customEndpoint ? Number(customEndpointPort) : 443,
-          sslCreds: customEndpoint
-            ? grpc.credentials.createInsecure()
-            : undefined,
-        },
-        options
-      ) as gax.ClientOptions,
-      BigtableInstanceAdminClient: Object.assign(
-        {
-          servicePath: customEndpoint
-            ? customEndpointBaseUrl
-            : defaultAdminBaseUrl,
-          port: customEndpoint ? Number(customEndpointPort) : 443,
-          sslCreds: customEndpoint
-            ? grpc.credentials.createInsecure()
-            : undefined,
-        },
-        options
-      ) as gax.ClientOptions,
-      BigtableTableAdminClient: Object.assign(
-        {
-          servicePath: customEndpoint
-            ? customEndpointBaseUrl
-            : defaultAdminBaseUrl,
-          port: customEndpoint ? Number(customEndpointPort) : 443,
-          sslCreds: customEndpoint
-            ? grpc.credentials.createInsecure()
-            : undefined,
-        },
-        options
-      ) as gax.ClientOptions,
+      BigtableClient: dataOptions,
+      BigtableInstanceAdminClient: adminOptions,
+      BigtableTableAdminClient: adminOptions,
     };
 
     this.api = {};
