@@ -449,7 +449,7 @@ export class Bigtable {
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
         'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
           channelPool: {
-            minxSize: 2,
+            minSize: 2,
             maxSize: 4,
             maxConcurrentStreamsLowWatermark: 10,
             debugHeaderIntervalSecs: 600,

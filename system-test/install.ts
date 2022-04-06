@@ -51,7 +51,7 @@ describe('📦 pack-n-play test', () => {
     } catch (e) {
       // all of the actionable information is on the output attribute
       if (e.output) {
-        e.message += "output: " + e.output;
+        e.message += 'output: ' + e.output;
       }
       throw e;
     }
