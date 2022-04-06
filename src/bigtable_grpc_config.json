@@ -1,6 +1,8 @@
 {
     "channelPool": {
-      "maxSize": 10,
-      "maxConcurrentStreamsLowWatermark": 30
+      "minxSize": 2,
+      "maxSize": 4,
+      "maxConcurrentStreamsLowWatermark": 10,
+      "debugHeaderIntervalSecs": 600
     }
   }
