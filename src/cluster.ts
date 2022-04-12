@@ -696,29 +696,48 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof gaxOptionsOrCallback === 'object'
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
+    // This function sets the metadata using location data from a metadata
+    // fetch.
+    const setMetadataWithLocation = () => {
+      const cluster: ICluster = Object.assign(
+        {},
+        {
+          name: this.name,
+          serveNodes: metadata.nodes,
+        },
+        metadata
+      );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      delete (cluster as any).nodes;
+      const reqOpts = {
+        cluster,
+        updateMask: {
+          paths: [
+            'serve_nodes',
+            'cluster_config.cluster_autoscaling_config.autoscaling_limits.min_serve_nodes',
+            'cluster_config.cluster_autoscaling_config.autoscaling_limits.max_serve_nodes',
+            'cluster_config.cluster_autoscaling_config.autoscaling_targets.cpu_utilization_percent',
+          ],
+        },
+      };
 
-    const reqOpts: ICluster = Object.assign(
-      {},
-      {
-        name: this.name,
-        serveNodes: metadata.nodes,
-      },
-      metadata
-    );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (reqOpts as any).nodes;
-
-    this.bigtable.request<Operation>(
-      {
-        client: 'BigtableInstanceAdminClient',
-        method: 'updateCluster',
-        reqOpts,
-        gaxOpts: gaxOptions,
-      },
-      (err, resp) => {
-        callback(err, resp);
-      }
-    );
+      this.bigtable.request<Operation>(
+        {
+          client: 'BigtableInstanceAdminClient',
+          method: 'partialUpdateCluster',
+          reqOpts: reqOpts,
+          gaxOpts: gaxOptions,
+        },
+        (err, resp) => {
+          callback(err, resp);
+        }
+      );
+    };
+    if (this.metadata && this.metadata.location) {
+      setMetadataWithLocation();
+    } else {
+      this.getMetadata(gaxOptions, );
+    }
   }
 }
 
