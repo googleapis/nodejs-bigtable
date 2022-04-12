@@ -544,7 +544,7 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.method, 'readRows');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
         assert.strictEqual(config.reqOpts.appProfileId, undefined);
-        assert.deepStrictEqual(config.gaxOpts, {otherArgs: { headers: { 'bigtable-attempt': 0 }}});
+        assert.deepStrictEqual(config.gaxOpts, {otherArgs: {headers: {'bigtable-attempt': 0 }}});
         done();
       };
       table.createReadStream();

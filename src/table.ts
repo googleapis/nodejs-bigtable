@@ -918,7 +918,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
-      options.gaxOptions = populateAttemptHeader(numRequestsMade, options.gaxOptions);
+      options.gaxOptions = populateAttemptHeader(
+        numRequestsMade,
+        options.gaxOptions);
 
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
@@ -1618,7 +1620,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         },
       };
 
-      options.gaxOptions = populateAttemptHeader(numRequestsMade, options.gaxOptions);
+      options.gaxOptions = populateAttemptHeader(
+        numRequestsMade,
+        options.gaxOptions);
 
       this.bigtable
         .request<google.bigtable.v2.MutateRowsResponse>({
