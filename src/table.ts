@@ -743,6 +743,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
     let numConsecutiveErrors = 0;
+    let numRequestsMade = 0;
     let retryTimer: NodeJS.Timeout | null;
 
     rowKeys = options.keys || [];
@@ -917,6 +918,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
+      options.gaxOptions = populateAttemptHeader(numRequestsMade, options.gaxOptions);
+
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
         method: 'readRows',
@@ -970,6 +973,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             return;
           }
           numConsecutiveErrors++;
+          numRequestsMade++;
           if (
             numConsecutiveErrors <= maxRetries &&
             (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
@@ -1614,6 +1618,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         },
       };
 
+      options.gaxOptions = populateAttemptHeader(numRequestsMade, options.gaxOptions);
+
       this.bigtable
         .request<google.bigtable.v2.MutateRowsResponse>({
           client: 'BigtableClient',
@@ -2070,6 +2076,14 @@ function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
     jitter;
 
   return Math.min(calculatedNextRetryDelay, config.maxRetryDelayMillis);
+}
+
+function populateAttemptHeader(attempt: number, gaxOpts?: CallOptions) {
+  gaxOpts = gaxOpts || {};
+  gaxOpts.otherArgs = gaxOpts.otherArgs || {}
+  gaxOpts.otherArgs.headers = gaxOpts.otherArgs.headers || {}
+  gaxOpts.otherArgs.headers['bigtable-attempt'] = attempt;
+  return gaxOpts;
 }
 
 export interface GoogleInnerError {
