@@ -544,7 +544,9 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.method, 'readRows');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
         assert.strictEqual(config.reqOpts.appProfileId, undefined);
-        assert.deepStrictEqual(config.gaxOpts, {otherArgs: {headers: {'bigtable-attempt': 0 }}});
+        assert.deepStrictEqual(config.gaxOpts, {
+          otherArgs: {headers: {'bigtable-attempt': 0}},
+        });
         done();
       };
       table.createReadStream();
@@ -2570,7 +2572,7 @@ describe('Bigtable/Table', () => {
       let fakeStatuses: any;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let entryRequests: any;
-      let requestArgs: RequestOptions[] = [];
+      const requestArgs: RequestOptions[] = [];
 
       beforeEach(() => {
         entryRequests = [];
@@ -2617,8 +2619,18 @@ describe('Bigtable/Table', () => {
       it('should send attempt header', done => {
         table.mutate(entries, () => {
           assert.strictEqual(requestArgs.length, 2);
-          assert.strictEqual((requestArgs[0].gaxOpts as any)['otherArgs']['headers']['bigtable-attempt'], 0)
-          assert.strictEqual((requestArgs[1].gaxOpts as any)['otherArgs']['headers']['bigtable-attempt'], 1)
+          assert.strictEqual(
+            (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            0
+          );
+          assert.strictEqual(
+            (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            1
+          );
           done();
         });
       });
@@ -2736,8 +2748,18 @@ describe('Bigtable/Table', () => {
         table.maxRetries = 1;
         table.mutate(entries, () => {
           assert.strictEqual(requestArgs.length, 2);
-          assert.strictEqual((requestArgs[0].gaxOpts as any)['otherArgs']['headers']['bigtable-attempt'], 0)
-          assert.strictEqual((requestArgs[1].gaxOpts as any)['otherArgs']['headers']['bigtable-attempt'], 1)
+          assert.strictEqual(
+            (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            0
+          );
+          assert.strictEqual(
+            (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            1
+          );
           done();
         });
       });
