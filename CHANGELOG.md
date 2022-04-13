@@ -4,6 +4,49 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.10.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.9.4...v3.10.0) (2022-04-06)
+
+
+### Features
+
+* Add ListHotTablets API method and protobufs ([#1057](https://github.com/googleapis/nodejs-bigtable/issues/1057)) ([2b175ac](https://github.com/googleapis/nodejs-bigtable/commit/2b175ac515948711b2ed9f34136255f69445e02a))
+* AuditConfig for IAM v1 ([#1061](https://github.com/googleapis/nodejs-bigtable/issues/1061)) ([d1b5f1a](https://github.com/googleapis/nodejs-bigtable/commit/d1b5f1aca4464b5e344de19e892dcf889243c578))
+* enable channel pooling ([#1065](https://github.com/googleapis/nodejs-bigtable/issues/1065)) ([6c3c397](https://github.com/googleapis/nodejs-bigtable/commit/6c3c397d080750b696024266a114e12b2db8ab04))
+
+
+### Bug Fixes
+
+* disable retry-request, add exponential backoff in mutateRows and readRows ([#1060](https://github.com/googleapis/nodejs-bigtable/issues/1060)) ([3718011](https://github.com/googleapis/nodejs-bigtable/commit/3718011e6d09a062e8e8c3dba822e060340e8b50))
+* retry rst_stream errors ([#1059](https://github.com/googleapis/nodejs-bigtable/issues/1059)) ([90de80f](https://github.com/googleapis/nodejs-bigtable/commit/90de80f7f32e644a0762579afe37951714ac7271))
+
+### [3.9.4](https://github.com/googleapis/nodejs-bigtable/compare/v3.9.3...v3.9.4) (2022-03-16)
+
+
+### Bug Fixes
+
+* do not cancel stream after server returned ok or cancelled status ([#1029](https://github.com/googleapis/nodejs-bigtable/issues/1029)) ([33754a2](https://github.com/googleapis/nodejs-bigtable/commit/33754a2c0cc180cd6ab6e34d722e34c35df9e757))
+
+### [3.9.3](https://github.com/googleapis/nodejs-bigtable/compare/v3.9.2...v3.9.3) (2022-03-16)
+
+
+### Bug Fixes
+
+* fix createReadStream retry from sending a full table scan ([#1026](https://github.com/googleapis/nodejs-bigtable/issues/1026)) ([f926992](https://github.com/googleapis/nodejs-bigtable/commit/f9269926bed0858d122ab6019a9b1e4c33e4307a))
+
+### [3.9.2](https://github.com/googleapis/nodejs-bigtable/compare/v3.9.1...v3.9.2) (2022-02-03)
+
+
+### Bug Fixes
+
+* manual generate library for ongoing stream on closed client ([#1011](https://github.com/googleapis/nodejs-bigtable/issues/1011)) ([b6fec4c](https://github.com/googleapis/nodejs-bigtable/commit/b6fec4ccfebd616b1d79da05817e82d59fdcbe9d))
+
+### [3.9.1](https://github.com/googleapis/nodejs-bigtable/compare/v3.9.0...v3.9.1) (2022-02-01)
+
+
+### Bug Fixes
+
+* update to latest generator with fix for regex bug ([#1000](https://github.com/googleapis/nodejs-bigtable/issues/1000)) ([6a26c07](https://github.com/googleapis/nodejs-bigtable/commit/6a26c07da47c8bcc4ccb399e9289f078e7827780))
+
 ## [3.9.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.8.0...v3.9.0) (2022-01-18)
 
 

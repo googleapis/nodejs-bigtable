@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -178,6 +178,9 @@ export class BigtableInstanceAdminClient {
       clusterPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}'
       ),
+      hotTabletPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}'
+      ),
       instancePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}'
       ),
@@ -200,6 +203,11 @@ export class BigtableInstanceAdminClient {
         'pageToken',
         'nextPageToken',
         'appProfiles'
+      ),
+      listHotTablets: new this._gaxModule.PageDescriptor(
+        'pageToken',
+        'nextPageToken',
+        'hotTablets'
       ),
     };
 
@@ -357,6 +365,7 @@ export class BigtableInstanceAdminClient {
       'getIamPolicy',
       'setIamPolicy',
       'testIamPermissions',
+      'listHotTablets',
     ];
     for (const methodName of bigtableInstanceAdminStubMethods) {
       const callPromise = this.bigtableInstanceAdminStub.then(
@@ -1374,7 +1383,7 @@ export class BigtableInstanceAdminClient {
    *   See the operation documentation for the appropriate value for this field.
    * @param {google.iam.v1.GetPolicyOptions} request.options
    *   OPTIONAL: A `GetPolicyOptions` object for specifying options to
-   *   `GetIamPolicy`. This field is only used by Cloud IAM.
+   *   `GetIamPolicy`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1465,6 +1474,12 @@ export class BigtableInstanceAdminClient {
    *   the policy is limited to a few 10s of KB. An empty policy is a
    *   valid policy but certain Cloud Platform services (such as Projects)
    *   might reject them.
+   * @param {google.protobuf.FieldMask} request.updateMask
+   *   OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only
+   *   the fields in the mask will be modified. If no mask is provided, the
+   *   following default mask is used:
+   *
+   *   `paths: "bindings, etag"`
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -2760,6 +2775,253 @@ export class BigtableInstanceAdminClient {
       callSettings
     ) as AsyncIterable<protos.google.bigtable.admin.v2.IAppProfile>;
   }
+  /**
+   * Lists hot tablets in a cluster, within the time range provided. Hot
+   * tablets are ordered based on CPU usage.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The cluster name to list hot tablets.
+   *   Value is in the following form:
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   * @param {google.protobuf.Timestamp} request.startTime
+   *   The start time to list hot tablets. The hot tablets in the response will
+   *   have start times between the requested start time and end time. Start time
+   *   defaults to Now if it is unset, and end time defaults to Now - 24 hours if
+   *   it is unset. The start time should be less than the end time, and the
+   *   maximum allowed time range between start time and end time is 48 hours.
+   *   Start time and end time should have values between Now and Now - 14 days.
+   * @param {google.protobuf.Timestamp} request.endTime
+   *   The end time to list hot tablets.
+   * @param {number} request.pageSize
+   *   Maximum number of results per page.
+   *
+   *   A page_size that is empty or zero lets the server choose the number of
+   *   items to return. A page_size which is strictly positive will return at most
+   *   that many items. A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls do not need a
+   *   page_size field. If a page_size is set in subsequent calls, it must match
+   *   the page_size given in the first request.
+   * @param {string} request.pageToken
+   *   The value of `next_page_token` returned by a previous call.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is Array of [HotTablet]{@link google.bigtable.admin.v2.HotTablet}.
+   *   The client library will perform auto-pagination by default: it will call the API as many
+   *   times as needed and will merge results from all the pages into this array.
+   *   Note that it can affect your quota.
+   *   We recommend using `listHotTabletsAsync()`
+   *   method described below for async iteration which you can stop as needed.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination)
+   *   for more details and examples.
+   */
+  listHotTablets(
+    request?: protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      protos.google.bigtable.admin.v2.IHotTablet[],
+      protos.google.bigtable.admin.v2.IListHotTabletsRequest | null,
+      protos.google.bigtable.admin.v2.IListHotTabletsResponse
+    ]
+  >;
+  listHotTablets(
+    request: protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+    options: CallOptions,
+    callback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+      | protos.google.bigtable.admin.v2.IListHotTabletsResponse
+      | null
+      | undefined,
+      protos.google.bigtable.admin.v2.IHotTablet
+    >
+  ): void;
+  listHotTablets(
+    request: protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+    callback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+      | protos.google.bigtable.admin.v2.IListHotTabletsResponse
+      | null
+      | undefined,
+      protos.google.bigtable.admin.v2.IHotTablet
+    >
+  ): void;
+  listHotTablets(
+    request?: protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | PaginationCallback<
+          protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+          | protos.google.bigtable.admin.v2.IListHotTabletsResponse
+          | null
+          | undefined,
+          protos.google.bigtable.admin.v2.IHotTablet
+        >,
+    callback?: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+      | protos.google.bigtable.admin.v2.IListHotTabletsResponse
+      | null
+      | undefined,
+      protos.google.bigtable.admin.v2.IHotTablet
+    >
+  ): Promise<
+    [
+      protos.google.bigtable.admin.v2.IHotTablet[],
+      protos.google.bigtable.admin.v2.IListHotTabletsRequest | null,
+      protos.google.bigtable.admin.v2.IListHotTabletsResponse
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
+    this.initialize();
+    return this.innerApiCalls.listHotTablets(request, options, callback);
+  }
+
+  /**
+   * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The cluster name to list hot tablets.
+   *   Value is in the following form:
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   * @param {google.protobuf.Timestamp} request.startTime
+   *   The start time to list hot tablets. The hot tablets in the response will
+   *   have start times between the requested start time and end time. Start time
+   *   defaults to Now if it is unset, and end time defaults to Now - 24 hours if
+   *   it is unset. The start time should be less than the end time, and the
+   *   maximum allowed time range between start time and end time is 48 hours.
+   *   Start time and end time should have values between Now and Now - 14 days.
+   * @param {google.protobuf.Timestamp} request.endTime
+   *   The end time to list hot tablets.
+   * @param {number} request.pageSize
+   *   Maximum number of results per page.
+   *
+   *   A page_size that is empty or zero lets the server choose the number of
+   *   items to return. A page_size which is strictly positive will return at most
+   *   that many items. A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls do not need a
+   *   page_size field. If a page_size is set in subsequent calls, it must match
+   *   the page_size given in the first request.
+   * @param {string} request.pageToken
+   *   The value of `next_page_token` returned by a previous call.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits an object representing [HotTablet]{@link google.bigtable.admin.v2.HotTablet} on 'data' event.
+   *   The client library will perform auto-pagination by default: it will call the API as many
+   *   times as needed. Note that it can affect your quota.
+   *   We recommend using `listHotTabletsAsync()`
+   *   method described below for async iteration which you can stop as needed.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination)
+   *   for more details and examples.
+   */
+  listHotTabletsStream(
+    request?: protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+    options?: CallOptions
+  ): Transform {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
+    const defaultCallSettings = this._defaults['listHotTablets'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listHotTablets.createStream(
+      this.innerApiCalls.listHotTablets as gax.GaxCall,
+      request,
+      callSettings
+    );
+  }
+
+  /**
+   * Equivalent to `listHotTablets`, but returns an iterable object.
+   *
+   * `for`-`await`-`of` syntax is used with the iterable to get response elements on-demand.
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The cluster name to list hot tablets.
+   *   Value is in the following form:
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   * @param {google.protobuf.Timestamp} request.startTime
+   *   The start time to list hot tablets. The hot tablets in the response will
+   *   have start times between the requested start time and end time. Start time
+   *   defaults to Now if it is unset, and end time defaults to Now - 24 hours if
+   *   it is unset. The start time should be less than the end time, and the
+   *   maximum allowed time range between start time and end time is 48 hours.
+   *   Start time and end time should have values between Now and Now - 14 days.
+   * @param {google.protobuf.Timestamp} request.endTime
+   *   The end time to list hot tablets.
+   * @param {number} request.pageSize
+   *   Maximum number of results per page.
+   *
+   *   A page_size that is empty or zero lets the server choose the number of
+   *   items to return. A page_size which is strictly positive will return at most
+   *   that many items. A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls do not need a
+   *   page_size field. If a page_size is set in subsequent calls, it must match
+   *   the page_size given in the first request.
+   * @param {string} request.pageToken
+   *   The value of `next_page_token` returned by a previous call.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Object}
+   *   An iterable Object that allows [async iteration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols).
+   *   When you iterate the returned iterable, each element will be an object representing
+   *   [HotTablet]{@link google.bigtable.admin.v2.HotTablet}. The API will be called under the hood as needed, once per the page,
+   *   so you can stop the iteration when you don't need more results.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination)
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_instance_admin.list_hot_tablets.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableInstanceAdmin_ListHotTablets_async
+   */
+  listHotTabletsAsync(
+    request?: protos.google.bigtable.admin.v2.IListHotTabletsRequest,
+    options?: CallOptions
+  ): AsyncIterable<protos.google.bigtable.admin.v2.IHotTablet> {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      gax.routingHeader.fromParams({
+        parent: request.parent || '',
+      });
+    const defaultCallSettings = this._defaults['listHotTablets'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listHotTablets.asyncIterate(
+      this.innerApiCalls['listHotTablets'] as GaxCall,
+      request as unknown as RequestType,
+      callSettings
+    ) as AsyncIterable<protos.google.bigtable.admin.v2.IHotTablet>;
+  }
   // --------------------
   // -- Path templates --
   // --------------------
@@ -2930,6 +3192,77 @@ export class BigtableInstanceAdminClient {
    */
   matchClusterFromClusterName(clusterName: string) {
     return this.pathTemplates.clusterPathTemplate.match(clusterName).cluster;
+  }
+
+  /**
+   * Return a fully-qualified hotTablet resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} cluster
+   * @param {string} hot_tablet
+   * @returns {string} Resource name string.
+   */
+  hotTabletPath(
+    project: string,
+    instance: string,
+    cluster: string,
+    hotTablet: string
+  ) {
+    return this.pathTemplates.hotTabletPathTemplate.render({
+      project: project,
+      instance: instance,
+      cluster: cluster,
+      hot_tablet: hotTablet,
+    });
+  }
+
+  /**
+   * Parse the project from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .project;
+  }
+
+  /**
+   * Parse the instance from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .instance;
+  }
+
+  /**
+   * Parse the cluster from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the cluster.
+   */
+  matchClusterFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .cluster;
+  }
+
+  /**
+   * Parse the hot_tablet from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the hot_tablet.
+   */
+  matchHotTabletFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .hot_tablet;
   }
 
   /**
@@ -3114,9 +3447,8 @@ export class BigtableInstanceAdminClient {
    * @returns {Promise} A promise that resolves when the client is closed.
    */
   close(): Promise<void> {
-    this.initialize();
-    if (!this._terminated) {
-      return this.bigtableInstanceAdminStub!.then(stub => {
+    if (this.bigtableInstanceAdminStub && !this._terminated) {
+      return this.bigtableInstanceAdminStub.then(stub => {
         this._terminated = true;
         stub.close();
         this.operationsClient.close();

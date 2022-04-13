@@ -6,7 +6,10 @@
       "name": "simple read",
       "max_retries": 3,
       "request_options": [
-        {}
+        {
+          "rowKeys": [],
+          "rowRanges": [{}]
+        }
       ],
       "responses": [
         { "row_keys": [ "a", "b", "c" ] }
@@ -22,8 +25,10 @@
       "name": "retries a failed read",
       "max_retries": 3,
       "request_options": [
-        {},
-        { "rowRanges": [ { "startKeyOpen": "b" } ] }
+        { "rowKeys": [],
+          "rowRanges": [{}]
+        },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "b" } ] }
       ],
       "responses": [
         { "row_keys": [ "a", "b" ], "end_with_error": 4 },
@@ -41,7 +46,18 @@
       "name": "fails after all available retries",
       "max_retries": 3,
       "request_options": [
-        {}, {}, {}, {}
+        { "rowKeys": [],
+          "rowRanges": [{}]
+        },
+        { "rowKeys": [],
+          "rowRanges": [{}]
+        },
+        { "rowKeys": [],
+          "rowRanges": [{}]
+        },
+        { "rowKeys": [],
+          "rowRanges": [{}]
+        }
       ],
       "responses": [
         { "end_with_error": 4 },
@@ -60,16 +76,18 @@
 
     {
       "name": "resets the retry counter after a successful read",
-      "max_retries": 3,
+      "max_retries": 4,
       "request_options": [
-        {},
-        { "rowRanges": [ { "startKeyOpen": "a" } ] },
-        { "rowRanges": [ { "startKeyOpen": "a" } ] },
-        { "rowRanges": [ { "startKeyOpen": "a" } ] },
-        { "rowRanges": [ { "startKeyOpen": "a" } ] },
-        { "rowRanges": [ { "startKeyOpen": "b" } ] },
-        { "rowRanges": [ { "startKeyOpen": "b" } ] },
-        { "rowRanges": [ { "startKeyOpen": "b" } ] }
+        { "rowKeys": [],
+          "rowRanges": [{}]
+        },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "a" } ] },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "a" } ] },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "a" } ] },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "a" } ] },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "b" } ] },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "b" } ] },
+        { "rowKeys": [], "rowRanges": [ { "startKeyOpen": "b" } ] }
       ],
       "responses": [
         { "row_keys": [ "a" ], "end_with_error": 4 },
@@ -98,8 +116,8 @@
         }]
       },
       "request_options": [
-        { "rowRanges": [ { "startKeyClosed": "a", "endKeyClosed": "z" } ] },
-        { "rowRanges": [ { "startKeyOpen": "b", "endKeyClosed": "z" } ] }
+        { "rowKeys": [],  "rowRanges": [ { "startKeyClosed": "a", "endKeyClosed": "z" } ] },
+        { "rowKeys": [],  "rowRanges": [ { "startKeyOpen": "b", "endKeyClosed": "z" } ] }
       ],
       "responses": [
         { "row_keys": [ "a", "b" ], "end_with_error": 4 },
@@ -126,11 +144,13 @@
         }]
       },
       "request_options": [
-        { "rowRanges": [
+        { "rowKeys": [], 
+          "rowRanges": [
           { "startKeyClosed": "a", "endKeyClosed": "c" },
           { "startKeyClosed": "x", "endKeyClosed": "z" }
         ] },
-        { "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
+        { "rowKeys": [], 
+          "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
       ],
       "responses": [
         { "row_keys": [ "a", "b", "c" ], "end_with_error": 4 },
@@ -151,8 +171,8 @@
         "keys": ["a", "b", "x"]
       },
       "request_options": [
-        { "rowKeys": [ "a", "b", "x" ] },
-        { "rowKeys": [ "x" ], "rowRanges": [ { "startKeyOpen": "c" } ] }
+        { "rowKeys": [ "a", "b", "x" ], "rowRanges": [] },
+        { "rowKeys": [ "x" ], "rowRanges": [] }
       ],
       "responses": [
         { "row_keys": [ "a", "b", "c" ], "end_with_error": 4 },
@@ -172,8 +192,8 @@
         "limit": 10
       },
       "request_options": [
-        { "rowsLimit": 10 },
-        { "rowsLimit": 8, "rowRanges": [ { "startKeyOpen": "b" } ] }
+        { "rowKeys": [], "rowRanges": [{}], "rowsLimit": 10 },
+        { "rowsLimit": 8, "rowKeys":[], "rowRanges": [ { "startKeyOpen": "b" } ] }
       ],
       "responses": [
         { "row_keys": [ "a", "b" ], "end_with_error": 4 },
@@ -191,7 +211,7 @@
 
     {
       "name": "does the previous 5 things in one giant test case",
-      "max_retries": 3,
+      "max_retries": 4,
       "createReadStream_options": {
         "limit": 10,
         "ranges": [{

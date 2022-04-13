@@ -21,26 +21,37 @@
 'use strict';
 
 function main(parent) {
-  // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_ListAppProfiles_async]
+  // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_ListHotTablets_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance for which a list of app profiles is
-   *  requested. Values are of the form
-   *  `projects/{project}/instances/{instance}`.
-   *  Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
-   *  e.g., `projects/myproject/instances/-`.
+   *  Required. The cluster name to list hot tablets.
+   *  Value is in the following form:
+   *  `projects/{project}/instances/{instance}/clusters/{cluster}`.
    */
   // const parent = 'abc123'
   /**
+   *  The start time to list hot tablets. The hot tablets in the response will
+   *  have start times between the requested start time and end time. Start time
+   *  defaults to Now if it is unset, and end time defaults to Now - 24 hours if
+   *  it is unset. The start time should be less than the end time, and the
+   *  maximum allowed time range between start time and end time is 48 hours.
+   *  Start time and end time should have values between Now and Now - 14 days.
+   */
+  // const startTime = {}
+  /**
+   *  The end time to list hot tablets.
+   */
+  // const endTime = {}
+  /**
    *  Maximum number of results per page.
-   *  A page_size of zero lets the server choose the number of items to return.
-   *  A page_size which is strictly positive will return at most that many items.
-   *  A negative page_size will cause an error.
-   *  Following the first request, subsequent paginated calls are not required
-   *  to pass a page_size. If a page_size is set in subsequent calls, it must
-   *  match the page_size given in the first request.
+   *  A page_size that is empty or zero lets the server choose the number of
+   *  items to return. A page_size which is strictly positive will return at most
+   *  that many items. A negative page_size will cause an error.
+   *  Following the first request, subsequent paginated calls do not need a
+   *  page_size field. If a page_size is set in subsequent calls, it must match
+   *  the page_size given in the first request.
    */
   // const pageSize = 1234
   /**
@@ -54,21 +65,21 @@ function main(parent) {
   // Instantiates a client
   const adminClient = new BigtableInstanceAdminClient();
 
-  async function callListAppProfiles() {
+  async function callListHotTablets() {
     // Construct request
     const request = {
       parent,
     };
 
     // Run request
-    const iterable = await adminClient.listAppProfilesAsync(request);
+    const iterable = await adminClient.listHotTabletsAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }
   }
 
-  callListAppProfiles();
-  // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_ListAppProfiles_async]
+  callListHotTablets();
+  // [END bigtableadmin_v2_generated_BigtableInstanceAdmin_ListHotTablets_async]
 }
 
 process.on('unhandledRejection', err => {
