@@ -44,9 +44,8 @@ import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 
 // See protos/google/rpc/code.proto
-// (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
-const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
-const IDEMPOTENT_RETRYABLE_STATUS_CODES = new Set([4, 14]);
+// (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
+const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
 
@@ -1564,7 +1563,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // If the error is empty but there are still outstanding mutations,
       // it means that there are retryable errors in the mutate response
       // even when the RPC succeeded
-      return !err || IDEMPOTENT_RETRYABLE_STATUS_CODES.has(err.code);
+      return !err || RETRYABLE_STATUS_CODES.has(err.code);
     };
 
     const onBatchResponse = (err: ServiceError | null) => {
@@ -1648,7 +1647,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
               mutationErrorsByEntryIndex.delete(originalEntriesIndex);
               return;
             }
-            if (!IDEMPOTENT_RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
+            if (!RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
               pendingEntryIndices.delete(originalEntriesIndex);
             }
             const errorDetails = entry.status;
