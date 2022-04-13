@@ -2485,8 +2485,8 @@ describe('Bigtable/Table', () => {
           {
             index: 1,
             status: {
-              code: 10,
-              message: 'ABORTED',
+              code: 3,
+              message: 'INVALID_ARGUMENT',
             },
           },
         ];
@@ -2652,14 +2652,14 @@ describe('Bigtable/Table', () => {
     });
 
     describe('rpc level retries', () => {
-      let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
+      let emitters: EventEmitter[]; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
       let requestArgs: RequestOptions[] = [];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let entryRequests: any;
 
       beforeEach(() => {
-        emitters = null; // This needs to be assigned in each test case.
+        emitters = []; // This needs to be assigned in each test case.
 
         requestArgs = [];
         entryRequests = [];
@@ -2682,7 +2682,7 @@ describe('Bigtable/Table', () => {
 
       it('should not retry unretriable errors', done => {
         const unretriableError = new Error('not retryable') as ServiceError;
-        unretriableError.code = 10; // Aborted
+        unretriableError.code = 3; // INVALID_ARGUMENT
         emitters = [
           ((stream: Writable) => {
             stream.emit('error', unretriableError);
