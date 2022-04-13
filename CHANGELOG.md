@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.12.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.11.0...v3.12.0) (2022-04-13)
+
+
+### Features
+
+* enable retries for RESOURCE_EXHAUSTED an simplify error codes ([#1070](https://github.com/googleapis/nodejs-bigtable/issues/1070)) ([6832df7](https://github.com/googleapis/nodejs-bigtable/commit/6832df7e5cd863b9c7f0dc67b0602cb8f579d59f))
+
 ## [3.11.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.10.0...v3.11.0) (2022-04-13)
 
 
