@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.11.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.10.0...v3.11.0) (2022-04-13)
+
+
+### Features
+
+* send retry attempt header to ease debugging ([#1068](https://github.com/googleapis/nodejs-bigtable/issues/1068)) ([37f9b3c](https://github.com/googleapis/nodejs-bigtable/commit/37f9b3c841ce34c2a7f4ab140de86eab584b51b9))
+
 ## [3.10.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.9.4...v3.10.0) (2022-04-06)
 
 
