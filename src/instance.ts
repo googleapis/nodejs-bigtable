@@ -426,6 +426,26 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       reqOpts.cluster!.serveNodes = options.nodes;
     }
 
+    // Set autoscaling features
+    if (
+      options.minServeNodes &&
+      options.maxServeNodes &&
+      options.cpuUtilizationPercent &&
+      reqOpts.cluster
+    ) {
+      reqOpts.cluster.clusterConfig = {
+        clusterAutoscalingConfig: {
+          autoscalingLimits: {
+            minServeNodes: options.minServeNodes,
+            maxServeNodes: options.maxServeNodes,
+          },
+          autoscalingTargets: {
+            cpuUtilizationPercent: options.cpuUtilizationPercent,
+          },
+        },
+      };
+    }
+
     if (options.storage) {
       const storageType = Cluster.getStorageType_(options.storage);
       reqOpts.cluster!.defaultStorageType = storageType;

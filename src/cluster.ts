@@ -76,6 +76,9 @@ export type GetClustersCallback = (
 ) => void;
 export interface SetClusterMetadataOptions {
   nodes: number;
+  minServeNodes?: number;
+  maxServeNodes?: number;
+  cpuUtilizationPercent?: number;
 }
 export type SetClusterMetadataCallback = GenericOperationCallback<
   Operation | null | undefined
@@ -86,6 +89,9 @@ export interface BasicClusterConfig {
   location: string;
   nodes: number;
   storage?: string;
+  minServeNodes?: number;
+  maxServeNodes?: number;
+  cpuUtilizationPercent?: number;
 }
 
 export interface CreateBackupConfig extends ModifiableBackupFields {
@@ -696,13 +702,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof gaxOptionsOrCallback === 'object'
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
-    // This function sets the metadata using location data from a metadata
-    // fetch.
-    const setMetadataWithLocation = () => {
+    // TODO: Don't use type any
+    const setMetadataWithLocation = (clusterClass: any) => {
       const cluster: ICluster = Object.assign(
         {},
         {
           name: this.name,
+          location: clusterClass.metadata.location,
           serveNodes: metadata.nodes,
         },
         metadata
@@ -734,9 +740,15 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       );
     };
     if (this.metadata && this.metadata.location) {
-      setMetadataWithLocation();
+      setMetadataWithLocation(this);
     } else {
-      this.getMetadata(gaxOptions, );
+      this.getMetadata(gaxOptions, (err, res) => {
+        if (err) {
+          callback(err, null);
+        } else {
+          setMetadataWithLocation(this);
+        }
+      });
     }
   }
 }
