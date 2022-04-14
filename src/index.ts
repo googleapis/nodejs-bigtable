@@ -16,7 +16,7 @@ import {replaceProjectIdToken} from '@google-cloud/projectify';
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import * as extend from 'extend';
-import {GoogleAuth, CallOptions} from 'google-gax';
+import {GoogleAuth, CallOptions, grpc as gaxVendoredGrpc} from 'google-gax';
 import * as gax from 'google-gax';
 import * as protos from '../protos/protos';
 
@@ -29,11 +29,11 @@ import {
   CreateInstanceResponse,
   IInstance,
 } from './instance';
-import {shouldRetryRequest} from './decorateStatus';
 import {google} from '../protos/protos';
 import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
+import grpcGcpModule = require('grpc-gcp');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -42,6 +42,9 @@ const streamEvents = require('stream-events');
 const PKG = require('../../package.json');
 
 const {grpc} = new gax.GrpcClient();
+
+// Enable channel pooling
+const grpcGcp = grpcGcpModule(gaxVendoredGrpc);
 
 export interface GetInstancesCallback {
   (
@@ -409,17 +412,6 @@ export class Bigtable {
       }
     }
 
-    options = Object.assign(
-      {
-        libName: 'gccl',
-        libVersion: PKG.version,
-        scopes,
-        'grpc.keepalive_time_ms': 30000,
-        'grpc.keepalive_timeout_ms': 10000,
-      },
-      options
-    );
-
     const defaultBaseUrl = 'bigtable.googleapis.com';
     const defaultAdminBaseUrl = 'bigtableadmin.googleapis.com';
 
@@ -429,52 +421,61 @@ export class Bigtable {
 
     let customEndpointBaseUrl;
     let customEndpointPort;
+    let sslCreds;
 
     if (customEndpoint) {
       const customEndpointParts = customEndpoint.split(':');
       customEndpointBaseUrl = customEndpointParts[0];
-      customEndpointPort = customEndpointParts[1];
+      customEndpointPort = Number(customEndpointParts[1]);
+      sslCreds = grpc.credentials.createInsecure();
     }
 
+    const baseOptions = Object.assign({
+      libName: 'gccl',
+      libVersion: PKG.version,
+      port: customEndpointPort || 443,
+      sslCreds,
+      scopes,
+      'grpc.keepalive_time_ms': 30000,
+      'grpc.keepalive_timeout_ms': 10000,
+    }) as gax.ClientOptions;
+
+    const dataOptions = Object.assign(
+      {},
+      baseOptions,
+      {
+        servicePath: customEndpointBaseUrl || defaultBaseUrl,
+        'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
+        'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
+        'grpc.gcpApiConfig': grpcGcp.createGcpApiConfig({
+          channelPool: {
+            minSize: 2,
+            maxSize: 4,
+            maxConcurrentStreamsLowWatermark: 10,
+            debugHeaderIntervalSecs: 600,
+          },
+        }),
+      },
+      options
+    ) as gax.ClientOptions;
+
+    const adminOptions = Object.assign(
+      {},
+      baseOptions,
+      {
+        servicePath: customEndpointBaseUrl || defaultAdminBaseUrl,
+      },
+      options
+    );
+
     this.options = {
-      BigtableClient: Object.assign(
-        {
-          servicePath: customEndpoint ? customEndpointBaseUrl : defaultBaseUrl,
-          port: customEndpoint ? Number(customEndpointPort) : 443,
-          sslCreds: customEndpoint
-            ? grpc.credentials.createInsecure()
-            : undefined,
-        },
-        options
-      ) as gax.ClientOptions,
-      BigtableInstanceAdminClient: Object.assign(
-        {
-          servicePath: customEndpoint
-            ? customEndpointBaseUrl
-            : defaultAdminBaseUrl,
-          port: customEndpoint ? Number(customEndpointPort) : 443,
-          sslCreds: customEndpoint
-            ? grpc.credentials.createInsecure()
-            : undefined,
-        },
-        options
-      ) as gax.ClientOptions,
-      BigtableTableAdminClient: Object.assign(
-        {
-          servicePath: customEndpoint
-            ? customEndpointBaseUrl
-            : defaultAdminBaseUrl,
-          port: customEndpoint ? Number(customEndpointPort) : 443,
-          sslCreds: customEndpoint
-            ? grpc.credentials.createInsecure()
-            : undefined,
-        },
-        options
-      ) as gax.ClientOptions,
+      BigtableClient: dataOptions,
+      BigtableInstanceAdminClient: adminOptions,
+      BigtableTableAdminClient: adminOptions,
     };
 
     this.api = {};
-    this.auth = new GoogleAuth(options);
+    this.auth = new GoogleAuth(Object.assign({}, baseOptions, options));
     this.projectId = options.projectId || '{{projectId}}';
     this.appProfileId = options.appProfileId;
     this.projectName = `projects/${this.projectId}`;
@@ -842,7 +843,6 @@ export class Bigtable {
           currentRetryAttempt: 0,
           noResponseRetries: 0,
           objectMode: true,
-          shouldRetryFn: shouldRetryRequest,
         },
         config.retryOpts
       );
@@ -884,7 +884,8 @@ export class Bigtable {
   }
 
   /**
-   * Terminate grpc channels and close all the clients.
+   * Close all bigtable clients. New requests will be rejected but it will not
+   * kill connections with pending requests.
    */
   close(): Promise<void[]> {
     const combined = Object.keys(this.api).map(clientType =>

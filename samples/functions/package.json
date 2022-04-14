@@ -13,6 +13,6 @@
   },
   "dependencies": {
     "@google-cloud/bigtable": "^3.0.0",
-    "@google-cloud/functions-framework": "^2.0.0"
+    "@google-cloud/functions-framework": "^3.0.0"
   }
 }

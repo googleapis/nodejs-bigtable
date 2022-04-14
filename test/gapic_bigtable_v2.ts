@@ -281,7 +281,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.mutateRow(request), expectedError);
@@ -404,7 +403,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.checkAndMutateRow(request), expectedError);
@@ -527,7 +525,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParams = '';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.pingAndWarm(request), expectedError);
@@ -651,7 +648,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParams = '';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.readModifyWriteRow(request), expectedError);

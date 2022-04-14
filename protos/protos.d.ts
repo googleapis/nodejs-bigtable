@@ -325,6 +325,20 @@ export namespace google {
                      * @returns Promise
                      */
                     public testIamPermissions(request: google.iam.v1.ITestIamPermissionsRequest): Promise<google.iam.v1.TestIamPermissionsResponse>;
+
+                    /**
+                     * Calls ListHotTablets.
+                     * @param request ListHotTabletsRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and ListHotTabletsResponse
+                     */
+                    public listHotTablets(request: google.bigtable.admin.v2.IListHotTabletsRequest, callback: google.bigtable.admin.v2.BigtableInstanceAdmin.ListHotTabletsCallback): void;
+
+                    /**
+                     * Calls ListHotTablets.
+                     * @param request ListHotTabletsRequest message or plain object
+                     * @returns Promise
+                     */
+                    public listHotTablets(request: google.bigtable.admin.v2.IListHotTabletsRequest): Promise<google.bigtable.admin.v2.ListHotTabletsResponse>;
                 }
 
                 namespace BigtableInstanceAdmin {
@@ -468,6 +482,13 @@ export namespace google {
                      * @param [response] TestIamPermissionsResponse
                      */
                     type TestIamPermissionsCallback = (error: (Error|null), response?: google.iam.v1.TestIamPermissionsResponse) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listHotTablets}.
+                     * @param error Error, if any
+                     * @param [response] ListHotTabletsResponse
+                     */
+                    type ListHotTabletsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListHotTabletsResponse) => void;
                 }
 
                 /** Properties of a CreateInstanceRequest. */
@@ -2822,6 +2843,216 @@ export namespace google {
                     public toJSON(): { [k: string]: any };
                 }
 
+                /** Properties of a ListHotTabletsRequest. */
+                interface IListHotTabletsRequest {
+
+                    /** ListHotTabletsRequest parent */
+                    parent?: (string|null);
+
+                    /** ListHotTabletsRequest startTime */
+                    startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** ListHotTabletsRequest endTime */
+                    endTime?: (google.protobuf.ITimestamp|null);
+
+                    /** ListHotTabletsRequest pageSize */
+                    pageSize?: (number|null);
+
+                    /** ListHotTabletsRequest pageToken */
+                    pageToken?: (string|null);
+                }
+
+                /** Represents a ListHotTabletsRequest. */
+                class ListHotTabletsRequest implements IListHotTabletsRequest {
+
+                    /**
+                     * Constructs a new ListHotTabletsRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListHotTabletsRequest);
+
+                    /** ListHotTabletsRequest parent. */
+                    public parent: string;
+
+                    /** ListHotTabletsRequest startTime. */
+                    public startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** ListHotTabletsRequest endTime. */
+                    public endTime?: (google.protobuf.ITimestamp|null);
+
+                    /** ListHotTabletsRequest pageSize. */
+                    public pageSize: number;
+
+                    /** ListHotTabletsRequest pageToken. */
+                    public pageToken: string;
+
+                    /**
+                     * Creates a new ListHotTabletsRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListHotTabletsRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListHotTabletsRequest): google.bigtable.admin.v2.ListHotTabletsRequest;
+
+                    /**
+                     * Encodes the specified ListHotTabletsRequest message. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsRequest.verify|verify} messages.
+                     * @param message ListHotTabletsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListHotTabletsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListHotTabletsRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsRequest.verify|verify} messages.
+                     * @param message ListHotTabletsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListHotTabletsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListHotTabletsRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListHotTabletsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListHotTabletsRequest;
+
+                    /**
+                     * Decodes a ListHotTabletsRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListHotTabletsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListHotTabletsRequest;
+
+                    /**
+                     * Verifies a ListHotTabletsRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListHotTabletsRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListHotTabletsRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListHotTabletsRequest;
+
+                    /**
+                     * Creates a plain object from a ListHotTabletsRequest message. Also converts values to other types if specified.
+                     * @param message ListHotTabletsRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListHotTabletsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListHotTabletsRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of a ListHotTabletsResponse. */
+                interface IListHotTabletsResponse {
+
+                    /** ListHotTabletsResponse hotTablets */
+                    hotTablets?: (google.bigtable.admin.v2.IHotTablet[]|null);
+
+                    /** ListHotTabletsResponse nextPageToken */
+                    nextPageToken?: (string|null);
+                }
+
+                /** Represents a ListHotTabletsResponse. */
+                class ListHotTabletsResponse implements IListHotTabletsResponse {
+
+                    /**
+                     * Constructs a new ListHotTabletsResponse.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListHotTabletsResponse);
+
+                    /** ListHotTabletsResponse hotTablets. */
+                    public hotTablets: google.bigtable.admin.v2.IHotTablet[];
+
+                    /** ListHotTabletsResponse nextPageToken. */
+                    public nextPageToken: string;
+
+                    /**
+                     * Creates a new ListHotTabletsResponse instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListHotTabletsResponse instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListHotTabletsResponse): google.bigtable.admin.v2.ListHotTabletsResponse;
+
+                    /**
+                     * Encodes the specified ListHotTabletsResponse message. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsResponse.verify|verify} messages.
+                     * @param message ListHotTabletsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListHotTabletsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListHotTabletsResponse message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsResponse.verify|verify} messages.
+                     * @param message ListHotTabletsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListHotTabletsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListHotTabletsResponse message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListHotTabletsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListHotTabletsResponse;
+
+                    /**
+                     * Decodes a ListHotTabletsResponse message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListHotTabletsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListHotTabletsResponse;
+
+                    /**
+                     * Verifies a ListHotTabletsResponse message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListHotTabletsResponse message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListHotTabletsResponse
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListHotTabletsResponse;
+
+                    /**
+                     * Creates a plain object from a ListHotTabletsResponse message. Also converts values to other types if specified.
+                     * @param message ListHotTabletsResponse
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListHotTabletsResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListHotTabletsResponse to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
                 /** Properties of an Instance. */
                 interface IInstance {
 
@@ -3866,6 +4097,132 @@ export namespace google {
                          */
                         public toJSON(): { [k: string]: any };
                     }
+                }
+
+                /** Properties of a HotTablet. */
+                interface IHotTablet {
+
+                    /** HotTablet name */
+                    name?: (string|null);
+
+                    /** HotTablet tableName */
+                    tableName?: (string|null);
+
+                    /** HotTablet startTime */
+                    startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** HotTablet endTime */
+                    endTime?: (google.protobuf.ITimestamp|null);
+
+                    /** HotTablet startKey */
+                    startKey?: (string|null);
+
+                    /** HotTablet endKey */
+                    endKey?: (string|null);
+
+                    /** HotTablet nodeCpuUsagePercent */
+                    nodeCpuUsagePercent?: (number|null);
+                }
+
+                /** Represents a HotTablet. */
+                class HotTablet implements IHotTablet {
+
+                    /**
+                     * Constructs a new HotTablet.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IHotTablet);
+
+                    /** HotTablet name. */
+                    public name: string;
+
+                    /** HotTablet tableName. */
+                    public tableName: string;
+
+                    /** HotTablet startTime. */
+                    public startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** HotTablet endTime. */
+                    public endTime?: (google.protobuf.ITimestamp|null);
+
+                    /** HotTablet startKey. */
+                    public startKey: string;
+
+                    /** HotTablet endKey. */
+                    public endKey: string;
+
+                    /** HotTablet nodeCpuUsagePercent. */
+                    public nodeCpuUsagePercent: number;
+
+                    /**
+                     * Creates a new HotTablet instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns HotTablet instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IHotTablet): google.bigtable.admin.v2.HotTablet;
+
+                    /**
+                     * Encodes the specified HotTablet message. Does not implicitly {@link google.bigtable.admin.v2.HotTablet.verify|verify} messages.
+                     * @param message HotTablet message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IHotTablet, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified HotTablet message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.HotTablet.verify|verify} messages.
+                     * @param message HotTablet message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IHotTablet, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a HotTablet message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns HotTablet
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.HotTablet;
+
+                    /**
+                     * Decodes a HotTablet message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns HotTablet
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.HotTablet;
+
+                    /**
+                     * Verifies a HotTablet message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a HotTablet message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns HotTablet
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.HotTablet;
+
+                    /**
+                     * Creates a plain object from a HotTablet message. Also converts values to other types if specified.
+                     * @param message HotTablet
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.HotTablet, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this HotTablet to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
                 }
 
                 /** StorageType enum. */

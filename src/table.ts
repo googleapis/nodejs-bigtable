@@ -15,7 +15,7 @@
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
-import {decorateStatus} from './decorateStatus';
+import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -44,10 +44,16 @@ import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 
 // See protos/google/rpc/code.proto
-// (4=DEADLINE_EXCEEDED, 10=ABORTED, 14=UNAVAILABLE)
-const RETRYABLE_STATUS_CODES = new Set([4, 10, 14]);
+// (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
+const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
+
+const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
+  initialRetryDelayMillis: 10,
+  retryDelayMultiplier: 2,
+  maxRetryDelayMillis: 60000,
+};
 
 /**
  * @typedef {object} Policy
@@ -728,13 +734,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
   createReadStream(opts?: GetRowsOptions) {
     const options = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
-    let activeRequestStream: AbortableDuplex;
-    let rowKeys: string[] | null;
+    let activeRequestStream: AbortableDuplex | null;
+    let rowKeys: string[];
     const ranges = options.ranges || [];
     let filter: {} | null;
-    let rowsLimit: number;
+    const rowsLimit = options.limit || 0;
+    const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
+    let numConsecutiveErrors = 0;
     let numRequestsMade = 0;
+    let retryTimer: NodeJS.Timeout | null;
+
+    rowKeys = options.keys || [];
 
     if (options.start || options.end) {
       if (options.ranges || options.prefix || options.prefixes) {
@@ -746,10 +757,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         start: options.start!,
         end: options.end!,
       });
-    }
-
-    if (options.keys) {
-      rowKeys = options.keys;
     }
 
     if (options.prefix) {
@@ -772,12 +779,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       });
     }
 
-    if (options.filter) {
-      filter = Filter.parse(options.filter);
+    // If rowKeys and ranges are both empty, the request is a full table scan.
+    // Add an empty range to simplify the resumption logic.
+    if (rowKeys.length === 0 && ranges.length === 0) {
+      ranges.push({});
     }
 
-    if (options.limit) {
-      rowsLimit = options.limit;
+    if (options.filter) {
+      filter = Filter.parse(options.filter);
     }
 
     const userStream = new PassThrough({objectMode: true});
@@ -787,6 +796,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
       return end();
     };
 
@@ -794,6 +806,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     const makeNewRequest = () => {
+      // Avoid cancelling an expired timer if user
+      // cancelled the stream in the middle of a retry
+      retryTimer = null;
+
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
@@ -804,96 +820,107 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       } as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
-        currentRetryAttempt: numRequestsMade,
+        currentRetryAttempt: numConsecutiveErrors,
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: (_: any) => {
+          return false;
+        },
       };
 
       if (lastRowKey) {
+        // TODO: lhs and rhs type shouldn't be string, it could be
+        // string, number, Uint8Array, boolean. Fix the type
+        // and clean up the casting.
         const lessThan = (lhs: string, rhs: string) => {
           const lhsBytes = Mutation.convertToBytes(lhs);
           const rhsBytes = Mutation.convertToBytes(rhs);
           return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
         };
         const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
-        const greaterThanOrEqualTo = (lhs: string, rhs: string) =>
-          !lessThan(rhs, lhs);
+        const lessThanOrEqualTo = (lhs: string, rhs: string) =>
+          !greaterThan(lhs, rhs);
 
-        if (ranges.length === 0) {
-          ranges.push({
-            start: {
-              value: lastRowKey,
-              inclusive: false,
-            },
-          });
-        } else {
-          // Readjust and/or remove ranges based on previous valid row reads.
-
-          // Iterate backward since items may need to be removed.
-          for (let index = ranges.length - 1; index >= 0; index--) {
-            const range = ranges[index];
-            const startValue = is.object(range.start)
-              ? (range.start as BoundData).value
-              : range.start;
-            const endValue = is.object(range.end)
-              ? (range.end as BoundData).value
-              : range.end;
-            const isWithinStart =
-              !startValue ||
-              greaterThanOrEqualTo(startValue as string, lastRowKey as string);
-            const isWithinEnd =
-              !endValue || lessThan(lastRowKey as string, endValue as string);
-            if (isWithinStart) {
-              if (isWithinEnd) {
-                // The lastRowKey is within this range, adjust the start
-                // value.
-                range.start = {
-                  value: lastRowKey,
-                  inclusive: false,
-                };
-              } else {
-                // The lastRowKey is past this range, remove this range.
-                ranges.splice(index, 1);
-              }
+        // Readjust and/or remove ranges based on previous valid row reads.
+        // Iterate backward since items may need to be removed.
+        for (let index = ranges.length - 1; index >= 0; index--) {
+          const range = ranges[index];
+          const startValue = is.object(range.start)
+            ? (range.start as BoundData).value
+            : range.start;
+          const endValue = is.object(range.end)
+            ? (range.end as BoundData).value
+            : range.end;
+          const startKeyIsRead =
+            !startValue ||
+            lessThanOrEqualTo(startValue as string, lastRowKey as string);
+          const endKeyIsNotRead =
+            !endValue ||
+            (endValue as Buffer).length === 0 ||
+            lessThan(lastRowKey as string, endValue as string);
+          if (startKeyIsRead) {
+            if (endKeyIsNotRead) {
+              // EndKey is not read, reset the range to start from lastRowKey open
+              range.start = {
+                value: lastRowKey,
+                inclusive: false,
+              };
+            } else {
+              // EndKey is read, remove this range
+              ranges.splice(index, 1);
             }
           }
         }
 
         // Remove rowKeys already read.
-        if (rowKeys) {
-          rowKeys = rowKeys.filter(rowKey =>
-            greaterThan(rowKey, lastRowKey as string)
-          );
-          if (rowKeys.length === 0) {
-            rowKeys = null;
-          }
+        rowKeys = rowKeys.filter(rowKey =>
+          greaterThan(rowKey, lastRowKey as string)
+        );
+
+        // If there was a row limit in the original request and
+        // we've already read all the rows, end the stream and
+        // do not retry.
+        if (hasLimit && rowsLimit === rowsRead) {
+          userStream.end();
+          return;
+        }
+        // If all the row keys and ranges are read, end the stream
+        // and do not retry.
+        if (rowKeys.length === 0 && ranges.length === 0) {
+          userStream.end();
+          return;
         }
       }
-      if (rowKeys || ranges.length) {
-        reqOpts.rows = {};
 
-        if (rowKeys) {
-          reqOpts.rows.rowKeys = rowKeys.map(
-            Mutation.convertToBytes
-          ) as {} as Uint8Array[];
-        }
+      // Create the new reqOpts
+      reqOpts.rows = {};
 
-        if (ranges.length) {
-          reqOpts.rows.rowRanges = ranges.map(range =>
-            Filter.createRange(
-              range.start as BoundData,
-              range.end as BoundData,
-              'Key'
-            )
-          );
-        }
-      }
+      // TODO: preprocess all the keys and ranges to Bytes
+      reqOpts.rows.rowKeys = rowKeys.map(
+        Mutation.convertToBytes
+      ) as {} as Uint8Array[];
+
+      reqOpts.rows.rowRanges = ranges.map(range =>
+        Filter.createRange(
+          range.start as BoundData,
+          range.end as BoundData,
+          'Key'
+        )
+      );
 
       if (filter) {
         reqOpts.filter = filter;
       }
 
-      if (rowsLimit) {
+      if (hasLimit) {
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
+
+      options.gaxOptions = populateAttemptHeader(
+        numRequestsMade,
+        options.gaxOptions
+      );
 
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
@@ -914,7 +941,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           ) {
             return next();
           }
-          numRequestsMade = 0;
           rowsRead++;
           const row = this.row(rowData.key);
           row.data = rowData.data;
@@ -925,25 +951,56 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
-      rowStream.on('error', (error: ServiceError) => {
-        if (IGNORED_STATUS_CODES.has(error.code)) {
-          // We ignore the `cancelled` "error", since we are the ones who cause
-          // it when the user calls `.abort()`.
-          userStream.end();
-          return;
+      // Retry on "received rst stream" errors
+      const isRstStreamError = (error: ServiceError): boolean => {
+        if (error.code === 13 && error.message) {
+          const error_message = (error.message || '').toLowerCase();
+          return (
+            error.code === 13 &&
+            (error_message.includes('rst_stream') ||
+              error_message.includes('rst stream'))
+          );
         }
-        rowStream.unpipe(userStream);
-        if (
-          numRequestsMade <= maxRetries &&
-          RETRYABLE_STATUS_CODES.has(error.code)
-        ) {
-          makeNewRequest();
-        } else {
-          userStream.emit('error', error);
-        }
-      });
+        return false;
+      };
+
+      rowStream
+        .on('error', (error: ServiceError) => {
+          rowStream.unpipe(userStream);
+          activeRequestStream = null;
+          if (IGNORED_STATUS_CODES.has(error.code)) {
+            // We ignore the `cancelled` "error", since we are the ones who cause
+            // it when the user calls `.abort()`.
+            userStream.end();
+            return;
+          }
+          numConsecutiveErrors++;
+          numRequestsMade++;
+          if (
+            numConsecutiveErrors <= maxRetries &&
+            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+          ) {
+            const backOffSettings =
+              options.gaxOptions?.retry?.backoffSettings ||
+              DEFAULT_BACKOFF_SETTINGS;
+            const nextRetryDelay = getNextDelay(
+              numConsecutiveErrors,
+              backOffSettings
+            );
+            retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
+          } else {
+            userStream.emit('error', error);
+          }
+        })
+        .on('data', _ => {
+          // Reset error count after a successful read so the backoff
+          // time won't keep increasing when as stream had multiple errors
+          numConsecutiveErrors = 0;
+        })
+        .on('end', () => {
+          activeRequestStream = null;
+        });
       rowStream.pipe(userStream);
-      numRequestsMade++;
     };
 
     makeNewRequest();
@@ -1498,23 +1555,43 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
     const mutationErrorsByEntryIndex = new Map();
 
-    const onBatchResponse = (
-      err: ServiceError | PartialFailureError | null
-    ) => {
-      // TODO: enable retries when the entire RPC fails
-      if (err) {
-        // The error happened before a request was even made, don't retry.
+    const isRetryable = (err: ServiceError | null) => {
+      // Don't retry if there are no more entries or retry attempts
+      if (pendingEntryIndices.size === 0 || numRequestsMade >= maxRetries + 1) {
+        return false;
+      }
+      // If the error is empty but there are still outstanding mutations,
+      // it means that there are retryable errors in the mutate response
+      // even when the RPC succeeded
+      return !err || RETRYABLE_STATUS_CODES.has(err.code);
+    };
+
+    const onBatchResponse = (err: ServiceError | null) => {
+      // Return if the error happened before a request was made
+      if (numRequestsMade === 0) {
         callback(err);
         return;
       }
-      if (pendingEntryIndices.size !== 0 && numRequestsMade <= maxRetries) {
-        makeNextBatchRequest();
+
+      if (isRetryable(err)) {
+        const backOffSettings =
+          options.gaxOptions?.retry?.backoffSettings ||
+          DEFAULT_BACKOFF_SETTINGS;
+        const nextDelay = getNextDelay(numRequestsMade, backOffSettings);
+        setTimeout(makeNextBatchRequest, nextDelay);
         return;
+      }
+
+      // If there's no more pending mutations, set the error
+      // to null
+      if (pendingEntryIndices.size === 0) {
+        err = null;
       }
 
       if (mutationErrorsByEntryIndex.size !== 0) {
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        err = new PartialFailureError(mutationErrors);
+        callback(new PartialFailureError(mutationErrors, err));
+        return;
       }
 
       callback(err);
@@ -1535,7 +1612,18 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
+        // Handling retries in this client. Specify the retry options to
+        // make sure nothing is retried in retry-request.
+        noResponseRetries: 0,
+        shouldRetryFn: (_: any) => {
+          return false;
+        },
       };
+
+      options.gaxOptions = populateAttemptHeader(
+        numRequestsMade,
+        options.gaxOptions
+      );
 
       this.bigtable
         .request<google.bigtable.v2.MutateRowsResponse>({
@@ -1546,13 +1634,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           retryOpts,
         })
         .on('error', (err: ServiceError) => {
-          // TODO: this check doesn't actually do anything, onBatchResponse
-          // currently doesn't retry RPC errors, only entry failures
-          if (numRequestsMade === 0) {
-            callback(err); // Likely a "projectId not detected" error.
-            return;
-          }
-
           onBatchResponse(err);
         })
         .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
@@ -1569,10 +1650,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             if (!RETRYABLE_STATUS_CODES.has(entry.status!.code!)) {
               pendingEntryIndices.delete(originalEntriesIndex);
             }
-            const status = decorateStatus(entry.status);
+            const errorDetails = entry.status;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (status as any).entry = originalEntry;
-            mutationErrorsByEntryIndex.set(originalEntriesIndex, status);
+            (errorDetails as any).entry = originalEntry;
+            mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
           });
         })
         .on('end', onBatchResponse);
@@ -1991,6 +2072,25 @@ promisifyAll(Table, {
   exclude: ['family', 'row'],
 });
 
+function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
+  // 0 - 100 ms jitter
+  const jitter = Math.floor(Math.random() * 100);
+  const calculatedNextRetryDelay =
+    config.initialRetryDelayMillis *
+      Math.pow(config.retryDelayMultiplier, numConsecutiveErrors) +
+    jitter;
+
+  return Math.min(calculatedNextRetryDelay, config.maxRetryDelayMillis);
+}
+
+function populateAttemptHeader(attempt: number, gaxOpts?: CallOptions) {
+  gaxOpts = gaxOpts || {};
+  gaxOpts.otherArgs = gaxOpts.otherArgs || {};
+  gaxOpts.otherArgs.headers = gaxOpts.otherArgs.headers || {};
+  gaxOpts.otherArgs.headers['bigtable-attempt'] = attempt;
+  return gaxOpts;
+}
+
 export interface GoogleInnerError {
   reason?: string;
   message?: string;
@@ -1998,7 +2098,7 @@ export interface GoogleInnerError {
 
 export class PartialFailureError extends Error {
   errors?: GoogleInnerError[];
-  constructor(errors: GoogleInnerError[]) {
+  constructor(errors: GoogleInnerError[], rpcError?: ServiceError | null) {
     super();
     this.errors = errors;
     this.name = 'PartialFailureError';
@@ -2011,5 +2111,8 @@ export class PartialFailureError extends Error {
       messages.push('\n');
     }
     this.message = messages.join('\n');
+    if (rpcError) {
+      this.message += 'Request failed with: ' + rpcError.message;
+    }
   }
 }

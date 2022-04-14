@@ -362,7 +362,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
       request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.createTable(request), expectedError);
@@ -486,7 +485,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getTable(request), expectedError);
@@ -613,7 +611,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteTable(request), expectedError);
@@ -741,7 +738,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.modifyColumnFamilies(request), expectedError);
@@ -868,7 +864,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.dropRowRange(request), expectedError);
@@ -999,7 +994,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(
@@ -1129,7 +1123,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.checkConsistency(request), expectedError);
@@ -1256,7 +1249,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getSnapshot(request), expectedError);
@@ -1383,7 +1375,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteSnapshot(request), expectedError);
@@ -1507,7 +1498,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getBackup(request), expectedError);
@@ -1638,7 +1628,6 @@ describe('v2.BigtableTableAdminClient', () => {
       );
       request.backup = {};
       request.backup.name = '';
-      const expectedHeaderRequestParams = 'backup.name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.updateBackup(request), expectedError);
@@ -1765,7 +1754,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
       request.name = '';
-      const expectedHeaderRequestParams = 'name=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteBackup(request), expectedError);
@@ -1892,7 +1880,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
       request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getIamPolicy(request), expectedError);
@@ -2019,7 +2006,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
       request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.setIamPolicy(request), expectedError);
@@ -2147,7 +2133,6 @@ describe('v2.BigtableTableAdminClient', () => {
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
       request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.testIamPermissions(request), expectedError);
@@ -3970,6 +3955,82 @@ describe('v2.BigtableTableAdminClient', () => {
         assert.strictEqual(result, 'clusterValue');
         assert(
           (client.pathTemplates.clusterPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
+    describe('hotTablet', () => {
+      const fakePath = '/rendered/path/hotTablet';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+        cluster: 'clusterValue',
+        hot_tablet: 'hotTabletValue',
+      };
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      client.pathTemplates.hotTabletPathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.hotTabletPathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
+
+      it('hotTabletPath', () => {
+        const result = client.hotTabletPath(
+          'projectValue',
+          'instanceValue',
+          'clusterValue',
+          'hotTabletValue'
+        );
+        assert.strictEqual(result, fakePath);
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.render as SinonStub)
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromHotTabletName', () => {
+        const result = client.matchProjectFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromHotTabletName', () => {
+        const result = client.matchInstanceFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchClusterFromHotTabletName', () => {
+        const result = client.matchClusterFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'clusterValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchHotTabletFromHotTabletName', () => {
+        const result = client.matchHotTabletFromHotTabletName(fakePath);
+        assert.strictEqual(result, 'hotTabletValue');
+        assert(
+          (client.pathTemplates.hotTabletPathTemplate.match as SinonStub)
             .getCall(-1)
             .calledWith(fakePath)
         );
