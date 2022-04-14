@@ -22,6 +22,7 @@ const pumpify = require('pumpify');
 import {google} from '../protos/protos';
 import {Bigtable} from '.';
 import {Instance} from './instance';
+import {ClusterUtils} from './utils/cluster';
 
 import {
   Backup,
@@ -75,7 +76,7 @@ export type GetClustersCallback = (
   apiResponse?: google.bigtable.admin.v2.IListClustersResponse
 ) => void;
 export interface SetClusterMetadataOptions {
-  nodes: number;
+  nodes?: number;
   minServeNodes?: number;
   maxServeNodes?: number;
   cpuUtilizationPercent?: number;
@@ -702,31 +703,12 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof gaxOptionsOrCallback === 'object'
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
-    // TODO: Don't use type any
-    const setMetadataWithLocation = (clusterClass: any) => {
-      const cluster: ICluster = Object.assign(
-        {},
-        {
-          name: this.name,
-          location: clusterClass.metadata.location,
-          serveNodes: metadata.nodes,
-        },
-        metadata
+    const setMetadataWithLocation = (location: string, name: string) => {
+      const reqOpts = ClusterUtils.getRequestFromMetadata(
+        metadata,
+        location,
+        name
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      delete (cluster as any).nodes;
-      const reqOpts = {
-        cluster,
-        updateMask: {
-          paths: [
-            'serve_nodes',
-            'cluster_config.cluster_autoscaling_config.autoscaling_limits.min_serve_nodes',
-            'cluster_config.cluster_autoscaling_config.autoscaling_limits.max_serve_nodes',
-            'cluster_config.cluster_autoscaling_config.autoscaling_targets.cpu_utilization_percent',
-          ],
-        },
-      };
-
       this.bigtable.request<Operation>(
         {
           client: 'BigtableInstanceAdminClient',
@@ -740,13 +722,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       );
     };
     if (this.metadata && this.metadata.location) {
-      setMetadataWithLocation(this);
+      setMetadataWithLocation(this.metadata.location, this.name);
     } else {
       this.getMetadata(gaxOptions, (err, res) => {
-        if (err) {
+        if (err || !this.metadata || !this.metadata.location) {
           callback(err, null);
         } else {
-          setMetadataWithLocation(this);
+          setMetadataWithLocation(this.metadata.location, this.name);
         }
       });
     }

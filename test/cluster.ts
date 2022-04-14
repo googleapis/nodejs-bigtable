@@ -19,6 +19,7 @@ import * as proxyquire from 'proxyquire';
 import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
 import {PreciseDate} from '@google-cloud/precise-date';
+import {GetClusterMetadataCallback} from '../src';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -954,6 +955,7 @@ describe('Bigtable/Cluster', () => {
   });
 
   describe('setMetadata', () => {
+    // TODO: Put getMetadata here so that it is mocked out for all four tests
     it('should provide the proper request options', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any, callback: Function) => {
@@ -1019,13 +1021,30 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata(options, gaxOptions, assert.ifError);
     });
 
+    // eslint-disable-next-line no-restricted-properties
     it('should execute callback with all arguments', done => {
       const args = [{}, {}];
 
       cluster.bigtable.request = (config: {}, callback: Function) => {
         callback(...args);
       };
-
+      const name =
+        'projects/{{projectId}}/instances/fake-instance/clusters/fake-cluster';
+      const metadata = {
+        location: 'projects/{{projectId}}/locations/us-east4-b',
+        name,
+        serveNodes: 1,
+      };
+      cluster.name = name;
+      cluster.metadata = metadata;
+      cluster.getMetadata = (
+        gaxOptionsOrCallback?: CallOptions | GetClusterMetadataCallback,
+        cb?: GetClusterMetadataCallback
+      ) => {
+        if (cb) {
+          cb(null, metadata);
+        }
+      };
       cluster.setMetadata({}, (...argsies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
