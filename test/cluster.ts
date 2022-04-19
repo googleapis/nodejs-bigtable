@@ -20,6 +20,7 @@ import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
 import {PreciseDate} from '@google-cloud/precise-date';
 import {GetClusterMetadataCallback} from '../src';
+import {ClusterUtils} from '../src/utils/cluster';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -955,13 +956,19 @@ describe('Bigtable/Cluster', () => {
   });
 
   describe('setMetadata', () => {
-    // TODO: Put getMetadata here so that it is mocked out for all four tests
+    beforeEach(() => {
+      const metadata = {
+        location: 'projects/{{projectId}}/locations/us-east4-b',
+      };
+      cluster.metadata = metadata;
+    });
+
     it('should provide the proper request options', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
-        assert.strictEqual(config.method, 'updateCluster');
-        assert.strictEqual(config.reqOpts.name, CLUSTER_NAME);
+        assert.strictEqual(config.method, 'partialUpdateCluster');
+        assert.strictEqual(config.reqOpts.cluster.name, CLUSTER_NAME);
         callback(); // done()
       };
 
@@ -975,7 +982,7 @@ describe('Bigtable/Cluster', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
-        assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
+        assert.strictEqual(config.reqOpts.cluster.serveNodes, options.nodes);
         done();
       };
 
@@ -989,12 +996,11 @@ describe('Bigtable/Cluster', () => {
         defaultStorageType: 'exellent_type',
       };
 
-      const expectedReqOpts = Object.assign(
-        {},
-        {name: CLUSTER_NAME, serveNodes: options.nodes},
-        options
+      const expectedReqOpts = ClusterUtils.getRequestFromMetadata(
+        options,
+        options.location,
+        CLUSTER_NAME
       );
-      delete expectedReqOpts.nodes;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
@@ -1013,7 +1019,7 @@ describe('Bigtable/Cluster', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
-        assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
+        assert.strictEqual(config.reqOpts.cluster.serveNodes, options.nodes);
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -1024,27 +1030,12 @@ describe('Bigtable/Cluster', () => {
     // eslint-disable-next-line no-restricted-properties
     it('should execute callback with all arguments', done => {
       const args = [{}, {}];
-
       cluster.bigtable.request = (config: {}, callback: Function) => {
         callback(...args);
       };
       const name =
         'projects/{{projectId}}/instances/fake-instance/clusters/fake-cluster';
-      const metadata = {
-        location: 'projects/{{projectId}}/locations/us-east4-b',
-        name,
-        serveNodes: 1,
-      };
       cluster.name = name;
-      cluster.metadata = metadata;
-      cluster.getMetadata = (
-        gaxOptionsOrCallback?: CallOptions | GetClusterMetadataCallback,
-        cb?: GetClusterMetadataCallback
-      ) => {
-        if (cb) {
-          cb(null, metadata);
-        }
-      };
       cluster.setMetadata({}, (...argsies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
