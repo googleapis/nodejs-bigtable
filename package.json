@@ -54,7 +54,7 @@
     "escape-string-regexp": "^4.0.0",
     "extend": "^3.0.2",
     "google-gax": "^2.29.5",
-    "grpc-gcp": "0.4.1",
+    "grpc-gcp": "^0.4.2",
     "is": "^3.0.1",
     "is-utf8": "^0.2.1",
     "lodash.snakecase": "^4.1.1",
