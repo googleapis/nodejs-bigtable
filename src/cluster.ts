@@ -88,7 +88,7 @@ export interface BasicClusterConfig {
   encryption?: google.bigtable.admin.v2.Cluster.IEncryptionConfig;
   key?: string;
   location: string;
-  nodes: number;
+  nodes?: number;
   storage?: string;
   minServeNodes?: number;
   maxServeNodes?: number;

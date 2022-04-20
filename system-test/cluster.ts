@@ -14,14 +14,78 @@
 
 import {describe, it, before, after} from 'mocha';
 import {generateId} from './common';
-import {AppProfileOptions, Bigtable, Instance} from '../src';
-import {AppProfile} from '../src';
+import {Bigtable, ClusterInfo, Instance} from '../src';
 import assert = require('assert');
 
 describe('Cluster', () => {
   const bigtable = new Bigtable();
 
-  describe('📦 Create a cluster', () => {
-    let instance: Instance;
+  async function getNewInstance(clusters: ClusterInfo[]): Promise<Instance> {
+    const instanceId: string = generateId('instance');
+    const instance: Instance = bigtable.instance(instanceId);
+    const [, operation] = await instance.create({
+      clusters,
+      labels: {
+        time_created: Date.now(),
+      },
+    });
+    await operation.promise();
+    return instance;
+  }
+
+  describe('Create cluster', () => {
+    it('📦 Create an instance with clusters for manual scaling', async () => {
+      const clusterId = generateId('cluster');
+      const nodes = 2;
+      const instance: Instance = await getNewInstance([
+        {
+          id: clusterId,
+          location: 'us-east1-c',
+          nodes,
+        },
+      ]);
+      const cluster = instance.cluster(clusterId);
+      const metadata = await cluster.getMetadata({});
+      assert.strictEqual(metadata[0].serveNodes, nodes);
+      await instance.delete();
+    });
+    // it('📦 Create an instance and then create clusters for manual scaling', () => {
+    //   const clusterId = generateId('cluster');
+    //   const nodes = 2;
+    //   const instance: Instance = await getNewInstance([
+    //     {
+    //       id: clusterId,
+    //       location: 'us-east1-c',
+    //       nodes,
+    //     },
+    //   ]);
+    //   const cluster = instance.cluster(clusterId);
+    //   const metadata = await cluster.getMetadata({});
+    //   assert.strictEqual(metadata[0].serveNodes, nodes);
+    //   await instance.delete();
+    // });
+    it.only('📦 Create an instance with clusters for automatic scaling', async () => {
+      const clusterId = generateId('cluster');
+      const minServeNodes = 2;
+      const maxServeNodes = 4;
+      const cpuUtilizationPercent = 50;
+      const instance: Instance = await getNewInstance([
+        {
+          id: clusterId,
+          location: 'us-east1-c',
+          minServeNodes,
+          maxServeNodes,
+          cpuUtilizationPercent,
+        },
+      ]);
+      const cluster = instance.cluster(clusterId);
+      const metadata = await cluster.getMetadata({});
+      // assert.strictEqual(metadata[0].serveNodes, nodes);
+      await instance.delete();
+    });
+    // describe('📦 Create an instance with clusters for manual scaling', () => {
+    //   let instance: Instance;
+    //   await instance.delete();
+    // });
   });
 });

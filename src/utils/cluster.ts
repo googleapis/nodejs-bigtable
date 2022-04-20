@@ -1,45 +1,13 @@
 import * as protos from '../../protos/protos';
-import {ICluster, SetClusterMetadataOptions} from '../cluster';
+import {
+  BasicClusterConfig,
+  ICluster,
+  SetClusterMetadataOptions,
+} from '../cluster';
+import {google} from '../../protos/protos';
 
 export class ClusterUtils {
-  static getRequestFromMetadata(
-    metadata: SetClusterMetadataOptions,
-    location: string,
-    name: string
-  ): protos.google.bigtable.admin.v2.IPartialUpdateClusterRequest {
-    let clusterConfig;
-    if (
-      metadata.cpuUtilizationPercent ||
-      metadata.minServeNodes ||
-      metadata.maxServeNodes
-    ) {
-      clusterConfig = {
-        clusterAutoscalingConfig: {
-          autoscalingTargets: {
-            cpuUtilizationPercent: metadata.cpuUtilizationPercent,
-          },
-          autoscalingLimits: {
-            minServeNodes: metadata.minServeNodes,
-            maxServeNodes: metadata.maxServeNodes,
-          },
-        },
-      };
-    }
-    const cluster: ICluster = Object.assign(
-      {},
-      {
-        name,
-        location,
-        serveNodes: metadata.nodes,
-        clusterConfig: clusterConfig,
-      },
-      metadata
-    );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (cluster as any).nodes;
-    delete (cluster as any).minServeNodes;
-    delete (cluster as any).maxServeNodes;
-    delete (cluster as any).cpuUtilizationPercent;
+  static getUpdateMask(metadata: SetClusterMetadataOptions): string[] {
     const updateMask: string[] = [];
     if (metadata.nodes) {
       updateMask.push('serve_nodes');
@@ -59,9 +27,66 @@ export class ClusterUtils {
         'cluster_config.cluster_autoscaling_config.autoscaling_targets.cpu_utilization_percent'
       );
     }
+    return updateMask;
+  }
+
+  static getClusterBaseConfig(
+    metadata: SetClusterMetadataOptions | BasicClusterConfig,
+    location: string,
+    name: string | undefined
+  ): google.bigtable.admin.v2.ICluster {
+    let clusterConfig;
+    if (
+      metadata.cpuUtilizationPercent ||
+      metadata.minServeNodes ||
+      metadata.maxServeNodes
+    ) {
+      clusterConfig = {
+        clusterAutoscalingConfig: {
+          autoscalingTargets: {
+            cpuUtilizationPercent: metadata.cpuUtilizationPercent,
+          },
+          autoscalingLimits: {
+            minServeNodes: metadata.minServeNodes,
+            maxServeNodes: metadata.maxServeNodes,
+          },
+        },
+      };
+    }
     return {
-      cluster,
-      updateMask: {paths: updateMask},
+      name,
+      location,
+      serveNodes: metadata.nodes,
+      clusterConfig,
+    };
+  }
+
+  static getClusterFromMetadata(
+    metadata: SetClusterMetadataOptions,
+    location: string,
+    name: string
+  ): google.bigtable.admin.v2.ICluster {
+    const cluster: ICluster = Object.assign(
+      {},
+      this.getClusterBaseConfig(metadata, location, name),
+      metadata
+    );
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delete (cluster as any).nodes;
+    delete (cluster as any).minServeNodes;
+    delete (cluster as any).maxServeNodes;
+    delete (cluster as any).cpuUtilizationPercent;
+    return cluster;
+  }
+
+  static getRequestFromMetadata(
+    metadata: SetClusterMetadataOptions,
+    location: string,
+    name: string
+  ): protos.google.bigtable.admin.v2.IPartialUpdateClusterRequest {
+    return {
+      cluster: this.getClusterFromMetadata(metadata, location, name),
+      updateMask: {paths: this.getUpdateMask(metadata)},
     };
   }
 }
