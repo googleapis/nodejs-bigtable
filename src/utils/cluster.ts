@@ -53,12 +53,13 @@ export class ClusterUtils {
         },
       };
     }
-    return {
-      name,
-      location,
-      serveNodes: metadata.nodes,
-      clusterConfig,
-    };
+    return Object.assign(
+      {},
+      name ? {name} : null,
+      location ? {location} : null,
+      clusterConfig ? {clusterConfig} : null,
+      metadata.nodes ? {serveNodes: metadata.nodes} : null
+    );
   }
 
   static getClusterFromMetadata(
