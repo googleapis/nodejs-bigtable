@@ -426,6 +426,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       reqOpts.cluster!.serveNodes = options.nodes;
     }
 
+    // TODO: Pull this out using the utils function
     // Set autoscaling features
     if (
       options.minServeNodes &&
