@@ -11,6 +11,7 @@ export class ClusterUtils {
     const updateMask: string[] = [];
     if (metadata.nodes) {
       updateMask.push('serve_nodes');
+      updateMask.push('cluster_config.cluster_autoscaling_config');
     }
     if (metadata.minServeNodes) {
       updateMask.push(

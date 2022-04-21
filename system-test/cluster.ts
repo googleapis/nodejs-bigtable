@@ -206,7 +206,9 @@ describe('Cluster', () => {
       it('Change cluster to manual scaling', async () => {
         const updateNodes = 5;
         const cluster: Cluster = instance.cluster(clusterId);
-        await cluster.setMetadata({nodes: updateNodes});
+        await cluster.setMetadata({
+          nodes: updateNodes,
+        });
         const metadata = await cluster.getMetadata({});
         const {clusterConfig, serveNodes} = metadata[0];
         // TODO: This test failing indicates that we must disable autoscaling somehow
