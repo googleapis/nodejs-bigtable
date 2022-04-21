@@ -32,7 +32,7 @@ export class ClusterUtils {
 
   static getClusterBaseConfig(
     metadata: SetClusterMetadataOptions | BasicClusterConfig,
-    location: string,
+    location: string | undefined,
     name: string | undefined
   ): google.bigtable.admin.v2.ICluster {
     let clusterConfig;

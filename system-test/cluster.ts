@@ -92,8 +92,6 @@ describe('Cluster', () => {
       const minServeNodes = 2;
       const maxServeNodes = 4;
       const cpuUtilizationPercent = 50;
-
-      // TODO: I might want to just do an assertion check on all metadata
       async function checkMetadata(
         instance: Instance,
         clusterId: string
@@ -112,17 +110,16 @@ describe('Cluster', () => {
           cpuUtilizationPercent
         );
       }
-
+      const createClusterOptions = {
+        location: 'us-west1-c',
+        minServeNodes,
+        maxServeNodes,
+        cpuUtilizationPercent,
+      };
       it('Create an instance with clusters for automatic scaling', async () => {
         const clusterId = generateId('cluster');
         const instance: Instance = await getNewInstance([
-          {
-            id: clusterId,
-            location: 'us-west1-c',
-            minServeNodes,
-            maxServeNodes,
-            cpuUtilizationPercent,
-          },
+          Object.assign({id: clusterId}, createClusterOptions),
         ]);
         await checkMetadata(instance, clusterId);
         await instance.delete();
@@ -132,14 +129,7 @@ describe('Cluster', () => {
         const instance: Instance = await getStandardNewInstance(clusterId, 2);
         const clusterId2: string = generateId('cluster');
         const cluster: Cluster = instance.cluster(clusterId2);
-        // TODO: Object assign here
-        // TODO: New standard instance function
-        await cluster.create({
-          location: 'us-west1-c',
-          minServeNodes,
-          maxServeNodes,
-          cpuUtilizationPercent,
-        });
+        await cluster.create(createClusterOptions);
         await checkMetadata(instance, clusterId2);
         await instance.delete();
       });

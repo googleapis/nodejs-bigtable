@@ -67,6 +67,7 @@ import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
 import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
+import {ClusterUtils} from './utils/cluster';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -393,7 +394,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     } as google.bigtable.admin.v2.CreateClusterRequest;
 
     if (!is.empty(options)) {
-      reqOpts.cluster = {};
+      reqOpts.cluster = ClusterUtils.getClusterBaseConfig(
+        options,
+        options.location
+          ? Cluster.getLocation_(this.bigtable.projectId, options.location)
+          : undefined,
+        undefined
+      );
     }
 
     if (
@@ -413,38 +420,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     if (options.encryption) {
       reqOpts.cluster!.encryptionConfig = options.encryption;
-    }
-
-    if (options.location) {
-      reqOpts.cluster!.location = Cluster.getLocation_(
-        this.bigtable.projectId,
-        options.location
-      );
-    }
-
-    if (options.nodes) {
-      reqOpts.cluster!.serveNodes = options.nodes;
-    }
-
-    // TODO: Pull this out using the utils function
-    // Set autoscaling features
-    if (
-      options.minServeNodes &&
-      options.maxServeNodes &&
-      options.cpuUtilizationPercent &&
-      reqOpts.cluster
-    ) {
-      reqOpts.cluster.clusterConfig = {
-        clusterAutoscalingConfig: {
-          autoscalingLimits: {
-            minServeNodes: options.minServeNodes,
-            maxServeNodes: options.maxServeNodes,
-          },
-          autoscalingTargets: {
-            cpuUtilizationPercent: options.cpuUtilizationPercent,
-          },
-        },
-      };
     }
 
     if (options.storage) {
