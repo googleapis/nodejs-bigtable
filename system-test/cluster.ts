@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {describe, it} from 'mocha';
+import {beforeEach, describe, it} from 'mocha';
 import {generateId} from './common';
 import {
   Bigtable,
@@ -132,6 +132,54 @@ describe('Cluster', () => {
         await cluster.create(createClusterOptions);
         await checkMetadata(instance, clusterId2);
         await instance.delete();
+      });
+    });
+  });
+  describe('Update cluster', () => {
+    describe('Starting from manual scaling', () => {
+      let clusterId: string;
+      let instance: Instance;
+      const startingNodes = 2;
+
+      beforeEach(async () => {
+        clusterId = generateId('cluster');
+        instance = await getStandardNewInstance(clusterId, startingNodes);
+      });
+
+      it.only('Change nodes for manual scaling', async () => {
+        const updateNodes = 5;
+        assert.notEqual(startingNodes, updateNodes);
+        const cluster: Cluster = instance.cluster(clusterId);
+        await cluster.setMetadata({nodes: updateNodes});
+        const metadata = await cluster.getMetadata({});
+        const {clusterConfig, serveNodes} = metadata[0];
+        assert.strictEqual(serveNodes, updateNodes);
+        assert.strictEqual(clusterConfig, undefined);
+      });
+      it('Change cluster to autoscaling', async () => {
+        const minServeNodes = 3;
+        const maxServeNodes = 4;
+        const cpuUtilizationPercent = 50;
+        const cluster: Cluster = instance.cluster(clusterId);
+        await cluster.setMetadata({
+          minServeNodes,
+          maxServeNodes,
+          cpuUtilizationPercent,
+        });
+        const metadata = await cluster.getMetadata({});
+        const {clusterConfig, serveNodes} = metadata[0];
+        assert.strictEqual(serveNodes, startingNodes);
+        assert.deepStrictEqual(clusterConfig, {
+          clusterAutoscalingConfig: {
+            autoscalingLimits: {
+              minServeNodes,
+              maxServeNodes,
+            },
+            autoscalingTargets: {
+              cpuUtilizationPercent,
+            },
+          },
+        });
       });
     });
   });
