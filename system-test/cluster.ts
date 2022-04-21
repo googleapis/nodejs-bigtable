@@ -26,10 +26,11 @@ import {ClusterUtils} from '../src/utils/cluster';
 
 describe('Cluster', () => {
   const bigtable = new Bigtable();
+  let instance: Instance;
 
-  async function getNewInstance(clusters: ClusterInfo[]): Promise<Instance> {
+  async function createNewInstance(clusters: ClusterInfo[]): Promise<void> {
     const instanceId: string = generateId('instance');
-    const instance: Instance = bigtable.instance(instanceId);
+    instance = bigtable.instance(instanceId);
     const [, operation] = await instance.create({
       clusters,
       labels: {
@@ -37,13 +38,12 @@ describe('Cluster', () => {
       },
     });
     await operation.promise();
-    return instance;
   }
-  async function getStandardNewInstance(
+  async function createStandardNewInstance(
     clusterId: string,
     nodes: number
-  ): Promise<Instance> {
-    return await getNewInstance(standardCreationClusters(clusterId, nodes));
+  ): Promise<void> {
+    return await createNewInstance(standardCreationClusters(clusterId, nodes));
   }
   function standardCreationClusters(
     clusterId: string,
@@ -57,36 +57,76 @@ describe('Cluster', () => {
       },
     ];
   }
+  afterEach(async () => {
+    await instance.delete();
+  });
   describe('Create cluster', () => {
     describe('With manual scaling', () => {
-      async function checkMetadata(
-        instance: Instance,
-        clusterId: string,
-        nodes: number
-      ) {
-        const cluster: Cluster = instance.cluster(clusterId);
-        const metadata: GetClusterMetadataResponse = await cluster.getMetadata(
-          {}
-        );
+      let clusterId: string;
+      let cluster: Cluster;
+      async function checkMetadata(localCluster: Cluster, nodes: number) {
+        const metadata: GetClusterMetadataResponse =
+          await localCluster.getMetadata({});
         assert.strictEqual(metadata[0].serveNodes, nodes);
       }
-      it('Create an instance with clusters for manual scaling', async () => {
-        const clusterId: string = generateId('cluster');
-        const instance: Instance = await getStandardNewInstance(clusterId, 2);
-        await checkMetadata(instance, clusterId, 2);
-        await instance.delete();
+      beforeEach(async () => {
+        clusterId = generateId('cluster');
+        cluster = instance.cluster(clusterId);
+        await createStandardNewInstance(clusterId, 2);
       });
-      it('Create an instance and then create clusters for manual scaling', async () => {
-        const clusterId: string = generateId('cluster');
-        const instance: Instance = await getStandardNewInstance(clusterId, 2);
+      it('Create an instance with clusters for manual scaling', async () => {
+        await checkMetadata(cluster, 2);
+      });
+      it('Create an instance and then create a cluster for manual scaling', async () => {
         const clusterId2: string = generateId('cluster');
-        const cluster: Cluster = instance.cluster(clusterId2);
-        await cluster.create({
+        const cluster2 = instance.cluster(clusterId2);
+        await cluster2.create({
           location: 'us-west1-c',
           nodes: 3,
         });
-        await checkMetadata(instance, clusterId2, 3);
-        await instance.delete();
+        await checkMetadata(cluster2, 3);
+      });
+      describe('Using an incorrect configuration', () => {
+        let cluster2: Cluster;
+        beforeEach(async () => {
+          const clusterId2: string = generateId('cluster');
+          cluster2 = instance.cluster(clusterId2);
+        });
+        it('Without providing any cluster configuration', async () => {
+          try {
+            await cluster2.create({
+              location: 'us-west1-c',
+              nodes: 3,
+            });
+            assert.fail();
+          } catch (e) {
+            assert.equal(e.message, ClusterUtils.noConfigError);
+          }
+        });
+        it('By providing too much cluster configurations', async () => {
+          try {
+            await cluster2.create({
+              location: 'us-west1-c',
+              nodes: 2,
+              minServeNodes: 3,
+            });
+            assert.fail();
+          } catch (e) {
+            assert.equal(e.message, ClusterUtils.allConfigError);
+          }
+        });
+        it('Without providing all autoscaling configurations', async () => {
+          try {
+            await cluster2.create({
+              location: 'us-west1-c',
+              minServeNodes: 3,
+              cpuUtilizationPercent: 51,
+            });
+            assert.fail();
+          } catch (e) {
+            assert.equal(e.message, ClusterUtils.incompleteConfigError);
+          }
+        });
       });
     });
     describe('With automatic scaling', () => {
@@ -119,32 +159,29 @@ describe('Cluster', () => {
       };
       it('Create an instance with clusters for automatic scaling', async () => {
         const clusterId = generateId('cluster');
-        const instance: Instance = await getNewInstance([
+        await createNewInstance([
           Object.assign({id: clusterId}, createClusterOptions),
         ]);
         await checkMetadata(instance, clusterId);
-        await instance.delete();
       });
       it('Create an instance and then create clusters for automatic scaling', async () => {
         const clusterId: string = generateId('cluster');
-        const instance: Instance = await getStandardNewInstance(clusterId, 2);
+        await createStandardNewInstance(clusterId, 2);
         const clusterId2: string = generateId('cluster');
         const cluster: Cluster = instance.cluster(clusterId2);
         await cluster.create(createClusterOptions);
         await checkMetadata(instance, clusterId2);
-        await instance.delete();
       });
     });
   });
   describe('Update cluster', () => {
     describe('Starting from manual scaling', () => {
-      let instance: Instance;
       let cluster: Cluster;
       const startingNodes = 2;
 
       beforeEach(async () => {
         const clusterId = generateId('cluster');
-        instance = await getStandardNewInstance(clusterId, startingNodes);
+        await createStandardNewInstance(clusterId, startingNodes);
         cluster = instance.cluster(clusterId);
       });
 
@@ -215,7 +252,6 @@ describe('Cluster', () => {
       });
     });
     describe('Starting from autoscaling', () => {
-      let instance: Instance;
       let cluster: Cluster;
 
       const minServeNodes = 3;
@@ -230,7 +266,7 @@ describe('Cluster', () => {
 
       beforeEach(async () => {
         const clusterId = generateId('cluster');
-        instance = await getNewInstance([
+        await createNewInstance([
           Object.assign({id: clusterId}, createClusterOptions),
         ]);
         cluster = instance.cluster(clusterId);
