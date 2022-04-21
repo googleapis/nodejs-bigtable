@@ -146,7 +146,7 @@ describe('Cluster', () => {
         instance = await getStandardNewInstance(clusterId, startingNodes);
       });
 
-      it.only('Change nodes for manual scaling', async () => {
+      it('Change nodes for manual scaling', async () => {
         const updateNodes = 5;
         assert.notEqual(startingNodes, updateNodes);
         const cluster: Cluster = instance.cluster(clusterId);
@@ -177,6 +177,66 @@ describe('Cluster', () => {
             },
             autoscalingTargets: {
               cpuUtilizationPercent,
+            },
+          },
+        });
+      });
+    });
+    describe('Starting from autoscaling', () => {
+      let clusterId: string;
+      let instance: Instance;
+
+      const minServeNodes = 3;
+      const maxServeNodes = 4;
+      const cpuUtilizationPercent = 50;
+      const createClusterOptions = {
+        location: 'us-west1-c',
+        minServeNodes,
+        maxServeNodes,
+        cpuUtilizationPercent,
+      };
+
+      beforeEach(async () => {
+        clusterId = generateId('cluster');
+        instance = await getNewInstance([
+          Object.assign({id: clusterId}, createClusterOptions),
+        ]);
+      });
+
+      it('Change cluster to manual scaling', async () => {
+        const updateNodes = 5;
+        const cluster: Cluster = instance.cluster(clusterId);
+        await cluster.setMetadata({nodes: updateNodes});
+        const metadata = await cluster.getMetadata({});
+        const {clusterConfig, serveNodes} = metadata[0];
+        // TODO: This test failing indicates that we must disable autoscaling somehow
+        assert.strictEqual(serveNodes, updateNodes);
+        assert.strictEqual(clusterConfig, undefined);
+      });
+      it('Change autoscaling properties', async () => {
+        const newMinServeNodes = 5;
+        const newMaxServeNodes = 6;
+        const newCpuUtilizationPercent = 53;
+        assert.notEqual(minServeNodes, newMinServeNodes);
+        assert.notEqual(maxServeNodes, newMaxServeNodes);
+        assert.notEqual(cpuUtilizationPercent, newCpuUtilizationPercent);
+        const cluster: Cluster = instance.cluster(clusterId);
+        await cluster.setMetadata({
+          minServeNodes: newMinServeNodes,
+          maxServeNodes: newMaxServeNodes,
+          cpuUtilizationPercent: newCpuUtilizationPercent,
+        });
+        const metadata = await cluster.getMetadata({});
+        const {clusterConfig, serveNodes} = metadata[0];
+        assert.strictEqual(serveNodes, minServeNodes);
+        assert.deepStrictEqual(clusterConfig, {
+          clusterAutoscalingConfig: {
+            autoscalingLimits: {
+              minServeNodes: newMinServeNodes,
+              maxServeNodes: newMaxServeNodes,
+            },
+            autoscalingTargets: {
+              cpuUtilizationPercent: newCpuUtilizationPercent,
             },
           },
         });
