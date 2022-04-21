@@ -138,19 +138,19 @@ describe('Cluster', () => {
   });
   describe('Update cluster', () => {
     describe('Starting from manual scaling', () => {
-      let clusterId: string;
       let instance: Instance;
+      let cluster: Cluster;
       const startingNodes = 2;
 
       beforeEach(async () => {
-        clusterId = generateId('cluster');
+        const clusterId = generateId('cluster');
         instance = await getStandardNewInstance(clusterId, startingNodes);
+        cluster = instance.cluster(clusterId);
       });
 
       it('Change nodes for manual scaling', async () => {
         const updateNodes = 5;
         assert.notEqual(startingNodes, updateNodes);
-        const cluster: Cluster = instance.cluster(clusterId);
         await cluster.setMetadata({nodes: updateNodes});
         const metadata = await cluster.getMetadata({});
         const {clusterConfig, serveNodes} = metadata[0];
@@ -161,7 +161,6 @@ describe('Cluster', () => {
         const minServeNodes = 3;
         const maxServeNodes = 4;
         const cpuUtilizationPercent = 50;
-        const cluster: Cluster = instance.cluster(clusterId);
         await cluster.setMetadata({
           minServeNodes,
           maxServeNodes,
@@ -184,7 +183,6 @@ describe('Cluster', () => {
       });
       describe('Using an incorrect configuration', () => {
         it('Without providing any cluster configuration', async () => {
-          const cluster: Cluster = instance.cluster(clusterId);
           try {
             await cluster.setMetadata({});
             assert.fail();
@@ -193,7 +191,6 @@ describe('Cluster', () => {
           }
         });
         it('By providing too much cluster configurations', async () => {
-          const cluster: Cluster = instance.cluster(clusterId);
           try {
             await cluster.setMetadata({
               nodes: 2,
@@ -205,7 +202,6 @@ describe('Cluster', () => {
           }
         });
         it('Without providing all autoscaling configurations', async () => {
-          const cluster: Cluster = instance.cluster(clusterId);
           try {
             await cluster.setMetadata({
               minServeNodes: 3,
