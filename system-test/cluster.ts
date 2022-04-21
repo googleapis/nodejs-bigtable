@@ -215,8 +215,8 @@ describe('Cluster', () => {
       });
     });
     describe('Starting from autoscaling', () => {
-      let clusterId: string;
       let instance: Instance;
+      let cluster: Cluster;
 
       const minServeNodes = 3;
       const maxServeNodes = 4;
@@ -229,15 +229,15 @@ describe('Cluster', () => {
       };
 
       beforeEach(async () => {
-        clusterId = generateId('cluster');
+        const clusterId = generateId('cluster');
         instance = await getNewInstance([
           Object.assign({id: clusterId}, createClusterOptions),
         ]);
+        cluster = instance.cluster(clusterId);
       });
 
       it('Change cluster to manual scaling', async () => {
         const updateNodes = 5;
-        const cluster: Cluster = instance.cluster(clusterId);
         await cluster.setMetadata({
           nodes: updateNodes,
         });
@@ -254,7 +254,6 @@ describe('Cluster', () => {
         assert.notEqual(minServeNodes, newMinServeNodes);
         assert.notEqual(maxServeNodes, newMaxServeNodes);
         assert.notEqual(cpuUtilizationPercent, newCpuUtilizationPercent);
-        const cluster: Cluster = instance.cluster(clusterId);
         await cluster.setMetadata({
           minServeNodes: newMinServeNodes,
           maxServeNodes: newMaxServeNodes,
