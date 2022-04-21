@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {describe, it, before, after} from 'mocha';
+import {describe, it} from 'mocha';
 import {generateId} from './common';
 import {
   Bigtable,
@@ -38,17 +38,25 @@ describe('Cluster', () => {
     await operation.promise();
     return instance;
   }
-
+  async function getStandardNewInstance(
+    clusterId: string,
+    nodes: number
+  ): Promise<Instance> {
+    return await getNewInstance(standardCreationClusters(clusterId, nodes));
+  }
+  function standardCreationClusters(
+    clusterId: string,
+    nodes: number
+  ): ClusterInfo[] {
+    return [
+      {
+        id: clusterId,
+        location: 'us-east1-c',
+        nodes,
+      },
+    ];
+  }
   describe('Create cluster', () => {
-    function standardCreationClusters(clusterId: string, nodes: number) {
-      return [
-        {
-          id: clusterId,
-          location: 'us-east1-c',
-          nodes,
-        },
-      ];
-    }
     describe('With manual scaling', () => {
       async function checkMetadata(
         instance: Instance,
@@ -63,17 +71,13 @@ describe('Cluster', () => {
       }
       it('Create an instance with clusters for manual scaling', async () => {
         const clusterId: string = generateId('cluster');
-        const instance: Instance = await getNewInstance(
-          standardCreationClusters(clusterId, 2)
-        );
+        const instance: Instance = await getStandardNewInstance(clusterId, 2);
         await checkMetadata(instance, clusterId, 2);
         await instance.delete();
       });
       it('Create an instance and then create clusters for manual scaling', async () => {
         const clusterId: string = generateId('cluster');
-        const instance: Instance = await getNewInstance(
-          standardCreationClusters(clusterId, 2)
-        );
+        const instance: Instance = await getStandardNewInstance(clusterId, 2);
         const clusterId2: string = generateId('cluster');
         const cluster: Cluster = instance.cluster(clusterId2);
         await cluster.create({
@@ -89,6 +93,7 @@ describe('Cluster', () => {
       const maxServeNodes = 4;
       const cpuUtilizationPercent = 50;
 
+      // TODO: I might want to just do an assertion check on all metadata
       async function checkMetadata(
         instance: Instance,
         clusterId: string
@@ -113,7 +118,7 @@ describe('Cluster', () => {
         const instance: Instance = await getNewInstance([
           {
             id: clusterId,
-            location: 'us-east1-c',
+            location: 'us-west1-c',
             minServeNodes,
             maxServeNodes,
             cpuUtilizationPercent,
@@ -122,10 +127,22 @@ describe('Cluster', () => {
         await checkMetadata(instance, clusterId);
         await instance.delete();
       });
-      // it('Create an instance with clusters for manual scaling', () => {
-      //   let instance: Instance;
-      //   await instance.delete();
-      // });
+      it('Create an instance and then create clusters for automatic scaling', async () => {
+        const clusterId: string = generateId('cluster');
+        const instance: Instance = await getStandardNewInstance(clusterId, 2);
+        const clusterId2: string = generateId('cluster');
+        const cluster: Cluster = instance.cluster(clusterId2);
+        // TODO: Object assign here
+        // TODO: New standard instance function
+        await cluster.create({
+          location: 'us-west1-c',
+          minServeNodes,
+          maxServeNodes,
+          cpuUtilizationPercent,
+        });
+        await checkMetadata(instance, clusterId2);
+        await instance.delete();
+      });
     });
   });
 });
