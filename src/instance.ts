@@ -392,7 +392,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       parent: this.name,
       clusterId: id,
     } as google.bigtable.admin.v2.CreateClusterRequest;
-
+    ClusterUtils.validateMetadata(options);
     if (!is.empty(options)) {
       reqOpts.cluster = ClusterUtils.getClusterBaseConfig(
         options,

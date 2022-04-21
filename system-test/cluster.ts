@@ -22,6 +22,7 @@ import {
   GetClusterMetadataResponse,
 } from '../src';
 import assert = require('assert');
+import {ClusterUtils} from '../src/utils/cluster';
 
 describe('Cluster', () => {
   const bigtable = new Bigtable();
@@ -179,6 +180,41 @@ describe('Cluster', () => {
               cpuUtilizationPercent,
             },
           },
+        });
+      });
+      describe('Using an incorrect configuration', () => {
+        it('Without providing any cluster configuration', async () => {
+          const cluster: Cluster = instance.cluster(clusterId);
+          try {
+            await cluster.setMetadata({});
+            assert.fail();
+          } catch (e) {
+            assert.equal(e.message, ClusterUtils.noConfigError);
+          }
+        });
+        it('By providing too much cluster configurations', async () => {
+          const cluster: Cluster = instance.cluster(clusterId);
+          try {
+            await cluster.setMetadata({
+              nodes: 2,
+              minServeNodes: 3,
+            });
+            assert.fail();
+          } catch (e) {
+            assert.equal(e.message, ClusterUtils.allConfigError);
+          }
+        });
+        it('Without providing all autoscaling configurations', async () => {
+          const cluster: Cluster = instance.cluster(clusterId);
+          try {
+            await cluster.setMetadata({
+              minServeNodes: 3,
+              cpuUtilizationPercent: 51,
+            });
+            assert.fail();
+          } catch (e) {
+            assert.equal(e.message, ClusterUtils.incompleteConfigError);
+          }
         });
       });
     });

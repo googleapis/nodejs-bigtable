@@ -697,6 +697,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     gaxOptionsOrCallback?: CallOptions | SetClusterMetadataCallback,
     cb?: SetClusterMetadataCallback
   ): void | Promise<SetClusterMetadataResponse> {
+    ClusterUtils.validateMetadata(metadata);
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
