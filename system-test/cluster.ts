@@ -243,7 +243,6 @@ describe('Cluster', () => {
         });
         const metadata = await cluster.getMetadata({});
         const {clusterConfig, serveNodes} = metadata[0];
-        // TODO: This test failing indicates that we must disable autoscaling somehow
         assert.strictEqual(serveNodes, updateNodes);
         assert.strictEqual(clusterConfig, undefined);
       });
