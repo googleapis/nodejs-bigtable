@@ -71,8 +71,8 @@ describe('Cluster', () => {
       }
       beforeEach(async () => {
         clusterId = generateId('cluster');
-        cluster = instance.cluster(clusterId);
         await createStandardNewInstance(clusterId, 2);
+        cluster = instance.cluster(clusterId);
       });
       it('Create an instance with clusters for manual scaling', async () => {
         await checkMetadata(cluster, 2);
@@ -96,7 +96,6 @@ describe('Cluster', () => {
           try {
             await cluster2.create({
               location: 'us-west1-c',
-              nodes: 3,
             });
             assert.fail();
           } catch (e) {
