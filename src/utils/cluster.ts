@@ -21,9 +21,12 @@ import {
 import {google} from '../../protos/protos';
 
 export class ClusterUtils {
-  static noConfigError = `Must specify either serve_nodes or all of the autoscaling configurations (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).`;
-  static allConfigError = `Cannot specify both serve_nodes and autoscaling configurations (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).`;
-  static incompleteConfigError = `All of autoscaling configurations must be specified at the same time (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).`;
+  static noConfigError =
+    'Must specify either serve_nodes or all of the autoscaling configurations (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).';
+  static allConfigError =
+    'Cannot specify both serve_nodes and autoscaling configurations (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).';
+  static incompleteConfigError =
+    'All of autoscaling configurations must be specified at the same time (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).';
 
   static validateMetadata(
     metadata: SetClusterMetadataOptions | BasicClusterConfig
