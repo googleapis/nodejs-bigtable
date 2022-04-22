@@ -27,7 +27,7 @@ import {Family} from '../src/family.js';
 import {Mutation} from '../src/mutation.js';
 import {Row} from '../src/row.js';
 import * as tblTypes from '../src/table';
-import {Bigtable} from '../src';
+import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 
 const sandbox = sinon.createSandbox();
@@ -544,7 +544,9 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.method, 'readRows');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
         assert.strictEqual(config.reqOpts.appProfileId, undefined);
-        assert.strictEqual(config.gaxOpts, undefined);
+        assert.deepStrictEqual(config.gaxOpts, {
+          otherArgs: {headers: {'bigtable-attempt': 0}},
+        });
         done();
       };
       table.createReadStream();
@@ -2483,8 +2485,8 @@ describe('Bigtable/Table', () => {
           {
             index: 1,
             status: {
-              code: 10,
-              message: 'ABORTED',
+              code: 3,
+              message: 'INVALID_ARGUMENT',
             },
           },
         ];
@@ -2570,6 +2572,7 @@ describe('Bigtable/Table', () => {
       let fakeStatuses: any;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let entryRequests: any;
+      const requestArgs: RequestOptions[] = [];
 
       beforeEach(() => {
         entryRequests = [];
@@ -2599,6 +2602,7 @@ describe('Bigtable/Table', () => {
         ];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
+          requestArgs.push(JSON.parse(JSON.stringify(config)));
           entryRequests.push(config.reqOpts.entries);
           const stream = new PassThrough({
             objectMode: true,
@@ -2610,6 +2614,25 @@ describe('Bigtable/Table', () => {
 
           return stream;
         };
+      });
+
+      it('should send attempt header', done => {
+        table.mutate(entries, () => {
+          assert.strictEqual(requestArgs.length, 2);
+          assert.strictEqual(
+            (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            0
+          );
+          assert.strictEqual(
+            (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            1
+          );
+          done();
+        });
       });
 
       it('should succeed after a retry', done => {
@@ -2629,18 +2652,21 @@ describe('Bigtable/Table', () => {
     });
 
     describe('rpc level retries', () => {
-      let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
+      let emitters: EventEmitter[]; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
+      let requestArgs: RequestOptions[] = [];
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let entryRequests: any;
 
       beforeEach(() => {
-        emitters = null; // This needs to be assigned in each test case.
+        emitters = []; // This needs to be assigned in each test case.
 
+        requestArgs = [];
         entryRequests = [];
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         table.bigtable.request = (config: any) => {
+          requestArgs.push(JSON.parse(JSON.stringify(config)));
           entryRequests.push(config.reqOpts.entries);
           const stream = new PassThrough({
             objectMode: true,
@@ -2656,7 +2682,7 @@ describe('Bigtable/Table', () => {
 
       it('should not retry unretriable errors', done => {
         const unretriableError = new Error('not retryable') as ServiceError;
-        unretriableError.code = 10; // Aborted
+        unretriableError.code = 3; // INVALID_ARGUMENT
         emitters = [
           ((stream: Writable) => {
             stream.emit('error', unretriableError);
@@ -2704,6 +2730,36 @@ describe('Bigtable/Table', () => {
         table.maxRetries = 1;
         table.mutate(entries, () => {
           assert.strictEqual(entryRequests.length, 2);
+          done();
+        });
+      });
+
+      it('should send attempt header', done => {
+        const error = new Error('retryable') as ServiceError;
+        error.code = 14; // Unavailable
+        emitters = [
+          ((stream: Writable) => {
+            stream.emit('error', error);
+          }) as {} as EventEmitter,
+          ((stream: Writable) => {
+            stream.end();
+          }) as {} as EventEmitter,
+        ];
+        table.maxRetries = 1;
+        table.mutate(entries, () => {
+          assert.strictEqual(requestArgs.length, 2);
+          assert.strictEqual(
+            (requestArgs[0].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            0
+          );
+          assert.strictEqual(
+            (requestArgs[1].gaxOpts as any)['otherArgs']['headers'][
+              'bigtable-attempt'
+            ],
+            1
+          );
           done();
         });
       });

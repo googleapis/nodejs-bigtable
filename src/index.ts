@@ -888,7 +888,8 @@ export class Bigtable {
   }
 
   /**
-   * Terminate grpc channels and close all the clients.
+   * Close all bigtable clients. New requests will be rejected but it will not
+   * kill connections with pending requests.
    */
   close(): Promise<void[]> {
     const combined = Object.keys(this.api).map(clientType =>
