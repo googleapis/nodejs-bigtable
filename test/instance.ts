@@ -346,11 +346,16 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
-      instance.createCluster(CLUSTER_ID, assert.ifError);
+      instance.createCluster(
+        CLUSTER_ID,
+        {nodes: 2, location: 'us-central1-b'},
+        assert.ifError
+      );
     });
 
     it('should accept gaxOptions', done => {
       const options = {
+        nodes: 2,
         gaxOptions: {},
       } as CreateClusterOptions;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -364,6 +369,7 @@ describe('Bigtable/Instance', () => {
     it('should respect the location option', done => {
       const options = {
         location: 'us-central1-b',
+        nodes: 2,
       } as CreateClusterOptions;
       const fakeLocation = 'a/b/c/d';
       sandbox
@@ -397,6 +403,7 @@ describe('Bigtable/Instance', () => {
     it('should respect the storage option', done => {
       const options = {
         storage: 'ssd',
+        nodes: 2,
       } as CreateClusterOptions;
       const fakeStorageType = 2;
       sandbox.stub(FakeCluster, 'getStorageType_').callsFake(type => {
@@ -427,7 +434,7 @@ describe('Bigtable/Instance', () => {
 
       instance.createCluster(
         CLUSTER_ID,
-        {key} as CreateClusterOptions,
+        {key, nodes: 2} as CreateClusterOptions,
         assert.ifError
       );
     });
@@ -445,7 +452,7 @@ describe('Bigtable/Instance', () => {
 
       instance.createCluster(
         CLUSTER_ID,
-        {encryption: {kmsKeyName: key}} as CreateClusterOptions,
+        {encryption: {kmsKeyName: key}, nodes: 2} as CreateClusterOptions,
         assert.ifError
       );
     });
@@ -456,7 +463,11 @@ describe('Bigtable/Instance', () => {
       assert.throws(() => {
         instance.createCluster(
           CLUSTER_ID,
-          {encryption: {kmsKeyName: key}, key} as CreateClusterOptions,
+          {
+            encryption: {kmsKeyName: key},
+            key,
+            nodes: 2,
+          } as CreateClusterOptions,
           assert.ifError
         );
       }, /The cluster cannot have both `encryption` and `key` defined\./);
@@ -474,6 +485,7 @@ describe('Bigtable/Instance', () => {
       };
       (instance.createCluster as Function)(
         CLUSTER_ID,
+        {nodes: 2},
         (err: Error, cluster: {}, apiResponse: {}) => {
           assert.ifError(err);
           assert.strictEqual(cluster, fakeCluster);

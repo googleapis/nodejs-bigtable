@@ -972,7 +972,7 @@ describe('Bigtable/Cluster', () => {
         callback(); // done()
       };
 
-      cluster.setMetadata({}, done);
+      cluster.setMetadata({nodes: 2}, done);
     });
 
     it('should respect the nodes option', done => {
@@ -1036,7 +1036,7 @@ describe('Bigtable/Cluster', () => {
       const name =
         'projects/{{projectId}}/instances/fake-instance/clusters/fake-cluster';
       cluster.name = name;
-      cluster.setMetadata({}, (...argsies: Array<{}>) => {
+      cluster.setMetadata({nodes: 2}, (...argsies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
       });
