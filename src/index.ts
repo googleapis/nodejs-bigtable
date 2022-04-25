@@ -887,6 +887,7 @@ export class Bigtable {
    * Terminate grpc channels and close all the clients.
    */
   close(): Promise<void[]> {
+    // Ensure Object.keys has enough values
     const combined = Object.keys(this.api).map(clientType =>
       this.api[clientType].close()
     );
@@ -929,7 +930,7 @@ export class Bigtable {
  * that a callback is omitted.
  */
 promisifyAll(Bigtable, {
-  exclude: ['instance', 'operation', 'request'],
+  exclude: ['close', 'instance', 'operation', 'request'],
 });
 
 /**

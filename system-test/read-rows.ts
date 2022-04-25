@@ -83,6 +83,29 @@ describe('Bigtable/Table', () => {
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
 
+  describe('close', () => {
+    it('invokes readRows with closed client 1', async () => {
+      const instance = bigtable.instance('fake-instance2');
+      const table = instance.table('fake-table');
+      await instance.create({
+        clusters: {
+          id: 'fake-cluster2',
+          location: 'us-east1-c',
+          nodes: 1,
+        },
+      });
+      await table.create({});
+      // const expectedError = new Error('The client has already been closed.');
+      await bigtable.close();
+      try {
+        await table.getRows();
+      } catch (err) {
+        console.log(err);
+      }
+      await instance.delete({});
+    });
+  });
+
   describe('createReadStream', () => {
     let clock: sinon.SinonFakeTimers;
     let endCalled: boolean;
@@ -146,7 +169,7 @@ describe('Bigtable/Table', () => {
     });
 
     afterEach(() => {
-      clock.uninstall();
+      clock.restore();
       stub.restore();
     });
 
