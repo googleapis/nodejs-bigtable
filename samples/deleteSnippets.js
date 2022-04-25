@@ -21,29 +21,29 @@ async function main(
   // [START_EXCLUDE]
   switch (deleteType) {
     case 'deleteFromRow': {
-      // [START bigtable_reads_row]
+      // [START bigtable_deletes_from_row]
       const row = table.row('phone#4c410523#20190501');
       await row.deleteCells(['cell_plan:data_plan_05gb']);
-      // [END bigtable_reads_row]
+      // [END bigtable_deletes_from_row]
       break;
     }
     case 'dropRowRange': {
-      // [START bigtable_reads_row]
+      // [START bigtable_drop_row_range]
       await table.deleteRows('phone#4c');
-      // [END bigtable_reads_row]
+      // [END bigtable_drop_row_range]
       break;
     }
     case 'deleteColumnFamily': {
-      // [START bigtable_reads_row]
+      // [START bigtable_delete_column_family]
       const cf = table.family('stats_summary');
       await cf.delete({});
-      // [END bigtable_reads_row]
+      // [END bigtable_delete_column_family]
       break;
     }
     case 'deleteTable': {
-      // [START bigtable_reads_row]
+      // [START bigtable_delete_table]
       await table.delete({});
-      // [END bigtable_reads_row]
+      // [END bigtable_delete_table]
       break;
     }
   }
