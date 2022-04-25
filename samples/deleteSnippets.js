@@ -47,6 +47,7 @@ async function main(
       break;
     }
   }
+  // [END_EXCLUDE]
 }
 // [END bigtable_deletes_print]
 
