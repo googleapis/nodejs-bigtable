@@ -212,6 +212,9 @@ describe('deletes', async () => {
   it('should delete one cell from a row', async () => {
     runAndSnapshot('deleteFromRow');
   });
+  it('should stream rows and then do a batch delete', async () => {
+    runAndSnapshot('streamingAndBatching');
+  });
   it('should check and mutate', async () => {
     runAndSnapshot('checkAndMutate');
   });

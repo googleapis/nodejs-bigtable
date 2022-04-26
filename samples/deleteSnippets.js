@@ -70,6 +70,20 @@ async function main(
       // [END bigtable_deletes_from_row]
       break;
     }
+    case 'streamingAndBatching': {
+      // [START bigtable_streaming_and_batching]
+      const rows = (await table.getRows({limit: 2}))[0];
+      const entries = rows.map(row => {
+        return {
+          key: row.id,
+          method: 'delete',
+        };
+      });
+      await table.mutate(entries);
+      await printRows();
+      // [END bigtable_streaming_and_batching]
+      break;
+    }
     case 'checkAndMutate': {
       // [START bigtable_check_and_mutate]
       const row = table.row('phone#4c410523#20190501');
