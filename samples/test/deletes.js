@@ -203,8 +203,17 @@ describe('deletes', async () => {
     snapshot(stdout);
   }
 
+  it('should delete column from a row', async () => {
+    runAndSnapshot('deleteFromColumn');
+  });
+  it('should delete column family from a row', async () => {
+    runAndSnapshot('deleteFromFamily');
+  });
   it('should delete one cell from a row', async () => {
     runAndSnapshot('deleteFromRow');
+  });
+  it('should check and mutate', async () => {
+    runAndSnapshot('checkAndMutate');
   });
   it('should delete a whole range of rows', async () => {
     runAndSnapshot('dropRowRange');

@@ -22,6 +22,8 @@ async function main(
   // [START bigtable_deletes_print]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
+  // TODO: We need to import this from mutation.ts, but I guess we need to compile typescript?
+  const DELETE_METHOD = 'delete';
 
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -34,12 +36,56 @@ async function main(
   // Write your code here.
   // [START_EXCLUDE]
   switch (deleteType) {
+    case 'deleteFromColumn': {
+      // [START bigtable_delete_from_column]
+      await table.mutate({
+        key: 'phone#4c410523#20190501',
+        method: DELETE_METHOD,
+        data: {
+          column: 'cell_plan:data_plan_05gb',
+        },
+      });
+      await printRows();
+      // [END bigtable_delete_from_column]
+      break;
+    }
+    case 'deleteFromFamily': {
+      // [START bigtable_delete_from_column]
+      await table.mutate({
+        key: 'phone#4c410523#20190501',
+        method: DELETE_METHOD,
+        data: {
+          column: 'cell_plan',
+        },
+      });
+      await printRows();
+      // [END bigtable_delete_from_column]
+      break;
+    }
     case 'deleteFromRow': {
       // [START bigtable_deletes_from_row]
       const row = table.row('phone#4c410523#20190501');
       await row.deleteCells(['cell_plan:data_plan_05gb']);
       await printRows();
       // [END bigtable_deletes_from_row]
+      break;
+    }
+    case 'checkAndMutate': {
+      // [START bigtable_check_and_mutate]
+      const row = table.row('phone#4c410523#20190501');
+      await row.filter(
+        {
+          column: 'data_plan_01gb',
+        },
+        {
+          onMatch: {
+            key: 'phone#4c410523#20190501',
+            method: 'delete',
+          },
+        }
+      );
+      await printRows();
+      // [END bigtable_check_and_mutate]
       break;
     }
     case 'dropRowRange': {
