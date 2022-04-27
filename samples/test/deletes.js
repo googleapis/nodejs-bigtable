@@ -16,7 +16,7 @@
 
 const uuid = require('uuid');
 const snapshot = require('snap-shot-it');
-const {describe, it, beforeEach} = require('mocha');
+const {describe, it, before} = require('mocha');
 const cp = require('child_process');
 const {obtainTestInstance} = require('./util');
 
@@ -29,7 +29,7 @@ describe('deletes', async () => {
   const TIMESTAMP = new Date(2019, 5, 1);
   TIMESTAMP.setUTCHours(0);
 
-  beforeEach(async () => {
+  before(async () => {
     const instance = await obtainTestInstance();
     INSTANCE_ID = instance.id;
     table = instance.table(TABLE_ID);

@@ -22,16 +22,7 @@ async function main(
   // [START bigtable_deletes_print]
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
-  const callOptions = {
-    timeout: 120000,
-    maxRetries: 0,
-    retry: {
-      retryCodes: [],
-      backoffSettings: {
-        totalTimeoutMillis: 120000,
-      },
-    },
-  };
+
   // TODO: We need to import this from mutation.ts, but I guess we need to compile typescript?
   const DELETE_METHOD = 'delete';
 
@@ -48,36 +39,26 @@ async function main(
   switch (deleteType) {
     case 'deleteFromColumn': {
       // [START bigtable_delete_from_column]
-      await table.mutate(
-        {
-          key: 'phone#4c410523#20190501',
-          method: DELETE_METHOD,
-          data: {
-            column: 'cell_plan:data_plan_05gb',
-          },
+      await table.mutate({
+        key: 'phone#4c410523#20190501',
+        method: DELETE_METHOD,
+        data: {
+          column: 'cell_plan:data_plan_05gb',
         },
-        {
-          gaxOptions: callOptions,
-        }
-      );
+      });
       await printRows();
       // [END bigtable_delete_from_column]
       break;
     }
     case 'deleteFromFamily': {
       // [START bigtable_delete_from_column]
-      await table.mutate(
-        {
-          key: 'phone#4c410523#20190501',
-          method: DELETE_METHOD,
-          data: {
-            column: 'cell_plan',
-          },
+      await table.mutate({
+        key: 'phone#4c410523#20190501',
+        method: DELETE_METHOD,
+        data: {
+          column: 'cell_plan',
         },
-        {
-          gaxOptions: callOptions,
-        }
-      );
+      });
       await printRows();
       // [END bigtable_delete_from_column]
       break;
@@ -85,16 +66,14 @@ async function main(
     case 'deleteFromRow': {
       // [START bigtable_deletes_from_row]
       const row = table.row('phone#4c410523#20190501');
-      await row.deleteCells(['cell_plan:data_plan_05gb'], callOptions);
+      await row.deleteCells(['stats_summary:connected_cell']);
       await printRows();
       // [END bigtable_deletes_from_row]
       break;
     }
     case 'streamingAndBatching': {
       // [START bigtable_streaming_and_batching]
-      const rows = (
-        await table.getRows({limit: 2, gaxOptions: callOptions})
-      )[0];
+      const rows = (await table.getRows({limit: 1}))[0];
       const entries = rows.map(row => {
         return {
           key: row.id,
@@ -108,17 +87,16 @@ async function main(
     }
     case 'checkAndMutate': {
       // [START bigtable_check_and_mutate]
-      const row = table.row('phone#4c410523#20190501');
+      const row = table.row('phone#4c410523#20190502');
       await row.filter(
         {
-          column: 'data_plan_01gb',
+          column: 'data_plan_05gb',
         },
         {
           onMatch: {
-            key: 'phone#4c410523#20190501',
+            key: 'phone#4c410523#20190502',
             method: 'delete',
           },
-          gaxOptions: callOptions,
         }
       );
       await printRows();
@@ -127,7 +105,7 @@ async function main(
     }
     case 'dropRowRange': {
       // [START bigtable_drop_row_range]
-      await table.deleteRows('phone#4c', callOptions);
+      await table.deleteRows('phone#5c10102#201');
       await printRows();
       // [END bigtable_drop_row_range]
       break;
@@ -135,14 +113,14 @@ async function main(
     case 'deleteColumnFamily': {
       // [START bigtable_delete_column_family]
       const cf = table.family('stats_summary');
-      await cf.delete(callOptions);
+      await cf.delete();
       await printRows();
       // [END bigtable_delete_column_family]
       break;
     }
     case 'deleteTable': {
       // [START bigtable_delete_table]
-      await table.delete(callOptions);
+      await table.delete();
       console.log(await table.exists({}));
       // [END bigtable_delete_table]
       break;
