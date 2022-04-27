@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 exports['deletes should delete column from a row 1'] = `
 Column Family stats_summary
 \tconnected_cell: 1 @1559347200000000
@@ -46,7 +45,7 @@ Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
 
-`
+`;
 
 exports['deletes should delete column family from a row 1'] = `
 Column Family stats_summary
@@ -79,7 +78,7 @@ Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
 
-`
+`;
 
 exports['deletes should delete one cell from a row 1'] = `
 Column Family stats_summary
@@ -114,7 +113,7 @@ Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
 
-`
+`;
 
 exports['deletes should check and mutate 1'] = `
 Column Family stats_summary
@@ -143,7 +142,7 @@ Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
 
-`
+`;
 
 exports['deletes should delete a whole range of rows 1'] = `
 Column Family stats_summary
@@ -160,7 +159,7 @@ Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
 
-`
+`;
 
 exports['deletes should delete a column family 1'] = `
 Column Family cell_plan
@@ -176,12 +175,12 @@ Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
 
-`
+`;
 
 exports['deletes should delete a table 1'] = `
 [ false ]
 
-`
+`;
 
 exports['deletes should stream rows and then do a batch delete 1'] = `
 Column Family stats_summary
@@ -204,4 +203,4 @@ Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
 
-`
+`;
