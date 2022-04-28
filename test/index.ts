@@ -515,6 +515,7 @@ describe('Bigtable', () => {
             {
               id: 'my-cluster',
               key,
+              nodes: 3,
             },
           ],
         },
@@ -548,6 +549,7 @@ describe('Bigtable', () => {
               encryption: {
                 kmsKeyName: key,
               },
+              nodes: 2,
             },
           ],
         },
