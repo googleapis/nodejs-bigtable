@@ -91,10 +91,10 @@ describe('Cluster', () => {
         await createStandardNewInstance(clusterId, 2);
         cluster = instance.cluster(clusterId);
       });
-      it('Create an instance with clusters for manual scaling', async () => {
+      it('should create an instance with clusters for manual scaling', async () => {
         await checkMetadata(cluster, {nodes: 2}, false);
       });
-      it('Create an instance and then create a cluster for manual scaling', async () => {
+      it('should create an instance and then create a cluster for manual scaling', async () => {
         const clusterId2: string = generateId('cluster');
         const cluster2 = instance.cluster(clusterId2);
         await cluster2.create({
@@ -109,7 +109,7 @@ describe('Cluster', () => {
           const clusterId2: string = generateId('cluster');
           cluster2 = instance.cluster(clusterId2);
         });
-        it('Without providing any cluster configuration', async () => {
+        it('should throw an error when providing no cluster configuration', async () => {
           try {
             await cluster2.create({
               location: 'us-west1-c',
@@ -119,7 +119,7 @@ describe('Cluster', () => {
             assert.equal(e.message, ClusterUtils.noConfigError);
           }
         });
-        it('By providing manual and autoscaling configurations', async () => {
+        it('should throw an error when providing manual and autoscaling configurations', async () => {
           try {
             await cluster2.create({
               location: 'us-west1-c',
@@ -131,7 +131,7 @@ describe('Cluster', () => {
             assert.equal(e.message, ClusterUtils.allConfigError);
           }
         });
-        it('Without providing all autoscaling configurations', async () => {
+        it('should throw an error providing all autoscaling configurations', async () => {
           try {
             await cluster2.create({
               location: 'us-west1-c',
@@ -156,7 +156,7 @@ describe('Cluster', () => {
         maxServeNodes,
         cpuUtilizationPercent,
       };
-      it('Create an instance with clusters for automatic scaling', async () => {
+      it('should create an instance with clusters for automatic scaling', async () => {
         const clusterId = generateId('cluster');
         await createNewInstance([
           Object.assign({id: clusterId}, createClusterOptions),
@@ -171,7 +171,7 @@ describe('Cluster', () => {
           true
         );
       });
-      it('Create an instance and then create clusters for automatic scaling', async () => {
+      it('should create an instance and then create clusters for automatic scaling', async () => {
         const clusterId: string = generateId('cluster');
         await createStandardNewInstance(clusterId, 2);
         const clusterId2: string = generateId('cluster');
@@ -199,7 +199,7 @@ describe('Cluster', () => {
         cluster = instance.cluster(clusterId);
       });
 
-      it('Change nodes for manual scaling', async () => {
+      it('should change nodes for manual scaling', async () => {
         const updateNodes = 5;
         assert.notEqual(startingNodes, updateNodes);
         await cluster.setMetadata({nodes: updateNodes});
@@ -211,7 +211,7 @@ describe('Cluster', () => {
           false
         );
       });
-      it('Change cluster to autoscaling', async () => {
+      it('should change cluster to autoscaling', async () => {
         const minServeNodes = 3;
         const maxServeNodes = 4;
         const cpuUtilizationPercent = 50;
@@ -232,7 +232,7 @@ describe('Cluster', () => {
         );
       });
       describe('Using an incorrect configuration', () => {
-        it('Without providing any cluster configuration', async () => {
+        it('should throw an error when providing no cluster configuration', async () => {
           try {
             await cluster.setMetadata({});
             assert.fail();
@@ -240,7 +240,7 @@ describe('Cluster', () => {
             assert.equal(e.message, ClusterUtils.noConfigError);
           }
         });
-        it('By providing too much cluster configurations', async () => {
+        it('should throw an error when providing manual and autoscaling configurations', async () => {
           try {
             await cluster.setMetadata({
               nodes: 2,
@@ -251,7 +251,7 @@ describe('Cluster', () => {
             assert.equal(e.message, ClusterUtils.allConfigError);
           }
         });
-        it('Without providing all autoscaling configurations', async () => {
+        it('should throw an error providing all autoscaling configurations', async () => {
           try {
             await cluster.setMetadata({
               minServeNodes: 3,
@@ -285,7 +285,7 @@ describe('Cluster', () => {
         cluster = instance.cluster(clusterId);
       });
 
-      it('Change cluster to manual scaling', async () => {
+      it('should change cluster to manual scaling', async () => {
         const updateNodes = 5;
         await cluster.setMetadata({
           nodes: updateNodes,
@@ -298,7 +298,7 @@ describe('Cluster', () => {
           false
         );
       });
-      it('Change autoscaling properties', async () => {
+      it('should change autoscaling properties', async () => {
         const newMinServeNodes = 5;
         const newMaxServeNodes = 6;
         const newCpuUtilizationPercent = 53;
