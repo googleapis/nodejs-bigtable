@@ -14,19 +14,41 @@
 
 import {afterEach, beforeEach, describe, it} from 'mocha';
 import {generateId} from './common';
-import {
-  Bigtable,
-  ClusterInfo,
-  Instance,
-  Cluster,
-  GetClusterMetadataResponse,
-} from '../src';
+import {Bigtable, ClusterInfo, Instance, Cluster} from '../src';
 import assert = require('assert');
 import {ClusterUtils} from '../src/utils/cluster';
+import {SetClusterMetadataOptions} from '../src/cluster';
 
 describe('Cluster', () => {
   const bigtable = new Bigtable();
   let instance: Instance;
+
+  async function checkMetadata(
+    cluster: Cluster,
+    compareValues: SetClusterMetadataOptions,
+    isConfigDefined: boolean
+  ): Promise<void> {
+    // const cluster: Cluster = instance.cluster(clusterId);
+    const metadata = await cluster.getMetadata({});
+    const {clusterConfig, serveNodes} = metadata[0];
+    assert.strictEqual(serveNodes, compareValues.nodes);
+    if (clusterConfig) {
+      assert.equal(isConfigDefined, true);
+      assert.deepStrictEqual(clusterConfig, {
+        clusterAutoscalingConfig: {
+          autoscalingLimits: {
+            minServeNodes: compareValues.minServeNodes,
+            maxServeNodes: compareValues.maxServeNodes,
+          },
+          autoscalingTargets: {
+            cpuUtilizationPercent: compareValues.cpuUtilizationPercent,
+          },
+        },
+      });
+    } else {
+      assert.equal(isConfigDefined, false);
+    }
+  }
 
   async function createNewInstance(clusters: ClusterInfo[]): Promise<void> {
     const instanceId: string = generateId('instance');
@@ -64,18 +86,13 @@ describe('Cluster', () => {
     describe('With manual scaling', () => {
       let clusterId: string;
       let cluster: Cluster;
-      async function checkMetadata(localCluster: Cluster, nodes: number) {
-        const metadata: GetClusterMetadataResponse =
-          await localCluster.getMetadata({});
-        assert.strictEqual(metadata[0].serveNodes, nodes);
-      }
       beforeEach(async () => {
         clusterId = generateId('cluster');
         await createStandardNewInstance(clusterId, 2);
         cluster = instance.cluster(clusterId);
       });
       it('Create an instance with clusters for manual scaling', async () => {
-        await checkMetadata(cluster, 2);
+        await checkMetadata(cluster, {nodes: 2}, false);
       });
       it('Create an instance and then create a cluster for manual scaling', async () => {
         const clusterId2: string = generateId('cluster');
@@ -84,7 +101,7 @@ describe('Cluster', () => {
           location: 'us-west1-c',
           nodes: 3,
         });
-        await checkMetadata(cluster2, 3);
+        await checkMetadata(cluster2, {nodes: 3}, false);
       });
       describe('Using an incorrect configuration', () => {
         let cluster2: Cluster;
@@ -132,24 +149,7 @@ describe('Cluster', () => {
       const minServeNodes = 2;
       const maxServeNodes = 4;
       const cpuUtilizationPercent = 50;
-      async function checkMetadata(
-        instance: Instance,
-        clusterId: string
-      ): Promise<void> {
-        const cluster: Cluster = instance.cluster(clusterId);
-        const metadata = await cluster.getMetadata({});
-        const clusterConfig = metadata[0].clusterConfig;
-        const clusterAutoscalingConfig =
-          clusterConfig?.clusterAutoscalingConfig;
-        const autoscalingLimits = clusterAutoscalingConfig?.autoscalingLimits;
-        const autoscalingTargets = clusterAutoscalingConfig?.autoscalingTargets;
-        assert.strictEqual(autoscalingLimits?.minServeNodes, minServeNodes);
-        assert.strictEqual(autoscalingLimits?.maxServeNodes, maxServeNodes);
-        assert.strictEqual(
-          autoscalingTargets?.cpuUtilizationPercent,
-          cpuUtilizationPercent
-        );
-      }
+
       const createClusterOptions = {
         location: 'us-west1-c',
         minServeNodes,
@@ -161,7 +161,15 @@ describe('Cluster', () => {
         await createNewInstance([
           Object.assign({id: clusterId}, createClusterOptions),
         ]);
-        await checkMetadata(instance, clusterId);
+        const cluster: Cluster = instance.cluster(clusterId);
+        await checkMetadata(
+          cluster,
+          {
+            ...createClusterOptions,
+            nodes: minServeNodes,
+          },
+          true
+        );
       });
       it('Create an instance and then create clusters for automatic scaling', async () => {
         const clusterId: string = generateId('cluster');
@@ -169,7 +177,14 @@ describe('Cluster', () => {
         const clusterId2: string = generateId('cluster');
         const cluster: Cluster = instance.cluster(clusterId2);
         await cluster.create(createClusterOptions);
-        await checkMetadata(instance, clusterId2);
+        await checkMetadata(
+          cluster,
+          {
+            ...createClusterOptions,
+            nodes: minServeNodes,
+          },
+          true
+        );
       });
     });
   });
@@ -188,10 +203,13 @@ describe('Cluster', () => {
         const updateNodes = 5;
         assert.notEqual(startingNodes, updateNodes);
         await cluster.setMetadata({nodes: updateNodes});
-        const metadata = await cluster.getMetadata({});
-        const {clusterConfig, serveNodes} = metadata[0];
-        assert.strictEqual(serveNodes, updateNodes);
-        assert.strictEqual(clusterConfig, undefined);
+        await checkMetadata(
+          cluster,
+          {
+            nodes: updateNodes,
+          },
+          false
+        );
       });
       it('Change cluster to autoscaling', async () => {
         const minServeNodes = 3;
@@ -202,20 +220,16 @@ describe('Cluster', () => {
           maxServeNodes,
           cpuUtilizationPercent,
         });
-        const metadata = await cluster.getMetadata({});
-        const {clusterConfig, serveNodes} = metadata[0];
-        assert.strictEqual(serveNodes, startingNodes);
-        assert.deepStrictEqual(clusterConfig, {
-          clusterAutoscalingConfig: {
-            autoscalingLimits: {
-              minServeNodes,
-              maxServeNodes,
-            },
-            autoscalingTargets: {
-              cpuUtilizationPercent,
-            },
+        await checkMetadata(
+          cluster,
+          {
+            nodes: startingNodes,
+            minServeNodes,
+            maxServeNodes,
+            cpuUtilizationPercent,
           },
-        });
+          true
+        );
       });
       describe('Using an incorrect configuration', () => {
         it('Without providing any cluster configuration', async () => {
@@ -276,10 +290,13 @@ describe('Cluster', () => {
         await cluster.setMetadata({
           nodes: updateNodes,
         });
-        const metadata = await cluster.getMetadata({});
-        const {clusterConfig, serveNodes} = metadata[0];
-        assert.strictEqual(serveNodes, updateNodes);
-        assert.strictEqual(clusterConfig, undefined);
+        await checkMetadata(
+          cluster,
+          {
+            nodes: updateNodes,
+          },
+          false
+        );
       });
       it('Change autoscaling properties', async () => {
         const newMinServeNodes = 5;
@@ -293,20 +310,16 @@ describe('Cluster', () => {
           maxServeNodes: newMaxServeNodes,
           cpuUtilizationPercent: newCpuUtilizationPercent,
         });
-        const metadata = await cluster.getMetadata({});
-        const {clusterConfig, serveNodes} = metadata[0];
-        assert.strictEqual(serveNodes, minServeNodes);
-        assert.deepStrictEqual(clusterConfig, {
-          clusterAutoscalingConfig: {
-            autoscalingLimits: {
-              minServeNodes: newMinServeNodes,
-              maxServeNodes: newMaxServeNodes,
-            },
-            autoscalingTargets: {
-              cpuUtilizationPercent: newCpuUtilizationPercent,
-            },
+        await checkMetadata(
+          cluster,
+          {
+            nodes: minServeNodes,
+            minServeNodes: newMinServeNodes,
+            maxServeNodes: newMaxServeNodes,
+            cpuUtilizationPercent: newCpuUtilizationPercent,
           },
-        });
+          true
+        );
       });
     });
   });
