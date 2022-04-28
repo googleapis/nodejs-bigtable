@@ -102,7 +102,7 @@ describe('Cluster', () => {
             assert.equal(e.message, ClusterUtils.noConfigError);
           }
         });
-        it('By providing too much cluster configurations', async () => {
+        it('By providing manual and autoscaling configurations', async () => {
           try {
             await cluster2.create({
               location: 'us-west1-c',
