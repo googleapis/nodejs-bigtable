@@ -32,7 +32,6 @@ async function main(
   const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
-  // Write your code here.
   // [START_EXCLUDE]
   switch (deleteType) {
     case 'deleteFromColumn': {
