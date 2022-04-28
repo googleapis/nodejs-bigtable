@@ -23,9 +23,7 @@ async function main(
   const {Bigtable} = require('@google-cloud/bigtable');
   const bigtable = new Bigtable();
 
-  // TODO: We need to import this from mutation.ts, but I guess we need to compile typescript?
-  const DELETE_METHOD = 'delete';
-
+  // TODO: We need to import Mutation.methods.DELETE from mutation.ts, but I guess we need to compile typescript?
   /**
    * TODO(developer): Uncomment these variables before running the sample.
    */
@@ -41,7 +39,7 @@ async function main(
       // [START bigtable_delete_from_column]
       await table.mutate({
         key: 'phone#4c410523#20190501',
-        method: DELETE_METHOD,
+        method: 'delete',
         data: {
           column: 'cell_plan:data_plan_05gb',
         },
@@ -51,16 +49,16 @@ async function main(
       break;
     }
     case 'deleteFromFamily': {
-      // [START bigtable_delete_from_column]
+      // [START bigtable_delete_from_column_family]
       await table.mutate({
         key: 'phone#4c410523#20190501',
-        method: DELETE_METHOD,
+        method: 'delete',
         data: {
           column: 'cell_plan',
         },
       });
       await printRows();
-      // [END bigtable_delete_from_column]
+      // [END bigtable_delete_from_column_family]
       break;
     }
     case 'deleteFromRow': {
