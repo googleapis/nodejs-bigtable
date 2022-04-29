@@ -17,7 +17,6 @@ import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
-import * as uuid from 'uuid';
 
 import {Backup, Bigtable, Instance} from '../src';
 import {AppProfile} from '../src/app-profile.js';
@@ -26,6 +25,7 @@ import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
+import {generateId} from './common';
 
 const PREFIX = 'gcloud-tests-';
 
@@ -1416,9 +1416,6 @@ describe('Bigtable', () => {
   });
 });
 
-function generateId(resourceType: string) {
-  return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
-}
 function createInstanceConfig(
   clusterId: string,
   location: string,
