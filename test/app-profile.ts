@@ -47,10 +47,14 @@ describe('Bigtable/AppProfile', () => {
     instance: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     id: any;
+    name: string;
+    bigtable: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(instance: any, id: any) {
       this.instance = instance;
       this.id = id;
+      this.name = 'cluster-name';
+      this.bigtable = instance.bigtable;
     }
   }
 

@@ -260,7 +260,7 @@ describe('Bigtable/Instance', () => {
       it('a set of cluster objects', done => {
         const clusterIds = ['my-cluster1', 'my-cluster2'];
         const clusters = clusterIds.map(
-          cluster => new FakeCluster({} as inst.Instance, cluster)
+          cluster => new FakeCluster(instance, cluster)
         );
         const options = {routing: new Set(clusters)};
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
