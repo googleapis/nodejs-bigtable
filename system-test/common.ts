@@ -19,7 +19,7 @@ import * as inst from '../src/instance';
 export const PREFIX = 'gcloud-tests-';
 
 export function generateId(resourceType: string) {
-  return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
+  return `${PREFIX}${resourceType}-${uuid.v1().substr(0, 8)}-${Date.now()}`;
 }
 
 export class FakeCluster extends Cluster {
