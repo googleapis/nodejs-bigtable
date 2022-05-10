@@ -28,7 +28,7 @@ export class ClusterUtils {
   static incompleteConfigError =
     'All of autoscaling configurations must be specified at the same time (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).';
 
-  static validateMetadata(
+  static validateClusterMetadata(
     metadata: SetClusterMetadataOptions | BasicClusterConfig
   ): void {
     if (metadata.nodes) {

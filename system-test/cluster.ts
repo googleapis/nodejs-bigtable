@@ -131,7 +131,7 @@ describe('Cluster', () => {
             assert.equal(e.message, ClusterUtils.allConfigError);
           }
         });
-        it('should throw an error providing all autoscaling configurations', async () => {
+        it('should throw an error when missing all autoscaling configurations', async () => {
           try {
             await cluster2.create({
               location: 'us-west1-c',
@@ -189,7 +189,7 @@ describe('Cluster', () => {
     });
   });
   describe('Update cluster', () => {
-    describe('Starting from manual scaling', () => {
+    describe('Updating manual scaling for a cluster', () => {
       let cluster: Cluster;
       const startingNodes = 2;
 
@@ -251,7 +251,7 @@ describe('Cluster', () => {
             assert.equal(e.message, ClusterUtils.allConfigError);
           }
         });
-        it('should throw an error providing all autoscaling configurations', async () => {
+        it('should throw an error when missing some autoscaling configurations', async () => {
           try {
             await cluster.setMetadata({
               minServeNodes: 3,
