@@ -47,10 +47,14 @@ describe('Bigtable/AppProfile', () => {
     instance: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     id: any;
+    name: string;
+    bigtable: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(instance: any, id: any) {
       this.instance = instance;
       this.id = id;
+      this.name = 'cluster-name';
+      this.bigtable = instance.bigtable;
     }
   }
 
@@ -106,6 +110,9 @@ describe('Bigtable/AppProfile', () => {
   });
 
   describe('formatAppProfile_', () => {
+    const errorReg =
+      /An app profile routing policy can only contain "any" for multi cluster routing, a `Cluster` for single routing, or a set of clusterIds as strings or `Clusters` for multi cluster routing\./;
+
     it("should accept an 'any' cluster routing policy", () => {
       const formattedAppProfile = AppProfile.formatAppProfile_({
         routing: 'any',
@@ -125,6 +132,7 @@ describe('Bigtable/AppProfile', () => {
           clusterId,
         });
       });
+
       it('should accept allowTransactionalWrites', () => {
         const formattedAppProfile = AppProfile.formatAppProfile_({
           routing: cluster,
@@ -145,12 +153,37 @@ describe('Bigtable/AppProfile', () => {
       });
 
       it('should throw for an invalid routing policy', () => {
-        const errorReg =
-          /An app profile routing policy can only contain "any" or a `Cluster`\./;
-
         assert.throws(
           AppProfile.formatAppProfile_.bind(null, {
             routing: 'not-any',
+          }),
+          errorReg
+        );
+      });
+    });
+
+    describe('with a multi cluster routing policy', () => {
+      it('should use multi cluster routing when providing an array of clusters', () => {
+        const clusterIds = ['clusterId1', 'clusterId2'];
+        const clusters = clusterIds.map(
+          clusterId => new FakeCluster(INSTANCE, clusterId)
+        );
+        const formattedAppProfile = AppProfile.formatAppProfile_({
+          routing: new Set(clusters),
+        });
+        assert.deepStrictEqual(
+          new Set(formattedAppProfile.multiClusterRoutingUseAny.clusterIds),
+          new Set(clusterIds)
+        );
+      });
+      it('should ensure elements in the array are clusters', () => {
+        const notAllClusters = [
+          new FakeCluster(INSTANCE, 'clusterId'),
+          'not a cluster',
+        ];
+        assert.throws(
+          AppProfile.formatAppProfile_.bind(null, {
+            routing: notAllClusters,
           }),
           errorReg
         );
