@@ -32,7 +32,6 @@ async function main(
   const instance = bigtable.instance(instanceId);
   const table = instance.table(tableId);
 
-  // [START_EXCLUDE]
   switch (deleteType) {
     case 'deleteFromColumn': {
       // [START bigtable_delete_from_column]
@@ -123,7 +122,6 @@ async function main(
       break;
     }
   }
-  // [END_EXCLUDE]
 
   async function printRows() {
     const rows = (await table.getRows({}))[0];
