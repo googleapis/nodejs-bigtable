@@ -1,74 +1,50 @@
-import {describe, it} from 'mocha';
+import {before, describe, it} from 'mocha';
 import {Bigtable} from '../src';
 import * as v2 from '../src/v2';
 import {PassThrough} from 'stream';
 import * as assert from 'assert';
-
 import jsonProtos = require('../protos/protos.json');
-
 import grpc = require('@grpc/grpc-js');
 import protoLoader = require('@grpc/proto-loader');
 import {GoogleError} from 'google-gax';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const packageDefinition = protoLoader.fromJSON(jsonProtos, {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true,
-});
-const errorDetails =
-  'Table not found: projects/my-project/instances/my-instance/tables/my-table';
-const readRows = (call: any, example: any) => {
-  // const metadata = new grpc.Metadata();
-  // metadata.set(
-  //   'grpc-server-stats-bin',Buffer.from('AAKENLPQKNSALSDFJ')
-  //   Buffer.from([0, 0, 201, 39, 110, 3, 0, 0, 0, 0]).toString()
-  // );
-  const metadata = new grpc.Metadata();
-  metadata.set('grpc-server-stats-bin', Buffer.from('AAKENLPQKNSALSDFJ'));
-  // const internalRepr = new Map();
-  // internalRepr.set('grpc-server-stats-bin', [
-  //   Buffer.from([0, 0, 201, 39, 110, 3, 0, 0, 0, 0]),
-  // ]);
-  call.emit('error', {
-    code: 5,
-    details:
-      'Table not found: projects/my-project/instances/my-instance/tables/my-table',
-    metadata,
-  });
-  // call.emit('error', {
-  //   code: 5,
-  //   details:
-  //     'Table not found: projects/my-project/instances/my-instance/tables/my-table',
-  //   metadata: {
-  //     internalRepr,
-  //     options: {},
-  //   },
-  // });
-  // call.emit('error', {
-  //   code: 5,
-  //   details: errorDetails,
-  // });
-};
-const proto = grpc.loadPackageDefinition(packageDefinition);
-const server = new grpc.Server();
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const service = proto.google.bigtable.v2.Bigtable.service;
-server.addService(service, {
-  ReadRows: readRows,
-});
-server.bindAsync(
-  'localhost:1234',
-  grpc.ServerCredentials.createInsecure(),
-  () => {
-    server.start();
-  }
-);
 
 describe('Bigtable/Grpc-mock', () => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const packageDefinition = protoLoader.fromJSON(jsonProtos, {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true,
+  });
+  const errorDetails =
+    'Table not found: projects/my-project/instances/my-instance/tables/my-table';
+  const readRows = (stream: any) => {
+    stream.emit('error', {
+      code: 5,
+      details: errorDetails,
+    });
+  };
+  const proto = grpc.loadPackageDefinition(packageDefinition);
+  const server = new grpc.Server();
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const service = proto.google.bigtable.v2.Bigtable.service;
+
+  before(async () => {
+    server.addService(service, {
+      ReadRows: readRows,
+    });
+    server.bindAsync(
+      'localhost:1234',
+      grpc.ServerCredentials.createInsecure(),
+      () => {
+        server.start();
+      }
+    );
+  });
+
   it('should produce human readable error when passing through gax', done => {
     const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
     const clientConfig = 'BigtableClient';
