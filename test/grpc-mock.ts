@@ -21,10 +21,23 @@ const packageDefinition = protoLoader.fromJSON(jsonProtos, {
 const errorDetails =
   'Table not found: projects/my-project/instances/my-instance/tables/my-table';
 const readRows = (call: any, example: any) => {
+  // const metadata = new grpc.Metadata();
+  // metadata.set(
+  //   'grpc-server-stats-bin',Buffer.from('AAKENLPQKNSALSDFJ')
+  //   Buffer.from([0, 0, 201, 39, 110, 3, 0, 0, 0, 0]).toString()
+  // );
+  const metadata = new grpc.Metadata();
+  metadata.set('grpc-server-stats-bin', Buffer.from('AAKENLPQKNSALSDFJ'));
   // const internalRepr = new Map();
   // internalRepr.set('grpc-server-stats-bin', [
   //   Buffer.from([0, 0, 201, 39, 110, 3, 0, 0, 0, 0]),
   // ]);
+  call.emit('error', {
+    code: 5,
+    details:
+      'Table not found: projects/my-project/instances/my-instance/tables/my-table',
+    metadata,
+  });
   // call.emit('error', {
   //   code: 5,
   //   details:
@@ -34,10 +47,10 @@ const readRows = (call: any, example: any) => {
   //     options: {},
   //   },
   // });
-  call.emit('error', {
-    code: 5,
-    details: errorDetails,
-  });
+  // call.emit('error', {
+  //   code: 5,
+  //   details: errorDetails,
+  // });
 };
 const proto = grpc.loadPackageDefinition(packageDefinition);
 const server = new grpc.Server();
