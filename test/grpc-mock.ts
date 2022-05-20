@@ -19,38 +19,25 @@
 import {before, describe, it} from 'mocha';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
-import jsonProtos = require('../protos/protos.json');
-import grpc = require('@grpc/grpc-js');
-import protoLoader = require('@grpc/proto-loader');
+
 import {GoogleError} from 'google-gax';
+import {MockServer} from '../src/util/mock-servers/mock-server';
+import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
+import {MockService} from '../src/util/mock-servers/mock-service';
+
+// TODO: Test server shuts down
 
 describe('Bigtable/Grpc-mock', () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const packageDefinition = protoLoader.fromJSON(jsonProtos, {
-    keepCase: true,
-    longs: String,
-    enums: String,
-    defaults: true,
-    oneofs: true,
-  });
-  const proto = grpc.loadPackageDefinition(packageDefinition);
-  const server = new grpc.Server();
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const service = proto.google.bigtable.v2.Bigtable.service;
-  server.bindAsync(
-    'localhost:1234',
-    grpc.ServerCredentials.createInsecure(),
-    () => {
-      server.start();
-    }
-  );
+  const server: MockServer = new MockServer();
+
   describe('with the bigtable data client', () => {
+    const service: MockService = new BigtableClientMockService(server);
+
     describe('sends errors through a streaming request', () => {
       const errorDetails =
         'Table not found: projects/my-project/instances/my-instance/tables/my-table';
       const emitTableNotExistsError = (stream: any) => {
+        // TODO: Replace stream with type
         stream.emit('error', {
           code: 5,
           details: errorDetails,
@@ -58,12 +45,9 @@ describe('Bigtable/Grpc-mock', () => {
       };
       describe('with ReadRows service', () => {
         before(async () => {
-          server.addService(service, {
+          service.setService({
             ReadRows: emitTableNotExistsError,
           });
-        });
-        after(async () => {
-          server.removeService(service);
         });
         it('should produce human readable error when passing through gax', done => {
           const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
@@ -83,12 +67,9 @@ describe('Bigtable/Grpc-mock', () => {
       });
       describe('with mutateRows service through insert', () => {
         before(async () => {
-          server.addService(service, {
+          service.setService({
             mutateRows: emitTableNotExistsError,
           });
-        });
-        after(async () => {
-          server.removeService(service);
         });
         it('should produce human readable error when passing through gax', async () => {
           const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
@@ -124,12 +105,9 @@ describe('Bigtable/Grpc-mock', () => {
       });
       describe('with sampleRowKeys', () => {
         before(async () => {
-          server.addService(service, {
+          service.setService({
             sampleRowKeys: emitTableNotExistsError,
           });
-        });
-        after(async () => {
-          server.removeService(service);
         });
         it('should produce human readable error when passing through gax', async () => {
           const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
