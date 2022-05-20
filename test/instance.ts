@@ -34,6 +34,7 @@ import {PassThrough} from 'stream';
 import * as pumpify from 'pumpify';
 import {FakeCluster} from '../system-test/common';
 import {RestoreTableConfig} from '../src/backup';
+import {Options} from './cluster';
 
 const sandbox = sinon.createSandbox();
 
@@ -904,7 +905,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -926,7 +927,7 @@ describe('Bigtable/Instance', () => {
       const pageSize = 3;
       const gaxOptions = {pageSize, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1010,7 +1011,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1033,7 +1034,7 @@ describe('Bigtable/Instance', () => {
       const pageSize = 3;
       const gaxOptions = {pageSize, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1436,7 +1437,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageSize, pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {

@@ -20,6 +20,13 @@ import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
 import {PreciseDate} from '@google-cloud/precise-date';
 
+export interface Options {
+  nodes?: Number;
+  gaxOptions?: {
+    timeout: number;
+  };
+}
+
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -987,7 +994,7 @@ describe('Bigtable/Cluster', () => {
         defaultStorageType: 'exellent_type',
       };
 
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {name: CLUSTER_NAME, serveNodes: options.nodes},
         options
