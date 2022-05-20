@@ -21,25 +21,21 @@ import {grpc} from 'google-gax';
 const DEFAULT_PORT = 1234;
 
 export class MockServer {
-  port: number;
+  port: string;
   services: Set<grpc.ServiceDefinition> = new Set();
   server: grpc.Server;
 
   constructor(port?: string | number | undefined) {
-    this.port = port ? Number(port) : DEFAULT_PORT;
+    this.port = Number(port ? port : DEFAULT_PORT).toString();
     const server = new grpc.Server();
     server.bindAsync(
-      `localhost:${this.port.toString()}`,
+      `localhost:${this.port}`,
       grpc.ServerCredentials.createInsecure(),
       () => {
         server.start();
       }
     );
     this.server = server;
-  }
-
-  getPort(): number {
-    return this.port;
   }
 
   setService(

@@ -29,10 +29,12 @@ import {MockService} from '../src/util/mock-servers/mock-service';
 
 describe('Bigtable/Grpc-mock', () => {
   const server: MockServer = new MockServer();
-
+  const bigtable = new Bigtable({
+    apiEndpoint: `localhost:${server.port}`,
+  });
+  const table = bigtable.instance('fake-instance').table('fake-table');
   describe('with the bigtable data client', () => {
     const service: MockService = new BigtableClientMockService(server);
-
     describe('sends errors through a streaming request', () => {
       const errorDetails =
         'Table not found: projects/my-project/instances/my-instance/tables/my-table';
@@ -43,6 +45,15 @@ describe('Bigtable/Grpc-mock', () => {
           details: errorDetails,
         });
       };
+      function checkTableNotExistError(err: GoogleError) {
+        const {code, statusDetails, message} = err;
+        assert.strictEqual(statusDetails, errorDetails);
+        assert.strictEqual(code, 5);
+        assert.strictEqual(
+          message,
+          '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
+        );
+      }
       describe('with ReadRows service', () => {
         before(async () => {
           service.setService({
@@ -50,17 +61,9 @@ describe('Bigtable/Grpc-mock', () => {
           });
         });
         it('should produce human readable error when passing through gax', done => {
-          const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
-          const table = bigtable.instance('fake-instance').table('fake-table');
           const readStream = table.createReadStream({});
           readStream.on('error', (err: GoogleError) => {
-            const {code, statusDetails, message} = err;
-            assert.strictEqual(statusDetails, errorDetails);
-            assert.strictEqual(code, 5);
-            assert.strictEqual(
-              message,
-              '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
-            );
+            checkTableNotExistError(err);
             done();
           });
         });
@@ -72,8 +75,6 @@ describe('Bigtable/Grpc-mock', () => {
           });
         });
         it('should produce human readable error when passing through gax', async () => {
-          const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
-          const table = bigtable.instance('fake-instance').table('fake-table');
           const timestamp = new Date();
           const rowsToInsert = [
             {
@@ -93,13 +94,7 @@ describe('Bigtable/Grpc-mock', () => {
             await table.insert(rowsToInsert);
             assert.fail();
           } catch (err) {
-            const {code, statusDetails, message} = err;
-            assert.strictEqual(statusDetails, errorDetails);
-            assert.strictEqual(code, 5);
-            assert.strictEqual(
-              message,
-              '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
-            );
+            checkTableNotExistError(err);
           }
         });
       });
@@ -110,19 +105,11 @@ describe('Bigtable/Grpc-mock', () => {
           });
         });
         it('should produce human readable error when passing through gax', async () => {
-          const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
-          const table = bigtable.instance('fake-instance').table('fake-table');
           try {
             await table.sampleRowKeys({});
             assert.fail();
           } catch (err) {
-            const {code, statusDetails, message} = err;
-            assert.strictEqual(statusDetails, errorDetails);
-            assert.strictEqual(code, 5);
-            assert.strictEqual(
-              message,
-              '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
-            );
+            checkTableNotExistError(err);
           }
         });
       });
