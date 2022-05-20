@@ -18,8 +18,6 @@
 
 import {before, describe, it} from 'mocha';
 import {Bigtable} from '../src';
-import * as v2 from '../src/v2';
-import {PassThrough} from 'stream';
 import * as assert from 'assert';
 import jsonProtos = require('../protos/protos.json');
 import grpc = require('@grpc/grpc-js');
@@ -36,52 +34,120 @@ describe('Bigtable/Grpc-mock', () => {
     defaults: true,
     oneofs: true,
   });
-  const errorDetails =
-    'Table not found: projects/my-project/instances/my-instance/tables/my-table';
-  const readRows = (stream: any) => {
-    stream.emit('error', {
-      code: 5,
-      details: errorDetails,
-    });
-  };
   const proto = grpc.loadPackageDefinition(packageDefinition);
   const server = new grpc.Server();
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const service = proto.google.bigtable.v2.Bigtable.service;
-
-  before(async () => {
-    server.addService(service, {
-      ReadRows: readRows,
-    });
-    server.bindAsync(
-      'localhost:1234',
-      grpc.ServerCredentials.createInsecure(),
-      () => {
-        server.start();
-      }
-    );
-  });
-
-  it('should produce human readable error when passing through gax', done => {
-    const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
-    const clientConfig = 'BigtableClient';
-    const gaxClient = new v2[clientConfig]({});
-    const stream = new PassThrough({objectMode: true});
-    gaxClient.innerApiCalls.readRows = () => {
-      return stream;
-    };
-    const table = bigtable.instance('fake-instance').table('fake-table');
-    const readStream = table.createReadStream({});
-    readStream.on('error', (err: GoogleError) => {
-      const {code, statusDetails, message} = err;
-      assert.strictEqual(statusDetails, errorDetails);
-      assert.strictEqual(code, 5);
-      assert.strictEqual(
-        message,
-        '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
-      );
-      done();
+  server.bindAsync(
+    'localhost:1234',
+    grpc.ServerCredentials.createInsecure(),
+    () => {
+      server.start();
+    }
+  );
+  describe('with the bigtable data client', () => {
+    describe('sends errors through a streaming request', () => {
+      const errorDetails =
+        'Table not found: projects/my-project/instances/my-instance/tables/my-table';
+      const emitTableNotExistsError = (stream: any) => {
+        stream.emit('error', {
+          code: 5,
+          details: errorDetails,
+        });
+      };
+      describe('with ReadRows service', () => {
+        before(async () => {
+          server.addService(service, {
+            ReadRows: emitTableNotExistsError,
+          });
+        });
+        after(async () => {
+          server.removeService(service);
+        });
+        it('should produce human readable error when passing through gax', done => {
+          const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
+          const table = bigtable.instance('fake-instance').table('fake-table');
+          const readStream = table.createReadStream({});
+          readStream.on('error', (err: GoogleError) => {
+            const {code, statusDetails, message} = err;
+            assert.strictEqual(statusDetails, errorDetails);
+            assert.strictEqual(code, 5);
+            assert.strictEqual(
+              message,
+              '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
+            );
+            done();
+          });
+        });
+      });
+      describe('with mutateRows service through insert', () => {
+        before(async () => {
+          server.addService(service, {
+            mutateRows: emitTableNotExistsError,
+          });
+        });
+        after(async () => {
+          server.removeService(service);
+        });
+        it('should produce human readable error when passing through gax', async () => {
+          const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
+          const table = bigtable.instance('fake-instance').table('fake-table');
+          const timestamp = new Date();
+          const rowsToInsert = [
+            {
+              key: 'r2',
+              data: {
+                cf1: {
+                  c1: {
+                    value: 'test-value2',
+                    labels: [],
+                    timestamp,
+                  },
+                },
+              },
+            },
+          ];
+          try {
+            await table.insert(rowsToInsert);
+            assert.fail();
+          } catch (err) {
+            const {code, statusDetails, message} = err;
+            assert.strictEqual(statusDetails, errorDetails);
+            assert.strictEqual(code, 5);
+            assert.strictEqual(
+              message,
+              '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
+            );
+          }
+        });
+      });
+      describe('with sampleRowKeys', () => {
+        before(async () => {
+          server.addService(service, {
+            sampleRowKeys: emitTableNotExistsError,
+          });
+        });
+        after(async () => {
+          server.removeService(service);
+        });
+        it('should produce human readable error when passing through gax', async () => {
+          const bigtable = new Bigtable({apiEndpoint: 'localhost:1234'});
+          const table = bigtable.instance('fake-instance').table('fake-table');
+          try {
+            await table.sampleRowKeys({});
+            assert.fail();
+          } catch (err) {
+            const {code, statusDetails, message} = err;
+            assert.strictEqual(statusDetails, errorDetails);
+            assert.strictEqual(code, 5);
+            assert.strictEqual(
+              message,
+              '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
+            );
+          }
+        });
+      });
     });
   });
 });
