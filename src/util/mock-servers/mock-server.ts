@@ -25,17 +25,22 @@ export class MockServer {
   services: Set<grpc.ServiceDefinition> = new Set();
   server: grpc.Server;
 
-  constructor(port?: string | number | undefined) {
-    this.port = Number(port ? port : DEFAULT_PORT).toString();
+  constructor(
+    callback?: (port: string) => void,
+    port?: string | number | undefined
+  ) {
+    const portString = Number(port ? port : DEFAULT_PORT).toString();
+    this.port = portString;
     const server = new grpc.Server();
+    this.server = server;
     server.bindAsync(
       `localhost:${this.port}`,
       grpc.ServerCredentials.createInsecure(),
       () => {
         server.start();
+        callback ? callback(portString) : undefined;
       }
     );
-    this.server = server;
   }
 
   setService(
@@ -48,5 +53,11 @@ export class MockServer {
       this.services.add(service);
     }
     this.server.addService(service, implementation);
+  }
+
+  shutdown(callback: (err?: Error) => void) {
+    this.server.tryShutdown((err?: Error) => {
+      callback(err);
+    });
   }
 }

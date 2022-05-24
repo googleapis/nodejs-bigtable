@@ -25,16 +25,27 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 
-// TODO: Test server shuts down
+describe('Bigtable/Errors', () => {
+  let server: MockServer;
+  let bigtable: Bigtable;
+  let table: any;
 
-describe('Bigtable/Grpc-mock', () => {
-  const server: MockServer = new MockServer();
-  const bigtable = new Bigtable({
-    apiEndpoint: `localhost:${server.port}`,
+  before(done => {
+    server = new MockServer(() => {
+      bigtable = new Bigtable({
+        apiEndpoint: `localhost:${server.port}`,
+      });
+      table = bigtable.instance('fake-instance').table('fake-table');
+      done();
+    });
   });
-  const table = bigtable.instance('fake-instance').table('fake-table');
+
   describe('with the bigtable data client', () => {
-    const service: MockService = new BigtableClientMockService(server);
+    let service: MockService;
+    before(async () => {
+      service = new BigtableClientMockService(server);
+    });
+
     describe('sends errors through a streaming request', () => {
       const errorDetails =
         'Table not found: projects/my-project/instances/my-instance/tables/my-table';
@@ -114,5 +125,9 @@ describe('Bigtable/Grpc-mock', () => {
         });
       });
     });
+  });
+
+  after(async () => {
+    server.shutdown(() => {});
   });
 });
