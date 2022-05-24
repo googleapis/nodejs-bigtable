@@ -48,9 +48,6 @@ describe('Bigtable/Mock-Server', () => {
     // netServer.listen(port);
     netServer.listen(`localhost:${port}`);
   }
-  before(done => {
-    checkPort(inputPort, false, done);
-  });
   describe('Ensure server shuts down properly when destroyed', () => {
     it('should start a mock server', done => {
       server = new MockServer(port => {
@@ -62,7 +59,6 @@ describe('Bigtable/Mock-Server', () => {
     checkPort(server.port, true, () => {
       server.shutdown((err?: Error) => {
         assert.deepStrictEqual(err, undefined);
-        checkPort(server.port, false, done);
       });
     });
   });

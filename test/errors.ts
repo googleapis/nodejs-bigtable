@@ -126,7 +126,6 @@ describe('Bigtable/Errors', () => {
       });
     });
   });
-
   after(async () => {
     server.shutdown(() => {});
   });
