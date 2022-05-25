@@ -20,7 +20,7 @@ import {before, describe, it} from 'mocha';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
 
-import {GoogleError} from 'google-gax';
+import {GoogleError, grpc} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
@@ -51,9 +51,15 @@ describe('Bigtable/Errors', () => {
         'Table not found: projects/my-project/instances/my-instance/tables/my-table';
       const emitTableNotExistsError = (stream: any) => {
         // TODO: Replace stream with type
+        const metadata = new grpc.Metadata();
+        metadata.set(
+          'grpc-server-stats-bin',
+          Buffer.from([0, 0, 116, 73, 159, 3, 0, 0, 0, 0])
+        );
         stream.emit('error', {
           code: 5,
           details: errorDetails,
+          metadata,
         });
       };
       function checkTableNotExistError(err: GoogleError) {
