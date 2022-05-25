@@ -101,7 +101,7 @@ async function main(
     }
     case 'dropRowRange': {
       // [START bigtable_drop_row_range]
-      await table.deleteRows('phone#5c10102#201');
+      await table.deleteRows('phone#5c10102');
       await printRows();
       // [END bigtable_drop_row_range]
       break;
