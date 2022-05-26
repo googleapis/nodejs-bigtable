@@ -25,6 +25,13 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 
+function isGoogleError(error: any): error is GoogleError {
+  return (
+    error.parseGRPCStatusDetails !== undefined &&
+    error.parseHttpError !== undefined
+  );
+}
+
 describe('Bigtable/Errors', () => {
   let server: MockServer;
   let bigtable: Bigtable;
@@ -62,14 +69,20 @@ describe('Bigtable/Errors', () => {
           metadata,
         });
       };
-      function checkTableNotExistError(err: GoogleError) {
-        const {code, statusDetails, message} = err;
-        assert.strictEqual(statusDetails, errorDetails);
-        assert.strictEqual(code, 5);
-        assert.strictEqual(
-          message,
-          '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
-        );
+      function checkTableNotExistError(err: any) {
+        if (isGoogleError(err)) {
+          const {code, statusDetails, message} = err;
+          assert.strictEqual(statusDetails, errorDetails);
+          assert.strictEqual(code, 5);
+          assert.strictEqual(
+            message,
+            '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
+          );
+        } else {
+          assert.fail(
+            'Errors checked using this function should all be GoogleErrors'
+          );
+        }
       }
       describe('with ReadRows service', () => {
         before(async () => {
@@ -109,10 +122,11 @@ describe('Bigtable/Errors', () => {
           ];
           try {
             await table.insert(rowsToInsert);
-            assert.fail();
           } catch (err) {
             checkTableNotExistError(err);
+            return;
           }
+          assert.fail('An error should have been thrown by the stream');
         });
       });
       describe('with sampleRowKeys', () => {
@@ -124,10 +138,11 @@ describe('Bigtable/Errors', () => {
         it('should produce human readable error when passing through gax', async () => {
           try {
             await table.sampleRowKeys({});
-            assert.fail();
           } catch (err) {
             checkTableNotExistError(err);
+            return;
           }
+          assert.fail('An error should have been thrown by the stream');
         });
       });
     });
