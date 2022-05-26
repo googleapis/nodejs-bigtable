@@ -703,15 +703,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       parent: this.name,
     };
 
-    if (is.number(gaxOpts.pageSize)) {
-      reqOpts.pageSize = gaxOpts.pageSize;
+    if (is.number((gaxOpts as GetBackupsOptions).pageSize)) {
+      reqOpts.pageSize = (gaxOpts as GetBackupsOptions).pageSize;
     }
-    delete gaxOpts.pageSize;
+    delete (gaxOpts as GetBackupsOptions).pageSize;
 
-    if (gaxOpts.pageToken) {
-      reqOpts.pageToken = gaxOpts.pageToken;
+    if ((gaxOpts as GetBackupsOptions).pageToken) {
+      reqOpts.pageToken = (gaxOpts as GetBackupsOptions).pageToken;
     }
-    delete gaxOpts.pageToken;
+    delete (gaxOpts as GetBackupsOptions).pageToken;
 
     this.bigtable.request<google.bigtable.admin.v2.IAppProfile[]>(
       {
@@ -777,15 +777,15 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     };
     const gaxOpts = extend(true, {}, gaxOptions);
 
-    if (is.number(gaxOpts.pageSize)) {
-      reqOpts.pageSize = gaxOpts.pageSize;
+    if (is.number((gaxOpts as GetBackupsOptions).pageSize)) {
+      reqOpts.pageSize = (gaxOpts as GetBackupsOptions).pageSize;
     }
-    delete gaxOpts.pageSize;
+    delete (gaxOpts as GetBackupsOptions).pageSize;
 
-    if (gaxOpts.pageToken) {
-      reqOpts.pageToken = gaxOpts.pageToken;
+    if ((gaxOpts as GetBackupsOptions).pageToken) {
+      reqOpts.pageToken = (gaxOpts as GetBackupsOptions).pageToken;
     }
-    delete gaxOpts.pageToken;
+    delete (gaxOpts as GetBackupsOptions).pageToken;
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
@@ -1103,13 +1103,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       reqOpts = extend(
         {},
         {
-          pageSize: gaxOpts.pageSize,
-          pageToken: gaxOpts.pageToken,
+          pageSize: (gaxOpts as GetBackupsOptions).pageSize,
+          pageToken: (gaxOpts as GetBackupsOptions).pageToken,
         },
         reqOpts
       );
-      delete gaxOpts.pageSize;
-      delete gaxOpts.pageToken;
+      delete (gaxOpts as GetBackupsOptions).pageSize;
+      delete (gaxOpts as GetBackupsOptions).pageToken;
     }
 
     delete (reqOpts as GetTablesOptions).gaxOptions;
@@ -1184,13 +1184,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       reqOpts = extend(
         {},
         {
-          pageSize: gaxOpts.pageSize,
-          pageToken: gaxOpts.pageToken,
+          pageSize: (gaxOpts as GetBackupsOptions).pageSize,
+          pageToken: (gaxOpts as GetBackupsOptions).pageToken,
         },
         reqOpts
       );
-      delete gaxOpts.pageSize;
-      delete gaxOpts.pageToken;
+      delete (gaxOpts as GetBackupsOptions).pageSize;
+      delete (gaxOpts as GetBackupsOptions).pageToken;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
