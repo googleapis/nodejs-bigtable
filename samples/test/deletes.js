@@ -209,7 +209,7 @@ describe('deletes', async () => {
   it('should delete column family from a row', async () => {
     runAndSnapshot('deleteFromFamily');
   });
-  it('should delete one cell from a row', async () => {
+  it('should delete a row', async () => {
     runAndSnapshot('deleteFromRow');
   });
   it('should stream rows and then do a batch delete', async () => {

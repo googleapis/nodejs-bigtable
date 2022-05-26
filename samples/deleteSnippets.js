@@ -62,7 +62,7 @@ async function main(
     case 'deleteFromRow': {
       // [START bigtable_deletes_from_row]
       const row = table.row('phone#4c410523#20190501');
-      await row.deleteCells(['stats_summary:connected_cell']);
+      await row.delete();
       await printRows();
       // [END bigtable_deletes_from_row]
       break;
