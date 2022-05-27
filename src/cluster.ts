@@ -96,7 +96,7 @@ export interface BasicClusterConfig {
 }
 
 export interface CreateBackupConfig extends ModifiableBackupFields {
-  table: string | Table;
+  table?: string | Table;
   gaxOptions?: CallOptions;
 }
 
@@ -494,13 +494,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
     const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
       parent: this.name,
-      pageSize: gaxOpts.pageSize,
-      pageToken: gaxOpts.pageToken,
+      pageSize: (gaxOpts as GetBackupsOptions).pageSize,
+      pageToken: (gaxOpts as GetBackupsOptions).pageToken,
       ...options,
     };
 
-    delete gaxOpts.pageSize;
-    delete gaxOpts.pageToken;
+    delete (gaxOpts as GetBackupsOptions).pageSize;
+    delete (gaxOpts as GetBackupsOptions).pageToken;
     delete (reqOpts as CallOptions).autoPaginate;
     delete (reqOpts as GetBackupsOptions).gaxOptions;
 

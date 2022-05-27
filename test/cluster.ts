@@ -19,8 +19,14 @@ import * as proxyquire from 'proxyquire';
 import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
 import {PreciseDate} from '@google-cloud/precise-date';
-import {GetClusterMetadataCallback} from '../src';
 import {ClusterUtils} from '../src/utils/cluster';
+
+export interface Options {
+  nodes?: Number;
+  gaxOptions?: {
+    timeout: number;
+  };
+}
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {

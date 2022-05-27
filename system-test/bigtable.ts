@@ -17,7 +17,6 @@ import {PreciseDate} from '@google-cloud/precise-date';
 import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
-import * as uuid from 'uuid';
 
 import {Backup, Bigtable, Instance} from '../src';
 import {AppProfile} from '../src/app-profile.js';
@@ -26,6 +25,7 @@ import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
+import {generateId} from './common';
 
 const PREFIX = 'gcloud-tests-';
 
@@ -279,7 +279,11 @@ describe('Bigtable', () => {
         await operation.promise();
         throw new Error('Cluster creation should not have succeeded');
       } catch (e) {
-        assert(e.message.includes('default keys and CMEKs are not allowed'));
+        assert(
+          (e as Error).message.includes(
+            'default keys and CMEKs are not allowed'
+          )
+        );
       }
     });
   });
@@ -913,7 +917,7 @@ describe('Bigtable', () => {
         ];
         await TABLE.insert(entries);
         const rows: Row[] = [];
-        await new Promise((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           const stream = TABLE.createReadStream()
             .on('error', reject)
             .on('data', row => {
@@ -1416,9 +1420,6 @@ describe('Bigtable', () => {
   });
 });
 
-function generateId(resourceType: string) {
-  return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
-}
 function createInstanceConfig(
   clusterId: string,
   location: string,
