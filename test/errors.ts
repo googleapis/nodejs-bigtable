@@ -20,15 +20,16 @@ import {before, describe, it} from 'mocha';
 import {Bigtable} from '../src';
 import * as assert from 'assert';
 
-import {GoogleError, grpc} from 'google-gax';
+import {GoogleError, grpc, ServiceError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 
-function isGoogleError(error: any): error is GoogleError {
+function isServiceError(error: any): error is ServiceError {
   return (
-    error.parseGRPCStatusDetails !== undefined &&
-    error.parseHttpError !== undefined
+    error.code !== undefined &&
+    error.details !== undefined &&
+    error.metadata !== undefined
   );
 }
 
@@ -70,8 +71,9 @@ describe('Bigtable/Errors', () => {
         });
       };
       function checkTableNotExistError(err: any) {
-        if (isGoogleError(err)) {
-          const {code, message} = err;
+        if (isServiceError(err)) {
+          const {code, message, details} = err;
+          assert.strictEqual(details, errorDetails);
           assert.strictEqual(code, 5);
           assert.strictEqual(message, `5 NOT_FOUND: ${errorDetails}`);
         } else {
