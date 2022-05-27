@@ -71,13 +71,9 @@ describe('Bigtable/Errors', () => {
       };
       function checkTableNotExistError(err: any) {
         if (isGoogleError(err)) {
-          const {code, statusDetails, message} = err;
-          assert.strictEqual(statusDetails, errorDetails);
+          const {code, message} = err;
           assert.strictEqual(code, 5);
-          assert.strictEqual(
-            message,
-            '5 NOT_FOUND: Table not found: projects/my-project/instances/my-instance/tables/my-table'
-          );
+          assert.strictEqual(message, `5 NOT_FOUND: ${errorDetails}`);
         } else {
           assert.fail(
             'Errors checked using this function should all be GoogleErrors'
