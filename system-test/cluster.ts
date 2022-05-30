@@ -212,7 +212,6 @@ describe('Cluster', () => {
 
       it('should change nodes for manual scaling', async () => {
         const updateNodes = 5;
-        assert.notEqual(startingNodes, updateNodes);
         await cluster.setMetadata({nodes: updateNodes});
         await checkMetadata(
           cluster,

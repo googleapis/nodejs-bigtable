@@ -128,17 +128,16 @@ export class ClusterUtils {
     location: string | undefined | null,
     name: string
   ): google.bigtable.admin.v2.ICluster {
-    const cluster: ICluster = Object.assign(
+    const cluster: ICluster | SetClusterMetadataOptions = Object.assign(
       {},
       this.getClusterBaseConfig(metadata, location, name),
       metadata
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (cluster as any).nodes;
-    delete (cluster as any).minServeNodes;
-    delete (cluster as any).maxServeNodes;
-    delete (cluster as any).cpuUtilizationPercent;
-    return cluster;
+    delete (cluster as SetClusterMetadataOptions).nodes;
+    delete (cluster as SetClusterMetadataOptions).minServeNodes;
+    delete (cluster as SetClusterMetadataOptions).maxServeNodes;
+    delete (cluster as SetClusterMetadataOptions).cpuUtilizationPercent;
+    return cluster as ICluster;
   }
 
   static getRequestFromMetadata(
