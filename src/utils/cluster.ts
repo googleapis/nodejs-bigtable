@@ -93,7 +93,7 @@ export class ClusterUtils {
 
   static getClusterBaseConfig(
     metadata: SetClusterMetadataOptions | BasicClusterConfig,
-    location: string | undefined,
+    location: string | undefined | null,
     name: string | undefined
   ): google.bigtable.admin.v2.ICluster {
     let clusterConfig;
@@ -125,7 +125,7 @@ export class ClusterUtils {
 
   static getClusterFromMetadata(
     metadata: SetClusterMetadataOptions,
-    location: string,
+    location: string | undefined | null,
     name: string
   ): google.bigtable.admin.v2.ICluster {
     const cluster: ICluster = Object.assign(
@@ -143,7 +143,7 @@ export class ClusterUtils {
 
   static getRequestFromMetadata(
     metadata: SetClusterMetadataOptions,
-    location: string,
+    location: string | undefined | null,
     name: string
   ): protos.google.bigtable.admin.v2.IPartialUpdateClusterRequest {
     return {

@@ -704,35 +704,22 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof gaxOptionsOrCallback === 'object'
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
-    const setMetadataWithLocation = (location: string, name: string) => {
-      const reqOpts = ClusterUtils.getRequestFromMetadata(
-        metadata,
-        location,
-        name
-      );
-      this.bigtable.request<Operation>(
-        {
-          client: 'BigtableInstanceAdminClient',
-          method: 'partialUpdateCluster',
-          reqOpts: reqOpts,
-          gaxOpts: gaxOptions,
-        },
-        (err, resp) => {
-          callback(err, resp);
-        }
-      );
-    };
-    if (this.metadata && this.metadata.location) {
-      setMetadataWithLocation(this.metadata.location, this.name);
-    } else {
-      this.getMetadata(gaxOptions, (err, res) => {
-        if (err || !this.metadata || !this.metadata.location) {
-          callback(err, null);
-        } else {
-          setMetadataWithLocation(this.metadata.location, this.name);
-        }
-      });
-    }
+    const reqOpts = ClusterUtils.getRequestFromMetadata(
+      metadata,
+      this?.metadata?.location,
+      this.name
+    );
+    this.bigtable.request<Operation>(
+      {
+        client: 'BigtableInstanceAdminClient',
+        method: 'partialUpdateCluster',
+        reqOpts: reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (err, resp) => {
+        callback(err, resp);
+      }
+    );
   }
 }
 
