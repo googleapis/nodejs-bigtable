@@ -19,6 +19,14 @@ import assert = require('assert');
 import {ClusterUtils} from '../src/utils/cluster';
 import {SetClusterMetadataOptions} from '../src/cluster';
 
+export interface ValidationError {
+  message: string;
+}
+
+function isValidationError(err: any): err is ValidationError {
+  return (err as ValidationError).message !== undefined;
+}
+
 describe('Cluster', () => {
   const bigtable = new Bigtable();
   let instance: Instance;
@@ -116,6 +124,7 @@ describe('Cluster', () => {
             });
             assert.fail();
           } catch (e) {
+            assert.ok(isValidationError(e));
             assert.equal(e.message, ClusterUtils.noConfigError);
           }
         });
@@ -128,6 +137,7 @@ describe('Cluster', () => {
             });
             assert.fail();
           } catch (e) {
+            assert.ok(isValidationError(e));
             assert.equal(e.message, ClusterUtils.allConfigError);
           }
         });
@@ -140,6 +150,7 @@ describe('Cluster', () => {
             });
             assert.fail();
           } catch (e) {
+            assert.ok(isValidationError(e));
             assert.equal(e.message, ClusterUtils.incompleteConfigError);
           }
         });
@@ -237,6 +248,7 @@ describe('Cluster', () => {
             await cluster.setMetadata({});
             assert.fail();
           } catch (e) {
+            assert.ok(isValidationError(e));
             assert.equal(e.message, ClusterUtils.noConfigError);
           }
         });
@@ -248,6 +260,7 @@ describe('Cluster', () => {
             });
             assert.fail();
           } catch (e) {
+            assert.ok(isValidationError(e));
             assert.equal(e.message, ClusterUtils.allConfigError);
           }
         });
@@ -259,6 +272,7 @@ describe('Cluster', () => {
             });
             assert.fail();
           } catch (e) {
+            assert.ok(isValidationError(e));
             assert.equal(e.message, ClusterUtils.incompleteConfigError);
           }
         });
