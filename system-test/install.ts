@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,14 @@ describe('📦 pack-n-play test', () => {
         ).toString(),
       },
     };
-    await packNTest(options);
+    try {
+      await packNTest(options);
+    } catch (e) {
+      // all of the actionable information is on the output attribute
+      if ((e as any).output) {
+        (e as any).message += 'output: ' + (e as any).output;
+      }
+      throw e;
+    }
   });
 });

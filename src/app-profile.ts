@@ -29,7 +29,7 @@ export interface AppProfileOptions {
    * value is required when creating the app profile and optional when setting
    * the metadata.
    */
-  routing?: 'any' | Cluster;
+  routing?: 'any' | Cluster | Set<Cluster> | Set<string>;
   /**
    * Whether or not CheckAndMutateRow and ReadModifyWriteRow requests are
    * allowed by this app profile. It is unsafe to send these requests to the
@@ -200,9 +200,26 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
   ): google.bigtable.admin.v2.IAppProfile {
     const appProfile: google.bigtable.admin.v2.IAppProfile = {};
 
+    const errMessage =
+      'An app profile routing policy can only contain "any" for multi cluster routing, a `Cluster` for single routing, or a set of clusterIds as strings or `Clusters` for multi cluster routing.';
     if (options.routing) {
       if (options.routing === 'any') {
         appProfile.multiClusterRoutingUseAny = {};
+      } else if (options.routing instanceof Set) {
+        const routingAsArray = [...options.routing];
+        if (isClusterArray(routingAsArray)) {
+          // Runs if routing is a set and every element in it is a cluster
+          appProfile.multiClusterRoutingUseAny = {
+            clusterIds: routingAsArray.map(cluster => cluster.id),
+          };
+        } else if (isStringArray(routingAsArray)) {
+          // Runs if routing is a set and every element in it is a string
+          appProfile.multiClusterRoutingUseAny = {
+            clusterIds: routingAsArray,
+          };
+        } else {
+          throw new Error(errMessage);
+        }
       } else if (options.routing instanceof Cluster) {
         appProfile.singleClusterRouting = {
           clusterId: options.routing.id,
@@ -212,9 +229,7 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
             options.allowTransactionalWrites;
         }
       } else {
-        throw new Error(
-          'An app profile routing policy can only contain "any" or a `Cluster`.'
-        );
+        throw new Error(errMessage);
       }
     }
 
@@ -496,6 +511,27 @@ Please use the format 'my-app-profile' or '${instance.name}/appProfiles/my-app-p
       callback
     );
   }
+}
+
+function isStringArray(array: any): array is string[] {
+  return array.every((cluster: any) => {
+    return typeof cluster === 'string';
+  });
+}
+
+function isClusterArray(array: any): array is Cluster[] {
+  return array.every((cluster: any) => {
+    return isCluster(cluster);
+  });
+}
+
+function isCluster(cluster: any): cluster is Cluster {
+  return (
+    (cluster as Cluster).bigtable !== undefined &&
+    (cluster as Cluster).instance !== undefined &&
+    (cluster as Cluster).id !== undefined &&
+    (cluster as Cluster).name !== undefined
+  );
 }
 
 /*! Developer Documentation

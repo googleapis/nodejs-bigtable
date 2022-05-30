@@ -87,9 +87,10 @@ describe('Bigtable/Table', () => {
     it('invokes readRows with closed client 1', async () => {
       const instance = bigtable.instance('fake-instance2');
       const table = instance.table('fake-table');
+      // I always get `Error: 14 UNAVAILABLE: Cluster is temporarily unavailable.`
       await instance.create({
         clusters: {
-          id: 'fake-cluster2',
+          id: 'fake-cluster3',
           location: 'us-east1-c',
           nodes: 1,
         },

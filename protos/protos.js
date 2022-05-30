@@ -758,6 +758,39 @@
                          * @variation 2
                          */
     
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listHotTablets}.
+                         * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
+                         * @typedef ListHotTabletsCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.bigtable.admin.v2.ListHotTabletsResponse} [response] ListHotTabletsResponse
+                         */
+    
+                        /**
+                         * Calls ListHotTablets.
+                         * @function listHotTablets
+                         * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IListHotTabletsRequest} request ListHotTabletsRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableInstanceAdmin.ListHotTabletsCallback} callback Node-style callback called with the error, if any, and ListHotTabletsResponse
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableInstanceAdmin.prototype.listHotTablets = function listHotTablets(request, callback) {
+                            return this.rpcCall(listHotTablets, $root.google.bigtable.admin.v2.ListHotTabletsRequest, $root.google.bigtable.admin.v2.ListHotTabletsResponse, request, callback);
+                        }, "name", { value: "ListHotTablets" });
+    
+                        /**
+                         * Calls ListHotTablets.
+                         * @function listHotTablets
+                         * @memberof google.bigtable.admin.v2.BigtableInstanceAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IListHotTabletsRequest} request ListHotTabletsRequest message or plain object
+                         * @returns {Promise<google.bigtable.admin.v2.ListHotTabletsResponse>} Promise
+                         * @variation 2
+                         */
+    
                         return BigtableInstanceAdmin;
                     })();
     
@@ -6243,6 +6276,523 @@
                         return UpdateAppProfileMetadata;
                     })();
     
+                    v2.ListHotTabletsRequest = (function() {
+    
+                        /**
+                         * Properties of a ListHotTabletsRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IListHotTabletsRequest
+                         * @property {string|null} [parent] ListHotTabletsRequest parent
+                         * @property {google.protobuf.ITimestamp|null} [startTime] ListHotTabletsRequest startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] ListHotTabletsRequest endTime
+                         * @property {number|null} [pageSize] ListHotTabletsRequest pageSize
+                         * @property {string|null} [pageToken] ListHotTabletsRequest pageToken
+                         */
+    
+                        /**
+                         * Constructs a new ListHotTabletsRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ListHotTabletsRequest.
+                         * @implements IListHotTabletsRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IListHotTabletsRequest=} [properties] Properties to set
+                         */
+                        function ListHotTabletsRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ListHotTabletsRequest parent.
+                         * @member {string} parent
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @instance
+                         */
+                        ListHotTabletsRequest.prototype.parent = "";
+    
+                        /**
+                         * ListHotTabletsRequest startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @instance
+                         */
+                        ListHotTabletsRequest.prototype.startTime = null;
+    
+                        /**
+                         * ListHotTabletsRequest endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @instance
+                         */
+                        ListHotTabletsRequest.prototype.endTime = null;
+    
+                        /**
+                         * ListHotTabletsRequest pageSize.
+                         * @member {number} pageSize
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @instance
+                         */
+                        ListHotTabletsRequest.prototype.pageSize = 0;
+    
+                        /**
+                         * ListHotTabletsRequest pageToken.
+                         * @member {string} pageToken
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @instance
+                         */
+                        ListHotTabletsRequest.prototype.pageToken = "";
+    
+                        /**
+                         * Creates a new ListHotTabletsRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListHotTabletsRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsRequest} ListHotTabletsRequest instance
+                         */
+                        ListHotTabletsRequest.create = function create(properties) {
+                            return new ListHotTabletsRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ListHotTabletsRequest message. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListHotTabletsRequest} message ListHotTabletsRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListHotTabletsRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.parent != null && Object.hasOwnProperty.call(message, "parent"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.parent);
+                            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.pageSize != null && Object.hasOwnProperty.call(message, "pageSize"))
+                                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.pageSize);
+                            if (message.pageToken != null && Object.hasOwnProperty.call(message, "pageToken"))
+                                writer.uint32(/* id 5, wireType 2 =*/42).string(message.pageToken);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ListHotTabletsRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListHotTabletsRequest} message ListHotTabletsRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListHotTabletsRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ListHotTabletsRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsRequest} ListHotTabletsRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListHotTabletsRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ListHotTabletsRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.parent = reader.string();
+                                    break;
+                                case 2:
+                                    message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 3:
+                                    message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.pageSize = reader.int32();
+                                    break;
+                                case 5:
+                                    message.pageToken = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ListHotTabletsRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsRequest} ListHotTabletsRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListHotTabletsRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ListHotTabletsRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ListHotTabletsRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                if (!$util.isString(message.parent))
+                                    return "parent: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                                if (!$util.isInteger(message.pageSize))
+                                    return "pageSize: integer expected";
+                            if (message.pageToken != null && message.hasOwnProperty("pageToken"))
+                                if (!$util.isString(message.pageToken))
+                                    return "pageToken: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ListHotTabletsRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsRequest} ListHotTabletsRequest
+                         */
+                        ListHotTabletsRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ListHotTabletsRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ListHotTabletsRequest();
+                            if (object.parent != null)
+                                message.parent = String(object.parent);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.ListHotTabletsRequest.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.ListHotTabletsRequest.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            if (object.pageSize != null)
+                                message.pageSize = object.pageSize | 0;
+                            if (object.pageToken != null)
+                                message.pageToken = String(object.pageToken);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ListHotTabletsRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ListHotTabletsRequest} message ListHotTabletsRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ListHotTabletsRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.parent = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                                object.pageSize = 0;
+                                object.pageToken = "";
+                            }
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                object.parent = message.parent;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            if (message.pageSize != null && message.hasOwnProperty("pageSize"))
+                                object.pageSize = message.pageSize;
+                            if (message.pageToken != null && message.hasOwnProperty("pageToken"))
+                                object.pageToken = message.pageToken;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ListHotTabletsRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ListHotTabletsRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return ListHotTabletsRequest;
+                    })();
+    
+                    v2.ListHotTabletsResponse = (function() {
+    
+                        /**
+                         * Properties of a ListHotTabletsResponse.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IListHotTabletsResponse
+                         * @property {Array.<google.bigtable.admin.v2.IHotTablet>|null} [hotTablets] ListHotTabletsResponse hotTablets
+                         * @property {string|null} [nextPageToken] ListHotTabletsResponse nextPageToken
+                         */
+    
+                        /**
+                         * Constructs a new ListHotTabletsResponse.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ListHotTabletsResponse.
+                         * @implements IListHotTabletsResponse
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IListHotTabletsResponse=} [properties] Properties to set
+                         */
+                        function ListHotTabletsResponse(properties) {
+                            this.hotTablets = [];
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ListHotTabletsResponse hotTablets.
+                         * @member {Array.<google.bigtable.admin.v2.IHotTablet>} hotTablets
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @instance
+                         */
+                        ListHotTabletsResponse.prototype.hotTablets = $util.emptyArray;
+    
+                        /**
+                         * ListHotTabletsResponse nextPageToken.
+                         * @member {string} nextPageToken
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @instance
+                         */
+                        ListHotTabletsResponse.prototype.nextPageToken = "";
+    
+                        /**
+                         * Creates a new ListHotTabletsResponse instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListHotTabletsResponse=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsResponse} ListHotTabletsResponse instance
+                         */
+                        ListHotTabletsResponse.create = function create(properties) {
+                            return new ListHotTabletsResponse(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ListHotTabletsResponse message. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsResponse.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListHotTabletsResponse} message ListHotTabletsResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListHotTabletsResponse.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.hotTablets != null && message.hotTablets.length)
+                                for (var i = 0; i < message.hotTablets.length; ++i)
+                                    $root.google.bigtable.admin.v2.HotTablet.encode(message.hotTablets[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.nextPageToken != null && Object.hasOwnProperty.call(message, "nextPageToken"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.nextPageToken);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ListHotTabletsResponse message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListHotTabletsResponse.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.IListHotTabletsResponse} message ListHotTabletsResponse message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ListHotTabletsResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ListHotTabletsResponse message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsResponse} ListHotTabletsResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListHotTabletsResponse.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ListHotTabletsResponse();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    if (!(message.hotTablets && message.hotTablets.length))
+                                        message.hotTablets = [];
+                                    message.hotTablets.push($root.google.bigtable.admin.v2.HotTablet.decode(reader, reader.uint32()));
+                                    break;
+                                case 2:
+                                    message.nextPageToken = reader.string();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ListHotTabletsResponse message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsResponse} ListHotTabletsResponse
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ListHotTabletsResponse.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ListHotTabletsResponse message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ListHotTabletsResponse.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.hotTablets != null && message.hasOwnProperty("hotTablets")) {
+                                if (!Array.isArray(message.hotTablets))
+                                    return "hotTablets: array expected";
+                                for (var i = 0; i < message.hotTablets.length; ++i) {
+                                    var error = $root.google.bigtable.admin.v2.HotTablet.verify(message.hotTablets[i]);
+                                    if (error)
+                                        return "hotTablets." + error;
+                                }
+                            }
+                            if (message.nextPageToken != null && message.hasOwnProperty("nextPageToken"))
+                                if (!$util.isString(message.nextPageToken))
+                                    return "nextPageToken: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ListHotTabletsResponse message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ListHotTabletsResponse} ListHotTabletsResponse
+                         */
+                        ListHotTabletsResponse.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ListHotTabletsResponse)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ListHotTabletsResponse();
+                            if (object.hotTablets) {
+                                if (!Array.isArray(object.hotTablets))
+                                    throw TypeError(".google.bigtable.admin.v2.ListHotTabletsResponse.hotTablets: array expected");
+                                message.hotTablets = [];
+                                for (var i = 0; i < object.hotTablets.length; ++i) {
+                                    if (typeof object.hotTablets[i] !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.ListHotTabletsResponse.hotTablets: object expected");
+                                    message.hotTablets[i] = $root.google.bigtable.admin.v2.HotTablet.fromObject(object.hotTablets[i]);
+                                }
+                            }
+                            if (object.nextPageToken != null)
+                                message.nextPageToken = String(object.nextPageToken);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ListHotTabletsResponse message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @static
+                         * @param {google.bigtable.admin.v2.ListHotTabletsResponse} message ListHotTabletsResponse
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ListHotTabletsResponse.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.arrays || options.defaults)
+                                object.hotTablets = [];
+                            if (options.defaults)
+                                object.nextPageToken = "";
+                            if (message.hotTablets && message.hotTablets.length) {
+                                object.hotTablets = [];
+                                for (var j = 0; j < message.hotTablets.length; ++j)
+                                    object.hotTablets[j] = $root.google.bigtable.admin.v2.HotTablet.toObject(message.hotTablets[j], options);
+                            }
+                            if (message.nextPageToken != null && message.hasOwnProperty("nextPageToken"))
+                                object.nextPageToken = message.nextPageToken;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ListHotTabletsResponse to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ListHotTabletsResponse
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ListHotTabletsResponse.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return ListHotTabletsResponse;
+                    })();
+    
                     v2.Instance = (function() {
     
                         /**
@@ -8786,6 +9336,336 @@
                         })();
     
                         return AppProfile;
+                    })();
+    
+                    v2.HotTablet = (function() {
+    
+                        /**
+                         * Properties of a HotTablet.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IHotTablet
+                         * @property {string|null} [name] HotTablet name
+                         * @property {string|null} [tableName] HotTablet tableName
+                         * @property {google.protobuf.ITimestamp|null} [startTime] HotTablet startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] HotTablet endTime
+                         * @property {string|null} [startKey] HotTablet startKey
+                         * @property {string|null} [endKey] HotTablet endKey
+                         * @property {number|null} [nodeCpuUsagePercent] HotTablet nodeCpuUsagePercent
+                         */
+    
+                        /**
+                         * Constructs a new HotTablet.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a HotTablet.
+                         * @implements IHotTablet
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IHotTablet=} [properties] Properties to set
+                         */
+                        function HotTablet(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * HotTablet name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         */
+                        HotTablet.prototype.name = "";
+    
+                        /**
+                         * HotTablet tableName.
+                         * @member {string} tableName
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         */
+                        HotTablet.prototype.tableName = "";
+    
+                        /**
+                         * HotTablet startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         */
+                        HotTablet.prototype.startTime = null;
+    
+                        /**
+                         * HotTablet endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         */
+                        HotTablet.prototype.endTime = null;
+    
+                        /**
+                         * HotTablet startKey.
+                         * @member {string} startKey
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         */
+                        HotTablet.prototype.startKey = "";
+    
+                        /**
+                         * HotTablet endKey.
+                         * @member {string} endKey
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         */
+                        HotTablet.prototype.endKey = "";
+    
+                        /**
+                         * HotTablet nodeCpuUsagePercent.
+                         * @member {number} nodeCpuUsagePercent
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         */
+                        HotTablet.prototype.nodeCpuUsagePercent = 0;
+    
+                        /**
+                         * Creates a new HotTablet instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {google.bigtable.admin.v2.IHotTablet=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.HotTablet} HotTablet instance
+                         */
+                        HotTablet.create = function create(properties) {
+                            return new HotTablet(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified HotTablet message. Does not implicitly {@link google.bigtable.admin.v2.HotTablet.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {google.bigtable.admin.v2.IHotTablet} message HotTablet message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        HotTablet.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.tableName != null && Object.hasOwnProperty.call(message, "tableName"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.tableName);
+                            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            if (message.startKey != null && Object.hasOwnProperty.call(message, "startKey"))
+                                writer.uint32(/* id 5, wireType 2 =*/42).string(message.startKey);
+                            if (message.endKey != null && Object.hasOwnProperty.call(message, "endKey"))
+                                writer.uint32(/* id 6, wireType 2 =*/50).string(message.endKey);
+                            if (message.nodeCpuUsagePercent != null && Object.hasOwnProperty.call(message, "nodeCpuUsagePercent"))
+                                writer.uint32(/* id 7, wireType 5 =*/61).float(message.nodeCpuUsagePercent);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified HotTablet message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.HotTablet.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {google.bigtable.admin.v2.IHotTablet} message HotTablet message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        HotTablet.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a HotTablet message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.HotTablet} HotTablet
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        HotTablet.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.HotTablet();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1:
+                                    message.name = reader.string();
+                                    break;
+                                case 2:
+                                    message.tableName = reader.string();
+                                    break;
+                                case 3:
+                                    message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 5:
+                                    message.startKey = reader.string();
+                                    break;
+                                case 6:
+                                    message.endKey = reader.string();
+                                    break;
+                                case 7:
+                                    message.nodeCpuUsagePercent = reader.float();
+                                    break;
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a HotTablet message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.HotTablet} HotTablet
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        HotTablet.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a HotTablet message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        HotTablet.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.tableName != null && message.hasOwnProperty("tableName"))
+                                if (!$util.isString(message.tableName))
+                                    return "tableName: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            if (message.startKey != null && message.hasOwnProperty("startKey"))
+                                if (!$util.isString(message.startKey))
+                                    return "startKey: string expected";
+                            if (message.endKey != null && message.hasOwnProperty("endKey"))
+                                if (!$util.isString(message.endKey))
+                                    return "endKey: string expected";
+                            if (message.nodeCpuUsagePercent != null && message.hasOwnProperty("nodeCpuUsagePercent"))
+                                if (typeof message.nodeCpuUsagePercent !== "number")
+                                    return "nodeCpuUsagePercent: number expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a HotTablet message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.HotTablet} HotTablet
+                         */
+                        HotTablet.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.HotTablet)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.HotTablet();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.tableName != null)
+                                message.tableName = String(object.tableName);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.HotTablet.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.HotTablet.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            if (object.startKey != null)
+                                message.startKey = String(object.startKey);
+                            if (object.endKey != null)
+                                message.endKey = String(object.endKey);
+                            if (object.nodeCpuUsagePercent != null)
+                                message.nodeCpuUsagePercent = Number(object.nodeCpuUsagePercent);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a HotTablet message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @static
+                         * @param {google.bigtable.admin.v2.HotTablet} message HotTablet
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        HotTablet.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.tableName = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                                object.startKey = "";
+                                object.endKey = "";
+                                object.nodeCpuUsagePercent = 0;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.tableName != null && message.hasOwnProperty("tableName"))
+                                object.tableName = message.tableName;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            if (message.startKey != null && message.hasOwnProperty("startKey"))
+                                object.startKey = message.startKey;
+                            if (message.endKey != null && message.hasOwnProperty("endKey"))
+                                object.endKey = message.endKey;
+                            if (message.nodeCpuUsagePercent != null && message.hasOwnProperty("nodeCpuUsagePercent"))
+                                object.nodeCpuUsagePercent = options.json && !isFinite(message.nodeCpuUsagePercent) ? String(message.nodeCpuUsagePercent) : message.nodeCpuUsagePercent;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this HotTablet to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.HotTablet
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        HotTablet.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        return HotTablet;
                     })();
     
                     /**
@@ -20438,6 +21318,39 @@
                      */
     
                     /**
+                     * Callback as used by {@link google.bigtable.v2.Bigtable#pingAndWarm}.
+                     * @memberof google.bigtable.v2.Bigtable
+                     * @typedef PingAndWarmCallback
+                     * @type {function}
+                     * @param {Error|null} error Error, if any
+                     * @param {google.bigtable.v2.PingAndWarmResponse} [response] PingAndWarmResponse
+                     */
+    
+                    /**
+                     * Calls PingAndWarm.
+                     * @function pingAndWarm
+                     * @memberof google.bigtable.v2.Bigtable
+                     * @instance
+                     * @param {google.bigtable.v2.IPingAndWarmRequest} request PingAndWarmRequest message or plain object
+                     * @param {google.bigtable.v2.Bigtable.PingAndWarmCallback} callback Node-style callback called with the error, if any, and PingAndWarmResponse
+                     * @returns {undefined}
+                     * @variation 1
+                     */
+                    Object.defineProperty(Bigtable.prototype.pingAndWarm = function pingAndWarm(request, callback) {
+                        return this.rpcCall(pingAndWarm, $root.google.bigtable.v2.PingAndWarmRequest, $root.google.bigtable.v2.PingAndWarmResponse, request, callback);
+                    }, "name", { value: "PingAndWarm" });
+    
+                    /**
+                     * Calls PingAndWarm.
+                     * @function pingAndWarm
+                     * @memberof google.bigtable.v2.Bigtable
+                     * @instance
+                     * @param {google.bigtable.v2.IPingAndWarmRequest} request PingAndWarmRequest message or plain object
+                     * @returns {Promise<google.bigtable.v2.PingAndWarmResponse>} Promise
+                     * @variation 2
+                     */
+    
+                    /**
                      * Callback as used by {@link google.bigtable.v2.Bigtable#readModifyWriteRow}.
                      * @memberof google.bigtable.v2.Bigtable
                      * @typedef ReadModifyWriteRowCallback
@@ -23821,6 +24734,376 @@
                     };
     
                     return CheckAndMutateRowResponse;
+                })();
+    
+                v2.PingAndWarmRequest = (function() {
+    
+                    /**
+                     * Properties of a PingAndWarmRequest.
+                     * @memberof google.bigtable.v2
+                     * @interface IPingAndWarmRequest
+                     * @property {string|null} [name] PingAndWarmRequest name
+                     * @property {string|null} [appProfileId] PingAndWarmRequest appProfileId
+                     */
+    
+                    /**
+                     * Constructs a new PingAndWarmRequest.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a PingAndWarmRequest.
+                     * @implements IPingAndWarmRequest
+                     * @constructor
+                     * @param {google.bigtable.v2.IPingAndWarmRequest=} [properties] Properties to set
+                     */
+                    function PingAndWarmRequest(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * PingAndWarmRequest name.
+                     * @member {string} name
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @instance
+                     */
+                    PingAndWarmRequest.prototype.name = "";
+    
+                    /**
+                     * PingAndWarmRequest appProfileId.
+                     * @member {string} appProfileId
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @instance
+                     */
+                    PingAndWarmRequest.prototype.appProfileId = "";
+    
+                    /**
+                     * Creates a new PingAndWarmRequest instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {google.bigtable.v2.IPingAndWarmRequest=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.PingAndWarmRequest} PingAndWarmRequest instance
+                     */
+                    PingAndWarmRequest.create = function create(properties) {
+                        return new PingAndWarmRequest(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified PingAndWarmRequest message. Does not implicitly {@link google.bigtable.v2.PingAndWarmRequest.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {google.bigtable.v2.IPingAndWarmRequest} message PingAndWarmRequest message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PingAndWarmRequest.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                        if (message.appProfileId != null && Object.hasOwnProperty.call(message, "appProfileId"))
+                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.appProfileId);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified PingAndWarmRequest message, length delimited. Does not implicitly {@link google.bigtable.v2.PingAndWarmRequest.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {google.bigtable.v2.IPingAndWarmRequest} message PingAndWarmRequest message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PingAndWarmRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a PingAndWarmRequest message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.PingAndWarmRequest} PingAndWarmRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PingAndWarmRequest.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.PingAndWarmRequest();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1:
+                                message.name = reader.string();
+                                break;
+                            case 2:
+                                message.appProfileId = reader.string();
+                                break;
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a PingAndWarmRequest message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.PingAndWarmRequest} PingAndWarmRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PingAndWarmRequest.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a PingAndWarmRequest message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PingAndWarmRequest.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.name != null && message.hasOwnProperty("name"))
+                            if (!$util.isString(message.name))
+                                return "name: string expected";
+                        if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
+                            if (!$util.isString(message.appProfileId))
+                                return "appProfileId: string expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a PingAndWarmRequest message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.PingAndWarmRequest} PingAndWarmRequest
+                     */
+                    PingAndWarmRequest.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.PingAndWarmRequest)
+                            return object;
+                        var message = new $root.google.bigtable.v2.PingAndWarmRequest();
+                        if (object.name != null)
+                            message.name = String(object.name);
+                        if (object.appProfileId != null)
+                            message.appProfileId = String(object.appProfileId);
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a PingAndWarmRequest message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @static
+                     * @param {google.bigtable.v2.PingAndWarmRequest} message PingAndWarmRequest
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PingAndWarmRequest.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.name = "";
+                            object.appProfileId = "";
+                        }
+                        if (message.name != null && message.hasOwnProperty("name"))
+                            object.name = message.name;
+                        if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
+                            object.appProfileId = message.appProfileId;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this PingAndWarmRequest to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.PingAndWarmRequest
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PingAndWarmRequest.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    return PingAndWarmRequest;
+                })();
+    
+                v2.PingAndWarmResponse = (function() {
+    
+                    /**
+                     * Properties of a PingAndWarmResponse.
+                     * @memberof google.bigtable.v2
+                     * @interface IPingAndWarmResponse
+                     */
+    
+                    /**
+                     * Constructs a new PingAndWarmResponse.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a PingAndWarmResponse.
+                     * @implements IPingAndWarmResponse
+                     * @constructor
+                     * @param {google.bigtable.v2.IPingAndWarmResponse=} [properties] Properties to set
+                     */
+                    function PingAndWarmResponse(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * Creates a new PingAndWarmResponse instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {google.bigtable.v2.IPingAndWarmResponse=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.PingAndWarmResponse} PingAndWarmResponse instance
+                     */
+                    PingAndWarmResponse.create = function create(properties) {
+                        return new PingAndWarmResponse(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified PingAndWarmResponse message. Does not implicitly {@link google.bigtable.v2.PingAndWarmResponse.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {google.bigtable.v2.IPingAndWarmResponse} message PingAndWarmResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PingAndWarmResponse.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified PingAndWarmResponse message, length delimited. Does not implicitly {@link google.bigtable.v2.PingAndWarmResponse.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {google.bigtable.v2.IPingAndWarmResponse} message PingAndWarmResponse message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    PingAndWarmResponse.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a PingAndWarmResponse message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.PingAndWarmResponse} PingAndWarmResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PingAndWarmResponse.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.PingAndWarmResponse();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a PingAndWarmResponse message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.PingAndWarmResponse} PingAndWarmResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    PingAndWarmResponse.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a PingAndWarmResponse message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    PingAndWarmResponse.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a PingAndWarmResponse message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.PingAndWarmResponse} PingAndWarmResponse
+                     */
+                    PingAndWarmResponse.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.PingAndWarmResponse)
+                            return object;
+                        return new $root.google.bigtable.v2.PingAndWarmResponse();
+                    };
+    
+                    /**
+                     * Creates a plain object from a PingAndWarmResponse message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @static
+                     * @param {google.bigtable.v2.PingAndWarmResponse} message PingAndWarmResponse
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    PingAndWarmResponse.toObject = function toObject() {
+                        return {};
+                    };
+    
+                    /**
+                     * Converts this PingAndWarmResponse to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.PingAndWarmResponse
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    PingAndWarmResponse.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    return PingAndWarmResponse;
                 })();
     
                 v2.ReadModifyWriteRowRequest = (function() {
@@ -31214,6 +32497,424 @@
                 return ResourceReference;
             })();
     
+            api.RoutingRule = (function() {
+    
+                /**
+                 * Properties of a RoutingRule.
+                 * @memberof google.api
+                 * @interface IRoutingRule
+                 * @property {Array.<google.api.IRoutingParameter>|null} [routingParameters] RoutingRule routingParameters
+                 */
+    
+                /**
+                 * Constructs a new RoutingRule.
+                 * @memberof google.api
+                 * @classdesc Represents a RoutingRule.
+                 * @implements IRoutingRule
+                 * @constructor
+                 * @param {google.api.IRoutingRule=} [properties] Properties to set
+                 */
+                function RoutingRule(properties) {
+                    this.routingParameters = [];
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+    
+                /**
+                 * RoutingRule routingParameters.
+                 * @member {Array.<google.api.IRoutingParameter>} routingParameters
+                 * @memberof google.api.RoutingRule
+                 * @instance
+                 */
+                RoutingRule.prototype.routingParameters = $util.emptyArray;
+    
+                /**
+                 * Creates a new RoutingRule instance using the specified properties.
+                 * @function create
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {google.api.IRoutingRule=} [properties] Properties to set
+                 * @returns {google.api.RoutingRule} RoutingRule instance
+                 */
+                RoutingRule.create = function create(properties) {
+                    return new RoutingRule(properties);
+                };
+    
+                /**
+                 * Encodes the specified RoutingRule message. Does not implicitly {@link google.api.RoutingRule.verify|verify} messages.
+                 * @function encode
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {google.api.IRoutingRule} message RoutingRule message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                RoutingRule.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.routingParameters != null && message.routingParameters.length)
+                        for (var i = 0; i < message.routingParameters.length; ++i)
+                            $root.google.api.RoutingParameter.encode(message.routingParameters[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    return writer;
+                };
+    
+                /**
+                 * Encodes the specified RoutingRule message, length delimited. Does not implicitly {@link google.api.RoutingRule.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {google.api.IRoutingRule} message RoutingRule message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                RoutingRule.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+    
+                /**
+                 * Decodes a RoutingRule message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {google.api.RoutingRule} RoutingRule
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                RoutingRule.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.api.RoutingRule();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 2:
+                            if (!(message.routingParameters && message.routingParameters.length))
+                                message.routingParameters = [];
+                            message.routingParameters.push($root.google.api.RoutingParameter.decode(reader, reader.uint32()));
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+    
+                /**
+                 * Decodes a RoutingRule message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {google.api.RoutingRule} RoutingRule
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                RoutingRule.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+    
+                /**
+                 * Verifies a RoutingRule message.
+                 * @function verify
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                RoutingRule.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.routingParameters != null && message.hasOwnProperty("routingParameters")) {
+                        if (!Array.isArray(message.routingParameters))
+                            return "routingParameters: array expected";
+                        for (var i = 0; i < message.routingParameters.length; ++i) {
+                            var error = $root.google.api.RoutingParameter.verify(message.routingParameters[i]);
+                            if (error)
+                                return "routingParameters." + error;
+                        }
+                    }
+                    return null;
+                };
+    
+                /**
+                 * Creates a RoutingRule message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {google.api.RoutingRule} RoutingRule
+                 */
+                RoutingRule.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.api.RoutingRule)
+                        return object;
+                    var message = new $root.google.api.RoutingRule();
+                    if (object.routingParameters) {
+                        if (!Array.isArray(object.routingParameters))
+                            throw TypeError(".google.api.RoutingRule.routingParameters: array expected");
+                        message.routingParameters = [];
+                        for (var i = 0; i < object.routingParameters.length; ++i) {
+                            if (typeof object.routingParameters[i] !== "object")
+                                throw TypeError(".google.api.RoutingRule.routingParameters: object expected");
+                            message.routingParameters[i] = $root.google.api.RoutingParameter.fromObject(object.routingParameters[i]);
+                        }
+                    }
+                    return message;
+                };
+    
+                /**
+                 * Creates a plain object from a RoutingRule message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof google.api.RoutingRule
+                 * @static
+                 * @param {google.api.RoutingRule} message RoutingRule
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                RoutingRule.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.arrays || options.defaults)
+                        object.routingParameters = [];
+                    if (message.routingParameters && message.routingParameters.length) {
+                        object.routingParameters = [];
+                        for (var j = 0; j < message.routingParameters.length; ++j)
+                            object.routingParameters[j] = $root.google.api.RoutingParameter.toObject(message.routingParameters[j], options);
+                    }
+                    return object;
+                };
+    
+                /**
+                 * Converts this RoutingRule to JSON.
+                 * @function toJSON
+                 * @memberof google.api.RoutingRule
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                RoutingRule.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+    
+                return RoutingRule;
+            })();
+    
+            api.RoutingParameter = (function() {
+    
+                /**
+                 * Properties of a RoutingParameter.
+                 * @memberof google.api
+                 * @interface IRoutingParameter
+                 * @property {string|null} [field] RoutingParameter field
+                 * @property {string|null} [pathTemplate] RoutingParameter pathTemplate
+                 */
+    
+                /**
+                 * Constructs a new RoutingParameter.
+                 * @memberof google.api
+                 * @classdesc Represents a RoutingParameter.
+                 * @implements IRoutingParameter
+                 * @constructor
+                 * @param {google.api.IRoutingParameter=} [properties] Properties to set
+                 */
+                function RoutingParameter(properties) {
+                    if (properties)
+                        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                            if (properties[keys[i]] != null)
+                                this[keys[i]] = properties[keys[i]];
+                }
+    
+                /**
+                 * RoutingParameter field.
+                 * @member {string} field
+                 * @memberof google.api.RoutingParameter
+                 * @instance
+                 */
+                RoutingParameter.prototype.field = "";
+    
+                /**
+                 * RoutingParameter pathTemplate.
+                 * @member {string} pathTemplate
+                 * @memberof google.api.RoutingParameter
+                 * @instance
+                 */
+                RoutingParameter.prototype.pathTemplate = "";
+    
+                /**
+                 * Creates a new RoutingParameter instance using the specified properties.
+                 * @function create
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {google.api.IRoutingParameter=} [properties] Properties to set
+                 * @returns {google.api.RoutingParameter} RoutingParameter instance
+                 */
+                RoutingParameter.create = function create(properties) {
+                    return new RoutingParameter(properties);
+                };
+    
+                /**
+                 * Encodes the specified RoutingParameter message. Does not implicitly {@link google.api.RoutingParameter.verify|verify} messages.
+                 * @function encode
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {google.api.IRoutingParameter} message RoutingParameter message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                RoutingParameter.encode = function encode(message, writer) {
+                    if (!writer)
+                        writer = $Writer.create();
+                    if (message.field != null && Object.hasOwnProperty.call(message, "field"))
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.field);
+                    if (message.pathTemplate != null && Object.hasOwnProperty.call(message, "pathTemplate"))
+                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.pathTemplate);
+                    return writer;
+                };
+    
+                /**
+                 * Encodes the specified RoutingParameter message, length delimited. Does not implicitly {@link google.api.RoutingParameter.verify|verify} messages.
+                 * @function encodeDelimited
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {google.api.IRoutingParameter} message RoutingParameter message or plain object to encode
+                 * @param {$protobuf.Writer} [writer] Writer to encode to
+                 * @returns {$protobuf.Writer} Writer
+                 */
+                RoutingParameter.encodeDelimited = function encodeDelimited(message, writer) {
+                    return this.encode(message, writer).ldelim();
+                };
+    
+                /**
+                 * Decodes a RoutingParameter message from the specified reader or buffer.
+                 * @function decode
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @param {number} [length] Message length if known beforehand
+                 * @returns {google.api.RoutingParameter} RoutingParameter
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                RoutingParameter.decode = function decode(reader, length) {
+                    if (!(reader instanceof $Reader))
+                        reader = $Reader.create(reader);
+                    var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.api.RoutingParameter();
+                    while (reader.pos < end) {
+                        var tag = reader.uint32();
+                        switch (tag >>> 3) {
+                        case 1:
+                            message.field = reader.string();
+                            break;
+                        case 2:
+                            message.pathTemplate = reader.string();
+                            break;
+                        default:
+                            reader.skipType(tag & 7);
+                            break;
+                        }
+                    }
+                    return message;
+                };
+    
+                /**
+                 * Decodes a RoutingParameter message from the specified reader or buffer, length delimited.
+                 * @function decodeDelimited
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                 * @returns {google.api.RoutingParameter} RoutingParameter
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                RoutingParameter.decodeDelimited = function decodeDelimited(reader) {
+                    if (!(reader instanceof $Reader))
+                        reader = new $Reader(reader);
+                    return this.decode(reader, reader.uint32());
+                };
+    
+                /**
+                 * Verifies a RoutingParameter message.
+                 * @function verify
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {Object.<string,*>} message Plain object to verify
+                 * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                 */
+                RoutingParameter.verify = function verify(message) {
+                    if (typeof message !== "object" || message === null)
+                        return "object expected";
+                    if (message.field != null && message.hasOwnProperty("field"))
+                        if (!$util.isString(message.field))
+                            return "field: string expected";
+                    if (message.pathTemplate != null && message.hasOwnProperty("pathTemplate"))
+                        if (!$util.isString(message.pathTemplate))
+                            return "pathTemplate: string expected";
+                    return null;
+                };
+    
+                /**
+                 * Creates a RoutingParameter message from a plain object. Also converts values to their respective internal types.
+                 * @function fromObject
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {Object.<string,*>} object Plain object
+                 * @returns {google.api.RoutingParameter} RoutingParameter
+                 */
+                RoutingParameter.fromObject = function fromObject(object) {
+                    if (object instanceof $root.google.api.RoutingParameter)
+                        return object;
+                    var message = new $root.google.api.RoutingParameter();
+                    if (object.field != null)
+                        message.field = String(object.field);
+                    if (object.pathTemplate != null)
+                        message.pathTemplate = String(object.pathTemplate);
+                    return message;
+                };
+    
+                /**
+                 * Creates a plain object from a RoutingParameter message. Also converts values to other types if specified.
+                 * @function toObject
+                 * @memberof google.api.RoutingParameter
+                 * @static
+                 * @param {google.api.RoutingParameter} message RoutingParameter
+                 * @param {$protobuf.IConversionOptions} [options] Conversion options
+                 * @returns {Object.<string,*>} Plain object
+                 */
+                RoutingParameter.toObject = function toObject(message, options) {
+                    if (!options)
+                        options = {};
+                    var object = {};
+                    if (options.defaults) {
+                        object.field = "";
+                        object.pathTemplate = "";
+                    }
+                    if (message.field != null && message.hasOwnProperty("field"))
+                        object.field = message.field;
+                    if (message.pathTemplate != null && message.hasOwnProperty("pathTemplate"))
+                        object.pathTemplate = message.pathTemplate;
+                    return object;
+                };
+    
+                /**
+                 * Converts this RoutingParameter to JSON.
+                 * @function toJSON
+                 * @memberof google.api.RoutingParameter
+                 * @instance
+                 * @returns {Object.<string,*>} JSON object
+                 */
+                RoutingParameter.prototype.toJSON = function toJSON() {
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                };
+    
+                return RoutingParameter;
+            })();
+    
             return api;
         })();
     
@@ -37942,6 +39643,7 @@
                  * @property {Array.<google.protobuf.IUninterpretedOption>|null} [uninterpretedOption] MethodOptions uninterpretedOption
                  * @property {google.api.IHttpRule|null} [".google.api.http"] MethodOptions .google.api.http
                  * @property {Array.<string>|null} [".google.api.methodSignature"] MethodOptions .google.api.methodSignature
+                 * @property {google.api.IRoutingRule|null} [".google.api.routing"] MethodOptions .google.api.routing
                  * @property {google.longrunning.IOperationInfo|null} [".google.longrunning.operationInfo"] MethodOptions .google.longrunning.operationInfo
                  */
     
@@ -38003,6 +39705,14 @@
                 MethodOptions.prototype[".google.api.methodSignature"] = $util.emptyArray;
     
                 /**
+                 * MethodOptions .google.api.routing.
+                 * @member {google.api.IRoutingRule|null|undefined} .google.api.routing
+                 * @memberof google.protobuf.MethodOptions
+                 * @instance
+                 */
+                MethodOptions.prototype[".google.api.routing"] = null;
+    
+                /**
                  * MethodOptions .google.longrunning.operationInfo.
                  * @member {google.longrunning.IOperationInfo|null|undefined} .google.longrunning.operationInfo
                  * @memberof google.protobuf.MethodOptions
@@ -38048,6 +39758,8 @@
                             writer.uint32(/* id 1051, wireType 2 =*/8410).string(message[".google.api.methodSignature"][i]);
                     if (message[".google.api.http"] != null && Object.hasOwnProperty.call(message, ".google.api.http"))
                         $root.google.api.HttpRule.encode(message[".google.api.http"], writer.uint32(/* id 72295728, wireType 2 =*/578365826).fork()).ldelim();
+                    if (message[".google.api.routing"] != null && Object.hasOwnProperty.call(message, ".google.api.routing"))
+                        $root.google.api.RoutingRule.encode(message[".google.api.routing"], writer.uint32(/* id 72295729, wireType 2 =*/578365834).fork()).ldelim();
                     return writer;
                 };
     
@@ -38100,6 +39812,9 @@
                             if (!(message[".google.api.methodSignature"] && message[".google.api.methodSignature"].length))
                                 message[".google.api.methodSignature"] = [];
                             message[".google.api.methodSignature"].push(reader.string());
+                            break;
+                        case 72295729:
+                            message[".google.api.routing"] = $root.google.api.RoutingRule.decode(reader, reader.uint32());
                             break;
                         case 1049:
                             message[".google.longrunning.operationInfo"] = $root.google.longrunning.OperationInfo.decode(reader, reader.uint32());
@@ -38172,6 +39887,11 @@
                             if (!$util.isString(message[".google.api.methodSignature"][i]))
                                 return ".google.api.methodSignature: string[] expected";
                     }
+                    if (message[".google.api.routing"] != null && message.hasOwnProperty(".google.api.routing")) {
+                        var error = $root.google.api.RoutingRule.verify(message[".google.api.routing"]);
+                        if (error)
+                            return ".google.api.routing." + error;
+                    }
                     if (message[".google.longrunning.operationInfo"] != null && message.hasOwnProperty(".google.longrunning.operationInfo")) {
                         var error = $root.google.longrunning.OperationInfo.verify(message[".google.longrunning.operationInfo"]);
                         if (error)
@@ -38230,6 +39950,11 @@
                         for (var i = 0; i < object[".google.api.methodSignature"].length; ++i)
                             message[".google.api.methodSignature"][i] = String(object[".google.api.methodSignature"][i]);
                     }
+                    if (object[".google.api.routing"] != null) {
+                        if (typeof object[".google.api.routing"] !== "object")
+                            throw TypeError(".google.protobuf.MethodOptions..google.api.routing: object expected");
+                        message[".google.api.routing"] = $root.google.api.RoutingRule.fromObject(object[".google.api.routing"]);
+                    }
                     if (object[".google.longrunning.operationInfo"] != null) {
                         if (typeof object[".google.longrunning.operationInfo"] !== "object")
                             throw TypeError(".google.protobuf.MethodOptions..google.longrunning.operationInfo: object expected");
@@ -38260,6 +39985,7 @@
                         object.idempotencyLevel = options.enums === String ? "IDEMPOTENCY_UNKNOWN" : 0;
                         object[".google.longrunning.operationInfo"] = null;
                         object[".google.api.http"] = null;
+                        object[".google.api.routing"] = null;
                     }
                     if (message.deprecated != null && message.hasOwnProperty("deprecated"))
                         object.deprecated = message.deprecated;
@@ -38279,6 +40005,8 @@
                     }
                     if (message[".google.api.http"] != null && message.hasOwnProperty(".google.api.http"))
                         object[".google.api.http"] = $root.google.api.HttpRule.toObject(message[".google.api.http"], options);
+                    if (message[".google.api.routing"] != null && message.hasOwnProperty(".google.api.routing"))
+                        object[".google.api.routing"] = $root.google.api.RoutingRule.toObject(message[".google.api.routing"], options);
                     return object;
                 };
     

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -178,6 +178,9 @@ export class BigtableTableAdminClient {
       ),
       clusterPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}'
+      ),
+      hotTabletPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/clusters/{cluster}/hotTablets/{hot_tablet}'
       ),
       instancePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}'
@@ -1587,7 +1590,7 @@ export class BigtableTableAdminClient {
    *   See the operation documentation for the appropriate value for this field.
    * @param {google.iam.v1.GetPolicyOptions} request.options
    *   OPTIONAL: A `GetPolicyOptions` object for specifying options to
-   *   `GetIamPolicy`. This field is only used by Cloud IAM.
+   *   `GetIamPolicy`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1678,6 +1681,12 @@ export class BigtableTableAdminClient {
    *   the policy is limited to a few 10s of KB. An empty policy is a
    *   valid policy but certain Cloud Platform services (such as Projects)
    *   might reject them.
+   * @param {google.protobuf.FieldMask} request.updateMask
+   *   OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only
+   *   the fields in the mask will be modified. If no mask is provided, the
+   *   following default mask is used:
+   *
+   *   `paths: "bindings, etag"`
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -3435,6 +3444,77 @@ export class BigtableTableAdminClient {
   }
 
   /**
+   * Return a fully-qualified hotTablet resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} cluster
+   * @param {string} hot_tablet
+   * @returns {string} Resource name string.
+   */
+  hotTabletPath(
+    project: string,
+    instance: string,
+    cluster: string,
+    hotTablet: string
+  ) {
+    return this.pathTemplates.hotTabletPathTemplate.render({
+      project: project,
+      instance: instance,
+      cluster: cluster,
+      hot_tablet: hotTablet,
+    });
+  }
+
+  /**
+   * Parse the project from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .project;
+  }
+
+  /**
+   * Parse the instance from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .instance;
+  }
+
+  /**
+   * Parse the cluster from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the cluster.
+   */
+  matchClusterFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .cluster;
+  }
+
+  /**
+   * Parse the hot_tablet from HotTablet resource.
+   *
+   * @param {string} hotTabletName
+   *   A fully-qualified path representing HotTablet resource.
+   * @returns {string} A string representing the hot_tablet.
+   */
+  matchHotTabletFromHotTabletName(hotTabletName: string) {
+    return this.pathTemplates.hotTabletPathTemplate.match(hotTabletName)
+      .hot_tablet;
+  }
+
+  /**
    * Return a fully-qualified instance resource name string.
    *
    * @param {string} project
@@ -3593,9 +3673,8 @@ export class BigtableTableAdminClient {
    * @returns {Promise} A promise that resolves when the client is closed.
    */
   close(): Promise<void> {
-    this.initialize();
-    if (!this._terminated) {
-      return this.bigtableTableAdminStub!.then(stub => {
+    if (this.bigtableTableAdminStub && !this._terminated) {
+      return this.bigtableTableAdminStub.then(stub => {
         this._terminated = true;
         stub.close();
         this.operationsClient.close();

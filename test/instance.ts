@@ -21,7 +21,7 @@ import {ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
 import {AppProfile, AppProfileOptions} from '../src/app-profile';
-import {Cluster, CreateClusterOptions} from '../src/cluster';
+import {CreateClusterOptions} from '../src/cluster';
 import {Family} from '../src/family';
 import {
   Policy,
@@ -32,7 +32,9 @@ import {
 import {Bigtable, RequestOptions} from '../src';
 import {PassThrough} from 'stream';
 import * as pumpify from 'pumpify';
-import {RestoreTableCallback, RestoreTableConfig} from '../src/backup';
+import {FakeCluster} from '../system-test/common';
+import {RestoreTableConfig} from '../src/backup';
+import {Options} from './cluster';
 
 const sandbox = sinon.createSandbox();
 
@@ -64,14 +66,6 @@ class FakeAppProfile extends AppProfile {
 }
 
 class FakeBackup {}
-
-class FakeCluster extends Cluster {
-  calledWith_: Array<{}>;
-  constructor(...args: [inst.Instance, string]) {
-    super(args[0], args[1]);
-    this.calledWith_ = args;
-  }
-}
 
 class FakeFamily extends Family {
   calledWith_: Array<{}>;
@@ -258,6 +252,23 @@ describe('Bigtable/Instance', () => {
           assert.deepStrictEqual(
             config.reqOpts.appProfile.singleClusterRouting,
             {clusterId: CLUSTER_ID}
+          );
+          done();
+        };
+        instance.createAppProfile(APP_PROFILE_ID, options, assert.ifError);
+      });
+
+      it('a set of cluster objects', done => {
+        const clusterIds = ['my-cluster1', 'my-cluster2'];
+        const clusters = clusterIds.map(
+          cluster => new FakeCluster(instance, cluster)
+        );
+        const options = {routing: new Set(clusters)};
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (instance.bigtable.request as Function) = (config: any) => {
+          assert.deepStrictEqual(
+            config.reqOpts.appProfile.multiClusterRoutingUseAny,
+            {clusterIds: clusterIds}
           );
           done();
         };
@@ -894,7 +905,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -916,7 +927,7 @@ describe('Bigtable/Instance', () => {
       const pageSize = 3;
       const gaxOptions = {pageSize, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1000,7 +1011,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1023,7 +1034,7 @@ describe('Bigtable/Instance', () => {
       const pageSize = 3;
       const gaxOptions = {pageSize, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1426,7 +1437,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageSize, pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {
