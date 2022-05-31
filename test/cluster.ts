@@ -19,6 +19,7 @@ import * as proxyquire from 'proxyquire';
 import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
 import {PreciseDate} from '@google-cloud/precise-date';
+import {ClusterUtils} from '../src/utils/cluster';
 
 export interface Options {
   nodes?: Number;
@@ -961,16 +962,23 @@ describe('Bigtable/Cluster', () => {
   });
 
   describe('setMetadata', () => {
+    beforeEach(() => {
+      const metadata = {
+        location: 'projects/{{projectId}}/locations/us-east4-b',
+      };
+      cluster.metadata = metadata;
+    });
+
     it('should provide the proper request options', done => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any, callback: Function) => {
         assert.strictEqual(config.client, 'BigtableInstanceAdminClient');
-        assert.strictEqual(config.method, 'updateCluster');
-        assert.strictEqual(config.reqOpts.name, CLUSTER_NAME);
+        assert.strictEqual(config.method, 'partialUpdateCluster');
+        assert.strictEqual(config.reqOpts.cluster.name, CLUSTER_NAME);
         callback(); // done()
       };
 
-      cluster.setMetadata({}, done);
+      cluster.setMetadata({nodes: 2}, done);
     });
 
     it('should respect the nodes option', done => {
@@ -980,7 +988,7 @@ describe('Bigtable/Cluster', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
-        assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
+        assert.strictEqual(config.reqOpts.cluster.serveNodes, options.nodes);
         done();
       };
 
@@ -994,12 +1002,11 @@ describe('Bigtable/Cluster', () => {
         defaultStorageType: 'exellent_type',
       };
 
-      const expectedReqOpts: Options = Object.assign(
-        {},
-        {name: CLUSTER_NAME, serveNodes: options.nodes},
-        options
+      const expectedReqOpts = ClusterUtils.getRequestFromMetadata(
+        options,
+        options.location,
+        CLUSTER_NAME
       );
-      delete expectedReqOpts.nodes;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
@@ -1018,7 +1025,7 @@ describe('Bigtable/Cluster', () => {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cluster.bigtable.request = (config: any) => {
-        assert.strictEqual(config.reqOpts.serveNodes, options.nodes);
+        assert.strictEqual(config.reqOpts.cluster.serveNodes, options.nodes);
         assert.strictEqual(config.gaxOpts, gaxOptions);
         done();
       };
@@ -1026,14 +1033,16 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata(options, gaxOptions, assert.ifError);
     });
 
+    // eslint-disable-next-line no-restricted-properties
     it('should execute callback with all arguments', done => {
       const args = [{}, {}];
-
       cluster.bigtable.request = (config: {}, callback: Function) => {
         callback(...args);
       };
-
-      cluster.setMetadata({}, (...argsies: Array<{}>) => {
+      const name =
+        'projects/{{projectId}}/instances/fake-instance/clusters/fake-cluster';
+      cluster.name = name;
+      cluster.setMetadata({nodes: 2}, (...argsies: Array<{}>) => {
         assert.deepStrictEqual([].slice.call(argsies), args);
         done();
       });
