@@ -25,8 +25,6 @@ interface ServerError {
   code: string;
 }
 
-// TODO: Test server shuts down
-
 describe('Bigtable/Mock-Server', () => {
   const inputPort = '1234';
   let server: MockServer;
@@ -59,6 +57,7 @@ describe('Bigtable/Mock-Server', () => {
     checkPort(server.port, true, () => {
       server.shutdown((err?: Error) => {
         assert.deepStrictEqual(err, undefined);
+        done();
       });
     });
   });
