@@ -18,6 +18,7 @@ import {before, beforeEach, afterEach, describe, it} from 'mocha';
 import * as sinon from 'sinon';
 import * as proxyquire from 'proxyquire';
 import {ServiceError} from 'google-gax';
+import * as snapshot from 'snap-shot-it';
 
 import * as inst from '../src/instance';
 import {AppProfile, AppProfileOptions} from '../src/app-profile';
@@ -362,6 +363,32 @@ describe('Bigtable/Instance', () => {
         {nodes: 2, location: 'us-central1-b'},
         assert.ifError
       );
+    });
+
+    it('should provide the proper request options asynchronously', async () => {
+      let currentRequestInput = null;
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        currentRequestInput = config;
+      };
+      const optionsList = [
+        {nodes: 2},
+        {nodes: 2, storage: 'ssd'},
+        {nodes: 2, key: 'kms-key-name'},
+        {nodes: 2, encryption: {kmsKeyName: 'kms-key-name'}},
+        {
+          minServeNodes: 2,
+          maxServeNodes: 3,
+          cpuUtilizationPercent: 50,
+        },
+      ].map(option => Object.assign(option, {location: 'us-central1-b'}));
+      for (const options of optionsList) {
+        await instance.createCluster(CLUSTER_ID, options);
+        snapshot({
+          id: CLUSTER_ID,
+          options: options,
+          request: currentRequestInput,
+        });
+      }
     });
 
     it('should accept gaxOptions', done => {
