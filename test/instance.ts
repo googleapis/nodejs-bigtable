@@ -386,7 +386,7 @@ describe('Bigtable/Instance', () => {
         snapshot({
           id: CLUSTER_ID,
           options: options,
-          request: currentRequestInput,
+          config: currentRequestInput,
         });
       }
     });

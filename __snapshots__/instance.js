@@ -20,7 +20,7 @@ exports[
     nodes: 2,
     location: 'us-central1-b',
   },
-  request: {
+  config: {
     client: 'BigtableInstanceAdminClient',
     method: 'createCluster',
     reqOpts: {
@@ -43,7 +43,7 @@ exports[
     storage: 'ssd',
     location: 'us-central1-b',
   },
-  request: {
+  config: {
     client: 'BigtableInstanceAdminClient',
     method: 'createCluster',
     reqOpts: {
@@ -67,7 +67,7 @@ exports[
     key: 'kms-key-name',
     location: 'us-central1-b',
   },
-  request: {
+  config: {
     client: 'BigtableInstanceAdminClient',
     method: 'createCluster',
     reqOpts: {
@@ -95,7 +95,7 @@ exports[
     },
     location: 'us-central1-b',
   },
-  request: {
+  config: {
     client: 'BigtableInstanceAdminClient',
     method: 'createCluster',
     reqOpts: {
@@ -122,7 +122,7 @@ exports[
     cpuUtilizationPercent: 50,
     location: 'us-central1-b',
   },
-  request: {
+  config: {
     client: 'BigtableInstanceAdminClient',
     method: 'createCluster',
     reqOpts: {
