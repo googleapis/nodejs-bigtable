@@ -15,20 +15,24 @@
 exports[
   'Bigtable/Instance createCluster should provide the proper request options asynchronously 1'
 ] = {
-  id: 'my-cluster',
-  options: {
-    nodes: 2,
-    location: 'us-central1-b',
+  input: {
+    id: 'my-cluster',
+    options: {
+      nodes: 2,
+      location: 'us-central1-b',
+    },
   },
-  config: {
-    client: 'BigtableInstanceAdminClient',
-    method: 'createCluster',
-    reqOpts: {
-      parent: 'projects/my-project/instances/my-instance',
-      clusterId: 'my-cluster',
-      cluster: {
-        location: 'projects/my-project/locations/us-central1-b',
-        serveNodes: 2,
+  output: {
+    config: {
+      client: 'BigtableInstanceAdminClient',
+      method: 'createCluster',
+      reqOpts: {
+        parent: 'projects/my-project/instances/my-instance',
+        clusterId: 'my-cluster',
+        cluster: {
+          location: 'projects/my-project/locations/us-central1-b',
+          serveNodes: 2,
+        },
       },
     },
   },
@@ -37,22 +41,26 @@ exports[
 exports[
   'Bigtable/Instance createCluster should provide the proper request options asynchronously 2'
 ] = {
-  id: 'my-cluster',
-  options: {
-    nodes: 2,
-    storage: 'ssd',
-    location: 'us-central1-b',
+  input: {
+    id: 'my-cluster',
+    options: {
+      nodes: 2,
+      storage: 'ssd',
+      location: 'us-central1-b',
+    },
   },
-  config: {
-    client: 'BigtableInstanceAdminClient',
-    method: 'createCluster',
-    reqOpts: {
-      parent: 'projects/my-project/instances/my-instance',
-      clusterId: 'my-cluster',
-      cluster: {
-        location: 'projects/my-project/locations/us-central1-b',
-        serveNodes: 2,
-        defaultStorageType: 1,
+  output: {
+    config: {
+      client: 'BigtableInstanceAdminClient',
+      method: 'createCluster',
+      reqOpts: {
+        parent: 'projects/my-project/instances/my-instance',
+        clusterId: 'my-cluster',
+        cluster: {
+          location: 'projects/my-project/locations/us-central1-b',
+          serveNodes: 2,
+          defaultStorageType: 1,
+        },
       },
     },
   },
@@ -61,23 +69,27 @@ exports[
 exports[
   'Bigtable/Instance createCluster should provide the proper request options asynchronously 3'
 ] = {
-  id: 'my-cluster',
-  options: {
-    nodes: 2,
-    key: 'kms-key-name',
-    location: 'us-central1-b',
+  input: {
+    id: 'my-cluster',
+    options: {
+      nodes: 2,
+      key: 'kms-key-name',
+      location: 'us-central1-b',
+    },
   },
-  config: {
-    client: 'BigtableInstanceAdminClient',
-    method: 'createCluster',
-    reqOpts: {
-      parent: 'projects/my-project/instances/my-instance',
-      clusterId: 'my-cluster',
-      cluster: {
-        location: 'projects/my-project/locations/us-central1-b',
-        serveNodes: 2,
-        encryptionConfig: {
-          kmsKeyName: 'kms-key-name',
+  output: {
+    config: {
+      client: 'BigtableInstanceAdminClient',
+      method: 'createCluster',
+      reqOpts: {
+        parent: 'projects/my-project/instances/my-instance',
+        clusterId: 'my-cluster',
+        cluster: {
+          location: 'projects/my-project/locations/us-central1-b',
+          serveNodes: 2,
+          encryptionConfig: {
+            kmsKeyName: 'kms-key-name',
+          },
         },
       },
     },
@@ -87,25 +99,29 @@ exports[
 exports[
   'Bigtable/Instance createCluster should provide the proper request options asynchronously 4'
 ] = {
-  id: 'my-cluster',
-  options: {
-    nodes: 2,
-    encryption: {
-      kmsKeyName: 'kms-key-name',
+  input: {
+    id: 'my-cluster',
+    options: {
+      nodes: 2,
+      encryption: {
+        kmsKeyName: 'kms-key-name',
+      },
+      location: 'us-central1-b',
     },
-    location: 'us-central1-b',
   },
-  config: {
-    client: 'BigtableInstanceAdminClient',
-    method: 'createCluster',
-    reqOpts: {
-      parent: 'projects/my-project/instances/my-instance',
-      clusterId: 'my-cluster',
-      cluster: {
-        location: 'projects/my-project/locations/us-central1-b',
-        serveNodes: 2,
-        encryptionConfig: {
-          kmsKeyName: 'kms-key-name',
+  output: {
+    config: {
+      client: 'BigtableInstanceAdminClient',
+      method: 'createCluster',
+      reqOpts: {
+        parent: 'projects/my-project/instances/my-instance',
+        clusterId: 'my-cluster',
+        cluster: {
+          location: 'projects/my-project/locations/us-central1-b',
+          serveNodes: 2,
+          encryptionConfig: {
+            kmsKeyName: 'kms-key-name',
+          },
         },
       },
     },
@@ -115,29 +131,33 @@ exports[
 exports[
   'Bigtable/Instance createCluster should provide the proper request options asynchronously 5'
 ] = {
-  id: 'my-cluster',
-  options: {
-    minServeNodes: 2,
-    maxServeNodes: 3,
-    cpuUtilizationPercent: 50,
-    location: 'us-central1-b',
+  input: {
+    id: 'my-cluster',
+    options: {
+      minServeNodes: 2,
+      maxServeNodes: 3,
+      cpuUtilizationPercent: 50,
+      location: 'us-central1-b',
+    },
   },
-  config: {
-    client: 'BigtableInstanceAdminClient',
-    method: 'createCluster',
-    reqOpts: {
-      parent: 'projects/my-project/instances/my-instance',
-      clusterId: 'my-cluster',
-      cluster: {
-        location: 'projects/my-project/locations/us-central1-b',
-        clusterConfig: {
-          clusterAutoscalingConfig: {
-            autoscalingTargets: {
-              cpuUtilizationPercent: 50,
-            },
-            autoscalingLimits: {
-              minServeNodes: 2,
-              maxServeNodes: 3,
+  output: {
+    config: {
+      client: 'BigtableInstanceAdminClient',
+      method: 'createCluster',
+      reqOpts: {
+        parent: 'projects/my-project/instances/my-instance',
+        clusterId: 'my-cluster',
+        cluster: {
+          location: 'projects/my-project/locations/us-central1-b',
+          clusterConfig: {
+            clusterAutoscalingConfig: {
+              autoscalingTargets: {
+                cpuUtilizationPercent: 50,
+              },
+              autoscalingLimits: {
+                minServeNodes: 2,
+                maxServeNodes: 3,
+              },
             },
           },
         },

@@ -384,9 +384,13 @@ describe('Bigtable/Instance', () => {
       for (const options of optionsList) {
         await instance.createCluster(CLUSTER_ID, options);
         snapshot({
-          id: CLUSTER_ID,
-          options: options,
-          config: currentRequestInput,
+          input: {
+            id: CLUSTER_ID,
+            options: options,
+          },
+          output: {
+            config: currentRequestInput,
+          },
         });
       }
     });
