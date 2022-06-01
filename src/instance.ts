@@ -394,15 +394,9 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     } as google.bigtable.admin.v2.CreateClusterRequest;
     ClusterUtils.validateClusterMetadata(options);
     if (!is.empty(options)) {
-      const optionsClone = Object.assign({}, options);
-      if (optionsClone.location) {
-        optionsClone.location = Cluster.getLocation_(
-          this.bigtable.projectId,
-          optionsClone.location
-        );
-      }
-      reqOpts.cluster = ClusterUtils.getClusterBaseConfig(
-        optionsClone,
+      reqOpts.cluster = ClusterUtils.getClusterBaseConfigWithFullLocation(
+        options,
+        this.bigtable.projectId,
         undefined
       );
     }
