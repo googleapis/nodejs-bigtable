@@ -57,6 +57,7 @@ export class ClusterUtils {
       }
     }
   }
+
   static getUpdateMask(metadata: SetClusterMetadataOptions): string[] {
     const updateMask: string[] = [];
     if (metadata.nodes) {
