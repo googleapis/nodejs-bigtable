@@ -118,7 +118,6 @@ export class ClusterUtils {
       location ? {location} : null,
       clusterConfig ? {clusterConfig} : null,
       metadata.nodes ? {serveNodes: metadata.nodes} : null
-      // metadata.key ? {encryptionConfig: {kmsKeyName: metadata.key}} : null
     );
   }
 
