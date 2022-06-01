@@ -22,7 +22,7 @@ import * as snapshot from 'snap-shot-it';
 
 import * as inst from '../src/instance';
 import {AppProfile, AppProfileOptions} from '../src/app-profile';
-import {CreateClusterOptions} from '../src/cluster';
+import {Cluster, CreateClusterOptions} from '../src/cluster';
 import {Family} from '../src/family';
 import {
   Policy,
@@ -404,7 +404,10 @@ describe('Bigtable/Instance', () => {
         location: 'us-central1-b',
         nodes: 2,
       } as CreateClusterOptions;
-      const fakeLocation = 'a/b/c/d';
+      const fakeLocation = Cluster.getLocation_(
+        BIGTABLE.projectId,
+        options.location
+      );
       sandbox
         .stub(FakeCluster, 'getLocation_')
         .callsFake((project, location) => {
