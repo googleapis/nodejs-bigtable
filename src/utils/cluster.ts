@@ -14,7 +14,8 @@
 
 import * as protos from '../../protos/protos';
 import {
-  BasicClusterConfig, Cluster,
+  BasicClusterConfig,
+  Cluster,
   ICluster,
   SetClusterMetadataOptions,
 } from '../cluster';
