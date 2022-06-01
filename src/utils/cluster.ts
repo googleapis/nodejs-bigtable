@@ -113,7 +113,8 @@ export class ClusterUtils {
     const baseConfig = ClusterUtils.getClusterBaseConfig(metadata, name);
     return Object.assign(
       baseConfig,
-      metadata.key ? {encryptionConfig: {kmsKeyName: metadata.key}} : null
+      metadata.key ? {encryptionConfig: {kmsKeyName: metadata.key}} : null,
+      metadata.encryption ? {encryptionConfig: metadata.encryption} : null
     );
   }
 

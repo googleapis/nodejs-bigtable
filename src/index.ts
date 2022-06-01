@@ -621,10 +621,6 @@ export class Bigtable {
         defaultStorageType: Cluster.getStorageType_(cluster.storage!),
       });
 
-      if (cluster.encryption) {
-        clusters[cluster.id!].encryptionConfig = cluster.encryption;
-      }
-
       return clusters;
     }, {} as {[index: string]: google.bigtable.admin.v2.ICluster});
 

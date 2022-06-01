@@ -410,10 +410,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       );
     }
 
-    if (options.encryption) {
-      reqOpts.cluster!.encryptionConfig = options.encryption;
-    }
-
     if (options.storage) {
       const storageType = Cluster.getStorageType_(options.storage);
       reqOpts.cluster!.defaultStorageType = storageType;
