@@ -14,7 +14,7 @@
 
 import * as protos from '../../protos/protos';
 import {
-  BasicClusterConfig,
+  BasicClusterConfig, Cluster,
   ICluster,
   SetClusterMetadataOptions,
 } from '../cluster';
@@ -87,6 +87,21 @@ export class ClusterUtils {
       );
     }
     return updateMask;
+  }
+
+  static getClusterBaseConfigWithFullLocation(
+    metadata: BasicClusterConfig,
+    projectId: string,
+    name: string | undefined
+  ): google.bigtable.admin.v2.ICluster {
+    const metadataClone = Object.assign({}, metadata);
+    if (metadataClone.location) {
+      metadataClone.location = Cluster.getLocation_(
+        projectId,
+        metadataClone.location
+      );
+    }
+    return ClusterUtils.getClusterBaseConfig(metadataClone, name);
   }
 
   static getClusterBaseConfig(
