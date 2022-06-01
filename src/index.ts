@@ -621,12 +621,6 @@ export class Bigtable {
         defaultStorageType: Cluster.getStorageType_(cluster.storage!),
       });
 
-      if (cluster.key) {
-        clusters[cluster.id!].encryptionConfig = {
-          kmsKeyName: cluster.key,
-        };
-      }
-
       if (cluster.encryption) {
         clusters[cluster.id!].encryptionConfig = cluster.encryption;
       }

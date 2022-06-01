@@ -410,12 +410,6 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
       );
     }
 
-    if (options.key) {
-      reqOpts.cluster!.encryptionConfig = {
-        kmsKeyName: options.key,
-      };
-    }
-
     if (options.encryption) {
       reqOpts.cluster!.encryptionConfig = options.encryption;
     }

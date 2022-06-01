@@ -103,7 +103,18 @@ export class ClusterUtils {
         metadataClone.location
       );
     }
-    return ClusterUtils.getClusterBaseConfig(metadataClone, name);
+    return ClusterUtils.getClusterAdvancedConfig(metadataClone, name);
+  }
+
+  static getClusterAdvancedConfig(
+    metadata: BasicClusterConfig,
+    name: string | undefined
+  ): google.bigtable.admin.v2.ICluster {
+    const baseConfig = ClusterUtils.getClusterBaseConfig(metadata, name);
+    return Object.assign(
+      baseConfig,
+      metadata.key ? {encryptionConfig: {kmsKeyName: metadata.key}} : null
+    );
   }
 
   static getClusterBaseConfig(
