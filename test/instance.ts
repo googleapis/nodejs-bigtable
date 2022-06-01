@@ -36,6 +36,7 @@ import * as pumpify from 'pumpify';
 import {FakeCluster} from '../system-test/common';
 import {RestoreTableConfig} from '../src/backup';
 import {Options} from './cluster';
+import {createClusterOptionsList} from './constants/cluster';
 
 const sandbox = sinon.createSandbox();
 
@@ -370,17 +371,7 @@ describe('Bigtable/Instance', () => {
       (instance.bigtable.request as Function) = (config: RequestOptions) => {
         currentRequestInput = config;
       };
-      const optionsList = [
-        {nodes: 2},
-        {nodes: 2, storage: 'ssd'},
-        {nodes: 2, key: 'kms-key-name'},
-        {nodes: 2, encryption: {kmsKeyName: 'kms-key-name'}},
-        {
-          minServeNodes: 2,
-          maxServeNodes: 3,
-          cpuUtilizationPercent: 50,
-        },
-      ].map(option => Object.assign(option, {location: 'us-central1-b'}));
+      const optionsList = createClusterOptionsList;
       for (const options of optionsList) {
         await instance.createCluster(CLUSTER_ID, options);
         snapshot({

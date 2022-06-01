@@ -25,6 +25,7 @@ import {Instance, InstanceOptions} from '../src/instance.js';
 import {PassThrough} from 'stream';
 import {RequestOptions} from '../src';
 import * as snapshot from 'snap-shot-it';
+import {createClusterOptionsList} from './constants/cluster';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const v2 = require('../src/v2');
@@ -406,19 +407,8 @@ describe('Bigtable', () => {
       (bigtable.request as Function) = (config: RequestOptions) => {
         currentRequestInput = config;
       };
-      const createClusterOptionsList: CreateClusterOptions[] = [
-        {nodes: 2},
-        {nodes: 2, storage: 'ssd'},
-        {nodes: 2, key: 'kms-key-name'},
-        {nodes: 2, encryption: {kmsKeyName: 'kms-key-name'}},
-        {
-          minServeNodes: 2,
-          maxServeNodes: 3,
-          cpuUtilizationPercent: 50,
-        },
-      ].map(option => Object.assign(option, {location: 'us-central1-b'}));
       const instanceOptionsList: InstanceOptions[] = createClusterOptionsList
-        .map(options => Object.assign(options, {id: 'my-cluster'}))
+        .map(options => Object.assign({}, options, {id: 'my-cluster'}))
         .map(options => {
           return {
             clusters: options,
