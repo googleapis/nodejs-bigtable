@@ -16,10 +16,12 @@ import * as protos from '../../protos/protos';
 import {
   BasicClusterConfig,
   Cluster,
+  CreateClusterOptions,
   ICluster,
   SetClusterMetadataOptions,
 } from '../cluster';
 import {google} from '../../protos/protos';
+import {ClusterInfo} from '../instance';
 
 export class ClusterUtils {
   static noConfigError =
@@ -174,5 +176,33 @@ export class ClusterUtils {
       cluster: this.getClusterFromMetadata(metadata, name),
       updateMask: {paths: this.getUpdateMask(metadata)},
     };
+  }
+}
+
+export class ClusterCredentialsUtils {
+  static validateCredentialsForInstance(cluster: ClusterInfo) {
+    this.validateErrorAndKey(
+      cluster,
+      'A cluster was provided with both `encryption` and `key` defined.'
+    );
+  }
+
+  static validateCredentialsForCluster(cluster: CreateClusterOptions) {
+    this.validateErrorAndKey(
+      cluster,
+      'The cluster cannot have both `encryption` and `key` defined.'
+    );
+  }
+
+  static validateErrorAndKey(
+    cluster: CreateClusterOptions | ClusterInfo,
+    message: string
+  ) {
+    if (
+      typeof cluster.key !== 'undefined' &&
+      typeof cluster.encryption !== 'undefined'
+    ) {
+      throw new Error(message);
+    }
   }
 }

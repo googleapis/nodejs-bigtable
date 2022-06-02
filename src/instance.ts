@@ -67,7 +67,7 @@ import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
 import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
-import {ClusterUtils} from './utils/cluster';
+import {ClusterCredentialsUtils, ClusterUtils} from './utils/cluster';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -400,16 +400,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         undefined
       );
     }
-
-    if (
-      typeof options.key !== 'undefined' &&
-      typeof options.encryption !== 'undefined'
-    ) {
-      throw new Error(
-        'The cluster cannot have both `encryption` and `key` defined.'
-      );
-    }
-
+    ClusterCredentialsUtils.validateCredentialsForCluster(options);
     if (options.storage) {
       const storageType = Cluster.getStorageType_(options.storage);
       reqOpts.cluster!.defaultStorageType = storageType;

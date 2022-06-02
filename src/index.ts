@@ -34,7 +34,7 @@ import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
-import {ClusterUtils} from './utils/cluster';
+import {ClusterCredentialsUtils, ClusterUtils} from './utils/cluster';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -602,15 +602,7 @@ export class Bigtable {
           'A cluster was provided without an `id` property defined.'
         );
       }
-
-      if (
-        typeof cluster.key !== 'undefined' &&
-        typeof cluster.encryption !== 'undefined'
-      ) {
-        throw new Error(
-          'A cluster was provided with both `encryption` and `key` defined.'
-        );
-      }
+      ClusterCredentialsUtils.validateCredentialsForInstance(cluster);
       ClusterUtils.validateClusterMetadata(cluster);
       clusters[cluster.id!] = ClusterUtils.getClusterBaseConfigWithFullLocation(
         cluster,
