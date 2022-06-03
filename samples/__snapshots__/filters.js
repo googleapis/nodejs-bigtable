@@ -345,6 +345,7 @@ Column Family stats_summary
 Column Family cell_plan
 \tdata_plan_10gb:  @1559347200000000
 
+Total rows: 5
 
 `;
 
