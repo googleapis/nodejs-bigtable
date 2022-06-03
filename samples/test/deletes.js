@@ -212,7 +212,7 @@ describe('deletes', async () => {
   it('should delete a row', async () => {
     runAndSnapshot('deleteFromRow');
   });
-  it('should stream rows and then do a batch delete', async () => {
+  it('should stream rows and then do a batch insert', async () => {
     runAndSnapshot('streamingAndBatching');
   });
   it('should check and mutate', async () => {
