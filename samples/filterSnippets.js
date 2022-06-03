@@ -195,7 +195,7 @@ function main(
           strip: true,
         },
       };
-      readWithFilter(filter);
+      getRowsWithFilter(filter);
       // [END bigtable_filters_modify_strip_value]
       break;
     }
@@ -280,6 +280,13 @@ function main(
       .on('end', () => {
         // All rows retrieved.
       });
+  }
+
+  async function getRowsWithFilter(filter) {
+    table.getRows({filter}, (err, rows) => {
+      rows.forEach(row => printRow(row.id, row.data));
+      console.log(`Total rows: ${rows.length}`);
+    });
   }
 
   function printRow(rowkey, rowData) {
