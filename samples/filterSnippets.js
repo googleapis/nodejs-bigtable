@@ -219,7 +219,9 @@ function main(
           },
         },
         {
-          family: 'cell_plan',
+          value: {
+            strip: true,
+          },
         },
       ];
       readWithFilter(filter);

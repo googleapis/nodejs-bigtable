@@ -397,25 +397,45 @@ Column Family cell_plan
 
 exports['filters should filter with chain 1'] = `
 Reading data for phone#4c410523#20190501:
+Column Family stats_summary
+\tconnected_cell:  @1559347200000000
+\tconnected_wifi:  @1559347200000000
+\tos_build:  @1559347200000000
 Column Family cell_plan
-\tdata_plan_01gb: true @1559347200000000
-\tdata_plan_05gb: true @1559347200000000
+\tdata_plan_01gb:  @1559347200000000
+\tdata_plan_05gb:  @1559347200000000
 
 Reading data for phone#4c410523#20190502:
+Column Family stats_summary
+\tconnected_cell:  @1559347200000000
+\tconnected_wifi:  @1559347200000000
+\tos_build:  @1559347200000000
 Column Family cell_plan
-\tdata_plan_05gb: true @1559347200000000
+\tdata_plan_05gb:  @1559347200000000
 
 Reading data for phone#4c410523#20190505:
+Column Family stats_summary
+\tconnected_cell:  @1559347200000000
+\tconnected_wifi:  @1559347200000000
+\tos_build:  @1559347200000000
 Column Family cell_plan
-\tdata_plan_05gb: true @1559347200000000
+\tdata_plan_05gb:  @1559347200000000
 
 Reading data for phone#5c10102#20190501:
+Column Family stats_summary
+\tconnected_cell:  @1559347200000000
+\tconnected_wifi:  @1559347200000000
+\tos_build:  @1559347200000000
 Column Family cell_plan
-\tdata_plan_10gb: true @1559347200000000
+\tdata_plan_10gb:  @1559347200000000
 
 Reading data for phone#5c10102#20190502:
+Column Family stats_summary
+\tconnected_cell:  @1559347200000000
+\tconnected_wifi:  @1559347200000000
+\tos_build:  @1559347200000000
 Column Family cell_plan
-\tdata_plan_10gb: true @1559347200000000
+\tdata_plan_10gb:  @1559347200000000
 
 
 `;
