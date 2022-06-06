@@ -27,7 +27,6 @@ describe('deletes', async () => {
   let table;
   let INSTANCE_ID;
   const TIMESTAMP = new Date(2019, 5, 1);
-  TIMESTAMP.setUTCHours(0);
 
   before(async () => {
     const instance = await obtainTestInstance();
