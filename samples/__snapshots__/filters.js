@@ -444,33 +444,10 @@ exports['filters should filter with interleave 1'] = `
 Reading data for phone#4c410523#20190501:
 Column Family stats_summary
 \tos_build: PQ2A.190405.003 @1559347200000000
-Column Family cell_plan
-\tdata_plan_01gb: true @1559347200000000
-\tdata_plan_05gb: true @1559347200000000
 
 Reading data for phone#4c410523#20190502:
 Column Family stats_summary
 \tos_build: PQ2A.190405.004 @1559347200000000
-Column Family cell_plan
-\tdata_plan_05gb: true @1559347200000000
-
-Reading data for phone#4c410523#20190505:
-Column Family stats_summary
-\tos_build: PQ2A.190406.000 @1559347200000000
-Column Family cell_plan
-\tdata_plan_05gb: true @1559347200000000
-
-Reading data for phone#5c10102#20190501:
-Column Family stats_summary
-\tos_build: PQ2A.190401.002 @1559347200000000
-Column Family cell_plan
-\tdata_plan_10gb: true @1559347200000000
-
-Reading data for phone#5c10102#20190502:
-Column Family stats_summary
-\tos_build: PQ2A.190406.000 @1559347200000000
-Column Family cell_plan
-\tdata_plan_10gb: true @1559347200000000
 
 
 `;

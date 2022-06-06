@@ -232,12 +232,7 @@ function main(
     case 'filterInterleave': {
       // [START bigtable_filters_composing_interleave]
       const filter = {
-        interleave: [
-          {
-            value: 'true',
-          },
-          {column: 'os_build'},
-        ],
+        interleave: [{value: 'PQ2A.190405.003'}, {value: 'PQ2A.190405.004'}],
       };
       readWithFilter(filter);
       // [END bigtable_filters_composing_interleave]
