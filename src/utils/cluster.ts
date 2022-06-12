@@ -15,10 +15,13 @@
 import * as protos from '../../protos/protos';
 import {
   BasicClusterConfig,
+  Cluster,
+  CreateClusterOptions,
   ICluster,
   SetClusterMetadataOptions,
 } from '../cluster';
 import {google} from '../../protos/protos';
+import {ClusterInfo} from '../instance';
 
 export class ClusterUtils {
   static noConfigError =
@@ -28,9 +31,7 @@ export class ClusterUtils {
   static incompleteConfigError =
     'All of autoscaling configurations must be specified at the same time (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).';
 
-  static validateClusterMetadata(
-    metadata: SetClusterMetadataOptions | BasicClusterConfig
-  ): void {
+  static validateClusterMetadata(metadata: BasicClusterConfig): void {
     if (metadata.nodes) {
       if (
         metadata.minServeNodes ||
@@ -59,6 +60,7 @@ export class ClusterUtils {
       }
     }
   }
+
   static getUpdateMask(metadata: SetClusterMetadataOptions): string[] {
     const updateMask: string[] = [];
     if (metadata.nodes) {
@@ -91,9 +93,35 @@ export class ClusterUtils {
     return updateMask;
   }
 
+  static getClusterBaseConfigWithFullLocation(
+    metadata: BasicClusterConfig,
+    projectId: string,
+    name: string | undefined
+  ): google.bigtable.admin.v2.ICluster {
+    const metadataClone = Object.assign({}, metadata);
+    if (metadataClone.location) {
+      metadataClone.location = Cluster.getLocation_(
+        projectId,
+        metadataClone.location
+      );
+    }
+    return ClusterUtils.getClusterAdvancedConfig(metadataClone, name);
+  }
+
+  static getClusterAdvancedConfig(
+    metadata: BasicClusterConfig,
+    name: string | undefined
+  ): google.bigtable.admin.v2.ICluster {
+    const baseConfig = ClusterUtils.getClusterBaseConfig(metadata, name);
+    return Object.assign(
+      baseConfig,
+      metadata.key ? {encryptionConfig: {kmsKeyName: metadata.key}} : null,
+      metadata.encryption ? {encryptionConfig: metadata.encryption} : null
+    );
+  }
+
   static getClusterBaseConfig(
-    metadata: SetClusterMetadataOptions | BasicClusterConfig,
-    location: string | undefined | null,
+    metadata: BasicClusterConfig,
     name: string | undefined
   ): google.bigtable.admin.v2.ICluster {
     let clusterConfig;
@@ -114,6 +142,7 @@ export class ClusterUtils {
         },
       };
     }
+    const location = metadata?.location;
     return Object.assign(
       {},
       name ? {name} : null,
@@ -124,13 +153,12 @@ export class ClusterUtils {
   }
 
   static getClusterFromMetadata(
-    metadata: SetClusterMetadataOptions,
-    location: string | undefined | null,
+    metadata: BasicClusterConfig,
     name: string
   ): google.bigtable.admin.v2.ICluster {
     const cluster: ICluster | SetClusterMetadataOptions = Object.assign(
       {},
-      this.getClusterBaseConfig(metadata, location, name),
+      this.getClusterBaseConfig(metadata, name),
       metadata
     );
     delete (cluster as SetClusterMetadataOptions).nodes;
@@ -141,13 +169,40 @@ export class ClusterUtils {
   }
 
   static getRequestFromMetadata(
-    metadata: SetClusterMetadataOptions,
-    location: string | undefined | null,
+    metadata: BasicClusterConfig,
     name: string
   ): protos.google.bigtable.admin.v2.IPartialUpdateClusterRequest {
     return {
-      cluster: this.getClusterFromMetadata(metadata, location, name),
+      cluster: this.getClusterFromMetadata(metadata, name),
       updateMask: {paths: this.getUpdateMask(metadata)},
     };
+  }
+}
+
+export class ClusterCredentialsUtils {
+  static validateCredentialsForInstance(cluster: ClusterInfo) {
+    this.validateErrorAndKey(
+      cluster,
+      'A cluster was provided with both `encryption` and `key` defined.'
+    );
+  }
+
+  static validateCredentialsForCluster(cluster: CreateClusterOptions) {
+    this.validateErrorAndKey(
+      cluster,
+      'The cluster cannot have both `encryption` and `key` defined.'
+    );
+  }
+
+  static validateErrorAndKey(
+    cluster: CreateClusterOptions | ClusterInfo,
+    message: string
+  ) {
+    if (
+      typeof cluster.key !== 'undefined' &&
+      typeof cluster.encryption !== 'undefined'
+    ) {
+      throw new Error(message);
+    }
   }
 }

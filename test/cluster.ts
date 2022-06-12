@@ -20,6 +20,9 @@ import {PassThrough, Readable} from 'stream';
 import {CallOptions} from 'google-gax';
 import {PreciseDate} from '@google-cloud/precise-date';
 import {ClusterUtils} from '../src/utils/cluster';
+import {InstanceOptions, RequestOptions} from '../src';
+import {createClusterOptionsList} from './constants/cluster';
+import * as snapshot from 'snap-shot-it';
 
 export interface Options {
   nodes?: Number;
@@ -981,6 +984,25 @@ describe('Bigtable/Cluster', () => {
       cluster.setMetadata({nodes: 2}, done);
     });
 
+    it('should provide the proper request options asynchronously', async () => {
+      let currentRequestInput = null;
+      (cluster.bigtable.request as Function) = (config: RequestOptions) => {
+        currentRequestInput = config;
+      };
+      for (const options of createClusterOptionsList) {
+        await cluster.setMetadata(options);
+        snapshot({
+          input: {
+            id: cluster.id,
+            options: options,
+          },
+          output: {
+            config: currentRequestInput,
+          },
+        });
+      }
+    });
+
     it('should respect the nodes option', done => {
       const options = {
         nodes: 3,
@@ -1004,7 +1026,6 @@ describe('Bigtable/Cluster', () => {
 
       const expectedReqOpts = ClusterUtils.getRequestFromMetadata(
         options,
-        options.location,
         CLUSTER_NAME
       );
 

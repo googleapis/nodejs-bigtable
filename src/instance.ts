@@ -67,7 +67,7 @@ import {ServiceError} from 'google-gax';
 import {Bigtable} from '.';
 import {google} from '../protos/protos';
 import {Backup, RestoreTableCallback, RestoreTableResponse} from './backup';
-import {ClusterUtils} from './utils/cluster';
+import {ClusterCredentialsUtils, ClusterUtils} from './utils/cluster';
 
 export interface ClusterInfo extends BasicClusterConfig {
   id: string;
@@ -394,34 +394,13 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     } as google.bigtable.admin.v2.CreateClusterRequest;
     ClusterUtils.validateClusterMetadata(options);
     if (!is.empty(options)) {
-      reqOpts.cluster = ClusterUtils.getClusterBaseConfig(
+      reqOpts.cluster = ClusterUtils.getClusterBaseConfigWithFullLocation(
         options,
-        options.location
-          ? Cluster.getLocation_(this.bigtable.projectId, options.location)
-          : undefined,
+        this.bigtable.projectId,
         undefined
       );
     }
-
-    if (
-      typeof options.key !== 'undefined' &&
-      typeof options.encryption !== 'undefined'
-    ) {
-      throw new Error(
-        'The cluster cannot have both `encryption` and `key` defined.'
-      );
-    }
-
-    if (options.key) {
-      reqOpts.cluster!.encryptionConfig = {
-        kmsKeyName: options.key,
-      };
-    }
-
-    if (options.encryption) {
-      reqOpts.cluster!.encryptionConfig = options.encryption;
-    }
-
+    ClusterCredentialsUtils.validateCredentialsForCluster(options);
     if (options.storage) {
       const storageType = Cluster.getStorageType_(options.storage);
       reqOpts.cluster!.defaultStorageType = storageType;
