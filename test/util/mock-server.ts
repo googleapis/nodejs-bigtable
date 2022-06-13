@@ -30,7 +30,9 @@ describe('Bigtable/Mock-Server', () => {
   let server: MockServer;
   function checkPort(port: string, inUse: boolean, callback: () => void) {
     const netServer = net.createServer();
+    console.log('Starting server');
     netServer.once('error', (err: ServerError) => {
+      console.log('error');
       if (inUse) {
         assert.strictEqual(err.code, 'EADDRINUSE');
       } else {
