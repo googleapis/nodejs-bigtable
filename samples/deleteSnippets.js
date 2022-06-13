@@ -70,20 +70,10 @@ async function main(
     case 'streamingAndBatching': {
       // [START bigtable_streaming_and_batching]
       const rows = (await table.getRows({limit: 1}))[0];
-      const TIMESTAMP = new Date(2019, 5, 3).setUTCHours(0);
       const entries = rows.map(row => {
         return {
           key: row.id,
-          method: 'insert',
-          data: {
-            stats_summary: {
-              connected_wifi: {
-                value: 4,
-                labels: [],
-                timestamp: TIMESTAMP,
-              },
-            },
-          },
+          method: 'delete',
         };
       });
       await table.mutate(entries);
