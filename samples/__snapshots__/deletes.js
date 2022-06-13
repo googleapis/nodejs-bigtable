@@ -113,7 +113,7 @@ exports['deletes should stream rows and then do a batch insert 1'] = `
 Column Family stats_summary
 \tconnected_cell: 1 @1559347200000000
 \tconnected_wifi: 1 @1559347200000000
-\tconnected_wifi: 4 @1559520000000000
+\tconnected_wifi: 4 @1559520000000
 \tos_build: PQ2A.190405.004 @1559347200000000
 Column Family cell_plan
 \tdata_plan_05gb:  @1559347200000000
