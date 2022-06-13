@@ -111,11 +111,13 @@ Column Family cell_plan
 
 exports['deletes should stream rows and then do a batch delete 1'] = `
 Column Family stats_summary
+\tconnected_cell: 1 @1559347200000000
+\tconnected_wifi: 1 @1559347200000000
+\tos_build: PQ2A.190405.004 @1559347200000000
+Column Family stats_summary
 \tconnected_cell: 0 @1559347200000000
 \tconnected_wifi: 1 @1559347200000000
 \tos_build: PQ2A.190406.000 @1559347200000000
-Column Family cell_plan
-\tdata_plan_05gb:  @1559347200000000
 Column Family stats_summary
 \tconnected_cell: 1 @1559347200000000
 \tconnected_wifi: 1 @1559347200000000
@@ -134,11 +136,13 @@ Column Family cell_plan
 
 exports['deletes should check and mutate 1'] = `
 Column Family stats_summary
+\tconnected_cell: 1 @1559347200000000
+\tconnected_wifi: 1 @1559347200000000
+\tos_build: PQ2A.190405.004 @1559347200000000
+Column Family stats_summary
 \tconnected_cell: 0 @1559347200000000
 \tconnected_wifi: 1 @1559347200000000
 \tos_build: PQ2A.190406.000 @1559347200000000
-Column Family cell_plan
-\tdata_plan_05gb:  @1559347200000000
 Column Family stats_summary
 \tconnected_cell: 1 @1559347200000000
 \tconnected_wifi: 1 @1559347200000000
@@ -157,18 +161,18 @@ Column Family cell_plan
 
 exports['deletes should delete a whole range of rows 1'] = `
 Column Family stats_summary
+\tconnected_cell: 1 @1559347200000000
+\tconnected_wifi: 1 @1559347200000000
+\tos_build: PQ2A.190405.004 @1559347200000000
+Column Family stats_summary
 \tconnected_cell: 0 @1559347200000000
 \tconnected_wifi: 1 @1559347200000000
 \tos_build: PQ2A.190406.000 @1559347200000000
-Column Family cell_plan
-\tdata_plan_05gb:  @1559347200000000
 
 
 `;
 
 exports['deletes should delete a column family 1'] = `
-Column Family cell_plan
-\tdata_plan_05gb:  @1559347200000000
 
 
 `;

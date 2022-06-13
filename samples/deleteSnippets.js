@@ -69,11 +69,14 @@ async function main(
     }
     case 'streamingAndBatching': {
       // [START bigtable_streaming_and_batching]
-      const rows = (await table.getRows({limit: 1}))[0];
+      const rows = (await table.getRows({limit: 2}))[0];
       const entries = rows.map(row => {
         return {
           key: row.id,
           method: 'delete',
+          data: {
+            column: 'cell_plan:data_plan_05gb',
+          },
         };
       });
       await table.mutate(entries);
