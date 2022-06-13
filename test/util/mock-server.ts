@@ -18,35 +18,18 @@
 
 import {describe, it} from 'mocha';
 import {MockServer} from '../../src/util/mock-servers/mock-server';
-import * as net from 'net';
 import * as assert from 'assert';
 
-interface ServerError {
-  code: string;
-}
+const tcpPortUsed = require('tcp-port-used');
 
 describe('Bigtable/Mock-Server', () => {
   const inputPort = '1234';
   let server: MockServer;
   function checkPort(port: string, inUse: boolean, callback: () => void) {
-    const netServer = net.createServer();
-    console.log('Starting server');
-    netServer.once('error', (err: ServerError) => {
-      console.log('error');
-      if (inUse) {
-        assert.strictEqual(err.code, 'EADDRINUSE');
-      } else {
-        assert.notEqual(err.code, 'EADDRINUSE');
-      }
-      netServer.close();
+    tcpPortUsed.check(parseInt(port), 'localhost').then((isInUse: boolean) => {
+      assert.strictEqual(isInUse, inUse);
       callback();
     });
-    netServer.once('listening', () => {
-      // close the server if listening doesn't fail
-      netServer.close();
-    });
-    // netServer.listen(port);
-    netServer.listen(`localhost:${port}`);
   }
   describe('Ensure server shuts down properly when destroyed', () => {
     it('should start a mock server', done => {
@@ -59,7 +42,7 @@ describe('Bigtable/Mock-Server', () => {
     checkPort(server.port, true, () => {
       server.shutdown((err?: Error) => {
         assert.deepStrictEqual(err, undefined);
-        done();
+        checkPort(server.port, false, done);
       });
     });
   });
