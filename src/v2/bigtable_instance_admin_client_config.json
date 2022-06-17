@@ -80,9 +80,8 @@
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "PartialUpdateCluster": {
-          "timeout_millis": 60000,
-          "retry_codes_name": "idempotent",
-          "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
         },
         "DeleteCluster": {
           "timeout_millis": 60000,

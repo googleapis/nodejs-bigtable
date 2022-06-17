@@ -20,7 +20,7 @@
 
 'use strict';
 
-function main(name, state, encryptionConfig) {
+function main(location, state, defaultStorageType, encryptionConfig) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateCluster_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -31,15 +31,14 @@ function main(name, state, encryptionConfig) {
    */
   // const name = 'abc123'
   /**
-   *  (`CreationOnly`)
-   *  The location where this cluster's nodes and storage reside. For best
+   *  Immutable. The location where this cluster's nodes and storage reside. For best
    *  performance, clients should be located as close as possible to this
    *  cluster. Currently only zones are supported, so values should be of the
    *  form `projects/{project}/locations/{zone}`.
    */
   // const location = 'abc123'
   /**
-   *  The current state of the cluster.
+   *  Output only. The current state of the cluster.
    */
   // const state = {}
   /**
@@ -52,8 +51,7 @@ function main(name, state, encryptionConfig) {
    */
   // const clusterConfig = {}
   /**
-   *  (`CreationOnly`)
-   *  The type of storage used by this cluster to serve its
+   *  Immutable. The type of storage used by this cluster to serve its
    *  parent instance's tables, unless explicitly overridden.
    */
   // const defaultStorageType = {}
@@ -71,8 +69,9 @@ function main(name, state, encryptionConfig) {
   async function callUpdateCluster() {
     // Construct request
     const request = {
-      name,
+      location,
       state,
+      defaultStorageType,
       encryptionConfig,
     };
 
