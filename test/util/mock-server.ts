@@ -25,11 +25,13 @@ const tcpPortUsed = require('tcp-port-used');
 describe('Bigtable/Mock-Server', () => {
   const inputPort = '1234';
   let server: MockServer;
-  function checkPort(port: string, inUse: boolean, callback: () => void) {
-    tcpPortUsed.check(parseInt(port), 'localhost').then((isInUse: boolean) => {
-      assert.strictEqual(isInUse, inUse);
-      callback();
-    });
+  async function checkPort(port: string, inUse: boolean, callback: () => void) {
+    const isInUse: boolean = await tcpPortUsed.check(
+      parseInt(port),
+      'localhost'
+    );
+    assert.strictEqual(isInUse, inUse);
+    callback();
   }
   describe('Ensure server shuts down properly when destroyed', () => {
     it('should start a mock server', done => {
