@@ -34,6 +34,7 @@ import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
+import {ClusterUtils} from './utils/cluster';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -610,12 +611,15 @@ export class Bigtable {
           'A cluster was provided with both `encryption` and `key` defined.'
         );
       }
-
-      clusters[cluster.id!] = {
-        location: Cluster.getLocation_(this.projectId, cluster.location!),
-        serveNodes: cluster.nodes,
+      ClusterUtils.validateClusterMetadata(cluster);
+      clusters[cluster.id!] = ClusterUtils.getClusterBaseConfig(
+        cluster,
+        Cluster.getLocation_(this.projectId, cluster.location!),
+        undefined
+      );
+      Object.assign(clusters[cluster.id!], {
         defaultStorageType: Cluster.getStorageType_(cluster.storage!),
-      };
+      });
 
       if (cluster.key) {
         clusters[cluster.id!].encryptionConfig = {
@@ -884,7 +888,8 @@ export class Bigtable {
   }
 
   /**
-   * Terminate grpc channels and close all the clients.
+   * Close all bigtable clients. New requests will be rejected but it will not
+   * kill connections with pending requests.
    */
   close(): Promise<void[]> {
     const combined = Object.keys(this.api).map(clientType =>

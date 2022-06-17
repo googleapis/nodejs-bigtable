@@ -2109,21 +2109,19 @@ export class BigtableInstanceAdminClient {
    *   The unique name of the cluster. Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{@link -a-z0-9|a-z}*`.
    * @param {string} request.location
-   *   (`CreationOnly`)
-   *   The location where this cluster's nodes and storage reside. For best
+   *   Immutable. The location where this cluster's nodes and storage reside. For best
    *   performance, clients should be located as close as possible to this
    *   cluster. Currently only zones are supported, so values should be of the
    *   form `projects/{project}/locations/{zone}`.
    * @param {google.bigtable.admin.v2.Cluster.State} request.state
-   *   The current state of the cluster.
+   *   Output only. The current state of the cluster.
    * @param {number} request.serveNodes
    *   The number of nodes allocated to this cluster. More nodes enable higher
    *   throughput and more consistent performance.
    * @param {google.bigtable.admin.v2.Cluster.ClusterConfig} request.clusterConfig
    *   Configuration for this cluster.
    * @param {google.bigtable.admin.v2.StorageType} request.defaultStorageType
-   *   (`CreationOnly`)
-   *   The type of storage used by this cluster to serve its
+   *   Immutable. The type of storage used by this cluster to serve its
    *   parent instance's tables, unless explicitly overridden.
    * @param {google.bigtable.admin.v2.Cluster.EncryptionConfig} request.encryptionConfig
    *   Immutable. The encryption configuration for CMEK-protected clusters.

@@ -22,6 +22,7 @@ const pumpify = require('pumpify');
 import {google} from '../protos/protos';
 import {Bigtable} from '.';
 import {Instance} from './instance';
+import {ClusterUtils} from './utils/cluster';
 
 import {
   Backup,
@@ -75,7 +76,10 @@ export type GetClustersCallback = (
   apiResponse?: google.bigtable.admin.v2.IListClustersResponse
 ) => void;
 export interface SetClusterMetadataOptions {
-  nodes: number;
+  nodes?: number;
+  minServeNodes?: number;
+  maxServeNodes?: number;
+  cpuUtilizationPercent?: number;
 }
 export type SetClusterMetadataCallback = GenericOperationCallback<
   Operation | null | undefined
@@ -84,12 +88,15 @@ export interface BasicClusterConfig {
   encryption?: google.bigtable.admin.v2.Cluster.IEncryptionConfig;
   key?: string;
   location: string;
-  nodes: number;
+  nodes?: number;
   storage?: string;
+  minServeNodes?: number;
+  maxServeNodes?: number;
+  cpuUtilizationPercent?: number;
 }
 
 export interface CreateBackupConfig extends ModifiableBackupFields {
-  table: string | Table;
+  table?: string | Table;
   gaxOptions?: CallOptions;
 }
 
@@ -487,13 +494,13 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
 
     const reqOpts: google.bigtable.admin.v2.IListBackupsRequest = {
       parent: this.name,
-      pageSize: gaxOpts.pageSize,
-      pageToken: gaxOpts.pageToken,
+      pageSize: (gaxOpts as GetBackupsOptions).pageSize,
+      pageToken: (gaxOpts as GetBackupsOptions).pageToken,
       ...options,
     };
 
-    delete gaxOpts.pageSize;
-    delete gaxOpts.pageToken;
+    delete (gaxOpts as GetBackupsOptions).pageSize;
+    delete (gaxOpts as GetBackupsOptions).pageToken;
     delete (reqOpts as CallOptions).autoPaginate;
     delete (reqOpts as GetBackupsOptions).gaxOptions;
 
@@ -690,29 +697,23 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
     gaxOptionsOrCallback?: CallOptions | SetClusterMetadataCallback,
     cb?: SetClusterMetadataCallback
   ): void | Promise<SetClusterMetadataResponse> {
+    ClusterUtils.validateClusterMetadata(metadata);
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
       typeof gaxOptionsOrCallback === 'object'
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
-
-    const reqOpts: ICluster = Object.assign(
-      {},
-      {
-        name: this.name,
-        serveNodes: metadata.nodes,
-      },
-      metadata
+    const reqOpts = ClusterUtils.getRequestFromMetadata(
+      metadata,
+      this?.metadata?.location,
+      this.name
     );
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    delete (reqOpts as any).nodes;
-
     this.bigtable.request<Operation>(
       {
         client: 'BigtableInstanceAdminClient',
-        method: 'updateCluster',
-        reqOpts,
+        method: 'partialUpdateCluster',
+        reqOpts: reqOpts,
         gaxOpts: gaxOptions,
       },
       (err, resp) => {
