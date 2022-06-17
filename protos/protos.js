@@ -3764,6 +3764,7 @@
                          * @property {google.bigtable.admin.v2.ICreateClusterRequest|null} [originalRequest] CreateClusterMetadata originalRequest
                          * @property {google.protobuf.ITimestamp|null} [requestTime] CreateClusterMetadata requestTime
                          * @property {google.protobuf.ITimestamp|null} [finishTime] CreateClusterMetadata finishTime
+                         * @property {Object.<string,google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress>|null} [tables] CreateClusterMetadata tables
                          */
     
                         /**
@@ -3775,6 +3776,7 @@
                          * @param {google.bigtable.admin.v2.ICreateClusterMetadata=} [properties] Properties to set
                          */
                         function CreateClusterMetadata(properties) {
+                            this.tables = {};
                             if (properties)
                                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                     if (properties[keys[i]] != null)
@@ -3806,6 +3808,14 @@
                         CreateClusterMetadata.prototype.finishTime = null;
     
                         /**
+                         * CreateClusterMetadata tables.
+                         * @member {Object.<string,google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress>} tables
+                         * @memberof google.bigtable.admin.v2.CreateClusterMetadata
+                         * @instance
+                         */
+                        CreateClusterMetadata.prototype.tables = $util.emptyObject;
+    
+                        /**
                          * Creates a new CreateClusterMetadata instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.CreateClusterMetadata
@@ -3835,6 +3845,11 @@
                                 $root.google.protobuf.Timestamp.encode(message.requestTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
                             if (message.finishTime != null && Object.hasOwnProperty.call(message, "finishTime"))
                                 $root.google.protobuf.Timestamp.encode(message.finishTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            if (message.tables != null && Object.hasOwnProperty.call(message, "tables"))
+                                for (var keys = Object.keys(message.tables), i = 0; i < keys.length; ++i) {
+                                    writer.uint32(/* id 4, wireType 2 =*/34).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
+                                    $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.encode(message.tables[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                                }
                             return writer;
                         };
     
@@ -3865,7 +3880,7 @@
                         CreateClusterMetadata.decode = function decode(reader, length) {
                             if (!(reader instanceof $Reader))
                                 reader = $Reader.create(reader);
-                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateClusterMetadata();
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateClusterMetadata(), key, value;
                             while (reader.pos < end) {
                                 var tag = reader.uint32();
                                 switch (tag >>> 3) {
@@ -3877,6 +3892,28 @@
                                     break;
                                 case 3:
                                     message.finishTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                    break;
+                                case 4:
+                                    if (message.tables === $util.emptyObject)
+                                        message.tables = {};
+                                    var end2 = reader.uint32() + reader.pos;
+                                    key = "";
+                                    value = null;
+                                    while (reader.pos < end2) {
+                                        var tag2 = reader.uint32();
+                                        switch (tag2 >>> 3) {
+                                        case 1:
+                                            key = reader.string();
+                                            break;
+                                        case 2:
+                                            value = $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.decode(reader, reader.uint32());
+                                            break;
+                                        default:
+                                            reader.skipType(tag2 & 7);
+                                            break;
+                                        }
+                                    }
+                                    message.tables[key] = value;
                                     break;
                                 default:
                                     reader.skipType(tag & 7);
@@ -3928,6 +3965,16 @@
                                 if (error)
                                     return "finishTime." + error;
                             }
+                            if (message.tables != null && message.hasOwnProperty("tables")) {
+                                if (!$util.isObject(message.tables))
+                                    return "tables: object expected";
+                                var key = Object.keys(message.tables);
+                                for (var i = 0; i < key.length; ++i) {
+                                    var error = $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.verify(message.tables[key[i]]);
+                                    if (error)
+                                        return "tables." + error;
+                                }
+                            }
                             return null;
                         };
     
@@ -3958,6 +4005,16 @@
                                     throw TypeError(".google.bigtable.admin.v2.CreateClusterMetadata.finishTime: object expected");
                                 message.finishTime = $root.google.protobuf.Timestamp.fromObject(object.finishTime);
                             }
+                            if (object.tables) {
+                                if (typeof object.tables !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CreateClusterMetadata.tables: object expected");
+                                message.tables = {};
+                                for (var keys = Object.keys(object.tables), i = 0; i < keys.length; ++i) {
+                                    if (typeof object.tables[keys[i]] !== "object")
+                                        throw TypeError(".google.bigtable.admin.v2.CreateClusterMetadata.tables: object expected");
+                                    message.tables[keys[i]] = $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.fromObject(object.tables[keys[i]]);
+                                }
+                            }
                             return message;
                         };
     
@@ -3974,6 +4031,8 @@
                             if (!options)
                                 options = {};
                             var object = {};
+                            if (options.objects || options.defaults)
+                                object.tables = {};
                             if (options.defaults) {
                                 object.originalRequest = null;
                                 object.requestTime = null;
@@ -3985,6 +4044,12 @@
                                 object.requestTime = $root.google.protobuf.Timestamp.toObject(message.requestTime, options);
                             if (message.finishTime != null && message.hasOwnProperty("finishTime"))
                                 object.finishTime = $root.google.protobuf.Timestamp.toObject(message.finishTime, options);
+                            var keys2;
+                            if (message.tables && (keys2 = Object.keys(message.tables)).length) {
+                                object.tables = {};
+                                for (var j = 0; j < keys2.length; ++j)
+                                    object.tables[keys2[j]] = $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.toObject(message.tables[keys2[j]], options);
+                            }
                             return object;
                         };
     
@@ -3998,6 +4063,314 @@
                         CreateClusterMetadata.prototype.toJSON = function toJSON() {
                             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                         };
+    
+                        CreateClusterMetadata.TableProgress = (function() {
+    
+                            /**
+                             * Properties of a TableProgress.
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata
+                             * @interface ITableProgress
+                             * @property {number|Long|null} [estimatedSizeBytes] TableProgress estimatedSizeBytes
+                             * @property {number|Long|null} [estimatedCopiedBytes] TableProgress estimatedCopiedBytes
+                             * @property {google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State|null} [state] TableProgress state
+                             */
+    
+                            /**
+                             * Constructs a new TableProgress.
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata
+                             * @classdesc Represents a TableProgress.
+                             * @implements ITableProgress
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress=} [properties] Properties to set
+                             */
+                            function TableProgress(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * TableProgress estimatedSizeBytes.
+                             * @member {number|Long} estimatedSizeBytes
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @instance
+                             */
+                            TableProgress.prototype.estimatedSizeBytes = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * TableProgress estimatedCopiedBytes.
+                             * @member {number|Long} estimatedCopiedBytes
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @instance
+                             */
+                            TableProgress.prototype.estimatedCopiedBytes = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                            /**
+                             * TableProgress state.
+                             * @member {google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State} state
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @instance
+                             */
+                            TableProgress.prototype.state = 0;
+    
+                            /**
+                             * Creates a new TableProgress instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.CreateClusterMetadata.TableProgress} TableProgress instance
+                             */
+                            TableProgress.create = function create(properties) {
+                                return new TableProgress(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified TableProgress message. Does not implicitly {@link google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress} message TableProgress message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            TableProgress.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.estimatedSizeBytes != null && Object.hasOwnProperty.call(message, "estimatedSizeBytes"))
+                                    writer.uint32(/* id 2, wireType 0 =*/16).int64(message.estimatedSizeBytes);
+                                if (message.estimatedCopiedBytes != null && Object.hasOwnProperty.call(message, "estimatedCopiedBytes"))
+                                    writer.uint32(/* id 3, wireType 0 =*/24).int64(message.estimatedCopiedBytes);
+                                if (message.state != null && Object.hasOwnProperty.call(message, "state"))
+                                    writer.uint32(/* id 4, wireType 0 =*/32).int32(message.state);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified TableProgress message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress} message TableProgress message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            TableProgress.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a TableProgress message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.CreateClusterMetadata.TableProgress} TableProgress
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            TableProgress.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 2:
+                                        message.estimatedSizeBytes = reader.int64();
+                                        break;
+                                    case 3:
+                                        message.estimatedCopiedBytes = reader.int64();
+                                        break;
+                                    case 4:
+                                        message.state = reader.int32();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a TableProgress message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.CreateClusterMetadata.TableProgress} TableProgress
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            TableProgress.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a TableProgress message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            TableProgress.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.estimatedSizeBytes != null && message.hasOwnProperty("estimatedSizeBytes"))
+                                    if (!$util.isInteger(message.estimatedSizeBytes) && !(message.estimatedSizeBytes && $util.isInteger(message.estimatedSizeBytes.low) && $util.isInteger(message.estimatedSizeBytes.high)))
+                                        return "estimatedSizeBytes: integer|Long expected";
+                                if (message.estimatedCopiedBytes != null && message.hasOwnProperty("estimatedCopiedBytes"))
+                                    if (!$util.isInteger(message.estimatedCopiedBytes) && !(message.estimatedCopiedBytes && $util.isInteger(message.estimatedCopiedBytes.low) && $util.isInteger(message.estimatedCopiedBytes.high)))
+                                        return "estimatedCopiedBytes: integer|Long expected";
+                                if (message.state != null && message.hasOwnProperty("state"))
+                                    switch (message.state) {
+                                    default:
+                                        return "state: enum value expected";
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                    case 4:
+                                        break;
+                                    }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a TableProgress message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.CreateClusterMetadata.TableProgress} TableProgress
+                             */
+                            TableProgress.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress();
+                                if (object.estimatedSizeBytes != null)
+                                    if ($util.Long)
+                                        (message.estimatedSizeBytes = $util.Long.fromValue(object.estimatedSizeBytes)).unsigned = false;
+                                    else if (typeof object.estimatedSizeBytes === "string")
+                                        message.estimatedSizeBytes = parseInt(object.estimatedSizeBytes, 10);
+                                    else if (typeof object.estimatedSizeBytes === "number")
+                                        message.estimatedSizeBytes = object.estimatedSizeBytes;
+                                    else if (typeof object.estimatedSizeBytes === "object")
+                                        message.estimatedSizeBytes = new $util.LongBits(object.estimatedSizeBytes.low >>> 0, object.estimatedSizeBytes.high >>> 0).toNumber();
+                                if (object.estimatedCopiedBytes != null)
+                                    if ($util.Long)
+                                        (message.estimatedCopiedBytes = $util.Long.fromValue(object.estimatedCopiedBytes)).unsigned = false;
+                                    else if (typeof object.estimatedCopiedBytes === "string")
+                                        message.estimatedCopiedBytes = parseInt(object.estimatedCopiedBytes, 10);
+                                    else if (typeof object.estimatedCopiedBytes === "number")
+                                        message.estimatedCopiedBytes = object.estimatedCopiedBytes;
+                                    else if (typeof object.estimatedCopiedBytes === "object")
+                                        message.estimatedCopiedBytes = new $util.LongBits(object.estimatedCopiedBytes.low >>> 0, object.estimatedCopiedBytes.high >>> 0).toNumber();
+                                switch (object.state) {
+                                case "STATE_UNSPECIFIED":
+                                case 0:
+                                    message.state = 0;
+                                    break;
+                                case "PENDING":
+                                case 1:
+                                    message.state = 1;
+                                    break;
+                                case "COPYING":
+                                case 2:
+                                    message.state = 2;
+                                    break;
+                                case "COMPLETED":
+                                case 3:
+                                    message.state = 3;
+                                    break;
+                                case "CANCELLED":
+                                case 4:
+                                    message.state = 4;
+                                    break;
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a TableProgress message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @static
+                             * @param {google.bigtable.admin.v2.CreateClusterMetadata.TableProgress} message TableProgress
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            TableProgress.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults) {
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.estimatedSizeBytes = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.estimatedSizeBytes = options.longs === String ? "0" : 0;
+                                    if ($util.Long) {
+                                        var long = new $util.Long(0, 0, false);
+                                        object.estimatedCopiedBytes = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                                    } else
+                                        object.estimatedCopiedBytes = options.longs === String ? "0" : 0;
+                                    object.state = options.enums === String ? "STATE_UNSPECIFIED" : 0;
+                                }
+                                if (message.estimatedSizeBytes != null && message.hasOwnProperty("estimatedSizeBytes"))
+                                    if (typeof message.estimatedSizeBytes === "number")
+                                        object.estimatedSizeBytes = options.longs === String ? String(message.estimatedSizeBytes) : message.estimatedSizeBytes;
+                                    else
+                                        object.estimatedSizeBytes = options.longs === String ? $util.Long.prototype.toString.call(message.estimatedSizeBytes) : options.longs === Number ? new $util.LongBits(message.estimatedSizeBytes.low >>> 0, message.estimatedSizeBytes.high >>> 0).toNumber() : message.estimatedSizeBytes;
+                                if (message.estimatedCopiedBytes != null && message.hasOwnProperty("estimatedCopiedBytes"))
+                                    if (typeof message.estimatedCopiedBytes === "number")
+                                        object.estimatedCopiedBytes = options.longs === String ? String(message.estimatedCopiedBytes) : message.estimatedCopiedBytes;
+                                    else
+                                        object.estimatedCopiedBytes = options.longs === String ? $util.Long.prototype.toString.call(message.estimatedCopiedBytes) : options.longs === Number ? new $util.LongBits(message.estimatedCopiedBytes.low >>> 0, message.estimatedCopiedBytes.high >>> 0).toNumber() : message.estimatedCopiedBytes;
+                                if (message.state != null && message.hasOwnProperty("state"))
+                                    object.state = options.enums === String ? $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State[message.state] : message.state;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this TableProgress to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            TableProgress.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            /**
+                             * State enum.
+                             * @name google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State
+                             * @enum {number}
+                             * @property {number} STATE_UNSPECIFIED=0 STATE_UNSPECIFIED value
+                             * @property {number} PENDING=1 PENDING value
+                             * @property {number} COPYING=2 COPYING value
+                             * @property {number} COMPLETED=3 COMPLETED value
+                             * @property {number} CANCELLED=4 CANCELLED value
+                             */
+                            TableProgress.State = (function() {
+                                var valuesById = {}, values = Object.create(valuesById);
+                                values[valuesById[0] = "STATE_UNSPECIFIED"] = 0;
+                                values[valuesById[1] = "PENDING"] = 1;
+                                values[valuesById[2] = "COPYING"] = 2;
+                                values[valuesById[3] = "COMPLETED"] = 3;
+                                values[valuesById[4] = "CANCELLED"] = 4;
+                                return values;
+                            })();
+    
+                            return TableProgress;
+                        })();
     
                         return CreateClusterMetadata;
                     })();
@@ -7990,6 +8363,26 @@
                             return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                         };
     
+                        /**
+                         * State enum.
+                         * @name google.bigtable.admin.v2.Cluster.State
+                         * @enum {number}
+                         * @property {number} STATE_NOT_KNOWN=0 STATE_NOT_KNOWN value
+                         * @property {number} READY=1 READY value
+                         * @property {number} CREATING=2 CREATING value
+                         * @property {number} RESIZING=3 RESIZING value
+                         * @property {number} DISABLED=4 DISABLED value
+                         */
+                        Cluster.State = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "STATE_NOT_KNOWN"] = 0;
+                            values[valuesById[1] = "READY"] = 1;
+                            values[valuesById[2] = "CREATING"] = 2;
+                            values[valuesById[3] = "RESIZING"] = 3;
+                            values[valuesById[4] = "DISABLED"] = 4;
+                            return values;
+                        })();
+    
                         Cluster.ClusterAutoscalingConfig = (function() {
     
                             /**
@@ -8587,26 +8980,6 @@
                             };
     
                             return EncryptionConfig;
-                        })();
-    
-                        /**
-                         * State enum.
-                         * @name google.bigtable.admin.v2.Cluster.State
-                         * @enum {number}
-                         * @property {number} STATE_NOT_KNOWN=0 STATE_NOT_KNOWN value
-                         * @property {number} READY=1 READY value
-                         * @property {number} CREATING=2 CREATING value
-                         * @property {number} RESIZING=3 RESIZING value
-                         * @property {number} DISABLED=4 DISABLED value
-                         */
-                        Cluster.State = (function() {
-                            var valuesById = {}, values = Object.create(valuesById);
-                            values[valuesById[0] = "STATE_NOT_KNOWN"] = 0;
-                            values[valuesById[1] = "READY"] = 1;
-                            values[valuesById[2] = "CREATING"] = 2;
-                            values[valuesById[3] = "RESIZING"] = 3;
-                            values[valuesById[4] = "DISABLED"] = 4;
-                            return values;
                         })();
     
                         return Cluster;
@@ -17900,20 +18273,6 @@
                         return ListBackupsResponse;
                     })();
     
-                    /**
-                     * RestoreSourceType enum.
-                     * @name google.bigtable.admin.v2.RestoreSourceType
-                     * @enum {number}
-                     * @property {number} RESTORE_SOURCE_TYPE_UNSPECIFIED=0 RESTORE_SOURCE_TYPE_UNSPECIFIED value
-                     * @property {number} BACKUP=1 BACKUP value
-                     */
-                    v2.RestoreSourceType = (function() {
-                        var valuesById = {}, values = Object.create(valuesById);
-                        values[valuesById[0] = "RESTORE_SOURCE_TYPE_UNSPECIFIED"] = 0;
-                        values[valuesById[1] = "BACKUP"] = 1;
-                        return values;
-                    })();
-    
                     v2.RestoreInfo = (function() {
     
                         /**
@@ -21103,6 +21462,20 @@
                         };
     
                         return BackupInfo;
+                    })();
+    
+                    /**
+                     * RestoreSourceType enum.
+                     * @name google.bigtable.admin.v2.RestoreSourceType
+                     * @enum {number}
+                     * @property {number} RESTORE_SOURCE_TYPE_UNSPECIFIED=0 RESTORE_SOURCE_TYPE_UNSPECIFIED value
+                     * @property {number} BACKUP=1 BACKUP value
+                     */
+                    v2.RestoreSourceType = (function() {
+                        var valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "RESTORE_SOURCE_TYPE_UNSPECIFIED"] = 0;
+                        values[valuesById[1] = "BACKUP"] = 1;
+                        return values;
                     })();
     
                     return v2;
