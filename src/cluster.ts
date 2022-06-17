@@ -80,6 +80,7 @@ export interface SetClusterMetadataOptions {
   minServeNodes?: number;
   maxServeNodes?: number;
   cpuUtilizationPercent?: number;
+  location?: string;
 }
 export type SetClusterMetadataCallback = GenericOperationCallback<
   Operation | null | undefined
@@ -693,7 +694,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
    * region_tag:bigtable_api_cluster_set_meta
    */
   setMetadata(
-    metadata: BasicClusterConfig,
+    metadata: SetClusterMetadataOptions,
     gaxOptionsOrCallback?: CallOptions | SetClusterMetadataCallback,
     cb?: SetClusterMetadataCallback
   ): void | Promise<SetClusterMetadataResponse> {
