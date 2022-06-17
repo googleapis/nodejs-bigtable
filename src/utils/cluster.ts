@@ -13,10 +13,7 @@
 // limitations under the License.
 
 import * as protos from '../../protos/protos';
-import {
-  ICluster,
-  SetClusterMetadataOptions,
-} from '../cluster';
+import {ICluster, SetClusterMetadataOptions} from '../cluster';
 import {google} from '../../protos/protos';
 
 export class ClusterUtils {
