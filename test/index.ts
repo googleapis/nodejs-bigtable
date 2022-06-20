@@ -45,6 +45,7 @@ const fakePromisify = Object.assign({}, promisify, {
     }
     promisified = true;
     assert.deepStrictEqual(options.exclude, [
+      'close',
       'instance',
       'operation',
       'request',
