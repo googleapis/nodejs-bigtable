@@ -20,9 +20,12 @@ import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 
-import {Cluster} from '../src/cluster.js';
-import {Instance} from '../src/instance.js';
+import {Cluster, CreateClusterOptions} from '../src/cluster.js';
+import {Instance, InstanceOptions} from '../src/instance.js';
 import {PassThrough} from 'stream';
+import {RequestOptions} from '../src';
+import * as snapshot from 'snap-shot-it';
+import {createClusterOptionsList} from './constants/cluster';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const v2 = require('../src/v2');
@@ -400,6 +403,32 @@ describe('Bigtable', () => {
       bigtable.createInstance(INSTANCE_ID, OPTIONS, assert.ifError);
     });
 
+    it('should provide the proper request options asynchronously', async () => {
+      let currentRequestInput = null;
+      (bigtable.request as Function) = (config: RequestOptions) => {
+        currentRequestInput = config;
+      };
+      const instanceOptionsList: InstanceOptions[] = createClusterOptionsList
+        .map(options => Object.assign({}, options, {id: 'my-cluster'}))
+        .map(options => {
+          return {
+            clusters: options,
+          };
+        });
+      for (const options of instanceOptionsList) {
+        await bigtable.createInstance(INSTANCE_ID, options, assert.ifError);
+        snapshot({
+          input: {
+            id: INSTANCE_ID,
+            options: options,
+          },
+          output: {
+            config: currentRequestInput,
+          },
+        });
+      }
+    });
+
     it('should accept gaxOptions', done => {
       const gaxOptions = {};
       const options = Object.assign({}, OPTIONS, {gaxOptions});
@@ -516,6 +545,7 @@ describe('Bigtable', () => {
             {
               id: 'my-cluster',
               key,
+              nodes: 3,
             },
           ],
         },
@@ -549,6 +579,7 @@ describe('Bigtable', () => {
               encryption: {
                 kmsKeyName: key,
               },
+              nodes: 2,
             },
           ],
         },
