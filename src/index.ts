@@ -888,7 +888,6 @@ export class Bigtable {
    * kill connections with pending requests.
    */
   close(): Promise<void[]> {
-    // Ensure Object.keys has enough values
     const combined = Object.keys(this.api).map(clientType =>
       this.api[clientType].close()
     );
