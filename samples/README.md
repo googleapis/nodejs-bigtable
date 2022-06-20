@@ -12,6 +12,7 @@
 
 * [Before you begin](#before-you-begin)
 * [Samples](#samples)
+  * [Delete Snippets](#delete-snippets)
   * [Filter Snippets](#filter-snippets)
   * [Instances](#instances)
   * [Quickstart](#quickstart)
@@ -34,6 +35,23 @@ Before running the samples, make sure you've followed the steps outlined in
 `cd ..`
 
 ## Samples
+
+
+
+### Delete Snippets
+
+View the [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/deleteSnippets.js).
+
+[![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/deleteSnippets.js,samples/README.md)
+
+__Usage:__
+
+
+`node samples/deleteSnippets.js`
+
+
+-----
+
 
 
 
