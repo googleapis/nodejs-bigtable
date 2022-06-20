@@ -29,7 +29,7 @@ export class ClusterUtils {
   static incompleteConfigError =
     'All of autoscaling configurations must be specified at the same time (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).';
 
-  static validateClusterMetadata(metadata: BasicClusterConfig): void {
+  static validateClusterMetadata(metadata: SetClusterMetadataOptions): void {
     if (metadata.nodes) {
       if (
         metadata.minServeNodes ||
@@ -107,7 +107,7 @@ export class ClusterUtils {
   }
 
   static getClusterBaseConfig(
-    metadata: BasicClusterConfig,
+    metadata: SetClusterMetadataOptions,
     name: string | undefined
   ): google.bigtable.admin.v2.ICluster {
     let clusterConfig;
@@ -139,7 +139,7 @@ export class ClusterUtils {
   }
 
   static getClusterFromMetadata(
-    metadata: BasicClusterConfig,
+    metadata: SetClusterMetadataOptions,
     name: string
   ): google.bigtable.admin.v2.ICluster {
     const cluster: ICluster | SetClusterMetadataOptions = Object.assign(
@@ -155,7 +155,7 @@ export class ClusterUtils {
   }
 
   static getRequestFromMetadata(
-    metadata: BasicClusterConfig,
+    metadata: SetClusterMetadataOptions,
     name: string
   ): protos.google.bigtable.admin.v2.IPartialUpdateClusterRequest {
     return {

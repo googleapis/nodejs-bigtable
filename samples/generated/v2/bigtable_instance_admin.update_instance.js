@@ -20,7 +20,7 @@
 
 'use strict';
 
-function main(name, displayName, createTime) {
+function main(displayName, createTime) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateInstance_async]
   /**
    * TODO(developer): Uncomment these variables before running the sample.
@@ -74,7 +74,6 @@ function main(name, displayName, createTime) {
   async function callUpdateInstance() {
     // Construct request
     const request = {
-      name,
       displayName,
       createTime,
     };
