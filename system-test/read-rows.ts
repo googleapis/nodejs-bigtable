@@ -77,6 +77,7 @@ function rowResponse(rowKey: {}) {
 
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
+  const INSTANCE_NAME = 'fake-instance2';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
@@ -85,7 +86,7 @@ describe('Bigtable/Table', () => {
 
   describe('close', () => {
     it('invokes readRows with closed client 1', async () => {
-      const instance = bigtable.instance('fake-instance2');
+      const instance = bigtable.instance(INSTANCE_NAME);
       const table = instance.table('fake-table');
       // I always get `Error: 14 UNAVAILABLE: Cluster is temporarily unavailable.`
       await instance.create({
@@ -99,10 +100,15 @@ describe('Bigtable/Table', () => {
       // const expectedError = new Error('The client has already been closed.');
       await bigtable.close();
       try {
-        await table.getRows();
+        const rows = await table.getRows();
+        console.log(rows);
       } catch (err) {
         console.log(err);
       }
+    });
+    after(async () => {
+      const bigtableSecondClient = new Bigtable();
+      const instance = bigtableSecondClient.instance(INSTANCE_NAME);
       await instance.delete({});
     });
   });
