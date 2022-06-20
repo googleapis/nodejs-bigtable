@@ -23,7 +23,7 @@ import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
-import {ServiceError, GrpcClient} from 'google-gax';
+import {ServiceError, GrpcClient, GoogleError} from 'google-gax';
 import {PassThrough} from 'stream';
 
 const {grpc} = new GrpcClient();
@@ -85,25 +85,26 @@ describe('Bigtable/Table', () => {
   const TABLE = INSTANCE.table('table');
 
   describe('close', () => {
-    it('invokes readRows with closed client 1', async () => {
+    it('invokes readRows with closed client', async () => {
       const instance = bigtable.instance(INSTANCE_NAME);
       const table = instance.table('fake-table');
-      // I always get `Error: 14 UNAVAILABLE: Cluster is temporarily unavailable.`
       await instance.create({
         clusters: {
           id: 'fake-cluster3',
-          location: 'us-east1-c',
+          location: 'us-west1-c',
           nodes: 1,
         },
       });
       await table.create({});
-      // const expectedError = new Error('The client has already been closed.');
+      await table.getRows(); // This is done to initialize the data client
       await bigtable.close();
       try {
-        const rows = await table.getRows();
-        console.log(rows);
-      } catch (err) {
-        console.log(err);
+        await table.getRows();
+        assert.fail(
+          'An error should have been thrown because the client is closed'
+        );
+      } catch (err: any) {
+        assert.strictEqual(err.message, 'The client has already been closed.');
       }
     });
     after(async () => {
