@@ -21,21 +21,17 @@ describe('Bigtable/Utils/Cluster', () => {
     it('should translate metadata for a full set of parameters', () => {
       const metadata = {
         nodes: 1,
+        location: 'projects/{{projectId}}/locations/us-east4-b',
         minServeNodes: 2,
         maxServeNodes: 3,
         cpuUtilizationPercent: 50,
       };
       const name = 'cluster1';
-      const location = 'projects/{{projectId}}/locations/us-east4-b';
-      const reqOpts = ClusterUtils.getRequestFromMetadata(
-        metadata,
-        location,
-        name
-      );
+      const reqOpts = ClusterUtils.getRequestFromMetadata(metadata, name);
       assert.deepStrictEqual(reqOpts, {
         cluster: {
-          name: name,
-          location: location,
+          name,
+          location: metadata.location,
           serveNodes: metadata.nodes,
           clusterConfig: {
             clusterAutoscalingConfig: {
@@ -61,21 +57,17 @@ describe('Bigtable/Utils/Cluster', () => {
     });
     it('should translate metadata for autoscaling parameters', () => {
       const metadata = {
+        location: 'projects/{{projectId}}/locations/us-east4-b',
         minServeNodes: 2,
         maxServeNodes: 3,
         cpuUtilizationPercent: 50,
       };
       const name = 'cluster1';
-      const location = 'projects/{{projectId}}/locations/us-east4-b';
-      const reqOpts = ClusterUtils.getRequestFromMetadata(
-        metadata,
-        location,
-        name
-      );
+      const reqOpts = ClusterUtils.getRequestFromMetadata(metadata, name);
       assert.deepStrictEqual(reqOpts, {
         cluster: {
-          name: name,
-          location: location,
+          name,
+          location: metadata.location,
           clusterConfig: {
             clusterAutoscalingConfig: {
               autoscalingLimits: {
