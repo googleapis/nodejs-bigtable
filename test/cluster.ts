@@ -1026,7 +1026,6 @@ describe('Bigtable/Cluster', () => {
 
       const expectedReqOpts = ClusterUtils.getRequestFromMetadata(
         options,
-        options.location,
         CLUSTER_NAME
       );
 

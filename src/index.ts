@@ -612,9 +612,15 @@ export class Bigtable {
         );
       }
       ClusterUtils.validateClusterMetadata(cluster);
+      const clusterClone = Object.assign({}, cluster);
+      if (clusterClone.location) {
+        clusterClone.location = Cluster.getLocation_(
+          this.projectId,
+          clusterClone.location
+        );
+      }
       clusters[cluster.id!] = ClusterUtils.getClusterBaseConfig(
-        cluster,
-        Cluster.getLocation_(this.projectId, cluster.location!),
+        clusterClone,
         undefined
       );
       Object.assign(clusters[cluster.id!], {
