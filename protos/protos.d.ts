@@ -1768,6 +1768,9 @@ export namespace google {
 
                     /** CreateClusterMetadata finishTime */
                     finishTime?: (google.protobuf.ITimestamp|null);
+
+                    /** CreateClusterMetadata tables */
+                    tables?: ({ [k: string]: google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress }|null);
                 }
 
                 /** Represents a CreateClusterMetadata. */
@@ -1787,6 +1790,9 @@ export namespace google {
 
                     /** CreateClusterMetadata finishTime. */
                     public finishTime?: (google.protobuf.ITimestamp|null);
+
+                    /** CreateClusterMetadata tables. */
+                    public tables: { [k: string]: google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress };
 
                     /**
                      * Creates a new CreateClusterMetadata instance using the specified properties.
@@ -1857,6 +1863,123 @@ export namespace google {
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
+                }
+
+                namespace CreateClusterMetadata {
+
+                    /** Properties of a TableProgress. */
+                    interface ITableProgress {
+
+                        /** TableProgress estimatedSizeBytes */
+                        estimatedSizeBytes?: (number|Long|string|null);
+
+                        /** TableProgress estimatedCopiedBytes */
+                        estimatedCopiedBytes?: (number|Long|string|null);
+
+                        /** TableProgress state */
+                        state?: (google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State|keyof typeof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State|null);
+                    }
+
+                    /** Represents a TableProgress. */
+                    class TableProgress implements ITableProgress {
+
+                        /**
+                         * Constructs a new TableProgress.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress);
+
+                        /** TableProgress estimatedSizeBytes. */
+                        public estimatedSizeBytes: (number|Long|string);
+
+                        /** TableProgress estimatedCopiedBytes. */
+                        public estimatedCopiedBytes: (number|Long|string);
+
+                        /** TableProgress state. */
+                        public state: (google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State|keyof typeof google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State);
+
+                        /**
+                         * Creates a new TableProgress instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns TableProgress instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress): google.bigtable.admin.v2.CreateClusterMetadata.TableProgress;
+
+                        /**
+                         * Encodes the specified TableProgress message. Does not implicitly {@link google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.verify|verify} messages.
+                         * @param message TableProgress message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified TableProgress message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.verify|verify} messages.
+                         * @param message TableProgress message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.CreateClusterMetadata.ITableProgress, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a TableProgress message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns TableProgress
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CreateClusterMetadata.TableProgress;
+
+                        /**
+                         * Decodes a TableProgress message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns TableProgress
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CreateClusterMetadata.TableProgress;
+
+                        /**
+                         * Verifies a TableProgress message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a TableProgress message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns TableProgress
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CreateClusterMetadata.TableProgress;
+
+                        /**
+                         * Creates a plain object from a TableProgress message. Also converts values to other types if specified.
+                         * @param message TableProgress
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.CreateClusterMetadata.TableProgress, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this TableProgress to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+                    }
+
+                    namespace TableProgress {
+
+                        /** State enum. */
+                        enum State {
+                            STATE_UNSPECIFIED = 0,
+                            PENDING = 1,
+                            COPYING = 2,
+                            COMPLETED = 3,
+                            CANCELLED = 4
+                        }
+                    }
                 }
 
                 /** Properties of an UpdateClusterMetadata. */
@@ -3507,6 +3630,15 @@ export namespace google {
 
                 namespace Cluster {
 
+                    /** State enum. */
+                    enum State {
+                        STATE_NOT_KNOWN = 0,
+                        READY = 1,
+                        CREATING = 2,
+                        RESIZING = 3,
+                        DISABLED = 4
+                    }
+
                     /** Properties of a ClusterAutoscalingConfig. */
                     interface IClusterAutoscalingConfig {
 
@@ -3781,15 +3913,6 @@ export namespace google {
                          * @returns JSON object
                          */
                         public toJSON(): { [k: string]: any };
-                    }
-
-                    /** State enum. */
-                    enum State {
-                        STATE_NOT_KNOWN = 0,
-                        READY = 1,
-                        CREATING = 2,
-                        RESIZING = 3,
-                        DISABLED = 4
                     }
                 }
 
@@ -7904,12 +8027,6 @@ export namespace google {
                     public toJSON(): { [k: string]: any };
                 }
 
-                /** RestoreSourceType enum. */
-                enum RestoreSourceType {
-                    RESTORE_SOURCE_TYPE_UNSPECIFIED = 0,
-                    BACKUP = 1
-                }
-
                 /** Properties of a RestoreInfo. */
                 interface IRestoreInfo {
 
@@ -9131,6 +9248,12 @@ export namespace google {
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
+                }
+
+                /** RestoreSourceType enum. */
+                enum RestoreSourceType {
+                    RESTORE_SOURCE_TYPE_UNSPECIFIED = 0,
+                    BACKUP = 1
                 }
             }
         }
