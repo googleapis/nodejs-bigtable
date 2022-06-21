@@ -80,6 +80,7 @@ export interface SetClusterMetadataOptions {
   minServeNodes?: number;
   maxServeNodes?: number;
   cpuUtilizationPercent?: number;
+  location?: string;
 }
 export type SetClusterMetadataCallback = GenericOperationCallback<
   Operation | null | undefined
@@ -704,11 +705,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       typeof gaxOptionsOrCallback === 'object'
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
-    const reqOpts = ClusterUtils.getRequestFromMetadata(
-      metadata,
-      this?.metadata?.location,
-      this.name
-    );
+    const reqOpts = ClusterUtils.getRequestFromMetadata(metadata, this.name);
     this.bigtable.request<Operation>(
       {
         client: 'BigtableInstanceAdminClient',

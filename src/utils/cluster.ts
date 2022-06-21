@@ -13,11 +13,7 @@
 // limitations under the License.
 
 import * as protos from '../../protos/protos';
-import {
-  BasicClusterConfig,
-  ICluster,
-  SetClusterMetadataOptions,
-} from '../cluster';
+import {ICluster, SetClusterMetadataOptions} from '../cluster';
 import {google} from '../../protos/protos';
 
 export class ClusterUtils {
@@ -28,9 +24,7 @@ export class ClusterUtils {
   static incompleteConfigError =
     'All of autoscaling configurations must be specified at the same time (min_serve_nodes, max_serve_nodes, and cpu_utilization_percent).';
 
-  static validateClusterMetadata(
-    metadata: SetClusterMetadataOptions | BasicClusterConfig
-  ): void {
+  static validateClusterMetadata(metadata: SetClusterMetadataOptions): void {
     if (metadata.nodes) {
       if (
         metadata.minServeNodes ||
@@ -92,8 +86,7 @@ export class ClusterUtils {
   }
 
   static getClusterBaseConfig(
-    metadata: SetClusterMetadataOptions | BasicClusterConfig,
-    location: string | undefined | null,
+    metadata: SetClusterMetadataOptions,
     name: string | undefined
   ): google.bigtable.admin.v2.ICluster {
     let clusterConfig;
@@ -114,6 +107,7 @@ export class ClusterUtils {
         },
       };
     }
+    const location = metadata?.location;
     return Object.assign(
       {},
       name ? {name} : null,
@@ -125,12 +119,11 @@ export class ClusterUtils {
 
   static getClusterFromMetadata(
     metadata: SetClusterMetadataOptions,
-    location: string | undefined | null,
     name: string
   ): google.bigtable.admin.v2.ICluster {
     const cluster: ICluster | SetClusterMetadataOptions = Object.assign(
       {},
-      this.getClusterBaseConfig(metadata, location, name),
+      this.getClusterBaseConfig(metadata, name),
       metadata
     );
     delete (cluster as SetClusterMetadataOptions).nodes;
@@ -142,11 +135,10 @@ export class ClusterUtils {
 
   static getRequestFromMetadata(
     metadata: SetClusterMetadataOptions,
-    location: string | undefined | null,
     name: string
   ): protos.google.bigtable.admin.v2.IPartialUpdateClusterRequest {
     return {
-      cluster: this.getClusterFromMetadata(metadata, location, name),
+      cluster: this.getClusterFromMetadata(metadata, name),
       updateMask: {paths: this.getUpdateMask(metadata)},
     };
   }
