@@ -19,9 +19,8 @@ import * as inst from '../src/instance';
 export const PREFIX = 'gt-';
 
 export function generateId(resourceType: string) {
-  return `${PREFIX}${resourceType}-${uuid.v1().substr(0, 6)}-${Math.floor(
-    Date.now() / 1000
-  )}`;
+  const newUuid = uuid.v1().substr(4, 4);
+  return `${PREFIX}${resourceType}-${newUuid}-${Date.now()}`;
 }
 
 export class FakeCluster extends Cluster {
