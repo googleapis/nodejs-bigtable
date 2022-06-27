@@ -56,29 +56,21 @@ describe('Bigtable/ReadRows', () => {
   });
 
   describe('with a mock server that always sends an error back', () => {
-    // Define the standard call here
+    function checkRetryWithServer(code: grpc.status, callback: () => void) {
+      checkRetrySnapshots(service, table, code, callback);
+    }
     describe('where the error is retryable', () => {
       it('should ensure correct behavior with deadline exceeded error', done => {
-        checkRetrySnapshots(
-          service,
-          table,
-          grpc.status.DEADLINE_EXCEEDED,
-          done
-        );
+        checkRetryWithServer(grpc.status.DEADLINE_EXCEEDED, done);
       });
       it('should ensure correct behavior with resource exhausted error', done => {
-        checkRetrySnapshots(
-          service,
-          table,
-          grpc.status.RESOURCE_EXHAUSTED,
-          done
-        );
+        checkRetryWithServer(grpc.status.RESOURCE_EXHAUSTED, done);
       });
       it('should ensure correct behavior with aborted error', done => {
-        checkRetrySnapshots(service, table, grpc.status.ABORTED, done);
+        checkRetryWithServer(grpc.status.ABORTED, done);
       });
       it('should ensure correct behavior with unavailable error', done => {
-        checkRetrySnapshots(service, table, grpc.status.UNAVAILABLE, done);
+        checkRetryWithServer(grpc.status.UNAVAILABLE, done);
       });
     });
   });
