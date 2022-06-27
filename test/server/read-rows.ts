@@ -27,6 +27,7 @@ import {MockService} from '../../src/util/mock-servers/mock-service';
 const snapshot = require('snap-shot-it');
 import {check} from 'linkinator';
 import * as gax from 'google-gax';
+import {checkRetrySnapshots} from '../../src/util/mock-servers/service-testers/check-retry-snapshots';
 
 function isServiceError(error: any): error is ServiceError {
   return (
@@ -57,57 +58,27 @@ describe('Bigtable/ReadRows', () => {
   describe('with a mock server that always sends an error back', () => {
     // Define the standard call here
     describe('where the error is retryable', () => {
-      function checkRequest(code: grpc.status, callback: () => void) {
-        const errorDetails = 'Details for a particular type of error';
-        let request: any = null;
-        let callCount = 0;
-        const emitError = (stream: any) => {
-          const streamRequest = stream.request;
-          if (request) {
-            // This ensures that every call to the server is the same
-            assert.deepStrictEqual(request, streamRequest);
-          } else {
-            request = streamRequest;
-          }
-          callCount++;
-          stream.emit('error', {
-            code,
-            details: errorDetails,
-          });
-        };
-        service.setService({
-          // Abstraction: Always emit error
-          ReadRows: emitError,
-        });
-        table.createReadStream({}).on('error', (error: ServiceError) => {
-          snapshot({
-            code,
-            callCount,
-            request,
-          });
-          callback();
-        });
-      }
-      function checkForCodes(codes: Array<grpc.status>, callback: () => void) {
-        function withNextCode() {
-          const code = codes.pop();
-          if (code) {
-            checkRequest(code, withNextCode);
-          } else {
-            callback();
-          }
-        }
-        withNextCode();
-      }
-      it('should ensure correct behavior with retryable errors', done => {
-        const status = grpc.status;
-        const codes: Array<grpc.status> = [
-          status.DEADLINE_EXCEEDED,
-          status.RESOURCE_EXHAUSTED,
-          status.ABORTED,
-          status.UNAVAILABLE,
-        ];
-        checkForCodes(codes, done);
+      it('should ensure correct behavior with deadline exceeded error', done => {
+        checkRetrySnapshots(
+          service,
+          table,
+          grpc.status.DEADLINE_EXCEEDED,
+          done
+        );
+      });
+      it('should ensure correct behavior with resource exhausted error', done => {
+        checkRetrySnapshots(
+          service,
+          table,
+          grpc.status.RESOURCE_EXHAUSTED,
+          done
+        );
+      });
+      it('should ensure correct behavior with aborted error', done => {
+        checkRetrySnapshots(service, table, grpc.status.ABORTED, done);
+      });
+      it('should ensure correct behavior with unavailable error', done => {
+        checkRetrySnapshots(service, table, grpc.status.UNAVAILABLE, done);
       });
     });
   });
