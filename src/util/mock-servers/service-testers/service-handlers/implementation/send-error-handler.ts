@@ -6,16 +6,15 @@ export class SendErrorHandler extends ServiceHandler {
   request: any = null;
   callCount = 0;
 
-  constructor(code: grpc.status) {
-    super();
+  constructor(endpoint: string, code: grpc.status) {
+    super(endpoint);
     this.code = code;
   }
 
-  handler(call: any) {
-    const errorDetails = 'Details for a particular type of error';
+  callHandler(call: any) {
     call.emit('error', {
       code: this.code,
-      details: errorDetails,
+      details: 'Details for a particular type of error',
     });
   }
 }

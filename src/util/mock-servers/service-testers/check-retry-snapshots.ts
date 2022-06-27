@@ -9,7 +9,7 @@ export function checkRetrySnapshots(
   code: grpc.status,
   callback: () => void
 ) {
-  const serviceHandler = new SendErrorHandler(code);
+  const serviceHandler = new SendErrorHandler('ReadRows', code);
   serviceHandler.setupService(service);
   table.createReadStream({}).on('error', (error: ServiceError) => {
     snapshot({
