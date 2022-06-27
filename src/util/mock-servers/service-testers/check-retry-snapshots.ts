@@ -1,7 +1,7 @@
 import {grpc, ServiceError} from 'google-gax';
 import * as snapshot from 'snap-shot-it';
 import {MockService} from '../mock-service';
-import {ServiceHandler} from './service-handler';
+import {SendErrorHandler} from './service-handlers/implementation/send-error-handler';
 
 export function checkRetrySnapshots(
   service: MockService,
@@ -9,7 +9,7 @@ export function checkRetrySnapshots(
   code: grpc.status,
   callback: () => void
 ) {
-  const serviceHandler = new ServiceHandler(code);
+  const serviceHandler = new SendErrorHandler(code);
   serviceHandler.setupService(service);
   table.createReadStream({}).on('error', (error: ServiceError) => {
     snapshot({

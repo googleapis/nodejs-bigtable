@@ -1,23 +1,11 @@
-import {grpc} from 'google-gax';
-import {MockService} from '../mock-service';
+import {MockService} from '../../mock-service';
 import * as assert from 'assert';
 
-export class ServiceHandler {
-  code: grpc.status;
+export abstract class ServiceHandler {
   request: any = null;
   callCount = 0;
 
-  constructor(code: grpc.status) {
-    this.code = code;
-  }
-
-  handler(call: any) {
-    const errorDetails = 'Details for a particular type of error';
-    call.emit('error', {
-      code: this.code,
-      details: errorDetails,
-    });
-  }
+  abstract handler(call: any): void;
 
   setupService(service: MockService) {
     const handleRpcCall = (call: any) => {
