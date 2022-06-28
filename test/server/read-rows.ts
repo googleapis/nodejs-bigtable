@@ -19,26 +19,21 @@
 import {before, describe, it} from 'mocha';
 import {Bigtable} from '../../src';
 
-import {grpc, ServiceError} from 'google-gax';
+import {grpc} from 'google-gax';
 import {MockServer} from '../../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../../src/util/mock-servers/mock-service';
-import {checkRetrySnapshots} from '../../src/util/mock-servers/service-testers/check-retry-snapshots';
 import {SendErrorHandler} from '../../src/util/mock-servers/service-testers/service-handlers/implementation/send-error-handler';
-
-function isServiceError(error: any): error is ServiceError {
-  return (
-    error.code !== undefined &&
-    error.details !== undefined &&
-    error.metadata !== undefined
-  );
-}
+import {StreamFetcher} from '../../src/util/mock-servers/service-testers/stream-fetchers/stream-fetcher';
+import {ReadRowsFetcher} from '../../src/util/mock-servers/service-testers/stream-fetchers/implementation/read-rows-fetcher';
+import {StreamTester} from '../../src/util/mock-servers/service-testers/stream-tester';
+import {ServiceHandler} from '../../src/util/mock-servers/service-testers/service-handlers/service-handler';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
   let service: MockService;
   let bigtable: Bigtable;
-  let table: any;
+  let streamFetcher: StreamFetcher;
 
   before(done => {
     server = new MockServer(() => {
@@ -46,16 +41,22 @@ describe('Bigtable/ReadRows', () => {
         apiEndpoint: `localhost:${server.port}`,
       });
       // TODO: Replace this with generated Ids so that we don't have flaky tests
-      table = bigtable.instance('fake-instance').table('fake-table');
+      const table = bigtable.instance('fake-instance').table('fake-table');
+      streamFetcher = new ReadRowsFetcher(table);
       service = new BigtableClientMockService(server);
       done();
     });
   });
 
+  function getStreamTester(serviceHandler: ServiceHandler) {
+    return new StreamTester(serviceHandler, streamFetcher);
+  }
+
   describe('with a mock server that always sends an error back', () => {
     function checkRetryWithServer(code: grpc.status, callback: () => void) {
       const serviceHandler = new SendErrorHandler(service, 'ReadRows', code);
-      checkRetrySnapshots(serviceHandler, table, callback);
+      const streamTester = getStreamTester(serviceHandler);
+      streamTester.checkSnapshots(callback);
     }
     describe('where the error is retryable', () => {
       it('should ensure correct behavior with deadline exceeded error', done => {
