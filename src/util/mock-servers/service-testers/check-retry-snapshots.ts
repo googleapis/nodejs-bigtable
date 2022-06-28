@@ -5,7 +5,6 @@ import {SameCallHandler} from './service-handlers/implementation/same-call-handl
 export function checkRetrySnapshots(
   serviceHandler: SameCallHandler,
   table: any,
-  code: grpc.status,
   callback: () => void
 ) {
   serviceHandler.setupService();

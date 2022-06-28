@@ -55,7 +55,7 @@ describe('Bigtable/ReadRows', () => {
   describe('with a mock server that always sends an error back', () => {
     function checkRetryWithServer(code: grpc.status, callback: () => void) {
       const serviceHandler = new SendErrorHandler(service, 'ReadRows', code);
-      checkRetrySnapshots(serviceHandler, table, code, callback);
+      checkRetrySnapshots(serviceHandler, table, callback);
     }
     describe('where the error is retryable', () => {
       it('should ensure correct behavior with deadline exceeded error', done => {
