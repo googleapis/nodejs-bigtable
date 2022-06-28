@@ -11,11 +11,7 @@ export function checkRetrySnapshots(
   serviceHandler.setupService();
   // TODO: Abstract out the stream getter
   table.createReadStream({}).on('error', (error: ServiceError) => {
-    snapshot({
-      code, // TODO: Replace with input
-      callCount: serviceHandler.callCount,
-      request: serviceHandler.request,
-    });
+    snapshot(serviceHandler.snapshotOutput());
     callback();
   });
 }
