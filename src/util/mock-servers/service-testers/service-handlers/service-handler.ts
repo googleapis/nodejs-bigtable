@@ -1,32 +1,20 @@
-import {MockService} from '../../mock-service';
-import * as assert from 'assert';
-
 export abstract class ServiceHandler {
-  request: any = null;
-  callCount = 0;
-  endpoint: string;
-
-  protected constructor(endpoint: string) {
-    this.endpoint = endpoint;
-  }
-
+  /*
+  callHandler accepts a grpc call and provides behaviour for that grpc call
+  which may involve sending errors or data back to the client for
+  example.
+  */
   abstract callHandler(call: any): void;
 
-  setupService(service: MockService) {
-    const handleRpcCall = (call: any) => {
-      const callRequest = call.request;
-      if (this.request) {
-        // This ensures that every call to the server is the same
-        assert.deepStrictEqual(this.request, callRequest);
-      } else {
-        this.request = callRequest;
-      }
-      this.callCount++;
-      this.callHandler(call);
-    };
-    service.setService({
-      // Abstraction: Always emit error
-      [this.endpoint]: handleRpcCall,
-    });
-  }
+  /*
+  snapshotOutput is used to provide a custom json object that represents the
+  results of the test that was run with this service handler.
+   */
+  abstract snapshotOutput(): any;
+
+  /*
+  setupService is called to setup the service we use for collecting data about
+  a running test.
+   */
+  abstract setupService(): void;
 }

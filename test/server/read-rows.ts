@@ -18,16 +18,13 @@
 
 import {before, describe, it} from 'mocha';
 import {Bigtable} from '../../src';
-import * as assert from 'assert';
 
-import {GoogleError, grpc, ServiceError} from 'google-gax';
+import {grpc, ServiceError} from 'google-gax';
 import {MockServer} from '../../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../../src/util/mock-servers/mock-service';
-const snapshot = require('snap-shot-it');
-import {check} from 'linkinator';
-import * as gax from 'google-gax';
 import {checkRetrySnapshots} from '../../src/util/mock-servers/service-testers/check-retry-snapshots';
+import {SendErrorHandler} from '../../src/util/mock-servers/service-testers/service-handlers/implementation/send-error-handler';
 
 function isServiceError(error: any): error is ServiceError {
   return (
@@ -57,7 +54,8 @@ describe('Bigtable/ReadRows', () => {
 
   describe('with a mock server that always sends an error back', () => {
     function checkRetryWithServer(code: grpc.status, callback: () => void) {
-      checkRetrySnapshots(service, table, code, callback);
+      const serviceHandler = new SendErrorHandler(service, 'ReadRows', code);
+      checkRetrySnapshots(serviceHandler, table, code, callback);
     }
     describe('where the error is retryable', () => {
       it('should ensure correct behavior with deadline exceeded error', done => {
