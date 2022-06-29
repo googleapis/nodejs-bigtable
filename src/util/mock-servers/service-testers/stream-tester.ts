@@ -34,20 +34,21 @@ export class StreamTester {
   }
 
   checkSnapshots(callback: () => void): void {
+    const collectSnapshot = (results: any) => {
+      this.serviceHandler.snapshot(results);
+    };
     this.serviceHandler.setupService();
     this.streamFetcher
       .fetchStream()
       .on('error', (error: ServiceError) => {
-        snapshot(this.serviceHandler.snapshotOutput({result: 'error'}));
+        collectSnapshot({result: 'error'});
         callback();
       })
       .pipe(
         concat((rows: Row[]) => {
-          snapshot({
-            output: this.serviceHandler.snapshotOutput({
-              result: 'data',
-              data: rows,
-            }),
+          collectSnapshot({
+            result: 'data',
+            data: rows,
           });
           callback();
         })

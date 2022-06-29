@@ -38,7 +38,7 @@ export class SendErrorHandler extends SameCallHandler {
     });
   }
 
-  snapshotOutput(results: any): any {
+  snapshot(results: any): any {
     return {
       input: {
         code: this.code,
