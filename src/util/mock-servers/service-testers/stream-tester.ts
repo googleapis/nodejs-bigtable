@@ -38,18 +38,16 @@ export class StreamTester {
     this.streamFetcher
       .fetchStream()
       .on('error', (error: ServiceError) => {
-        snapshot({
-          result: 'error',
-          output: this.serviceHandler.snapshotOutput(),
-        });
+        snapshot(this.serviceHandler.snapshotOutput({result: 'error'}));
         callback();
       })
       .pipe(
         concat((rows: Row[]) => {
           snapshot({
-            result: 'data',
-            output: this.serviceHandler.snapshotOutput(),
-            data: rows,
+            output: this.serviceHandler.snapshotOutput({
+              result: 'data',
+              data: rows,
+            }),
           });
           callback();
         })

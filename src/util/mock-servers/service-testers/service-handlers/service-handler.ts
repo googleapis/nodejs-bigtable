@@ -28,7 +28,7 @@ export abstract class ServiceHandler {
   snapshotOutput is used to provide a custom json object that represents the
   results of the test that was run with this service handler.
    */
-  abstract snapshotOutput(): any;
+  abstract snapshotOutput(results: any): any;
 
   /*
   setupService is called to setup the service we use for collecting data about

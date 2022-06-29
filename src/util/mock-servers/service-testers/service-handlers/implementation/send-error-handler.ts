@@ -38,12 +38,15 @@ export class SendErrorHandler extends SameCallHandler {
     });
   }
 
-  snapshotOutput(): any {
+  snapshotOutput(results: any): any {
     return {
       input: {
         code: this.code,
       },
-      output: this.requests(),
+      output: {
+        results,
+        requestData: this.requests(),
+      },
     };
   }
 }
