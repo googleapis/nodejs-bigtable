@@ -16,19 +16,21 @@
 // ** https://github.com/googleapis/gapic-generator-typescript **
 // ** All changes to this file may be overwritten. **
 
-import {Table} from '../../../../../table';
+import {GetRowsOptions, Table} from '../../../../../table';
 import internal = require('stream');
 import {StreamFetcher} from '../stream-fetcher';
 
 export class ReadRowsFetcher extends StreamFetcher {
   table: Table;
+  opts: GetRowsOptions;
 
-  constructor(table: Table) {
+  constructor(table: Table, opts?: GetRowsOptions) {
     super();
+    this.opts = opts ?? {};
     this.table = table;
   }
 
   fetchStream(): internal.PassThrough {
-    return this.table.createReadStream({});
+    return this.table.createReadStream(this.opts);
   }
 }

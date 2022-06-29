@@ -17,23 +17,24 @@
 // ** All changes to this file may be overwritten. **
 
 import {before, describe, it} from 'mocha';
-import {Bigtable} from '../../src';
+import {Bigtable, GetRowsOptions} from '../../src';
 
 import {grpc} from 'google-gax';
 import {MockServer} from '../../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../../src/util/mock-servers/mock-service';
 import {SendErrorHandler} from '../../src/util/mock-servers/service-testers/service-handlers/implementation/send-error-handler';
-import {StreamFetcher} from '../../src/util/mock-servers/service-testers/stream-fetchers/stream-fetcher';
 import {ReadRowsFetcher} from '../../src/util/mock-servers/service-testers/stream-fetchers/implementation/read-rows-fetcher';
 import {StreamTester} from '../../src/util/mock-servers/service-testers/stream-tester';
 import {ServiceHandler} from '../../src/util/mock-servers/service-testers/service-handlers/service-handler';
+import {Table} from '../../src/table';
+import {testGaxOptions} from './test-options';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
   let service: MockService;
   let bigtable: Bigtable;
-  let streamFetcher: StreamFetcher;
+  let table: Table;
 
   before(done => {
     server = new MockServer(() => {
@@ -41,14 +42,17 @@ describe('Bigtable/ReadRows', () => {
         apiEndpoint: `localhost:${server.port}`,
       });
       // TODO: Replace this with generated Ids so that we don't have flaky tests
-      const table = bigtable.instance('fake-instance').table('fake-table');
-      streamFetcher = new ReadRowsFetcher(table);
+      table = bigtable.instance('fake-instance').table('fake-table');
       service = new BigtableClientMockService(server);
       done();
     });
   });
 
-  function getStreamTester(serviceHandler: ServiceHandler) {
+  function getStreamTester(
+    serviceHandler: ServiceHandler,
+    opts?: GetRowsOptions
+  ) {
+    const streamFetcher = new ReadRowsFetcher(table, opts);
     return new StreamTester(serviceHandler, streamFetcher);
   }
 
@@ -72,8 +76,94 @@ describe('Bigtable/ReadRows', () => {
         checkRetryWithServer(grpc.status.UNAVAILABLE, done);
       });
     });
+    describe('where the error is not retryable', () => {
+      it('should ensure correct behavior with cancelled error', done => {
+        checkRetryWithServer(grpc.status.CANCELLED, done);
+      });
+      it('should ensure correct behavior with internal error', done => {
+        checkRetryWithServer(grpc.status.INTERNAL, done);
+      });
+      it('should ensure correct behavior with invalid argument error', done => {
+        checkRetryWithServer(grpc.status.INVALID_ARGUMENT, done);
+      });
+    });
+    describe('with a deadline exceeded error and different createReadStream arguments', () => {
+      const serviceHandler = new SendErrorHandler(
+        service,
+        'ReadRows',
+        grpc.status.DEADLINE_EXCEEDED
+      );
+      function checkWithOptions(opts: any, callback: () => void) {
+        const streamTester = getStreamTester(serviceHandler, opts);
+        streamTester.checkSnapshots(callback);
+      }
+      it('should pass checks with an empty request', done => {
+        checkWithOptions({}, done);
+      });
+      it('should pass checks with a decode value set', done => {
+        checkWithOptions({decode: true}, done);
+      });
+      it('should pass checks with an encoding value set', done => {
+        // TODO: encoding
+        checkWithOptions({encoding: 'test-encoding'}, done);
+      });
+      it('should pass checks with start and end values', done => {
+        checkWithOptions(
+          {
+            start: 'test-start',
+            end: 'test-end',
+          },
+          done
+        );
+      });
+      it('should pass checks with keys', done => {
+        checkWithOptions({keys: ['test-key-1', 'test-key-2']}, done);
+      });
+      it('should pass checks with a filter', done => {
+        checkWithOptions({filter: [{}]}, done);
+      });
+      it('should pass checks with a limit', done => {
+        checkWithOptions({limit: 10}, done);
+      });
+      it('should pass checks with a prefix', done => {
+        checkWithOptions({prefix: 'test-prefix'}, done);
+      });
+      it('should pass checks with prefixes', done => {
+        checkWithOptions({prefixes: ['test-prefix1', 'test-prefix2']}, done);
+      });
+      it('should pass checks with a list of ranges', done => {
+        checkWithOptions(
+          {
+            ranges: [
+              {
+                start: 'test-start-1',
+                end: 'test-end-1',
+              },
+              {
+                start: 'test-start-2',
+                end: 'test-end-2',
+              },
+            ],
+          },
+          done
+        );
+      });
+      it('should pass checks with gaxOptions', done => {
+        // TODO: Add the retry parameter
+        checkWithOptions(
+          {
+            gaxOptions: testGaxOptions,
+          },
+          done
+        );
+      });
+    });
   });
   after(async () => {
     server.shutdown(() => {});
   });
 });
+
+// TODO: Think of interesting cases for the shouldRetryFn
+// TODO: Change the test framework so that it saves each different request
+// TODO: and then records the order that they occur in
