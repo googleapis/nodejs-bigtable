@@ -19,10 +19,10 @@
 import {ServiceHandler} from './service-handlers/service-handler';
 import {StreamFetcher} from './stream-fetchers/stream-fetcher';
 import {ServiceError} from 'google-gax';
-import * as snapshot from 'snap-shot-it';
 import {Row} from '../../../row';
 
 const concat = require('concat-stream');
+import * as snapshot from 'snap-shot-it';
 
 export class StreamTester {
   serviceHandler: ServiceHandler;
@@ -35,7 +35,7 @@ export class StreamTester {
 
   checkSnapshots(callback: () => void): void {
     const collectSnapshot = (results: any) => {
-      this.serviceHandler.snapshot(results);
+      snapshot(this.serviceHandler.snapshot(results));
     };
     this.serviceHandler.setupService();
     this.streamFetcher

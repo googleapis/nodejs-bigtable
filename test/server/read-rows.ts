@@ -28,7 +28,7 @@ import {ReadRowsFetcher} from '../../src/util/mock-servers/service-testers/strea
 import {StreamTester} from '../../src/util/mock-servers/service-testers/stream-tester';
 import {ServiceHandler} from '../../src/util/mock-servers/service-testers/service-handlers/service-handler';
 import {Table} from '../../src/table';
-import {testGaxOptions} from './test-options';
+// import {testGaxOptions} from './test-options';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -88,12 +88,16 @@ describe('Bigtable/ReadRows', () => {
       });
     });
     describe('with a deadline exceeded error and different createReadStream arguments', () => {
-      const serviceHandler = new SendErrorHandler(
-        service,
-        'ReadRows',
-        grpc.status.DEADLINE_EXCEEDED
-      );
+      function getServiceHandler(message: any) {
+        return new SendErrorHandler(
+          service,
+          'ReadRows',
+          grpc.status.DEADLINE_EXCEEDED,
+          message
+        );
+      }
       function checkWithOptions(opts: any, callback: () => void) {
+        const serviceHandler = getServiceHandler(opts);
         const streamTester = getStreamTester(serviceHandler, opts);
         streamTester.checkSnapshots(callback);
       }
@@ -119,9 +123,11 @@ describe('Bigtable/ReadRows', () => {
       it('should pass checks with keys', done => {
         checkWithOptions({keys: ['test-key-1', 'test-key-2']}, done);
       });
+      /*
       it('should pass checks with a filter', done => {
         checkWithOptions({filter: [{}]}, done);
       });
+      */
       it('should pass checks with a limit', done => {
         checkWithOptions({limit: 10}, done);
       });
@@ -148,6 +154,7 @@ describe('Bigtable/ReadRows', () => {
           done
         );
       });
+      /*
       it('should pass checks with gaxOptions', done => {
         // TODO: Add the retry parameter
         checkWithOptions(
@@ -157,6 +164,7 @@ describe('Bigtable/ReadRows', () => {
           done
         );
       });
+      */
     });
   });
   after(async () => {
@@ -165,5 +173,5 @@ describe('Bigtable/ReadRows', () => {
 });
 
 // TODO: Think of interesting cases for the shouldRetryFn
-// TODO: Change the test framework so that it saves each different request
-// TODO: and then records the order that they occur in
+// TODO: Consider setting up the framework so that we take snapshots of values passed into createReadStream afterwards
+// TODO: Adjust max retries
