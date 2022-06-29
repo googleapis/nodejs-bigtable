@@ -3,19 +3,26 @@ exports[
 ] = {
   result: 'error',
   output: {
-    request: {
-      tableName:
-        'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
-      },
-      filter: null,
-      rowsLimit: '0',
-      appProfileId: '',
+    input: {
+      code: 4,
     },
-    code: 4,
-    callCount: 4,
+    output: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0, 0, 0, 0],
+      callCount: 4,
+    },
   },
 };
 
@@ -24,19 +31,26 @@ exports[
 ] = {
   result: 'error',
   output: {
-    request: {
-      tableName:
-        'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
-      },
-      filter: null,
-      rowsLimit: '0',
-      appProfileId: '',
+    input: {
+      code: 8,
     },
-    code: 8,
-    callCount: 4,
+    output: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0, 0, 0, 0],
+      callCount: 4,
+    },
   },
 };
 
@@ -45,19 +59,26 @@ exports[
 ] = {
   result: 'error',
   output: {
-    request: {
-      tableName:
-        'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
-      },
-      filter: null,
-      rowsLimit: '0',
-      appProfileId: '',
+    input: {
+      code: 10,
     },
-    code: 10,
-    callCount: 4,
+    output: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0, 0, 0, 0],
+      callCount: 4,
+    },
   },
 };
 
@@ -66,19 +87,26 @@ exports[
 ] = {
   result: 'error',
   output: {
-    request: {
-      tableName:
-        'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
-      },
-      filter: null,
-      rowsLimit: '0',
-      appProfileId: '',
+    input: {
+      code: 14,
     },
-    code: 14,
-    callCount: 4,
+    output: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0, 0, 0, 0],
+      callCount: 4,
+    },
   },
 };
 
@@ -87,19 +115,26 @@ exports[
 ] = {
   result: 'data',
   output: {
-    request: {
-      tableName:
-        'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
-      },
-      filter: null,
-      rowsLimit: '0',
-      appProfileId: '',
+    input: {
+      code: 1,
     },
-    code: 1,
-    callCount: 1,
+    output: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0],
+      callCount: 1,
+    },
   },
   data: [],
 };
@@ -109,19 +144,26 @@ exports[
 ] = {
   result: 'error',
   output: {
-    request: {
-      tableName:
-        'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
-      },
-      filter: null,
-      rowsLimit: '0',
-      appProfileId: '',
+    input: {
+      code: 13,
     },
-    code: 13,
-    callCount: 1,
+    output: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0],
+      callCount: 1,
+    },
   },
 };
 
@@ -130,18 +172,25 @@ exports[
 ] = {
   result: 'error',
   output: {
-    request: {
-      tableName:
-        'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
-      },
-      filter: null,
-      rowsLimit: '0',
-      appProfileId: '',
+    input: {
+      code: 3,
     },
-    code: 3,
-    callCount: 1,
+    output: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0],
+      callCount: 1,
+    },
   },
 };

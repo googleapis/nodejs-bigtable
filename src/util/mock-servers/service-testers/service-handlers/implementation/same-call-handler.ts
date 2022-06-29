@@ -17,12 +17,15 @@
 // ** All changes to this file may be overwritten. **
 
 import {MockService} from '../../../mock-service';
-import * as assert from 'assert';
 import {ServiceHandler} from '../service-handler';
+
+const equal = require('deep-equal');
 
 export abstract class SameCallHandler extends ServiceHandler {
   service: MockService;
   request: any = null;
+  requestList: any[] = [];
+  requestOrder: number[] = [];
   callCount = 0;
   endpoint: string;
 
@@ -36,12 +39,16 @@ export abstract class SameCallHandler extends ServiceHandler {
     const handleRpcCall = (call: any) => {
       // TODO: Make an abstraction of this
       const callRequest = call.request;
-      if (this.request) {
-        // This ensures that every call to the server is the same
-        assert.deepStrictEqual(this.request, callRequest);
+      const requestIndex = this.requestList.findIndex(request => {
+        return equal(request, callRequest);
+      });
+      if (requestIndex === -1) {
+        this.requestList.push(callRequest);
+        this.requestOrder.push(this.requestList.length - 1);
       } else {
-        this.request = callRequest;
+        this.requestOrder.push(requestIndex);
       }
+      this.request = callRequest;
       this.callCount++;
       this.callHandler(call);
     };
@@ -49,5 +56,13 @@ export abstract class SameCallHandler extends ServiceHandler {
       // Abstraction: Always emit error
       [this.endpoint]: handleRpcCall,
     });
+  }
+
+  requests() {
+    return {
+      requests: Object.assign({}, this.requestList),
+      requestOrder: this.requestOrder,
+      callCount: this.callCount,
+    };
   }
 }

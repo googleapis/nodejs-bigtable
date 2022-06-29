@@ -25,6 +25,7 @@ export class SendErrorHandler extends SameCallHandler {
   request: any = null;
   callCount = 0;
 
+  // TODO: service and endpoint should be bundled into one object.
   constructor(service: MockService, endpoint: string, code: grpc.status) {
     super(service, endpoint);
     this.code = code;
@@ -39,9 +40,10 @@ export class SendErrorHandler extends SameCallHandler {
 
   snapshotOutput(): any {
     return {
-      request: this.request,
-      code: this.code,
-      callCount: this.callCount,
+      input: {
+        code: this.code,
+      },
+      output: this.requests(),
     };
   }
 }
