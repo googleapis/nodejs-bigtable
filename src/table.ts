@@ -486,21 +486,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * ```
    */
   static createPrefixRange(start: string): PrefixRange {
-    const prefix = start.replace(new RegExp('[\xff]+$'), '');
-    let endKey = '';
-    if (prefix) {
-      const position = prefix.length - 1;
-      const charCode = prefix.charCodeAt(position);
-      const nextChar = String.fromCharCode(charCode + 1);
-      endKey = prefix.substring(0, position) + nextChar;
-    }
-    return {
-      start,
-      end: {
-        value: endKey,
-        inclusive: !endKey,
-      },
-    };
+    return TableUtils.createPrefixRange(start);
   }
 
   create(options?: CreateTableOptions): Promise<CreateTableResponse>;

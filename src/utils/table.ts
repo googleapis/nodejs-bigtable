@@ -1,4 +1,4 @@
-import {GetRowsOptions, Table} from '../table';
+import {GetRowsOptions, PrefixRange, Table} from '../table';
 
 export class TableUtils {
   static getRanges(options: GetRowsOptions) {
@@ -33,5 +33,23 @@ export class TableUtils {
       });
     }
     return ranges;
+  }
+
+  static createPrefixRange(start: string): PrefixRange {
+    const prefix = start.replace(new RegExp('[\xff]+$'), '');
+    let endKey = '';
+    if (prefix) {
+      const position = prefix.length - 1;
+      const charCode = prefix.charCodeAt(position);
+      const nextChar = String.fromCharCode(charCode + 1);
+      endKey = prefix.substring(0, position) + nextChar;
+    }
+    return {
+      start,
+      end: {
+        value: endKey,
+        inclusive: !endKey,
+      },
+    };
   }
 }
