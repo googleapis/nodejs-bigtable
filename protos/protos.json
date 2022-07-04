@@ -706,6 +706,40 @@
                         "finishTime": {
                           "type": "google.protobuf.Timestamp",
                           "id": 3
+                        },
+                        "tables": {
+                          "keyType": "string",
+                          "type": "TableProgress",
+                          "id": 4
+                        }
+                      },
+                      "nested": {
+                        "TableProgress": {
+                          "fields": {
+                            "estimatedSizeBytes": {
+                              "type": "int64",
+                              "id": 2
+                            },
+                            "estimatedCopiedBytes": {
+                              "type": "int64",
+                              "id": 3
+                            },
+                            "state": {
+                              "type": "State",
+                              "id": 4
+                            }
+                          },
+                          "nested": {
+                            "State": {
+                              "values": {
+                                "STATE_UNSPECIFIED": 0,
+                                "PENDING": 1,
+                                "COPYING": 2,
+                                "COMPLETED": 3,
+                                "CANCELLED": 4
+                              }
+                            }
+                          }
                         }
                       }
                     },
@@ -932,10 +966,7 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 1
                         },
                         "displayName": {
                           "type": "string",
@@ -1023,15 +1054,13 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 1
                         },
                         "location": {
                           "type": "string",
                           "id": 2,
                           "options": {
+                            "(google.api.field_behavior)": "IMMUTABLE",
                             "(google.api.resource_reference).type": "locations.googleapis.com/Location"
                           }
                         },
@@ -1052,7 +1081,10 @@
                         },
                         "defaultStorageType": {
                           "type": "StorageType",
-                          "id": 5
+                          "id": 5,
+                          "options": {
+                            "(google.api.field_behavior)": "IMMUTABLE"
+                          }
                         },
                         "encryptionConfig": {
                           "type": "EncryptionConfig",
@@ -1063,6 +1095,15 @@
                         }
                       },
                       "nested": {
+                        "State": {
+                          "values": {
+                            "STATE_NOT_KNOWN": 0,
+                            "READY": 1,
+                            "CREATING": 2,
+                            "RESIZING": 3,
+                            "DISABLED": 4
+                          }
+                        },
                         "ClusterAutoscalingConfig": {
                           "fields": {
                             "autoscalingLimits": {
@@ -1098,15 +1139,6 @@
                                 "(google.api.resource_reference).type": "cloudkms.googleapis.com/CryptoKey"
                               }
                             }
-                          }
-                        },
-                        "State": {
-                          "values": {
-                            "STATE_NOT_KNOWN": 0,
-                            "READY": 1,
-                            "CREATING": 2,
-                            "RESIZING": 3,
-                            "DISABLED": 4
                           }
                         }
                       }
@@ -2301,12 +2333,6 @@
                         }
                       }
                     },
-                    "RestoreSourceType": {
-                      "values": {
-                        "RESTORE_SOURCE_TYPE_UNSPECIFIED": 0,
-                        "BACKUP": 1
-                      }
-                    },
                     "RestoreInfo": {
                       "oneofs": {
                         "sourceInfo": {
@@ -2339,7 +2365,10 @@
                         "clusterStates": {
                           "keyType": "string",
                           "type": "ClusterState",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "columnFamilies": {
                           "keyType": "string",
@@ -2348,11 +2377,17 @@
                         },
                         "granularity": {
                           "type": "TimestampGranularity",
-                          "id": 4
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "IMMUTABLE"
+                          }
                         },
                         "restoreInfo": {
                           "type": "RestoreInfo",
-                          "id": 6
+                          "id": 6,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         }
                       },
                       "nested": {
@@ -2360,7 +2395,10 @@
                           "fields": {
                             "replicationState": {
                               "type": "ReplicationState",
-                              "id": 1
+                              "id": 1,
+                              "options": {
+                                "(google.api.field_behavior)": "OUTPUT_ONLY"
+                              }
                             },
                             "encryptionInfo": {
                               "rule": "repeated",
@@ -2548,10 +2586,7 @@
                       "fields": {
                         "name": {
                           "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 1
                         },
                         "sourceTable": {
                           "type": "string",
@@ -2643,6 +2678,12 @@
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
                         }
+                      }
+                    },
+                    "RestoreSourceType": {
+                      "values": {
+                        "RESTORE_SOURCE_TYPE_UNSPECIFIED": 0,
+                        "BACKUP": 1
                       }
                     }
                   }

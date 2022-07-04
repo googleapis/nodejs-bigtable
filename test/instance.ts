@@ -18,6 +18,7 @@ import {before, beforeEach, afterEach, describe, it} from 'mocha';
 import * as sinon from 'sinon';
 import * as proxyquire from 'proxyquire';
 import {ServiceError} from 'google-gax';
+import * as snapshot from 'snap-shot-it';
 
 import * as inst from '../src/instance';
 import {AppProfile, AppProfileOptions} from '../src/app-profile';
@@ -34,6 +35,8 @@ import {PassThrough} from 'stream';
 import * as pumpify from 'pumpify';
 import {FakeCluster} from '../system-test/common';
 import {RestoreTableConfig} from '../src/backup';
+import {Options} from './cluster';
+import {createClusterOptionsList} from './constants/cluster';
 
 const sandbox = sinon.createSandbox();
 
@@ -356,11 +359,36 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
-      instance.createCluster(CLUSTER_ID, assert.ifError);
+      instance.createCluster(
+        CLUSTER_ID,
+        {nodes: 2, location: 'us-central1-b'},
+        assert.ifError
+      );
+    });
+
+    it('should provide the proper request options asynchronously', async () => {
+      let currentRequestInput = null;
+      (instance.bigtable.request as Function) = (config: RequestOptions) => {
+        currentRequestInput = config;
+      };
+      const optionsList = createClusterOptionsList;
+      for (const options of optionsList) {
+        await instance.createCluster(CLUSTER_ID, options);
+        snapshot({
+          input: {
+            id: CLUSTER_ID,
+            options: options,
+          },
+          output: {
+            config: currentRequestInput,
+          },
+        });
+      }
     });
 
     it('should accept gaxOptions', done => {
       const options = {
+        nodes: 2,
         gaxOptions: {},
       } as CreateClusterOptions;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -374,6 +402,7 @@ describe('Bigtable/Instance', () => {
     it('should respect the location option', done => {
       const options = {
         location: 'us-central1-b',
+        nodes: 2,
       } as CreateClusterOptions;
       const fakeLocation = 'a/b/c/d';
       sandbox
@@ -407,6 +436,7 @@ describe('Bigtable/Instance', () => {
     it('should respect the storage option', done => {
       const options = {
         storage: 'ssd',
+        nodes: 2,
       } as CreateClusterOptions;
       const fakeStorageType = 2;
       sandbox.stub(FakeCluster, 'getStorageType_').callsFake(type => {
@@ -437,7 +467,7 @@ describe('Bigtable/Instance', () => {
 
       instance.createCluster(
         CLUSTER_ID,
-        {key} as CreateClusterOptions,
+        {key, nodes: 2} as CreateClusterOptions,
         assert.ifError
       );
     });
@@ -455,7 +485,7 @@ describe('Bigtable/Instance', () => {
 
       instance.createCluster(
         CLUSTER_ID,
-        {encryption: {kmsKeyName: key}} as CreateClusterOptions,
+        {encryption: {kmsKeyName: key}, nodes: 2} as CreateClusterOptions,
         assert.ifError
       );
     });
@@ -466,7 +496,11 @@ describe('Bigtable/Instance', () => {
       assert.throws(() => {
         instance.createCluster(
           CLUSTER_ID,
-          {encryption: {kmsKeyName: key}, key} as CreateClusterOptions,
+          {
+            encryption: {kmsKeyName: key},
+            key,
+            nodes: 2,
+          } as CreateClusterOptions,
           assert.ifError
         );
       }, /The cluster cannot have both `encryption` and `key` defined\./);
@@ -484,6 +518,7 @@ describe('Bigtable/Instance', () => {
       };
       (instance.createCluster as Function)(
         CLUSTER_ID,
+        {nodes: 2},
         (err: Error, cluster: {}, apiResponse: {}) => {
           assert.ifError(err);
           assert.strictEqual(cluster, fakeCluster);
@@ -904,7 +939,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -926,7 +961,7 @@ describe('Bigtable/Instance', () => {
       const pageSize = 3;
       const gaxOptions = {pageSize, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1010,7 +1045,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1033,7 +1068,7 @@ describe('Bigtable/Instance', () => {
       const pageSize = 3;
       const gaxOptions = {pageSize, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {parent: instance.name},
@@ -1436,7 +1471,7 @@ describe('Bigtable/Instance', () => {
       const pageToken = 'token';
       const gaxOptions = {pageSize, pageToken, timeout: 1000};
       const expectedGaxOpts = {timeout: 1000};
-      const expectedReqOpts = Object.assign(
+      const expectedReqOpts: Options = Object.assign(
         {},
         {gaxOptions},
         {

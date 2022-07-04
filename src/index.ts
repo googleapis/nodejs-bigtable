@@ -34,6 +34,7 @@ import {ServiceError} from 'google-gax';
 import * as v2 from './v2';
 import {PassThrough, Duplex} from 'stream';
 import grpcGcpModule = require('grpc-gcp');
+import {ClusterUtils} from './utils/cluster';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const streamEvents = require('stream-events');
@@ -610,12 +611,21 @@ export class Bigtable {
           'A cluster was provided with both `encryption` and `key` defined.'
         );
       }
-
-      clusters[cluster.id!] = {
-        location: Cluster.getLocation_(this.projectId, cluster.location!),
-        serveNodes: cluster.nodes,
+      ClusterUtils.validateClusterMetadata(cluster);
+      const clusterClone = Object.assign({}, cluster);
+      if (clusterClone.location) {
+        clusterClone.location = Cluster.getLocation_(
+          this.projectId,
+          clusterClone.location
+        );
+      }
+      clusters[cluster.id!] = ClusterUtils.getClusterBaseConfig(
+        clusterClone,
+        undefined
+      );
+      Object.assign(clusters[cluster.id!], {
         defaultStorageType: Cluster.getStorageType_(cluster.storage!),
-      };
+      });
 
       if (cluster.key) {
         clusters[cluster.id!].encryptionConfig = {

@@ -279,7 +279,11 @@ describe('Bigtable', () => {
         await operation.promise();
         throw new Error('Cluster creation should not have succeeded');
       } catch (e) {
-        assert(e.message.includes('default keys and CMEKs are not allowed'));
+        assert(
+          (e as Error).message.includes(
+            'default keys and CMEKs are not allowed'
+          )
+        );
       }
     });
   });
@@ -913,7 +917,7 @@ describe('Bigtable', () => {
         ];
         await TABLE.insert(entries);
         const rows: Row[] = [];
-        await new Promise((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           const stream = TABLE.createReadStream()
             .on('error', reject)
             .on('data', row => {

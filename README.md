@@ -88,6 +88,7 @@ Samples are in the [`samples/`](https://github.com/googleapis/nodejs-bigtable/tr
 
 | Sample                      | Source Code                       | Try it |
 | --------------------------- | --------------------------------- | ------ |
+| Delete Snippets | [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/deleteSnippets.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/deleteSnippets.js,samples/README.md) |
 | Filter Snippets | [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/filterSnippets.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/filterSnippets.js,samples/README.md) |
 | Instances | [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/instances.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/instances.js,samples/README.md) |
 | Quickstart | [source code](https://github.com/googleapis/nodejs-bigtable/blob/main/samples/quickstart.js) | [![Open in Cloud Shell][shell_img]](https://console.cloud.google.com/cloudshell/open?git_repo=https://github.com/googleapis/nodejs-bigtable&page=editor&open_in_editor=samples/quickstart.js,samples/README.md) |
