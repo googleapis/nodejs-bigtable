@@ -52,22 +52,25 @@ export class TableUtils {
     return ranges;
   }
 
-  static spliceRangesGetKeys(
+  // TODO: lhs and rhs type shouldn't be string, it could be
+  // string, number, Uint8Array, boolean. Fix the type
+  // and clean up the casting.
+  static lessThan(lhs: string, rhs: string) {
+    const lhsBytes = Mutation.convertToBytes(lhs);
+    const rhsBytes = Mutation.convertToBytes(rhs);
+    return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
+  }
+
+  static greaterThan(lhs: string, rhs: string) {
+    return this.lessThan(rhs, lhs);
+  }
+
+  static spliceRanges(
     ranges: PrefixRange[],
-    lastRowKey: string | number | true | Uint8Array,
-    rowKeys: string[]
-  ): string[] {
-    // TODO: lhs and rhs type shouldn't be string, it could be
-    // string, number, Uint8Array, boolean. Fix the type
-    // and clean up the casting.
-    const lessThan = (lhs: string, rhs: string) => {
-      const lhsBytes = Mutation.convertToBytes(lhs);
-      const rhsBytes = Mutation.convertToBytes(rhs);
-      return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
-    };
-    const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
+    lastRowKey: string | number | true | Uint8Array
+  ): void {
     const lessThanOrEqualTo = (lhs: string, rhs: string) =>
-      !greaterThan(lhs, rhs);
+      !this.greaterThan(lhs, rhs);
 
     // Readjust and/or remove ranges based on previous valid row reads.
     // Iterate backward since items may need to be removed.
@@ -85,7 +88,7 @@ export class TableUtils {
       const endKeyIsNotRead =
         !endValue ||
         (endValue as Buffer).length === 0 ||
-        lessThan(lastRowKey as string, endValue as string);
+        this.lessThan(lastRowKey as string, endValue as string);
       if (startKeyIsRead) {
         if (endKeyIsNotRead) {
           // EndKey is not read, reset the range to start from lastRowKey open
@@ -99,9 +102,16 @@ export class TableUtils {
         }
       }
     }
+  }
 
+  static getRowKeys(
+    rowKeys: string[],
+    lastRowKey: string | number | true | Uint8Array
+  ) {
     // Remove rowKeys already read.
-    return rowKeys.filter(rowKey => greaterThan(rowKey, lastRowKey as string));
+    return rowKeys.filter(rowKey =>
+      this.greaterThan(rowKey, lastRowKey as string)
+    );
   }
 
   static createPrefixRange(start: string): PrefixRange {

@@ -786,7 +786,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
-        rowKeys = TableUtils.spliceRangesGetKeys(ranges, lastRowKey, rowKeys);
+        TableUtils.spliceRanges(ranges, lastRowKey);
+        rowKeys = TableUtils.getRowKeys(rowKeys, lastRowKey);
 
         // If there was a row limit in the original request and
         // we've already read all the rows, end the stream and
