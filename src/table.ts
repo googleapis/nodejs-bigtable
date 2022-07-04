@@ -723,6 +723,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     let activeRequestStream: AbortableDuplex | null;
     let rowKeys: string[];
+    let filter: {} | null;
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
@@ -738,6 +739,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     // Add an empty range to simplify the resumption logic.
     if (rowKeys.length === 0 && ranges.length === 0) {
       ranges.push({});
+    }
+
+    if (options.filter) {
+      filter = Filter.parse(options.filter);
     }
 
     const userStream = new PassThrough({objectMode: true});
@@ -764,6 +769,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+
+      const reqOpts = {
+        tableName: this.name,
+        appProfileId: this.bigtable.appProfileId,
+      } as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
         currentRetryAttempt: numConsecutiveErrors,
@@ -793,7 +803,25 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
       }
 
-      const reqOpts: any = this.readRowsReqOpts(ranges, rowKeys, options);
+      // Create the new reqOpts
+      reqOpts.rows = {};
+
+      // TODO: preprocess all the keys and ranges to Bytes
+      reqOpts.rows.rowKeys = rowKeys.map(
+        Mutation.convertToBytes
+      ) as {} as Uint8Array[];
+
+      reqOpts.rows.rowRanges = ranges.map(range =>
+        Filter.createRange(
+          range.start as BoundData,
+          range.end as BoundData,
+          'Key'
+        )
+      );
+
+      if (filter) {
+        reqOpts.filter = filter;
+      }
 
       if (hasLimit) {
         reqOpts.rowsLimit = rowsLimit - rowsRead;
@@ -1543,39 +1571,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     makeNextBatchRequest();
-  }
-
-  private readRowsReqOpts(
-    ranges: PrefixRange[],
-    rowKeys: string[],
-    options: any
-  ) {
-    const reqOpts = {
-      tableName: this.name,
-      appProfileId: this.bigtable.appProfileId,
-    } as google.bigtable.v2.IReadRowsRequest;
-
-    // Create the new reqOpts
-    reqOpts.rows = {};
-
-    // TODO: preprocess all the keys and ranges to Bytes
-    reqOpts.rows.rowKeys = rowKeys.map(
-      Mutation.convertToBytes
-    ) as {} as Uint8Array[];
-
-    reqOpts.rows.rowRanges = ranges.map(range =>
-      Filter.createRange(
-        range.start as BoundData,
-        range.end as BoundData,
-        'Key'
-      )
-    );
-
-    const filter = options.filter;
-    if (filter) {
-      reqOpts.filter = Filter.parse(filter);
-    }
-    return reqOpts;
   }
 
   /**
