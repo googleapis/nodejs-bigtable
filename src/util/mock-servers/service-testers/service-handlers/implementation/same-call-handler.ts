@@ -18,6 +18,7 @@
 
 import {MockService} from '../../../mock-service';
 import {ServiceHandler} from '../service-handler';
+import {Row} from '../../../../../row';
 
 const equal = require('deep-equal');
 
@@ -28,6 +29,7 @@ export abstract class SameCallHandler extends ServiceHandler {
   requestOrder: number[] = [];
   callCount = 0;
   endpoint: string;
+  data: Row[][] = [];
 
   protected constructor(service: MockService, endpoint: string) {
     super();
@@ -50,6 +52,7 @@ export abstract class SameCallHandler extends ServiceHandler {
       }
       this.request = callRequest;
       this.callCount++;
+      this.data.push([]);
       this.callHandler(call);
     };
     this.service.setService({
@@ -58,8 +61,13 @@ export abstract class SameCallHandler extends ServiceHandler {
     });
   }
 
+  getData() {
+    return this.data;
+  }
+
   requests() {
     return {
+      data: this.data,
       requests: Object.assign({}, this.requestList),
       requestOrder: this.requestOrder,
       callCount: this.callCount,

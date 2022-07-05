@@ -16,6 +16,8 @@
 // ** https://github.com/googleapis/gapic-generator-typescript **
 // ** All changes to this file may be overwritten. **
 
+import {Row} from '../../../../row';
+
 export abstract class ServiceHandler {
   /*
   callHandler accepts a grpc call and provides behaviour for that grpc call
@@ -35,4 +37,14 @@ export abstract class ServiceHandler {
   a running test.
    */
   abstract setupService(): void;
+
+  /*
+  addData is called to add data which will be reported in the snapshot later on.
+   */
+  abstract addData(data: Row): void;
+
+  /*
+  getData is called to get all data which was collected from requests.
+   */
+  abstract getData(): Row[][];
 }

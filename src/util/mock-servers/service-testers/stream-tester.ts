@@ -19,10 +19,9 @@
 import {ServiceHandler} from './service-handlers/service-handler';
 import {StreamFetcher} from './stream-fetchers/stream-fetcher';
 import {ServiceError} from 'google-gax';
-import {Row} from '../../../row';
 
-const concat = require('concat-stream');
 import * as snapshot from 'snap-shot-it';
+import {Row} from '../../../row';
 
 export class StreamTester {
   serviceHandler: ServiceHandler;
@@ -37,21 +36,26 @@ export class StreamTester {
     const collectSnapshot = (results: any) => {
       snapshot(this.serviceHandler.snapshot(results));
     };
+    const getData = (result: string) => {
+      return {
+        result,
+        data: this.serviceHandler
+          .getData()
+          .map(rows => rows.map(row => row.id)),
+      };
+    };
     this.serviceHandler.setupService();
-    this.streamFetcher
-      .fetchStream()
+    const fetchedStream = this.streamFetcher.fetchStream();
+    fetchedStream
       .on('error', (error: ServiceError) => {
-        collectSnapshot({result: 'error'});
+        collectSnapshot(getData('error'));
         callback();
       })
-      .pipe(
-        concat((rows: Row[]) => {
-          collectSnapshot({
-            result: 'data',
-            data: rows,
-          });
-          callback();
-        })
-      );
+      .on('data', (message: Row) => {
+        this.serviceHandler.addData(message);
+      });
+    // TODO: Find a meaningful way to test stream ending
+    // TODO: We need to find a way to trigger the end of the test or errors
+    // after a certain amount of data has been sent back
   }
 }

@@ -19,6 +19,7 @@
 import {grpc} from 'google-gax';
 import {SameCallHandler} from './same-call-handler';
 import {MockService} from '../../../mock-service';
+import {Row} from '../../../../../row';
 
 export class SendErrorHandler extends SameCallHandler {
   code: grpc.status;
@@ -43,6 +44,11 @@ export class SendErrorHandler extends SameCallHandler {
       code: this.code,
       details: 'Details for a particular type of error',
     });
+  }
+
+  addData(data: Row) {
+    const lastIndex = this.data.length - 1;
+    this.data[lastIndex].push(data);
   }
 
   snapshot(results: any): any {

@@ -28,6 +28,10 @@ import {ReadRowsFetcher} from '../../src/util/mock-servers/service-testers/strea
 import {StreamTester} from '../../src/util/mock-servers/service-testers/stream-tester';
 import {ServiceHandler} from '../../src/util/mock-servers/service-testers/service-handlers/service-handler';
 import {Table} from '../../src/table';
+import {
+  ReadRowsHandler,
+  ReadRowsResponse,
+} from '../../src/util/mock-servers/service-testers/service-handlers/implementation/read-rows-handler';
 // import {testGaxOptions} from './test-options';
 
 describe('Bigtable/ReadRows', () => {
@@ -55,7 +59,7 @@ describe('Bigtable/ReadRows', () => {
     const streamFetcher = new ReadRowsFetcher(table, opts);
     return new StreamTester(serviceHandler, streamFetcher);
   }
-
+  /*
   describe('with a mock server that always sends an error back', () => {
     function checkRetryWithServer(code: grpc.status, callback: () => void) {
       const serviceHandler = new SendErrorHandler(service, 'ReadRows', code);
@@ -123,11 +127,9 @@ describe('Bigtable/ReadRows', () => {
       it('should pass checks with keys', done => {
         checkWithOptions({keys: ['test-key-1', 'test-key-2']}, done);
       });
-      /*
       it('should pass checks with a filter', done => {
-        checkWithOptions({filter: [{}]}, done);
+        checkWithOptions({filter: [{column: 'columnPrefix'}]}, done);
       });
-      */
       it('should pass checks with a limit', done => {
         checkWithOptions({limit: 10}, done);
       });
@@ -154,7 +156,7 @@ describe('Bigtable/ReadRows', () => {
           done
         );
       });
-      /*
+      ///*
       it('should pass checks with gaxOptions', done => {
         // TODO: Add the retry parameter
         checkWithOptions(
@@ -164,7 +166,40 @@ describe('Bigtable/ReadRows', () => {
           done
         );
       });
-      */
+
+    });
+  });
+  */
+  describe('with custom responses and createReadStream arguments', () => {
+    function getServiceHandler(responses: ReadRowsResponse[], message: any) {
+      return new ReadRowsHandler(service, 'ReadRows', responses, message);
+    }
+    function checkWithOptions(
+      responses: ReadRowsResponse[],
+      opts: any,
+      callback: () => void
+    ) {
+      const serviceHandler = getServiceHandler(responses, opts);
+      const streamTester = getStreamTester(serviceHandler, opts);
+      streamTester.checkSnapshots(callback);
+    }
+    it('should pass checks with a simple call', done => {
+      checkWithOptions(
+        [
+          {
+            data: {
+              row_keys: ['a', 'b', 'c'],
+              last_row_key: 'c',
+              end_with_error: grpc.status.DEADLINE_EXCEEDED,
+            },
+          },
+        ],
+        {
+          rowKeys: [],
+          rowRanges: [{}],
+        },
+        done
+      );
     });
   });
   after(async () => {
