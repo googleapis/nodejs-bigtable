@@ -64,32 +64,36 @@ export class ReadRowsHandler extends SameCallHandler {
   }
 
   // TODO: Create interface for this.
+  // callHandler(call: any) {
+  //   const lastResponse = this.responses[this.callCount - 1];
+  //   // Send data if it is provided
+  //   const data = lastResponse.data;
+  //   if (data) {
+  //     const grpcResponse = {
+  //       chunks: data.row_keys.map(rowResponse),
+  //       lastScannedRowKey: Mutation.convertToBytes(data.last_row_key),
+  //     };
+  //     call.write(grpcResponse);
+  //   }
+  //   // Send an error right away
+  //   const errorCode = lastResponse.error_on_call;
+  //   if (errorCode) {
+  //     call.emit('error', {
+  //       code: errorCode,
+  //       details: 'Details for a particular type of error',
+  //     });
+  //   }
   callHandler(call: any) {
-    const lastResponse = this.responses[this.callCount - 1];
-    // Send data if it is provided
-    const data = lastResponse.data;
-    if (data) {
-      const grpcResponse = {
-        chunks: data.row_keys.map(rowResponse),
-        lastScannedRowKey: Mutation.convertToBytes(data.last_row_key),
-      };
-      call.write(grpcResponse);
-    }
-    // Send an error right away
-    const errorCode = lastResponse.error_on_call;
-    if (errorCode) {
+    setTimeout(() => {
       call.emit('error', {
-        code: errorCode,
+        code: 4,
         details: 'Details for a particular type of error',
       });
-    }
-    call.emit('error', {
-      code: errorCode,
-      details: 'Details for a particular type of error',
-    });
-    // Set a timer and send an error if we are confident that all data has been sent back to the user
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    /*
+    }, 2500);
+  }
+  // Set a timer and send an error if we are confident that all data has been sent back to the user
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  /*
     const self = this;
     const savedCall = call;
     const checkCollected = () => {
@@ -118,7 +122,7 @@ export class ReadRowsHandler extends SameCallHandler {
     };
     startTimer();
     */
-  }
+  // }
 
   addData(data: Row) {
     // Add data collected from the stream
