@@ -48,10 +48,12 @@ export class StreamTester {
     const fetchedStream = this.streamFetcher.fetchStream();
     fetchedStream
       .on('error', (error: ServiceError) => {
+        console.log('error received');
         collectSnapshot(getData('error'));
         callback();
       })
       .on('data', (message: Row) => {
+        console.log('data received');
         this.serviceHandler.addData(message);
       });
     // TODO: Find a meaningful way to test stream ending

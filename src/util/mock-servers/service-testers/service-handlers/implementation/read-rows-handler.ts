@@ -50,7 +50,6 @@ export class ReadRowsHandler extends SameCallHandler {
   request: any = null;
   callCount = 0;
   message: any;
-  lastCall: any;
 
   // TODO: service and endpoint should be bundled into one object.
   constructor(
@@ -70,7 +69,6 @@ export class ReadRowsHandler extends SameCallHandler {
     // Send data if it is provided
     const data = lastResponse.data;
     if (data) {
-      // TODO: Issue warning if empty data is provided as stream may get stuck
       const grpcResponse = {
         chunks: data.row_keys.map(rowResponse),
         lastScannedRowKey: Mutation.convertToBytes(data.last_row_key),
@@ -85,10 +83,16 @@ export class ReadRowsHandler extends SameCallHandler {
         details: 'Details for a particular type of error',
       });
     }
+    call.emit('error', {
+      code: errorCode,
+      details: 'Details for a particular type of error',
+    });
     // Set a timer and send an error if we are confident that all data has been sent back to the user
     // eslint-disable-next-line @typescript-eslint/no-this-alias
+    /*
     const self = this;
-    function checkCollected() {
+    const savedCall = call;
+    const checkCollected = () => {
       // Send the error if all data was collected
       const lastIndex = self.data.length - 1;
       const lastResponse = self.responses[self.callCount - 1];
@@ -97,7 +101,7 @@ export class ReadRowsHandler extends SameCallHandler {
         if (self.data[lastIndex].length === lastResponseData.row_keys.length) {
           const errorCode = lastResponseData.end_with_error;
           if (errorCode) {
-            call.emit('error', {
+            savedCall.emit('error', {
               code: errorCode,
               details: 'Details for a particular type of error',
             });
@@ -108,11 +112,12 @@ export class ReadRowsHandler extends SameCallHandler {
       } else {
         throw Error('Response data should have been provided in the test');
       }
-    }
-    function startTimer() {
+    };
+    const startTimer = () => {
       setTimeout(checkCollected, 2500);
-    }
+    };
     startTimer();
+    */
   }
 
   addData(data: Row) {
