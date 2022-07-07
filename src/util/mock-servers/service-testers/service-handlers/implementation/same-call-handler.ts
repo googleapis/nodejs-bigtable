@@ -29,7 +29,7 @@ export abstract class SameCallHandler extends ServiceHandler {
   requestOrder: number[] = [];
   callCount = 0;
   endpoint: string;
-  data: Row[][] = [];
+  data: string[][] = [];
 
   protected constructor(service: MockService, endpoint: string) {
     super();

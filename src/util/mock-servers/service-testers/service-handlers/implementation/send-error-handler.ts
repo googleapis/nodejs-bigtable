@@ -46,7 +46,7 @@ export class SendErrorHandler extends SameCallHandler {
     });
   }
 
-  addData(data: Row) {
+  addData(data: string) {
     const lastIndex = this.data.length - 1;
     this.data[lastIndex].push(data);
   }

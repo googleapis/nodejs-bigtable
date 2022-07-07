@@ -39,9 +39,7 @@ export class StreamTester {
     const getData = (result: string) => {
       return {
         result,
-        data: this.serviceHandler
-          .getData()
-          .map(rows => rows.map(row => row.id)),
+        data: this.serviceHandler.getData(),
       };
     };
     this.serviceHandler.setupService();
@@ -54,7 +52,7 @@ export class StreamTester {
       })
       .on('data', (message: Row) => {
         console.log('data received');
-        this.serviceHandler.addData(message);
+        this.serviceHandler.addData(message.id);
       });
     // TODO: Find a meaningful way to test stream ending
     // TODO: We need to find a way to trigger the end of the test or errors
