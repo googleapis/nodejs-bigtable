@@ -62,67 +62,84 @@ export class ReadRowsHandler extends SameCallHandler {
     this.responses = responses;
     this.message = Object.assign({}, message);
   }
-
-  // TODO: Create interface for this.
-  // callHandler(call: any) {
-  //   const lastResponse = this.responses[this.callCount - 1];
-  //   // Send data if it is provided
-  //   const data = lastResponse.data;
-  //   if (data) {
-  //     const grpcResponse = {
-  //       chunks: data.row_keys.map(rowResponse),
-  //       lastScannedRowKey: Mutation.convertToBytes(data.last_row_key),
-  //     };
-  //     call.write(grpcResponse);
-  //   }
-  //   // Send an error right away
-  //   const errorCode = lastResponse.error_on_call;
-  //   if (errorCode) {
-  //     call.emit('error', {
-  //       code: errorCode,
-  //       details: 'Details for a particular type of error',
-  //     });
-  //   }
+  /*
   callHandler(call: any) {
-    setTimeout(() => {
+    const checkCollected = () => {
+      console.log('emit error');
       call.emit('error', {
         code: 4,
         details: 'Details for a particular type of error',
       });
-    }, 2500);
-  }
-  // Set a timer and send an error if we are confident that all data has been sent back to the user
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  /*
-    const self = this;
-    const savedCall = call;
-    const checkCollected = () => {
-      // Send the error if all data was collected
-      const lastIndex = self.data.length - 1;
-      const lastResponse = self.responses[self.callCount - 1];
-      const lastResponseData = lastResponse.data;
-      if (lastResponseData) {
-        if (self.data[lastIndex].length === lastResponseData.row_keys.length) {
-          const errorCode = lastResponseData.end_with_error;
-          if (errorCode) {
-            savedCall.emit('error', {
-              code: errorCode,
-              details: 'Details for a particular type of error',
-            });
-          }
-        } else {
-          startTimer();
-        }
-      } else {
-        throw Error('Response data should have been provided in the test');
-      }
     };
     const startTimer = () => {
       setTimeout(checkCollected, 2500);
     };
     startTimer();
-    */
-  // }
+  }
+  */
+  // TODO: Create interface for this.
+  callHandler(call: any) {
+    // const lastResponse = this.responses[this.callCount - 1];
+    // Send data if it is provided
+    // const data = lastResponse.data;
+    // if (data) {
+    //  const grpcResponse = {
+    //    chunks: data.row_keys.map(rowResponse),
+    //    lastScannedRowKey: Mutation.convertToBytes(data.last_row_key),
+    //  };
+    //  call.write(grpcResponse);
+    // }
+    // Send an error right away
+    // const errorCode = lastResponse.error_on_call;
+    // if (errorCode) {
+    //   call.emit('error', {
+    //     code: errorCode,
+    //     details: 'Details for a particular type of error',
+    //   });
+    // }
+    // callHandler(call: any) {
+    //   const self = this;
+    //   const sendError = () => {
+    //     console.log(self.data);
+    //     call.emit('error', {
+    //       code: 4,
+    //       details: 'Details for a particular type of error',
+    //     });
+    //   };
+    //   setTimeout(sendError, 2500);
+    // }
+    // Set a timer and send an error if we are confident that all data has been sent back to the user
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    // const self = this;
+    const checkCollected = () => {
+      // Send the error if all data was collected
+      // const lastIndex = self.data.length - 1;
+      // const lastResponse = self.responses[self.callCount - 1];
+      // const lastResponseData = lastResponse.data;
+      // if (lastResponseData) {
+      //  console.log(self.data[lastIndex]);
+      //  if (self.data[lastIndex].length === lastResponseData.row_keys.length) {
+      //    const errorCode = lastResponseData.end_with_error;
+      //    if (errorCode) {
+      //      console.log('emit error');
+      console.log('emit error');
+      call.emit('error', {
+        code: 4,
+        details: 'Details for a particular type of error',
+      });
+      //    }
+      //  } else {
+      //    startTimer();
+      //  }
+      // } else {
+      //  throw Error('Response data should have been provided in the test');
+      //}
+    };
+    const startTimer = () => {
+      setTimeout(checkCollected, 2500);
+    };
+    startTimer();
+  }
 
   addData(data: Row) {
     // Add data collected from the stream
