@@ -231,6 +231,18 @@ describe('Bigtable/ReadRows', () => {
         done
       );
     });
+    it('fails after all available retries', done => {
+      checkWithOptions(
+        Array(4).fill({
+          end_with_error: grpc.status.DEADLINE_EXCEEDED,
+        }),
+        {
+          rowKeys: [],
+          rowRanges: [{}],
+        },
+        done
+      );
+    });
   });
   after(async () => {
     server.shutdown(() => {});
