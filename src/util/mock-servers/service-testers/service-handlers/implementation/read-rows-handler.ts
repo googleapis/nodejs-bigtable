@@ -34,9 +34,9 @@ function rowResponse(rowKey: {}) {
 }
 
 export interface ReadRowsResponse {
-  row_keys: string[];
-  last_row_key: string;
-  end_with_error: number;
+  row_keys?: string[];
+  last_row_key?: string;
+  end_with_error?: number;
 }
 
 export class ReadRowsHandler extends SameCallHandler {
@@ -60,7 +60,7 @@ export class ReadRowsHandler extends SameCallHandler {
   // TODO: Create interface for this.
   callHandler(call: any) {
     const lastResponse = this.responses[this.callCount - 1];
-    if (lastResponse) {
+    if (lastResponse && lastResponse.row_keys) {
       const grpcResponse = {
         chunks: lastResponse.row_keys.map(rowResponse),
         lastScannedRowKey: Mutation.convertToBytes(lastResponse.last_row_key),
@@ -70,23 +70,30 @@ export class ReadRowsHandler extends SameCallHandler {
     // Set a timer and send an error if we are confident that all data has been sent back to the user
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
+    const endRequest = (lastResponse: any) => {
+      const errorCode = lastResponse.end_with_error;
+      if (errorCode) {
+        call.emit('error', {
+          code: errorCode,
+          details: 'Details for a particular type of error',
+        });
+      } else {
+        call.end();
+      }
+    };
     const checkCollected = () => {
       // Send the error if all data was collected
       const lastIndex = self.data.length - 1;
       const lastResponse = self.responses[self.callCount - 1];
       if (lastResponse) {
-        console.log(self.data[lastIndex]);
-        if (self.data[lastIndex].length === lastResponse.row_keys.length) {
-          const errorCode = lastResponse.end_with_error;
-          if (errorCode) {
-            console.log('emit error');
-            call.emit('error', {
-              code: errorCode,
-              details: 'Details for a particular type of error',
-            });
+        if (lastResponse.row_keys) {
+          if (self.data[lastIndex].length === lastResponse.row_keys.length) {
+            endRequest(lastResponse);
+          } else {
+            startTimer();
           }
         } else {
-          startTimer();
+          endRequest(lastResponse);
         }
       } else {
         throw Error('Response data should have been provided in the test');

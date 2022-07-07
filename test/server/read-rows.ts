@@ -199,6 +199,38 @@ describe('Bigtable/ReadRows', () => {
         done
       );
     });
+    it('retries a failed read', done => {
+      checkWithOptions(
+        [
+          {
+            row_keys: ['a', 'b'],
+            last_row_key: 'c',
+            end_with_error: grpc.status.DEADLINE_EXCEEDED,
+          },
+          {
+            row_keys: ['c'],
+            last_row_key: 'c',
+          },
+        ],
+        {
+          rowKeys: [],
+          rowRanges: [{}],
+        },
+        done
+      );
+    });
+    it('fails after all available retries', done => {
+      checkWithOptions(
+        Array(4).fill({
+          end_with_error: grpc.status.DEADLINE_EXCEEDED,
+        }),
+        {
+          rowKeys: [],
+          rowRanges: [{}],
+        },
+        done
+      );
+    });
   });
   after(async () => {
     server.shutdown(() => {});

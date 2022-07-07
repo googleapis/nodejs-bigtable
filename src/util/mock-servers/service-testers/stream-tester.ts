@@ -35,6 +35,7 @@ export class StreamTester {
   checkSnapshots(callback: () => void): void {
     const collectSnapshot = (results: any) => {
       snapshot(this.serviceHandler.snapshot(results));
+      callback();
     };
     const getData = (result: string) => {
       return {
@@ -46,16 +47,13 @@ export class StreamTester {
     const fetchedStream = this.streamFetcher.fetchStream();
     fetchedStream
       .on('error', (error: ServiceError) => {
-        console.log('error received');
         collectSnapshot(getData('error'));
-        callback();
       })
       .on('data', (message: Row) => {
-        console.log('data received');
         this.serviceHandler.addData(message.id);
+      })
+      .on('end', (message: Row) => {
+        collectSnapshot(getData('end stream'));
       });
-    // TODO: Find a meaningful way to test stream ending
-    // TODO: We need to find a way to trigger the end of the test or errors
-    // after a certain amount of data has been sent back
   }
 }
