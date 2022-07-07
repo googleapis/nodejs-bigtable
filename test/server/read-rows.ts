@@ -231,15 +231,70 @@ describe('Bigtable/ReadRows', () => {
         done
       );
     });
-    it('fails after all available retries', done => {
+    it('resets the retry counter after a successful read', done => {
       checkWithOptions(
-        Array(4).fill({
-          end_with_error: grpc.status.DEADLINE_EXCEEDED,
-        }),
+        [
+          {row_keys: ['a'], last_row_key: 'a', end_with_error: 4},
+          {end_with_error: 4},
+          {end_with_error: 4},
+          {end_with_error: 4},
+          {row_keys: ['b'], last_row_key: 'b', end_with_error: 4},
+          {end_with_error: 4},
+          {end_with_error: 4},
+          {row_keys: ['c'], last_row_key: 'b'},
+        ],
         {
           rowKeys: [],
           rowRanges: [{}],
         },
+        done
+      );
+    });
+    it('moves the start point of a range being consumed', done => {
+      checkWithOptions(
+        [{row_keys: ['a', 'b'], end_with_error: 4}, {row_keys: ['c']}],
+        {
+          ranges: [
+            {
+              start: 'a',
+              end: 'z',
+            },
+          ],
+        },
+        done
+      );
+    });
+    it('removes ranges already consumed', done => {
+      checkWithOptions(
+        [{row_keys: ['a', 'b', 'c'], end_with_error: 4}, {row_keys: ['x']}],
+        {
+          ranges: [
+            {
+              start: 'a',
+              end: 'c',
+            },
+            {
+              start: 'x',
+              end: 'z',
+            },
+          ],
+        },
+        done
+      );
+    });
+    it('removes keys already read', done => {
+      checkWithOptions(
+        [{row_keys: ['a', 'b', 'c'], end_with_error: 4}, {row_keys: ['x']}],
+        {
+          keys: ['a', 'b', 'x'],
+        },
+        done
+      );
+    });
+    it('adjust the limit based on the number of rows read', done => {
+      checkWithOptions(
+        [{row_keys: ['a', 'b'], end_with_error: 4}, {row_keys: ['x']}],
+        {limit: 10},
         done
       );
     });
