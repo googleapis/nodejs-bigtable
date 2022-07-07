@@ -4,11 +4,9 @@ exports[
   input: {
     responses: [
       {
-        data: {
-          row_keys: ['a', 'b', 'c'],
-          last_row_key: 'c',
-          end_with_error: 4,
-        },
+        row_keys: ['a', 'b', 'c'],
+        last_row_key: 'c',
+        end_with_error: 13,
       },
     ],
     message: {
@@ -22,7 +20,6 @@ exports[
       data: [['a', 'b', 'c']],
     },
     requestData: {
-      data: [['a', 'b', 'c']],
       requests: {
         0: {
           tableName:

@@ -66,7 +66,6 @@ export abstract class SameCallHandler extends ServiceHandler {
 
   requests() {
     return {
-      data: this.data,
       requests: Object.assign({}, this.requestList),
       requestOrder: this.requestOrder,
       callCount: this.callCount,

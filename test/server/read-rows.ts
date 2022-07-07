@@ -187,11 +187,9 @@ describe('Bigtable/ReadRows', () => {
       checkWithOptions(
         [
           {
-            data: {
-              row_keys: ['a', 'b', 'c'],
-              last_row_key: 'c',
-              end_with_error: grpc.status.DEADLINE_EXCEEDED,
-            },
+            row_keys: ['a', 'b', 'c'],
+            last_row_key: 'c',
+            end_with_error: grpc.status.INTERNAL,
           },
         ],
         {

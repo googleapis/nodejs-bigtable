@@ -33,15 +33,10 @@ function rowResponse(rowKey: {}) {
   };
 }
 
-export interface DataResponse {
+export interface ReadRowsResponse {
   row_keys: string[];
   last_row_key: string;
   end_with_error: number;
-}
-
-export interface ReadRowsResponse {
-  data?: DataResponse;
-  error_on_call?: number;
 }
 
 export class ReadRowsHandler extends SameCallHandler {
@@ -79,12 +74,10 @@ export class ReadRowsHandler extends SameCallHandler {
   // TODO: Create interface for this.
   callHandler(call: any) {
     const lastResponse = this.responses[this.callCount - 1];
-    // Send data if it is provided
-    const data = lastResponse.data;
-    if (data) {
+    if (lastResponse) {
       const grpcResponse = {
-        chunks: data.row_keys.map(rowResponse),
-        lastScannedRowKey: Mutation.convertToBytes(data.last_row_key),
+        chunks: lastResponse.row_keys.map(rowResponse),
+        lastScannedRowKey: Mutation.convertToBytes(lastResponse.last_row_key),
       };
       call.write(grpcResponse);
     }
@@ -114,15 +107,14 @@ export class ReadRowsHandler extends SameCallHandler {
       // Send the error if all data was collected
       const lastIndex = self.data.length - 1;
       const lastResponse = self.responses[self.callCount - 1];
-      const lastResponseData = lastResponse.data;
-      if (lastResponseData) {
+      if (lastResponse) {
         console.log(self.data[lastIndex]);
-        if (self.data[lastIndex].length === lastResponseData.row_keys.length) {
-          const errorCode = lastResponseData.end_with_error;
+        if (self.data[lastIndex].length === lastResponse.row_keys.length) {
+          const errorCode = lastResponse.end_with_error;
           if (errorCode) {
             console.log('emit error');
             call.emit('error', {
-              code: 2,
+              code: errorCode,
               details: 'Details for a particular type of error',
             });
           }
