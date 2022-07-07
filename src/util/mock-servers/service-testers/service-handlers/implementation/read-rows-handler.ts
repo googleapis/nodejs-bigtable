@@ -19,7 +19,6 @@
 import {SameCallHandler} from './same-call-handler';
 import {MockService} from '../../../mock-service';
 import {Mutation} from '../../../../../mutation';
-import {Row} from '../../../../../row';
 
 function rowResponse(rowKey: {}) {
   return {

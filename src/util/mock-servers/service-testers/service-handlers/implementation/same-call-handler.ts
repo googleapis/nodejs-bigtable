@@ -18,7 +18,6 @@
 
 import {MockService} from '../../../mock-service';
 import {ServiceHandler} from '../service-handler';
-import {Row} from '../../../../../row';
 
 const equal = require('deep-equal');
 
