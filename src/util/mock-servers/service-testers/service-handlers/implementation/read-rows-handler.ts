@@ -56,21 +56,7 @@ export class ReadRowsHandler extends SameCallHandler {
     this.responses = responses;
     this.message = Object.assign({}, message);
   }
-  /*
-  callHandler(call: any) {
-    const checkCollected = () => {
-      console.log('emit error');
-      call.emit('error', {
-        code: 4,
-        details: 'Details for a particular type of error',
-      });
-    };
-    const startTimer = () => {
-      setTimeout(checkCollected, 2500);
-    };
-    startTimer();
-  }
-  */
+
   // TODO: Create interface for this.
   callHandler(call: any) {
     const lastResponse = this.responses[this.callCount - 1];
@@ -81,25 +67,6 @@ export class ReadRowsHandler extends SameCallHandler {
       };
       call.write(grpcResponse);
     }
-    // Send an error right away
-    // const errorCode = lastResponse.error_on_call;
-    // if (errorCode) {
-    //   call.emit('error', {
-    //     code: errorCode,
-    //     details: 'Details for a particular type of error',
-    //   });
-    // }
-    // callHandler(call: any) {
-    //   const self = this;
-    //   const sendError = () => {
-    //     console.log(self.data);
-    //     call.emit('error', {
-    //       code: 4,
-    //       details: 'Details for a particular type of error',
-    //     });
-    //   };
-    //   setTimeout(sendError, 2500);
-    // }
     // Set a timer and send an error if we are confident that all data has been sent back to the user
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
