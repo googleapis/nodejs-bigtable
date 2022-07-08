@@ -298,6 +298,18 @@ describe('Bigtable/ReadRows', () => {
         done
       );
     });
+    it('respects the max retries parameter', done => {
+      // NOTE: This test snapshot currently shows that maxRetries is not respected on a per call basis because three requests are required.
+      checkWithOptions(
+        Array(4).fill({
+          end_with_error: grpc.status.DEADLINE_EXCEEDED,
+        }),
+        {
+          maxRetries: 2,
+        },
+        done
+      );
+    });
   });
   after(async () => {
     server.shutdown(() => {});
@@ -306,4 +318,3 @@ describe('Bigtable/ReadRows', () => {
 
 // TODO: Think of interesting cases for the shouldRetryFn
 // TODO: Consider setting up the framework so that we take snapshots of values passed into createReadStream afterwards
-// TODO: Adjust max retries

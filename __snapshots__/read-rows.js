@@ -549,3 +549,50 @@ exports[
     },
   },
 };
+
+exports[
+  'Bigtable/ReadRows with custom responses and createReadStream arguments respects the max retries parameter 1'
+] = {
+  input: {
+    responses: [
+      {
+        end_with_error: 4,
+      },
+      {
+        end_with_error: 4,
+      },
+      {
+        end_with_error: 4,
+      },
+      {
+        end_with_error: 4,
+      },
+    ],
+    message: {
+      maxRetries: 2,
+    },
+  },
+  output: {
+    results: {
+      result: 'error',
+      data: [[], [], [], []],
+    },
+    requestData: {
+      requests: {
+        0: {
+          tableName:
+            'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          filter: null,
+          rowsLimit: '0',
+          appProfileId: '',
+        },
+      },
+      requestOrder: [0, 0, 0, 0],
+      callCount: 4,
+    },
+  },
+};

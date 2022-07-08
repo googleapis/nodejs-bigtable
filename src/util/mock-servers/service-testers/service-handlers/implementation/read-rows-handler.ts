@@ -96,7 +96,7 @@ export class ReadRowsHandler extends SameCallHandler {
           endRequest(lastResponse);
         }
       } else {
-        throw Error('Response data should have been provided in the test');
+        throw Error('Ran out of requests to send');
       }
     };
     const startTimer = () => {
