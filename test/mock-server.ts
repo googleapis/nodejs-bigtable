@@ -17,7 +17,7 @@
 // ** All changes to this file may be overwritten. **
 
 import {describe, it} from 'mocha';
-import {MockServer} from '../../src/util/mock-servers/mock-server';
+import {MockServer} from '../src/util/mock-servers/mock-server';
 import * as assert from 'assert';
 
 const tcpPortUsed = require('tcp-port-used');
