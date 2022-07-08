@@ -32,7 +32,7 @@ import {
   ReadRowsHandler,
   ReadRowsResponse,
 } from '../../src/util/mock-servers/service-testers/service-handlers/implementation/read-rows-handler';
-// import {testGaxOptions} from './test-options';
+import {testGaxOptions} from './test-options';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -59,7 +59,6 @@ describe('Bigtable/ReadRows', () => {
     const streamFetcher = new ReadRowsFetcher(table, opts);
     return new StreamTester(serviceHandler, streamFetcher);
   }
-  /*
   describe('with a mock server that always sends an error back', () => {
     function checkRetryWithServer(code: grpc.status, callback: () => void) {
       const serviceHandler = new SendErrorHandler(service, 'ReadRows', code);
@@ -156,7 +155,7 @@ describe('Bigtable/ReadRows', () => {
           done
         );
       });
-      ///*
+      /*
       it('should pass checks with gaxOptions', done => {
         // TODO: Add the retry parameter
         checkWithOptions(
@@ -166,10 +165,9 @@ describe('Bigtable/ReadRows', () => {
           done
         );
       });
-
+      */
     });
   });
-  */
   describe('with custom responses and createReadStream arguments', () => {
     function getServiceHandler(responses: ReadRowsResponse[], message: any) {
       return new ReadRowsHandler(service, 'ReadRows', responses, message);
