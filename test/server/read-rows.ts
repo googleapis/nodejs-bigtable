@@ -20,18 +20,18 @@ import {before, describe, it} from 'mocha';
 import {Bigtable, GetRowsOptions} from '../../src';
 
 import {grpc} from 'google-gax';
-import {MockServer} from '../../src/util/mock-servers/mock-server';
-import {BigtableClientMockService} from '../../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
-import {MockService} from '../../src/util/mock-servers/mock-service';
-import {SendErrorHandler} from '../../src/util/mock-servers/service-testers/service-handlers/implementation/send-error-handler';
-import {ReadRowsFetcher} from '../../src/util/mock-servers/service-testers/stream-fetchers/implementation/read-rows-fetcher';
-import {StreamTester} from '../../src/util/mock-servers/service-testers/stream-tester';
-import {ServiceHandler} from '../../src/util/mock-servers/service-testers/service-handlers/service-handler';
+import {MockServer} from '../helpers/mock-servers/mock-server';
+import {BigtableClientMockService} from '../helpers/mock-servers/service-implementations/bigtable-client-mock-service';
+import {MockService} from '../helpers/mock-servers/mock-service';
+import {SendErrorHandler} from '../helpers/mock-servers/service-testers/service-handlers/implementation/send-error-handler';
+import {ReadRowsFetcher} from '../helpers/mock-servers/service-testers/stream-fetchers/implementation/read-rows-fetcher';
+import {StreamTester} from '../helpers/mock-servers/service-testers/stream-tester';
+import {ServiceHandler} from '../helpers/mock-servers/service-testers/service-handlers/service-handler';
 import {Table} from '../../src/table';
 import {
   ReadRowsHandler,
   ReadRowsResponse,
-} from '../../src/util/mock-servers/service-testers/service-handlers/implementation/read-rows-handler';
+} from '../helpers/mock-servers/service-testers/service-handlers/implementation/read-rows-handler';
 import {testGaxOptions} from './test-options';
 
 describe('Bigtable/ReadRows', () => {

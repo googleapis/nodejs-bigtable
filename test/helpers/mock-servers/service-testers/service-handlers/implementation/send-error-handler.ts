@@ -19,7 +19,7 @@
 import {grpc} from 'google-gax';
 import {SameCallHandler} from './same-call-handler';
 import {MockService} from '../../../mock-service';
-import {Row} from '../../../../../row';
+import {Row} from '../../../../../../src/row';
 
 export class SendErrorHandler extends SameCallHandler {
   code: grpc.status;

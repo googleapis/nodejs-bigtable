@@ -21,7 +21,7 @@ import {StreamFetcher} from './stream-fetchers/stream-fetcher';
 import {ServiceError} from 'google-gax';
 
 import * as snapshot from 'snap-shot-it';
-import {Row} from '../../../row';
+import {Row} from '../../../../src/row';
 
 export class StreamTester {
   serviceHandler: ServiceHandler;
