@@ -4,6 +4,18 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [3.13.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.12.0...v3.13.0) (2022-05-11)
+
+
+### Features
+
+* Multi cluster routing ([#1007](https://github.com/googleapis/nodejs-bigtable/issues/1007)) ([3468cd9](https://github.com/googleapis/nodejs-bigtable/commit/3468cd99f3ea82d06b76359087a82845394dfd03))
+
+
+### Bug Fixes
+
+* **deps:** update dependency grpc-gcp to v0.4.2 ([#1074](https://github.com/googleapis/nodejs-bigtable/issues/1074)) ([54f4202](https://github.com/googleapis/nodejs-bigtable/commit/54f42024c0d3b6dcb117c8ac9811ff14d413454d))
+
 ## [3.12.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.11.0...v3.12.0) (2022-04-13)
 
 
