@@ -42,6 +42,7 @@ import {ModifiableBackupFields} from './backup';
 import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
+import {TableUtils} from './utils/table';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -485,21 +486,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * ```
    */
   static createPrefixRange(start: string): PrefixRange {
-    const prefix = start.replace(new RegExp('[\xff]+$'), '');
-    let endKey = '';
-    if (prefix) {
-      const position = prefix.length - 1;
-      const charCode = prefix.charCodeAt(position);
-      const nextChar = String.fromCharCode(charCode + 1);
-      endKey = prefix.substring(0, position) + nextChar;
-    }
-    return {
-      start,
-      end: {
-        value: endKey,
-        inclusive: !endKey,
-      },
-    };
+    return TableUtils.createPrefixRange(start);
   }
 
   create(options?: CreateTableOptions): Promise<CreateTableResponse>;
@@ -736,8 +723,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     let activeRequestStream: AbortableDuplex | null;
     let rowKeys: string[];
-    const ranges = options.ranges || [];
-    let filter: {} | null;
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
@@ -747,46 +732,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     rowKeys = options.keys || [];
 
-    if (options.start || options.end) {
-      if (options.ranges || options.prefix || options.prefixes) {
-        throw new Error(
-          'start/end should be used exclusively to ranges/prefix/prefixes.'
-        );
-      }
-      ranges.push({
-        start: options.start!,
-        end: options.end!,
-      });
-    }
-
-    if (options.prefix) {
-      if (options.ranges || options.start || options.end || options.prefixes) {
-        throw new Error(
-          'prefix should be used exclusively to ranges/start/end/prefixes.'
-        );
-      }
-      ranges.push(Table.createPrefixRange(options.prefix));
-    }
-
-    if (options.prefixes) {
-      if (options.ranges || options.start || options.end || options.prefix) {
-        throw new Error(
-          'prefixes should be used exclusively to ranges/start/end/prefix.'
-        );
-      }
-      options.prefixes.forEach(prefix => {
-        ranges.push(Table.createPrefixRange(prefix));
-      });
-    }
+    const ranges = TableUtils.getRanges(options);
 
     // If rowKeys and ranges are both empty, the request is a full table scan.
     // Add an empty range to simplify the resumption logic.
     if (rowKeys.length === 0 && ranges.length === 0) {
       ranges.push({});
-    }
-
-    if (options.filter) {
-      filter = Filter.parse(options.filter);
     }
 
     const userStream = new PassThrough({objectMode: true});
@@ -814,11 +765,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
-      const reqOpts = {
-        tableName: this.name,
-        appProfileId: this.bigtable.appProfileId,
-      } as google.bigtable.v2.IReadRowsRequest;
-
       const retryOpts = {
         currentRetryAttempt: numConsecutiveErrors,
         // Handling retries in this client. Specify the retry options to
@@ -830,53 +776,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
-        // TODO: lhs and rhs type shouldn't be string, it could be
-        // string, number, Uint8Array, boolean. Fix the type
-        // and clean up the casting.
-        const lessThan = (lhs: string, rhs: string) => {
-          const lhsBytes = Mutation.convertToBytes(lhs);
-          const rhsBytes = Mutation.convertToBytes(rhs);
-          return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
-        };
-        const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
-        const lessThanOrEqualTo = (lhs: string, rhs: string) =>
-          !greaterThan(lhs, rhs);
-
-        // Readjust and/or remove ranges based on previous valid row reads.
-        // Iterate backward since items may need to be removed.
-        for (let index = ranges.length - 1; index >= 0; index--) {
-          const range = ranges[index];
-          const startValue = is.object(range.start)
-            ? (range.start as BoundData).value
-            : range.start;
-          const endValue = is.object(range.end)
-            ? (range.end as BoundData).value
-            : range.end;
-          const startKeyIsRead =
-            !startValue ||
-            lessThanOrEqualTo(startValue as string, lastRowKey as string);
-          const endKeyIsNotRead =
-            !endValue ||
-            (endValue as Buffer).length === 0 ||
-            lessThan(lastRowKey as string, endValue as string);
-          if (startKeyIsRead) {
-            if (endKeyIsNotRead) {
-              // EndKey is not read, reset the range to start from lastRowKey open
-              range.start = {
-                value: lastRowKey,
-                inclusive: false,
-              };
-            } else {
-              // EndKey is read, remove this range
-              ranges.splice(index, 1);
-            }
-          }
-        }
-
-        // Remove rowKeys already read.
-        rowKeys = rowKeys.filter(rowKey =>
-          greaterThan(rowKey, lastRowKey as string)
-        );
+        TableUtils.spliceRanges(ranges, lastRowKey);
+        rowKeys = TableUtils.getRowKeys(rowKeys, lastRowKey);
 
         // If there was a row limit in the original request and
         // we've already read all the rows, end the stream and
@@ -893,25 +794,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
       }
 
-      // Create the new reqOpts
-      reqOpts.rows = {};
-
-      // TODO: preprocess all the keys and ranges to Bytes
-      reqOpts.rows.rowKeys = rowKeys.map(
-        Mutation.convertToBytes
-      ) as {} as Uint8Array[];
-
-      reqOpts.rows.rowRanges = ranges.map(range =>
-        Filter.createRange(
-          range.start as BoundData,
-          range.end as BoundData,
-          'Key'
-        )
-      );
-
-      if (filter) {
-        reqOpts.filter = filter;
-      }
+      const reqOpts: any = this.readRowsReqOpts(ranges, rowKeys, options);
 
       if (hasLimit) {
         reqOpts.rowsLimit = rowsLimit - rowsRead;
@@ -1661,6 +1544,39 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     makeNextBatchRequest();
+  }
+
+  private readRowsReqOpts(
+    ranges: PrefixRange[],
+    rowKeys: string[],
+    options: any
+  ) {
+    const reqOpts = {
+      tableName: this.name,
+      appProfileId: this.bigtable.appProfileId,
+    } as google.bigtable.v2.IReadRowsRequest;
+
+    // Create the new reqOpts
+    reqOpts.rows = {};
+
+    // TODO: preprocess all the keys and ranges to Bytes
+    reqOpts.rows.rowKeys = rowKeys.map(
+      Mutation.convertToBytes
+    ) as {} as Uint8Array[];
+
+    reqOpts.rows.rowRanges = ranges.map(range =>
+      Filter.createRange(
+        range.start as BoundData,
+        range.end as BoundData,
+        'Key'
+      )
+    );
+
+    const filter = options.filter;
+    if (filter) {
+      reqOpts.filter = Filter.parse(filter);
+    }
+    return reqOpts;
   }
 
   /**
