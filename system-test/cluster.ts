@@ -67,6 +67,7 @@ describe('Cluster', () => {
         time_created: Date.now(),
       },
     });
+    console.log(`Test Instance Id: ${instanceId}`);
     await operation.promise();
   }
   async function createStandardNewInstance(
