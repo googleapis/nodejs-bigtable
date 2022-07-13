@@ -408,13 +408,6 @@ describe('Bigtable/Instance', () => {
         BIGTABLE.projectId,
         options.location
       );
-      sandbox
-        .stub(FakeCluster, 'getLocation_')
-        .callsFake((project, location) => {
-          assert.strictEqual(project, BIGTABLE.projectId);
-          assert.strictEqual(location, options.location);
-          return fakeLocation;
-        });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (instance.bigtable.request as Function) = (config: any) => {
         assert.strictEqual(config.reqOpts.cluster.location, fakeLocation);

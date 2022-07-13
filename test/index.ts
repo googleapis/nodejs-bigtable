@@ -497,11 +497,6 @@ describe('Bigtable', () => {
         PROJECT_ID,
         OPTIONS.clusters[0].location
       );
-      FakeCluster.getLocation_ = (project: string, location: string) => {
-        assert.strictEqual(project, PROJECT_ID);
-        assert.strictEqual(location, OPTIONS.clusters[0].location);
-        return fakeLocation;
-      };
       const fakeStorage = 20;
       FakeCluster.getStorageType_ = (storage: {}) => {
         assert.strictEqual(storage, OPTIONS.clusters[0].storage);
