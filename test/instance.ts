@@ -356,6 +356,10 @@ describe('Bigtable/Instance', () => {
         assert.strictEqual(config.method, 'createCluster');
         assert.strictEqual(config.reqOpts.parent, INSTANCE_NAME);
         assert.strictEqual(config.reqOpts.clusterId, CLUSTER_ID);
+        assert.strictEqual(
+          config.reqOpts.cluster.location,
+          'projects/my-project/locations/us-central1-b'
+        );
         assert.strictEqual(config.gaxOpts, undefined);
         done();
       };
