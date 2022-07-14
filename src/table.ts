@@ -42,6 +42,7 @@ import {ModifiableBackupFields} from './backup';
 import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
+import {TableUtils} from './utils/table';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -485,21 +486,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * ```
    */
   static createPrefixRange(start: string): PrefixRange {
-    const prefix = start.replace(new RegExp('[\xff]+$'), '');
-    let endKey = '';
-    if (prefix) {
-      const position = prefix.length - 1;
-      const charCode = prefix.charCodeAt(position);
-      const nextChar = String.fromCharCode(charCode + 1);
-      endKey = prefix.substring(0, position) + nextChar;
-    }
-    return {
-      start,
-      end: {
-        value: endKey,
-        inclusive: !endKey,
-      },
-    };
+    return TableUtils.createPrefixRange(start);
   }
 
   create(options?: CreateTableOptions): Promise<CreateTableResponse>;
@@ -736,7 +723,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
     let activeRequestStream: AbortableDuplex | null;
     let rowKeys: string[];
-    const ranges = options.ranges || [];
     let filter: {} | null;
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
@@ -747,37 +733,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     rowKeys = options.keys || [];
 
-    if (options.start || options.end) {
-      if (options.ranges || options.prefix || options.prefixes) {
-        throw new Error(
-          'start/end should be used exclusively to ranges/prefix/prefixes.'
-        );
-      }
-      ranges.push({
-        start: options.start!,
-        end: options.end!,
-      });
-    }
-
-    if (options.prefix) {
-      if (options.ranges || options.start || options.end || options.prefixes) {
-        throw new Error(
-          'prefix should be used exclusively to ranges/start/end/prefixes.'
-        );
-      }
-      ranges.push(Table.createPrefixRange(options.prefix));
-    }
-
-    if (options.prefixes) {
-      if (options.ranges || options.start || options.end || options.prefix) {
-        throw new Error(
-          'prefixes should be used exclusively to ranges/start/end/prefix.'
-        );
-      }
-      options.prefixes.forEach(prefix => {
-        ranges.push(Table.createPrefixRange(prefix));
-      });
-    }
+    const ranges = TableUtils.getRanges(options);
 
     // If rowKeys and ranges are both empty, the request is a full table scan.
     // Add an empty range to simplify the resumption logic.
