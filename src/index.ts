@@ -934,7 +934,7 @@ export class Bigtable {
  * that a callback is omitted.
  */
 promisifyAll(Bigtable, {
-  exclude: ['instance', 'operation', 'request'],
+  exclude: ['close', 'instance', 'operation', 'request'],
 });
 
 /**

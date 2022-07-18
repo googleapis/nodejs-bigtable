@@ -4,6 +4,46 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.0.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.12.0...v4.0.0) (2022-07-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* update library to use Node 12 (#1089)
+
+### Features
+
+* Autoscaler ([#1077](https://github.com/googleapis/nodejs-bigtable/issues/1077)) ([e5f6fdb](https://github.com/googleapis/nodejs-bigtable/commit/e5f6fdb5345a19055be812c59796a2e08ea45345))
+* Errors from gax layer ([#1090](https://github.com/googleapis/nodejs-bigtable/issues/1090)) ([ecae5f3](https://github.com/googleapis/nodejs-bigtable/commit/ecae5f3bc00210c44513a40895a3c128938383bf))
+* Multi cluster routing ([#1007](https://github.com/googleapis/nodejs-bigtable/issues/1007)) ([3468cd9](https://github.com/googleapis/nodejs-bigtable/commit/3468cd99f3ea82d06b76359087a82845394dfd03))
+* Remove need to pass location parameter along ([#1093](https://github.com/googleapis/nodejs-bigtable/issues/1093)) ([75c1a30](https://github.com/googleapis/nodejs-bigtable/commit/75c1a301cd3ec91c7b251b384307687d081525b9))
+
+
+### Bug Fixes
+
+* **deps:** update dependency @google-cloud/precise-date to v3 ([#1097](https://github.com/googleapis/nodejs-bigtable/issues/1097)) ([e8a5ab8](https://github.com/googleapis/nodejs-bigtable/commit/e8a5ab8bc2dd800a78c625ecb42c230c446e092f))
+* **deps:** update dependency @google-cloud/projectify to v3 ([#1102](https://github.com/googleapis/nodejs-bigtable/issues/1102)) ([b997a6b](https://github.com/googleapis/nodejs-bigtable/commit/b997a6b7be9f58a2d2d4884527260a643ae84252))
+* **deps:** update dependency @google-cloud/promisify to v3 ([#1085](https://github.com/googleapis/nodejs-bigtable/issues/1085)) ([62fc17e](https://github.com/googleapis/nodejs-bigtable/commit/62fc17ea517f9b61270b9227226619bd0259a553))
+* **deps:** update dependency grpc-gcp to v0.4.2 ([#1074](https://github.com/googleapis/nodejs-bigtable/issues/1074)) ([54f4202](https://github.com/googleapis/nodejs-bigtable/commit/54f42024c0d3b6dcb117c8ac9811ff14d413454d))
+* fixes for dynamic routing and streaming descriptors ([#1088](https://github.com/googleapis/nodejs-bigtable/issues/1088)) ([bdca7d1](https://github.com/googleapis/nodejs-bigtable/commit/bdca7d18308d5cb1797f6fab5603e55fb3f726b2))
+
+
+### Build System
+
+* update library to use Node 12 ([#1089](https://github.com/googleapis/nodejs-bigtable/issues/1089)) ([033bfc8](https://github.com/googleapis/nodejs-bigtable/commit/033bfc878c2aeb40cc40ca66f905e47810f42c12))
+
+## [3.13.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.12.0...v3.13.0) (2022-05-11)
+
+
+### Features
+
+* Multi cluster routing ([#1007](https://github.com/googleapis/nodejs-bigtable/issues/1007)) ([3468cd9](https://github.com/googleapis/nodejs-bigtable/commit/3468cd99f3ea82d06b76359087a82845394dfd03))
+
+
+### Bug Fixes
+
+* **deps:** update dependency grpc-gcp to v0.4.2 ([#1074](https://github.com/googleapis/nodejs-bigtable/issues/1074)) ([54f4202](https://github.com/googleapis/nodejs-bigtable/commit/54f42024c0d3b6dcb117c8ac9811ff14d413454d))
+
 ## [3.12.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.11.0...v3.12.0) (2022-04-13)
 
 
