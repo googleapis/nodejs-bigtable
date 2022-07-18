@@ -57,30 +57,49 @@ describe('Bigtable/Errors', () => {
     describe('sends errors through a streaming request', () => {
       const errorDetails =
         'Table not found: projects/my-project/instances/my-instance/tables/my-table';
-      const emitTableNotExistsError = (stream: any) => {
-        // TODO: Replace stream with type
+      function emitErrorWithCode(stream: any, code: number) {
         const metadata = new grpc.Metadata();
         metadata.set(
           'grpc-server-stats-bin',
           Buffer.from([0, 0, 116, 73, 159, 3, 0, 0, 0, 0])
         );
         stream.emit('error', {
-          code: 5,
+          code: code,
           details: errorDetails,
           metadata,
         });
+      }
+      const emitTableNotExistsError = (stream: any) => {
+        emitErrorWithCode(stream, 5);
       };
-      function checkTableNotExistError(err: any) {
+      const emitDeadlineExceededError = (stream: any) => {
+        emitErrorWithCode(stream, grpc.status.DEADLINE_EXCEEDED);
+      };
+      function checkError(
+        err: any,
+        expectedCode: number,
+        expectedMessage: string
+      ) {
         if (isServiceError(err)) {
           const {code, message, details} = err;
           assert.strictEqual(details, errorDetails);
-          assert.strictEqual(code, 5);
-          assert.strictEqual(message, `5 NOT_FOUND: ${errorDetails}`);
+          assert.strictEqual(code, expectedCode);
+          assert.strictEqual(message, expectedMessage);
         } else {
           assert.fail(
             'Errors checked using this function should all be GoogleErrors'
           );
         }
+      }
+      function checkTableNotExistError(err: any) {
+        checkError(err, 5, `5 NOT_FOUND: ${errorDetails}`);
+      }
+      function checkDeadlineExceededError(err: any) {
+        checkError(
+          err,
+          grpc.status.DEADLINE_EXCEEDED,
+          `4 DEADLINE_EXCEEDED: ${errorDetails}`
+        );
       }
       describe('with ReadRows service', () => {
         before(async () => {
@@ -92,6 +111,20 @@ describe('Bigtable/Errors', () => {
           const readStream = table.createReadStream({});
           readStream.on('error', (err: GoogleError) => {
             checkTableNotExistError(err);
+            done();
+          });
+        });
+      });
+      describe('with ReadRows service and a deadline exceeded error', () => {
+        before(async () => {
+          service.setService({
+            ReadRows: emitDeadlineExceededError,
+          });
+        });
+        it('should produce human readable error when passing through gax', done => {
+          const readStream = table.createReadStream({});
+          readStream.on('error', (err: GoogleError) => {
+            checkDeadlineExceededError(err);
             done();
           });
         });
