@@ -612,15 +612,9 @@ export class Bigtable {
         );
       }
       ClusterUtils.validateClusterMetadata(cluster);
-      const clusterClone = Object.assign({}, cluster);
-      if (clusterClone.location) {
-        clusterClone.location = Cluster.getLocation_(
-          this.projectId,
-          clusterClone.location
-        );
-      }
-      clusters[cluster.id!] = ClusterUtils.getClusterBaseConfig(
-        clusterClone,
+      clusters[cluster.id!] = ClusterUtils.getClusterBaseConfigWithFullLocation(
+        cluster,
+        this.projectId,
         undefined
       );
       Object.assign(clusters[cluster.id!], {
@@ -940,7 +934,7 @@ export class Bigtable {
  * that a callback is omitted.
  */
 promisifyAll(Bigtable, {
-  exclude: ['instance', 'operation', 'request'],
+  exclude: ['close', 'instance', 'operation', 'request'],
 });
 
 /**

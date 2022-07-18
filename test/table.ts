@@ -29,6 +29,7 @@ import {Row} from '../src/row.js';
 import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
+import {TableUtils} from '../src/utils/table';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -827,7 +828,7 @@ describe('Bigtable/Table', () => {
 
         afterEach(() => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (Table as any).createPrefixRange.restore();
+          (TableUtils as any).createPrefixRange.restore();
         });
 
         it('should transform the prefix into a range', done => {
@@ -840,7 +841,7 @@ describe('Bigtable/Table', () => {
           const fakePrefix = 'abc';
 
           const prefixSpy = sandbox
-            .stub(Table, 'createPrefixRange')
+            .stub(TableUtils, 'createPrefixRange')
             .returns(fakePrefixRange);
 
           const rangeSpy = sandbox
@@ -871,7 +872,7 @@ describe('Bigtable/Table', () => {
             {start: 'def', end: 'deg'},
           ] as {} as tblTypes.PrefixRange[];
           const prefixSpy = sandbox
-            .stub(Table, 'createPrefixRange')
+            .stub(TableUtils, 'createPrefixRange')
             .callsFake(() => {
               const callIndex = prefixSpy.callCount - 1;
               return prefixRanges[callIndex];

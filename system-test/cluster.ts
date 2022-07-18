@@ -37,6 +37,7 @@ describe('Cluster', () => {
     isConfigDefined: boolean
   ): Promise<void> {
     // const cluster: Cluster = instance.cluster(clusterId);
+    console.log(`Cluster Id: ${cluster.id}`);
     const metadata = await cluster.getMetadata({});
     const {clusterConfig, serveNodes} = metadata[0];
     assert.strictEqual(serveNodes, compareValues.nodes);
@@ -67,6 +68,7 @@ describe('Cluster', () => {
         time_created: Date.now(),
       },
     });
+    console.log(`Test Instance Id: ${instanceId}`);
     await operation.promise();
   }
   async function createStandardNewInstance(
