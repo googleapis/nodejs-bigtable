@@ -344,147 +344,147 @@ export namespace google {
                 namespace BigtableInstanceAdmin {
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createInstance}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateInstanceCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getInstance}.
                      * @param error Error, if any
                      * @param [response] Instance
                      */
                     type GetInstanceCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Instance) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listInstances}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listInstances}.
                      * @param error Error, if any
                      * @param [response] ListInstancesResponse
                      */
                     type ListInstancesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListInstancesResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateInstance}.
                      * @param error Error, if any
                      * @param [response] Instance
                      */
                     type UpdateInstanceCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Instance) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|partialUpdateInstance}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type PartialUpdateInstanceCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteInstance}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteInstance}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteInstanceCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createCluster}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getCluster}.
                      * @param error Error, if any
                      * @param [response] Cluster
                      */
                     type GetClusterCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Cluster) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listClusters}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listClusters}.
                      * @param error Error, if any
                      * @param [response] ListClustersResponse
                      */
                     type ListClustersCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListClustersResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateCluster}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type UpdateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#partialUpdateCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|partialUpdateCluster}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type PartialUpdateClusterCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteCluster}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteCluster}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteClusterCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#createAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|createAppProfile}.
                      * @param error Error, if any
                      * @param [response] AppProfile
                      */
                     type CreateAppProfileCallback = (error: (Error|null), response?: google.bigtable.admin.v2.AppProfile) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getAppProfile}.
                      * @param error Error, if any
                      * @param [response] AppProfile
                      */
                     type GetAppProfileCallback = (error: (Error|null), response?: google.bigtable.admin.v2.AppProfile) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listAppProfiles}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listAppProfiles}.
                      * @param error Error, if any
                      * @param [response] ListAppProfilesResponse
                      */
                     type ListAppProfilesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListAppProfilesResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#updateAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|updateAppProfile}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type UpdateAppProfileCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#deleteAppProfile}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|deleteAppProfile}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteAppProfileCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#getIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|getIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type GetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#setIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|setIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type SetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#testIamPermissions}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|testIamPermissions}.
                      * @param error Error, if any
                      * @param [response] TestIamPermissionsResponse
                      */
                     type TestIamPermissionsCallback = (error: (Error|null), response?: google.iam.v1.TestIamPermissionsResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin#listHotTablets}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableInstanceAdmin|listHotTablets}.
                      * @param error Error, if any
                      * @param [response] ListHotTabletsResponse
                      */
@@ -3196,6 +3196,9 @@ export namespace google {
 
                     /** Instance createTime */
                     createTime?: (google.protobuf.ITimestamp|null);
+
+                    /** Instance satisfiesPzs */
+                    satisfiesPzs?: (boolean|null);
                 }
 
                 /** Represents an Instance. */
@@ -3224,6 +3227,12 @@ export namespace google {
 
                     /** Instance createTime. */
                     public createTime?: (google.protobuf.ITimestamp|null);
+
+                    /** Instance satisfiesPzs. */
+                    public satisfiesPzs?: (boolean|null);
+
+                    /** Instance _satisfiesPzs. */
+                    public _satisfiesPzs?: "satisfiesPzs";
 
                     /**
                      * Creates a new Instance instance using the specified properties.
@@ -3318,6 +3327,9 @@ export namespace google {
 
                     /** AutoscalingTargets cpuUtilizationPercent */
                     cpuUtilizationPercent?: (number|null);
+
+                    /** AutoscalingTargets storageUtilizationGibPerNode */
+                    storageUtilizationGibPerNode?: (number|null);
                 }
 
                 /** Represents an AutoscalingTargets. */
@@ -3331,6 +3343,9 @@ export namespace google {
 
                     /** AutoscalingTargets cpuUtilizationPercent. */
                     public cpuUtilizationPercent: number;
+
+                    /** AutoscalingTargets storageUtilizationGibPerNode. */
+                    public storageUtilizationGibPerNode: number;
 
                     /**
                      * Creates a new AutoscalingTargets instance using the specified properties.
@@ -4548,6 +4563,20 @@ export namespace google {
                     public deleteTable(request: google.bigtable.admin.v2.IDeleteTableRequest): Promise<google.protobuf.Empty>;
 
                     /**
+                     * Calls UndeleteTable.
+                     * @param request UndeleteTableRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public undeleteTable(request: google.bigtable.admin.v2.IUndeleteTableRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTableCallback): void;
+
+                    /**
+                     * Calls UndeleteTable.
+                     * @param request UndeleteTableRequest message or plain object
+                     * @returns Promise
+                     */
+                    public undeleteTable(request: google.bigtable.admin.v2.IUndeleteTableRequest): Promise<google.longrunning.Operation>;
+
+                    /**
                      * Calls ModifyColumnFamilies.
                      * @param request ModifyColumnFamiliesRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Table
@@ -4744,6 +4773,20 @@ export namespace google {
                     public restoreTable(request: google.bigtable.admin.v2.IRestoreTableRequest): Promise<google.longrunning.Operation>;
 
                     /**
+                     * Calls CopyBackup.
+                     * @param request CopyBackupRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public copyBackup(request: google.bigtable.admin.v2.ICopyBackupRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.CopyBackupCallback): void;
+
+                    /**
+                     * Calls CopyBackup.
+                     * @param request CopyBackupRequest message or plain object
+                     * @returns Promise
+                     */
+                    public copyBackup(request: google.bigtable.admin.v2.ICopyBackupRequest): Promise<google.longrunning.Operation>;
+
+                    /**
                      * Calls GetIamPolicy.
                      * @param request GetIamPolicyRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Policy
@@ -4789,154 +4832,168 @@ export namespace google {
                 namespace BigtableTableAdmin {
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createTable}.
                      * @param error Error, if any
                      * @param [response] Table
                      */
                     type CreateTableCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Table) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createTableFromSnapshot}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createTableFromSnapshot}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateTableFromSnapshotCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listTables}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listTables}.
                      * @param error Error, if any
                      * @param [response] ListTablesResponse
                      */
                     type ListTablesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListTablesResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getTable}.
                      * @param error Error, if any
                      * @param [response] Table
                      */
                     type GetTableCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Table) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteTable}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteTableCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#modifyColumnFamilies}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|undeleteTable}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type UndeleteTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|modifyColumnFamilies}.
                      * @param error Error, if any
                      * @param [response] Table
                      */
                     type ModifyColumnFamiliesCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Table) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#dropRowRange}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|dropRowRange}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DropRowRangeCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#generateConsistencyToken}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|generateConsistencyToken}.
                      * @param error Error, if any
                      * @param [response] GenerateConsistencyTokenResponse
                      */
                     type GenerateConsistencyTokenCallback = (error: (Error|null), response?: google.bigtable.admin.v2.GenerateConsistencyTokenResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#checkConsistency}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|checkConsistency}.
                      * @param error Error, if any
                      * @param [response] CheckConsistencyResponse
                      */
                     type CheckConsistencyCallback = (error: (Error|null), response?: google.bigtable.admin.v2.CheckConsistencyResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#snapshotTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|snapshotTable}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type SnapshotTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getSnapshot}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getSnapshot}.
                      * @param error Error, if any
                      * @param [response] Snapshot
                      */
                     type GetSnapshotCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Snapshot) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listSnapshots}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listSnapshots}.
                      * @param error Error, if any
                      * @param [response] ListSnapshotsResponse
                      */
                     type ListSnapshotsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListSnapshotsResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteSnapshot}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteSnapshot}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteSnapshotCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#createBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createBackup}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type CreateBackupCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getBackup}.
                      * @param error Error, if any
                      * @param [response] Backup
                      */
                     type GetBackupCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Backup) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#updateBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateBackup}.
                      * @param error Error, if any
                      * @param [response] Backup
                      */
                     type UpdateBackupCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Backup) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#deleteBackup}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteBackup}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteBackupCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#listBackups}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listBackups}.
                      * @param error Error, if any
                      * @param [response] ListBackupsResponse
                      */
                     type ListBackupsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListBackupsResponse) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#restoreTable}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|restoreTable}.
                      * @param error Error, if any
                      * @param [response] Operation
                      */
                     type RestoreTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#getIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|copyBackup}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type CopyBackupCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type GetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#setIamPolicy}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|setIamPolicy}.
                      * @param error Error, if any
                      * @param [response] Policy
                      */
                     type SetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                     /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin#testIamPermissions}.
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|testIamPermissions}.
                      * @param error Error, if any
                      * @param [response] TestIamPermissionsResponse
                      */
@@ -6054,6 +6111,198 @@ export namespace google {
 
                     /**
                      * Converts this DeleteTableRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of an UndeleteTableRequest. */
+                interface IUndeleteTableRequest {
+
+                    /** UndeleteTableRequest name */
+                    name?: (string|null);
+                }
+
+                /** Represents an UndeleteTableRequest. */
+                class UndeleteTableRequest implements IUndeleteTableRequest {
+
+                    /**
+                     * Constructs a new UndeleteTableRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUndeleteTableRequest);
+
+                    /** UndeleteTableRequest name. */
+                    public name: string;
+
+                    /**
+                     * Creates a new UndeleteTableRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UndeleteTableRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUndeleteTableRequest): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Encodes the specified UndeleteTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
+                     * @param message UndeleteTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUndeleteTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UndeleteTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
+                     * @param message UndeleteTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUndeleteTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UndeleteTableRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UndeleteTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Decodes an UndeleteTableRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UndeleteTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Verifies an UndeleteTableRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UndeleteTableRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UndeleteTableRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Creates a plain object from an UndeleteTableRequest message. Also converts values to other types if specified.
+                     * @param message UndeleteTableRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UndeleteTableRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UndeleteTableRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of an UndeleteTableMetadata. */
+                interface IUndeleteTableMetadata {
+
+                    /** UndeleteTableMetadata name */
+                    name?: (string|null);
+
+                    /** UndeleteTableMetadata startTime */
+                    startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UndeleteTableMetadata endTime */
+                    endTime?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents an UndeleteTableMetadata. */
+                class UndeleteTableMetadata implements IUndeleteTableMetadata {
+
+                    /**
+                     * Constructs a new UndeleteTableMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUndeleteTableMetadata);
+
+                    /** UndeleteTableMetadata name. */
+                    public name: string;
+
+                    /** UndeleteTableMetadata startTime. */
+                    public startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UndeleteTableMetadata endTime. */
+                    public endTime?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new UndeleteTableMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UndeleteTableMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUndeleteTableMetadata): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Encodes the specified UndeleteTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
+                     * @param message UndeleteTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUndeleteTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UndeleteTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
+                     * @param message UndeleteTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUndeleteTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UndeleteTableMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UndeleteTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Decodes an UndeleteTableMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UndeleteTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Verifies an UndeleteTableMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UndeleteTableMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UndeleteTableMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Creates a plain object from an UndeleteTableMetadata message. Also converts values to other types if specified.
+                     * @param message UndeleteTableMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UndeleteTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UndeleteTableMetadata to JSON.
                      * @returns JSON object
                      */
                     public toJSON(): { [k: string]: any };
@@ -8027,6 +8276,216 @@ export namespace google {
                     public toJSON(): { [k: string]: any };
                 }
 
+                /** Properties of a CopyBackupRequest. */
+                interface ICopyBackupRequest {
+
+                    /** CopyBackupRequest parent */
+                    parent?: (string|null);
+
+                    /** CopyBackupRequest backupId */
+                    backupId?: (string|null);
+
+                    /** CopyBackupRequest sourceBackup */
+                    sourceBackup?: (string|null);
+
+                    /** CopyBackupRequest expireTime */
+                    expireTime?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents a CopyBackupRequest. */
+                class CopyBackupRequest implements ICopyBackupRequest {
+
+                    /**
+                     * Constructs a new CopyBackupRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.ICopyBackupRequest);
+
+                    /** CopyBackupRequest parent. */
+                    public parent: string;
+
+                    /** CopyBackupRequest backupId. */
+                    public backupId: string;
+
+                    /** CopyBackupRequest sourceBackup. */
+                    public sourceBackup: string;
+
+                    /** CopyBackupRequest expireTime. */
+                    public expireTime?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new CopyBackupRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns CopyBackupRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.ICopyBackupRequest): google.bigtable.admin.v2.CopyBackupRequest;
+
+                    /**
+                     * Encodes the specified CopyBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
+                     * @param message CopyBackupRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.ICopyBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified CopyBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
+                     * @param message CopyBackupRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.ICopyBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a CopyBackupRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns CopyBackupRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CopyBackupRequest;
+
+                    /**
+                     * Decodes a CopyBackupRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns CopyBackupRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CopyBackupRequest;
+
+                    /**
+                     * Verifies a CopyBackupRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a CopyBackupRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns CopyBackupRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CopyBackupRequest;
+
+                    /**
+                     * Creates a plain object from a CopyBackupRequest message. Also converts values to other types if specified.
+                     * @param message CopyBackupRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.CopyBackupRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this CopyBackupRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
+                /** Properties of a CopyBackupMetadata. */
+                interface ICopyBackupMetadata {
+
+                    /** CopyBackupMetadata name */
+                    name?: (string|null);
+
+                    /** CopyBackupMetadata sourceBackup */
+                    sourceBackup?: (string|null);
+
+                    /** CopyBackupMetadata progress */
+                    progress?: (google.bigtable.admin.v2.IOperationProgress|null);
+                }
+
+                /** Represents a CopyBackupMetadata. */
+                class CopyBackupMetadata implements ICopyBackupMetadata {
+
+                    /**
+                     * Constructs a new CopyBackupMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.ICopyBackupMetadata);
+
+                    /** CopyBackupMetadata name. */
+                    public name: string;
+
+                    /** CopyBackupMetadata sourceBackup. */
+                    public sourceBackup: string;
+
+                    /** CopyBackupMetadata progress. */
+                    public progress?: (google.bigtable.admin.v2.IOperationProgress|null);
+
+                    /**
+                     * Creates a new CopyBackupMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns CopyBackupMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.ICopyBackupMetadata): google.bigtable.admin.v2.CopyBackupMetadata;
+
+                    /**
+                     * Encodes the specified CopyBackupMetadata message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
+                     * @param message CopyBackupMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.ICopyBackupMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified CopyBackupMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
+                     * @param message CopyBackupMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.ICopyBackupMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a CopyBackupMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns CopyBackupMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CopyBackupMetadata;
+
+                    /**
+                     * Decodes a CopyBackupMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns CopyBackupMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CopyBackupMetadata;
+
+                    /**
+                     * Verifies a CopyBackupMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a CopyBackupMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns CopyBackupMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CopyBackupMetadata;
+
+                    /**
+                     * Creates a plain object from a CopyBackupMetadata message. Also converts values to other types if specified.
+                     * @param message CopyBackupMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.CopyBackupMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this CopyBackupMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+                }
+
                 /** Properties of a RestoreInfo. */
                 interface IRestoreInfo {
 
@@ -9383,49 +9842,49 @@ export namespace google {
             namespace Bigtable {
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#readRows}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|readRows}.
                  * @param error Error, if any
                  * @param [response] ReadRowsResponse
                  */
                 type ReadRowsCallback = (error: (Error|null), response?: google.bigtable.v2.ReadRowsResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#sampleRowKeys}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|sampleRowKeys}.
                  * @param error Error, if any
                  * @param [response] SampleRowKeysResponse
                  */
                 type SampleRowKeysCallback = (error: (Error|null), response?: google.bigtable.v2.SampleRowKeysResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#mutateRow}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|mutateRow}.
                  * @param error Error, if any
                  * @param [response] MutateRowResponse
                  */
                 type MutateRowCallback = (error: (Error|null), response?: google.bigtable.v2.MutateRowResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#mutateRows}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|mutateRows}.
                  * @param error Error, if any
                  * @param [response] MutateRowsResponse
                  */
                 type MutateRowsCallback = (error: (Error|null), response?: google.bigtable.v2.MutateRowsResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#checkAndMutateRow}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|checkAndMutateRow}.
                  * @param error Error, if any
                  * @param [response] CheckAndMutateRowResponse
                  */
                 type CheckAndMutateRowCallback = (error: (Error|null), response?: google.bigtable.v2.CheckAndMutateRowResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#pingAndWarm}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|pingAndWarm}.
                  * @param error Error, if any
                  * @param [response] PingAndWarmResponse
                  */
                 type PingAndWarmCallback = (error: (Error|null), response?: google.bigtable.v2.PingAndWarmResponse) => void;
 
                 /**
-                 * Callback as used by {@link google.bigtable.v2.Bigtable#readModifyWriteRow}.
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|readModifyWriteRow}.
                  * @param error Error, if any
                  * @param [response] ReadModifyWriteRowResponse
                  */
@@ -15808,6 +16267,9 @@ export namespace google {
             /** FieldOptions lazy */
             lazy?: (boolean|null);
 
+            /** FieldOptions unverifiedLazy */
+            unverifiedLazy?: (boolean|null);
+
             /** FieldOptions deprecated */
             deprecated?: (boolean|null);
 
@@ -15844,6 +16306,9 @@ export namespace google {
 
             /** FieldOptions lazy. */
             public lazy: boolean;
+
+            /** FieldOptions unverifiedLazy. */
+            public unverifiedLazy: boolean;
 
             /** FieldOptions deprecated. */
             public deprecated: boolean;
@@ -17185,6 +17650,96 @@ export namespace google {
             public toJSON(): { [k: string]: any };
         }
 
+        /** Properties of a FieldMask. */
+        interface IFieldMask {
+
+            /** FieldMask paths */
+            paths?: (string[]|null);
+        }
+
+        /** Represents a FieldMask. */
+        class FieldMask implements IFieldMask {
+
+            /**
+             * Constructs a new FieldMask.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: google.protobuf.IFieldMask);
+
+            /** FieldMask paths. */
+            public paths: string[];
+
+            /**
+             * Creates a new FieldMask instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns FieldMask instance
+             */
+            public static create(properties?: google.protobuf.IFieldMask): google.protobuf.FieldMask;
+
+            /**
+             * Encodes the specified FieldMask message. Does not implicitly {@link google.protobuf.FieldMask.verify|verify} messages.
+             * @param message FieldMask message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: google.protobuf.IFieldMask, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified FieldMask message, length delimited. Does not implicitly {@link google.protobuf.FieldMask.verify|verify} messages.
+             * @param message FieldMask message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: google.protobuf.IFieldMask, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a FieldMask message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns FieldMask
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.FieldMask;
+
+            /**
+             * Decodes a FieldMask message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns FieldMask
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.FieldMask;
+
+            /**
+             * Verifies a FieldMask message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a FieldMask message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns FieldMask
+             */
+            public static fromObject(object: { [k: string]: any }): google.protobuf.FieldMask;
+
+            /**
+             * Creates a plain object from a FieldMask message. Also converts values to other types if specified.
+             * @param message FieldMask
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: google.protobuf.FieldMask, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this FieldMask to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
         /** Properties of an Any. */
         interface IAny {
 
@@ -17456,96 +18011,6 @@ export namespace google {
 
             /**
              * Converts this Empty to JSON.
-             * @returns JSON object
-             */
-            public toJSON(): { [k: string]: any };
-        }
-
-        /** Properties of a FieldMask. */
-        interface IFieldMask {
-
-            /** FieldMask paths */
-            paths?: (string[]|null);
-        }
-
-        /** Represents a FieldMask. */
-        class FieldMask implements IFieldMask {
-
-            /**
-             * Constructs a new FieldMask.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: google.protobuf.IFieldMask);
-
-            /** FieldMask paths. */
-            public paths: string[];
-
-            /**
-             * Creates a new FieldMask instance using the specified properties.
-             * @param [properties] Properties to set
-             * @returns FieldMask instance
-             */
-            public static create(properties?: google.protobuf.IFieldMask): google.protobuf.FieldMask;
-
-            /**
-             * Encodes the specified FieldMask message. Does not implicitly {@link google.protobuf.FieldMask.verify|verify} messages.
-             * @param message FieldMask message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: google.protobuf.IFieldMask, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Encodes the specified FieldMask message, length delimited. Does not implicitly {@link google.protobuf.FieldMask.verify|verify} messages.
-             * @param message FieldMask message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encodeDelimited(message: google.protobuf.IFieldMask, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes a FieldMask message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns FieldMask
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.FieldMask;
-
-            /**
-             * Decodes a FieldMask message from the specified reader or buffer, length delimited.
-             * @param reader Reader or buffer to decode from
-             * @returns FieldMask
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.FieldMask;
-
-            /**
-             * Verifies a FieldMask message.
-             * @param message Plain object to verify
-             * @returns `null` if valid, otherwise the reason why it is not
-             */
-            public static verify(message: { [k: string]: any }): (string|null);
-
-            /**
-             * Creates a FieldMask message from a plain object. Also converts values to their respective internal types.
-             * @param object Plain object
-             * @returns FieldMask
-             */
-            public static fromObject(object: { [k: string]: any }): google.protobuf.FieldMask;
-
-            /**
-             * Creates a plain object from a FieldMask message. Also converts values to other types if specified.
-             * @param message FieldMask
-             * @param [options] Conversion options
-             * @returns Plain object
-             */
-            public static toObject(message: google.protobuf.FieldMask, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-            /**
-             * Converts this FieldMask to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };
@@ -18434,21 +18899,21 @@ export namespace google {
             namespace IAMPolicy {
 
                 /**
-                 * Callback as used by {@link google.iam.v1.IAMPolicy#setIamPolicy}.
+                 * Callback as used by {@link google.iam.v1.IAMPolicy|setIamPolicy}.
                  * @param error Error, if any
                  * @param [response] Policy
                  */
                 type SetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                 /**
-                 * Callback as used by {@link google.iam.v1.IAMPolicy#getIamPolicy}.
+                 * Callback as used by {@link google.iam.v1.IAMPolicy|getIamPolicy}.
                  * @param error Error, if any
                  * @param [response] Policy
                  */
                 type GetIamPolicyCallback = (error: (Error|null), response?: google.iam.v1.Policy) => void;
 
                 /**
-                 * Callback as used by {@link google.iam.v1.IAMPolicy#testIamPermissions}.
+                 * Callback as used by {@link google.iam.v1.IAMPolicy|testIamPermissions}.
                  * @param error Error, if any
                  * @param [response] TestIamPermissionsResponse
                  */
@@ -18463,6 +18928,9 @@ export namespace google {
 
                 /** SetIamPolicyRequest policy */
                 policy?: (google.iam.v1.IPolicy|null);
+
+                /** SetIamPolicyRequest updateMask */
+                updateMask?: (google.protobuf.IFieldMask|null);
             }
 
             /** Represents a SetIamPolicyRequest. */
@@ -18479,6 +18947,9 @@ export namespace google {
 
                 /** SetIamPolicyRequest policy. */
                 public policy?: (google.iam.v1.IPolicy|null);
+
+                /** SetIamPolicyRequest updateMask. */
+                public updateMask?: (google.protobuf.IFieldMask|null);
 
                 /**
                  * Creates a new SetIamPolicyRequest instance using the specified properties.
@@ -18932,6 +19403,9 @@ export namespace google {
                 /** Policy bindings */
                 bindings?: (google.iam.v1.IBinding[]|null);
 
+                /** Policy auditConfigs */
+                auditConfigs?: (google.iam.v1.IAuditConfig[]|null);
+
                 /** Policy etag */
                 etag?: (Uint8Array|string|null);
             }
@@ -18950,6 +19424,9 @@ export namespace google {
 
                 /** Policy bindings. */
                 public bindings: google.iam.v1.IBinding[];
+
+                /** Policy auditConfigs. */
+                public auditConfigs: google.iam.v1.IAuditConfig[];
 
                 /** Policy etag. */
                 public etag: (Uint8Array|string);
@@ -19125,6 +19602,209 @@ export namespace google {
                  * @returns JSON object
                  */
                 public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of an AuditConfig. */
+            interface IAuditConfig {
+
+                /** AuditConfig service */
+                service?: (string|null);
+
+                /** AuditConfig auditLogConfigs */
+                auditLogConfigs?: (google.iam.v1.IAuditLogConfig[]|null);
+            }
+
+            /** Represents an AuditConfig. */
+            class AuditConfig implements IAuditConfig {
+
+                /**
+                 * Constructs a new AuditConfig.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.iam.v1.IAuditConfig);
+
+                /** AuditConfig service. */
+                public service: string;
+
+                /** AuditConfig auditLogConfigs. */
+                public auditLogConfigs: google.iam.v1.IAuditLogConfig[];
+
+                /**
+                 * Creates a new AuditConfig instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns AuditConfig instance
+                 */
+                public static create(properties?: google.iam.v1.IAuditConfig): google.iam.v1.AuditConfig;
+
+                /**
+                 * Encodes the specified AuditConfig message. Does not implicitly {@link google.iam.v1.AuditConfig.verify|verify} messages.
+                 * @param message AuditConfig message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.iam.v1.IAuditConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified AuditConfig message, length delimited. Does not implicitly {@link google.iam.v1.AuditConfig.verify|verify} messages.
+                 * @param message AuditConfig message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.iam.v1.IAuditConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes an AuditConfig message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns AuditConfig
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.iam.v1.AuditConfig;
+
+                /**
+                 * Decodes an AuditConfig message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns AuditConfig
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.iam.v1.AuditConfig;
+
+                /**
+                 * Verifies an AuditConfig message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates an AuditConfig message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns AuditConfig
+                 */
+                public static fromObject(object: { [k: string]: any }): google.iam.v1.AuditConfig;
+
+                /**
+                 * Creates a plain object from an AuditConfig message. Also converts values to other types if specified.
+                 * @param message AuditConfig
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.iam.v1.AuditConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this AuditConfig to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            /** Properties of an AuditLogConfig. */
+            interface IAuditLogConfig {
+
+                /** AuditLogConfig logType */
+                logType?: (google.iam.v1.AuditLogConfig.LogType|keyof typeof google.iam.v1.AuditLogConfig.LogType|null);
+
+                /** AuditLogConfig exemptedMembers */
+                exemptedMembers?: (string[]|null);
+            }
+
+            /** Represents an AuditLogConfig. */
+            class AuditLogConfig implements IAuditLogConfig {
+
+                /**
+                 * Constructs a new AuditLogConfig.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.iam.v1.IAuditLogConfig);
+
+                /** AuditLogConfig logType. */
+                public logType: (google.iam.v1.AuditLogConfig.LogType|keyof typeof google.iam.v1.AuditLogConfig.LogType);
+
+                /** AuditLogConfig exemptedMembers. */
+                public exemptedMembers: string[];
+
+                /**
+                 * Creates a new AuditLogConfig instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns AuditLogConfig instance
+                 */
+                public static create(properties?: google.iam.v1.IAuditLogConfig): google.iam.v1.AuditLogConfig;
+
+                /**
+                 * Encodes the specified AuditLogConfig message. Does not implicitly {@link google.iam.v1.AuditLogConfig.verify|verify} messages.
+                 * @param message AuditLogConfig message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.iam.v1.IAuditLogConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified AuditLogConfig message, length delimited. Does not implicitly {@link google.iam.v1.AuditLogConfig.verify|verify} messages.
+                 * @param message AuditLogConfig message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.iam.v1.IAuditLogConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes an AuditLogConfig message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns AuditLogConfig
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.iam.v1.AuditLogConfig;
+
+                /**
+                 * Decodes an AuditLogConfig message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns AuditLogConfig
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.iam.v1.AuditLogConfig;
+
+                /**
+                 * Verifies an AuditLogConfig message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates an AuditLogConfig message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns AuditLogConfig
+                 */
+                public static fromObject(object: { [k: string]: any }): google.iam.v1.AuditLogConfig;
+
+                /**
+                 * Creates a plain object from an AuditLogConfig message. Also converts values to other types if specified.
+                 * @param message AuditLogConfig
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.iam.v1.AuditLogConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this AuditLogConfig to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+            }
+
+            namespace AuditLogConfig {
+
+                /** LogType enum. */
+                enum LogType {
+                    LOG_TYPE_UNSPECIFIED = 0,
+                    ADMIN_READ = 1,
+                    DATA_WRITE = 2,
+                    DATA_READ = 3
+                }
             }
 
             /** Properties of a PolicyDelta. */
@@ -19670,35 +20350,35 @@ export namespace google {
         namespace Operations {
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#listOperations}.
+             * Callback as used by {@link google.longrunning.Operations|listOperations}.
              * @param error Error, if any
              * @param [response] ListOperationsResponse
              */
             type ListOperationsCallback = (error: (Error|null), response?: google.longrunning.ListOperationsResponse) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#getOperation}.
+             * Callback as used by {@link google.longrunning.Operations|getOperation}.
              * @param error Error, if any
              * @param [response] Operation
              */
             type GetOperationCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#deleteOperation}.
+             * Callback as used by {@link google.longrunning.Operations|deleteOperation}.
              * @param error Error, if any
              * @param [response] Empty
              */
             type DeleteOperationCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#cancelOperation}.
+             * Callback as used by {@link google.longrunning.Operations|cancelOperation}.
              * @param error Error, if any
              * @param [response] Empty
              */
             type CancelOperationCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
             /**
-             * Callback as used by {@link google.longrunning.Operations#waitOperation}.
+             * Callback as used by {@link google.longrunning.Operations|waitOperation}.
              * @param error Error, if any
              * @param [response] Operation
              */

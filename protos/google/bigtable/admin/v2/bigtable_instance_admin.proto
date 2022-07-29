@@ -309,7 +309,6 @@ message CreateInstanceRequest {
   // cluster ID, e.g., just `mycluster` rather than
   // `projects/myproject/instances/myinstance/clusters/mycluster`.
   // Fields marked `OutputOnly` must be left blank.
-  // Currently, at most four clusters can be specified.
   map<string, Cluster> clusters = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
