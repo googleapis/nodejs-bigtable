@@ -1417,6 +1417,24 @@ describe('Bigtable', () => {
 
       Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
+
+    it('should create backup of a table and copy it', async () => {
+      const backupId = generateId('backup');
+      try {
+        const [backup, op] = await TABLE.createBackup(backupId, {
+          expireTime,
+        });
+        await op.promise();
+        await backup.getMetadata();
+        assert.deepStrictEqual(backup.expireDate, expireTime);
+        const newBackupId = generateId('backup');
+        const newBackup = new Backup(backup.cluster, newBackupId);
+        const copyBackupResult = await backup.copy(newBackup);
+        console.log(copyBackupResult);
+      } catch (e) {
+        console.log(e);
+      }
+    });
   });
 });
 
