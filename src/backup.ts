@@ -15,7 +15,6 @@
 import {PreciseDate} from '@google-cloud/precise-date';
 import {promisifyAll} from '@google-cloud/promisify';
 import snakeCase = require('lodash.snakecase');
-import {google} from '../protos/protos';
 import {
   Bigtable,
   Cluster,
@@ -23,6 +22,7 @@ import {
   GetIamPolicyOptions,
   GetIamPolicyResponse,
   Policy,
+  SetClusterMetadataCallback,
   SetIamPolicyCallback,
   SetIamPolicyResponse,
   TestIamPermissionsCallback,
@@ -34,9 +34,12 @@ import {
   CreateBackupCallback,
   CreateBackupResponse,
   IOperation,
+  CopyBackupCallback,
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
+import {google} from '../protos/protos';
+import ICopyBackupMetadata = google.bigtable.admin.v2.ICopyBackupMetadata;
 
 type IEmpty = google.protobuf.IEmpty;
 export type IBackup = google.bigtable.admin.v2.IBackup;
@@ -241,6 +244,43 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       seconds: this.metadata.startTime.seconds!,
       nanos: this.metadata.startTime.nanos!,
     });
+  }
+
+  /**
+   *
+   * @param destination
+   * @param callback
+   */
+  copy(destination: Backup, callback?: CopyBackupCallback): void;
+  copy(destination: Backup): Promise<ICopyBackupMetadata>;
+  copy(
+    destination: Backup,
+    gaxOptionsOrCallback?: CallOptions | CopyBackupCallback,
+    cb?: CopyBackupCallback
+  ): void | Promise<ICopyBackupMetadata> {
+    const callback =
+      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
+    const gaxOptions =
+      typeof gaxOptionsOrCallback === 'object'
+        ? gaxOptionsOrCallback
+        : ({} as CallOptions);
+    const reqOpts = {
+      parent: destination.cluster.name,
+      backup_id: destination.id,
+      source_backup: `${this.cluster.name}/backups/${this.id}`,
+      expire_time: destination.metadata?.expireTime,
+    };
+    this.bigtable.request(
+      {
+        client: 'BigtableTableAdminClient',
+        method: 'copyBackup',
+        reqOpts,
+        gaxOpts: gaxOptions,
+      },
+      (err, resp) => {
+        callback(err, resp);
+      }
+    );
   }
 
   create(config: CreateBackupConfig, callback?: CreateBackupCallback): void;

@@ -101,6 +101,13 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
   gaxOptions?: CallOptions;
 }
 
+export type CopyBackupCallback = (
+  err: ServiceError | Error | null,
+  backup?: Backup,
+  operation?: Operation,
+  apiResponse?: IOperation
+) => void;
+
 export type CreateBackupCallback = (
   err: ServiceError | Error | null,
   backup?: Backup,
