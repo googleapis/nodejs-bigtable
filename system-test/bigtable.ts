@@ -1419,6 +1419,7 @@ describe('Bigtable', () => {
     });
 
     it('should create backup of a table and copy it', async () => {
+      debugger;
       const backupId = generateId('backup');
       try {
         const [backup, op] = await TABLE.createBackup(backupId, {
@@ -1428,8 +1429,10 @@ describe('Bigtable', () => {
         await backup.getMetadata();
         assert.deepStrictEqual(backup.expireDate, expireTime);
         const newBackupId = generateId('backup');
-        const newBackup = new Backup(backup.cluster, newBackupId);
+        const newBackup = backup.cluster.backup(newBackupId);
+        debugger;
         const copyBackupResult = await backup.copy(newBackup);
+        console.log('copyBackupResult');
         console.log(copyBackupResult);
       } catch (e) {
         console.log(e);
