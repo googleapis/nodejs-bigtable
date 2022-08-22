@@ -88,13 +88,14 @@ describe('Bigtable/Table', () => {
     it('should fail when invoking readRows with closed client', async () => {
       const instance = bigtable.instance(INSTANCE_NAME);
       const table = instance.table('fake-table');
-      await instance.create({
+      const [, operation] = await instance.create({
         clusters: {
           id: 'fake-cluster3',
           location: 'us-west1-c',
           nodes: 1,
         },
       });
+      await operation.promise();
       await table.create({});
       await table.getRows(); // This is done to initialize the data client
       await bigtable.close();
