@@ -36,8 +36,6 @@ describe('Cluster', () => {
     compareValues: SetClusterMetadataOptions,
     isConfigDefined: boolean
   ): Promise<void> {
-    // const cluster: Cluster = instance.cluster(clusterId);
-    console.log(`Cluster Id: ${cluster.id}`);
     const metadata = await cluster.getMetadata({});
     const {clusterConfig, serveNodes} = metadata[0];
     assert.strictEqual(serveNodes, compareValues.nodes);
@@ -68,7 +66,6 @@ describe('Cluster', () => {
         time_created: Date.now(),
       },
     });
-    console.log(`Test Instance Id: ${instanceId}`);
     await operation.promise();
   }
   async function createStandardNewInstance(
@@ -107,10 +104,11 @@ describe('Cluster', () => {
       it('should create an instance and then create a cluster for manual scaling', async () => {
         const clusterId2: string = generateId('cluster');
         const cluster2 = instance.cluster(clusterId2);
-        await cluster2.create({
+        const [, operation] = await cluster2.create({
           location: 'us-west1-c',
           nodes: 3,
         });
+        await operation.promise();
         await checkMetadata(cluster2, {nodes: 3}, false);
       });
       describe('Using an incorrect configuration', () => {
@@ -121,9 +119,10 @@ describe('Cluster', () => {
         });
         it('should throw an error when providing no cluster configuration', async () => {
           try {
-            await cluster2.create({
+            const [, operation] = await cluster2.create({
               location: 'us-west1-c',
             });
+            await operation.promise();
             assert.fail();
           } catch (e) {
             assert.ok(isValidationError(e));
@@ -132,11 +131,12 @@ describe('Cluster', () => {
         });
         it('should throw an error when providing manual and autoscaling configurations', async () => {
           try {
-            await cluster2.create({
+            const [, operation] = await cluster2.create({
               location: 'us-west1-c',
               nodes: 2,
               minServeNodes: 3,
             });
+            await operation.promise();
             assert.fail();
           } catch (e) {
             assert.ok(isValidationError(e));
@@ -145,11 +145,12 @@ describe('Cluster', () => {
         });
         it('should throw an error when missing all autoscaling configurations', async () => {
           try {
-            await cluster2.create({
+            const [, operation] = await cluster2.create({
               location: 'us-west1-c',
               minServeNodes: 3,
               cpuUtilizationPercent: 51,
             });
+            await operation.promise();
             assert.fail();
           } catch (e) {
             assert.ok(isValidationError(e));
@@ -189,7 +190,8 @@ describe('Cluster', () => {
         await createStandardNewInstance(clusterId, 2);
         const clusterId2: string = generateId('cluster');
         const cluster: Cluster = instance.cluster(clusterId2);
-        await cluster.create(createClusterOptions);
+        const [, operation] = await cluster.create(createClusterOptions);
+        await operation.promise();
         await checkMetadata(
           cluster,
           {
@@ -214,7 +216,8 @@ describe('Cluster', () => {
 
       it('should change nodes for manual scaling', async () => {
         const updateNodes = 5;
-        await cluster.setMetadata({nodes: updateNodes});
+        const [operation] = await cluster.setMetadata({nodes: updateNodes});
+        await operation.promise();
         await checkMetadata(
           cluster,
           {
@@ -227,11 +230,12 @@ describe('Cluster', () => {
         const minServeNodes = 3;
         const maxServeNodes = 4;
         const cpuUtilizationPercent = 50;
-        await cluster.setMetadata({
+        const [operation] = await cluster.setMetadata({
           minServeNodes,
           maxServeNodes,
           cpuUtilizationPercent,
         });
+        await operation.promise();
         await checkMetadata(
           cluster,
           {
@@ -246,7 +250,8 @@ describe('Cluster', () => {
       describe('Using an incorrect configuration', () => {
         it('should throw an error when providing no cluster configuration', async () => {
           try {
-            await cluster.setMetadata({});
+            const [operation] = await cluster.setMetadata({});
+            await operation.promise();
             assert.fail();
           } catch (e) {
             assert.ok(isValidationError(e));
@@ -255,10 +260,11 @@ describe('Cluster', () => {
         });
         it('should throw an error when providing manual and autoscaling configurations', async () => {
           try {
-            await cluster.setMetadata({
+            const [operation] = await cluster.setMetadata({
               nodes: 2,
               minServeNodes: 3,
             });
+            await operation.promise();
             assert.fail();
           } catch (e) {
             assert.ok(isValidationError(e));
@@ -267,10 +273,11 @@ describe('Cluster', () => {
         });
         it('should throw an error when missing some autoscaling configurations', async () => {
           try {
-            await cluster.setMetadata({
+            const [operation] = await cluster.setMetadata({
               minServeNodes: 3,
               cpuUtilizationPercent: 51,
             });
+            await operation.promise();
             assert.fail();
           } catch (e) {
             assert.ok(isValidationError(e));
@@ -302,9 +309,10 @@ describe('Cluster', () => {
 
       it('should change cluster to manual scaling', async () => {
         const updateNodes = 5;
-        await cluster.setMetadata({
+        const [operation] = await cluster.setMetadata({
           nodes: updateNodes,
         });
+        await operation.promise();
         await checkMetadata(
           cluster,
           {
@@ -320,11 +328,12 @@ describe('Cluster', () => {
         assert.notEqual(minServeNodes, newMinServeNodes);
         assert.notEqual(maxServeNodes, newMaxServeNodes);
         assert.notEqual(cpuUtilizationPercent, newCpuUtilizationPercent);
-        await cluster.setMetadata({
+        const [operation] = await cluster.setMetadata({
           minServeNodes: newMinServeNodes,
           maxServeNodes: newMaxServeNodes,
           cpuUtilizationPercent: newCpuUtilizationPercent,
         });
+        await operation.promise();
         await checkMetadata(
           cluster,
           {
