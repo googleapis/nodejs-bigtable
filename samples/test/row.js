@@ -30,7 +30,7 @@ const instance = bigtable.instance(INSTANCE_ID);
 describe.skip('Row Snippets', () => {
   before(async () => {
     try {
-      await instance.create({
+      const [, operation] = await instance.create({
         clusters: [
           {
             name: CLUSTER_ID,
@@ -40,6 +40,7 @@ describe.skip('Row Snippets', () => {
         ],
         type: 'DEVELOPMENT',
       });
+      await operation.promise();
       await instance.createTable(TABLE_ID);
     } catch (err) {
       // Handle the error.
