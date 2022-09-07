@@ -34,7 +34,7 @@ import {
   CreateBackupCallback,
   CreateBackupResponse,
   IOperation,
-  CopyBackupCallback,
+  CopyBackupCallback, CopyBackupResponse,
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
@@ -251,13 +251,13 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param destination
    * @param callback
    */
+  copy(destination: Backup): Promise<CopyBackupResponse>;
   copy(destination: Backup, callback?: CopyBackupCallback): void;
-  copy(destination: Backup): Promise<ICopyBackupMetadata>;
   copy(
     destination: Backup,
     gaxOptionsOrCallback?: CallOptions | CopyBackupCallback,
     cb?: CopyBackupCallback
-  ): void | Promise<ICopyBackupMetadata> {
+  ): void | Promise<CopyBackupResponse> {
     const callback =
       typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
     const gaxOptions =
@@ -270,7 +270,6 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       sourceBackup: `${this.cluster.name}/backups/${this.id}`,
       expireTime: this.metadata?.expireTime,
     };
-    debugger;
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',

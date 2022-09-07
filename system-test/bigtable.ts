@@ -1419,7 +1419,6 @@ describe('Bigtable', () => {
     });
 
     it.only('should create backup of a table and copy it', async () => {
-      debugger;
       const backupId = generateId('backup');
       try {
         const [backup, op] = await TABLE.createBackup(backupId, {
@@ -1430,10 +1429,14 @@ describe('Bigtable', () => {
         assert.deepStrictEqual(backup.expireDate, expireTime);
         const newBackupId = generateId('backup');
         const newBackup = backup.cluster.backup(newBackupId);
-        debugger;
-        const copyBackupResult = await backup.copy(newBackup);
-        console.log('copyBackupResult');
-        console.log(copyBackupResult);
+        const [operation] = await backup.copy(newBackup);
+        await operation.promise();
+        const clusterName = `${newBackup.cluster.name.replace(
+          '{{projectId}}',
+          backup.bigtable.projectId
+        )}`;
+        const backupPath = `${clusterName}/backups/${newBackup.id}`;
+        assert.strictEqual(operation?.metadata?.name, backupPath);
       } catch (e) {
         console.log(e);
       }

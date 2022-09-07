@@ -103,10 +103,9 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
 
 export type CopyBackupCallback = (
   err: ServiceError | Error | null,
-  backup?: Backup,
-  operation?: Operation,
-  apiResponse?: IOperation
+  operation?: Operation
 ) => void;
+export type CopyBackupResponse = [Operation];
 
 export type CreateBackupCallback = (
   err: ServiceError | Error | null,
