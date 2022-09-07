@@ -1430,6 +1430,7 @@ describe('Bigtable', () => {
         assert.deepStrictEqual(backup.expireDate, expireTime);
         const newBackupId = generateId('backup');
         const newBackup = backup.cluster.backup(newBackupId);
+        await newBackup.setMetadata({expireTime: backup.expireDate});
         debugger;
         const copyBackupResult = await backup.copy(newBackup);
         console.log('copyBackupResult');
