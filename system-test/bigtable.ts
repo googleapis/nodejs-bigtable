@@ -1418,7 +1418,7 @@ describe('Bigtable', () => {
       Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
 
-    it('should create backup of a table and copy it', async () => {
+    it.only('should create backup of a table and copy it', async () => {
       debugger;
       const backupId = generateId('backup');
       try {

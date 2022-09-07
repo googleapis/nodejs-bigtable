@@ -266,10 +266,11 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         : ({} as CallOptions);
     const reqOpts = {
       parent: destination.cluster.name,
-      backup_id: destination.id,
-      source_backup: `${this.cluster.name}/backups/${this.id}`,
-      expire_time: destination.metadata?.expireTime,
+      backupId: destination.id,
+      sourceBackup: `${this.cluster.name}/backups/${this.id}`,
+      expireTime: destination.metadata?.expireTime,
     };
+    debugger;
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
