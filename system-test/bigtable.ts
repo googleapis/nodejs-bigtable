@@ -18,7 +18,7 @@ import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
 
-import {Backup, Bigtable, Instance} from '../src';
+import {Backup, Bigtable, Instance, InstanceOptions} from '../src';
 import {AppProfile} from '../src/app-profile.js';
 import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
@@ -1429,29 +1429,32 @@ describe('Bigtable', () => {
         assert.strictEqual(operation?.metadata?.name, backupPath);
       }
 
-      it.only('should create backup of a table and copy it', async () => {
+      it('should create backup of a table and copy it', async () => {
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
           expireTime,
         });
         await op.promise();
+        await backup.getMetadata();
         assert.deepStrictEqual(backup.expireDate, expireTime);
         const newBackupId = generateId('backup');
         const newBackup = backup.cluster.backup(newBackupId);
         await testCopyBackup(backup, newBackup);
       });
-      it('should create backup of a table and copy it on another cluster', async () => {
+      it.only('should create backup of a table and copy it on another cluster', async () => {
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
           expireTime,
         });
         await op.promise();
+        await backup.getMetadata();
         assert.deepStrictEqual(backup.expireDate, expireTime);
         // Create another instance
+        debugger;
         const instanceId = generateId('instance');
         const instance = bigtable.instance(instanceId);
         const clusterId = generateId('cluster');
-        const instanceOptions = {
+        const instanceOptions: InstanceOptions = {
           clusters: [
             {
               id: clusterId,
@@ -1461,15 +1464,19 @@ describe('Bigtable', () => {
             },
           ],
           labels: {'prod-label': 'prod-label'},
+          type: 'production',
         };
         // Create production instance with given options
         const [, operation] = await instance.create(instanceOptions);
         await operation.promise();
+        debugger;
         // Create and test the backup
         const cluster = new Cluster(instance, clusterId);
         const newBackupId = generateId('backup');
         const newBackup = cluster.backup(newBackupId);
         await testCopyBackup(backup, newBackup);
+        await newBackup.delete();
+        await instance.delete();
       });
     });
   });
