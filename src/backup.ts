@@ -34,7 +34,8 @@ import {
   CreateBackupCallback,
   CreateBackupResponse,
   IOperation,
-  CopyBackupCallback, CopyBackupResponse,
+  CopyBackupCallback,
+  CopyBackupResponse,
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';

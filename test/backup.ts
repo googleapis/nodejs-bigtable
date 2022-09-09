@@ -25,8 +25,9 @@ import * as backupTypes from '../src/backup';
 import * as instanceTypes from '../src/instance';
 import * as sinon from 'sinon';
 
-import {Bigtable} from '../src';
+import {Bigtable, RequestOptions} from '../src';
 import {Table} from '../src/table';
+import {generateId} from '../system-test/common';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -220,6 +221,38 @@ describe('Bigtable/Backup', () => {
       };
 
       backup.create(config, done);
+    });
+  });
+
+  describe('copy', () => {
+    it.only('should correctly copy backup from the Cluster', done => {
+      const backupId = generateId('backup');
+      const newBackupId = generateId('backup');
+      const oldBackup = new Backup(CLUSTER, backupId);
+      const newBackup = new Backup(CLUSTER, newBackupId);
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      oldBackup.bigtable.request = (
+        config: RequestOptions,
+        callback: (err: ServiceError | null, res: RequestOptions) => void
+      ) => {
+        callback(null, config);
+      };
+      const callback: (err: any, config: any) => void = (
+        err: ServiceError | Error | null,
+        config: any
+      ) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'copyBackup');
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: 'a/b/c/d',
+          backupId: newBackupId,
+          sourceBackup: `a/b/c/d/backups/${backupId}`,
+          expireTime: undefined,
+        });
+        done();
+      };
+      oldBackup.copy(newBackup, callback);
     });
   });
 

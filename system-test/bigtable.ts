@@ -1441,7 +1441,7 @@ describe('Bigtable', () => {
         const newBackup = backup.cluster.backup(newBackupId);
         await testCopyBackup(backup, newBackup);
       });
-      it.only('should create backup of a table and copy it on another cluster', async () => {
+      it('should create backup of a table and copy it on another cluster', async () => {
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
           expireTime,
@@ -1450,7 +1450,6 @@ describe('Bigtable', () => {
         await backup.getMetadata();
         assert.deepStrictEqual(backup.expireDate, expireTime);
         // Create another instance
-        debugger;
         const instanceId = generateId('instance');
         const instance = bigtable.instance(instanceId);
         const clusterId = generateId('cluster');
@@ -1469,7 +1468,6 @@ describe('Bigtable', () => {
         // Create production instance with given options
         const [, operation] = await instance.create(instanceOptions);
         await operation.promise();
-        debugger;
         // Create and test the backup
         const cluster = new Cluster(instance, clusterId);
         const newBackupId = generateId('backup');
