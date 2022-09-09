@@ -963,13 +963,6 @@
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Instance",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
                       },
-                      "oneofs": {
-                        "_satisfiesPzs": {
-                          "oneof": [
-                            "satisfiesPzs"
-                          ]
-                        }
-                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -984,39 +977,22 @@
                         },
                         "state": {
                           "type": "State",
-                          "id": 3,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 3
                         },
                         "type": {
                           "type": "Type",
-                          "id": 4,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
+                          "id": 4
                         },
                         "labels": {
                           "keyType": "string",
                           "type": "string",
-                          "id": 5,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
+                          "id": 5
                         },
                         "createTime": {
                           "type": "google.protobuf.Timestamp",
                           "id": 7,
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
-                        },
-                        "satisfiesPzs": {
-                          "type": "bool",
-                          "id": 8,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY",
-                            "proto3_optional": true
                           }
                         }
                       },
@@ -1042,10 +1018,6 @@
                         "cpuUtilizationPercent": {
                           "type": "int32",
                           "id": 2
-                        },
-                        "storageUtilizationGibPerNode": {
-                          "type": "int32",
-                          "id": 3
                         }
                       }
                     },
@@ -1409,34 +1381,6 @@
                             }
                           ]
                         },
-                        "UndeleteTable": {
-                          "requestType": "UndeleteTableRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
-                            "(google.api.http).body": "*",
-                            "(google.api.method_signature)": "name",
-                            "(google.longrunning.operation_info).response_type": "Table",
-                            "(google.longrunning.operation_info).metadata_type": "UndeleteTableMetadata"
-                          },
-                          "parsedOptions": [
-                            {
-                              "(google.api.http)": {
-                                "post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
-                                "body": "*"
-                              }
-                            },
-                            {
-                              "(google.api.method_signature)": "name"
-                            },
-                            {
-                              "(google.longrunning.operation_info)": {
-                                "response_type": "Table",
-                                "metadata_type": "UndeleteTableMetadata"
-                              }
-                            }
-                          ]
-                        },
                         "ModifyColumnFamilies": {
                           "requestType": "ModifyColumnFamiliesRequest",
                           "responseType": "Table",
@@ -1717,34 +1661,6 @@
                               "(google.longrunning.operation_info)": {
                                 "response_type": "Table",
                                 "metadata_type": "RestoreTableMetadata"
-                              }
-                            }
-                          ]
-                        },
-                        "CopyBackup": {
-                          "requestType": "CopyBackupRequest",
-                          "responseType": "google.longrunning.Operation",
-                          "options": {
-                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups:copy",
-                            "(google.api.http).body": "*",
-                            "(google.api.method_signature)": "parent,backup_id,source_backup,expire_time",
-                            "(google.longrunning.operation_info).response_type": "Backup",
-                            "(google.longrunning.operation_info).metadata_type": "CopyBackupMetadata"
-                          },
-                          "parsedOptions": [
-                            {
-                              "(google.api.http)": {
-                                "post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups:copy",
-                                "body": "*"
-                              }
-                            },
-                            {
-                              "(google.api.method_signature)": "parent,backup_id,source_backup,expire_time"
-                            },
-                            {
-                              "(google.longrunning.operation_info)": {
-                                "response_type": "Backup",
-                                "metadata_type": "CopyBackupMetadata"
                               }
                             }
                           ]
@@ -2063,34 +1979,6 @@
                             "(google.api.field_behavior)": "REQUIRED",
                             "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
-                        }
-                      }
-                    },
-                    "UndeleteTableRequest": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
-                          }
-                        }
-                      }
-                    },
-                    "UndeleteTableMetadata": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1
-                        },
-                        "startTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 2
-                        },
-                        "endTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 3
                         }
                       }
                     },
@@ -2445,62 +2333,6 @@
                         }
                       }
                     },
-                    "CopyBackupRequest": {
-                      "fields": {
-                        "parent": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
-                          }
-                        },
-                        "backupId": {
-                          "type": "string",
-                          "id": 2,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
-                        },
-                        "sourceBackup": {
-                          "type": "string",
-                          "id": 3,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED",
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
-                          }
-                        },
-                        "expireTime": {
-                          "type": "google.protobuf.Timestamp",
-                          "id": 4,
-                          "options": {
-                            "(google.api.field_behavior)": "REQUIRED"
-                          }
-                        }
-                      }
-                    },
-                    "CopyBackupMetadata": {
-                      "fields": {
-                        "name": {
-                          "type": "string",
-                          "id": 1,
-                          "options": {
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
-                          }
-                        },
-                        "sourceBackup": {
-                          "type": "string",
-                          "id": 2,
-                          "options": {
-                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
-                          }
-                        },
-                        "progress": {
-                          "type": "OperationProgress",
-                          "id": 3
-                        }
-                      }
-                    },
                     "RestoreInfo": {
                       "oneofs": {
                         "sourceInfo": {
@@ -2713,24 +2545,15 @@
                         },
                         "sourceTable": {
                           "type": "Table",
-                          "id": 2,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 2
                         },
                         "dataSizeBytes": {
                           "type": "int64",
-                          "id": 3,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 3
                         },
                         "createTime": {
                           "type": "google.protobuf.Timestamp",
-                          "id": 4,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 4
                         },
                         "deleteTime": {
                           "type": "google.protobuf.Timestamp",
@@ -2738,10 +2561,7 @@
                         },
                         "state": {
                           "type": "State",
-                          "id": 6,
-                          "options": {
-                            "(google.api.field_behavior)": "OUTPUT_ONLY"
-                          }
+                          "id": 6
                         },
                         "description": {
                           "type": "string",
@@ -4766,13 +4586,6 @@
                     "default": false
                   }
                 },
-                "unverifiedLazy": {
-                  "type": "bool",
-                  "id": 15,
-                  "options": {
-                    "default": false
-                  }
-                },
                 "deprecated": {
                   "type": "bool",
                   "id": 3,
@@ -5082,15 +4895,6 @@
                 }
               }
             },
-            "FieldMask": {
-              "fields": {
-                "paths": {
-                  "rule": "repeated",
-                  "type": "string",
-                  "id": 1
-                }
-              }
-            },
             "Any": {
               "fields": {
                 "type_url": {
@@ -5117,6 +4921,15 @@
             },
             "Empty": {
               "fields": {}
+            },
+            "FieldMask": {
+              "fields": {
+                "paths": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 1
+                }
+              }
             },
             "DoubleValue": {
               "fields": {
@@ -5276,10 +5089,6 @@
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED"
                       }
-                    },
-                    "updateMask": {
-                      "type": "google.protobuf.FieldMask",
-                      "id": 3
                     }
                   }
                 },
@@ -5347,11 +5156,6 @@
                       "type": "Binding",
                       "id": 4
                     },
-                    "auditConfigs": {
-                      "rule": "repeated",
-                      "type": "AuditConfig",
-                      "id": 6
-                    },
                     "etag": {
                       "type": "bytes",
                       "id": 3
@@ -5372,42 +5176,6 @@
                     "condition": {
                       "type": "google.type.Expr",
                       "id": 3
-                    }
-                  }
-                },
-                "AuditConfig": {
-                  "fields": {
-                    "service": {
-                      "type": "string",
-                      "id": 1
-                    },
-                    "auditLogConfigs": {
-                      "rule": "repeated",
-                      "type": "AuditLogConfig",
-                      "id": 3
-                    }
-                  }
-                },
-                "AuditLogConfig": {
-                  "fields": {
-                    "logType": {
-                      "type": "LogType",
-                      "id": 1
-                    },
-                    "exemptedMembers": {
-                      "rule": "repeated",
-                      "type": "string",
-                      "id": 2
-                    }
-                  },
-                  "nested": {
-                    "LogType": {
-                      "values": {
-                        "LOG_TYPE_UNSPECIFIED": 0,
-                        "ADMIN_READ": 1,
-                        "DATA_WRITE": 2,
-                        "DATA_READ": 3
-                      }
                     }
                   }
                 },

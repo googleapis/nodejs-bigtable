@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,3 +18,4 @@
 
 export {BigtableInstanceAdminClient} from './bigtable_instance_admin_client';
 export {BigtableTableAdminClient} from './bigtable_table_admin_client';
+export {BigtableClient} from './bigtable_client';

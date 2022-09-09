@@ -322,11 +322,6 @@
                 "createTableFromSnapshot"
               ]
             },
-            "UndeleteTable": {
-              "methods": [
-                "undeleteTable"
-              ]
-            },
             "SnapshotTable": {
               "methods": [
                 "snapshotTable"
@@ -340,11 +335,6 @@
             "RestoreTable": {
               "methods": [
                 "restoreTable"
-              ]
-            },
-            "CopyBackup": {
-              "methods": [
-                "copyBackup"
               ]
             },
             "ListTables": {
@@ -453,11 +443,6 @@
                 "createTableFromSnapshot"
               ]
             },
-            "UndeleteTable": {
-              "methods": [
-                "undeleteTable"
-              ]
-            },
             "SnapshotTable": {
               "methods": [
                 "snapshotTable"
@@ -471,11 +456,6 @@
             "RestoreTable": {
               "methods": [
                 "restoreTable"
-              ]
-            },
-            "CopyBackup": {
-              "methods": [
-                "copyBackup"
               ]
             },
             "ListTables": {
