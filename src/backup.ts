@@ -15,6 +15,7 @@
 import {PreciseDate} from '@google-cloud/precise-date';
 import {promisifyAll} from '@google-cloud/promisify';
 import snakeCase = require('lodash.snakecase');
+import {google} from '../protos/protos';
 import {
   Bigtable,
   Cluster,
@@ -22,7 +23,6 @@ import {
   GetIamPolicyOptions,
   GetIamPolicyResponse,
   Policy,
-  SetClusterMetadataCallback,
   SetIamPolicyCallback,
   SetIamPolicyResponse,
   TestIamPermissionsCallback,
@@ -39,8 +39,6 @@ import {
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
-import {google} from '../protos/protos';
-import ICopyBackupMetadata = google.bigtable.admin.v2.ICopyBackupMetadata;
 
 type IEmpty = google.protobuf.IEmpty;
 export type IBackup = google.bigtable.admin.v2.IBackup;
