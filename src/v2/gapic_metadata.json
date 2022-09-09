@@ -322,6 +322,11 @@
                 "createTableFromSnapshot"
               ]
             },
+            "UndeleteTable": {
+              "methods": [
+                "undeleteTable"
+              ]
+            },
             "SnapshotTable": {
               "methods": [
                 "snapshotTable"
@@ -441,6 +446,11 @@
             "CreateTableFromSnapshot": {
               "methods": [
                 "createTableFromSnapshot"
+              ]
+            },
+            "UndeleteTable": {
+              "methods": [
+                "undeleteTable"
               ]
             },
             "SnapshotTable": {

@@ -963,6 +963,13 @@
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Instance",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
                       },
+                      "oneofs": {
+                        "_satisfiesPzs": {
+                          "oneof": [
+                            "satisfiesPzs"
+                          ]
+                        }
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -994,6 +1001,14 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "satisfiesPzs": {
+                          "type": "bool",
+                          "id": 8,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY",
+                            "proto3_optional": true
+                          }
                         }
                       },
                       "nested": {
@@ -1018,6 +1033,10 @@
                         "cpuUtilizationPercent": {
                           "type": "int32",
                           "id": 2
+                        },
+                        "storageUtilizationGibPerNode": {
+                          "type": "int32",
+                          "id": 3
                         }
                       }
                     },
@@ -1378,6 +1397,34 @@
                             },
                             {
                               "(google.api.method_signature)": "name"
+                            }
+                          ]
+                        },
+                        "UndeleteTable": {
+                          "requestType": "UndeleteTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "UndeleteTableMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
+                                "body": "*"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "name"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Table",
+                                "metadata_type": "UndeleteTableMetadata"
+                              }
                             }
                           ]
                         },
@@ -1979,6 +2026,34 @@
                             "(google.api.field_behavior)": "REQUIRED",
                             "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
+                        }
+                      }
+                    },
+                    "UndeleteTableRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                          }
+                        }
+                      }
+                    },
+                    "UndeleteTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
                         }
                       }
                     },
@@ -2695,7 +2770,7 @@
                 "csharp_namespace": "Google.Cloud.Bigtable.V2",
                 "go_package": "google.golang.org/genproto/googleapis/bigtable/v2;bigtable",
                 "java_multiple_files": true,
-                "java_outer_classname": "DataProto",
+                "java_outer_classname": "ResponseParamsProto",
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
@@ -3733,6 +3808,36 @@
                     "incrementAmount": {
                       "type": "int64",
                       "id": 4
+                    }
+                  }
+                },
+                "ResponseParams": {
+                  "oneofs": {
+                    "_zoneId": {
+                      "oneof": [
+                        "zoneId"
+                      ]
+                    },
+                    "_clusterId": {
+                      "oneof": [
+                        "clusterId"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "zoneId": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "proto3_optional": true
+                      }
+                    },
+                    "clusterId": {
+                      "type": "string",
+                      "id": 2,
+                      "options": {
+                        "proto3_optional": true
+                      }
                     }
                   }
                 }

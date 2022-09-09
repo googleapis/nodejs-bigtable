@@ -53,6 +53,10 @@
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
+        "UndeleteTable": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
         "ModifyColumnFamilies": {
           "timeout_millis": 300000,
           "retry_codes_name": "non_idempotent",

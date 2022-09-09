@@ -73,99 +73,101 @@ function stubServerStreamingCall<ResponseType>(
 }
 
 describe('v2.BigtableClient', () => {
-  it('has servicePath', () => {
-    const servicePath = bigtableModule.v2.BigtableClient.servicePath;
-    assert(servicePath);
-  });
-
-  it('has apiEndpoint', () => {
-    const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
-    assert(apiEndpoint);
-  });
-
-  it('has port', () => {
-    const port = bigtableModule.v2.BigtableClient.port;
-    assert(port);
-    assert(typeof port === 'number');
-  });
-
-  it('should create a client with no option', () => {
-    const client = new bigtableModule.v2.BigtableClient();
-    assert(client);
-  });
-
-  it('should create a client with gRPC fallback', () => {
-    const client = new bigtableModule.v2.BigtableClient({
-      fallback: true,
+  describe('Common methods', () => {
+    it('has servicePath', () => {
+      const servicePath = bigtableModule.v2.BigtableClient.servicePath;
+      assert(servicePath);
     });
-    assert(client);
-  });
 
-  it('has initialize method and supports deferred initialization', async () => {
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has apiEndpoint', () => {
+      const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
+      assert(apiEndpoint);
     });
-    assert.strictEqual(client.bigtableStub, undefined);
-    await client.initialize();
-    assert(client.bigtableStub);
-  });
 
-  it('has close method for the initialized client', done => {
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has port', () => {
+      const port = bigtableModule.v2.BigtableClient.port;
+      assert(port);
+      assert(typeof port === 'number');
     });
-    client.initialize();
-    assert(client.bigtableStub);
-    client.close().then(() => {
-      done();
-    });
-  });
 
-  it('has close method for the non-initialized client', done => {
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('should create a client with no option', () => {
+      const client = new bigtableModule.v2.BigtableClient();
+      assert(client);
     });
-    assert.strictEqual(client.bigtableStub, undefined);
-    client.close().then(() => {
-      done();
-    });
-  });
 
-  it('has getProjectId method', async () => {
-    const fakeProjectId = 'fake-project-id';
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('should create a client with gRPC fallback', () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        fallback: true,
+      });
+      assert(client);
     });
-    client.auth.getProjectId = sinon.stub().resolves(fakeProjectId);
-    const result = await client.getProjectId();
-    assert.strictEqual(result, fakeProjectId);
-    assert((client.auth.getProjectId as SinonStub).calledWithExactly());
-  });
 
-  it('has getProjectId method with callback', async () => {
-    const fakeProjectId = 'fake-project-id';
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has initialize method and supports deferred initialization', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      assert.strictEqual(client.bigtableStub, undefined);
+      await client.initialize();
+      assert(client.bigtableStub);
     });
-    client.auth.getProjectId = sinon
-      .stub()
-      .callsArgWith(0, null, fakeProjectId);
-    const promise = new Promise((resolve, reject) => {
-      client.getProjectId((err?: Error | null, projectId?: string | null) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(projectId);
-        }
+
+    it('has close method for the initialized client', done => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      assert(client.bigtableStub);
+      client.close().then(() => {
+        done();
       });
     });
-    const result = await promise;
-    assert.strictEqual(result, fakeProjectId);
+
+    it('has close method for the non-initialized client', done => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      assert.strictEqual(client.bigtableStub, undefined);
+      client.close().then(() => {
+        done();
+      });
+    });
+
+    it('has getProjectId method', async () => {
+      const fakeProjectId = 'fake-project-id';
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.auth.getProjectId = sinon.stub().resolves(fakeProjectId);
+      const result = await client.getProjectId();
+      assert.strictEqual(result, fakeProjectId);
+      assert((client.auth.getProjectId as SinonStub).calledWithExactly());
+    });
+
+    it('has getProjectId method with callback', async () => {
+      const fakeProjectId = 'fake-project-id';
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.auth.getProjectId = sinon
+        .stub()
+        .callsArgWith(0, null, fakeProjectId);
+      const promise = new Promise((resolve, reject) => {
+        client.getProjectId((err?: Error | null, projectId?: string | null) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId);
+          }
+        });
+      });
+      const result = await promise;
+      assert.strictEqual(result, fakeProjectId);
+    });
   });
 
   describe('mutateRow', () => {
@@ -178,7 +180,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -208,7 +222,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -254,7 +280,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -281,6 +319,10 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.mutateRow(request), expectedError);
@@ -297,7 +339,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -327,7 +381,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -373,7 +439,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -403,6 +481,10 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.checkAndMutateRow(request), expectedError);
@@ -419,7 +501,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {name=projects/*/instances/*}
+      request.name = 'projects/value/instances/value';
+      expectedHeaderRequestParamsObj['name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -449,7 +543,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {name=projects/*/instances/*}
+      request.name = 'projects/value/instances/value';
+      expectedHeaderRequestParamsObj['name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -495,7 +601,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {name=projects/*/instances/*}
+      request.name = 'projects/value/instances/value';
+      expectedHeaderRequestParamsObj['name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -525,6 +643,10 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
+      // path template: {name=projects/*/instances/*}
+      request.name = 'projects/value/instances/value';
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.pingAndWarm(request), expectedError);
@@ -541,7 +663,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -572,7 +706,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -618,7 +764,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -648,6 +806,10 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.readModifyWriteRow(request), expectedError);
@@ -664,7 +826,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -706,7 +880,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -748,6 +934,10 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.readRows(request);
@@ -776,7 +966,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -819,7 +1021,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -861,6 +1075,10 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.sampleRowKeys(request);
@@ -889,7 +1107,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -932,7 +1162,19 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
+      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      expectedHeaderRequestParamsObj['table_name'] =
+        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
+      // path template is empty
+      request.appProfileId = 'value';
+      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
+      const expectedHeaderRequestParams = Object.entries(
+        expectedHeaderRequestParamsObj
+      )
+        .map(([key, value]) => `${key}=${value}`)
+        .join('&');
       const expectedOptions = {
         otherArgs: {
           headers: {
@@ -974,6 +1216,10 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
+      // path template: {table_name=projects/*/instances/*/tables/*}
+      request.tableName = 'projects/value/instances/value/tables/value';
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.mutateRows(request);
