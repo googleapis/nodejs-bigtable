@@ -4,6 +4,14 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.0.3](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.2...v4.0.3) (2022-09-09)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency uuid to v9 ([#1152](https://github.com/googleapis/nodejs-bigtable/issues/1152)) ([dea0425](https://github.com/googleapis/nodejs-bigtable/commit/dea0425df05218cf7fb42e4ef72f3952782f7bbb))
+* Wait for instances to get created in all samples ([#1149](https://github.com/googleapis/nodejs-bigtable/issues/1149)) ([c9dd9c6](https://github.com/googleapis/nodejs-bigtable/commit/c9dd9c614b963763b361394332ad227a86eb0de9))
+
 ## [4.0.2](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.1...v4.0.2) (2022-08-27)
 
 
