@@ -2553,6 +2553,10 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "deletionProtection": {
+                          "type": "bool",
+                          "id": 9
                         }
                       },
                       "nested": {
@@ -2772,6 +2776,13 @@
                             "(google.api.field_behavior)": "REQUIRED"
                           }
                         },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 10,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
                         "expireTime": {
                           "type": "google.protobuf.Timestamp",
                           "id": 3,
@@ -2851,6 +2862,13 @@
                         "sourceTable": {
                           "type": "string",
                           "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 10,
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }

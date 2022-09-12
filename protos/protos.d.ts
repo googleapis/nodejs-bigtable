@@ -9127,6 +9127,9 @@ export namespace google {
 
                     /** Table restoreInfo */
                     restoreInfo?: (google.bigtable.admin.v2.IRestoreInfo|null);
+
+                    /** Table deletionProtection */
+                    deletionProtection?: (boolean|null);
                 }
 
                 /** Represents a Table. */
@@ -9152,6 +9155,9 @@ export namespace google {
 
                     /** Table restoreInfo. */
                     public restoreInfo?: (google.bigtable.admin.v2.IRestoreInfo|null);
+
+                    /** Table deletionProtection. */
+                    public deletionProtection: boolean;
 
                     /**
                      * Creates a new Table instance using the specified properties.
@@ -10049,6 +10055,9 @@ export namespace google {
                     /** Backup sourceTable */
                     sourceTable?: (string|null);
 
+                    /** Backup sourceBackup */
+                    sourceBackup?: (string|null);
+
                     /** Backup expireTime */
                     expireTime?: (google.protobuf.ITimestamp|null);
 
@@ -10082,6 +10091,9 @@ export namespace google {
 
                     /** Backup sourceTable. */
                     public sourceTable: string;
+
+                    /** Backup sourceBackup. */
+                    public sourceBackup: string;
 
                     /** Backup expireTime. */
                     public expireTime?: (google.protobuf.ITimestamp|null);
@@ -10203,6 +10215,9 @@ export namespace google {
 
                     /** BackupInfo sourceTable */
                     sourceTable?: (string|null);
+
+                    /** BackupInfo sourceBackup */
+                    sourceBackup?: (string|null);
                 }
 
                 /** Represents a BackupInfo. */
@@ -10225,6 +10240,9 @@ export namespace google {
 
                     /** BackupInfo sourceTable. */
                     public sourceTable: string;
+
+                    /** BackupInfo sourceBackup. */
+                    public sourceBackup: string;
 
                     /**
                      * Creates a new BackupInfo instance using the specified properties.
