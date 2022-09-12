@@ -490,6 +490,12 @@ describe('Bigtable', () => {
       await table.get({autoCreate: true});
       await table.delete();
     });
+
+    it('should not delete a table if table deletion protection is enabled', async () => {
+      const table = INSTANCE.table(generateId('table'));
+      await table.get({autoCreate: true});
+      await table.delete();
+    });
   });
 
   describe('consistency tokens', () => {
