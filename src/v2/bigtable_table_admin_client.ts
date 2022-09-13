@@ -264,6 +264,12 @@ export class BigtableTableAdminClient {
     const createTableFromSnapshotMetadata = protoFilesRoot.lookup(
       '.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata'
     ) as gax.protobuf.Type;
+    const updateTableResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.Table'
+    ) as gax.protobuf.Type;
+    const updateTableMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.UpdateTableMetadata'
+    ) as gax.protobuf.Type;
     const undeleteTableResponse = protoFilesRoot.lookup(
       '.google.bigtable.admin.v2.Table'
     ) as gax.protobuf.Type;
@@ -298,6 +304,11 @@ export class BigtableTableAdminClient {
         createTableFromSnapshotMetadata.decode.bind(
           createTableFromSnapshotMetadata
         )
+      ),
+      updateTable: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        updateTableResponse.decode.bind(updateTableResponse),
+        updateTableMetadata.decode.bind(updateTableMetadata)
       ),
       undeleteTable: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
@@ -375,6 +386,7 @@ export class BigtableTableAdminClient {
       'createTableFromSnapshot',
       'listTables',
       'getTable',
+      'updateTable',
       'deleteTable',
       'undeleteTable',
       'modifyColumnFamilies',
@@ -2054,6 +2066,156 @@ export class BigtableTableAdminClient {
     return decodeOperation as LROperation<
       protos.google.bigtable.admin.v2.Table,
       protos.google.bigtable.admin.v2.CreateTableFromSnapshotMetadata
+    >;
+  }
+  /**
+   * Updates a specified table.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {google.bigtable.admin.v2.Table} request.table
+   *   Required. The table to update.
+   *   The table's `name` field is used to identify the table to update.
+   *   Format:
+   *   `projects/{project}/instances/{instance}/tables/{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*`
+   * @param {google.protobuf.FieldMask} request.updateMask
+   *   Required. The list of fields to update.
+   *   A mask specifying which fields (e.g. `deletion_protection`) in the `table`
+   *   field should be updated. This mask is relative to the `table` field, not to
+   *   the request message. The wildcard (*) path is currently not supported.
+   *   Currently UpdateTable is only supported for the following field:
+   *    * `deletion_protection`
+   *   If `column_families` is set in `update_mask`, it will return an
+   *   UNIMPLEMENTED error.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing
+   *   a long running operation. Its `promise()` method returns a promise
+   *   you can `await` for.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations)
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.update_table.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_async
+   */
+  updateTable(
+    request?: protos.google.bigtable.admin.v2.IUpdateTableRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.ITable,
+        protos.google.bigtable.admin.v2.IUpdateTableMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  >;
+  updateTable(
+    request: protos.google.bigtable.admin.v2.IUpdateTableRequest,
+    options: CallOptions,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.ITable,
+        protos.google.bigtable.admin.v2.IUpdateTableMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  updateTable(
+    request: protos.google.bigtable.admin.v2.IUpdateTableRequest,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.ITable,
+        protos.google.bigtable.admin.v2.IUpdateTableMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  updateTable(
+    request?: protos.google.bigtable.admin.v2.IUpdateTableRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          LROperation<
+            protos.google.bigtable.admin.v2.ITable,
+            protos.google.bigtable.admin.v2.IUpdateTableMetadata
+          >,
+          protos.google.longrunning.IOperation | null | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.ITable,
+        protos.google.bigtable.admin.v2.IUpdateTableMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.ITable,
+        protos.google.bigtable.admin.v2.IUpdateTableMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        'table.name': request.table!.name || '',
+      });
+    this.initialize();
+    return this.innerApiCalls.updateTable(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by `updateTable()`.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations)
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.update_table.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_async
+   */
+  async checkUpdateTableProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Table,
+      protos.google.bigtable.admin.v2.UpdateTableMetadata
+    >
+  > {
+    const request =
+      new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
+        {name}
+      );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(
+      operation,
+      this.descriptors.longrunning.updateTable,
+      this._gaxModule.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Table,
+      protos.google.bigtable.admin.v2.UpdateTableMetadata
     >;
   }
   /**

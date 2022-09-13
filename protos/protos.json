@@ -1382,6 +1382,34 @@
                             }
                           ]
                         },
+                        "UpdateTable": {
+                          "requestType": "UpdateTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{table.name=projects/*/instances/*/tables/*}",
+                            "(google.api.http).body": "table",
+                            "(google.api.method_signature)": "table,update_mask",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateTableMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "patch": "/v2/{table.name=projects/*/instances/*/tables/*}",
+                                "body": "table"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "table,update_mask"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Table",
+                                "metadata_type": "UpdateTableMetadata"
+                              }
+                            }
+                          ]
+                        },
                         "DeleteTable": {
                           "requestType": "DeleteTableRequest",
                           "responseType": "google.protobuf.Empty",
@@ -2017,6 +2045,40 @@
                         }
                       }
                     },
+                    "UpdateTableRequest": {
+                      "fields": {
+                        "table": {
+                          "type": "Table",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
                     "DeleteTableRequest": {
                       "fields": {
                         "name": {
@@ -2463,6 +2525,10 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "deletionProtection": {
+                          "type": "bool",
+                          "id": 9
                         }
                       },
                       "nested": {

@@ -1196,6 +1196,50 @@
       }
     },
     {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_async",
+      "title": "bigtable updateTable Sample",
+      "origin": "API_DEFINITION",
+      "description": " Updates a specified table.",
+      "canonical": true,
+      "file": "bigtable_table_admin.update_table.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 69,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "UpdateTable",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UpdateTable",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table",
+            "type": ".google.bigtable.admin.v2.Table"
+          },
+          {
+            "name": "update_mask",
+            "type": ".google.protobuf.FieldMask"
+          }
+        ],
+        "resultType": ".google.longrunning.Operation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateTable",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UpdateTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      }
+    },
+    {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteTable_async",
       "title": "bigtable deleteTable Sample",
       "origin": "API_DEFINITION",

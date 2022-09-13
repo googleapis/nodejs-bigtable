@@ -11220,6 +11220,39 @@
                          */
     
                         /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateTable}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef UpdateTableCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls UpdateTable.
+                         * @function updateTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} request UpdateTableRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.UpdateTableCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.updateTable = function updateTable(request, callback) {
+                            return this.rpcCall(updateTable, $root.google.bigtable.admin.v2.UpdateTableRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "UpdateTable" });
+    
+                        /**
+                         * Calls UpdateTable.
+                         * @function updateTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} request UpdateTableRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
                          * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteTable}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef DeleteTableCallback
@@ -14540,6 +14573,503 @@
                         };
     
                         return GetTableRequest;
+                    })();
+    
+                    v2.UpdateTableRequest = (function() {
+    
+                        /**
+                         * Properties of an UpdateTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUpdateTableRequest
+                         * @property {google.bigtable.admin.v2.ITable|null} [table] UpdateTableRequest table
+                         * @property {google.protobuf.IFieldMask|null} [updateMask] UpdateTableRequest updateMask
+                         */
+    
+                        /**
+                         * Constructs a new UpdateTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UpdateTableRequest.
+                         * @implements IUpdateTableRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest=} [properties] Properties to set
+                         */
+                        function UpdateTableRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UpdateTableRequest table.
+                         * @member {google.bigtable.admin.v2.ITable|null|undefined} table
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @instance
+                         */
+                        UpdateTableRequest.prototype.table = null;
+    
+                        /**
+                         * UpdateTableRequest updateMask.
+                         * @member {google.protobuf.IFieldMask|null|undefined} updateMask
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @instance
+                         */
+                        UpdateTableRequest.prototype.updateMask = null;
+    
+                        /**
+                         * Creates a new UpdateTableRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest instance
+                         */
+                        UpdateTableRequest.create = function create(properties) {
+                            return new UpdateTableRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} message UpdateTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.table != null && Object.hasOwnProperty.call(message, "table"))
+                                $root.google.bigtable.admin.v2.Table.encode(message.table, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.updateMask != null && Object.hasOwnProperty.call(message, "updateMask"))
+                                $root.google.protobuf.FieldMask.encode(message.updateMask, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} message UpdateTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UpdateTableRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.table = $root.google.bigtable.admin.v2.Table.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 2: {
+                                        message.updateMask = $root.google.protobuf.FieldMask.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UpdateTableRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UpdateTableRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.table != null && message.hasOwnProperty("table")) {
+                                var error = $root.google.bigtable.admin.v2.Table.verify(message.table);
+                                if (error)
+                                    return "table." + error;
+                            }
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask")) {
+                                var error = $root.google.protobuf.FieldMask.verify(message.updateMask);
+                                if (error)
+                                    return "updateMask." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UpdateTableRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest
+                         */
+                        UpdateTableRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UpdateTableRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UpdateTableRequest();
+                            if (object.table != null) {
+                                if (typeof object.table !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableRequest.table: object expected");
+                                message.table = $root.google.bigtable.admin.v2.Table.fromObject(object.table);
+                            }
+                            if (object.updateMask != null) {
+                                if (typeof object.updateMask !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableRequest.updateMask: object expected");
+                                message.updateMask = $root.google.protobuf.FieldMask.fromObject(object.updateMask);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UpdateTableRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.UpdateTableRequest} message UpdateTableRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UpdateTableRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.table = null;
+                                object.updateMask = null;
+                            }
+                            if (message.table != null && message.hasOwnProperty("table"))
+                                object.table = $root.google.bigtable.admin.v2.Table.toObject(message.table, options);
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask"))
+                                object.updateMask = $root.google.protobuf.FieldMask.toObject(message.updateMask, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UpdateTableRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UpdateTableRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UpdateTableRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UpdateTableRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UpdateTableRequest";
+                        };
+    
+                        return UpdateTableRequest;
+                    })();
+    
+                    v2.UpdateTableMetadata = (function() {
+    
+                        /**
+                         * Properties of an UpdateTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUpdateTableMetadata
+                         * @property {string|null} [name] UpdateTableMetadata name
+                         * @property {google.protobuf.ITimestamp|null} [startTime] UpdateTableMetadata startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] UpdateTableMetadata endTime
+                         */
+    
+                        /**
+                         * Constructs a new UpdateTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UpdateTableMetadata.
+                         * @implements IUpdateTableMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata=} [properties] Properties to set
+                         */
+                        function UpdateTableMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UpdateTableMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         */
+                        UpdateTableMetadata.prototype.name = "";
+    
+                        /**
+                         * UpdateTableMetadata startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         */
+                        UpdateTableMetadata.prototype.startTime = null;
+    
+                        /**
+                         * UpdateTableMetadata endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         */
+                        UpdateTableMetadata.prototype.endTime = null;
+    
+                        /**
+                         * Creates a new UpdateTableMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata instance
+                         */
+                        UpdateTableMetadata.create = function create(properties) {
+                            return new UpdateTableMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata} message UpdateTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata} message UpdateTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UpdateTableMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UpdateTableMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UpdateTableMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UpdateTableMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata
+                         */
+                        UpdateTableMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UpdateTableMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UpdateTableMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableMetadata.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableMetadata.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UpdateTableMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.UpdateTableMetadata} message UpdateTableMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UpdateTableMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UpdateTableMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UpdateTableMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UpdateTableMetadata
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UpdateTableMetadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UpdateTableMetadata";
+                        };
+    
+                        return UpdateTableMetadata;
                     })();
     
                     v2.DeleteTableRequest = (function() {
@@ -20342,6 +20872,7 @@
                          * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
                          * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
                          * @property {google.bigtable.admin.v2.IRestoreInfo|null} [restoreInfo] Table restoreInfo
+                         * @property {boolean|null} [deletionProtection] Table deletionProtection
                          */
     
                         /**
@@ -20402,6 +20933,14 @@
                         Table.prototype.restoreInfo = null;
     
                         /**
+                         * Table deletionProtection.
+                         * @member {boolean} deletionProtection
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.deletionProtection = false;
+    
+                        /**
                          * Creates a new Table instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.Table
@@ -20441,6 +20980,8 @@
                                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
                             if (message.restoreInfo != null && Object.hasOwnProperty.call(message, "restoreInfo"))
                                 $root.google.bigtable.admin.v2.RestoreInfo.encode(message.restoreInfo, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            if (message.deletionProtection != null && Object.hasOwnProperty.call(message, "deletionProtection"))
+                                writer.uint32(/* id 9, wireType 0 =*/72).bool(message.deletionProtection);
                             return writer;
                         };
     
@@ -20533,6 +21074,10 @@
                                         message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.decode(reader, reader.uint32());
                                         break;
                                     }
+                                case 9: {
+                                        message.deletionProtection = reader.bool();
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -20604,6 +21149,9 @@
                                 if (error)
                                     return "restoreInfo." + error;
                             }
+                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
+                                if (typeof message.deletionProtection !== "boolean")
+                                    return "deletionProtection: boolean expected";
                             return null;
                         };
     
@@ -20656,6 +21204,8 @@
                                     throw TypeError(".google.bigtable.admin.v2.Table.restoreInfo: object expected");
                                 message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.fromObject(object.restoreInfo);
                             }
+                            if (object.deletionProtection != null)
+                                message.deletionProtection = Boolean(object.deletionProtection);
                             return message;
                         };
     
@@ -20680,6 +21230,7 @@
                                 object.name = "";
                                 object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
                                 object.restoreInfo = null;
+                                object.deletionProtection = false;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -20698,6 +21249,8 @@
                                 object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
                             if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
                                 object.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.toObject(message.restoreInfo, options);
+                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
+                                object.deletionProtection = message.deletionProtection;
                             return object;
                         };
     
