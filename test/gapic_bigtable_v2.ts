@@ -27,6 +27,21 @@ import {PassThrough} from 'stream';
 
 import {protobuf} from 'google-gax';
 
+// Dynamically loaded proto JSON is needed to get the type information
+// to fill in default values for request objects
+const root = protobuf.Root.fromJSON(
+  require('../protos/protos.json')
+).resolveAll();
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getTypeDefaultValue(typeName: string, fields: string[]) {
+  let type = root.lookupType(typeName) as protobuf.Type;
+  for (const field of fields.slice(0, -1)) {
+    type = type.fields[field]?.resolvedType as protobuf.Type;
+  }
+  return type.fields[fields[fields.length - 1]]?.defaultValue;
+}
+
 function generateSampleMessage<T extends object>(instance: T) {
   const filledObject = (
     instance.constructor as typeof protobuf.Message
@@ -180,37 +195,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowResponse()
       );
       client.innerApiCalls.mutateRow = stubSimpleCall(expectedResponse);
       const [response] = await client.mutateRow(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.mutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRow without error using callback', async () => {
@@ -222,26 +223,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowResponse()
       );
@@ -264,11 +248,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.mutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRow with error', async () => {
@@ -280,34 +267,20 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.mutateRow = stubSimpleCall(undefined, expectedError);
       await assert.rejects(client.mutateRow(request), expectedError);
-      assert(
-        (client.innerApiCalls.mutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRow with closed client', async () => {
@@ -319,8 +292,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
@@ -339,37 +310,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowResponse()
       );
       client.innerApiCalls.checkAndMutateRow = stubSimpleCall(expectedResponse);
       const [response] = await client.checkAndMutateRow(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.checkAndMutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkAndMutateRow without error using callback', async () => {
@@ -381,26 +338,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowResponse()
       );
@@ -423,11 +363,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.checkAndMutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkAndMutateRow with error', async () => {
@@ -439,37 +382,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.checkAndMutateRow = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.checkAndMutateRow(request), expectedError);
-      assert(
-        (client.innerApiCalls.checkAndMutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkAndMutateRow with closed client', async () => {
@@ -481,8 +410,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
@@ -501,37 +428,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {name=projects/*/instances/*}
-      request.name = 'projects/value/instances/value';
-      expectedHeaderRequestParamsObj['name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmResponse()
       );
       client.innerApiCalls.pingAndWarm = stubSimpleCall(expectedResponse);
       const [response] = await client.pingAndWarm(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.pingAndWarm as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes pingAndWarm without error using callback', async () => {
@@ -543,26 +456,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {name=projects/*/instances/*}
-      request.name = 'projects/value/instances/value';
-      expectedHeaderRequestParamsObj['name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmResponse()
       );
@@ -585,11 +481,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.pingAndWarm as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes pingAndWarm with error', async () => {
@@ -601,37 +500,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {name=projects/*/instances/*}
-      request.name = 'projects/value/instances/value';
-      expectedHeaderRequestParamsObj['name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.pingAndWarm = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.pingAndWarm(request), expectedError);
-      assert(
-        (client.innerApiCalls.pingAndWarm as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes pingAndWarm with closed client', async () => {
@@ -643,8 +528,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      // path template: {name=projects/*/instances/*}
-      request.name = 'projects/value/instances/value';
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
@@ -663,26 +546,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowResponse()
       );
@@ -690,11 +556,14 @@ describe('v2.BigtableClient', () => {
         stubSimpleCall(expectedResponse);
       const [response] = await client.readModifyWriteRow(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.readModifyWriteRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readModifyWriteRow without error using callback', async () => {
@@ -706,26 +575,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowResponse()
       );
@@ -748,11 +600,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.readModifyWriteRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readModifyWriteRow with error', async () => {
@@ -764,37 +619,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.readModifyWriteRow = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.readModifyWriteRow(request), expectedError);
-      assert(
-        (client.innerApiCalls.readModifyWriteRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readModifyWriteRow with closed client', async () => {
@@ -806,8 +647,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
@@ -826,26 +665,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsResponse()
       );
@@ -864,11 +686,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.readRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readRows with error', async () => {
@@ -880,26 +705,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.readRows = stubServerStreamingCall(
         undefined,
@@ -918,11 +726,14 @@ describe('v2.BigtableClient', () => {
         });
       });
       await assert.rejects(promise, expectedError);
-      assert(
-        (client.innerApiCalls.readRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readRows with closed client', async () => {
@@ -934,8 +745,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
@@ -966,26 +775,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysResponse()
       );
@@ -1005,11 +797,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.sampleRowKeys as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes sampleRowKeys with error', async () => {
@@ -1021,26 +816,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.sampleRowKeys = stubServerStreamingCall(
         undefined,
@@ -1059,11 +837,14 @@ describe('v2.BigtableClient', () => {
         });
       });
       await assert.rejects(promise, expectedError);
-      assert(
-        (client.innerApiCalls.sampleRowKeys as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes sampleRowKeys with closed client', async () => {
@@ -1075,8 +856,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
@@ -1107,26 +886,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsResponse()
       );
@@ -1146,11 +908,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.mutateRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRows with error', async () => {
@@ -1162,26 +927,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      const expectedHeaderRequestParamsObj: {[key: string]: string} = {};
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
-      expectedHeaderRequestParamsObj['table_name'] =
-        'projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue';
       // path template is empty
       request.appProfileId = 'value';
-      expectedHeaderRequestParamsObj['app_profile_id'] = 'value';
-      const expectedHeaderRequestParams = Object.entries(
-        expectedHeaderRequestParamsObj
-      )
-        .map(([key, value]) => `${key}=${value}`)
-        .join('&');
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.mutateRows = stubServerStreamingCall(
         undefined,
@@ -1200,11 +948,14 @@ describe('v2.BigtableClient', () => {
         });
       });
       await assert.rejects(promise, expectedError);
-      assert(
-        (client.innerApiCalls.mutateRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRows with closed client', async () => {
@@ -1216,8 +967,6 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      // path template: {table_name=projects/*/instances/*/tables/*}
-      request.tableName = 'projects/value/instances/value/tables/value';
       // path template is empty
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');

@@ -573,7 +573,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.getInstance(request, options, callback);
@@ -661,7 +661,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     this.initialize();
     return this.innerApiCalls.listInstances(request, options, callback);
@@ -774,7 +774,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.updateInstance(request, options, callback);
@@ -860,7 +860,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.deleteInstance(request, options, callback);
@@ -944,7 +944,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.getCluster(request, options, callback);
@@ -1034,7 +1034,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     this.initialize();
     return this.innerApiCalls.listClusters(request, options, callback);
@@ -1120,7 +1120,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.deleteCluster(request, options, callback);
@@ -1222,7 +1222,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     this.initialize();
     return this.innerApiCalls.createAppProfile(request, options, callback);
@@ -1308,7 +1308,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.getAppProfile(request, options, callback);
@@ -1402,7 +1402,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.deleteAppProfile(request, options, callback);
@@ -1490,7 +1490,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        resource: request.resource || '',
+        resource: request.resource ?? '',
       });
     this.initialize();
     return this.innerApiCalls.getIamPolicy(request, options, callback);
@@ -1586,7 +1586,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        resource: request.resource || '',
+        resource: request.resource ?? '',
       });
     this.initialize();
     return this.innerApiCalls.setIamPolicy(request, options, callback);
@@ -1675,7 +1675,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        resource: request.resource || '',
+        resource: request.resource ?? '',
       });
     this.initialize();
     return this.innerApiCalls.testIamPermissions(request, options, callback);
@@ -1799,7 +1799,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     this.initialize();
     return this.innerApiCalls.createInstance(request, options, callback);
@@ -1941,7 +1941,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        'instance.name': request.instance!.name || '',
+        'instance.name': request.instance!.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.partialUpdateInstance(request, options, callback);
@@ -2094,7 +2094,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     this.initialize();
     return this.innerApiCalls.createCluster(request, options, callback);
@@ -2254,7 +2254,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        name: request.name || '',
+        name: request.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.updateCluster(request, options, callback);
@@ -2406,7 +2406,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        'cluster.name': request.cluster!.name || '',
+        'cluster.name': request.cluster!.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.partialUpdateCluster(request, options, callback);
@@ -2549,7 +2549,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        'app_profile.name': request.appProfile!.name || '',
+        'app_profile.name': request.appProfile!.name ?? '',
       });
     this.initialize();
     return this.innerApiCalls.updateAppProfile(request, options, callback);
@@ -2694,7 +2694,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     this.initialize();
     return this.innerApiCalls.listAppProfiles(request, options, callback);
@@ -2744,7 +2744,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     const defaultCallSettings = this._defaults['listAppProfiles'];
     const callSettings = defaultCallSettings.merge(options);
@@ -2803,7 +2803,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     const defaultCallSettings = this._defaults['listAppProfiles'];
     const callSettings = defaultCallSettings.merge(options);
@@ -2927,7 +2927,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     this.initialize();
     return this.innerApiCalls.listHotTablets(request, options, callback);
@@ -2984,7 +2984,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     const defaultCallSettings = this._defaults['listHotTablets'];
     const callSettings = defaultCallSettings.merge(options);
@@ -3050,7 +3050,7 @@ export class BigtableInstanceAdminClient {
     options.otherArgs.headers = options.otherArgs.headers || {};
     options.otherArgs.headers['x-goog-request-params'] =
       this._gaxModule.routingHeader.fromParams({
-        parent: request.parent || '',
+        parent: request.parent ?? '',
       });
     const defaultCallSettings = this._defaults['listHotTablets'];
     const callSettings = defaultCallSettings.merge(options);

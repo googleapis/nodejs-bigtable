@@ -27,6 +27,21 @@ import {PassThrough} from 'stream';
 
 import {protobuf, LROperation, operationsProtos} from 'google-gax';
 
+// Dynamically loaded proto JSON is needed to get the type information
+// to fill in default values for request objects
+const root = protobuf.Root.fromJSON(
+  require('../protos/protos.json')
+).resolveAll();
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getTypeDefaultValue(typeName: string, fields: string[]) {
+  let type = root.lookupType(typeName) as protobuf.Type;
+  for (const field of fields.slice(0, -1)) {
+    type = type.fields[field]?.resolvedType as protobuf.Type;
+  }
+  return type.fields[fields[fields.length - 1]]?.defaultValue;
+}
+
 function generateSampleMessage<T extends object>(instance: T) {
   const filledObject = (
     instance.constructor as typeof protobuf.Message
@@ -254,26 +269,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CreateTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
       client.innerApiCalls.createTable = stubSimpleCall(expectedResponse);
       const [response] = await client.createTable(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.createTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createTable without error using callback', async () => {
@@ -285,15 +299,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CreateTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -316,11 +326,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.createTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createTable with error', async () => {
@@ -332,26 +345,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CreateTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createTable = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.createTable(request), expectedError);
-      assert(
-        (client.innerApiCalls.createTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createTable with closed client', async () => {
@@ -363,7 +375,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableRequest()
       );
-      request.parent = '';
+      const defaultValue1 = getTypeDefaultValue('CreateTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.createTable(request), expectedError);
@@ -380,26 +395,23 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetTableRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
       client.innerApiCalls.getTable = stubSimpleCall(expectedResponse);
       const [response] = await client.getTable(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getTable without error using callback', async () => {
@@ -411,15 +423,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetTableRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -442,11 +448,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getTable with error', async () => {
@@ -458,23 +467,20 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetTableRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getTable = stubSimpleCall(undefined, expectedError);
       await assert.rejects(client.getTable(request), expectedError);
-      assert(
-        (client.innerApiCalls.getTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getTable with closed client', async () => {
@@ -486,7 +492,8 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetTableRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('GetTableRequest', ['name']);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getTable(request), expectedError);
@@ -503,26 +510,23 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteTableRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
       client.innerApiCalls.deleteTable = stubSimpleCall(expectedResponse);
       const [response] = await client.deleteTable(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.deleteTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteTable without error using callback', async () => {
@@ -534,15 +538,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteTableRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -565,11 +563,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.deleteTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteTable with error', async () => {
@@ -581,26 +582,23 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteTableRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.deleteTable = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.deleteTable(request), expectedError);
-      assert(
-        (client.innerApiCalls.deleteTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteTable with closed client', async () => {
@@ -612,7 +610,8 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteTableRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('DeleteTableRequest', ['name']);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteTable(request), expectedError);
@@ -629,15 +628,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ModifyColumnFamiliesRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -645,11 +640,14 @@ describe('v2.BigtableTableAdminClient', () => {
         stubSimpleCall(expectedResponse);
       const [response] = await client.modifyColumnFamilies(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.modifyColumnFamilies as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.modifyColumnFamilies as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.modifyColumnFamilies as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes modifyColumnFamilies without error using callback', async () => {
@@ -661,15 +659,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ModifyColumnFamiliesRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Table()
       );
@@ -692,11 +686,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.modifyColumnFamilies as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.modifyColumnFamilies as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.modifyColumnFamilies as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes modifyColumnFamilies with error', async () => {
@@ -708,26 +705,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ModifyColumnFamiliesRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.modifyColumnFamilies = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.modifyColumnFamilies(request), expectedError);
-      assert(
-        (client.innerApiCalls.modifyColumnFamilies as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.modifyColumnFamilies as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.modifyColumnFamilies as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes modifyColumnFamilies with closed client', async () => {
@@ -739,7 +735,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ModifyColumnFamiliesRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('ModifyColumnFamiliesRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.modifyColumnFamilies(request), expectedError);
@@ -756,26 +755,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DropRowRangeRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
       client.innerApiCalls.dropRowRange = stubSimpleCall(expectedResponse);
       const [response] = await client.dropRowRange(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.dropRowRange as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.dropRowRange as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.dropRowRange as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes dropRowRange without error using callback', async () => {
@@ -787,15 +785,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DropRowRangeRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -818,11 +812,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.dropRowRange as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.dropRowRange as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.dropRowRange as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes dropRowRange with error', async () => {
@@ -834,26 +831,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DropRowRangeRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.dropRowRange = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.dropRowRange(request), expectedError);
-      assert(
-        (client.innerApiCalls.dropRowRange as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.dropRowRange as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.dropRowRange as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes dropRowRange with closed client', async () => {
@@ -865,7 +861,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DropRowRangeRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('DropRowRangeRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.dropRowRange(request), expectedError);
@@ -882,15 +881,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue(
+        'GenerateConsistencyTokenRequest',
+        ['name']
+      );
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenResponse()
       );
@@ -898,11 +894,14 @@ describe('v2.BigtableTableAdminClient', () => {
         stubSimpleCall(expectedResponse);
       const [response] = await client.generateConsistencyToken(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.generateConsistencyToken as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.generateConsistencyToken as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.generateConsistencyToken as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes generateConsistencyToken without error using callback', async () => {
@@ -914,15 +913,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue(
+        'GenerateConsistencyTokenRequest',
+        ['name']
+      );
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenResponse()
       );
@@ -945,11 +941,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.generateConsistencyToken as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.generateConsistencyToken as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.generateConsistencyToken as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes generateConsistencyToken with error', async () => {
@@ -961,15 +960,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue(
+        'GenerateConsistencyTokenRequest',
+        ['name']
+      );
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.generateConsistencyToken = stubSimpleCall(
         undefined,
@@ -979,11 +975,14 @@ describe('v2.BigtableTableAdminClient', () => {
         client.generateConsistencyToken(request),
         expectedError
       );
-      assert(
-        (client.innerApiCalls.generateConsistencyToken as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.generateConsistencyToken as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.generateConsistencyToken as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes generateConsistencyToken with closed client', async () => {
@@ -995,7 +994,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GenerateConsistencyTokenRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue(
+        'GenerateConsistencyTokenRequest',
+        ['name']
+      );
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(
@@ -1015,26 +1018,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CheckConsistencyRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyResponse()
       );
       client.innerApiCalls.checkConsistency = stubSimpleCall(expectedResponse);
       const [response] = await client.checkConsistency(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.checkConsistency as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkConsistency as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkConsistency as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkConsistency without error using callback', async () => {
@@ -1046,15 +1048,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CheckConsistencyRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyResponse()
       );
@@ -1077,11 +1075,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.checkConsistency as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkConsistency as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkConsistency as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkConsistency with error', async () => {
@@ -1093,26 +1094,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CheckConsistencyRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.checkConsistency = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.checkConsistency(request), expectedError);
-      assert(
-        (client.innerApiCalls.checkConsistency as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkConsistency as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkConsistency as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkConsistency with closed client', async () => {
@@ -1124,7 +1124,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CheckConsistencyRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('CheckConsistencyRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.checkConsistency(request), expectedError);
@@ -1141,26 +1144,23 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetSnapshotRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Snapshot()
       );
       client.innerApiCalls.getSnapshot = stubSimpleCall(expectedResponse);
       const [response] = await client.getSnapshot(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getSnapshot without error using callback', async () => {
@@ -1172,15 +1172,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetSnapshotRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Snapshot()
       );
@@ -1203,11 +1197,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getSnapshot with error', async () => {
@@ -1219,26 +1216,23 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetSnapshotRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getSnapshot = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.getSnapshot(request), expectedError);
-      assert(
-        (client.innerApiCalls.getSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getSnapshot with closed client', async () => {
@@ -1250,7 +1244,8 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetSnapshotRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('GetSnapshotRequest', ['name']);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getSnapshot(request), expectedError);
@@ -1267,26 +1262,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteSnapshotRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
       client.innerApiCalls.deleteSnapshot = stubSimpleCall(expectedResponse);
       const [response] = await client.deleteSnapshot(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.deleteSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteSnapshot without error using callback', async () => {
@@ -1298,15 +1292,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteSnapshotRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -1329,11 +1319,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.deleteSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteSnapshot with error', async () => {
@@ -1345,26 +1338,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteSnapshotRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.deleteSnapshot = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.deleteSnapshot(request), expectedError);
-      assert(
-        (client.innerApiCalls.deleteSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteSnapshot with closed client', async () => {
@@ -1376,7 +1368,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteSnapshotRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('DeleteSnapshotRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteSnapshot(request), expectedError);
@@ -1393,26 +1388,23 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetBackupRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
       client.innerApiCalls.getBackup = stubSimpleCall(expectedResponse);
       const [response] = await client.getBackup(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getBackup without error using callback', async () => {
@@ -1424,15 +1416,9 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetBackupRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
@@ -1455,11 +1441,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getBackup with error', async () => {
@@ -1471,23 +1460,20 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetBackupRequest', ['name']);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getBackup = stubSimpleCall(undefined, expectedError);
       await assert.rejects(client.getBackup(request), expectedError);
-      assert(
-        (client.innerApiCalls.getBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getBackup with closed client', async () => {
@@ -1499,7 +1485,8 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetBackupRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('GetBackupRequest', ['name']);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getBackup(request), expectedError);
@@ -1516,27 +1503,27 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
-      request.backup = {};
-      request.backup.name = '';
-      const expectedHeaderRequestParams = 'backup.name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      request.backup ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateBackupRequest', [
+        'backup',
+        'name',
+      ]);
+      request.backup.name = defaultValue1;
+      const expectedHeaderRequestParams = `backup.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
       client.innerApiCalls.updateBackup = stubSimpleCall(expectedResponse);
       const [response] = await client.updateBackup(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.updateBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.updateBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.updateBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes updateBackup without error using callback', async () => {
@@ -1548,16 +1535,13 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
-      request.backup = {};
-      request.backup.name = '';
-      const expectedHeaderRequestParams = 'backup.name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      request.backup ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateBackupRequest', [
+        'backup',
+        'name',
+      ]);
+      request.backup.name = defaultValue1;
+      const expectedHeaderRequestParams = `backup.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Backup()
       );
@@ -1580,11 +1564,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.updateBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.updateBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.updateBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes updateBackup with error', async () => {
@@ -1596,27 +1583,27 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
-      request.backup = {};
-      request.backup.name = '';
-      const expectedHeaderRequestParams = 'backup.name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      request.backup ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateBackupRequest', [
+        'backup',
+        'name',
+      ]);
+      request.backup.name = defaultValue1;
+      const expectedHeaderRequestParams = `backup.name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateBackup = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.updateBackup(request), expectedError);
-      assert(
-        (client.innerApiCalls.updateBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.updateBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.updateBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes updateBackup with closed client', async () => {
@@ -1628,8 +1615,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateBackupRequest()
       );
-      request.backup = {};
-      request.backup.name = '';
+      request.backup ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateBackupRequest', [
+        'backup',
+        'name',
+      ]);
+      request.backup.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.updateBackup(request), expectedError);
@@ -1646,26 +1637,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteBackupRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
       client.innerApiCalls.deleteBackup = stubSimpleCall(expectedResponse);
       const [response] = await client.deleteBackup(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.deleteBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteBackup without error using callback', async () => {
@@ -1677,15 +1667,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteBackupRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.protobuf.Empty()
       );
@@ -1708,11 +1694,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.deleteBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteBackup with error', async () => {
@@ -1724,26 +1713,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('DeleteBackupRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.deleteBackup = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.deleteBackup(request), expectedError);
-      assert(
-        (client.innerApiCalls.deleteBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.deleteBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.deleteBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes deleteBackup with closed client', async () => {
@@ -1755,7 +1743,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteBackupRequest()
       );
-      request.name = '';
+      const defaultValue1 = getTypeDefaultValue('DeleteBackupRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.deleteBackup(request), expectedError);
@@ -1772,26 +1763,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
       client.innerApiCalls.getIamPolicy = stubSimpleCall(expectedResponse);
       const [response] = await client.getIamPolicy(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getIamPolicy as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getIamPolicy as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getIamPolicy as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getIamPolicy without error using callback', async () => {
@@ -1803,15 +1793,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
@@ -1834,11 +1820,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.getIamPolicy as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getIamPolicy as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getIamPolicy as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getIamPolicy with error', async () => {
@@ -1850,26 +1839,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.getIamPolicy = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.getIamPolicy(request), expectedError);
-      assert(
-        (client.innerApiCalls.getIamPolicy as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.getIamPolicy as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.getIamPolicy as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes getIamPolicy with closed client', async () => {
@@ -1881,7 +1869,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      request.resource = '';
+      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.getIamPolicy(request), expectedError);
@@ -1898,26 +1889,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
       client.innerApiCalls.setIamPolicy = stubSimpleCall(expectedResponse);
       const [response] = await client.setIamPolicy(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.setIamPolicy as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.setIamPolicy as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.setIamPolicy as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes setIamPolicy without error using callback', async () => {
@@ -1929,15 +1919,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.Policy()
       );
@@ -1960,11 +1946,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.setIamPolicy as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.setIamPolicy as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.setIamPolicy as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes setIamPolicy with error', async () => {
@@ -1976,26 +1965,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.setIamPolicy = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.setIamPolicy(request), expectedError);
-      assert(
-        (client.innerApiCalls.setIamPolicy as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.setIamPolicy as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.setIamPolicy as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes setIamPolicy with closed client', async () => {
@@ -2007,7 +1995,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      request.resource = '';
+      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.setIamPolicy(request), expectedError);
@@ -2024,15 +2015,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
@@ -2040,11 +2027,14 @@ describe('v2.BigtableTableAdminClient', () => {
         stubSimpleCall(expectedResponse);
       const [response] = await client.testIamPermissions(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.testIamPermissions as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.testIamPermissions as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.testIamPermissions as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes testIamPermissions without error using callback', async () => {
@@ -2056,15 +2046,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsResponse()
       );
@@ -2087,11 +2073,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.testIamPermissions as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.testIamPermissions as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.testIamPermissions as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes testIamPermissions with error', async () => {
@@ -2103,26 +2092,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      request.resource = '';
-      const expectedHeaderRequestParams = 'resource=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
+      const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.testIamPermissions = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.testIamPermissions(request), expectedError);
-      assert(
-        (client.innerApiCalls.testIamPermissions as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.testIamPermissions as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.testIamPermissions as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes testIamPermissions with closed client', async () => {
@@ -2134,7 +2122,10 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      request.resource = '';
+      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
+        'resource',
+      ]);
+      request.resource = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.testIamPermissions(request), expectedError);
@@ -2151,15 +2142,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue(
+        'CreateTableFromSnapshotRequest',
+        ['parent']
+      );
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2168,11 +2156,14 @@ describe('v2.BigtableTableAdminClient', () => {
       const [operation] = await client.createTableFromSnapshot(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.createTableFromSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createTableFromSnapshot without error using callback', async () => {
@@ -2184,15 +2175,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue(
+        'CreateTableFromSnapshotRequest',
+        ['parent']
+      );
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2222,11 +2210,14 @@ describe('v2.BigtableTableAdminClient', () => {
       >;
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.createTableFromSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createTableFromSnapshot with call error', async () => {
@@ -2238,15 +2229,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue(
+        'CreateTableFromSnapshotRequest',
+        ['parent']
+      );
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createTableFromSnapshot = stubLongRunningCall(
         undefined,
@@ -2256,11 +2244,14 @@ describe('v2.BigtableTableAdminClient', () => {
         client.createTableFromSnapshot(request),
         expectedError
       );
-      assert(
-        (client.innerApiCalls.createTableFromSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createTableFromSnapshot with LRO error', async () => {
@@ -2272,15 +2263,12 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateTableFromSnapshotRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue(
+        'CreateTableFromSnapshotRequest',
+        ['parent']
+      );
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createTableFromSnapshot = stubLongRunningCall(
         undefined,
@@ -2289,11 +2277,14 @@ describe('v2.BigtableTableAdminClient', () => {
       );
       const [operation] = await client.createTableFromSnapshot(request);
       await assert.rejects(operation.promise(), expectedError);
-      assert(
-        (client.innerApiCalls.createTableFromSnapshot as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createTableFromSnapshot as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkCreateTableFromSnapshotProgress without error', async () => {
@@ -2349,16 +2340,13 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
-      request.table = {};
-      request.table.name = '';
-      const expectedHeaderRequestParams = 'table.name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      request.table ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateTableRequest', [
+        'table',
+        'name',
+      ]);
+      request.table.name = defaultValue1;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2366,11 +2354,14 @@ describe('v2.BigtableTableAdminClient', () => {
       const [operation] = await client.updateTable(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.updateTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes updateTable without error using callback', async () => {
@@ -2382,16 +2373,13 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
-      request.table = {};
-      request.table.name = '';
-      const expectedHeaderRequestParams = 'table.name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      request.table ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateTableRequest', [
+        'table',
+        'name',
+      ]);
+      request.table.name = defaultValue1;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2421,11 +2409,14 @@ describe('v2.BigtableTableAdminClient', () => {
       >;
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.updateTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes updateTable with call error', async () => {
@@ -2437,27 +2428,27 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
-      request.table = {};
-      request.table.name = '';
-      const expectedHeaderRequestParams = 'table.name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      request.table ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateTableRequest', [
+        'table',
+        'name',
+      ]);
+      request.table.name = defaultValue1;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateTable = stubLongRunningCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.updateTable(request), expectedError);
-      assert(
-        (client.innerApiCalls.updateTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes updateTable with LRO error', async () => {
@@ -2469,16 +2460,13 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UpdateTableRequest()
       );
-      request.table = {};
-      request.table.name = '';
-      const expectedHeaderRequestParams = 'table.name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      request.table ??= {};
+      const defaultValue1 = getTypeDefaultValue('UpdateTableRequest', [
+        'table',
+        'name',
+      ]);
+      request.table.name = defaultValue1;
+      const expectedHeaderRequestParams = `table.name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.updateTable = stubLongRunningCall(
         undefined,
@@ -2487,11 +2475,14 @@ describe('v2.BigtableTableAdminClient', () => {
       );
       const [operation] = await client.updateTable(request);
       await assert.rejects(operation.promise(), expectedError);
-      assert(
-        (client.innerApiCalls.updateTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.updateTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkUpdateTableProgress without error', async () => {
@@ -2543,15 +2534,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('UndeleteTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2560,11 +2547,14 @@ describe('v2.BigtableTableAdminClient', () => {
       const [operation] = await client.undeleteTable(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.undeleteTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes undeleteTable without error using callback', async () => {
@@ -2576,15 +2566,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('UndeleteTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2614,11 +2600,14 @@ describe('v2.BigtableTableAdminClient', () => {
       >;
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.undeleteTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes undeleteTable with call error', async () => {
@@ -2630,26 +2619,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('UndeleteTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.undeleteTable = stubLongRunningCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.undeleteTable(request), expectedError);
-      assert(
-        (client.innerApiCalls.undeleteTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes undeleteTable with LRO error', async () => {
@@ -2661,15 +2649,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.UndeleteTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('UndeleteTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.undeleteTable = stubLongRunningCall(
         undefined,
@@ -2678,11 +2662,14 @@ describe('v2.BigtableTableAdminClient', () => {
       );
       const [operation] = await client.undeleteTable(request);
       await assert.rejects(operation.promise(), expectedError);
-      assert(
-        (client.innerApiCalls.undeleteTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.undeleteTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkUndeleteTableProgress without error', async () => {
@@ -2737,15 +2724,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('SnapshotTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2754,11 +2737,14 @@ describe('v2.BigtableTableAdminClient', () => {
       const [operation] = await client.snapshotTable(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.snapshotTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes snapshotTable without error using callback', async () => {
@@ -2770,15 +2756,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('SnapshotTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2808,11 +2790,14 @@ describe('v2.BigtableTableAdminClient', () => {
       >;
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.snapshotTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes snapshotTable with call error', async () => {
@@ -2824,26 +2809,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('SnapshotTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.snapshotTable = stubLongRunningCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.snapshotTable(request), expectedError);
-      assert(
-        (client.innerApiCalls.snapshotTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes snapshotTable with LRO error', async () => {
@@ -2855,15 +2839,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.SnapshotTableRequest()
       );
-      request.name = '';
-      const expectedHeaderRequestParams = 'name=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('SnapshotTableRequest', [
+        'name',
+      ]);
+      request.name = defaultValue1;
+      const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.snapshotTable = stubLongRunningCall(
         undefined,
@@ -2872,11 +2852,14 @@ describe('v2.BigtableTableAdminClient', () => {
       );
       const [operation] = await client.snapshotTable(request);
       await assert.rejects(operation.promise(), expectedError);
-      assert(
-        (client.innerApiCalls.snapshotTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.snapshotTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkSnapshotTableProgress without error', async () => {
@@ -2931,15 +2914,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CreateBackupRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -2947,11 +2926,14 @@ describe('v2.BigtableTableAdminClient', () => {
       const [operation] = await client.createBackup(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.createBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createBackup without error using callback', async () => {
@@ -2963,15 +2945,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CreateBackupRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3001,11 +2979,14 @@ describe('v2.BigtableTableAdminClient', () => {
       >;
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.createBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createBackup with call error', async () => {
@@ -3017,26 +2998,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CreateBackupRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createBackup = stubLongRunningCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.createBackup(request), expectedError);
-      assert(
-        (client.innerApiCalls.createBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes createBackup with LRO error', async () => {
@@ -3048,15 +3028,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateBackupRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('CreateBackupRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.createBackup = stubLongRunningCall(
         undefined,
@@ -3065,11 +3041,14 @@ describe('v2.BigtableTableAdminClient', () => {
       );
       const [operation] = await client.createBackup(request);
       await assert.rejects(operation.promise(), expectedError);
-      assert(
-        (client.innerApiCalls.createBackup as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.createBackup as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkCreateBackupProgress without error', async () => {
@@ -3121,15 +3100,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('RestoreTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3137,11 +3112,14 @@ describe('v2.BigtableTableAdminClient', () => {
       const [operation] = await client.restoreTable(request);
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.restoreTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes restoreTable without error using callback', async () => {
@@ -3153,15 +3131,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('RestoreTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
         new protos.google.longrunning.Operation()
       );
@@ -3191,11 +3165,14 @@ describe('v2.BigtableTableAdminClient', () => {
       >;
       const [response] = await operation.promise();
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.restoreTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes restoreTable with call error', async () => {
@@ -3207,26 +3184,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('RestoreTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.restoreTable = stubLongRunningCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.restoreTable(request), expectedError);
-      assert(
-        (client.innerApiCalls.restoreTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes restoreTable with LRO error', async () => {
@@ -3238,15 +3214,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.RestoreTableRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('RestoreTableRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.restoreTable = stubLongRunningCall(
         undefined,
@@ -3255,11 +3227,14 @@ describe('v2.BigtableTableAdminClient', () => {
       );
       const [operation] = await client.restoreTable(request);
       await assert.rejects(operation.promise(), expectedError);
-      assert(
-        (client.innerApiCalls.restoreTable as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.restoreTable as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkRestoreTableProgress without error', async () => {
@@ -3311,15 +3286,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListTablesRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -3328,11 +3299,14 @@ describe('v2.BigtableTableAdminClient', () => {
       client.innerApiCalls.listTables = stubSimpleCall(expectedResponse);
       const [response] = await client.listTables(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.listTables as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listTables as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listTables as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listTables without error using callback', async () => {
@@ -3344,15 +3318,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListTablesRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -3377,11 +3347,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.listTables as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listTables as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listTables as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listTables with error', async () => {
@@ -3393,26 +3366,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListTablesRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.listTables = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.listTables(request), expectedError);
-      assert(
-        (client.innerApiCalls.listTables as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listTables as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listTables as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listTablesStream without error', async () => {
@@ -3424,8 +3396,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListTablesRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -3453,11 +3428,12 @@ describe('v2.BigtableTableAdminClient', () => {
           .getCall(0)
           .calledWith(client.innerApiCalls.listTables, request)
       );
-      assert.strictEqual(
-        (client.descriptors.page.listTables.createStream as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listTables.createStream as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -3470,8 +3446,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListTablesRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listTables.createStream = stubPageStreamingCall(
         undefined,
@@ -3496,11 +3475,12 @@ describe('v2.BigtableTableAdminClient', () => {
           .getCall(0)
           .calledWith(client.innerApiCalls.listTables, request)
       );
-      assert.strictEqual(
-        (client.descriptors.page.listTables.createStream as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listTables.createStream as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -3513,8 +3493,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListTablesRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Table()),
@@ -3534,11 +3517,12 @@ describe('v2.BigtableTableAdminClient', () => {
         ).args[1],
         request
       );
-      assert.strictEqual(
-        (client.descriptors.page.listTables.asyncIterate as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listTables.asyncIterate as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -3551,8 +3535,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListTablesRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListTablesRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listTables.asyncIterate = stubAsyncIterationCall(
         undefined,
@@ -3571,11 +3558,12 @@ describe('v2.BigtableTableAdminClient', () => {
         ).args[1],
         request
       );
-      assert.strictEqual(
-        (client.descriptors.page.listTables.asyncIterate as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listTables.asyncIterate as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
   });
@@ -3590,15 +3578,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListSnapshotsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -3607,11 +3591,14 @@ describe('v2.BigtableTableAdminClient', () => {
       client.innerApiCalls.listSnapshots = stubSimpleCall(expectedResponse);
       const [response] = await client.listSnapshots(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.listSnapshots as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listSnapshots as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listSnapshots as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listSnapshots without error using callback', async () => {
@@ -3623,15 +3610,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListSnapshotsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -3656,11 +3639,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.listSnapshots as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listSnapshots as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listSnapshots as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listSnapshots with error', async () => {
@@ -3672,26 +3658,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListSnapshotsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.listSnapshots = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.listSnapshots(request), expectedError);
-      assert(
-        (client.innerApiCalls.listSnapshots as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listSnapshots as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listSnapshots as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listSnapshotsStream without error', async () => {
@@ -3703,8 +3688,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListSnapshotsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -3735,11 +3723,12 @@ describe('v2.BigtableTableAdminClient', () => {
           .getCall(0)
           .calledWith(client.innerApiCalls.listSnapshots, request)
       );
-      assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.createStream as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listSnapshots.createStream as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -3752,8 +3741,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListSnapshotsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listSnapshots.createStream =
         stubPageStreamingCall(undefined, expectedError);
@@ -3779,11 +3771,12 @@ describe('v2.BigtableTableAdminClient', () => {
           .getCall(0)
           .calledWith(client.innerApiCalls.listSnapshots, request)
       );
-      assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.createStream as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listSnapshots.createStream as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -3796,8 +3789,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListSnapshotsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Snapshot()),
@@ -3817,11 +3813,12 @@ describe('v2.BigtableTableAdminClient', () => {
         ).getCall(0).args[1],
         request
       );
-      assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.asyncIterate as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listSnapshots.asyncIterate as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -3834,8 +3831,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListSnapshotsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListSnapshotsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listSnapshots.asyncIterate =
         stubAsyncIterationCall(undefined, expectedError);
@@ -3852,11 +3852,12 @@ describe('v2.BigtableTableAdminClient', () => {
         ).getCall(0).args[1],
         request
       );
-      assert.strictEqual(
-        (
-          client.descriptors.page.listSnapshots.asyncIterate as SinonStub
-        ).getCall(0).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listSnapshots.asyncIterate as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
   });
@@ -3871,15 +3872,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListBackupsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -3888,11 +3885,14 @@ describe('v2.BigtableTableAdminClient', () => {
       client.innerApiCalls.listBackups = stubSimpleCall(expectedResponse);
       const [response] = await client.listBackups(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.listBackups as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listBackups as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listBackups as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listBackups without error using callback', async () => {
@@ -3904,15 +3904,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListBackupsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -3937,11 +3933,14 @@ describe('v2.BigtableTableAdminClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.listBackups as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listBackups as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listBackups as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listBackups with error', async () => {
@@ -3953,26 +3952,25 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      const defaultValue1 = getTypeDefaultValue('ListBackupsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.innerApiCalls.listBackups = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.listBackups(request), expectedError);
-      assert(
-        (client.innerApiCalls.listBackups as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.listBackups as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.listBackups as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes listBackupsStream without error', async () => {
@@ -3984,8 +3982,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListBackupsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -4016,11 +4017,12 @@ describe('v2.BigtableTableAdminClient', () => {
           .getCall(0)
           .calledWith(client.innerApiCalls.listBackups, request)
       );
-      assert.strictEqual(
-        (client.descriptors.page.listBackups.createStream as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listBackups.createStream as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -4033,8 +4035,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListBackupsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listBackups.createStream = stubPageStreamingCall(
         undefined,
@@ -4062,11 +4067,12 @@ describe('v2.BigtableTableAdminClient', () => {
           .getCall(0)
           .calledWith(client.innerApiCalls.listBackups, request)
       );
-      assert.strictEqual(
-        (client.descriptors.page.listBackups.createStream as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listBackups.createStream as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -4079,8 +4085,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListBackupsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
         generateSampleMessage(new protos.google.bigtable.admin.v2.Backup()),
@@ -4100,11 +4109,12 @@ describe('v2.BigtableTableAdminClient', () => {
         ).args[1],
         request
       );
-      assert.strictEqual(
-        (client.descriptors.page.listBackups.asyncIterate as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listBackups.asyncIterate as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
 
@@ -4117,8 +4127,11 @@ describe('v2.BigtableTableAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListBackupsRequest()
       );
-      request.parent = '';
-      const expectedHeaderRequestParams = 'parent=';
+      const defaultValue1 = getTypeDefaultValue('ListBackupsRequest', [
+        'parent',
+      ]);
+      request.parent = defaultValue1;
+      const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
       client.descriptors.page.listBackups.asyncIterate = stubAsyncIterationCall(
         undefined,
@@ -4137,11 +4150,12 @@ describe('v2.BigtableTableAdminClient', () => {
         ).args[1],
         request
       );
-      assert.strictEqual(
-        (client.descriptors.page.listBackups.asyncIterate as SinonStub).getCall(
-          0
-        ).args[2].otherArgs.headers['x-goog-request-params'],
-        expectedHeaderRequestParams
+      assert(
+        (client.descriptors.page.listBackups.asyncIterate as SinonStub)
+          .getCall(0)
+          .args[2].otherArgs.headers['x-goog-request-params'].includes(
+            expectedHeaderRequestParams
+          )
       );
     });
   });
