@@ -470,7 +470,7 @@ export class Bigtable {
     );
 
     this.options = {
-      BigtableClient: dataOptions, // JUST Exclude these options for now
+      BigtableClient: dataOptions,
       BigtableInstanceAdminClient: adminOptions,
       BigtableTableAdminClient: adminOptions,
     };
