@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.0.4](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.3...v4.0.4) (2022-09-14)
+
+
+### Bug Fixes
+
+* **deps:** Use grpc-gcp v1.0.0 ([#1156](https://github.com/googleapis/nodejs-bigtable/issues/1156)) ([6196424](https://github.com/googleapis/nodejs-bigtable/commit/61964246cc79b0cb70f18d6bc1e524c01fdd51b0))
+
 ## [4.0.3](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.2...v4.0.3) (2022-09-09)
 
 
