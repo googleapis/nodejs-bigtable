@@ -1419,6 +1419,10 @@ describe('Bigtable', () => {
     });
     describe('copying backups', () => {
       async function testCopyBackup(backup: Backup, newBackup: Backup) {
+        // Get a list of backup ids before the copy
+        const [backupsBeforeCopy] = await INSTANCE.getBackups();
+        const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
+        // Copy the backup
         const [operation] = await backup.copy(newBackup);
         await operation.promise();
         const clusterName = `${newBackup.cluster.name.replace(
@@ -1427,6 +1431,13 @@ describe('Bigtable', () => {
         )}`;
         const backupPath = `${clusterName}/backups/${newBackup.id}`;
         assert.strictEqual(operation?.metadata?.name, backupPath);
+        // Check that there is now one more backup
+        const [backupsAfterCopy] = await INSTANCE.getBackups();
+        const newBackups = backupsAfterCopy.filter(
+          backup => !backupIdsBeforeCopy.includes(backup.id)
+        );
+        assert.strictEqual(newBackups.length, 1);
+        assert.strictEqual(newBackups[0].id, newBackup.id);
       }
 
       it('should create backup of a table and copy it', async () => {
