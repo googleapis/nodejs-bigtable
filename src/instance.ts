@@ -498,7 +498,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         // Currently only milliseconds is supported, so it's not
         // configurable.
         granularity: 0,
-        deletionProtection: true,
+        deletionProtection: options.deletionProtection,
       },
     } as google.bigtable.admin.v2.CreateTableRequest;
 
