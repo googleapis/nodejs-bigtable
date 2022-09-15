@@ -491,10 +491,11 @@ describe('Bigtable', () => {
       await table.delete();
     });
 
-    it('should not delete a table if table deletion protection is enabled', async () => {
+    it.only('should not delete a table if table deletion protection is enabled', async () => {
       const table = INSTANCE.table(generateId('table'));
-      await table.get({autoCreate: true});
       await table.delete();
+      const metadata = await table.getMetadata();
+      await table.get({autoCreate: true});
     });
   });
 
