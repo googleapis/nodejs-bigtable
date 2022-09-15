@@ -228,11 +228,11 @@ describe('Bigtable/Backup', () => {
     it.only('should correctly copy backup from the Cluster', done => {
       const backupId = generateId('backup');
       const newBackupId = generateId('backup');
-      const oldBackup = new Backup(CLUSTER, backupId);
-      const newBackup = new Backup(CLUSTER, newBackupId);
+      const backup = new Backup(CLUSTER, backupId);
+      const copiedBackup = new Backup(CLUSTER, newBackupId);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      oldBackup.bigtable.request = (
+      backup.bigtable.request = (
         config: RequestOptions,
         callback: (err: ServiceError | null, res: RequestOptions) => void
       ) => {
@@ -252,7 +252,7 @@ describe('Bigtable/Backup', () => {
         });
         done();
       };
-      oldBackup.copy(newBackup, callback);
+      backup.copy(copiedBackup, callback);
     });
   });
 

@@ -1437,10 +1437,11 @@ describe('Bigtable', () => {
           backup => !backupIdsBeforeCopy.includes(backup.id)
         );
         assert.strictEqual(newBackups.length, 1);
-        assert.strictEqual(newBackups[0].id, newBackup.id);
+        const [fetchedNewBackup] = newBackups;
+        assert.strictEqual(fetchedNewBackup.id, newBackup.id);
       }
 
-      it('should create backup of a table and copy it', async () => {
+      it.only('should create backup of a table and copy it', async () => {
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
           expireTime,
