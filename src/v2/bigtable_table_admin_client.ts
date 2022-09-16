@@ -2076,8 +2076,6 @@ export class BigtableTableAdminClient {
    * @param {google.bigtable.admin.v2.Table} request.table
    *   Required. The table to update.
    *   The table's `name` field is used to identify the table to update.
-   *   Format:
-   *   `projects/{project}/instances/{instance}/tables/{@link -_.a-zA-Z0-9|_a-zA-Z0-9}*`
    * @param {google.protobuf.FieldMask} request.updateMask
    *   Required. The list of fields to update.
    *   A mask specifying which fields (e.g. `deletion_protection`) in the `table`

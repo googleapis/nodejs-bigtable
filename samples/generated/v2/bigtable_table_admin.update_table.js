@@ -31,8 +31,6 @@ function main(table, updateMask) {
   /**
    *  Required. The table to update.
    *  The table's `name` field is used to identify the table to update.
-   *  Format:
-   *  `projects/{project}/instances/{instance}/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
    */
   // const table = {}
   /**
