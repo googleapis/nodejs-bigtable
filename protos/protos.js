@@ -20967,7 +20967,6 @@
                          * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
                          * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
                          * @property {google.bigtable.admin.v2.IRestoreInfo|null} [restoreInfo] Table restoreInfo
-                         * @property {boolean|null} [deletionProtection] Table deletionProtection
                          */
     
                         /**
@@ -21028,14 +21027,6 @@
                         Table.prototype.restoreInfo = null;
     
                         /**
-                         * Table deletionProtection.
-                         * @member {boolean} deletionProtection
-                         * @memberof google.bigtable.admin.v2.Table
-                         * @instance
-                         */
-                        Table.prototype.deletionProtection = false;
-    
-                        /**
                          * Creates a new Table instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.Table
@@ -21075,8 +21066,6 @@
                                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
                             if (message.restoreInfo != null && Object.hasOwnProperty.call(message, "restoreInfo"))
                                 $root.google.bigtable.admin.v2.RestoreInfo.encode(message.restoreInfo, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
-                            if (message.deletionProtection != null && Object.hasOwnProperty.call(message, "deletionProtection"))
-                                writer.uint32(/* id 9, wireType 0 =*/72).bool(message.deletionProtection);
                             return writer;
                         };
     
@@ -21169,10 +21158,6 @@
                                         message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.decode(reader, reader.uint32());
                                         break;
                                     }
-                                case 9: {
-                                        message.deletionProtection = reader.bool();
-                                        break;
-                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -21244,9 +21229,6 @@
                                 if (error)
                                     return "restoreInfo." + error;
                             }
-                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
-                                if (typeof message.deletionProtection !== "boolean")
-                                    return "deletionProtection: boolean expected";
                             return null;
                         };
     
@@ -21305,8 +21287,6 @@
                                     throw TypeError(".google.bigtable.admin.v2.Table.restoreInfo: object expected");
                                 message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.fromObject(object.restoreInfo);
                             }
-                            if (object.deletionProtection != null)
-                                message.deletionProtection = Boolean(object.deletionProtection);
                             return message;
                         };
     
@@ -21331,7 +21311,6 @@
                                 object.name = "";
                                 object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
                                 object.restoreInfo = null;
-                                object.deletionProtection = false;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -21350,8 +21329,6 @@
                                 object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] === undefined ? message.granularity : $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
                             if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
                                 object.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.toObject(message.restoreInfo, options);
-                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
-                                object.deletionProtection = message.deletionProtection;
                             return object;
                         };
     
@@ -23425,7 +23402,6 @@
                          * @interface IBackup
                          * @property {string|null} [name] Backup name
                          * @property {string|null} [sourceTable] Backup sourceTable
-                         * @property {string|null} [sourceBackup] Backup sourceBackup
                          * @property {google.protobuf.ITimestamp|null} [expireTime] Backup expireTime
                          * @property {google.protobuf.ITimestamp|null} [startTime] Backup startTime
                          * @property {google.protobuf.ITimestamp|null} [endTime] Backup endTime
@@ -23464,14 +23440,6 @@
                          * @instance
                          */
                         Backup.prototype.sourceTable = "";
-    
-                        /**
-                         * Backup sourceBackup.
-                         * @member {string} sourceBackup
-                         * @memberof google.bigtable.admin.v2.Backup
-                         * @instance
-                         */
-                        Backup.prototype.sourceBackup = "";
     
                         /**
                          * Backup expireTime.
@@ -23561,8 +23529,6 @@
                                 writer.uint32(/* id 7, wireType 0 =*/56).int32(message.state);
                             if (message.encryptionInfo != null && Object.hasOwnProperty.call(message, "encryptionInfo"))
                                 $root.google.bigtable.admin.v2.EncryptionInfo.encode(message.encryptionInfo, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-                            if (message.sourceBackup != null && Object.hasOwnProperty.call(message, "sourceBackup"))
-                                writer.uint32(/* id 10, wireType 2 =*/82).string(message.sourceBackup);
                             return writer;
                         };
     
@@ -23603,10 +23569,6 @@
                                     }
                                 case 2: {
                                         message.sourceTable = reader.string();
-                                        break;
-                                    }
-                                case 10: {
-                                        message.sourceBackup = reader.string();
                                         break;
                                     }
                                 case 3: {
@@ -23674,9 +23636,6 @@
                             if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
                                 if (!$util.isString(message.sourceTable))
                                     return "sourceTable: string expected";
-                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
-                                if (!$util.isString(message.sourceBackup))
-                                    return "sourceBackup: string expected";
                             if (message.expireTime != null && message.hasOwnProperty("expireTime")) {
                                 var error = $root.google.protobuf.Timestamp.verify(message.expireTime);
                                 if (error)
@@ -23728,8 +23687,6 @@
                                 message.name = String(object.name);
                             if (object.sourceTable != null)
                                 message.sourceTable = String(object.sourceTable);
-                            if (object.sourceBackup != null)
-                                message.sourceBackup = String(object.sourceBackup);
                             if (object.expireTime != null) {
                                 if (typeof object.expireTime !== "object")
                                     throw TypeError(".google.bigtable.admin.v2.Backup.expireTime: object expected");
@@ -23808,7 +23765,6 @@
                                     object.sizeBytes = options.longs === String ? "0" : 0;
                                 object.state = options.enums === String ? "STATE_UNSPECIFIED" : 0;
                                 object.encryptionInfo = null;
-                                object.sourceBackup = "";
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -23829,8 +23785,6 @@
                                 object.state = options.enums === String ? $root.google.bigtable.admin.v2.Backup.State[message.state] === undefined ? message.state : $root.google.bigtable.admin.v2.Backup.State[message.state] : message.state;
                             if (message.encryptionInfo != null && message.hasOwnProperty("encryptionInfo"))
                                 object.encryptionInfo = $root.google.bigtable.admin.v2.EncryptionInfo.toObject(message.encryptionInfo, options);
-                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
-                                object.sourceBackup = message.sourceBackup;
                             return object;
                         };
     
@@ -23889,7 +23843,6 @@
                          * @property {google.protobuf.ITimestamp|null} [startTime] BackupInfo startTime
                          * @property {google.protobuf.ITimestamp|null} [endTime] BackupInfo endTime
                          * @property {string|null} [sourceTable] BackupInfo sourceTable
-                         * @property {string|null} [sourceBackup] BackupInfo sourceBackup
                          */
     
                         /**
@@ -23940,14 +23893,6 @@
                         BackupInfo.prototype.sourceTable = "";
     
                         /**
-                         * BackupInfo sourceBackup.
-                         * @member {string} sourceBackup
-                         * @memberof google.bigtable.admin.v2.BackupInfo
-                         * @instance
-                         */
-                        BackupInfo.prototype.sourceBackup = "";
-    
-                        /**
                          * Creates a new BackupInfo instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.BackupInfo
@@ -23979,8 +23924,6 @@
                                 $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                             if (message.sourceTable != null && Object.hasOwnProperty.call(message, "sourceTable"))
                                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.sourceTable);
-                            if (message.sourceBackup != null && Object.hasOwnProperty.call(message, "sourceBackup"))
-                                writer.uint32(/* id 10, wireType 2 =*/82).string(message.sourceBackup);
                             return writer;
                         };
     
@@ -24029,10 +23972,6 @@
                                     }
                                 case 4: {
                                         message.sourceTable = reader.string();
-                                        break;
-                                    }
-                                case 10: {
-                                        message.sourceBackup = reader.string();
                                         break;
                                     }
                                 default:
@@ -24086,9 +24025,6 @@
                             if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
                                 if (!$util.isString(message.sourceTable))
                                     return "sourceTable: string expected";
-                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
-                                if (!$util.isString(message.sourceBackup))
-                                    return "sourceBackup: string expected";
                             return null;
                         };
     
@@ -24118,8 +24054,6 @@
                             }
                             if (object.sourceTable != null)
                                 message.sourceTable = String(object.sourceTable);
-                            if (object.sourceBackup != null)
-                                message.sourceBackup = String(object.sourceBackup);
                             return message;
                         };
     
@@ -24141,7 +24075,6 @@
                                 object.startTime = null;
                                 object.endTime = null;
                                 object.sourceTable = "";
-                                object.sourceBackup = "";
                             }
                             if (message.backup != null && message.hasOwnProperty("backup"))
                                 object.backup = message.backup;
@@ -24151,8 +24084,6 @@
                                 object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
                             if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
                                 object.sourceTable = message.sourceTable;
-                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
-                                object.sourceBackup = message.sourceBackup;
                             return object;
                         };
     
