@@ -225,7 +225,7 @@ describe('Bigtable/Backup', () => {
   });
 
   describe('copy', () => {
-    it.only('should correctly copy backup from the Cluster', done => {
+    it('should correctly copy backup from the Cluster', done => {
       const backupId = generateId('backup');
       const newBackupId = generateId('backup');
       const backup = new Backup(CLUSTER, backupId);
