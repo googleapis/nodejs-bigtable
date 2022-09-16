@@ -3385,9 +3385,6 @@ export namespace google {
 
                     /** Instance createTime */
                     createTime?: (google.protobuf.ITimestamp|null);
-
-                    /** Instance satisfiesPzs */
-                    satisfiesPzs?: (boolean|null);
                 }
 
                 /** Represents an Instance. */
@@ -3416,12 +3413,6 @@ export namespace google {
 
                     /** Instance createTime. */
                     public createTime?: (google.protobuf.ITimestamp|null);
-
-                    /** Instance satisfiesPzs. */
-                    public satisfiesPzs?: (boolean|null);
-
-                    /** Instance _satisfiesPzs. */
-                    public _satisfiesPzs?: "satisfiesPzs";
 
                     /**
                      * Creates a new Instance instance using the specified properties.
@@ -3523,9 +3514,6 @@ export namespace google {
 
                     /** AutoscalingTargets cpuUtilizationPercent */
                     cpuUtilizationPercent?: (number|null);
-
-                    /** AutoscalingTargets storageUtilizationGibPerNode */
-                    storageUtilizationGibPerNode?: (number|null);
                 }
 
                 /** Represents an AutoscalingTargets. */
@@ -3539,9 +3527,6 @@ export namespace google {
 
                     /** AutoscalingTargets cpuUtilizationPercent. */
                     public cpuUtilizationPercent: number;
-
-                    /** AutoscalingTargets storageUtilizationGibPerNode. */
-                    public storageUtilizationGibPerNode: number;
 
                     /**
                      * Creates a new AutoscalingTargets instance using the specified properties.
@@ -4836,20 +4821,6 @@ export namespace google {
                     public deleteTable(request: google.bigtable.admin.v2.IDeleteTableRequest): Promise<google.protobuf.Empty>;
 
                     /**
-                     * Calls UndeleteTable.
-                     * @param request UndeleteTableRequest message or plain object
-                     * @param callback Node-style callback called with the error, if any, and Operation
-                     */
-                    public undeleteTable(request: google.bigtable.admin.v2.IUndeleteTableRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTableCallback): void;
-
-                    /**
-                     * Calls UndeleteTable.
-                     * @param request UndeleteTableRequest message or plain object
-                     * @returns Promise
-                     */
-                    public undeleteTable(request: google.bigtable.admin.v2.IUndeleteTableRequest): Promise<google.longrunning.Operation>;
-
-                    /**
                      * Calls ModifyColumnFamilies.
                      * @param request ModifyColumnFamiliesRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Table
@@ -5046,20 +5017,6 @@ export namespace google {
                     public restoreTable(request: google.bigtable.admin.v2.IRestoreTableRequest): Promise<google.longrunning.Operation>;
 
                     /**
-                     * Calls CopyBackup.
-                     * @param request CopyBackupRequest message or plain object
-                     * @param callback Node-style callback called with the error, if any, and Operation
-                     */
-                    public copyBackup(request: google.bigtable.admin.v2.ICopyBackupRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.CopyBackupCallback): void;
-
-                    /**
-                     * Calls CopyBackup.
-                     * @param request CopyBackupRequest message or plain object
-                     * @returns Promise
-                     */
-                    public copyBackup(request: google.bigtable.admin.v2.ICopyBackupRequest): Promise<google.longrunning.Operation>;
-
-                    /**
                      * Calls GetIamPolicy.
                      * @param request GetIamPolicyRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Policy
@@ -5138,13 +5095,6 @@ export namespace google {
                      * @param [response] Empty
                      */
                     type DeleteTableCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
-
-                    /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|undeleteTable}.
-                     * @param error Error, if any
-                     * @param [response] Operation
-                     */
-                    type UndeleteTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
                      * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|modifyColumnFamilies}.
@@ -5243,13 +5193,6 @@ export namespace google {
                      * @param [response] Operation
                      */
                     type RestoreTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
-
-                    /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|copyBackup}.
-                     * @param error Error, if any
-                     * @param [response] Operation
-                     */
-                    type CopyBackupCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
                      * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getIamPolicy}.
@@ -6460,212 +6403,6 @@ export namespace google {
 
                     /**
                      * Gets the default type url for DeleteTableRequest
-                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns The default type url
-                     */
-                    public static getTypeUrl(typeUrlPrefix?: string): string;
-                }
-
-                /** Properties of an UndeleteTableRequest. */
-                interface IUndeleteTableRequest {
-
-                    /** UndeleteTableRequest name */
-                    name?: (string|null);
-                }
-
-                /** Represents an UndeleteTableRequest. */
-                class UndeleteTableRequest implements IUndeleteTableRequest {
-
-                    /**
-                     * Constructs a new UndeleteTableRequest.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.IUndeleteTableRequest);
-
-                    /** UndeleteTableRequest name. */
-                    public name: string;
-
-                    /**
-                     * Creates a new UndeleteTableRequest instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns UndeleteTableRequest instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.IUndeleteTableRequest): google.bigtable.admin.v2.UndeleteTableRequest;
-
-                    /**
-                     * Encodes the specified UndeleteTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
-                     * @param message UndeleteTableRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.IUndeleteTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified UndeleteTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
-                     * @param message UndeleteTableRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.IUndeleteTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes an UndeleteTableRequest message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns UndeleteTableRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UndeleteTableRequest;
-
-                    /**
-                     * Decodes an UndeleteTableRequest message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns UndeleteTableRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UndeleteTableRequest;
-
-                    /**
-                     * Verifies an UndeleteTableRequest message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates an UndeleteTableRequest message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns UndeleteTableRequest
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UndeleteTableRequest;
-
-                    /**
-                     * Creates a plain object from an UndeleteTableRequest message. Also converts values to other types if specified.
-                     * @param message UndeleteTableRequest
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.UndeleteTableRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this UndeleteTableRequest to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-
-                    /**
-                     * Gets the default type url for UndeleteTableRequest
-                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns The default type url
-                     */
-                    public static getTypeUrl(typeUrlPrefix?: string): string;
-                }
-
-                /** Properties of an UndeleteTableMetadata. */
-                interface IUndeleteTableMetadata {
-
-                    /** UndeleteTableMetadata name */
-                    name?: (string|null);
-
-                    /** UndeleteTableMetadata startTime */
-                    startTime?: (google.protobuf.ITimestamp|null);
-
-                    /** UndeleteTableMetadata endTime */
-                    endTime?: (google.protobuf.ITimestamp|null);
-                }
-
-                /** Represents an UndeleteTableMetadata. */
-                class UndeleteTableMetadata implements IUndeleteTableMetadata {
-
-                    /**
-                     * Constructs a new UndeleteTableMetadata.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.IUndeleteTableMetadata);
-
-                    /** UndeleteTableMetadata name. */
-                    public name: string;
-
-                    /** UndeleteTableMetadata startTime. */
-                    public startTime?: (google.protobuf.ITimestamp|null);
-
-                    /** UndeleteTableMetadata endTime. */
-                    public endTime?: (google.protobuf.ITimestamp|null);
-
-                    /**
-                     * Creates a new UndeleteTableMetadata instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns UndeleteTableMetadata instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.IUndeleteTableMetadata): google.bigtable.admin.v2.UndeleteTableMetadata;
-
-                    /**
-                     * Encodes the specified UndeleteTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
-                     * @param message UndeleteTableMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.IUndeleteTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified UndeleteTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
-                     * @param message UndeleteTableMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.IUndeleteTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes an UndeleteTableMetadata message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns UndeleteTableMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UndeleteTableMetadata;
-
-                    /**
-                     * Decodes an UndeleteTableMetadata message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns UndeleteTableMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UndeleteTableMetadata;
-
-                    /**
-                     * Verifies an UndeleteTableMetadata message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates an UndeleteTableMetadata message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns UndeleteTableMetadata
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UndeleteTableMetadata;
-
-                    /**
-                     * Creates a plain object from an UndeleteTableMetadata message. Also converts values to other types if specified.
-                     * @param message UndeleteTableMetadata
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.UndeleteTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this UndeleteTableMetadata to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-
-                    /**
-                     * Gets the default type url for UndeleteTableMetadata
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
@@ -8774,230 +8511,6 @@ export namespace google {
 
                     /**
                      * Gets the default type url for ListBackupsResponse
-                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns The default type url
-                     */
-                    public static getTypeUrl(typeUrlPrefix?: string): string;
-                }
-
-                /** Properties of a CopyBackupRequest. */
-                interface ICopyBackupRequest {
-
-                    /** CopyBackupRequest parent */
-                    parent?: (string|null);
-
-                    /** CopyBackupRequest backupId */
-                    backupId?: (string|null);
-
-                    /** CopyBackupRequest sourceBackup */
-                    sourceBackup?: (string|null);
-
-                    /** CopyBackupRequest expireTime */
-                    expireTime?: (google.protobuf.ITimestamp|null);
-                }
-
-                /** Represents a CopyBackupRequest. */
-                class CopyBackupRequest implements ICopyBackupRequest {
-
-                    /**
-                     * Constructs a new CopyBackupRequest.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.ICopyBackupRequest);
-
-                    /** CopyBackupRequest parent. */
-                    public parent: string;
-
-                    /** CopyBackupRequest backupId. */
-                    public backupId: string;
-
-                    /** CopyBackupRequest sourceBackup. */
-                    public sourceBackup: string;
-
-                    /** CopyBackupRequest expireTime. */
-                    public expireTime?: (google.protobuf.ITimestamp|null);
-
-                    /**
-                     * Creates a new CopyBackupRequest instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns CopyBackupRequest instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.ICopyBackupRequest): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Encodes the specified CopyBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
-                     * @param message CopyBackupRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.ICopyBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified CopyBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
-                     * @param message CopyBackupRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.ICopyBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes a CopyBackupRequest message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns CopyBackupRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Decodes a CopyBackupRequest message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns CopyBackupRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Verifies a CopyBackupRequest message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates a CopyBackupRequest message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns CopyBackupRequest
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Creates a plain object from a CopyBackupRequest message. Also converts values to other types if specified.
-                     * @param message CopyBackupRequest
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.CopyBackupRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this CopyBackupRequest to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-
-                    /**
-                     * Gets the default type url for CopyBackupRequest
-                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns The default type url
-                     */
-                    public static getTypeUrl(typeUrlPrefix?: string): string;
-                }
-
-                /** Properties of a CopyBackupMetadata. */
-                interface ICopyBackupMetadata {
-
-                    /** CopyBackupMetadata name */
-                    name?: (string|null);
-
-                    /** CopyBackupMetadata sourceBackupInfo */
-                    sourceBackupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
-
-                    /** CopyBackupMetadata progress */
-                    progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-                }
-
-                /** Represents a CopyBackupMetadata. */
-                class CopyBackupMetadata implements ICopyBackupMetadata {
-
-                    /**
-                     * Constructs a new CopyBackupMetadata.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.ICopyBackupMetadata);
-
-                    /** CopyBackupMetadata name. */
-                    public name: string;
-
-                    /** CopyBackupMetadata sourceBackupInfo. */
-                    public sourceBackupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
-
-                    /** CopyBackupMetadata progress. */
-                    public progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-
-                    /**
-                     * Creates a new CopyBackupMetadata instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns CopyBackupMetadata instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.ICopyBackupMetadata): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Encodes the specified CopyBackupMetadata message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
-                     * @param message CopyBackupMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.ICopyBackupMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified CopyBackupMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
-                     * @param message CopyBackupMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.ICopyBackupMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes a CopyBackupMetadata message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns CopyBackupMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Decodes a CopyBackupMetadata message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns CopyBackupMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Verifies a CopyBackupMetadata message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates a CopyBackupMetadata message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns CopyBackupMetadata
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Creates a plain object from a CopyBackupMetadata message. Also converts values to other types if specified.
-                     * @param message CopyBackupMetadata
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.CopyBackupMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this CopyBackupMetadata to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-
-                    /**
-                     * Gets the default type url for CopyBackupMetadata
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
