@@ -41,17 +41,21 @@ describe('Cluster', () => {
     assert.strictEqual(serveNodes, compareValues.nodes);
     if (clusterConfig) {
       assert.equal(isConfigDefined, true);
-      assert.deepStrictEqual(clusterConfig, {
-        clusterAutoscalingConfig: {
-          autoscalingLimits: {
-            minServeNodes: compareValues.minServeNodes,
-            maxServeNodes: compareValues.maxServeNodes,
-          },
-          autoscalingTargets: {
-            cpuUtilizationPercent: compareValues.cpuUtilizationPercent,
-          },
-        },
-      });
+      assert.equal(
+        clusterConfig.clusterAutoscalingConfig?.autoscalingLimits
+          ?.minServeNodes,
+        compareValues.minServeNodes
+      );
+      assert.equal(
+        clusterConfig.clusterAutoscalingConfig?.autoscalingLimits
+          ?.maxServeNodes,
+        compareValues.maxServeNodes
+      );
+      assert.equal(
+        clusterConfig.clusterAutoscalingConfig?.autoscalingTargets
+          ?.cpuUtilizationPercent,
+        compareValues.cpuUtilizationPercent
+      );
     } else {
       assert.equal(isConfigDefined, false);
     }
