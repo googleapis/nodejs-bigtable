@@ -491,35 +491,37 @@ describe('Bigtable', () => {
       await table.delete();
     });
 
-    it('should not delete a table if table deletion protection is enabled', async () => {
-      const table = INSTANCE.table(generateId('table'));
-      await table.create({deletionProtection: true});
-      const [metadata] = await table.getMetadata();
-      assert.strictEqual(metadata.deletionProtection, true);
-      try {
-        await table.delete();
-        assert.fail(
-          'An error should have been thrown when we tried to delete the table.'
-        );
-      } catch (err: any) {
-        assert.strictEqual(err.code, 9);
-      }
-    });
+    describe('table deletion protection', async () => {
+      it('should not delete a table if table deletion protection is enabled', async () => {
+        const table = INSTANCE.table(generateId('table'));
+        await table.create({deletionProtection: true});
+        const [metadata] = await table.getMetadata();
+        assert.strictEqual(metadata.deletionProtection, true);
+        try {
+          await table.delete();
+          assert.fail(
+            'An error should have been thrown when we tried to delete the table.'
+          );
+        } catch (err: any) {
+          assert.strictEqual(err.code, 9);
+        }
+      });
 
-    it('should delete a table if table deletion protection is not enabled', async () => {
-      const table = INSTANCE.table(generateId('table'));
-      await table.create({deletionProtection: false});
-      const [metadata] = await table.getMetadata();
-      assert.strictEqual(metadata.deletionProtection, false);
-      await table.delete();
-      try {
-        await table.getMetadata();
-        assert.fail(
-          'An error should have been thrown when we tried to get the deleted table.'
-        );
-      } catch (err: any) {
-        assert.strictEqual(err.code, 5);
-      }
+      it('should delete a table if table deletion protection is not enabled', async () => {
+        const table = INSTANCE.table(generateId('table'));
+        await table.create({deletionProtection: false});
+        const [metadata] = await table.getMetadata();
+        assert.strictEqual(metadata.deletionProtection, false);
+        await table.delete();
+        try {
+          await table.getMetadata();
+          assert.fail(
+            'An error should have been thrown when we tried to get the deleted table.'
+          );
+        } catch (err: any) {
+          assert.strictEqual(err.code, 5);
+        }
+      });
     });
   });
 
