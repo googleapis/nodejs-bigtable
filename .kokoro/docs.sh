@@ -22,4 +22,4 @@ cd $(dirname $0)/..
 
 npm install
 
-npm run docs-test
+# npm run docs-test
