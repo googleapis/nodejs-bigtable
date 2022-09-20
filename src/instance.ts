@@ -19,6 +19,7 @@ import * as is from 'is';
 import * as extend from 'extend';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
+const setColumnFamilies = Symbol('sets the column families for a request');
 
 import snakeCase = require('lodash.snakecase');
 import {
@@ -191,6 +192,32 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
 
     this.id = name.split('/').pop()!;
     this.name = name;
+  }
+
+  [setColumnFamilies](
+    reqOpts: google.bigtable.admin.v2.CreateTableRequest,
+    options: CreateTableOptions
+  ): void {
+    if (options.families) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const columnFamilies = (options.families as any[]).reduce(
+        (families, family) => {
+          if (typeof family === 'string') {
+            family = {
+              name: family,
+            };
+          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const columnFamily: any = (families[family.name] = {});
+          if (family.rule) {
+            columnFamily.gcRule = Family.formatRule_(family.rule);
+          }
+          return families;
+        },
+        {}
+      );
+      reqOpts.table!.columnFamilies = columnFamilies;
+    }
   }
 
   /**
@@ -506,29 +533,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         key,
       }));
     }
-
-    if (options.families) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const columnFamilies = (options.families as any[]).reduce(
-        (families, family) => {
-          if (typeof family === 'string') {
-            family = {
-              name: family,
-            };
-          }
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const columnFamily: any = (families[family.name] = {});
-          if (family.rule) {
-            columnFamily.gcRule = Family.formatRule_(family.rule);
-          }
-          return families;
-        },
-        {}
-      );
-
-      reqOpts.table!.columnFamilies = columnFamilies;
-    }
-
+    this[setColumnFamilies](reqOpts, options);
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',
