@@ -498,9 +498,14 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         // Currently only milliseconds is supported, so it's not
         // configurable.
         granularity: 0,
-        deletionProtection: options.deletionProtection,
       },
     } as google.bigtable.admin.v2.CreateTableRequest;
+    Object.assign(
+      reqOpts,
+      options.deletionProtection
+        ? {deletionProtection: options.deletionProtection}
+        : null
+    );
 
     if (options.splits) {
       reqOpts.initialSplits = options.splits.map(key => ({
