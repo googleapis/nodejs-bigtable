@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {Operation, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
@@ -169,12 +169,23 @@ export interface CreateTableOptions {
   gaxOptions?: CallOptions;
   splits?: string[];
 }
+export interface UpdateTableOptions {
+  families?: {} | string[];
+  gaxOptions?: CallOptions;
+  name: string;
+}
 export type CreateTableCallback = (
   err: ServiceError | null,
   table?: Table,
   apiResponse?: google.bigtable.admin.v2.Table
 ) => void;
+export type UpdateTableCallback = (
+  err: ServiceError | null,
+  table?: Table,
+  apiResponse?: google.bigtable.admin.v2.Table
+) => void;
 export type CreateTableResponse = [Table, google.bigtable.admin.v2.Table];
+export type UpdateTableResponse = [Table, Operation];
 
 export type TableExistsCallback = (
   err: ServiceError | null,

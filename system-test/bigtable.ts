@@ -485,6 +485,24 @@ describe('Bigtable', () => {
       assert(table.metadata!.columnFamilies!.test);
     });
 
+    it.only('should update a table with column family data', async () => {
+      const name = generateId('table');
+      const options = {
+        families: ['test'],
+      };
+      await INSTANCE.createTable(name, options);
+      const updateOptions = {
+        families: ['test2'],
+        name,
+      };
+      const results = await INSTANCE.updateTable(updateOptions);
+      const [, operation] = results;
+      await operation.promise();
+      const table = INSTANCE.table(name);
+      const [, metadata] = await table.get({autoCreate: true});
+      assert(metadata.columnFamilies.test2);
+    });
+
     it('should create a table if autoCreate is true', async () => {
       const table = INSTANCE.table(generateId('table'));
       await table.get({autoCreate: true});
