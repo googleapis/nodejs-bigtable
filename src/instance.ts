@@ -1518,7 +1518,7 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     }
     const callback = cb!;
     const updateMask: string[] = [];
-    updateMask.push('name');
+    updateMask.push('deletion_protection');
     const table = this.table(options.name);
     const reqOpts = {
       table: {
@@ -1532,6 +1532,16 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
         paths: updateMask,
       },
     } as google.bigtable.admin.v2.UpdateTableRequest;
+    if (reqOpts.table) {
+      Object.assign(
+        reqOpts.table,
+        options.deletionProtection
+          ? {
+              deletionProtection: options.deletionProtection,
+            }
+          : null
+      );
+    }
     this[setColumnFamilies](reqOpts, options);
     this.bigtable.request(
       {

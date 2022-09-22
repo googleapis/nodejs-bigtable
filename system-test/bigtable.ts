@@ -485,14 +485,15 @@ describe('Bigtable', () => {
       assert(table.metadata!.columnFamilies!.test);
     });
 
-    it.only('should update a table with column family data', async () => {
+    it('should update a table with deletion protection', async () => {
       const name = generateId('table');
       const options = {
         families: ['test'],
+        deletionProtection: false,
       };
       await INSTANCE.createTable(name, options);
       const updateOptions = {
-        families: ['test2'],
+        deletionProtection: true,
         name,
       };
       const results = await INSTANCE.updateTable(updateOptions);
@@ -500,7 +501,7 @@ describe('Bigtable', () => {
       await operation.promise();
       const table = INSTANCE.table(name);
       const [, metadata] = await table.get({autoCreate: true});
-      assert(metadata.columnFamilies.test2);
+      assert(metadata.deletionProtection);
     });
 
     it('should create a table if autoCreate is true', async () => {

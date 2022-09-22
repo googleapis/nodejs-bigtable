@@ -170,6 +170,7 @@ export interface CreateTableOptions {
   splits?: string[];
 }
 export interface UpdateTableOptions {
+  deletionProtection?: boolean;
   families?: {} | string[];
   gaxOptions?: CallOptions;
   name: string;
