@@ -3175,4 +3175,20 @@ describe('Bigtable/Table', () => {
       table.truncate(gaxOptions, assert.ifError);
     });
   });
+
+  describe('update', () => {
+    it('should call updateTable from instance', done => {
+      const options = {};
+
+      table.instance.updateTable = (
+        options_: {},
+        callback: Function
+      ) => {
+        assert.strictEqual(options_, options);
+        callback(); // done()
+      };
+
+      table.update(options, done);
+    });
+  });
 });

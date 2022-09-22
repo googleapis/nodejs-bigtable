@@ -1901,6 +1901,30 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     );
   }
 
+  update(options: UpdateTableOptions): Promise<UpdateTableResponse>;
+  update(options: UpdateTableOptions, callback: UpdateTableCallback): void;
+  /**
+   * Update a table.
+   *
+   * @param {object} [options] See {@link Instance#updateTable}.
+   * @param {object} [options.gaxOptions] Request configuration options, outlined
+   *     here: https://googleapis.github.io/gax-nodejs/global.html#CallOptions.
+   * @param {function} callback The callback function.
+   * @param {?error} callback.err An error returned while making this request.
+   * @param {Table} callback.table The newly updated table.
+   * @param {object} callback.apiResponse The full API response.
+   *
+   * @example <caption>include:samples/api-reference-doc-snippets/table.js</caption>
+   * region_tag:bigtable_api_update_table
+   */
+  update(
+    options: UpdateTableOptions,
+    cb?: UpdateTableCallback
+  ): void | Promise<UpdateTableResponse> {
+    const callback = cb!;
+    this.instance.updateTable(options, callback);
+  }
+
   waitForReplication(): Promise<WaitForReplicationResponse>;
   waitForReplication(callback: WaitForReplicationCallback): void;
   /**
