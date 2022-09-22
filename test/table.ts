@@ -3180,10 +3180,7 @@ describe('Bigtable/Table', () => {
     it('should call updateTable from instance', done => {
       const options = {};
 
-      table.instance.updateTable = (
-        options_: {},
-        callback: Function
-      ) => {
+      table.instance.updateTable = (options_: {}, callback: Function) => {
         assert.strictEqual(options_, options);
         callback(); // done()
       };
