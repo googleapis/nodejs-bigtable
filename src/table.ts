@@ -14,12 +14,12 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {CallOptions, ServiceError} from 'google-gax';
+import {ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
-import {Duplex, PassThrough, Transform} from 'stream';
+import {PassThrough, Transform} from 'stream';
 import * as is from 'is';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const pumpify = require('pumpify');
@@ -35,11 +35,13 @@ import {Filter, BoundData, RawFilter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
+import {CallOptions} from 'google-gax';
 import {Bigtable, AbortableDuplex} from '.';
 import {Instance} from './instance';
 import {ModifiableBackupFields} from './backup';
 import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
+import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
 import {grpc} from 'google-gax';
 const Status = grpc.status;
