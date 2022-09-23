@@ -13,36 +13,35 @@
 // limitations under the License.
 
 import {promisifyAll} from '@google-cloud/promisify';
-import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {CallOptions, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
-import {PassThrough, Transform} from 'stream';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const concat = require('concat-stream');
+import {Duplex, PassThrough, Transform} from 'stream';
 import * as is from 'is';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const pumpify = require('pumpify');
-
 import {
-  Family,
-  CreateFamilyOptions,
   CreateFamilyCallback,
+  CreateFamilyOptions,
   CreateFamilyResponse,
+  Family,
   IColumnFamily,
 } from './family';
-import {Filter, BoundData, RawFilter} from './filter';
+import {BoundData, Filter, RawFilter} from './filter';
 import {Mutation} from './mutation';
 import {Row} from './row';
 import {ChunkTransformer} from './chunktransformer';
-import {CallOptions} from 'google-gax';
-import {Bigtable, AbortableDuplex} from '.';
+import {AbortableDuplex, Bigtable} from '.';
 import {Instance} from './instance';
 import {ModifiableBackupFields} from './backup';
 import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
-import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
+import {grpc} from 'google-gax';
+import arrify = require('arrify');
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const concat = require('concat-stream');
+const Status = grpc.status;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const pumpify = require('pumpify');
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -1510,6 +1509,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       entries.map((entry: Entry, index: number) => [entry, index])
     );
     const mutationErrorsByEntryIndex = new Map();
+    let savedMetadata: ServiceError['metadata'] | null = null;
 
     const isRetryable = (err: ServiceError | null) => {
       // Don't retry if there are no more entries or retry attempts
@@ -1541,7 +1541,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // If there's no more pending mutations, set the error
       // to null
       if (pendingEntryIndices.size === 0) {
-        err = null;
+        err = savedMetadata
+          ? {
+              name: 'metadata',
+              metadata: savedMetadata,
+              code: Status.UNKNOWN,
+              message: '',
+              details: '',
+            }
+          : null;
       }
 
       if (mutationErrorsByEntryIndex.size !== 0) {
@@ -1611,6 +1619,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             (errorDetails as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
           });
+        })
+        .on('metadata', metadata => {
+          savedMetadata = metadata;
         })
         .on('end', onBatchResponse);
       numRequestsMade++;
