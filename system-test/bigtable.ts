@@ -695,7 +695,11 @@ describe('Bigtable', () => {
             },
           },
         ];
-        await TABLE.insert(rows);
+        try {
+          await TABLE.insert(rows);
+        } catch (e) {
+          console.log(e);
+        }
       });
 
       it('should insert a large row', async () => {

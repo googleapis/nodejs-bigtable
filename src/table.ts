@@ -1544,18 +1544,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // If there's no more pending mutations, set the error
       // to null
       if (pendingEntryIndices.size === 0) {
-        err = savedMetadata
-          ? {
-              name: 'metadata',
-              metadata: savedMetadata,
-              code: Status.UNKNOWN,
-              message: '',
-              details: '',
-            }
-          : null;
+        err = null;
       }
-
       if (mutationErrorsByEntryIndex.size !== 0) {
+        if (err && !err.metadata && savedMetadata) {
+          // Append metadata saved from metadata event to help with debugging
+          err.metadata = savedMetadata;
+        }
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
         callback(new PartialFailureError(mutationErrors, err));
         return;
