@@ -39,8 +39,8 @@ function main(tableName) {
    */
   // const tableName = 'abc123'
   /**
-   *  This value specifies routing for replication. If not specified, the
-   *  "default" application profile will be used.
+   *  This value specifies routing for replication. This API only accepts the
+   *  empty value of app_profile_id.
    */
   // const appProfileId = 'abc123'
   /**
@@ -58,6 +58,10 @@ function main(tableName) {
    *  default (zero) is to return all results.
    */
   // const rowsLimit = 1234
+  /**
+   *  The view into RequestStats, as described above.
+   */
+  // const requestStatsView = {}
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;
