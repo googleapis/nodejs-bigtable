@@ -43,8 +43,6 @@ import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
-import {grpc} from 'google-gax';
-const Status = grpc.status;
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -1547,12 +1545,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         err = null;
       }
       if (mutationErrorsByEntryIndex.size !== 0) {
-        if (err && !err.metadata && savedMetadata) {
-          // Append metadata saved from metadata event to help with debugging
-          err.metadata = savedMetadata;
-        }
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        callback(new PartialFailureError(mutationErrors, err));
+        const partialError = new PartialFailureError(mutationErrors, err);
+        savedMetadata ? (partialError.metadata = savedMetadata) : null;
+        callback(partialError);
         return;
       }
 
@@ -2063,6 +2059,7 @@ export interface GoogleInnerError {
 
 export class PartialFailureError extends Error {
   errors?: GoogleInnerError[];
+  metadata?: ServiceError['metadata'];
   constructor(errors: GoogleInnerError[], rpcError?: ServiceError | null) {
     super();
     this.errors = errors;
@@ -2078,6 +2075,9 @@ export class PartialFailureError extends Error {
     this.message = messages.join('\n');
     if (rpcError) {
       this.message += 'Request failed with: ' + rpcError.message;
+      if (rpcError.metadata) {
+        this.metadata = rpcError.metadata;
+      }
     }
   }
 }

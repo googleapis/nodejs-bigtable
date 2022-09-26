@@ -695,10 +695,24 @@ describe('Bigtable', () => {
             },
           },
         ];
+        await TABLE.insert(rows);
+      });
+
+      it.only('should include metadata in error sent back', async () => {
+        const rows = [
+          {
+            key: 'gwashington',
+            data: {
+              nonExistentColumnFamily: {
+                jadams: 1,
+              },
+            },
+          },
+        ];
         try {
           await TABLE.insert(rows);
-        } catch (e) {
-          console.log(e);
+        } catch (e: any) {
+          assert(e.metadata);
         }
       });
 
