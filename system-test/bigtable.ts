@@ -698,7 +698,7 @@ describe('Bigtable', () => {
         await TABLE.insert(rows);
       });
 
-      it.only('should include metadata in error sent back', async () => {
+      it('should include metadata in error sent back', async () => {
         const rows = [
           {
             key: 'gwashington',
