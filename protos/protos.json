@@ -2840,8 +2840,8 @@
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Instance",
-                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}"
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Table",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
               },
               "nested": {
                 "Bigtable": {
@@ -3144,6 +3144,20 @@
                     "rowsLimit": {
                       "type": "int64",
                       "id": 4
+                    },
+                    "requestStatsView": {
+                      "type": "RequestStatsView",
+                      "id": 6
+                    }
+                  },
+                  "nested": {
+                    "RequestStatsView": {
+                      "values": {
+                        "REQUEST_STATS_VIEW_UNSPECIFIED": 0,
+                        "REQUEST_STATS_NONE": 1,
+                        "REQUEST_STATS_EFFICIENCY": 2,
+                        "REQUEST_STATS_FULL": 3
+                      }
                     }
                   }
                 },
@@ -3157,6 +3171,10 @@
                     "lastScannedRowKey": {
                       "type": "bytes",
                       "id": 2
+                    },
+                    "requestStats": {
+                      "type": "RequestStats",
+                      "id": 3
                     }
                   },
                   "nested": {
@@ -3874,6 +3892,82 @@
                     "incrementAmount": {
                       "type": "int64",
                       "id": 4
+                    }
+                  }
+                },
+                "ReadIteratorStats": {
+                  "fields": {
+                    "rowsSeenCount": {
+                      "type": "int64",
+                      "id": 1
+                    },
+                    "rowsReturnedCount": {
+                      "type": "int64",
+                      "id": 2
+                    },
+                    "cellsSeenCount": {
+                      "type": "int64",
+                      "id": 3
+                    },
+                    "cellsReturnedCount": {
+                      "type": "int64",
+                      "id": 4
+                    },
+                    "deletesSeenCount": {
+                      "type": "int64",
+                      "id": 5
+                    }
+                  }
+                },
+                "RequestLatencyStats": {
+                  "fields": {
+                    "frontendServerLatency": {
+                      "type": "google.protobuf.Duration",
+                      "id": 1
+                    }
+                  }
+                },
+                "ReadEfficiencyStats": {
+                  "fields": {
+                    "readIteratorStats": {
+                      "type": "ReadIteratorStats",
+                      "id": 1
+                    },
+                    "requestLatencyStats": {
+                      "type": "RequestLatencyStats",
+                      "id": 2
+                    }
+                  }
+                },
+                "AllReadStats": {
+                  "fields": {
+                    "readIteratorStats": {
+                      "type": "ReadIteratorStats",
+                      "id": 1
+                    },
+                    "requestLatencyStats": {
+                      "type": "RequestLatencyStats",
+                      "id": 2
+                    }
+                  }
+                },
+                "RequestStats": {
+                  "oneofs": {
+                    "stats": {
+                      "oneof": [
+                        "readEfficiencyStats",
+                        "allReadStats"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "readEfficiencyStats": {
+                      "type": "ReadEfficiencyStats",
+                      "id": 1
+                    },
+                    "allReadStats": {
+                      "type": "AllReadStats",
+                      "id": 2
                     }
                   }
                 },
