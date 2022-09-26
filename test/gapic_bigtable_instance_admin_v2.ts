@@ -278,7 +278,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetInstanceRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -307,7 +310,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetInstanceRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -352,7 +358,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetInstanceRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -381,7 +390,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetInstanceRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -400,9 +412,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListInstancesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListInstancesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -431,9 +444,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListInstancesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListInstancesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -478,9 +492,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListInstancesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListInstancesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -509,9 +524,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListInstancesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListInstancesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListInstancesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -530,7 +546,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
       );
-      const defaultValue1 = getTypeDefaultValue('Instance', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Instance',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -559,7 +578,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
       );
-      const defaultValue1 = getTypeDefaultValue('Instance', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Instance',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -604,7 +626,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
       );
-      const defaultValue1 = getTypeDefaultValue('Instance', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Instance',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -633,7 +658,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Instance()
       );
-      const defaultValue1 = getTypeDefaultValue('Instance', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Instance',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -652,9 +680,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteInstanceRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -683,9 +712,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteInstanceRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -730,9 +760,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteInstanceRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -761,9 +792,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteInstanceRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteInstanceRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -782,7 +814,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetClusterRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -811,7 +846,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetClusterRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -856,7 +894,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetClusterRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -885,7 +926,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetClusterRequest', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -904,9 +948,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListClustersRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListClustersRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -935,9 +980,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListClustersRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListClustersRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -982,9 +1028,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListClustersRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListClustersRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1013,9 +1060,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListClustersRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListClustersRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListClustersRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1034,9 +1082,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteClusterRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1065,9 +1114,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteClusterRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1112,9 +1162,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteClusterRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1143,9 +1194,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteClusterRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteClusterRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1164,9 +1216,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateAppProfileRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateAppProfileRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1195,9 +1248,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateAppProfileRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateAppProfileRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1242,9 +1296,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateAppProfileRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateAppProfileRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1273,9 +1328,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateAppProfileRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateAppProfileRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1294,9 +1350,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1325,9 +1382,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1372,9 +1430,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1403,9 +1462,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.GetAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.GetAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1424,9 +1484,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1455,9 +1516,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1502,9 +1564,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1533,9 +1596,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.DeleteAppProfileRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('DeleteAppProfileRequest', [
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.DeleteAppProfileRequest',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1554,9 +1618,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.GetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1585,9 +1650,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.GetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1632,9 +1698,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.GetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1663,9 +1730,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.GetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('GetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.GetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1684,9 +1752,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.SetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1715,9 +1784,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.SetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1762,9 +1832,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.SetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1793,9 +1864,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.SetIamPolicyRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('SetIamPolicyRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.SetIamPolicyRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1814,9 +1886,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.TestIamPermissionsRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1846,9 +1919,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.TestIamPermissionsRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1893,9 +1967,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.TestIamPermissionsRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedHeaderRequestParams = `resource=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -1924,9 +1999,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.iam.v1.TestIamPermissionsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('TestIamPermissionsRequest', [
-        'resource',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.iam.v1.TestIamPermissionsRequest',
+        ['resource']
+      );
       request.resource = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
@@ -1945,9 +2021,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateInstanceRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateInstanceRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -1978,9 +2055,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateInstanceRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateInstanceRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2032,9 +2110,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateInstanceRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateInstanceRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2063,9 +2142,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateInstanceRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateInstanceRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateInstanceRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2143,7 +2223,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
       );
       request.instance ??= {};
       const defaultValue1 = getTypeDefaultValue(
-        'PartialUpdateInstanceRequest',
+        '.google.bigtable.admin.v2.PartialUpdateInstanceRequest',
         ['instance', 'name']
       );
       request.instance.name = defaultValue1;
@@ -2178,7 +2258,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
       );
       request.instance ??= {};
       const defaultValue1 = getTypeDefaultValue(
-        'PartialUpdateInstanceRequest',
+        '.google.bigtable.admin.v2.PartialUpdateInstanceRequest',
         ['instance', 'name']
       );
       request.instance.name = defaultValue1;
@@ -2234,7 +2314,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
       );
       request.instance ??= {};
       const defaultValue1 = getTypeDefaultValue(
-        'PartialUpdateInstanceRequest',
+        '.google.bigtable.admin.v2.PartialUpdateInstanceRequest',
         ['instance', 'name']
       );
       request.instance.name = defaultValue1;
@@ -2270,7 +2350,7 @@ describe('v2.BigtableInstanceAdminClient', () => {
       );
       request.instance ??= {};
       const defaultValue1 = getTypeDefaultValue(
-        'PartialUpdateInstanceRequest',
+        '.google.bigtable.admin.v2.PartialUpdateInstanceRequest',
         ['instance', 'name']
       );
       request.instance.name = defaultValue1;
@@ -2348,9 +2428,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateClusterRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateClusterRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2381,9 +2462,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateClusterRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateClusterRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2435,9 +2517,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateClusterRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateClusterRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2466,9 +2549,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.CreateClusterRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('CreateClusterRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.CreateClusterRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2544,7 +2628,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
       );
-      const defaultValue1 = getTypeDefaultValue('Cluster', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Cluster',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2575,7 +2662,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
       );
-      const defaultValue1 = getTypeDefaultValue('Cluster', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Cluster',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2627,7 +2717,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
       );
-      const defaultValue1 = getTypeDefaultValue('Cluster', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Cluster',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2656,7 +2749,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.Cluster()
       );
-      const defaultValue1 = getTypeDefaultValue('Cluster', ['name']);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.Cluster',
+        ['name']
+      );
       request.name = defaultValue1;
       const expectedHeaderRequestParams = `name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2733,10 +2829,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
       );
       request.cluster ??= {};
-      const defaultValue1 = getTypeDefaultValue('PartialUpdateClusterRequest', [
-        'cluster',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.PartialUpdateClusterRequest',
+        ['cluster', 'name']
+      );
       request.cluster.name = defaultValue1;
       const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2768,10 +2864,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
       );
       request.cluster ??= {};
-      const defaultValue1 = getTypeDefaultValue('PartialUpdateClusterRequest', [
-        'cluster',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.PartialUpdateClusterRequest',
+        ['cluster', 'name']
+      );
       request.cluster.name = defaultValue1;
       const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2824,10 +2920,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
       );
       request.cluster ??= {};
-      const defaultValue1 = getTypeDefaultValue('PartialUpdateClusterRequest', [
-        'cluster',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.PartialUpdateClusterRequest',
+        ['cluster', 'name']
+      );
       request.cluster.name = defaultValue1;
       const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2857,10 +2953,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.PartialUpdateClusterRequest()
       );
       request.cluster ??= {};
-      const defaultValue1 = getTypeDefaultValue('PartialUpdateClusterRequest', [
-        'cluster',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.PartialUpdateClusterRequest',
+        ['cluster', 'name']
+      );
       request.cluster.name = defaultValue1;
       const expectedHeaderRequestParams = `cluster.name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -2937,10 +3033,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
       );
       request.appProfile ??= {};
-      const defaultValue1 = getTypeDefaultValue('UpdateAppProfileRequest', [
-        'appProfile',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.UpdateAppProfileRequest',
+        ['appProfile', 'name']
+      );
       request.appProfile.name = defaultValue1;
       const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -2972,10 +3068,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
       );
       request.appProfile ??= {};
-      const defaultValue1 = getTypeDefaultValue('UpdateAppProfileRequest', [
-        'appProfile',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.UpdateAppProfileRequest',
+        ['appProfile', 'name']
+      );
       request.appProfile.name = defaultValue1;
       const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
       const expectedResponse = generateSampleMessage(
@@ -3028,10 +3124,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
       );
       request.appProfile ??= {};
-      const defaultValue1 = getTypeDefaultValue('UpdateAppProfileRequest', [
-        'appProfile',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.UpdateAppProfileRequest',
+        ['appProfile', 'name']
+      );
       request.appProfile.name = defaultValue1;
       const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -3061,10 +3157,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
         new protos.google.bigtable.admin.v2.UpdateAppProfileRequest()
       );
       request.appProfile ??= {};
-      const defaultValue1 = getTypeDefaultValue('UpdateAppProfileRequest', [
-        'appProfile',
-        'name',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.UpdateAppProfileRequest',
+        ['appProfile', 'name']
+      );
       request.appProfile.name = defaultValue1;
       const expectedHeaderRequestParams = `app_profile.name=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -3140,9 +3236,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListAppProfilesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListAppProfilesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3173,9 +3270,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListAppProfilesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListAppProfilesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3222,9 +3320,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListAppProfilesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListAppProfilesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -3253,9 +3352,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListAppProfilesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListAppProfilesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3307,9 +3407,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListAppProfilesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListAppProfilesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -3356,9 +3457,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListAppProfilesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListAppProfilesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3399,9 +3501,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListAppProfilesRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListAppProfilesRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListAppProfilesRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -3441,9 +3544,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListHotTabletsRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListHotTabletsRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3474,9 +3578,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListHotTabletsRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListHotTabletsRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3523,9 +3628,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListHotTabletsRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListHotTabletsRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -3554,9 +3660,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListHotTabletsRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListHotTabletsRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3608,9 +3715,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListHotTabletsRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListHotTabletsRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
@@ -3657,9 +3765,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListHotTabletsRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListHotTabletsRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedResponse = [
@@ -3700,9 +3809,10 @@ describe('v2.BigtableInstanceAdminClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.admin.v2.ListHotTabletsRequest()
       );
-      const defaultValue1 = getTypeDefaultValue('ListHotTabletsRequest', [
-        'parent',
-      ]);
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.admin.v2.ListHotTabletsRequest',
+        ['parent']
+      );
       request.parent = defaultValue1;
       const expectedHeaderRequestParams = `parent=${defaultValue1}`;
       const expectedError = new Error('expected');
