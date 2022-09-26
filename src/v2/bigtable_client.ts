@@ -364,8 +364,8 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the mutation should be applied.
-   *   Values are of the form
+   *   Required. The unique name of the table to which the mutation should be
+   *   applied. Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
@@ -373,9 +373,9 @@ export class BigtableClient {
    * @param {Buffer} request.rowKey
    *   Required. The key of the row to which the mutation should be applied.
    * @param {number[]} request.mutations
-   *   Required. Changes to be atomically applied to the specified row. Entries are applied
-   *   in order, meaning that earlier mutations can be masked by later ones.
-   *   Must contain at least one entry and at most 100000.
+   *   Required. Changes to be atomically applied to the specified row. Entries
+   *   are applied in order, meaning that earlier mutations can be masked by later
+   *   ones. Must contain at least one entry and at most 100000.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -481,15 +481,15 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the conditional mutation should be
-   *   applied.
-   *   Values are of the form
+   *   Required. The unique name of the table to which the conditional mutation
+   *   should be applied. Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Buffer} request.rowKey
-   *   Required. The key of the row to which the conditional mutation should be applied.
+   *   Required. The key of the row to which the conditional mutation should be
+   *   applied.
    * @param {google.bigtable.v2.RowFilter} request.predicateFilter
    *   The filter to be applied to the contents of the specified row. Depending
    *   on whether or not any results are yielded, either `true_mutations` or
@@ -615,8 +615,9 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the instance to check permissions for as well as
-   *   respond. Values are of the form `projects/<project>/instances/<instance>`.
+   *   Required. The unique name of the instance to check permissions for as well
+   *   as respond. Values are of the form
+   *   `projects/<project>/instances/<instance>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
@@ -727,19 +728,19 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the read/modify/write rules should be
-   *   applied.
-   *   Values are of the form
+   *   Required. The unique name of the table to which the read/modify/write rules
+   *   should be applied. Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Buffer} request.rowKey
-   *   Required. The key of the row to which the read/modify/write rules should be applied.
+   *   Required. The key of the row to which the read/modify/write rules should be
+   *   applied.
    * @param {number[]} request.rules
-   *   Required. Rules specifying how the specified row's contents are to be transformed
-   *   into writes. Entries are applied in order, meaning that earlier rules will
-   *   affect the results of later ones.
+   *   Required. Rules specifying how the specified row's contents are to be
+   *   transformed into writes. Entries are applied in order, meaning that earlier
+   *   rules will affect the results of later ones.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -856,8 +857,8 @@ export class BigtableClient {
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
-   *   This value specifies routing for replication. If not specified, the
-   *   "default" application profile will be used.
+   *   This value specifies routing for replication. This API only accepts the
+   *   empty value of app_profile_id.
    * @param {google.bigtable.v2.RowSet} request.rows
    *   The row keys and/or ranges to read sequentially. If not specified, reads
    *   from all rows.
@@ -867,6 +868,8 @@ export class BigtableClient {
    * @param {number} request.rowsLimit
    *   The read will stop after committing to N rows' worth of results. The
    *   default (zero) is to return all results.
+   * @param {google.bigtable.v2.ReadRowsRequest.RequestStatsView} request.requestStatsView
+   *   The view into RequestStats, as described above.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
@@ -988,7 +991,8 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the mutations should be applied.
+   *   Required. The unique name of the table to which the mutations should be
+   *   applied.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.

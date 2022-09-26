@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.1.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.5...v4.1.0) (2022-09-26)
+
+
+### Features
+
+* Publish the RequestStats proto ([#1177](https://github.com/googleapis/nodejs-bigtable/issues/1177)) ([89dfc83](https://github.com/googleapis/nodejs-bigtable/commit/89dfc83b4fed199d70934c34ab7f4c4d17796418))
+
 ## [4.0.5](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.4...v4.0.5) (2022-09-23)
 
 
