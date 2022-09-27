@@ -710,10 +710,15 @@ describe('Bigtable', () => {
           },
         ];
         try {
+          // Inserts should not work on non-existent column family.
           await TABLE.insert(rows);
           assert.fail('Inserts should not work on non-existent column family.');
         } catch (e: any) {
-          assert(e.metadata);
+          const metadata = e.metadata;
+          const contentType = metadata.get('content-type');
+          const contentDisposition = metadata.get('content-disposition');
+          assert.deepStrictEqual(contentType, ['application/grpc']);
+          assert.deepStrictEqual(contentDisposition, ['attachment']);
         }
       });
 
