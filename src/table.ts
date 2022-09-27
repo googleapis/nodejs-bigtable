@@ -2075,9 +2075,6 @@ export class PartialFailureError extends Error {
     this.message = messages.join('\n');
     if (rpcError) {
       this.message += 'Request failed with: ' + rpcError.message;
-      if (rpcError.metadata) {
-        this.metadata = rpcError.metadata;
-      }
     }
   }
 }
