@@ -711,6 +711,7 @@ describe('Bigtable', () => {
         ];
         try {
           await TABLE.insert(rows);
+          assert.fail('Inserts should not work on non-existent column family.');
         } catch (e: any) {
           assert(e.metadata);
         }
