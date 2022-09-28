@@ -257,6 +257,35 @@ describe('Bigtable/Backup', () => {
       };
       backup.copy(copiedBackup, callback);
     });
+    it('should correctly copy backup from the Cluster to another project', done => {
+      const otherInstanceName = 'projects/project2/instances/instance2';
+      const CLUSTER2 = {
+        bigtable: {} as Bigtable,
+        name: otherInstanceName,
+        instance: {
+          name: 'instance-name',
+        },
+      } as clusterTypes.Cluster;
+      const backupId = generateId('backup');
+      const newBackupId = generateId('backup');
+      const backup = new Backup(CLUSTER, backupId);
+      const copiedBackup = new Backup(CLUSTER2, newBackupId);
+      const callback: (err: any, config: any) => void = (
+        err: ServiceError | Error | null,
+        config: any
+      ) => {
+        assert.strictEqual(config.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config.method, 'copyBackup');
+        assert.deepStrictEqual(config.reqOpts, {
+          parent: otherInstanceName,
+          backupId: newBackupId,
+          sourceBackup: `a/b/c/d/backups/${backupId}`,
+          expireTime: undefined,
+        });
+        done();
+      };
+      backup.copy(copiedBackup, callback);
+    });
   });
 
   describe('delete', () => {
