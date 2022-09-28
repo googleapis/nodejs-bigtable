@@ -225,11 +225,7 @@ describe('Bigtable/Backup', () => {
   });
 
   describe('copy', () => {
-    it('should correctly copy backup from the Cluster', done => {
-      const backupId = generateId('backup');
-      const newBackupId = generateId('backup');
-      const backup = new Backup(CLUSTER, backupId);
-      const copiedBackup = new Backup(CLUSTER, newBackupId);
+    beforeEach(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       backup.bigtable.request = (
@@ -238,6 +234,13 @@ describe('Bigtable/Backup', () => {
       ) => {
         callback(null, config);
       };
+    });
+
+    it('should correctly copy backup from the Cluster', done => {
+      const backupId = generateId('backup');
+      const newBackupId = generateId('backup');
+      const backup = new Backup(CLUSTER, backupId);
+      const copiedBackup = new Backup(CLUSTER, newBackupId);
       const callback: (err: any, config: any) => void = (
         err: ServiceError | Error | null,
         config: any
