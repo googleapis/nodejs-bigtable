@@ -880,7 +880,9 @@ export class Bigtable {
           .on('error', (err: Error) => {
             stream.destroy(err);
           })
-          .on('metadata', stream.emit.bind(stream, 'metadata'))
+          .on('metadata', metadata => {
+            stream.emit('metadata', metadata);
+          })
           .on('response', response => {
             stream.emit('response', response);
           })
