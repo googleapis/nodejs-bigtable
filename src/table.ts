@@ -1510,7 +1510,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       entries.map((entry: Entry, index: number) => [entry, index])
     );
     const mutationErrorsByEntryIndex = new Map();
-    let savedMetadata: ServiceError['metadata'] | null = null;
 
     const isRetryable = (err: ServiceError | null) => {
       // Don't retry if there are no more entries or retry attempts
@@ -1544,11 +1543,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (pendingEntryIndices.size === 0) {
         err = null;
       }
+
       if (mutationErrorsByEntryIndex.size !== 0) {
         const mutationErrors = Array.from(mutationErrorsByEntryIndex.values());
-        const partialError = new PartialFailureError(mutationErrors, err);
-        savedMetadata ? (partialError.metadata = savedMetadata) : null;
-        callback(partialError);
+        callback(new PartialFailureError(mutationErrors, err));
         return;
       }
 
@@ -1613,9 +1611,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             (errorDetails as any).entry = originalEntry;
             mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
           });
-        })
-        .on('metadata', metadata => {
-          savedMetadata = metadata;
         })
         .on('end', onBatchResponse);
       numRequestsMade++;
@@ -2059,7 +2054,6 @@ export interface GoogleInnerError {
 
 export class PartialFailureError extends Error {
   errors?: GoogleInnerError[];
-  metadata?: ServiceError['metadata'];
   constructor(errors: GoogleInnerError[], rpcError?: ServiceError | null) {
     super();
     this.errors = errors;

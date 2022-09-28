@@ -698,30 +698,6 @@ describe('Bigtable', () => {
         await TABLE.insert(rows);
       });
 
-      it('should include metadata in error sent back', async () => {
-        const rows = [
-          {
-            key: 'gwashington',
-            data: {
-              nonExistentColumnFamily: {
-                jadams: 1,
-              },
-            },
-          },
-        ];
-        try {
-          // Inserts should not work on non-existent column family.
-          await TABLE.insert(rows);
-          assert.fail('Inserts should not work on non-existent column family.');
-        } catch (e: any) {
-          const metadata = e.metadata;
-          const contentType = metadata.get('content-type');
-          const contentDisposition = metadata.get('content-disposition');
-          assert.deepStrictEqual(contentType, ['application/grpc']);
-          assert.deepStrictEqual(contentDisposition, ['attachment']);
-        }
-      });
-
       it('should insert a large row', async () => {
         await TABLE.insert({
           key: 'gwashington',
