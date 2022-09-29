@@ -19,7 +19,7 @@
         define(["protobufjs/minimal"], factory);
 
     /* CommonJS */ else if (typeof require === 'function' && typeof module === 'object' && module && module.exports)
-        module.exports = factory(require("google-gax").protobufMinimal);
+        module.exports = factory(require("google-gax/build/src/protobuf").protobufMinimal);
 
 })(this, function($protobuf) {
     "use strict";
@@ -7650,6 +7650,7 @@
                          * @property {google.bigtable.admin.v2.Instance.Type|null} [type] Instance type
                          * @property {Object.<string,string>|null} [labels] Instance labels
                          * @property {google.protobuf.ITimestamp|null} [createTime] Instance createTime
+                         * @property {boolean|null} [satisfiesPzs] Instance satisfiesPzs
                          */
     
                         /**
@@ -7717,6 +7718,28 @@
                         Instance.prototype.createTime = null;
     
                         /**
+                         * Instance satisfiesPzs.
+                         * @member {boolean|null|undefined} satisfiesPzs
+                         * @memberof google.bigtable.admin.v2.Instance
+                         * @instance
+                         */
+                        Instance.prototype.satisfiesPzs = null;
+    
+                        // OneOf field names bound to virtual getters and setters
+                        var $oneOfFields;
+    
+                        /**
+                         * Instance _satisfiesPzs.
+                         * @member {"satisfiesPzs"|undefined} _satisfiesPzs
+                         * @memberof google.bigtable.admin.v2.Instance
+                         * @instance
+                         */
+                        Object.defineProperty(Instance.prototype, "_satisfiesPzs", {
+                            get: $util.oneOfGetter($oneOfFields = ["satisfiesPzs"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+    
+                        /**
                          * Creates a new Instance instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.Instance
@@ -7753,6 +7776,8 @@
                                     writer.uint32(/* id 5, wireType 2 =*/42).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]).uint32(/* id 2, wireType 2 =*/18).string(message.labels[keys[i]]).ldelim();
                             if (message.createTime != null && Object.hasOwnProperty.call(message, "createTime"))
                                 $root.google.protobuf.Timestamp.encode(message.createTime, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                            if (message.satisfiesPzs != null && Object.hasOwnProperty.call(message, "satisfiesPzs"))
+                                writer.uint32(/* id 8, wireType 0 =*/64).bool(message.satisfiesPzs);
                             return writer;
                         };
     
@@ -7830,6 +7855,10 @@
                                         message.createTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
                                         break;
                                     }
+                                case 8: {
+                                        message.satisfiesPzs = reader.bool();
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -7865,6 +7894,7 @@
                         Instance.verify = function verify(message) {
                             if (typeof message !== "object" || message === null)
                                 return "object expected";
+                            var properties = {};
                             if (message.name != null && message.hasOwnProperty("name"))
                                 if (!$util.isString(message.name))
                                     return "name: string expected";
@@ -7901,6 +7931,11 @@
                                 var error = $root.google.protobuf.Timestamp.verify(message.createTime);
                                 if (error)
                                     return "createTime." + error;
+                            }
+                            if (message.satisfiesPzs != null && message.hasOwnProperty("satisfiesPzs")) {
+                                properties._satisfiesPzs = 1;
+                                if (typeof message.satisfiesPzs !== "boolean")
+                                    return "satisfiesPzs: boolean expected";
                             }
                             return null;
                         };
@@ -7961,6 +7996,8 @@
                                     throw TypeError(".google.bigtable.admin.v2.Instance.createTime: object expected");
                                 message.createTime = $root.google.protobuf.Timestamp.fromObject(object.createTime);
                             }
+                            if (object.satisfiesPzs != null)
+                                message.satisfiesPzs = Boolean(object.satisfiesPzs);
                             return message;
                         };
     
@@ -8002,6 +8039,11 @@
                             }
                             if (message.createTime != null && message.hasOwnProperty("createTime"))
                                 object.createTime = $root.google.protobuf.Timestamp.toObject(message.createTime, options);
+                            if (message.satisfiesPzs != null && message.hasOwnProperty("satisfiesPzs")) {
+                                object.satisfiesPzs = message.satisfiesPzs;
+                                if (options.oneofs)
+                                    object._satisfiesPzs = "satisfiesPzs";
+                            }
                             return object;
                         };
     
@@ -8073,6 +8115,7 @@
                          * @memberof google.bigtable.admin.v2
                          * @interface IAutoscalingTargets
                          * @property {number|null} [cpuUtilizationPercent] AutoscalingTargets cpuUtilizationPercent
+                         * @property {number|null} [storageUtilizationGibPerNode] AutoscalingTargets storageUtilizationGibPerNode
                          */
     
                         /**
@@ -8097,6 +8140,14 @@
                          * @instance
                          */
                         AutoscalingTargets.prototype.cpuUtilizationPercent = 0;
+    
+                        /**
+                         * AutoscalingTargets storageUtilizationGibPerNode.
+                         * @member {number} storageUtilizationGibPerNode
+                         * @memberof google.bigtable.admin.v2.AutoscalingTargets
+                         * @instance
+                         */
+                        AutoscalingTargets.prototype.storageUtilizationGibPerNode = 0;
     
                         /**
                          * Creates a new AutoscalingTargets instance using the specified properties.
@@ -8124,6 +8175,8 @@
                                 writer = $Writer.create();
                             if (message.cpuUtilizationPercent != null && Object.hasOwnProperty.call(message, "cpuUtilizationPercent"))
                                 writer.uint32(/* id 2, wireType 0 =*/16).int32(message.cpuUtilizationPercent);
+                            if (message.storageUtilizationGibPerNode != null && Object.hasOwnProperty.call(message, "storageUtilizationGibPerNode"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.storageUtilizationGibPerNode);
                             return writer;
                         };
     
@@ -8160,6 +8213,10 @@
                                 switch (tag >>> 3) {
                                 case 2: {
                                         message.cpuUtilizationPercent = reader.int32();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.storageUtilizationGibPerNode = reader.int32();
                                         break;
                                     }
                                 default:
@@ -8200,6 +8257,9 @@
                             if (message.cpuUtilizationPercent != null && message.hasOwnProperty("cpuUtilizationPercent"))
                                 if (!$util.isInteger(message.cpuUtilizationPercent))
                                     return "cpuUtilizationPercent: integer expected";
+                            if (message.storageUtilizationGibPerNode != null && message.hasOwnProperty("storageUtilizationGibPerNode"))
+                                if (!$util.isInteger(message.storageUtilizationGibPerNode))
+                                    return "storageUtilizationGibPerNode: integer expected";
                             return null;
                         };
     
@@ -8217,6 +8277,8 @@
                             var message = new $root.google.bigtable.admin.v2.AutoscalingTargets();
                             if (object.cpuUtilizationPercent != null)
                                 message.cpuUtilizationPercent = object.cpuUtilizationPercent | 0;
+                            if (object.storageUtilizationGibPerNode != null)
+                                message.storageUtilizationGibPerNode = object.storageUtilizationGibPerNode | 0;
                             return message;
                         };
     
@@ -8233,10 +8295,14 @@
                             if (!options)
                                 options = {};
                             var object = {};
-                            if (options.defaults)
+                            if (options.defaults) {
                                 object.cpuUtilizationPercent = 0;
+                                object.storageUtilizationGibPerNode = 0;
+                            }
                             if (message.cpuUtilizationPercent != null && message.hasOwnProperty("cpuUtilizationPercent"))
                                 object.cpuUtilizationPercent = message.cpuUtilizationPercent;
+                            if (message.storageUtilizationGibPerNode != null && message.hasOwnProperty("storageUtilizationGibPerNode"))
+                                object.storageUtilizationGibPerNode = message.storageUtilizationGibPerNode;
                             return object;
                         };
     
@@ -11154,6 +11220,39 @@
                          */
     
                         /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateTable}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef UpdateTableCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls UpdateTable.
+                         * @function updateTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} request UpdateTableRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.UpdateTableCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.updateTable = function updateTable(request, callback) {
+                            return this.rpcCall(updateTable, $root.google.bigtable.admin.v2.UpdateTableRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "UpdateTable" });
+    
+                        /**
+                         * Calls UpdateTable.
+                         * @function updateTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} request UpdateTableRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
                          * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteTable}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef DeleteTableCallback
@@ -11183,6 +11282,39 @@
                          * @instance
                          * @param {google.bigtable.admin.v2.IDeleteTableRequest} request DeleteTableRequest message or plain object
                          * @returns {Promise<google.protobuf.Empty>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|undeleteTable}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef UndeleteTableCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls UndeleteTable.
+                         * @function undeleteTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUndeleteTableRequest} request UndeleteTableRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTableCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.undeleteTable = function undeleteTable(request, callback) {
+                            return this.rpcCall(undeleteTable, $root.google.bigtable.admin.v2.UndeleteTableRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "UndeleteTable" });
+    
+                        /**
+                         * Calls UndeleteTable.
+                         * @function undeleteTable
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.IUndeleteTableRequest} request UndeleteTableRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
                          * @variation 2
                          */
     
@@ -14443,6 +14575,503 @@
                         return GetTableRequest;
                     })();
     
+                    v2.UpdateTableRequest = (function() {
+    
+                        /**
+                         * Properties of an UpdateTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUpdateTableRequest
+                         * @property {google.bigtable.admin.v2.ITable|null} [table] UpdateTableRequest table
+                         * @property {google.protobuf.IFieldMask|null} [updateMask] UpdateTableRequest updateMask
+                         */
+    
+                        /**
+                         * Constructs a new UpdateTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UpdateTableRequest.
+                         * @implements IUpdateTableRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest=} [properties] Properties to set
+                         */
+                        function UpdateTableRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UpdateTableRequest table.
+                         * @member {google.bigtable.admin.v2.ITable|null|undefined} table
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @instance
+                         */
+                        UpdateTableRequest.prototype.table = null;
+    
+                        /**
+                         * UpdateTableRequest updateMask.
+                         * @member {google.protobuf.IFieldMask|null|undefined} updateMask
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @instance
+                         */
+                        UpdateTableRequest.prototype.updateMask = null;
+    
+                        /**
+                         * Creates a new UpdateTableRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest instance
+                         */
+                        UpdateTableRequest.create = function create(properties) {
+                            return new UpdateTableRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} message UpdateTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.table != null && Object.hasOwnProperty.call(message, "table"))
+                                $root.google.bigtable.admin.v2.Table.encode(message.table, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            if (message.updateMask != null && Object.hasOwnProperty.call(message, "updateMask"))
+                                $root.google.protobuf.FieldMask.encode(message.updateMask, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableRequest} message UpdateTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UpdateTableRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.table = $root.google.bigtable.admin.v2.Table.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 2: {
+                                        message.updateMask = $root.google.protobuf.FieldMask.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UpdateTableRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UpdateTableRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.table != null && message.hasOwnProperty("table")) {
+                                var error = $root.google.bigtable.admin.v2.Table.verify(message.table);
+                                if (error)
+                                    return "table." + error;
+                            }
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask")) {
+                                var error = $root.google.protobuf.FieldMask.verify(message.updateMask);
+                                if (error)
+                                    return "updateMask." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UpdateTableRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UpdateTableRequest} UpdateTableRequest
+                         */
+                        UpdateTableRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UpdateTableRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UpdateTableRequest();
+                            if (object.table != null) {
+                                if (typeof object.table !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableRequest.table: object expected");
+                                message.table = $root.google.bigtable.admin.v2.Table.fromObject(object.table);
+                            }
+                            if (object.updateMask != null) {
+                                if (typeof object.updateMask !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableRequest.updateMask: object expected");
+                                message.updateMask = $root.google.protobuf.FieldMask.fromObject(object.updateMask);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UpdateTableRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.UpdateTableRequest} message UpdateTableRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UpdateTableRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.table = null;
+                                object.updateMask = null;
+                            }
+                            if (message.table != null && message.hasOwnProperty("table"))
+                                object.table = $root.google.bigtable.admin.v2.Table.toObject(message.table, options);
+                            if (message.updateMask != null && message.hasOwnProperty("updateMask"))
+                                object.updateMask = $root.google.protobuf.FieldMask.toObject(message.updateMask, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UpdateTableRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UpdateTableRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UpdateTableRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UpdateTableRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UpdateTableRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UpdateTableRequest";
+                        };
+    
+                        return UpdateTableRequest;
+                    })();
+    
+                    v2.UpdateTableMetadata = (function() {
+    
+                        /**
+                         * Properties of an UpdateTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUpdateTableMetadata
+                         * @property {string|null} [name] UpdateTableMetadata name
+                         * @property {google.protobuf.ITimestamp|null} [startTime] UpdateTableMetadata startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] UpdateTableMetadata endTime
+                         */
+    
+                        /**
+                         * Constructs a new UpdateTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UpdateTableMetadata.
+                         * @implements IUpdateTableMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata=} [properties] Properties to set
+                         */
+                        function UpdateTableMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UpdateTableMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         */
+                        UpdateTableMetadata.prototype.name = "";
+    
+                        /**
+                         * UpdateTableMetadata startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         */
+                        UpdateTableMetadata.prototype.startTime = null;
+    
+                        /**
+                         * UpdateTableMetadata endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         */
+                        UpdateTableMetadata.prototype.endTime = null;
+    
+                        /**
+                         * Creates a new UpdateTableMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata instance
+                         */
+                        UpdateTableMetadata.create = function create(properties) {
+                            return new UpdateTableMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata} message UpdateTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UpdateTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUpdateTableMetadata} message UpdateTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UpdateTableMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UpdateTableMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UpdateTableMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UpdateTableMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UpdateTableMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UpdateTableMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UpdateTableMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UpdateTableMetadata} UpdateTableMetadata
+                         */
+                        UpdateTableMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UpdateTableMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UpdateTableMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableMetadata.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UpdateTableMetadata.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UpdateTableMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.UpdateTableMetadata} message UpdateTableMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UpdateTableMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UpdateTableMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UpdateTableMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UpdateTableMetadata
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UpdateTableMetadata
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UpdateTableMetadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UpdateTableMetadata";
+                        };
+    
+                        return UpdateTableMetadata;
+                    })();
+    
                     v2.DeleteTableRequest = (function() {
     
                         /**
@@ -14644,6 +15273,469 @@
                         };
     
                         return DeleteTableRequest;
+                    })();
+    
+                    v2.UndeleteTableRequest = (function() {
+    
+                        /**
+                         * Properties of an UndeleteTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUndeleteTableRequest
+                         * @property {string|null} [name] UndeleteTableRequest name
+                         */
+    
+                        /**
+                         * Constructs a new UndeleteTableRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UndeleteTableRequest.
+                         * @implements IUndeleteTableRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUndeleteTableRequest=} [properties] Properties to set
+                         */
+                        function UndeleteTableRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UndeleteTableRequest name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @instance
+                         */
+                        UndeleteTableRequest.prototype.name = "";
+    
+                        /**
+                         * Creates a new UndeleteTableRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUndeleteTableRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UndeleteTableRequest} UndeleteTableRequest instance
+                         */
+                        UndeleteTableRequest.create = function create(properties) {
+                            return new UndeleteTableRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UndeleteTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUndeleteTableRequest} message UndeleteTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UndeleteTableRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UndeleteTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUndeleteTableRequest} message UndeleteTableRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UndeleteTableRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UndeleteTableRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UndeleteTableRequest} UndeleteTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UndeleteTableRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UndeleteTableRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UndeleteTableRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UndeleteTableRequest} UndeleteTableRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UndeleteTableRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UndeleteTableRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UndeleteTableRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UndeleteTableRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UndeleteTableRequest} UndeleteTableRequest
+                         */
+                        UndeleteTableRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UndeleteTableRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UndeleteTableRequest();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UndeleteTableRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.UndeleteTableRequest} message UndeleteTableRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UndeleteTableRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.name = "";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UndeleteTableRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UndeleteTableRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UndeleteTableRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UndeleteTableRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UndeleteTableRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UndeleteTableRequest";
+                        };
+    
+                        return UndeleteTableRequest;
+                    })();
+    
+                    v2.UndeleteTableMetadata = (function() {
+    
+                        /**
+                         * Properties of an UndeleteTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IUndeleteTableMetadata
+                         * @property {string|null} [name] UndeleteTableMetadata name
+                         * @property {google.protobuf.ITimestamp|null} [startTime] UndeleteTableMetadata startTime
+                         * @property {google.protobuf.ITimestamp|null} [endTime] UndeleteTableMetadata endTime
+                         */
+    
+                        /**
+                         * Constructs a new UndeleteTableMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents an UndeleteTableMetadata.
+                         * @implements IUndeleteTableMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IUndeleteTableMetadata=} [properties] Properties to set
+                         */
+                        function UndeleteTableMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * UndeleteTableMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @instance
+                         */
+                        UndeleteTableMetadata.prototype.name = "";
+    
+                        /**
+                         * UndeleteTableMetadata startTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} startTime
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @instance
+                         */
+                        UndeleteTableMetadata.prototype.startTime = null;
+    
+                        /**
+                         * UndeleteTableMetadata endTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} endTime
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @instance
+                         */
+                        UndeleteTableMetadata.prototype.endTime = null;
+    
+                        /**
+                         * Creates a new UndeleteTableMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUndeleteTableMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.UndeleteTableMetadata} UndeleteTableMetadata instance
+                         */
+                        UndeleteTableMetadata.create = function create(properties) {
+                            return new UndeleteTableMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified UndeleteTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUndeleteTableMetadata} message UndeleteTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UndeleteTableMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.startTime != null && Object.hasOwnProperty.call(message, "startTime"))
+                                $root.google.protobuf.Timestamp.encode(message.startTime, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.endTime != null && Object.hasOwnProperty.call(message, "endTime"))
+                                $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified UndeleteTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.IUndeleteTableMetadata} message UndeleteTableMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        UndeleteTableMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes an UndeleteTableMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.UndeleteTableMetadata} UndeleteTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UndeleteTableMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.UndeleteTableMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.startTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.endTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes an UndeleteTableMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.UndeleteTableMetadata} UndeleteTableMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        UndeleteTableMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies an UndeleteTableMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        UndeleteTableMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.startTime != null && message.hasOwnProperty("startTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.startTime);
+                                if (error)
+                                    return "startTime." + error;
+                            }
+                            if (message.endTime != null && message.hasOwnProperty("endTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.endTime);
+                                if (error)
+                                    return "endTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates an UndeleteTableMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.UndeleteTableMetadata} UndeleteTableMetadata
+                         */
+                        UndeleteTableMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.UndeleteTableMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.UndeleteTableMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.startTime != null) {
+                                if (typeof object.startTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UndeleteTableMetadata.startTime: object expected");
+                                message.startTime = $root.google.protobuf.Timestamp.fromObject(object.startTime);
+                            }
+                            if (object.endTime != null) {
+                                if (typeof object.endTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.UndeleteTableMetadata.endTime: object expected");
+                                message.endTime = $root.google.protobuf.Timestamp.fromObject(object.endTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from an UndeleteTableMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.UndeleteTableMetadata} message UndeleteTableMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        UndeleteTableMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.startTime = null;
+                                object.endTime = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.startTime != null && message.hasOwnProperty("startTime"))
+                                object.startTime = $root.google.protobuf.Timestamp.toObject(message.startTime, options);
+                            if (message.endTime != null && message.hasOwnProperty("endTime"))
+                                object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this UndeleteTableMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        UndeleteTableMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for UndeleteTableMetadata
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.UndeleteTableMetadata
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        UndeleteTableMetadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.UndeleteTableMetadata";
+                        };
+    
+                        return UndeleteTableMetadata;
                     })();
     
                     v2.ModifyColumnFamiliesRequest = (function() {
@@ -19780,6 +20872,7 @@
                          * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
                          * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
                          * @property {google.bigtable.admin.v2.IRestoreInfo|null} [restoreInfo] Table restoreInfo
+                         * @property {boolean|null} [deletionProtection] Table deletionProtection
                          */
     
                         /**
@@ -19840,6 +20933,14 @@
                         Table.prototype.restoreInfo = null;
     
                         /**
+                         * Table deletionProtection.
+                         * @member {boolean} deletionProtection
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.deletionProtection = false;
+    
+                        /**
                          * Creates a new Table instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.Table
@@ -19879,6 +20980,8 @@
                                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
                             if (message.restoreInfo != null && Object.hasOwnProperty.call(message, "restoreInfo"))
                                 $root.google.bigtable.admin.v2.RestoreInfo.encode(message.restoreInfo, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            if (message.deletionProtection != null && Object.hasOwnProperty.call(message, "deletionProtection"))
+                                writer.uint32(/* id 9, wireType 0 =*/72).bool(message.deletionProtection);
                             return writer;
                         };
     
@@ -19971,6 +21074,10 @@
                                         message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.decode(reader, reader.uint32());
                                         break;
                                     }
+                                case 9: {
+                                        message.deletionProtection = reader.bool();
+                                        break;
+                                    }
                                 default:
                                     reader.skipType(tag & 7);
                                     break;
@@ -20042,6 +21149,9 @@
                                 if (error)
                                     return "restoreInfo." + error;
                             }
+                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
+                                if (typeof message.deletionProtection !== "boolean")
+                                    return "deletionProtection: boolean expected";
                             return null;
                         };
     
@@ -20094,6 +21204,8 @@
                                     throw TypeError(".google.bigtable.admin.v2.Table.restoreInfo: object expected");
                                 message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.fromObject(object.restoreInfo);
                             }
+                            if (object.deletionProtection != null)
+                                message.deletionProtection = Boolean(object.deletionProtection);
                             return message;
                         };
     
@@ -20118,6 +21230,7 @@
                                 object.name = "";
                                 object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
                                 object.restoreInfo = null;
+                                object.deletionProtection = false;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -20136,6 +21249,8 @@
                                 object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
                             if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
                                 object.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.toObject(message.restoreInfo, options);
+                            if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
+                                object.deletionProtection = message.deletionProtection;
                             return object;
                         };
     
@@ -23205,6 +24320,7 @@
                      * @property {google.bigtable.v2.IRowSet|null} [rows] ReadRowsRequest rows
                      * @property {google.bigtable.v2.IRowFilter|null} [filter] ReadRowsRequest filter
                      * @property {number|Long|null} [rowsLimit] ReadRowsRequest rowsLimit
+                     * @property {google.bigtable.v2.ReadRowsRequest.RequestStatsView|null} [requestStatsView] ReadRowsRequest requestStatsView
                      */
     
                     /**
@@ -23263,6 +24379,14 @@
                     ReadRowsRequest.prototype.rowsLimit = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
     
                     /**
+                     * ReadRowsRequest requestStatsView.
+                     * @member {google.bigtable.v2.ReadRowsRequest.RequestStatsView} requestStatsView
+                     * @memberof google.bigtable.v2.ReadRowsRequest
+                     * @instance
+                     */
+                    ReadRowsRequest.prototype.requestStatsView = 0;
+    
+                    /**
                      * Creates a new ReadRowsRequest instance using the specified properties.
                      * @function create
                      * @memberof google.bigtable.v2.ReadRowsRequest
@@ -23296,6 +24420,8 @@
                             writer.uint32(/* id 4, wireType 0 =*/32).int64(message.rowsLimit);
                         if (message.appProfileId != null && Object.hasOwnProperty.call(message, "appProfileId"))
                             writer.uint32(/* id 5, wireType 2 =*/42).string(message.appProfileId);
+                        if (message.requestStatsView != null && Object.hasOwnProperty.call(message, "requestStatsView"))
+                            writer.uint32(/* id 6, wireType 0 =*/48).int32(message.requestStatsView);
                         return writer;
                     };
     
@@ -23348,6 +24474,10 @@
                                 }
                             case 4: {
                                     message.rowsLimit = reader.int64();
+                                    break;
+                                }
+                            case 6: {
+                                    message.requestStatsView = reader.int32();
                                     break;
                                 }
                             default:
@@ -23404,6 +24534,16 @@
                         if (message.rowsLimit != null && message.hasOwnProperty("rowsLimit"))
                             if (!$util.isInteger(message.rowsLimit) && !(message.rowsLimit && $util.isInteger(message.rowsLimit.low) && $util.isInteger(message.rowsLimit.high)))
                                 return "rowsLimit: integer|Long expected";
+                        if (message.requestStatsView != null && message.hasOwnProperty("requestStatsView"))
+                            switch (message.requestStatsView) {
+                            default:
+                                return "requestStatsView: enum value expected";
+                            case 0:
+                            case 1:
+                            case 2:
+                            case 3:
+                                break;
+                            }
                         return null;
                     };
     
@@ -23442,6 +24582,24 @@
                                 message.rowsLimit = object.rowsLimit;
                             else if (typeof object.rowsLimit === "object")
                                 message.rowsLimit = new $util.LongBits(object.rowsLimit.low >>> 0, object.rowsLimit.high >>> 0).toNumber();
+                        switch (object.requestStatsView) {
+                        case "REQUEST_STATS_VIEW_UNSPECIFIED":
+                        case 0:
+                            message.requestStatsView = 0;
+                            break;
+                        case "REQUEST_STATS_NONE":
+                        case 1:
+                            message.requestStatsView = 1;
+                            break;
+                        case "REQUEST_STATS_EFFICIENCY":
+                        case 2:
+                            message.requestStatsView = 2;
+                            break;
+                        case "REQUEST_STATS_FULL":
+                        case 3:
+                            message.requestStatsView = 3;
+                            break;
+                        }
                         return message;
                     };
     
@@ -23468,6 +24626,7 @@
                             } else
                                 object.rowsLimit = options.longs === String ? "0" : 0;
                             object.appProfileId = "";
+                            object.requestStatsView = options.enums === String ? "REQUEST_STATS_VIEW_UNSPECIFIED" : 0;
                         }
                         if (message.tableName != null && message.hasOwnProperty("tableName"))
                             object.tableName = message.tableName;
@@ -23482,6 +24641,8 @@
                                 object.rowsLimit = options.longs === String ? $util.Long.prototype.toString.call(message.rowsLimit) : options.longs === Number ? new $util.LongBits(message.rowsLimit.low >>> 0, message.rowsLimit.high >>> 0).toNumber() : message.rowsLimit;
                         if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
                             object.appProfileId = message.appProfileId;
+                        if (message.requestStatsView != null && message.hasOwnProperty("requestStatsView"))
+                            object.requestStatsView = options.enums === String ? $root.google.bigtable.v2.ReadRowsRequest.RequestStatsView[message.requestStatsView] : message.requestStatsView;
                         return object;
                     };
     
@@ -23511,6 +24672,24 @@
                         return typeUrlPrefix + "/google.bigtable.v2.ReadRowsRequest";
                     };
     
+                    /**
+                     * RequestStatsView enum.
+                     * @name google.bigtable.v2.ReadRowsRequest.RequestStatsView
+                     * @enum {number}
+                     * @property {number} REQUEST_STATS_VIEW_UNSPECIFIED=0 REQUEST_STATS_VIEW_UNSPECIFIED value
+                     * @property {number} REQUEST_STATS_NONE=1 REQUEST_STATS_NONE value
+                     * @property {number} REQUEST_STATS_EFFICIENCY=2 REQUEST_STATS_EFFICIENCY value
+                     * @property {number} REQUEST_STATS_FULL=3 REQUEST_STATS_FULL value
+                     */
+                    ReadRowsRequest.RequestStatsView = (function() {
+                        var valuesById = {}, values = Object.create(valuesById);
+                        values[valuesById[0] = "REQUEST_STATS_VIEW_UNSPECIFIED"] = 0;
+                        values[valuesById[1] = "REQUEST_STATS_NONE"] = 1;
+                        values[valuesById[2] = "REQUEST_STATS_EFFICIENCY"] = 2;
+                        values[valuesById[3] = "REQUEST_STATS_FULL"] = 3;
+                        return values;
+                    })();
+    
                     return ReadRowsRequest;
                 })();
     
@@ -23522,6 +24701,7 @@
                      * @interface IReadRowsResponse
                      * @property {Array.<google.bigtable.v2.ReadRowsResponse.ICellChunk>|null} [chunks] ReadRowsResponse chunks
                      * @property {Uint8Array|null} [lastScannedRowKey] ReadRowsResponse lastScannedRowKey
+                     * @property {google.bigtable.v2.IRequestStats|null} [requestStats] ReadRowsResponse requestStats
                      */
     
                     /**
@@ -23557,6 +24737,14 @@
                     ReadRowsResponse.prototype.lastScannedRowKey = $util.newBuffer([]);
     
                     /**
+                     * ReadRowsResponse requestStats.
+                     * @member {google.bigtable.v2.IRequestStats|null|undefined} requestStats
+                     * @memberof google.bigtable.v2.ReadRowsResponse
+                     * @instance
+                     */
+                    ReadRowsResponse.prototype.requestStats = null;
+    
+                    /**
                      * Creates a new ReadRowsResponse instance using the specified properties.
                      * @function create
                      * @memberof google.bigtable.v2.ReadRowsResponse
@@ -23585,6 +24773,8 @@
                                 $root.google.bigtable.v2.ReadRowsResponse.CellChunk.encode(message.chunks[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
                         if (message.lastScannedRowKey != null && Object.hasOwnProperty.call(message, "lastScannedRowKey"))
                             writer.uint32(/* id 2, wireType 2 =*/18).bytes(message.lastScannedRowKey);
+                        if (message.requestStats != null && Object.hasOwnProperty.call(message, "requestStats"))
+                            $root.google.bigtable.v2.RequestStats.encode(message.requestStats, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         return writer;
                     };
     
@@ -23627,6 +24817,10 @@
                                 }
                             case 2: {
                                     message.lastScannedRowKey = reader.bytes();
+                                    break;
+                                }
+                            case 3: {
+                                    message.requestStats = $root.google.bigtable.v2.RequestStats.decode(reader, reader.uint32());
                                     break;
                                 }
                             default:
@@ -23676,6 +24870,11 @@
                         if (message.lastScannedRowKey != null && message.hasOwnProperty("lastScannedRowKey"))
                             if (!(message.lastScannedRowKey && typeof message.lastScannedRowKey.length === "number" || $util.isString(message.lastScannedRowKey)))
                                 return "lastScannedRowKey: buffer expected";
+                        if (message.requestStats != null && message.hasOwnProperty("requestStats")) {
+                            var error = $root.google.bigtable.v2.RequestStats.verify(message.requestStats);
+                            if (error)
+                                return "requestStats." + error;
+                        }
                         return null;
                     };
     
@@ -23706,6 +24905,11 @@
                                 $util.base64.decode(object.lastScannedRowKey, message.lastScannedRowKey = $util.newBuffer($util.base64.length(object.lastScannedRowKey)), 0);
                             else if (object.lastScannedRowKey.length >= 0)
                                 message.lastScannedRowKey = object.lastScannedRowKey;
+                        if (object.requestStats != null) {
+                            if (typeof object.requestStats !== "object")
+                                throw TypeError(".google.bigtable.v2.ReadRowsResponse.requestStats: object expected");
+                            message.requestStats = $root.google.bigtable.v2.RequestStats.fromObject(object.requestStats);
+                        }
                         return message;
                     };
     
@@ -23724,7 +24928,7 @@
                         var object = {};
                         if (options.arrays || options.defaults)
                             object.chunks = [];
-                        if (options.defaults)
+                        if (options.defaults) {
                             if (options.bytes === String)
                                 object.lastScannedRowKey = "";
                             else {
@@ -23732,6 +24936,8 @@
                                 if (options.bytes !== Array)
                                     object.lastScannedRowKey = $util.newBuffer(object.lastScannedRowKey);
                             }
+                            object.requestStats = null;
+                        }
                         if (message.chunks && message.chunks.length) {
                             object.chunks = [];
                             for (var j = 0; j < message.chunks.length; ++j)
@@ -23739,6 +24945,8 @@
                         }
                         if (message.lastScannedRowKey != null && message.hasOwnProperty("lastScannedRowKey"))
                             object.lastScannedRowKey = options.bytes === String ? $util.base64.encode(message.lastScannedRowKey, 0, message.lastScannedRowKey.length) : options.bytes === Array ? Array.prototype.slice.call(message.lastScannedRowKey) : message.lastScannedRowKey;
+                        if (message.requestStats != null && message.hasOwnProperty("requestStats"))
+                            object.requestStats = $root.google.bigtable.v2.RequestStats.toObject(message.requestStats, options);
                         return object;
                     };
     
@@ -33375,6 +34583,1575 @@
                     };
     
                     return ReadModifyWriteRule;
+                })();
+    
+                v2.ReadIteratorStats = (function() {
+    
+                    /**
+                     * Properties of a ReadIteratorStats.
+                     * @memberof google.bigtable.v2
+                     * @interface IReadIteratorStats
+                     * @property {number|Long|null} [rowsSeenCount] ReadIteratorStats rowsSeenCount
+                     * @property {number|Long|null} [rowsReturnedCount] ReadIteratorStats rowsReturnedCount
+                     * @property {number|Long|null} [cellsSeenCount] ReadIteratorStats cellsSeenCount
+                     * @property {number|Long|null} [cellsReturnedCount] ReadIteratorStats cellsReturnedCount
+                     * @property {number|Long|null} [deletesSeenCount] ReadIteratorStats deletesSeenCount
+                     */
+    
+                    /**
+                     * Constructs a new ReadIteratorStats.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a ReadIteratorStats.
+                     * @implements IReadIteratorStats
+                     * @constructor
+                     * @param {google.bigtable.v2.IReadIteratorStats=} [properties] Properties to set
+                     */
+                    function ReadIteratorStats(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * ReadIteratorStats rowsSeenCount.
+                     * @member {number|Long} rowsSeenCount
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @instance
+                     */
+                    ReadIteratorStats.prototype.rowsSeenCount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                    /**
+                     * ReadIteratorStats rowsReturnedCount.
+                     * @member {number|Long} rowsReturnedCount
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @instance
+                     */
+                    ReadIteratorStats.prototype.rowsReturnedCount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                    /**
+                     * ReadIteratorStats cellsSeenCount.
+                     * @member {number|Long} cellsSeenCount
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @instance
+                     */
+                    ReadIteratorStats.prototype.cellsSeenCount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                    /**
+                     * ReadIteratorStats cellsReturnedCount.
+                     * @member {number|Long} cellsReturnedCount
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @instance
+                     */
+                    ReadIteratorStats.prototype.cellsReturnedCount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                    /**
+                     * ReadIteratorStats deletesSeenCount.
+                     * @member {number|Long} deletesSeenCount
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @instance
+                     */
+                    ReadIteratorStats.prototype.deletesSeenCount = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+    
+                    /**
+                     * Creates a new ReadIteratorStats instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {google.bigtable.v2.IReadIteratorStats=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.ReadIteratorStats} ReadIteratorStats instance
+                     */
+                    ReadIteratorStats.create = function create(properties) {
+                        return new ReadIteratorStats(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified ReadIteratorStats message. Does not implicitly {@link google.bigtable.v2.ReadIteratorStats.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {google.bigtable.v2.IReadIteratorStats} message ReadIteratorStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ReadIteratorStats.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.rowsSeenCount != null && Object.hasOwnProperty.call(message, "rowsSeenCount"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).int64(message.rowsSeenCount);
+                        if (message.rowsReturnedCount != null && Object.hasOwnProperty.call(message, "rowsReturnedCount"))
+                            writer.uint32(/* id 2, wireType 0 =*/16).int64(message.rowsReturnedCount);
+                        if (message.cellsSeenCount != null && Object.hasOwnProperty.call(message, "cellsSeenCount"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).int64(message.cellsSeenCount);
+                        if (message.cellsReturnedCount != null && Object.hasOwnProperty.call(message, "cellsReturnedCount"))
+                            writer.uint32(/* id 4, wireType 0 =*/32).int64(message.cellsReturnedCount);
+                        if (message.deletesSeenCount != null && Object.hasOwnProperty.call(message, "deletesSeenCount"))
+                            writer.uint32(/* id 5, wireType 0 =*/40).int64(message.deletesSeenCount);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified ReadIteratorStats message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadIteratorStats.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {google.bigtable.v2.IReadIteratorStats} message ReadIteratorStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ReadIteratorStats.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a ReadIteratorStats message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.ReadIteratorStats} ReadIteratorStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ReadIteratorStats.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.ReadIteratorStats();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.rowsSeenCount = reader.int64();
+                                    break;
+                                }
+                            case 2: {
+                                    message.rowsReturnedCount = reader.int64();
+                                    break;
+                                }
+                            case 3: {
+                                    message.cellsSeenCount = reader.int64();
+                                    break;
+                                }
+                            case 4: {
+                                    message.cellsReturnedCount = reader.int64();
+                                    break;
+                                }
+                            case 5: {
+                                    message.deletesSeenCount = reader.int64();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a ReadIteratorStats message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.ReadIteratorStats} ReadIteratorStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ReadIteratorStats.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a ReadIteratorStats message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ReadIteratorStats.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.rowsSeenCount != null && message.hasOwnProperty("rowsSeenCount"))
+                            if (!$util.isInteger(message.rowsSeenCount) && !(message.rowsSeenCount && $util.isInteger(message.rowsSeenCount.low) && $util.isInteger(message.rowsSeenCount.high)))
+                                return "rowsSeenCount: integer|Long expected";
+                        if (message.rowsReturnedCount != null && message.hasOwnProperty("rowsReturnedCount"))
+                            if (!$util.isInteger(message.rowsReturnedCount) && !(message.rowsReturnedCount && $util.isInteger(message.rowsReturnedCount.low) && $util.isInteger(message.rowsReturnedCount.high)))
+                                return "rowsReturnedCount: integer|Long expected";
+                        if (message.cellsSeenCount != null && message.hasOwnProperty("cellsSeenCount"))
+                            if (!$util.isInteger(message.cellsSeenCount) && !(message.cellsSeenCount && $util.isInteger(message.cellsSeenCount.low) && $util.isInteger(message.cellsSeenCount.high)))
+                                return "cellsSeenCount: integer|Long expected";
+                        if (message.cellsReturnedCount != null && message.hasOwnProperty("cellsReturnedCount"))
+                            if (!$util.isInteger(message.cellsReturnedCount) && !(message.cellsReturnedCount && $util.isInteger(message.cellsReturnedCount.low) && $util.isInteger(message.cellsReturnedCount.high)))
+                                return "cellsReturnedCount: integer|Long expected";
+                        if (message.deletesSeenCount != null && message.hasOwnProperty("deletesSeenCount"))
+                            if (!$util.isInteger(message.deletesSeenCount) && !(message.deletesSeenCount && $util.isInteger(message.deletesSeenCount.low) && $util.isInteger(message.deletesSeenCount.high)))
+                                return "deletesSeenCount: integer|Long expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a ReadIteratorStats message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.ReadIteratorStats} ReadIteratorStats
+                     */
+                    ReadIteratorStats.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.ReadIteratorStats)
+                            return object;
+                        var message = new $root.google.bigtable.v2.ReadIteratorStats();
+                        if (object.rowsSeenCount != null)
+                            if ($util.Long)
+                                (message.rowsSeenCount = $util.Long.fromValue(object.rowsSeenCount)).unsigned = false;
+                            else if (typeof object.rowsSeenCount === "string")
+                                message.rowsSeenCount = parseInt(object.rowsSeenCount, 10);
+                            else if (typeof object.rowsSeenCount === "number")
+                                message.rowsSeenCount = object.rowsSeenCount;
+                            else if (typeof object.rowsSeenCount === "object")
+                                message.rowsSeenCount = new $util.LongBits(object.rowsSeenCount.low >>> 0, object.rowsSeenCount.high >>> 0).toNumber();
+                        if (object.rowsReturnedCount != null)
+                            if ($util.Long)
+                                (message.rowsReturnedCount = $util.Long.fromValue(object.rowsReturnedCount)).unsigned = false;
+                            else if (typeof object.rowsReturnedCount === "string")
+                                message.rowsReturnedCount = parseInt(object.rowsReturnedCount, 10);
+                            else if (typeof object.rowsReturnedCount === "number")
+                                message.rowsReturnedCount = object.rowsReturnedCount;
+                            else if (typeof object.rowsReturnedCount === "object")
+                                message.rowsReturnedCount = new $util.LongBits(object.rowsReturnedCount.low >>> 0, object.rowsReturnedCount.high >>> 0).toNumber();
+                        if (object.cellsSeenCount != null)
+                            if ($util.Long)
+                                (message.cellsSeenCount = $util.Long.fromValue(object.cellsSeenCount)).unsigned = false;
+                            else if (typeof object.cellsSeenCount === "string")
+                                message.cellsSeenCount = parseInt(object.cellsSeenCount, 10);
+                            else if (typeof object.cellsSeenCount === "number")
+                                message.cellsSeenCount = object.cellsSeenCount;
+                            else if (typeof object.cellsSeenCount === "object")
+                                message.cellsSeenCount = new $util.LongBits(object.cellsSeenCount.low >>> 0, object.cellsSeenCount.high >>> 0).toNumber();
+                        if (object.cellsReturnedCount != null)
+                            if ($util.Long)
+                                (message.cellsReturnedCount = $util.Long.fromValue(object.cellsReturnedCount)).unsigned = false;
+                            else if (typeof object.cellsReturnedCount === "string")
+                                message.cellsReturnedCount = parseInt(object.cellsReturnedCount, 10);
+                            else if (typeof object.cellsReturnedCount === "number")
+                                message.cellsReturnedCount = object.cellsReturnedCount;
+                            else if (typeof object.cellsReturnedCount === "object")
+                                message.cellsReturnedCount = new $util.LongBits(object.cellsReturnedCount.low >>> 0, object.cellsReturnedCount.high >>> 0).toNumber();
+                        if (object.deletesSeenCount != null)
+                            if ($util.Long)
+                                (message.deletesSeenCount = $util.Long.fromValue(object.deletesSeenCount)).unsigned = false;
+                            else if (typeof object.deletesSeenCount === "string")
+                                message.deletesSeenCount = parseInt(object.deletesSeenCount, 10);
+                            else if (typeof object.deletesSeenCount === "number")
+                                message.deletesSeenCount = object.deletesSeenCount;
+                            else if (typeof object.deletesSeenCount === "object")
+                                message.deletesSeenCount = new $util.LongBits(object.deletesSeenCount.low >>> 0, object.deletesSeenCount.high >>> 0).toNumber();
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a ReadIteratorStats message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {google.bigtable.v2.ReadIteratorStats} message ReadIteratorStats
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ReadIteratorStats.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.rowsSeenCount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.rowsSeenCount = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.rowsReturnedCount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.rowsReturnedCount = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.cellsSeenCount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.cellsSeenCount = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.cellsReturnedCount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.cellsReturnedCount = options.longs === String ? "0" : 0;
+                            if ($util.Long) {
+                                var long = new $util.Long(0, 0, false);
+                                object.deletesSeenCount = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
+                            } else
+                                object.deletesSeenCount = options.longs === String ? "0" : 0;
+                        }
+                        if (message.rowsSeenCount != null && message.hasOwnProperty("rowsSeenCount"))
+                            if (typeof message.rowsSeenCount === "number")
+                                object.rowsSeenCount = options.longs === String ? String(message.rowsSeenCount) : message.rowsSeenCount;
+                            else
+                                object.rowsSeenCount = options.longs === String ? $util.Long.prototype.toString.call(message.rowsSeenCount) : options.longs === Number ? new $util.LongBits(message.rowsSeenCount.low >>> 0, message.rowsSeenCount.high >>> 0).toNumber() : message.rowsSeenCount;
+                        if (message.rowsReturnedCount != null && message.hasOwnProperty("rowsReturnedCount"))
+                            if (typeof message.rowsReturnedCount === "number")
+                                object.rowsReturnedCount = options.longs === String ? String(message.rowsReturnedCount) : message.rowsReturnedCount;
+                            else
+                                object.rowsReturnedCount = options.longs === String ? $util.Long.prototype.toString.call(message.rowsReturnedCount) : options.longs === Number ? new $util.LongBits(message.rowsReturnedCount.low >>> 0, message.rowsReturnedCount.high >>> 0).toNumber() : message.rowsReturnedCount;
+                        if (message.cellsSeenCount != null && message.hasOwnProperty("cellsSeenCount"))
+                            if (typeof message.cellsSeenCount === "number")
+                                object.cellsSeenCount = options.longs === String ? String(message.cellsSeenCount) : message.cellsSeenCount;
+                            else
+                                object.cellsSeenCount = options.longs === String ? $util.Long.prototype.toString.call(message.cellsSeenCount) : options.longs === Number ? new $util.LongBits(message.cellsSeenCount.low >>> 0, message.cellsSeenCount.high >>> 0).toNumber() : message.cellsSeenCount;
+                        if (message.cellsReturnedCount != null && message.hasOwnProperty("cellsReturnedCount"))
+                            if (typeof message.cellsReturnedCount === "number")
+                                object.cellsReturnedCount = options.longs === String ? String(message.cellsReturnedCount) : message.cellsReturnedCount;
+                            else
+                                object.cellsReturnedCount = options.longs === String ? $util.Long.prototype.toString.call(message.cellsReturnedCount) : options.longs === Number ? new $util.LongBits(message.cellsReturnedCount.low >>> 0, message.cellsReturnedCount.high >>> 0).toNumber() : message.cellsReturnedCount;
+                        if (message.deletesSeenCount != null && message.hasOwnProperty("deletesSeenCount"))
+                            if (typeof message.deletesSeenCount === "number")
+                                object.deletesSeenCount = options.longs === String ? String(message.deletesSeenCount) : message.deletesSeenCount;
+                            else
+                                object.deletesSeenCount = options.longs === String ? $util.Long.prototype.toString.call(message.deletesSeenCount) : options.longs === Number ? new $util.LongBits(message.deletesSeenCount.low >>> 0, message.deletesSeenCount.high >>> 0).toNumber() : message.deletesSeenCount;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this ReadIteratorStats to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ReadIteratorStats.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for ReadIteratorStats
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.ReadIteratorStats
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    ReadIteratorStats.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.ReadIteratorStats";
+                    };
+    
+                    return ReadIteratorStats;
+                })();
+    
+                v2.RequestLatencyStats = (function() {
+    
+                    /**
+                     * Properties of a RequestLatencyStats.
+                     * @memberof google.bigtable.v2
+                     * @interface IRequestLatencyStats
+                     * @property {google.protobuf.IDuration|null} [frontendServerLatency] RequestLatencyStats frontendServerLatency
+                     */
+    
+                    /**
+                     * Constructs a new RequestLatencyStats.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a RequestLatencyStats.
+                     * @implements IRequestLatencyStats
+                     * @constructor
+                     * @param {google.bigtable.v2.IRequestLatencyStats=} [properties] Properties to set
+                     */
+                    function RequestLatencyStats(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * RequestLatencyStats frontendServerLatency.
+                     * @member {google.protobuf.IDuration|null|undefined} frontendServerLatency
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @instance
+                     */
+                    RequestLatencyStats.prototype.frontendServerLatency = null;
+    
+                    /**
+                     * Creates a new RequestLatencyStats instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {google.bigtable.v2.IRequestLatencyStats=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.RequestLatencyStats} RequestLatencyStats instance
+                     */
+                    RequestLatencyStats.create = function create(properties) {
+                        return new RequestLatencyStats(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified RequestLatencyStats message. Does not implicitly {@link google.bigtable.v2.RequestLatencyStats.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {google.bigtable.v2.IRequestLatencyStats} message RequestLatencyStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RequestLatencyStats.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.frontendServerLatency != null && Object.hasOwnProperty.call(message, "frontendServerLatency"))
+                            $root.google.protobuf.Duration.encode(message.frontendServerLatency, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified RequestLatencyStats message, length delimited. Does not implicitly {@link google.bigtable.v2.RequestLatencyStats.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {google.bigtable.v2.IRequestLatencyStats} message RequestLatencyStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RequestLatencyStats.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a RequestLatencyStats message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.RequestLatencyStats} RequestLatencyStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RequestLatencyStats.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.RequestLatencyStats();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.frontendServerLatency = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a RequestLatencyStats message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.RequestLatencyStats} RequestLatencyStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RequestLatencyStats.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a RequestLatencyStats message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    RequestLatencyStats.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.frontendServerLatency != null && message.hasOwnProperty("frontendServerLatency")) {
+                            var error = $root.google.protobuf.Duration.verify(message.frontendServerLatency);
+                            if (error)
+                                return "frontendServerLatency." + error;
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a RequestLatencyStats message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.RequestLatencyStats} RequestLatencyStats
+                     */
+                    RequestLatencyStats.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.RequestLatencyStats)
+                            return object;
+                        var message = new $root.google.bigtable.v2.RequestLatencyStats();
+                        if (object.frontendServerLatency != null) {
+                            if (typeof object.frontendServerLatency !== "object")
+                                throw TypeError(".google.bigtable.v2.RequestLatencyStats.frontendServerLatency: object expected");
+                            message.frontendServerLatency = $root.google.protobuf.Duration.fromObject(object.frontendServerLatency);
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a RequestLatencyStats message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {google.bigtable.v2.RequestLatencyStats} message RequestLatencyStats
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    RequestLatencyStats.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.frontendServerLatency = null;
+                        if (message.frontendServerLatency != null && message.hasOwnProperty("frontendServerLatency"))
+                            object.frontendServerLatency = $root.google.protobuf.Duration.toObject(message.frontendServerLatency, options);
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this RequestLatencyStats to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    RequestLatencyStats.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for RequestLatencyStats
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.RequestLatencyStats
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    RequestLatencyStats.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.RequestLatencyStats";
+                    };
+    
+                    return RequestLatencyStats;
+                })();
+    
+                v2.ReadEfficiencyStats = (function() {
+    
+                    /**
+                     * Properties of a ReadEfficiencyStats.
+                     * @memberof google.bigtable.v2
+                     * @interface IReadEfficiencyStats
+                     * @property {google.bigtable.v2.IReadIteratorStats|null} [readIteratorStats] ReadEfficiencyStats readIteratorStats
+                     * @property {google.bigtable.v2.IRequestLatencyStats|null} [requestLatencyStats] ReadEfficiencyStats requestLatencyStats
+                     */
+    
+                    /**
+                     * Constructs a new ReadEfficiencyStats.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a ReadEfficiencyStats.
+                     * @implements IReadEfficiencyStats
+                     * @constructor
+                     * @param {google.bigtable.v2.IReadEfficiencyStats=} [properties] Properties to set
+                     */
+                    function ReadEfficiencyStats(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * ReadEfficiencyStats readIteratorStats.
+                     * @member {google.bigtable.v2.IReadIteratorStats|null|undefined} readIteratorStats
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @instance
+                     */
+                    ReadEfficiencyStats.prototype.readIteratorStats = null;
+    
+                    /**
+                     * ReadEfficiencyStats requestLatencyStats.
+                     * @member {google.bigtable.v2.IRequestLatencyStats|null|undefined} requestLatencyStats
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @instance
+                     */
+                    ReadEfficiencyStats.prototype.requestLatencyStats = null;
+    
+                    /**
+                     * Creates a new ReadEfficiencyStats instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {google.bigtable.v2.IReadEfficiencyStats=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.ReadEfficiencyStats} ReadEfficiencyStats instance
+                     */
+                    ReadEfficiencyStats.create = function create(properties) {
+                        return new ReadEfficiencyStats(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified ReadEfficiencyStats message. Does not implicitly {@link google.bigtable.v2.ReadEfficiencyStats.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {google.bigtable.v2.IReadEfficiencyStats} message ReadEfficiencyStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ReadEfficiencyStats.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.readIteratorStats != null && Object.hasOwnProperty.call(message, "readIteratorStats"))
+                            $root.google.bigtable.v2.ReadIteratorStats.encode(message.readIteratorStats, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.requestLatencyStats != null && Object.hasOwnProperty.call(message, "requestLatencyStats"))
+                            $root.google.bigtable.v2.RequestLatencyStats.encode(message.requestLatencyStats, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified ReadEfficiencyStats message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadEfficiencyStats.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {google.bigtable.v2.IReadEfficiencyStats} message ReadEfficiencyStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ReadEfficiencyStats.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a ReadEfficiencyStats message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.ReadEfficiencyStats} ReadEfficiencyStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ReadEfficiencyStats.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.ReadEfficiencyStats();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.readIteratorStats = $root.google.bigtable.v2.ReadIteratorStats.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.requestLatencyStats = $root.google.bigtable.v2.RequestLatencyStats.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a ReadEfficiencyStats message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.ReadEfficiencyStats} ReadEfficiencyStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ReadEfficiencyStats.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a ReadEfficiencyStats message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ReadEfficiencyStats.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.readIteratorStats != null && message.hasOwnProperty("readIteratorStats")) {
+                            var error = $root.google.bigtable.v2.ReadIteratorStats.verify(message.readIteratorStats);
+                            if (error)
+                                return "readIteratorStats." + error;
+                        }
+                        if (message.requestLatencyStats != null && message.hasOwnProperty("requestLatencyStats")) {
+                            var error = $root.google.bigtable.v2.RequestLatencyStats.verify(message.requestLatencyStats);
+                            if (error)
+                                return "requestLatencyStats." + error;
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a ReadEfficiencyStats message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.ReadEfficiencyStats} ReadEfficiencyStats
+                     */
+                    ReadEfficiencyStats.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.ReadEfficiencyStats)
+                            return object;
+                        var message = new $root.google.bigtable.v2.ReadEfficiencyStats();
+                        if (object.readIteratorStats != null) {
+                            if (typeof object.readIteratorStats !== "object")
+                                throw TypeError(".google.bigtable.v2.ReadEfficiencyStats.readIteratorStats: object expected");
+                            message.readIteratorStats = $root.google.bigtable.v2.ReadIteratorStats.fromObject(object.readIteratorStats);
+                        }
+                        if (object.requestLatencyStats != null) {
+                            if (typeof object.requestLatencyStats !== "object")
+                                throw TypeError(".google.bigtable.v2.ReadEfficiencyStats.requestLatencyStats: object expected");
+                            message.requestLatencyStats = $root.google.bigtable.v2.RequestLatencyStats.fromObject(object.requestLatencyStats);
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a ReadEfficiencyStats message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {google.bigtable.v2.ReadEfficiencyStats} message ReadEfficiencyStats
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ReadEfficiencyStats.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.readIteratorStats = null;
+                            object.requestLatencyStats = null;
+                        }
+                        if (message.readIteratorStats != null && message.hasOwnProperty("readIteratorStats"))
+                            object.readIteratorStats = $root.google.bigtable.v2.ReadIteratorStats.toObject(message.readIteratorStats, options);
+                        if (message.requestLatencyStats != null && message.hasOwnProperty("requestLatencyStats"))
+                            object.requestLatencyStats = $root.google.bigtable.v2.RequestLatencyStats.toObject(message.requestLatencyStats, options);
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this ReadEfficiencyStats to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ReadEfficiencyStats.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for ReadEfficiencyStats
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.ReadEfficiencyStats
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    ReadEfficiencyStats.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.ReadEfficiencyStats";
+                    };
+    
+                    return ReadEfficiencyStats;
+                })();
+    
+                v2.AllReadStats = (function() {
+    
+                    /**
+                     * Properties of an AllReadStats.
+                     * @memberof google.bigtable.v2
+                     * @interface IAllReadStats
+                     * @property {google.bigtable.v2.IReadIteratorStats|null} [readIteratorStats] AllReadStats readIteratorStats
+                     * @property {google.bigtable.v2.IRequestLatencyStats|null} [requestLatencyStats] AllReadStats requestLatencyStats
+                     */
+    
+                    /**
+                     * Constructs a new AllReadStats.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents an AllReadStats.
+                     * @implements IAllReadStats
+                     * @constructor
+                     * @param {google.bigtable.v2.IAllReadStats=} [properties] Properties to set
+                     */
+                    function AllReadStats(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * AllReadStats readIteratorStats.
+                     * @member {google.bigtable.v2.IReadIteratorStats|null|undefined} readIteratorStats
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @instance
+                     */
+                    AllReadStats.prototype.readIteratorStats = null;
+    
+                    /**
+                     * AllReadStats requestLatencyStats.
+                     * @member {google.bigtable.v2.IRequestLatencyStats|null|undefined} requestLatencyStats
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @instance
+                     */
+                    AllReadStats.prototype.requestLatencyStats = null;
+    
+                    /**
+                     * Creates a new AllReadStats instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {google.bigtable.v2.IAllReadStats=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.AllReadStats} AllReadStats instance
+                     */
+                    AllReadStats.create = function create(properties) {
+                        return new AllReadStats(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified AllReadStats message. Does not implicitly {@link google.bigtable.v2.AllReadStats.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {google.bigtable.v2.IAllReadStats} message AllReadStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    AllReadStats.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.readIteratorStats != null && Object.hasOwnProperty.call(message, "readIteratorStats"))
+                            $root.google.bigtable.v2.ReadIteratorStats.encode(message.readIteratorStats, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.requestLatencyStats != null && Object.hasOwnProperty.call(message, "requestLatencyStats"))
+                            $root.google.bigtable.v2.RequestLatencyStats.encode(message.requestLatencyStats, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified AllReadStats message, length delimited. Does not implicitly {@link google.bigtable.v2.AllReadStats.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {google.bigtable.v2.IAllReadStats} message AllReadStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    AllReadStats.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes an AllReadStats message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.AllReadStats} AllReadStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    AllReadStats.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.AllReadStats();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.readIteratorStats = $root.google.bigtable.v2.ReadIteratorStats.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.requestLatencyStats = $root.google.bigtable.v2.RequestLatencyStats.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes an AllReadStats message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.AllReadStats} AllReadStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    AllReadStats.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies an AllReadStats message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    AllReadStats.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.readIteratorStats != null && message.hasOwnProperty("readIteratorStats")) {
+                            var error = $root.google.bigtable.v2.ReadIteratorStats.verify(message.readIteratorStats);
+                            if (error)
+                                return "readIteratorStats." + error;
+                        }
+                        if (message.requestLatencyStats != null && message.hasOwnProperty("requestLatencyStats")) {
+                            var error = $root.google.bigtable.v2.RequestLatencyStats.verify(message.requestLatencyStats);
+                            if (error)
+                                return "requestLatencyStats." + error;
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates an AllReadStats message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.AllReadStats} AllReadStats
+                     */
+                    AllReadStats.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.AllReadStats)
+                            return object;
+                        var message = new $root.google.bigtable.v2.AllReadStats();
+                        if (object.readIteratorStats != null) {
+                            if (typeof object.readIteratorStats !== "object")
+                                throw TypeError(".google.bigtable.v2.AllReadStats.readIteratorStats: object expected");
+                            message.readIteratorStats = $root.google.bigtable.v2.ReadIteratorStats.fromObject(object.readIteratorStats);
+                        }
+                        if (object.requestLatencyStats != null) {
+                            if (typeof object.requestLatencyStats !== "object")
+                                throw TypeError(".google.bigtable.v2.AllReadStats.requestLatencyStats: object expected");
+                            message.requestLatencyStats = $root.google.bigtable.v2.RequestLatencyStats.fromObject(object.requestLatencyStats);
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from an AllReadStats message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {google.bigtable.v2.AllReadStats} message AllReadStats
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    AllReadStats.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.readIteratorStats = null;
+                            object.requestLatencyStats = null;
+                        }
+                        if (message.readIteratorStats != null && message.hasOwnProperty("readIteratorStats"))
+                            object.readIteratorStats = $root.google.bigtable.v2.ReadIteratorStats.toObject(message.readIteratorStats, options);
+                        if (message.requestLatencyStats != null && message.hasOwnProperty("requestLatencyStats"))
+                            object.requestLatencyStats = $root.google.bigtable.v2.RequestLatencyStats.toObject(message.requestLatencyStats, options);
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this AllReadStats to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    AllReadStats.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for AllReadStats
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.AllReadStats
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    AllReadStats.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.AllReadStats";
+                    };
+    
+                    return AllReadStats;
+                })();
+    
+                v2.RequestStats = (function() {
+    
+                    /**
+                     * Properties of a RequestStats.
+                     * @memberof google.bigtable.v2
+                     * @interface IRequestStats
+                     * @property {google.bigtable.v2.IReadEfficiencyStats|null} [readEfficiencyStats] RequestStats readEfficiencyStats
+                     * @property {google.bigtable.v2.IAllReadStats|null} [allReadStats] RequestStats allReadStats
+                     */
+    
+                    /**
+                     * Constructs a new RequestStats.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a RequestStats.
+                     * @implements IRequestStats
+                     * @constructor
+                     * @param {google.bigtable.v2.IRequestStats=} [properties] Properties to set
+                     */
+                    function RequestStats(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * RequestStats readEfficiencyStats.
+                     * @member {google.bigtable.v2.IReadEfficiencyStats|null|undefined} readEfficiencyStats
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @instance
+                     */
+                    RequestStats.prototype.readEfficiencyStats = null;
+    
+                    /**
+                     * RequestStats allReadStats.
+                     * @member {google.bigtable.v2.IAllReadStats|null|undefined} allReadStats
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @instance
+                     */
+                    RequestStats.prototype.allReadStats = null;
+    
+                    // OneOf field names bound to virtual getters and setters
+                    var $oneOfFields;
+    
+                    /**
+                     * RequestStats stats.
+                     * @member {"readEfficiencyStats"|"allReadStats"|undefined} stats
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @instance
+                     */
+                    Object.defineProperty(RequestStats.prototype, "stats", {
+                        get: $util.oneOfGetter($oneOfFields = ["readEfficiencyStats", "allReadStats"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+    
+                    /**
+                     * Creates a new RequestStats instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {google.bigtable.v2.IRequestStats=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.RequestStats} RequestStats instance
+                     */
+                    RequestStats.create = function create(properties) {
+                        return new RequestStats(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified RequestStats message. Does not implicitly {@link google.bigtable.v2.RequestStats.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {google.bigtable.v2.IRequestStats} message RequestStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RequestStats.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.readEfficiencyStats != null && Object.hasOwnProperty.call(message, "readEfficiencyStats"))
+                            $root.google.bigtable.v2.ReadEfficiencyStats.encode(message.readEfficiencyStats, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.allReadStats != null && Object.hasOwnProperty.call(message, "allReadStats"))
+                            $root.google.bigtable.v2.AllReadStats.encode(message.allReadStats, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified RequestStats message, length delimited. Does not implicitly {@link google.bigtable.v2.RequestStats.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {google.bigtable.v2.IRequestStats} message RequestStats message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RequestStats.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a RequestStats message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.RequestStats} RequestStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RequestStats.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.RequestStats();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.readEfficiencyStats = $root.google.bigtable.v2.ReadEfficiencyStats.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.allReadStats = $root.google.bigtable.v2.AllReadStats.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a RequestStats message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.RequestStats} RequestStats
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RequestStats.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a RequestStats message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    RequestStats.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        var properties = {};
+                        if (message.readEfficiencyStats != null && message.hasOwnProperty("readEfficiencyStats")) {
+                            properties.stats = 1;
+                            {
+                                var error = $root.google.bigtable.v2.ReadEfficiencyStats.verify(message.readEfficiencyStats);
+                                if (error)
+                                    return "readEfficiencyStats." + error;
+                            }
+                        }
+                        if (message.allReadStats != null && message.hasOwnProperty("allReadStats")) {
+                            if (properties.stats === 1)
+                                return "stats: multiple values";
+                            properties.stats = 1;
+                            {
+                                var error = $root.google.bigtable.v2.AllReadStats.verify(message.allReadStats);
+                                if (error)
+                                    return "allReadStats." + error;
+                            }
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a RequestStats message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.RequestStats} RequestStats
+                     */
+                    RequestStats.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.RequestStats)
+                            return object;
+                        var message = new $root.google.bigtable.v2.RequestStats();
+                        if (object.readEfficiencyStats != null) {
+                            if (typeof object.readEfficiencyStats !== "object")
+                                throw TypeError(".google.bigtable.v2.RequestStats.readEfficiencyStats: object expected");
+                            message.readEfficiencyStats = $root.google.bigtable.v2.ReadEfficiencyStats.fromObject(object.readEfficiencyStats);
+                        }
+                        if (object.allReadStats != null) {
+                            if (typeof object.allReadStats !== "object")
+                                throw TypeError(".google.bigtable.v2.RequestStats.allReadStats: object expected");
+                            message.allReadStats = $root.google.bigtable.v2.AllReadStats.fromObject(object.allReadStats);
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a RequestStats message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {google.bigtable.v2.RequestStats} message RequestStats
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    RequestStats.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (message.readEfficiencyStats != null && message.hasOwnProperty("readEfficiencyStats")) {
+                            object.readEfficiencyStats = $root.google.bigtable.v2.ReadEfficiencyStats.toObject(message.readEfficiencyStats, options);
+                            if (options.oneofs)
+                                object.stats = "readEfficiencyStats";
+                        }
+                        if (message.allReadStats != null && message.hasOwnProperty("allReadStats")) {
+                            object.allReadStats = $root.google.bigtable.v2.AllReadStats.toObject(message.allReadStats, options);
+                            if (options.oneofs)
+                                object.stats = "allReadStats";
+                        }
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this RequestStats to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    RequestStats.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for RequestStats
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.RequestStats
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    RequestStats.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.RequestStats";
+                    };
+    
+                    return RequestStats;
+                })();
+    
+                v2.ResponseParams = (function() {
+    
+                    /**
+                     * Properties of a ResponseParams.
+                     * @memberof google.bigtable.v2
+                     * @interface IResponseParams
+                     * @property {string|null} [zoneId] ResponseParams zoneId
+                     * @property {string|null} [clusterId] ResponseParams clusterId
+                     */
+    
+                    /**
+                     * Constructs a new ResponseParams.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a ResponseParams.
+                     * @implements IResponseParams
+                     * @constructor
+                     * @param {google.bigtable.v2.IResponseParams=} [properties] Properties to set
+                     */
+                    function ResponseParams(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * ResponseParams zoneId.
+                     * @member {string|null|undefined} zoneId
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @instance
+                     */
+                    ResponseParams.prototype.zoneId = null;
+    
+                    /**
+                     * ResponseParams clusterId.
+                     * @member {string|null|undefined} clusterId
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @instance
+                     */
+                    ResponseParams.prototype.clusterId = null;
+    
+                    // OneOf field names bound to virtual getters and setters
+                    var $oneOfFields;
+    
+                    /**
+                     * ResponseParams _zoneId.
+                     * @member {"zoneId"|undefined} _zoneId
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @instance
+                     */
+                    Object.defineProperty(ResponseParams.prototype, "_zoneId", {
+                        get: $util.oneOfGetter($oneOfFields = ["zoneId"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+    
+                    /**
+                     * ResponseParams _clusterId.
+                     * @member {"clusterId"|undefined} _clusterId
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @instance
+                     */
+                    Object.defineProperty(ResponseParams.prototype, "_clusterId", {
+                        get: $util.oneOfGetter($oneOfFields = ["clusterId"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
+    
+                    /**
+                     * Creates a new ResponseParams instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {google.bigtable.v2.IResponseParams=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.ResponseParams} ResponseParams instance
+                     */
+                    ResponseParams.create = function create(properties) {
+                        return new ResponseParams(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified ResponseParams message. Does not implicitly {@link google.bigtable.v2.ResponseParams.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {google.bigtable.v2.IResponseParams} message ResponseParams message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ResponseParams.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.zoneId != null && Object.hasOwnProperty.call(message, "zoneId"))
+                            writer.uint32(/* id 1, wireType 2 =*/10).string(message.zoneId);
+                        if (message.clusterId != null && Object.hasOwnProperty.call(message, "clusterId"))
+                            writer.uint32(/* id 2, wireType 2 =*/18).string(message.clusterId);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified ResponseParams message, length delimited. Does not implicitly {@link google.bigtable.v2.ResponseParams.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {google.bigtable.v2.IResponseParams} message ResponseParams message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    ResponseParams.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a ResponseParams message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.ResponseParams} ResponseParams
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ResponseParams.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.ResponseParams();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.zoneId = reader.string();
+                                    break;
+                                }
+                            case 2: {
+                                    message.clusterId = reader.string();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a ResponseParams message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.ResponseParams} ResponseParams
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    ResponseParams.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a ResponseParams message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    ResponseParams.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        var properties = {};
+                        if (message.zoneId != null && message.hasOwnProperty("zoneId")) {
+                            properties._zoneId = 1;
+                            if (!$util.isString(message.zoneId))
+                                return "zoneId: string expected";
+                        }
+                        if (message.clusterId != null && message.hasOwnProperty("clusterId")) {
+                            properties._clusterId = 1;
+                            if (!$util.isString(message.clusterId))
+                                return "clusterId: string expected";
+                        }
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a ResponseParams message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.ResponseParams} ResponseParams
+                     */
+                    ResponseParams.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.ResponseParams)
+                            return object;
+                        var message = new $root.google.bigtable.v2.ResponseParams();
+                        if (object.zoneId != null)
+                            message.zoneId = String(object.zoneId);
+                        if (object.clusterId != null)
+                            message.clusterId = String(object.clusterId);
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a ResponseParams message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {google.bigtable.v2.ResponseParams} message ResponseParams
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    ResponseParams.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (message.zoneId != null && message.hasOwnProperty("zoneId")) {
+                            object.zoneId = message.zoneId;
+                            if (options.oneofs)
+                                object._zoneId = "zoneId";
+                        }
+                        if (message.clusterId != null && message.hasOwnProperty("clusterId")) {
+                            object.clusterId = message.clusterId;
+                            if (options.oneofs)
+                                object._clusterId = "clusterId";
+                        }
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this ResponseParams to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    ResponseParams.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for ResponseParams
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.ResponseParams
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    ResponseParams.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.ResponseParams";
+                    };
+    
+                    return ResponseParams;
                 })();
     
                 return v2;

@@ -20,8 +20,8 @@
 
 'use strict';
 
-function main(name) {
-  // [START bigtableadmin_v2_generated_BigtableTableAdmin_GenerateConsistencyToken_async]
+function main(table, updateMask) {
+  // [START bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
    * It will require modifications to work.
@@ -29,11 +29,21 @@ function main(name) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the Table for which to create a consistency token.
-   *  Values are of the form
-   *  `projects/{project}/instances/{instance}/tables/{table}`.
+   *  Required. The table to update.
+   *  The table's `name` field is used to identify the table to update.
    */
-  // const name = 'abc123'
+  // const table = {}
+  /**
+   *  Required. The list of fields to update.
+   *  A mask specifying which fields (e.g. `deletion_protection`) in the `table`
+   *  field should be updated. This mask is relative to the `table` field, not to
+   *  the request message. The wildcard (*) path is currently not supported.
+   *  Currently UpdateTable is only supported for the following field:
+   *   * `deletion_protection`
+   *  If `column_families` is set in `update_mask`, it will return an
+   *  UNIMPLEMENTED error.
+   */
+  // const updateMask = {}
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
@@ -41,19 +51,21 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function callGenerateConsistencyToken() {
+  async function callUpdateTable() {
     // Construct request
     const request = {
-      name,
+      table,
+      updateMask,
     };
 
     // Run request
-    const response = await adminClient.generateConsistencyToken(request);
+    const [operation] = await adminClient.updateTable(request);
+    const [response] = await operation.promise();
     console.log(response);
   }
 
-  callGenerateConsistencyToken();
-  // [END bigtableadmin_v2_generated_BigtableTableAdmin_GenerateConsistencyToken_async]
+  callUpdateTable();
+  // [END bigtableadmin_v2_generated_BigtableTableAdmin_UpdateTable_async]
 }
 
 process.on('unhandledRejection', err => {

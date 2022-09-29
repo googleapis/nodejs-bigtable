@@ -21,7 +21,7 @@
 'use strict';
 
 function main(name) {
-  // [START bigtableadmin_v2_generated_BigtableTableAdmin_GenerateConsistencyToken_async]
+  // [START bigtableadmin_v2_generated_BigtableTableAdmin_UndeleteTable_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
    * It will require modifications to work.
@@ -29,7 +29,7 @@ function main(name) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the Table for which to create a consistency token.
+   *  Required. The unique name of the table to be restored.
    *  Values are of the form
    *  `projects/{project}/instances/{instance}/tables/{table}`.
    */
@@ -41,19 +41,20 @@ function main(name) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function callGenerateConsistencyToken() {
+  async function callUndeleteTable() {
     // Construct request
     const request = {
       name,
     };
 
     // Run request
-    const response = await adminClient.generateConsistencyToken(request);
+    const [operation] = await adminClient.undeleteTable(request);
+    const [response] = await operation.promise();
     console.log(response);
   }
 
-  callGenerateConsistencyToken();
-  // [END bigtableadmin_v2_generated_BigtableTableAdmin_GenerateConsistencyToken_async]
+  callUndeleteTable();
+  // [END bigtableadmin_v2_generated_BigtableTableAdmin_UndeleteTable_async]
 }
 
 process.on('unhandledRejection', err => {

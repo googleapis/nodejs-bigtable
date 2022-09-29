@@ -27,12 +27,14 @@
 function main(tableName, rowKey, rules) {
   // [START bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the read/modify/write rules should be
-   *  applied.
-   *  Values are of the form
+   *  Required. The unique name of the table to which the read/modify/write rules
+   *  should be applied. Values are of the form
    *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
@@ -42,13 +44,14 @@ function main(tableName, rowKey, rules) {
    */
   // const appProfileId = 'abc123'
   /**
-   *  Required. The key of the row to which the read/modify/write rules should be applied.
+   *  Required. The key of the row to which the read/modify/write rules should be
+   *  applied.
    */
   // const rowKey = 'Buffer.from('string')'
   /**
-   *  Required. Rules specifying how the specified row's contents are to be transformed
-   *  into writes. Entries are applied in order, meaning that earlier rules will
-   *  affect the results of later ones.
+   *  Required. Rules specifying how the specified row's contents are to be
+   *  transformed into writes. Entries are applied in order, meaning that earlier
+   *  rules will affect the results of later ones.
    */
   // const rules = 1234
 

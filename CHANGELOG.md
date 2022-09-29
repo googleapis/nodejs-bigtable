@@ -4,6 +4,57 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.1.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.5...v4.1.0) (2022-09-26)
+
+
+### Features
+
+* Publish the RequestStats proto ([#1177](https://github.com/googleapis/nodejs-bigtable/issues/1177)) ([89dfc83](https://github.com/googleapis/nodejs-bigtable/commit/89dfc83b4fed199d70934c34ab7f4c4d17796418))
+
+## [4.0.5](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.4...v4.0.5) (2022-09-23)
+
+
+### Bug Fixes
+
+* Test is less restrictive to allow changes ([#1160](https://github.com/googleapis/nodejs-bigtable/issues/1160)) ([7d05b96](https://github.com/googleapis/nodejs-bigtable/commit/7d05b96f0adcbcdab2598ea52bc6a60005c7251b))
+
+## [4.0.4](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.3...v4.0.4) (2022-09-14)
+
+
+### Bug Fixes
+
+* **deps:** Use grpc-gcp v1.0.0 ([#1156](https://github.com/googleapis/nodejs-bigtable/issues/1156)) ([6196424](https://github.com/googleapis/nodejs-bigtable/commit/61964246cc79b0cb70f18d6bc1e524c01fdd51b0))
+
+## [4.0.3](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.2...v4.0.3) (2022-09-09)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency uuid to v9 ([#1152](https://github.com/googleapis/nodejs-bigtable/issues/1152)) ([dea0425](https://github.com/googleapis/nodejs-bigtable/commit/dea0425df05218cf7fb42e4ef72f3952782f7bbb))
+* Wait for instances to get created in all samples ([#1149](https://github.com/googleapis/nodejs-bigtable/issues/1149)) ([c9dd9c6](https://github.com/googleapis/nodejs-bigtable/commit/c9dd9c614b963763b361394332ad227a86eb0de9))
+
+## [4.0.2](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.1...v4.0.2) (2022-08-27)
+
+
+### Bug Fixes
+
+* add operation ([#1145](https://github.com/googleapis/nodejs-bigtable/issues/1145)) ([3a1e282](https://github.com/googleapis/nodejs-bigtable/commit/3a1e2827990729df078fe1d075c100ace1833a96))
+* do not import the whole google-gax from proto JS ([#1553](https://github.com/googleapis/nodejs-bigtable/issues/1553)) ([#1148](https://github.com/googleapis/nodejs-bigtable/issues/1148)) ([262d3d7](https://github.com/googleapis/nodejs-bigtable/commit/262d3d729211da7fa23043c64de59ba67de2ce5b))
+* use google-gax v3.3.0 ([262d3d7](https://github.com/googleapis/nodejs-bigtable/commit/262d3d729211da7fa23043c64de59ba67de2ce5b))
+
+## [4.0.1](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.0...v4.0.1) (2022-08-25)
+
+
+### Bug Fixes
+
+* change import long to require ([#1139](https://github.com/googleapis/nodejs-bigtable/issues/1139)) ([a7079bc](https://github.com/googleapis/nodejs-bigtable/commit/a7079bc414b9d9e64cd47766c68d41740c9ce9e3))
+* **deps:** update dependency @google-cloud/bigtable to v4 ([#1127](https://github.com/googleapis/nodejs-bigtable/issues/1127)) ([c88801a](https://github.com/googleapis/nodejs-bigtable/commit/c88801a8cd872a6bb837e8880f8e7294b6255fb7))
+* fixed the closed client test ([#1138](https://github.com/googleapis/nodejs-bigtable/issues/1138)) ([7f6f0e6](https://github.com/googleapis/nodejs-bigtable/commit/7f6f0e629a7b3f15c9d4bab06b3209d35656d992))
+* Integration test close function again ([#1103](https://github.com/googleapis/nodejs-bigtable/issues/1103)) ([10dcd21](https://github.com/googleapis/nodejs-bigtable/commit/10dcd217a6f276f53f58f3cd89650040d7b88089))
+* Make a ten minute timeout for delete operations ([#1143](https://github.com/googleapis/nodejs-bigtable/issues/1143)) ([94e61dd](https://github.com/googleapis/nodejs-bigtable/commit/94e61dd05134d2d1cb4e04a94f7a4f927da90ea2))
+* remove pip install statements ([#1546](https://github.com/googleapis/nodejs-bigtable/issues/1546)) ([#1140](https://github.com/googleapis/nodejs-bigtable/issues/1140)) ([5bea48f](https://github.com/googleapis/nodejs-bigtable/commit/5bea48f9fcf50575453f6ee85881785e07917543))
+* Wait for long running operation on flakey test ([#1141](https://github.com/googleapis/nodejs-bigtable/issues/1141)) ([7be90ee](https://github.com/googleapis/nodejs-bigtable/commit/7be90ee1011ad44f2f6cd998443a95b73aaa2c55))
+
 ## [4.0.0](https://github.com/googleapis/nodejs-bigtable/compare/v3.12.0...v4.0.0) (2022-07-04)
 
 

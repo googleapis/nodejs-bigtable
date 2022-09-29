@@ -47,7 +47,8 @@ async function runInstanceOperations(instanceID, clusterID) {
     };
 
     // Create production instance with given options
-    const [prodInstance] = await instance.create(instanceOptions);
+    const [prodInstance, operation] = await instance.create(instanceOptions);
+    await operation.promise();
     console.log(`Created Instance: ${prodInstance.id}`);
     // [END bigtable_create_prod_instance]
   } else {
@@ -105,7 +106,11 @@ async function createDevInstance(instanceID, clusterID) {
   };
 
   // Create development instance with given options
-  const [instance] = await bigtable.createInstance(instanceID, options);
+  const [instance, operation] = await bigtable.createInstance(
+    instanceID,
+    options
+  );
+  await operation.promise();
   console.log(`Created development instance: ${instance.id}`);
   // [END bigtable_create_dev_instance]
 }
@@ -141,7 +146,11 @@ async function addCluster(instanceID, clusterID) {
       storage: 'ssd',
     };
 
-    const [cluster] = await instance.createCluster(clusterID, clusterOptions);
+    const [cluster, operation] = await instance.createCluster(
+      clusterID,
+      clusterOptions
+    );
+    await operation.promise();
     console.log(`Cluster created: ${cluster.id}`);
     // [END bigtable_create_cluster]
   }
