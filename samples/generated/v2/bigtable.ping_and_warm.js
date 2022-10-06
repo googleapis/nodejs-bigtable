@@ -33,9 +33,8 @@ function main(name) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance to check permissions for as well
-   *  as respond. Values are of the form
-   *  `projects/<project>/instances/<instance>`.
+   *  Required. The unique name of the instance to check permissions for as well as
+   *  respond. Values are of the form `projects/<project>/instances/<instance>`.
    */
   // const name = 'abc123'
   /**
