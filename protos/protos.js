@@ -4519,6 +4519,12 @@
                                     else if (typeof object.estimatedCopiedBytes === "object")
                                         message.estimatedCopiedBytes = new $util.LongBits(object.estimatedCopiedBytes.low >>> 0, object.estimatedCopiedBytes.high >>> 0).toNumber();
                                 switch (object.state) {
+                                default:
+                                    if (typeof object.state === "number") {
+                                        message.state = object.state;
+                                        break;
+                                    }
+                                    break;
                                 case "STATE_UNSPECIFIED":
                                 case 0:
                                     message.state = 0;
@@ -4580,7 +4586,7 @@
                                     else
                                         object.estimatedCopiedBytes = options.longs === String ? $util.Long.prototype.toString.call(message.estimatedCopiedBytes) : options.longs === Number ? new $util.LongBits(message.estimatedCopiedBytes.low >>> 0, message.estimatedCopiedBytes.high >>> 0).toNumber() : message.estimatedCopiedBytes;
                                 if (message.state != null && message.hasOwnProperty("state"))
-                                    object.state = options.enums === String ? $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State[message.state] : message.state;
+                                    object.state = options.enums === String ? $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State[message.state] === undefined ? message.state : $root.google.bigtable.admin.v2.CreateClusterMetadata.TableProgress.State[message.state] : message.state;
                                 return object;
                             };
     
@@ -7957,6 +7963,12 @@
                             if (object.displayName != null)
                                 message.displayName = String(object.displayName);
                             switch (object.state) {
+                            default:
+                                if (typeof object.state === "number") {
+                                    message.state = object.state;
+                                    break;
+                                }
+                                break;
                             case "STATE_NOT_KNOWN":
                             case 0:
                                 message.state = 0;
@@ -7971,6 +7983,12 @@
                                 break;
                             }
                             switch (object.type) {
+                            default:
+                                if (typeof object.type === "number") {
+                                    message.type = object.type;
+                                    break;
+                                }
+                                break;
                             case "TYPE_UNSPECIFIED":
                             case 0:
                                 message.type = 0;
@@ -8028,9 +8046,9 @@
                             if (message.displayName != null && message.hasOwnProperty("displayName"))
                                 object.displayName = message.displayName;
                             if (message.state != null && message.hasOwnProperty("state"))
-                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Instance.State[message.state] : message.state;
+                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Instance.State[message.state] === undefined ? message.state : $root.google.bigtable.admin.v2.Instance.State[message.state] : message.state;
                             if (message.type != null && message.hasOwnProperty("type"))
-                                object.type = options.enums === String ? $root.google.bigtable.admin.v2.Instance.Type[message.type] : message.type;
+                                object.type = options.enums === String ? $root.google.bigtable.admin.v2.Instance.Type[message.type] === undefined ? message.type : $root.google.bigtable.admin.v2.Instance.Type[message.type] : message.type;
                             var keys2;
                             if (message.labels && (keys2 = Object.keys(message.labels)).length) {
                                 object.labels = {};
@@ -8860,6 +8878,12 @@
                             if (object.location != null)
                                 message.location = String(object.location);
                             switch (object.state) {
+                            default:
+                                if (typeof object.state === "number") {
+                                    message.state = object.state;
+                                    break;
+                                }
+                                break;
                             case "STATE_NOT_KNOWN":
                             case 0:
                                 message.state = 0;
@@ -8889,6 +8913,12 @@
                                 message.clusterConfig = $root.google.bigtable.admin.v2.Cluster.ClusterConfig.fromObject(object.clusterConfig);
                             }
                             switch (object.defaultStorageType) {
+                            default:
+                                if (typeof object.defaultStorageType === "number") {
+                                    message.defaultStorageType = object.defaultStorageType;
+                                    break;
+                                }
+                                break;
                             case "STORAGE_TYPE_UNSPECIFIED":
                             case 0:
                                 message.defaultStorageType = 0;
@@ -8936,11 +8966,11 @@
                             if (message.location != null && message.hasOwnProperty("location"))
                                 object.location = message.location;
                             if (message.state != null && message.hasOwnProperty("state"))
-                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Cluster.State[message.state] : message.state;
+                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Cluster.State[message.state] === undefined ? message.state : $root.google.bigtable.admin.v2.Cluster.State[message.state] : message.state;
                             if (message.serveNodes != null && message.hasOwnProperty("serveNodes"))
                                 object.serveNodes = message.serveNodes;
                             if (message.defaultStorageType != null && message.hasOwnProperty("defaultStorageType"))
-                                object.defaultStorageType = options.enums === String ? $root.google.bigtable.admin.v2.StorageType[message.defaultStorageType] : message.defaultStorageType;
+                                object.defaultStorageType = options.enums === String ? $root.google.bigtable.admin.v2.StorageType[message.defaultStorageType] === undefined ? message.defaultStorageType : $root.google.bigtable.admin.v2.StorageType[message.defaultStorageType] : message.defaultStorageType;
                             if (message.encryptionConfig != null && message.hasOwnProperty("encryptionConfig"))
                                 object.encryptionConfig = $root.google.bigtable.admin.v2.Cluster.EncryptionConfig.toObject(message.encryptionConfig, options);
                             if (message.clusterConfig != null && message.hasOwnProperty("clusterConfig")) {
@@ -12402,6 +12432,12 @@
                             if (object.name != null)
                                 message.name = String(object.name);
                             switch (object.sourceType) {
+                            default:
+                                if (typeof object.sourceType === "number") {
+                                    message.sourceType = object.sourceType;
+                                    break;
+                                }
+                                break;
                             case "RESTORE_SOURCE_TYPE_UNSPECIFIED":
                             case 0:
                                 message.sourceType = 0;
@@ -12448,7 +12484,7 @@
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
                             if (message.sourceType != null && message.hasOwnProperty("sourceType"))
-                                object.sourceType = options.enums === String ? $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] : message.sourceType;
+                                object.sourceType = options.enums === String ? $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] === undefined ? message.sourceType : $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] : message.sourceType;
                             if (message.backupInfo != null && message.hasOwnProperty("backupInfo")) {
                                 object.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.toObject(message.backupInfo, options);
                                 if (options.oneofs)
@@ -13976,6 +14012,12 @@
                             if (object.parent != null)
                                 message.parent = String(object.parent);
                             switch (object.view) {
+                            default:
+                                if (typeof object.view === "number") {
+                                    message.view = object.view;
+                                    break;
+                                }
+                                break;
                             case "VIEW_UNSPECIFIED":
                             case 0:
                                 message.view = 0;
@@ -14030,7 +14072,7 @@
                             if (message.parent != null && message.hasOwnProperty("parent"))
                                 object.parent = message.parent;
                             if (message.view != null && message.hasOwnProperty("view"))
-                                object.view = options.enums === String ? $root.google.bigtable.admin.v2.Table.View[message.view] : message.view;
+                                object.view = options.enums === String ? $root.google.bigtable.admin.v2.Table.View[message.view] === undefined ? message.view : $root.google.bigtable.admin.v2.Table.View[message.view] : message.view;
                             if (message.pageToken != null && message.hasOwnProperty("pageToken"))
                                 object.pageToken = message.pageToken;
                             if (message.pageSize != null && message.hasOwnProperty("pageSize"))
@@ -14494,6 +14536,12 @@
                             if (object.name != null)
                                 message.name = String(object.name);
                             switch (object.view) {
+                            default:
+                                if (typeof object.view === "number") {
+                                    message.view = object.view;
+                                    break;
+                                }
+                                break;
                             case "VIEW_UNSPECIFIED":
                             case 0:
                                 message.view = 0;
@@ -14542,7 +14590,7 @@
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
                             if (message.view != null && message.hasOwnProperty("view"))
-                                object.view = options.enums === String ? $root.google.bigtable.admin.v2.Table.View[message.view] : message.view;
+                                object.view = options.enums === String ? $root.google.bigtable.admin.v2.Table.View[message.view] === undefined ? message.view : $root.google.bigtable.admin.v2.Table.View[message.view] : message.view;
                             return object;
                         };
     
@@ -20790,6 +20838,12 @@
                                 return object;
                             var message = new $root.google.bigtable.admin.v2.RestoreInfo();
                             switch (object.sourceType) {
+                            default:
+                                if (typeof object.sourceType === "number") {
+                                    message.sourceType = object.sourceType;
+                                    break;
+                                }
+                                break;
                             case "RESTORE_SOURCE_TYPE_UNSPECIFIED":
                             case 0:
                                 message.sourceType = 0;
@@ -20823,7 +20877,7 @@
                             if (options.defaults)
                                 object.sourceType = options.enums === String ? "RESTORE_SOURCE_TYPE_UNSPECIFIED" : 0;
                             if (message.sourceType != null && message.hasOwnProperty("sourceType"))
-                                object.sourceType = options.enums === String ? $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] : message.sourceType;
+                                object.sourceType = options.enums === String ? $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] === undefined ? message.sourceType : $root.google.bigtable.admin.v2.RestoreSourceType[message.sourceType] : message.sourceType;
                             if (message.backupInfo != null && message.hasOwnProperty("backupInfo")) {
                                 object.backupInfo = $root.google.bigtable.admin.v2.BackupInfo.toObject(message.backupInfo, options);
                                 if (options.oneofs)
@@ -21190,6 +21244,12 @@
                                 }
                             }
                             switch (object.granularity) {
+                            default:
+                                if (typeof object.granularity === "number") {
+                                    message.granularity = object.granularity;
+                                    break;
+                                }
+                                break;
                             case "TIMESTAMP_GRANULARITY_UNSPECIFIED":
                             case 0:
                                 message.granularity = 0;
@@ -21246,7 +21306,7 @@
                                     object.columnFamilies[keys2[j]] = $root.google.bigtable.admin.v2.ColumnFamily.toObject(message.columnFamilies[keys2[j]], options);
                             }
                             if (message.granularity != null && message.hasOwnProperty("granularity"))
-                                object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
+                                object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] === undefined ? message.granularity : $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
                             if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
                                 object.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.toObject(message.restoreInfo, options);
                             if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
@@ -21467,6 +21527,12 @@
                                     return object;
                                 var message = new $root.google.bigtable.admin.v2.Table.ClusterState();
                                 switch (object.replicationState) {
+                                default:
+                                    if (typeof object.replicationState === "number") {
+                                        message.replicationState = object.replicationState;
+                                        break;
+                                    }
+                                    break;
                                 case "STATE_NOT_KNOWN":
                                 case 0:
                                     message.replicationState = 0;
@@ -21523,7 +21589,7 @@
                                 if (options.defaults)
                                     object.replicationState = options.enums === String ? "STATE_NOT_KNOWN" : 0;
                                 if (message.replicationState != null && message.hasOwnProperty("replicationState"))
-                                    object.replicationState = options.enums === String ? $root.google.bigtable.admin.v2.Table.ClusterState.ReplicationState[message.replicationState] : message.replicationState;
+                                    object.replicationState = options.enums === String ? $root.google.bigtable.admin.v2.Table.ClusterState.ReplicationState[message.replicationState] === undefined ? message.replicationState : $root.google.bigtable.admin.v2.Table.ClusterState.ReplicationState[message.replicationState] : message.replicationState;
                                 if (message.encryptionInfo && message.encryptionInfo.length) {
                                     object.encryptionInfo = [];
                                     for (var j = 0; j < message.encryptionInfo.length; ++j)
@@ -22798,6 +22864,12 @@
                                 return object;
                             var message = new $root.google.bigtable.admin.v2.EncryptionInfo();
                             switch (object.encryptionType) {
+                            default:
+                                if (typeof object.encryptionType === "number") {
+                                    message.encryptionType = object.encryptionType;
+                                    break;
+                                }
+                                break;
                             case "ENCRYPTION_TYPE_UNSPECIFIED":
                             case 0:
                                 message.encryptionType = 0;
@@ -22842,7 +22914,7 @@
                             if (message.kmsKeyVersion != null && message.hasOwnProperty("kmsKeyVersion"))
                                 object.kmsKeyVersion = message.kmsKeyVersion;
                             if (message.encryptionType != null && message.hasOwnProperty("encryptionType"))
-                                object.encryptionType = options.enums === String ? $root.google.bigtable.admin.v2.EncryptionInfo.EncryptionType[message.encryptionType] : message.encryptionType;
+                                object.encryptionType = options.enums === String ? $root.google.bigtable.admin.v2.EncryptionInfo.EncryptionType[message.encryptionType] === undefined ? message.encryptionType : $root.google.bigtable.admin.v2.EncryptionInfo.EncryptionType[message.encryptionType] : message.encryptionType;
                             if (message.encryptionStatus != null && message.hasOwnProperty("encryptionStatus"))
                                 object.encryptionStatus = $root.google.rpc.Status.toObject(message.encryptionStatus, options);
                             return object;
@@ -23189,6 +23261,12 @@
                                 message.deleteTime = $root.google.protobuf.Timestamp.fromObject(object.deleteTime);
                             }
                             switch (object.state) {
+                            default:
+                                if (typeof object.state === "number") {
+                                    message.state = object.state;
+                                    break;
+                                }
+                                break;
                             case "STATE_NOT_KNOWN":
                             case 0:
                                 message.state = 0;
@@ -23247,7 +23325,7 @@
                             if (message.deleteTime != null && message.hasOwnProperty("deleteTime"))
                                 object.deleteTime = $root.google.protobuf.Timestamp.toObject(message.deleteTime, options);
                             if (message.state != null && message.hasOwnProperty("state"))
-                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Snapshot.State[message.state] : message.state;
+                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Snapshot.State[message.state] === undefined ? message.state : $root.google.bigtable.admin.v2.Snapshot.State[message.state] : message.state;
                             if (message.description != null && message.hasOwnProperty("description"))
                                 object.description = message.description;
                             return object;
@@ -23616,6 +23694,12 @@
                                 else if (typeof object.sizeBytes === "object")
                                     message.sizeBytes = new $util.LongBits(object.sizeBytes.low >>> 0, object.sizeBytes.high >>> 0).toNumber();
                             switch (object.state) {
+                            default:
+                                if (typeof object.state === "number") {
+                                    message.state = object.state;
+                                    break;
+                                }
+                                break;
                             case "STATE_UNSPECIFIED":
                             case 0:
                                 message.state = 0;
@@ -23680,7 +23764,7 @@
                                 else
                                     object.sizeBytes = options.longs === String ? $util.Long.prototype.toString.call(message.sizeBytes) : options.longs === Number ? new $util.LongBits(message.sizeBytes.low >>> 0, message.sizeBytes.high >>> 0).toNumber() : message.sizeBytes;
                             if (message.state != null && message.hasOwnProperty("state"))
-                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Backup.State[message.state] : message.state;
+                                object.state = options.enums === String ? $root.google.bigtable.admin.v2.Backup.State[message.state] === undefined ? message.state : $root.google.bigtable.admin.v2.Backup.State[message.state] : message.state;
                             if (message.encryptionInfo != null && message.hasOwnProperty("encryptionInfo"))
                                 object.encryptionInfo = $root.google.bigtable.admin.v2.EncryptionInfo.toObject(message.encryptionInfo, options);
                             return object;
@@ -24583,6 +24667,12 @@
                             else if (typeof object.rowsLimit === "object")
                                 message.rowsLimit = new $util.LongBits(object.rowsLimit.low >>> 0, object.rowsLimit.high >>> 0).toNumber();
                         switch (object.requestStatsView) {
+                        default:
+                            if (typeof object.requestStatsView === "number") {
+                                message.requestStatsView = object.requestStatsView;
+                                break;
+                            }
+                            break;
                         case "REQUEST_STATS_VIEW_UNSPECIFIED":
                         case 0:
                             message.requestStatsView = 0;
@@ -24642,7 +24732,7 @@
                         if (message.appProfileId != null && message.hasOwnProperty("appProfileId"))
                             object.appProfileId = message.appProfileId;
                         if (message.requestStatsView != null && message.hasOwnProperty("requestStatsView"))
-                            object.requestStatsView = options.enums === String ? $root.google.bigtable.v2.ReadRowsRequest.RequestStatsView[message.requestStatsView] : message.requestStatsView;
+                            object.requestStatsView = options.enums === String ? $root.google.bigtable.v2.ReadRowsRequest.RequestStatsView[message.requestStatsView] === undefined ? message.requestStatsView : $root.google.bigtable.v2.ReadRowsRequest.RequestStatsView[message.requestStatsView] : message.requestStatsView;
                         return object;
                     };
     
@@ -37462,6 +37552,12 @@
                     if (object.nameField != null)
                         message.nameField = String(object.nameField);
                     switch (object.history) {
+                    default:
+                        if (typeof object.history === "number") {
+                            message.history = object.history;
+                            break;
+                        }
+                        break;
                     case "HISTORY_UNSPECIFIED":
                     case 0:
                         message.history = 0;
@@ -37486,6 +37582,10 @@
                         for (var i = 0; i < object.style.length; ++i)
                             switch (object.style[i]) {
                             default:
+                                if (typeof object.style[i] === "number") {
+                                    message.style[i] = object.style[i];
+                                    break;
+                                }
                             case "STYLE_UNSPECIFIED":
                             case 0:
                                 message.style[i] = 0;
@@ -37533,7 +37633,7 @@
                     if (message.nameField != null && message.hasOwnProperty("nameField"))
                         object.nameField = message.nameField;
                     if (message.history != null && message.hasOwnProperty("history"))
-                        object.history = options.enums === String ? $root.google.api.ResourceDescriptor.History[message.history] : message.history;
+                        object.history = options.enums === String ? $root.google.api.ResourceDescriptor.History[message.history] === undefined ? message.history : $root.google.api.ResourceDescriptor.History[message.history] : message.history;
                     if (message.plural != null && message.hasOwnProperty("plural"))
                         object.plural = message.plural;
                     if (message.singular != null && message.hasOwnProperty("singular"))
@@ -37541,7 +37641,7 @@
                     if (message.style && message.style.length) {
                         object.style = [];
                         for (var j = 0; j < message.style.length; ++j)
-                            object.style[j] = options.enums === String ? $root.google.api.ResourceDescriptor.Style[message.style[j]] : message.style[j];
+                            object.style[j] = options.enums === String ? $root.google.api.ResourceDescriptor.Style[message.style[j]] === undefined ? message.style[j] : $root.google.api.ResourceDescriptor.Style[message.style[j]] : message.style[j];
                     }
                     return object;
                 };
@@ -40803,6 +40903,12 @@
                     if (object.number != null)
                         message.number = object.number | 0;
                     switch (object.label) {
+                    default:
+                        if (typeof object.label === "number") {
+                            message.label = object.label;
+                            break;
+                        }
+                        break;
                     case "LABEL_OPTIONAL":
                     case 1:
                         message.label = 1;
@@ -40817,6 +40923,12 @@
                         break;
                     }
                     switch (object.type) {
+                    default:
+                        if (typeof object.type === "number") {
+                            message.type = object.type;
+                            break;
+                        }
+                        break;
                     case "TYPE_DOUBLE":
                     case 1:
                         message.type = 1;
@@ -40943,9 +41055,9 @@
                     if (message.number != null && message.hasOwnProperty("number"))
                         object.number = message.number;
                     if (message.label != null && message.hasOwnProperty("label"))
-                        object.label = options.enums === String ? $root.google.protobuf.FieldDescriptorProto.Label[message.label] : message.label;
+                        object.label = options.enums === String ? $root.google.protobuf.FieldDescriptorProto.Label[message.label] === undefined ? message.label : $root.google.protobuf.FieldDescriptorProto.Label[message.label] : message.label;
                     if (message.type != null && message.hasOwnProperty("type"))
-                        object.type = options.enums === String ? $root.google.protobuf.FieldDescriptorProto.Type[message.type] : message.type;
+                        object.type = options.enums === String ? $root.google.protobuf.FieldDescriptorProto.Type[message.type] === undefined ? message.type : $root.google.protobuf.FieldDescriptorProto.Type[message.type] : message.type;
                     if (message.typeName != null && message.hasOwnProperty("typeName"))
                         object.typeName = message.typeName;
                     if (message.defaultValue != null && message.hasOwnProperty("defaultValue"))
@@ -43292,6 +43404,12 @@
                     if (object.javaStringCheckUtf8 != null)
                         message.javaStringCheckUtf8 = Boolean(object.javaStringCheckUtf8);
                     switch (object.optimizeFor) {
+                    default:
+                        if (typeof object.optimizeFor === "number") {
+                            message.optimizeFor = object.optimizeFor;
+                            break;
+                        }
+                        break;
                     case "SPEED":
                     case 1:
                         message.optimizeFor = 1;
@@ -43400,7 +43518,7 @@
                     if (message.javaOuterClassname != null && message.hasOwnProperty("javaOuterClassname"))
                         object.javaOuterClassname = message.javaOuterClassname;
                     if (message.optimizeFor != null && message.hasOwnProperty("optimizeFor"))
-                        object.optimizeFor = options.enums === String ? $root.google.protobuf.FileOptions.OptimizeMode[message.optimizeFor] : message.optimizeFor;
+                        object.optimizeFor = options.enums === String ? $root.google.protobuf.FileOptions.OptimizeMode[message.optimizeFor] === undefined ? message.optimizeFor : $root.google.protobuf.FileOptions.OptimizeMode[message.optimizeFor] : message.optimizeFor;
                     if (message.javaMultipleFiles != null && message.hasOwnProperty("javaMultipleFiles"))
                         object.javaMultipleFiles = message.javaMultipleFiles;
                     if (message.goPackage != null && message.hasOwnProperty("goPackage"))
@@ -44202,6 +44320,12 @@
                         return object;
                     var message = new $root.google.protobuf.FieldOptions();
                     switch (object.ctype) {
+                    default:
+                        if (typeof object.ctype === "number") {
+                            message.ctype = object.ctype;
+                            break;
+                        }
+                        break;
                     case "STRING":
                     case 0:
                         message.ctype = 0;
@@ -44218,6 +44342,12 @@
                     if (object.packed != null)
                         message.packed = Boolean(object.packed);
                     switch (object.jstype) {
+                    default:
+                        if (typeof object.jstype === "number") {
+                            message.jstype = object.jstype;
+                            break;
+                        }
+                        break;
                     case "JS_NORMAL":
                     case 0:
                         message.jstype = 0;
@@ -44256,6 +44386,10 @@
                         for (var i = 0; i < object[".google.api.fieldBehavior"].length; ++i)
                             switch (object[".google.api.fieldBehavior"][i]) {
                             default:
+                                if (typeof object[".google.api.fieldBehavior"][i] === "number") {
+                                    message[".google.api.fieldBehavior"][i] = object[".google.api.fieldBehavior"][i];
+                                    break;
+                                }
                             case "FIELD_BEHAVIOR_UNSPECIFIED":
                             case 0:
                                 message[".google.api.fieldBehavior"][i] = 0;
@@ -44326,7 +44460,7 @@
                         object[".google.api.resourceReference"] = null;
                     }
                     if (message.ctype != null && message.hasOwnProperty("ctype"))
-                        object.ctype = options.enums === String ? $root.google.protobuf.FieldOptions.CType[message.ctype] : message.ctype;
+                        object.ctype = options.enums === String ? $root.google.protobuf.FieldOptions.CType[message.ctype] === undefined ? message.ctype : $root.google.protobuf.FieldOptions.CType[message.ctype] : message.ctype;
                     if (message.packed != null && message.hasOwnProperty("packed"))
                         object.packed = message.packed;
                     if (message.deprecated != null && message.hasOwnProperty("deprecated"))
@@ -44334,7 +44468,7 @@
                     if (message.lazy != null && message.hasOwnProperty("lazy"))
                         object.lazy = message.lazy;
                     if (message.jstype != null && message.hasOwnProperty("jstype"))
-                        object.jstype = options.enums === String ? $root.google.protobuf.FieldOptions.JSType[message.jstype] : message.jstype;
+                        object.jstype = options.enums === String ? $root.google.protobuf.FieldOptions.JSType[message.jstype] === undefined ? message.jstype : $root.google.protobuf.FieldOptions.JSType[message.jstype] : message.jstype;
                     if (message.weak != null && message.hasOwnProperty("weak"))
                         object.weak = message.weak;
                     if (message.unverifiedLazy != null && message.hasOwnProperty("unverifiedLazy"))
@@ -44347,7 +44481,7 @@
                     if (message[".google.api.fieldBehavior"] && message[".google.api.fieldBehavior"].length) {
                         object[".google.api.fieldBehavior"] = [];
                         for (var j = 0; j < message[".google.api.fieldBehavior"].length; ++j)
-                            object[".google.api.fieldBehavior"][j] = options.enums === String ? $root.google.api.FieldBehavior[message[".google.api.fieldBehavior"][j]] : message[".google.api.fieldBehavior"][j];
+                            object[".google.api.fieldBehavior"][j] = options.enums === String ? $root.google.api.FieldBehavior[message[".google.api.fieldBehavior"][j]] === undefined ? message[".google.api.fieldBehavior"][j] : $root.google.api.FieldBehavior[message[".google.api.fieldBehavior"][j]] : message[".google.api.fieldBehavior"][j];
                     }
                     if (message[".google.api.resourceReference"] != null && message.hasOwnProperty(".google.api.resourceReference"))
                         object[".google.api.resourceReference"] = $root.google.api.ResourceReference.toObject(message[".google.api.resourceReference"], options);
@@ -45744,6 +45878,12 @@
                     if (object.deprecated != null)
                         message.deprecated = Boolean(object.deprecated);
                     switch (object.idempotencyLevel) {
+                    default:
+                        if (typeof object.idempotencyLevel === "number") {
+                            message.idempotencyLevel = object.idempotencyLevel;
+                            break;
+                        }
+                        break;
                     case "IDEMPOTENCY_UNKNOWN":
                     case 0:
                         message.idempotencyLevel = 0;
@@ -45819,7 +45959,7 @@
                     if (message.deprecated != null && message.hasOwnProperty("deprecated"))
                         object.deprecated = message.deprecated;
                     if (message.idempotencyLevel != null && message.hasOwnProperty("idempotencyLevel"))
-                        object.idempotencyLevel = options.enums === String ? $root.google.protobuf.MethodOptions.IdempotencyLevel[message.idempotencyLevel] : message.idempotencyLevel;
+                        object.idempotencyLevel = options.enums === String ? $root.google.protobuf.MethodOptions.IdempotencyLevel[message.idempotencyLevel] === undefined ? message.idempotencyLevel : $root.google.protobuf.MethodOptions.IdempotencyLevel[message.idempotencyLevel] : message.idempotencyLevel;
                     if (message.uninterpretedOption && message.uninterpretedOption.length) {
                         object.uninterpretedOption = [];
                         for (var j = 0; j < message.uninterpretedOption.length; ++j)
@@ -47576,6 +47716,12 @@
                         if (object.end != null)
                             message.end = object.end | 0;
                         switch (object.semantic) {
+                        default:
+                            if (typeof object.semantic === "number") {
+                                message.semantic = object.semantic;
+                                break;
+                            }
+                            break;
                         case "NONE":
                         case 0:
                             message.semantic = 0;
@@ -47625,7 +47771,7 @@
                         if (message.end != null && message.hasOwnProperty("end"))
                             object.end = message.end;
                         if (message.semantic != null && message.hasOwnProperty("semantic"))
-                            object.semantic = options.enums === String ? $root.google.protobuf.GeneratedCodeInfo.Annotation.Semantic[message.semantic] : message.semantic;
+                            object.semantic = options.enums === String ? $root.google.protobuf.GeneratedCodeInfo.Annotation.Semantic[message.semantic] === undefined ? message.semantic : $root.google.protobuf.GeneratedCodeInfo.Annotation.Semantic[message.semantic] : message.semantic;
                         return object;
                     };
     
@@ -52994,6 +53140,12 @@
                             return object;
                         var message = new $root.google.iam.v1.AuditLogConfig();
                         switch (object.logType) {
+                        default:
+                            if (typeof object.logType === "number") {
+                                message.logType = object.logType;
+                                break;
+                            }
+                            break;
                         case "LOG_TYPE_UNSPECIFIED":
                         case 0:
                             message.logType = 0;
@@ -53039,7 +53191,7 @@
                         if (options.defaults)
                             object.logType = options.enums === String ? "LOG_TYPE_UNSPECIFIED" : 0;
                         if (message.logType != null && message.hasOwnProperty("logType"))
-                            object.logType = options.enums === String ? $root.google.iam.v1.AuditLogConfig.LogType[message.logType] : message.logType;
+                            object.logType = options.enums === String ? $root.google.iam.v1.AuditLogConfig.LogType[message.logType] === undefined ? message.logType : $root.google.iam.v1.AuditLogConfig.LogType[message.logType] : message.logType;
                         if (message.exemptedMembers && message.exemptedMembers.length) {
                             object.exemptedMembers = [];
                             for (var j = 0; j < message.exemptedMembers.length; ++j)
@@ -53576,6 +53728,12 @@
                             return object;
                         var message = new $root.google.iam.v1.BindingDelta();
                         switch (object.action) {
+                        default:
+                            if (typeof object.action === "number") {
+                                message.action = object.action;
+                                break;
+                            }
+                            break;
                         case "ACTION_UNSPECIFIED":
                         case 0:
                             message.action = 0;
@@ -53621,7 +53779,7 @@
                             object.condition = null;
                         }
                         if (message.action != null && message.hasOwnProperty("action"))
-                            object.action = options.enums === String ? $root.google.iam.v1.BindingDelta.Action[message.action] : message.action;
+                            object.action = options.enums === String ? $root.google.iam.v1.BindingDelta.Action[message.action] === undefined ? message.action : $root.google.iam.v1.BindingDelta.Action[message.action] : message.action;
                         if (message.role != null && message.hasOwnProperty("role"))
                             object.role = message.role;
                         if (message.member != null && message.hasOwnProperty("member"))
@@ -53886,6 +54044,12 @@
                             return object;
                         var message = new $root.google.iam.v1.AuditConfigDelta();
                         switch (object.action) {
+                        default:
+                            if (typeof object.action === "number") {
+                                message.action = object.action;
+                                break;
+                            }
+                            break;
                         case "ACTION_UNSPECIFIED":
                         case 0:
                             message.action = 0;
@@ -53928,7 +54092,7 @@
                             object.logType = "";
                         }
                         if (message.action != null && message.hasOwnProperty("action"))
-                            object.action = options.enums === String ? $root.google.iam.v1.AuditConfigDelta.Action[message.action] : message.action;
+                            object.action = options.enums === String ? $root.google.iam.v1.AuditConfigDelta.Action[message.action] === undefined ? message.action : $root.google.iam.v1.AuditConfigDelta.Action[message.action] : message.action;
                         if (message.service != null && message.hasOwnProperty("service"))
                             object.service = message.service;
                         if (message.exemptedMember != null && message.hasOwnProperty("exemptedMember"))
