@@ -22,6 +22,7 @@ const instanceId = `${PREFIX}-${runId}`;
 const clusterId = `${PREFIX}-${runId}`;
 const bigtable = new Bigtable();
 let instance;
+let obtainInstance;
 
 // Get a unique ID to use for test resources.
 function generateId() {
@@ -48,10 +49,9 @@ async function getStaleInstances() {
  * the result.
  */
 async function obtainTestInstance() {
-  const [instances] = await bigtable.getInstances();
-  const matchedInstances = instances.filter(i => i.id === instanceId);
-  if (matchedInstances.length === 0) {
-    await createTestInstance();
+  const delay = ms => new Promise(res => setTimeout(res, ms));
+  while (!obtainInstance) {
+    await delay(5000);
   }
   return bigtable.instance(instanceId);
 }
@@ -74,7 +74,7 @@ async function createTestInstance() {
     },
   });
   await operation.promise();
-  return instance;
+  obtainInstance = instance;
 }
 
 /**
@@ -84,4 +84,9 @@ after(async () => {
   await instance.delete();
 });
 
-module.exports = {generateId, getStaleInstances, obtainTestInstance};
+module.exports = {
+  generateId,
+  getStaleInstances,
+  obtainTestInstance,
+  createTestInstance,
+};
