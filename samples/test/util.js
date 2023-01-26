@@ -51,7 +51,7 @@ async function getStaleInstances() {
  */
 async function obtainTestInstance() {
   if (!obtainPromise) {
-    obtainPromise = createTestInstance();
+    obtainPromise = await createTestInstance();
   }
   return obtainPromise;
 }
