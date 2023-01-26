@@ -53,7 +53,7 @@ async function obtainTestInstance() {
   while (!obtainInstance) {
     await delay(5000);
   }
-  return bigtable.instance(instanceId);
+  return obtainInstance;
 }
 
 /**
