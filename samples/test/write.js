@@ -25,6 +25,7 @@ const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable na
 
 describe('writes', async () => {
   const instance = await obtainTestInstance();
+  console.log('writes done');
   const INSTANCE_ID = instance.id;
   let table;
 

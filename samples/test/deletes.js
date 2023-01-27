@@ -31,6 +31,7 @@ describe('deletes', async () => {
 
   before(async () => {
     const instance = await obtainTestInstance();
+    console.log('deletes done');
     INSTANCE_ID = instance.id;
     table = instance.table(TABLE_ID);
     const tableExists = (await table.exists({}))[0];

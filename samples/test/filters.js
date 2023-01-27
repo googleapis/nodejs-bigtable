@@ -35,6 +35,7 @@ describe('filters', async () => {
 
   before(async () => {
     const instance = await obtainTestInstance();
+    console.log('filters done');
     INSTANCE_ID = instance.id;
     table = instance.table(TABLE_ID);
 

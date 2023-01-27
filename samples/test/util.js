@@ -53,6 +53,7 @@ async function obtainTestInstance() {
   if (!obtainPromise) {
     obtainPromise = createTestInstance();
   }
+  console.log('Instance obtained.');
   return obtainPromise;
 }
 
@@ -60,6 +61,7 @@ async function obtainTestInstance() {
  * Create a testing cluster and the corresponding instance.
  */
 async function createTestInstance() {
+  console.log('Test instance created.');
   instance = bigtable.instance(instanceId);
   const [, operation] = await instance.create({
     clusters: [

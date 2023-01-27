@@ -26,6 +26,7 @@ describe('backups', async () => {
   const BACKUP_ID = generateId();
 
   const instance = await obtainTestInstance();
+  console.log('backups done');
 
   const INSTANCE_ID = instance.id;
   const CLUSTER_ID = instance.id; // The test function uses the same name.
