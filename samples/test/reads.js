@@ -24,7 +24,9 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('reads', async () => {
+  console.log('reads start');
   const instance = await obtainTestInstance();
+  console.log('reads done');
   const INSTANCE_ID = instance.id;
   let table;
   const TIMESTAMP = new Date(2019, 5, 1);
