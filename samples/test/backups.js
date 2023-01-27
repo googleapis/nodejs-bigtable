@@ -25,14 +25,12 @@ describe('backups', async () => {
   const TABLE_ID = generateId();
   const BACKUP_ID = generateId();
 
-  const instance = await obtainTestInstance();
-
-  const INSTANCE_ID = instance.id;
-  const CLUSTER_ID = instance.id; // The test function uses the same name.
-
-  const table = instance.table(TABLE_ID);
-  const cluster = instance.cluster(INSTANCE_ID);
-  const backup = cluster.backup(BACKUP_ID);
+  let instance;
+  let INSTANCE_ID;
+  let CLUSTER_ID;
+  let table;
+  let cluster;
+  let backup;
 
   async function createTestBackup(backupId) {
     const [backup, operation] = await cluster.createBackup(backupId, {
@@ -44,6 +42,15 @@ describe('backups', async () => {
   }
 
   before(async () => {
+    instance = await obtainTestInstance();
+
+    INSTANCE_ID = instance.id;
+    CLUSTER_ID = instance.id; // The test function uses the same name.
+
+    table = instance.table(TABLE_ID);
+    cluster = instance.cluster(INSTANCE_ID);
+    backup = cluster.backup(BACKUP_ID);
+
     await table.create();
     await table.createFamily('follows');
     await table.insert([
