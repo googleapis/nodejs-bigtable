@@ -25,6 +25,7 @@ describe('backups', async () => {
   const TABLE_ID = generateId();
   const BACKUP_ID = generateId();
 
+  console.log('backups start');
   const instance = await obtainTestInstance();
   console.log('backups done');
 

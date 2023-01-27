@@ -30,6 +30,7 @@ describe('deletes', async () => {
   TIMESTAMP.setUTCHours(0);
 
   before(async () => {
+    console.log('deletes start');
     const instance = await obtainTestInstance();
     console.log('deletes done');
     INSTANCE_ID = instance.id;

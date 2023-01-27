@@ -34,6 +34,7 @@ describe('filters', async () => {
   TIMESTAMP_OLDER.setUTCHours(0);
 
   before(async () => {
+    console.log('filters start');
     const instance = await obtainTestInstance();
     console.log('filters done');
     INSTANCE_ID = instance.id;

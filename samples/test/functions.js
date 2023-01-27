@@ -29,6 +29,7 @@ const cwd = path.join(__dirname, '..');
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('functions', async () => {
+  console.log('functions start');
   const instance = await obtainTestInstance();
   console.log('functions done');
   const INSTANCE_ID = instance.id;
