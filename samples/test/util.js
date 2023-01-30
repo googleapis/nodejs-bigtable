@@ -50,7 +50,6 @@ async function getStaleInstances() {
  * the result.
  */
 async function obtainTestInstance() {
-  // Note: Do not use this function if it is only inside a describe block.
   if (!obtainPromise) {
     obtainPromise = createTestInstance();
   }
