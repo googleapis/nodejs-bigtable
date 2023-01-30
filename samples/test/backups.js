@@ -35,7 +35,7 @@ describe('backups', async () => {
   async function createTestBackup(backupId) {
     const [backup, operation] = await cluster.createBackup(backupId, {
       table,
-      expireTime: new Date(Date.now() + 12 * 60 * 60 * 1000), // 1 hour from now
+      expireTime: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
     });
     await operation.promise();
     return backup;
