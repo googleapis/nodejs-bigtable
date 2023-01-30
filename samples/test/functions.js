@@ -30,7 +30,7 @@ const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable na
 
 describe('functions', async () => {
   // The following `obtainTestInstance` line needs to be moved into `before`.
-  // This needs to happen when we get the backup tests running again.
+  // This needs to happen when we get the functions tests running again.
   const instance = await obtainTestInstance();
   const INSTANCE_ID = instance.id;
   let table;
