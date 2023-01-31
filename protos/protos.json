@@ -3155,8 +3155,7 @@
                       "values": {
                         "REQUEST_STATS_VIEW_UNSPECIFIED": 0,
                         "REQUEST_STATS_NONE": 1,
-                        "REQUEST_STATS_EFFICIENCY": 2,
-                        "REQUEST_STATS_FULL": 3
+                        "REQUEST_STATS_FULL": 2
                       }
                     }
                   }
@@ -3895,7 +3894,7 @@
                     }
                   }
                 },
-                "ReadIteratorStats": {
+                "ReadIterationStats": {
                   "fields": {
                     "rowsSeenCount": {
                       "type": "int64",
@@ -3912,10 +3911,6 @@
                     "cellsReturnedCount": {
                       "type": "int64",
                       "id": 4
-                    },
-                    "deletesSeenCount": {
-                      "type": "int64",
-                      "id": 5
                     }
                   }
                 },
@@ -3927,22 +3922,10 @@
                     }
                   }
                 },
-                "ReadEfficiencyStats": {
+                "FullReadStatsView": {
                   "fields": {
-                    "readIteratorStats": {
-                      "type": "ReadIteratorStats",
-                      "id": 1
-                    },
-                    "requestLatencyStats": {
-                      "type": "RequestLatencyStats",
-                      "id": 2
-                    }
-                  }
-                },
-                "AllReadStats": {
-                  "fields": {
-                    "readIteratorStats": {
-                      "type": "ReadIteratorStats",
+                    "readIterationStats": {
+                      "type": "ReadIterationStats",
                       "id": 1
                     },
                     "requestLatencyStats": {
@@ -3953,21 +3936,16 @@
                 },
                 "RequestStats": {
                   "oneofs": {
-                    "stats": {
+                    "statsView": {
                       "oneof": [
-                        "readEfficiencyStats",
-                        "allReadStats"
+                        "fullReadStatsView"
                       ]
                     }
                   },
                   "fields": {
-                    "readEfficiencyStats": {
-                      "type": "ReadEfficiencyStats",
+                    "fullReadStatsView": {
+                      "type": "FullReadStatsView",
                       "id": 1
-                    },
-                    "allReadStats": {
-                      "type": "AllReadStats",
-                      "id": 2
                     }
                   }
                 },
