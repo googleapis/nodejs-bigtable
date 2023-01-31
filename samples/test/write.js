@@ -24,11 +24,13 @@ const execSync = cmd => cp.execSync(cmd, {encoding: 'utf-8'});
 const TABLE_ID = `mobile-time-series-${uuid.v4()}`.substr(0, 30); // Bigtable naming rules
 
 describe('writes', async () => {
-  const instance = await obtainTestInstance();
-  const INSTANCE_ID = instance.id;
+  let INSTANCE_ID;
   let table;
 
   before(async () => {
+    const instance = await obtainTestInstance();
+    INSTANCE_ID = instance.id;
+
     table = instance.table(TABLE_ID);
 
     await table.create().catch(console.error);
