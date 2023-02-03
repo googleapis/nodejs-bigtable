@@ -14,6 +14,7 @@
 
 import {Transform, TransformOptions} from 'stream';
 import {Bytes, Mutation} from './mutation';
+import {TableUtils} from './utils/table';
 
 export type Value = string | number | boolean | Uint8Array;
 
@@ -259,6 +260,11 @@ export class ChunkTransformer extends Transform {
       errorMessage = 'A new row cannot be reset';
     } else if (lastRowKey === newRowKey) {
       errorMessage = 'A commit happened but the same key followed';
+    } else if (
+      typeof lastRowKey !== 'undefined' &&
+      TableUtils.lessThanOrEqualTo(newRowKey as string, lastRowKey as string)
+    ) {
+      errorMessage = 'key must be strictly increasing';
     } else if (!chunk.familyName) {
       errorMessage = 'A family must be set';
     } else if (chunk.qualifier === null || chunk.qualifier === undefined) {
