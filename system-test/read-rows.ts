@@ -95,16 +95,23 @@ describe('Bigtable/Table', () => {
           nodes: 1,
         },
       });
+      console.log('Run long running operation');
       await operation.promise();
+      console.log('Run table create');
       await table.create({});
+      console.log('Run getRows');
       await table.getRows(); // This is done to initialize the data client
+      console.log('Run close client');
       await bigtable.close();
+      console.log('Run try block');
       try {
         await table.getRows();
+        console.log('Assert fail');
         assert.fail(
           'An error should have been thrown because the client is closed'
         );
       } catch (err: any) {
+        console.log('Catch block');
         assert.strictEqual(err.message, 'The client has already been closed.');
       }
     });
