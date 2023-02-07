@@ -264,7 +264,7 @@ export class ChunkTransformer extends Transform {
       typeof lastRowKey !== 'undefined' &&
       TableUtils.lessThanOrEqualTo(newRowKey as string, lastRowKey as string)
     ) {
-      errorMessage = 'key must be strictly increasing';
+      errorMessage = 'A row key must be strictly increasing';
     } else if (!chunk.familyName) {
       errorMessage = 'A family must be set';
     } else if (chunk.qualifier === null || chunk.qualifier === undefined) {
