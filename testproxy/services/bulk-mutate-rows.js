@@ -38,17 +38,12 @@ const bulkMutateRows = ({clientMap}) =>
       };
     } catch (error) {
       if (error.name === 'PartialFailureError') {
-        const entries = Array.from(error.errors.entries()).map(
-          ([index, entry]) => {
-            // We add one to index because for partial failures, the
-            // client expects an index starting at 1 in the error
-            // results.
-            return {index: index + 1, status: entry};
-          }
-        );
         return {
           status: {code: grpc.status.OK, message: error.message},
-          entry: entries,
+          entry: Array.from(error.errors.entries()).map(([index, entry]) => ({
+            index: index + 1,
+            status: entry,
+          })),
         };
       } else {
         return {
