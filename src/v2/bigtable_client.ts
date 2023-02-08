@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
 // ** All changes to this file may be overwritten. **
 
 /* global window */
-import * as gax from 'google-gax';
-import {
+import type * as gax from 'google-gax';
+import type {
   Callback,
   CallOptions,
   Descriptors,
   ClientOptions,
-  GoogleError,
 } from 'google-gax';
-
 import {PassThrough} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
@@ -35,7 +33,6 @@ import jsonProtos = require('../../protos/protos.json');
  * This file defines retry strategy and timeouts for all API methods in this library.
  */
 import * as gapicConfig from './bigtable_client_config.json';
-
 const version = require('../../../package.json').version;
 
 /**
@@ -68,7 +65,7 @@ export class BigtableClient {
    *
    * @param {object} [options] - The configuration object.
    * The options accepted by the constructor are described in detail
-   * in [this document](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#creating-the-client-instance).
+   * in [this document](https://github.com/googleapis/gax-nodejs/blob/main/client-libraries.md#creating-the-client-instance).
    * The common options are:
    * @param {object} [options.credentials] - Credentials object.
    * @param {string} [options.credentials.client_email]
@@ -91,13 +88,22 @@ export class BigtableClient {
    *     API remote host.
    * @param {gax.ClientConfig} [options.clientConfig] - Client configuration override.
    *     Follows the structure of {@link gapicConfig}.
-   * @param {boolean} [options.fallback] - Use HTTP fallback mode.
-   *     In fallback mode, a special browser-compatible transport implementation is used
-   *     instead of gRPC transport. In browser context (if the `window` object is defined)
-   *     the fallback mode is enabled automatically; set `options.fallback` to `false`
-   *     if you need to override this behavior.
+   * @param {boolean | "rest"} [options.fallback] - Use HTTP fallback mode.
+   *     Pass "rest" to use HTTP/1.1 REST API instead of gRPC.
+   *     For more information, please check the
+   *     {@link https://github.com/googleapis/gax-nodejs/blob/main/client-libraries.md#http11-rest-api-mode documentation}.
+   * @param {gax} [gaxInstance]: loaded instance of `google-gax`. Useful if you
+   *     need to avoid loading the default gRPC version and want to use the fallback
+   *     HTTP implementation. Load only fallback version and pass it to the constructor:
+   *     ```
+   *     const gax = require('google-gax/build/src/fallback'); // avoids loading google-gax with gRPC
+   *     const client = new BigtableClient({fallback: 'rest'}, gax);
+   *     ```
    */
-  constructor(opts?: ClientOptions) {
+  constructor(
+    opts?: ClientOptions,
+    gaxInstance?: typeof gax | typeof gax.fallback
+  ) {
     // Ensure that options include all the required fields.
     const staticMembers = this.constructor as typeof BigtableClient;
     const servicePath =
@@ -112,13 +118,21 @@ export class BigtableClient {
       (typeof window !== 'undefined' && typeof window?.fetch === 'function');
     opts = Object.assign({servicePath, port, clientConfig, fallback}, opts);
 
+    // Request numeric enum values if REST transport is used.
+    opts.numericEnums = true;
+
     // If scopes are unset in options and we're connecting to a non-default endpoint, set scopes just in case.
     if (servicePath !== staticMembers.servicePath && !('scopes' in opts)) {
       opts['scopes'] = staticMembers.scopes;
     }
 
+    // Load google-gax module synchronously if needed
+    if (!gaxInstance) {
+      gaxInstance = require('google-gax') as typeof gax;
+    }
+
     // Choose either gRPC or proto-over-HTTP implementation of google-gax.
-    this._gaxModule = opts.fallback ? gax.fallback : gax;
+    this._gaxModule = opts.fallback ? gaxInstance.fallback : gaxInstance;
 
     // Create a `gaxGrpc` object, with any grpc-specific options sent to the client.
     this._gaxGrpc = new this._gaxModule.GrpcClient(opts);
@@ -174,15 +188,15 @@ export class BigtableClient {
     // Provide descriptors for these.
     this.descriptors.stream = {
       readRows: new this._gaxModule.StreamDescriptor(
-        gax.StreamType.SERVER_STREAMING,
+        this._gaxModule.StreamType.SERVER_STREAMING,
         opts.fallback === 'rest'
       ),
       sampleRowKeys: new this._gaxModule.StreamDescriptor(
-        gax.StreamType.SERVER_STREAMING,
+        this._gaxModule.StreamType.SERVER_STREAMING,
         opts.fallback === 'rest'
       ),
       mutateRows: new this._gaxModule.StreamDescriptor(
-        gax.StreamType.SERVER_STREAMING,
+        this._gaxModule.StreamType.SERVER_STREAMING,
         opts.fallback === 'rest'
       ),
     };
@@ -201,7 +215,7 @@ export class BigtableClient {
     this.innerApiCalls = {};
 
     // Add a warn function to the client constructor so it can be easily tested.
-    this.warn = gax.warn;
+    this.warn = this._gaxModule.warn;
   }
 
   /**
@@ -255,7 +269,9 @@ export class BigtableClient {
                 setImmediate(() => {
                   stream.emit(
                     'error',
-                    new GoogleError('The client has already been closed.')
+                    new this._gaxModule.GoogleError(
+                      'The client has already been closed.'
+                    )
                   );
                 });
                 return stream;
@@ -274,7 +290,8 @@ export class BigtableClient {
       const apiCall = this._gaxModule.createApiCall(
         callPromise,
         this._defaults[methodName],
-        descriptor
+        descriptor,
+        this._opts.fallback
       );
 
       this.innerApiCalls[methodName] = apiCall;
@@ -430,30 +447,34 @@ export class BigtableClient {
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
     const routingParameter = {};
-    if (
-      typeof request.tableName !== 'undefined' &&
-      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
-        request.tableName!
-      )
-    ) {
-      Object.assign(routingParameter, {
-        table_name: request.tableName!.match(
-          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
-        )![0],
-      });
+    {
+      const fieldValue = request.tableName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(
+            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+          );
+        if (match) {
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, {table_name: parameterValue});
+        }
+      }
     }
-
-    if (
-      typeof request.appProfileId !== 'undefined' &&
-      RegExp('[^/]+').test(request.appProfileId!)
-    ) {
-      Object.assign(routingParameter, {
-        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
-      });
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
     }
-
     options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams(routingParameter);
+      this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.mutateRow(request, options, callback);
   }
@@ -559,30 +580,34 @@ export class BigtableClient {
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
     const routingParameter = {};
-    if (
-      typeof request.tableName !== 'undefined' &&
-      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
-        request.tableName!
-      )
-    ) {
-      Object.assign(routingParameter, {
-        table_name: request.tableName!.match(
-          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
-        )![0],
-      });
+    {
+      const fieldValue = request.tableName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(
+            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+          );
+        if (match) {
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, {table_name: parameterValue});
+        }
+      }
     }
-
-    if (
-      typeof request.appProfileId !== 'undefined' &&
-      RegExp('[^/]+').test(request.appProfileId!)
-    ) {
-      Object.assign(routingParameter, {
-        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
-      });
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
     }
-
     options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams(routingParameter);
+      this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.checkAndMutateRow(request, options, callback);
   }
@@ -666,28 +691,32 @@ export class BigtableClient {
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
     const routingParameter = {};
-    if (
-      typeof request.name !== 'undefined' &&
-      RegExp('(?<name>projects)/[^/]+/instances/[^/]+').test(request.name!)
-    ) {
-      Object.assign(routingParameter, {
-        name: request.name!.match(
-          RegExp('(?<name>projects/[^/]+/instances/[^/]+)')
-        )![0],
-      });
+    {
+      const fieldValue = request.name;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<name>projects/[^/]+/instances/[^/]+)'));
+        if (match) {
+          const parameterValue = match.groups?.['name'] ?? fieldValue;
+          Object.assign(routingParameter, {name: parameterValue});
+        }
+      }
     }
-
-    if (
-      typeof request.appProfileId !== 'undefined' &&
-      RegExp('[^/]+').test(request.appProfileId!)
-    ) {
-      Object.assign(routingParameter, {
-        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
-      });
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
     }
-
     options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams(routingParameter);
+      this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.pingAndWarm(request, options, callback);
   }
@@ -784,30 +813,34 @@ export class BigtableClient {
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
     const routingParameter = {};
-    if (
-      typeof request.tableName !== 'undefined' &&
-      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
-        request.tableName!
-      )
-    ) {
-      Object.assign(routingParameter, {
-        table_name: request.tableName!.match(
-          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
-        )![0],
-      });
+    {
+      const fieldValue = request.tableName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(
+            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+          );
+        if (match) {
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, {table_name: parameterValue});
+        }
+      }
     }
-
-    if (
-      typeof request.appProfileId !== 'undefined' &&
-      RegExp('[^/]+').test(request.appProfileId!)
-    ) {
-      Object.assign(routingParameter, {
-        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
-      });
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
     }
-
     options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams(routingParameter);
+      this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.readModifyWriteRow(request, options, callback);
   }
@@ -826,8 +859,8 @@ export class BigtableClient {
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
-   *   This value specifies routing for replication. If not specified, the
-   *   "default" application profile will be used.
+   *   This value specifies routing for replication. This API only accepts the
+   *   empty value of app_profile_id.
    * @param {google.bigtable.v2.RowSet} request.rows
    *   The row keys and/or ranges to read sequentially. If not specified, reads
    *   from all rows.
@@ -837,6 +870,8 @@ export class BigtableClient {
    * @param {number} request.rowsLimit
    *   The read will stop after committing to N rows' worth of results. The
    *   default (zero) is to return all results.
+   * @param {google.bigtable.v2.ReadRowsRequest.RequestStatsView} request.requestStatsView
+   *   The view into RequestStats, as described above.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
@@ -854,30 +889,34 @@ export class BigtableClient {
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
     const routingParameter = {};
-    if (
-      typeof request.tableName !== 'undefined' &&
-      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
-        request.tableName!
-      )
-    ) {
-      Object.assign(routingParameter, {
-        table_name: request.tableName!.match(
-          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
-        )![0],
-      });
+    {
+      const fieldValue = request.tableName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(
+            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+          );
+        if (match) {
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, {table_name: parameterValue});
+        }
+      }
     }
-
-    if (
-      typeof request.appProfileId !== 'undefined' &&
-      RegExp('[^/]+').test(request.appProfileId!)
-    ) {
-      Object.assign(routingParameter, {
-        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
-      });
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
     }
-
     options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams(routingParameter);
+      this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.readRows(request, options);
   }
@@ -914,30 +953,34 @@ export class BigtableClient {
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
     const routingParameter = {};
-    if (
-      typeof request.tableName !== 'undefined' &&
-      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
-        request.tableName!
-      )
-    ) {
-      Object.assign(routingParameter, {
-        table_name: request.tableName!.match(
-          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
-        )![0],
-      });
+    {
+      const fieldValue = request.tableName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(
+            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+          );
+        if (match) {
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, {table_name: parameterValue});
+        }
+      }
     }
-
-    if (
-      typeof request.appProfileId !== 'undefined' &&
-      RegExp('[^/]+').test(request.appProfileId!)
-    ) {
-      Object.assign(routingParameter, {
-        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
-      });
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
     }
-
     options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams(routingParameter);
+      this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.sampleRowKeys(request, options);
   }
@@ -977,30 +1020,34 @@ export class BigtableClient {
     options.otherArgs = options.otherArgs || {};
     options.otherArgs.headers = options.otherArgs.headers || {};
     const routingParameter = {};
-    if (
-      typeof request.tableName !== 'undefined' &&
-      RegExp('(?<table_name>projects)/[^/]+/instances/[^/]+/tables/[^/]+').test(
-        request.tableName!
-      )
-    ) {
-      Object.assign(routingParameter, {
-        table_name: request.tableName!.match(
-          RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
-        )![0],
-      });
+    {
+      const fieldValue = request.tableName;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(
+            RegExp('(?<table_name>projects/[^/]+/instances/[^/]+/tables/[^/]+)')
+          );
+        if (match) {
+          const parameterValue = match.groups?.['table_name'] ?? fieldValue;
+          Object.assign(routingParameter, {table_name: parameterValue});
+        }
+      }
     }
-
-    if (
-      typeof request.appProfileId !== 'undefined' &&
-      RegExp('[^/]+').test(request.appProfileId!)
-    ) {
-      Object.assign(routingParameter, {
-        app_profile_id: request.appProfileId!.match(RegExp('[^/]+'))![0],
-      });
+    {
+      const fieldValue = request.appProfileId;
+      if (fieldValue !== undefined && fieldValue !== null) {
+        const match = fieldValue
+          .toString()
+          .match(RegExp('(?<app_profile_id>.*)'));
+        if (match) {
+          const parameterValue = match.groups?.['app_profile_id'] ?? fieldValue;
+          Object.assign(routingParameter, {app_profile_id: parameterValue});
+        }
+      }
     }
-
     options.otherArgs.headers['x-goog-request-params'] =
-      gax.routingHeader.fromParams(routingParameter);
+      this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.mutateRows(request, options);
   }

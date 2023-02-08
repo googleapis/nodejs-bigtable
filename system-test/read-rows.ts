@@ -23,7 +23,7 @@ import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
-import {ServiceError, GrpcClient} from 'google-gax';
+import {ServiceError, GrpcClient, GoogleError} from 'google-gax';
 import {PassThrough} from 'stream';
 
 const {grpc} = new GrpcClient();
@@ -77,11 +77,43 @@ function rowResponse(rowKey: {}) {
 
 describe('Bigtable/Table', () => {
   const bigtable = new Bigtable();
+  const INSTANCE_NAME = 'fake-instance2';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
   const TABLE = INSTANCE.table('table');
+
+  describe('close', () => {
+    it('should fail when invoking readRows with closed client', async () => {
+      const instance = bigtable.instance(INSTANCE_NAME);
+      const table = instance.table('fake-table');
+      const [, operation] = await instance.create({
+        clusters: {
+          id: 'fake-cluster3',
+          location: 'us-west1-c',
+          nodes: 1,
+        },
+      });
+      await operation.promise();
+      await table.create({});
+      await table.getRows(); // This is done to initialize the data client
+      await bigtable.close();
+      try {
+        await table.getRows();
+        assert.fail(
+          'An error should have been thrown because the client is closed'
+        );
+      } catch (err: any) {
+        assert.strictEqual(err.message, 'The client has already been closed.');
+      }
+    });
+    after(async () => {
+      const bigtableSecondClient = new Bigtable();
+      const instance = bigtableSecondClient.instance(INSTANCE_NAME);
+      await instance.delete({});
+    });
+  });
 
   describe('createReadStream', () => {
     let clock: sinon.SinonFakeTimers;

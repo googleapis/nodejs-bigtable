@@ -963,6 +963,13 @@
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Instance",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
                       },
+                      "oneofs": {
+                        "_satisfiesPzs": {
+                          "oneof": [
+                            "satisfiesPzs"
+                          ]
+                        }
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -994,6 +1001,14 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "satisfiesPzs": {
+                          "type": "bool",
+                          "id": 8,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY",
+                            "proto3_optional": true
+                          }
                         }
                       },
                       "nested": {
@@ -1018,6 +1033,10 @@
                         "cpuUtilizationPercent": {
                           "type": "int32",
                           "id": 2
+                        },
+                        "storageUtilizationGibPerNode": {
+                          "type": "int32",
+                          "id": 3
                         }
                       }
                     },
@@ -1363,6 +1382,34 @@
                             }
                           ]
                         },
+                        "UpdateTable": {
+                          "requestType": "UpdateTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{table.name=projects/*/instances/*/tables/*}",
+                            "(google.api.http).body": "table",
+                            "(google.api.method_signature)": "table,update_mask",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateTableMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "patch": "/v2/{table.name=projects/*/instances/*/tables/*}",
+                                "body": "table"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "table,update_mask"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Table",
+                                "metadata_type": "UpdateTableMetadata"
+                              }
+                            }
+                          ]
+                        },
                         "DeleteTable": {
                           "requestType": "DeleteTableRequest",
                           "responseType": "google.protobuf.Empty",
@@ -1378,6 +1425,34 @@
                             },
                             {
                               "(google.api.method_signature)": "name"
+                            }
+                          ]
+                        },
+                        "UndeleteTable": {
+                          "requestType": "UndeleteTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "UndeleteTableMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
+                                "body": "*"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "name"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Table",
+                                "metadata_type": "UndeleteTableMetadata"
+                              }
                             }
                           ]
                         },
@@ -1970,6 +2045,40 @@
                         }
                       }
                     },
+                    "UpdateTableRequest": {
+                      "fields": {
+                        "table": {
+                          "type": "Table",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
                     "DeleteTableRequest": {
                       "fields": {
                         "name": {
@@ -1979,6 +2088,34 @@
                             "(google.api.field_behavior)": "REQUIRED",
                             "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
+                        }
+                      }
+                    },
+                    "UndeleteTableRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                          }
+                        }
+                      }
+                    },
+                    "UndeleteTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
                         }
                       }
                     },
@@ -2388,6 +2525,10 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "deletionProtection": {
+                          "type": "bool",
+                          "id": 9
                         }
                       },
                       "nested": {
@@ -2695,12 +2836,12 @@
                 "csharp_namespace": "Google.Cloud.Bigtable.V2",
                 "go_package": "google.golang.org/genproto/googleapis/bigtable/v2;bigtable",
                 "java_multiple_files": true,
-                "java_outer_classname": "DataProto",
+                "java_outer_classname": "ResponseParamsProto",
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Instance",
-                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}"
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Table",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
               },
               "nested": {
                 "Bigtable": {
@@ -3003,6 +3144,19 @@
                     "rowsLimit": {
                       "type": "int64",
                       "id": 4
+                    },
+                    "requestStatsView": {
+                      "type": "RequestStatsView",
+                      "id": 6
+                    }
+                  },
+                  "nested": {
+                    "RequestStatsView": {
+                      "values": {
+                        "REQUEST_STATS_VIEW_UNSPECIFIED": 0,
+                        "REQUEST_STATS_NONE": 1,
+                        "REQUEST_STATS_FULL": 2
+                      }
                     }
                   }
                 },
@@ -3016,6 +3170,10 @@
                     "lastScannedRowKey": {
                       "type": "bytes",
                       "id": 2
+                    },
+                    "requestStats": {
+                      "type": "RequestStats",
+                      "id": 3
                     }
                   },
                   "nested": {
@@ -3735,6 +3893,91 @@
                       "id": 4
                     }
                   }
+                },
+                "ReadIterationStats": {
+                  "fields": {
+                    "rowsSeenCount": {
+                      "type": "int64",
+                      "id": 1
+                    },
+                    "rowsReturnedCount": {
+                      "type": "int64",
+                      "id": 2
+                    },
+                    "cellsSeenCount": {
+                      "type": "int64",
+                      "id": 3
+                    },
+                    "cellsReturnedCount": {
+                      "type": "int64",
+                      "id": 4
+                    }
+                  }
+                },
+                "RequestLatencyStats": {
+                  "fields": {
+                    "frontendServerLatency": {
+                      "type": "google.protobuf.Duration",
+                      "id": 1
+                    }
+                  }
+                },
+                "FullReadStatsView": {
+                  "fields": {
+                    "readIterationStats": {
+                      "type": "ReadIterationStats",
+                      "id": 1
+                    },
+                    "requestLatencyStats": {
+                      "type": "RequestLatencyStats",
+                      "id": 2
+                    }
+                  }
+                },
+                "RequestStats": {
+                  "oneofs": {
+                    "statsView": {
+                      "oneof": [
+                        "fullReadStatsView"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "fullReadStatsView": {
+                      "type": "FullReadStatsView",
+                      "id": 1
+                    }
+                  }
+                },
+                "ResponseParams": {
+                  "oneofs": {
+                    "_zoneId": {
+                      "oneof": [
+                        "zoneId"
+                      ]
+                    },
+                    "_clusterId": {
+                      "oneof": [
+                        "clusterId"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "zoneId": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "proto3_optional": true
+                      }
+                    },
+                    "clusterId": {
+                      "type": "string",
+                      "id": 2,
+                      "options": {
+                        "proto3_optional": true
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -4058,6 +4301,10 @@
                 "syntax": {
                   "type": "string",
                   "id": 12
+                },
+                "edition": {
+                  "type": "string",
+                  "id": 13
                 }
               }
             },
@@ -4586,6 +4833,13 @@
                     "default": false
                   }
                 },
+                "unverifiedLazy": {
+                  "type": "bool",
+                  "id": 15,
+                  "options": {
+                    "default": false
+                  }
+                },
                 "deprecated": {
                   "type": "bool",
                   "id": 3,
@@ -4878,6 +5132,19 @@
                     "end": {
                       "type": "int32",
                       "id": 4
+                    },
+                    "semantic": {
+                      "type": "Semantic",
+                      "id": 5
+                    }
+                  },
+                  "nested": {
+                    "Semantic": {
+                      "values": {
+                        "NONE": 0,
+                        "SET": 1,
+                        "ALIAS": 2
+                      }
                     }
                   }
                 }
@@ -4892,6 +5159,15 @@
                 "nanos": {
                   "type": "int32",
                   "id": 2
+                }
+              }
+            },
+            "FieldMask": {
+              "fields": {
+                "paths": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 1
                 }
               }
             },
@@ -4921,15 +5197,6 @@
             },
             "Empty": {
               "fields": {}
-            },
-            "FieldMask": {
-              "fields": {
-                "paths": {
-                  "rule": "repeated",
-                  "type": "string",
-                  "id": 1
-                }
-              }
             },
             "DoubleValue": {
               "fields": {
@@ -5089,6 +5356,10 @@
                       "options": {
                         "(google.api.field_behavior)": "REQUIRED"
                       }
+                    },
+                    "updateMask": {
+                      "type": "google.protobuf.FieldMask",
+                      "id": 3
                     }
                   }
                 },
@@ -5156,6 +5427,11 @@
                       "type": "Binding",
                       "id": 4
                     },
+                    "auditConfigs": {
+                      "rule": "repeated",
+                      "type": "AuditConfig",
+                      "id": 6
+                    },
                     "etag": {
                       "type": "bytes",
                       "id": 3
@@ -5176,6 +5452,42 @@
                     "condition": {
                       "type": "google.type.Expr",
                       "id": 3
+                    }
+                  }
+                },
+                "AuditConfig": {
+                  "fields": {
+                    "service": {
+                      "type": "string",
+                      "id": 1
+                    },
+                    "auditLogConfigs": {
+                      "rule": "repeated",
+                      "type": "AuditLogConfig",
+                      "id": 3
+                    }
+                  }
+                },
+                "AuditLogConfig": {
+                  "fields": {
+                    "logType": {
+                      "type": "LogType",
+                      "id": 1
+                    },
+                    "exemptedMembers": {
+                      "rule": "repeated",
+                      "type": "string",
+                      "id": 2
+                    }
+                  },
+                  "nested": {
+                    "LogType": {
+                      "values": {
+                        "LOG_TYPE_UNSPECIFIED": 0,
+                        "ADMIN_READ": 1,
+                        "DATA_WRITE": 2,
+                        "DATA_READ": 3
+                      }
                     }
                   }
                 },

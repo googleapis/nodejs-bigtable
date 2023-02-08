@@ -612,15 +612,9 @@ export class Bigtable {
         );
       }
       ClusterUtils.validateClusterMetadata(cluster);
-      const clusterClone = Object.assign({}, cluster);
-      if (clusterClone.location) {
-        clusterClone.location = Cluster.getLocation_(
-          this.projectId,
-          clusterClone.location
-        );
-      }
-      clusters[cluster.id!] = ClusterUtils.getClusterBaseConfig(
-        clusterClone,
+      clusters[cluster.id!] = ClusterUtils.getClusterBaseConfigWithFullLocation(
+        cluster,
+        this.projectId,
         undefined
       );
       Object.assign(clusters[cluster.id!], {
@@ -869,6 +863,7 @@ export class Bigtable {
         gaxStream = requestFn!();
         gaxStream
           .on('error', stream.destroy.bind(stream))
+          .on('metadata', stream.emit.bind(stream, 'metadata'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
@@ -884,6 +879,9 @@ export class Bigtable {
         gaxStream
           .on('error', (err: Error) => {
             stream.destroy(err);
+          })
+          .on('metadata', metadata => {
+            stream.emit('metadata', metadata);
           })
           .on('response', response => {
             stream.emit('response', response);
@@ -940,7 +938,7 @@ export class Bigtable {
  * that a callback is omitted.
  */
 promisifyAll(Bigtable, {
-  exclude: ['instance', 'operation', 'request'],
+  exclude: ['close', 'instance', 'operation', 'request'],
 });
 
 /**

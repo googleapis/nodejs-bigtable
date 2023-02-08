@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@
 function main(tableName) {
   // [START bigtable_v2_generated_Bigtable_ReadRows_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
@@ -36,8 +39,8 @@ function main(tableName) {
    */
   // const tableName = 'abc123'
   /**
-   *  This value specifies routing for replication. If not specified, the
-   *  "default" application profile will be used.
+   *  This value specifies routing for replication. This API only accepts the
+   *  empty value of app_profile_id.
    */
   // const appProfileId = 'abc123'
   /**
@@ -55,6 +58,10 @@ function main(tableName) {
    *  default (zero) is to return all results.
    */
   // const rowsLimit = 1234
+  /**
+   *  The view into RequestStats, as described above.
+   */
+  // const requestStatsView = {}
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;

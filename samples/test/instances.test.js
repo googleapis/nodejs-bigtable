@@ -29,7 +29,7 @@ const instance = bigtable.instance(instanceId);
 
 describe('instances', () => {
   before(async () => {
-    await instance.create({
+    const [, operation] = await instance.create({
       clusters: [
         {
           id: clusterId,
@@ -38,6 +38,7 @@ describe('instances', () => {
         },
       ],
     });
+    await operation.promise();
   });
 
   after(() => instance.delete());
