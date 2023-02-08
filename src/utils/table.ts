@@ -65,13 +65,14 @@ export class TableUtils {
     return this.lessThan(rhs, lhs);
   }
 
+  static lessThanOrEqualTo(lhs: string, rhs: string) {
+    return !this.greaterThan(lhs, rhs);
+  }
+
   static spliceRanges(
     ranges: PrefixRange[],
     lastRowKey: string | number | true | Uint8Array
   ): void {
-    const lessThanOrEqualTo = (lhs: string, rhs: string) =>
-      !this.greaterThan(lhs, rhs);
-
     // Readjust and/or remove ranges based on previous valid row reads.
     // Iterate backward since items may need to be removed.
     for (let index = ranges.length - 1; index >= 0; index--) {
@@ -84,7 +85,7 @@ export class TableUtils {
         : range.end;
       const startKeyIsRead =
         !startValue ||
-        lessThanOrEqualTo(startValue as string, lastRowKey as string);
+        this.lessThanOrEqualTo(startValue as string, lastRowKey as string);
       const endKeyIsNotRead =
         !endValue ||
         (endValue as Buffer).length === 0 ||
