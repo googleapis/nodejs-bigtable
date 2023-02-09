@@ -65,12 +65,15 @@ const readRows = ({clientMap}) =>
     const bigtable = clientMap.get(clientId);
     const table = getTableInfo(bigtable, tableName);
     const rowsOptions = getRowsOptions(readRowsRequest);
-    const [rows] = await table.getRows(rowsOptions);
-
-    return {
-      status: {code: grpc.status.OK, details: []},
-      row: rows.map(getRowResponse),
-    };
+    try {
+      const [rows] = await table.getRows(rowsOptions);
+      return {
+        status: {code: grpc.status.OK, details: []},
+        row: rows.map(getRowResponse),
+      };
+    } catch (e) {
+      return {status: e};
+    }
   });
 
 module.exports = readRows;

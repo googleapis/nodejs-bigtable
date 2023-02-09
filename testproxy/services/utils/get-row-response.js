@@ -20,7 +20,7 @@ const getRowResponse = ({id, data}) => ({
     columns: Object.entries(familyValue).map(([columnKey, columnValue]) => ({
       qualifier: Buffer.from(columnKey),
       cells: columnValue.map(({labels, timestamp, value}) => ({
-        timestamp_micros: timestamp,
+        timestampMicros: timestamp,
         value: Buffer.from(value),
         labels,
       })),

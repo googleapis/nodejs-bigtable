@@ -27,10 +27,11 @@ const readRow = ({clientMap}) =>
     const table = getTableInfo(bigtable, tableName);
     const row = table.row(rowKey);
     const res = await row.get(columns);
+    const firstRow = getRowResponse(res[0]);
 
     return {
       status: {code: grpc.status.OK, details: []},
-      row: res.map(getRowResponse),
+      row: firstRow,
     };
   });
 

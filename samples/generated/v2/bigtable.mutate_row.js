@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ function main(tableName, rowKey, mutations) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the mutation should be
-   *  applied. Values are of the form
+   *  Required. The unique name of the table to which the mutation should be applied.
+   *  Values are of the form
    *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
@@ -48,9 +48,9 @@ function main(tableName, rowKey, mutations) {
    */
   // const rowKey = 'Buffer.from('string')'
   /**
-   *  Required. Changes to be atomically applied to the specified row. Entries
-   *  are applied in order, meaning that earlier mutations can be masked by later
-   *  ones. Must contain at least one entry and at most 100000.
+   *  Required. Changes to be atomically applied to the specified row. Entries are applied
+   *  in order, meaning that earlier mutations can be masked by later ones.
+   *  Must contain at least one entry and at most 100000.
    */
   // const mutations = 1234
 

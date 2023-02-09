@@ -25,6 +25,8 @@ describe('backups', async () => {
   const TABLE_ID = generateId();
   const BACKUP_ID = generateId();
 
+  // The following `obtainTestInstance` line needs to be moved into `before`.
+  // This needs to happen when we get the backup tests running again.
   const instance = await obtainTestInstance();
 
   const INSTANCE_ID = instance.id;

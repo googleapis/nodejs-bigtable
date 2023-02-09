@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -10613,8 +10613,7 @@ export namespace google {
                 enum RequestStatsView {
                     REQUEST_STATS_VIEW_UNSPECIFIED = 0,
                     REQUEST_STATS_NONE = 1,
-                    REQUEST_STATS_EFFICIENCY = 2,
-                    REQUEST_STATS_FULL = 3
+                    REQUEST_STATS_FULL = 2
                 }
             }
 
@@ -14496,121 +14495,115 @@ export namespace google {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
-            /** Properties of a ReadIteratorStats. */
-            interface IReadIteratorStats {
+            /** Properties of a ReadIterationStats. */
+            interface IReadIterationStats {
 
-                /** ReadIteratorStats rowsSeenCount */
+                /** ReadIterationStats rowsSeenCount */
                 rowsSeenCount?: (number|Long|string|null);
 
-                /** ReadIteratorStats rowsReturnedCount */
+                /** ReadIterationStats rowsReturnedCount */
                 rowsReturnedCount?: (number|Long|string|null);
 
-                /** ReadIteratorStats cellsSeenCount */
+                /** ReadIterationStats cellsSeenCount */
                 cellsSeenCount?: (number|Long|string|null);
 
-                /** ReadIteratorStats cellsReturnedCount */
+                /** ReadIterationStats cellsReturnedCount */
                 cellsReturnedCount?: (number|Long|string|null);
-
-                /** ReadIteratorStats deletesSeenCount */
-                deletesSeenCount?: (number|Long|string|null);
             }
 
-            /** Represents a ReadIteratorStats. */
-            class ReadIteratorStats implements IReadIteratorStats {
+            /** Represents a ReadIterationStats. */
+            class ReadIterationStats implements IReadIterationStats {
 
                 /**
-                 * Constructs a new ReadIteratorStats.
+                 * Constructs a new ReadIterationStats.
                  * @param [properties] Properties to set
                  */
-                constructor(properties?: google.bigtable.v2.IReadIteratorStats);
+                constructor(properties?: google.bigtable.v2.IReadIterationStats);
 
-                /** ReadIteratorStats rowsSeenCount. */
+                /** ReadIterationStats rowsSeenCount. */
                 public rowsSeenCount: (number|Long|string);
 
-                /** ReadIteratorStats rowsReturnedCount. */
+                /** ReadIterationStats rowsReturnedCount. */
                 public rowsReturnedCount: (number|Long|string);
 
-                /** ReadIteratorStats cellsSeenCount. */
+                /** ReadIterationStats cellsSeenCount. */
                 public cellsSeenCount: (number|Long|string);
 
-                /** ReadIteratorStats cellsReturnedCount. */
+                /** ReadIterationStats cellsReturnedCount. */
                 public cellsReturnedCount: (number|Long|string);
 
-                /** ReadIteratorStats deletesSeenCount. */
-                public deletesSeenCount: (number|Long|string);
-
                 /**
-                 * Creates a new ReadIteratorStats instance using the specified properties.
+                 * Creates a new ReadIterationStats instance using the specified properties.
                  * @param [properties] Properties to set
-                 * @returns ReadIteratorStats instance
+                 * @returns ReadIterationStats instance
                  */
-                public static create(properties?: google.bigtable.v2.IReadIteratorStats): google.bigtable.v2.ReadIteratorStats;
+                public static create(properties?: google.bigtable.v2.IReadIterationStats): google.bigtable.v2.ReadIterationStats;
 
                 /**
-                 * Encodes the specified ReadIteratorStats message. Does not implicitly {@link google.bigtable.v2.ReadIteratorStats.verify|verify} messages.
-                 * @param message ReadIteratorStats message or plain object to encode
+                 * Encodes the specified ReadIterationStats message. Does not implicitly {@link google.bigtable.v2.ReadIterationStats.verify|verify} messages.
+                 * @param message ReadIterationStats message or plain object to encode
                  * @param [writer] Writer to encode to
                  * @returns Writer
                  */
-                public static encode(message: google.bigtable.v2.IReadIteratorStats, writer?: $protobuf.Writer): $protobuf.Writer;
+                public static encode(message: google.bigtable.v2.IReadIterationStats, writer?: $protobuf.Writer): $protobuf.Writer;
 
                 /**
-                 * Encodes the specified ReadIteratorStats message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadIteratorStats.verify|verify} messages.
-                 * @param message ReadIteratorStats message or plain object to encode
+                 * Encodes the specified ReadIterationStats message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadIterationStats.verify|verify} messages.
+                 * @param message ReadIterationStats message or plain object to encode
                  * @param [writer] Writer to encode to
                  * @returns Writer
                  */
-                public static encodeDelimited(message: google.bigtable.v2.IReadIteratorStats, writer?: $protobuf.Writer): $protobuf.Writer;
+                public static encodeDelimited(message: google.bigtable.v2.IReadIterationStats, writer?: $protobuf.Writer): $protobuf.Writer;
 
                 /**
-                 * Decodes a ReadIteratorStats message from the specified reader or buffer.
+                 * Decodes a ReadIterationStats message from the specified reader or buffer.
                  * @param reader Reader or buffer to decode from
                  * @param [length] Message length if known beforehand
-                 * @returns ReadIteratorStats
+                 * @returns ReadIterationStats
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadIteratorStats;
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadIterationStats;
 
                 /**
-                 * Decodes a ReadIteratorStats message from the specified reader or buffer, length delimited.
+                 * Decodes a ReadIterationStats message from the specified reader or buffer, length delimited.
                  * @param reader Reader or buffer to decode from
-                 * @returns ReadIteratorStats
+                 * @returns ReadIterationStats
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadIteratorStats;
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadIterationStats;
 
                 /**
-                 * Verifies a ReadIteratorStats message.
+                 * Verifies a ReadIterationStats message.
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
                 public static verify(message: { [k: string]: any }): (string|null);
 
                 /**
-                 * Creates a ReadIteratorStats message from a plain object. Also converts values to their respective internal types.
+                 * Creates a ReadIterationStats message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
-                 * @returns ReadIteratorStats
+                 * @returns ReadIterationStats
                  */
-                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadIteratorStats;
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadIterationStats;
 
                 /**
-                 * Creates a plain object from a ReadIteratorStats message. Also converts values to other types if specified.
-                 * @param message ReadIteratorStats
+                 * Creates a plain object from a ReadIterationStats message. Also converts values to other types if specified.
+                 * @param message ReadIterationStats
                  * @param [options] Conversion options
                  * @returns Plain object
                  */
-                public static toObject(message: google.bigtable.v2.ReadIteratorStats, options?: $protobuf.IConversionOptions): { [k: string]: any };
+                public static toObject(message: google.bigtable.v2.ReadIterationStats, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
                 /**
-                 * Converts this ReadIteratorStats to JSON.
+                 * Converts this ReadIterationStats to JSON.
                  * @returns JSON object
                  */
                 public toJSON(): { [k: string]: any };
 
                 /**
-                 * Gets the default type url for ReadIteratorStats
+                 * Gets the default type url for ReadIterationStats
                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                  * @returns The default type url
                  */
@@ -14714,206 +14707,103 @@ export namespace google {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
-            /** Properties of a ReadEfficiencyStats. */
-            interface IReadEfficiencyStats {
+            /** Properties of a FullReadStatsView. */
+            interface IFullReadStatsView {
 
-                /** ReadEfficiencyStats readIteratorStats */
-                readIteratorStats?: (google.bigtable.v2.IReadIteratorStats|null);
+                /** FullReadStatsView readIterationStats */
+                readIterationStats?: (google.bigtable.v2.IReadIterationStats|null);
 
-                /** ReadEfficiencyStats requestLatencyStats */
+                /** FullReadStatsView requestLatencyStats */
                 requestLatencyStats?: (google.bigtable.v2.IRequestLatencyStats|null);
             }
 
-            /** Represents a ReadEfficiencyStats. */
-            class ReadEfficiencyStats implements IReadEfficiencyStats {
+            /** Represents a FullReadStatsView. */
+            class FullReadStatsView implements IFullReadStatsView {
 
                 /**
-                 * Constructs a new ReadEfficiencyStats.
+                 * Constructs a new FullReadStatsView.
                  * @param [properties] Properties to set
                  */
-                constructor(properties?: google.bigtable.v2.IReadEfficiencyStats);
+                constructor(properties?: google.bigtable.v2.IFullReadStatsView);
 
-                /** ReadEfficiencyStats readIteratorStats. */
-                public readIteratorStats?: (google.bigtable.v2.IReadIteratorStats|null);
+                /** FullReadStatsView readIterationStats. */
+                public readIterationStats?: (google.bigtable.v2.IReadIterationStats|null);
 
-                /** ReadEfficiencyStats requestLatencyStats. */
+                /** FullReadStatsView requestLatencyStats. */
                 public requestLatencyStats?: (google.bigtable.v2.IRequestLatencyStats|null);
 
                 /**
-                 * Creates a new ReadEfficiencyStats instance using the specified properties.
+                 * Creates a new FullReadStatsView instance using the specified properties.
                  * @param [properties] Properties to set
-                 * @returns ReadEfficiencyStats instance
+                 * @returns FullReadStatsView instance
                  */
-                public static create(properties?: google.bigtable.v2.IReadEfficiencyStats): google.bigtable.v2.ReadEfficiencyStats;
+                public static create(properties?: google.bigtable.v2.IFullReadStatsView): google.bigtable.v2.FullReadStatsView;
 
                 /**
-                 * Encodes the specified ReadEfficiencyStats message. Does not implicitly {@link google.bigtable.v2.ReadEfficiencyStats.verify|verify} messages.
-                 * @param message ReadEfficiencyStats message or plain object to encode
+                 * Encodes the specified FullReadStatsView message. Does not implicitly {@link google.bigtable.v2.FullReadStatsView.verify|verify} messages.
+                 * @param message FullReadStatsView message or plain object to encode
                  * @param [writer] Writer to encode to
                  * @returns Writer
                  */
-                public static encode(message: google.bigtable.v2.IReadEfficiencyStats, writer?: $protobuf.Writer): $protobuf.Writer;
+                public static encode(message: google.bigtable.v2.IFullReadStatsView, writer?: $protobuf.Writer): $protobuf.Writer;
 
                 /**
-                 * Encodes the specified ReadEfficiencyStats message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadEfficiencyStats.verify|verify} messages.
-                 * @param message ReadEfficiencyStats message or plain object to encode
+                 * Encodes the specified FullReadStatsView message, length delimited. Does not implicitly {@link google.bigtable.v2.FullReadStatsView.verify|verify} messages.
+                 * @param message FullReadStatsView message or plain object to encode
                  * @param [writer] Writer to encode to
                  * @returns Writer
                  */
-                public static encodeDelimited(message: google.bigtable.v2.IReadEfficiencyStats, writer?: $protobuf.Writer): $protobuf.Writer;
+                public static encodeDelimited(message: google.bigtable.v2.IFullReadStatsView, writer?: $protobuf.Writer): $protobuf.Writer;
 
                 /**
-                 * Decodes a ReadEfficiencyStats message from the specified reader or buffer.
+                 * Decodes a FullReadStatsView message from the specified reader or buffer.
                  * @param reader Reader or buffer to decode from
                  * @param [length] Message length if known beforehand
-                 * @returns ReadEfficiencyStats
+                 * @returns FullReadStatsView
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadEfficiencyStats;
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.FullReadStatsView;
 
                 /**
-                 * Decodes a ReadEfficiencyStats message from the specified reader or buffer, length delimited.
+                 * Decodes a FullReadStatsView message from the specified reader or buffer, length delimited.
                  * @param reader Reader or buffer to decode from
-                 * @returns ReadEfficiencyStats
+                 * @returns FullReadStatsView
                  * @throws {Error} If the payload is not a reader or valid buffer
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadEfficiencyStats;
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.FullReadStatsView;
 
                 /**
-                 * Verifies a ReadEfficiencyStats message.
+                 * Verifies a FullReadStatsView message.
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
                 public static verify(message: { [k: string]: any }): (string|null);
 
                 /**
-                 * Creates a ReadEfficiencyStats message from a plain object. Also converts values to their respective internal types.
+                 * Creates a FullReadStatsView message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
-                 * @returns ReadEfficiencyStats
+                 * @returns FullReadStatsView
                  */
-                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadEfficiencyStats;
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.FullReadStatsView;
 
                 /**
-                 * Creates a plain object from a ReadEfficiencyStats message. Also converts values to other types if specified.
-                 * @param message ReadEfficiencyStats
+                 * Creates a plain object from a FullReadStatsView message. Also converts values to other types if specified.
+                 * @param message FullReadStatsView
                  * @param [options] Conversion options
                  * @returns Plain object
                  */
-                public static toObject(message: google.bigtable.v2.ReadEfficiencyStats, options?: $protobuf.IConversionOptions): { [k: string]: any };
+                public static toObject(message: google.bigtable.v2.FullReadStatsView, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
                 /**
-                 * Converts this ReadEfficiencyStats to JSON.
+                 * Converts this FullReadStatsView to JSON.
                  * @returns JSON object
                  */
                 public toJSON(): { [k: string]: any };
 
                 /**
-                 * Gets the default type url for ReadEfficiencyStats
-                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                 * @returns The default type url
-                 */
-                public static getTypeUrl(typeUrlPrefix?: string): string;
-            }
-
-            /** Properties of an AllReadStats. */
-            interface IAllReadStats {
-
-                /** AllReadStats readIteratorStats */
-                readIteratorStats?: (google.bigtable.v2.IReadIteratorStats|null);
-
-                /** AllReadStats requestLatencyStats */
-                requestLatencyStats?: (google.bigtable.v2.IRequestLatencyStats|null);
-            }
-
-            /** Represents an AllReadStats. */
-            class AllReadStats implements IAllReadStats {
-
-                /**
-                 * Constructs a new AllReadStats.
-                 * @param [properties] Properties to set
-                 */
-                constructor(properties?: google.bigtable.v2.IAllReadStats);
-
-                /** AllReadStats readIteratorStats. */
-                public readIteratorStats?: (google.bigtable.v2.IReadIteratorStats|null);
-
-                /** AllReadStats requestLatencyStats. */
-                public requestLatencyStats?: (google.bigtable.v2.IRequestLatencyStats|null);
-
-                /**
-                 * Creates a new AllReadStats instance using the specified properties.
-                 * @param [properties] Properties to set
-                 * @returns AllReadStats instance
-                 */
-                public static create(properties?: google.bigtable.v2.IAllReadStats): google.bigtable.v2.AllReadStats;
-
-                /**
-                 * Encodes the specified AllReadStats message. Does not implicitly {@link google.bigtable.v2.AllReadStats.verify|verify} messages.
-                 * @param message AllReadStats message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encode(message: google.bigtable.v2.IAllReadStats, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Encodes the specified AllReadStats message, length delimited. Does not implicitly {@link google.bigtable.v2.AllReadStats.verify|verify} messages.
-                 * @param message AllReadStats message or plain object to encode
-                 * @param [writer] Writer to encode to
-                 * @returns Writer
-                 */
-                public static encodeDelimited(message: google.bigtable.v2.IAllReadStats, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                /**
-                 * Decodes an AllReadStats message from the specified reader or buffer.
-                 * @param reader Reader or buffer to decode from
-                 * @param [length] Message length if known beforehand
-                 * @returns AllReadStats
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.AllReadStats;
-
-                /**
-                 * Decodes an AllReadStats message from the specified reader or buffer, length delimited.
-                 * @param reader Reader or buffer to decode from
-                 * @returns AllReadStats
-                 * @throws {Error} If the payload is not a reader or valid buffer
-                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                 */
-                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.AllReadStats;
-
-                /**
-                 * Verifies an AllReadStats message.
-                 * @param message Plain object to verify
-                 * @returns `null` if valid, otherwise the reason why it is not
-                 */
-                public static verify(message: { [k: string]: any }): (string|null);
-
-                /**
-                 * Creates an AllReadStats message from a plain object. Also converts values to their respective internal types.
-                 * @param object Plain object
-                 * @returns AllReadStats
-                 */
-                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.AllReadStats;
-
-                /**
-                 * Creates a plain object from an AllReadStats message. Also converts values to other types if specified.
-                 * @param message AllReadStats
-                 * @param [options] Conversion options
-                 * @returns Plain object
-                 */
-                public static toObject(message: google.bigtable.v2.AllReadStats, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                /**
-                 * Converts this AllReadStats to JSON.
-                 * @returns JSON object
-                 */
-                public toJSON(): { [k: string]: any };
-
-                /**
-                 * Gets the default type url for AllReadStats
+                 * Gets the default type url for FullReadStatsView
                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                  * @returns The default type url
                  */
@@ -14923,11 +14813,8 @@ export namespace google {
             /** Properties of a RequestStats. */
             interface IRequestStats {
 
-                /** RequestStats readEfficiencyStats */
-                readEfficiencyStats?: (google.bigtable.v2.IReadEfficiencyStats|null);
-
-                /** RequestStats allReadStats */
-                allReadStats?: (google.bigtable.v2.IAllReadStats|null);
+                /** RequestStats fullReadStatsView */
+                fullReadStatsView?: (google.bigtable.v2.IFullReadStatsView|null);
             }
 
             /** Represents a RequestStats. */
@@ -14939,14 +14826,11 @@ export namespace google {
                  */
                 constructor(properties?: google.bigtable.v2.IRequestStats);
 
-                /** RequestStats readEfficiencyStats. */
-                public readEfficiencyStats?: (google.bigtable.v2.IReadEfficiencyStats|null);
+                /** RequestStats fullReadStatsView. */
+                public fullReadStatsView?: (google.bigtable.v2.IFullReadStatsView|null);
 
-                /** RequestStats allReadStats. */
-                public allReadStats?: (google.bigtable.v2.IAllReadStats|null);
-
-                /** RequestStats stats. */
-                public stats?: ("readEfficiencyStats"|"allReadStats");
+                /** RequestStats statsView. */
+                public statsView?: "fullReadStatsView";
 
                 /**
                  * Creates a new RequestStats instance using the specified properties.
