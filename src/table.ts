@@ -786,18 +786,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
-        // TODO: lhs and rhs type shouldn't be string, it could be
-        // string, number, Uint8Array, boolean. Fix the type
-        // and clean up the casting.
-        const lessThan = (lhs: string, rhs: string) => {
-          const lhsBytes = Mutation.convertToBytes(lhs);
-          const rhsBytes = Mutation.convertToBytes(rhs);
-          return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
-        };
-        const greaterThan = (lhs: string, rhs: string) => lessThan(rhs, lhs);
-        const lessThanOrEqualTo = (lhs: string, rhs: string) =>
-          !greaterThan(lhs, rhs);
-
         // Readjust and/or remove ranges based on previous valid row reads.
         // Iterate backward since items may need to be removed.
         for (let index = ranges.length - 1; index >= 0; index--) {
@@ -810,11 +798,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             : range.end;
           const startKeyIsRead =
             !startValue ||
-            lessThanOrEqualTo(startValue as string, lastRowKey as string);
+            TableUtils.lessThanOrEqualTo(
+              startValue as string,
+              lastRowKey as string
+            );
           const endKeyIsNotRead =
             !endValue ||
             (endValue as Buffer).length === 0 ||
-            lessThan(lastRowKey as string, endValue as string);
+            TableUtils.lessThan(lastRowKey as string, endValue as string);
           if (startKeyIsRead) {
             if (endKeyIsNotRead) {
               // EndKey is not read, reset the range to start from lastRowKey open
@@ -831,7 +822,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
         // Remove rowKeys already read.
         rowKeys = rowKeys.filter(rowKey =>
-          greaterThan(rowKey, lastRowKey as string)
+          TableUtils.greaterThan(rowKey, lastRowKey as string)
         );
 
         // If there was a row limit in the original request and

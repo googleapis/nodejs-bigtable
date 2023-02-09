@@ -50,6 +50,8 @@ async function getStaleInstances() {
  * the result.
  */
 async function obtainTestInstance() {
+  // Note: This function should only be called inside a `before` or `it` block.
+  // Note: Otherwise it will try to create an instance more than once.
   if (!obtainPromise) {
     obtainPromise = createTestInstance();
   }
