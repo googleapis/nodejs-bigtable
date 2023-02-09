@@ -33,7 +33,8 @@ function main(tableName, entries) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the mutations should be applied.
+   *  Required. The unique name of the table to which the mutations should be
+   *  applied.
    */
   // const tableName = 'abc123'
   /**

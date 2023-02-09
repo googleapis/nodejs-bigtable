@@ -178,7 +178,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 73,
+          "end": 74,
           "type": "FULL"
         }
       ],
@@ -286,7 +286,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 63,
+          "end": 64,
           "type": "FULL"
         }
       ],
@@ -364,6 +364,114 @@
         "method": {
           "shortName": "ReadModifyWriteRow",
           "fullName": "google.bigtable.v2.Bigtable.ReadModifyWriteRow",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_GenerateInitialChangeStreamPartitions_async",
+      "title": "bigtable generateInitialChangeStreamPartitions Sample",
+      "origin": "API_DEFINITION",
+      "description": " NOTE: This API is intended to be used by Apache Beam BigtableIO. Returns the current list of partitions that make up the table's change stream. The union of partitions will cover the entire keyspace. Partitions can be read with `ReadChangeStream`.",
+      "canonical": false,
+      "file": "bigtable.generate_initial_change_stream_partitions.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 29,
+          "end": 68,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "GenerateInitialChangeStreamPartitions",
+        "fullName": "google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "GenerateInitialChangeStreamPartitions",
+          "fullName": "google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitions",
+          "service": {
+            "shortName": "Bigtable",
+            "fullName": "google.bigtable.v2.Bigtable"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtable_v2_generated_Bigtable_ReadChangeStream_async",
+      "title": "bigtable readChangeStream Sample",
+      "origin": "API_DEFINITION",
+      "description": " NOTE: This API is intended to be used by Apache Beam BigtableIO. Reads changes from a table's change stream. Changes will reflect both user-initiated mutations and mutations that are caused by garbage collection.",
+      "canonical": false,
+      "file": "bigtable.read_change_stream.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 29,
+          "end": 102,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "ReadChangeStream",
+        "fullName": "google.bigtable.v2.Bigtable.ReadChangeStream",
+        "async": true,
+        "parameters": [
+          {
+            "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "app_profile_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "partition",
+            "type": ".google.bigtable.v2.StreamPartition"
+          },
+          {
+            "name": "start_time",
+            "type": ".google.protobuf.Timestamp"
+          },
+          {
+            "name": "continuation_tokens",
+            "type": ".google.bigtable.v2.StreamContinuationTokens"
+          },
+          {
+            "name": "end_time",
+            "type": ".google.protobuf.Timestamp"
+          },
+          {
+            "name": "heartbeat_duration",
+            "type": ".google.protobuf.Duration"
+          }
+        ],
+        "resultType": ".google.bigtable.v2.ReadChangeStreamResponse",
+        "client": {
+          "shortName": "BigtableClient",
+          "fullName": "google.bigtable.v2.BigtableClient"
+        },
+        "method": {
+          "shortName": "ReadChangeStream",
+          "fullName": "google.bigtable.v2.Bigtable.ReadChangeStream",
           "service": {
             "shortName": "Bigtable",
             "fullName": "google.bigtable.v2.Bigtable"
