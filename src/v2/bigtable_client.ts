@@ -199,6 +199,15 @@ export class BigtableClient {
         this._gaxModule.StreamType.SERVER_STREAMING,
         opts.fallback === 'rest'
       ),
+      generateInitialChangeStreamPartitions:
+        new this._gaxModule.StreamDescriptor(
+          this._gaxModule.StreamType.SERVER_STREAMING,
+          opts.fallback === 'rest'
+        ),
+      readChangeStream: new this._gaxModule.StreamDescriptor(
+        this._gaxModule.StreamType.SERVER_STREAMING,
+        opts.fallback === 'rest'
+      ),
     };
 
     // Put together the default options sent with requests.
@@ -258,6 +267,8 @@ export class BigtableClient {
       'checkAndMutateRow',
       'pingAndWarm',
       'readModifyWriteRow',
+      'generateInitialChangeStreamPartitions',
+      'readChangeStream',
     ];
     for (const methodName of bigtableStubMethods) {
       const callPromise = this.bigtableStub.then(
@@ -367,8 +378,8 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the mutation should be applied.
-   *   Values are of the form
+   *   Required. The unique name of the table to which the mutation should be
+   *   applied. Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
@@ -376,9 +387,9 @@ export class BigtableClient {
    * @param {Buffer} request.rowKey
    *   Required. The key of the row to which the mutation should be applied.
    * @param {number[]} request.mutations
-   *   Required. Changes to be atomically applied to the specified row. Entries are applied
-   *   in order, meaning that earlier mutations can be masked by later ones.
-   *   Must contain at least one entry and at most 100000.
+   *   Required. Changes to be atomically applied to the specified row. Entries
+   *   are applied in order, meaning that earlier mutations can be masked by later
+   *   ones. Must contain at least one entry and at most 100000.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -484,15 +495,15 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the conditional mutation should be
-   *   applied.
-   *   Values are of the form
+   *   Required. The unique name of the table to which the conditional mutation
+   *   should be applied. Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Buffer} request.rowKey
-   *   Required. The key of the row to which the conditional mutation should be applied.
+   *   Required. The key of the row to which the conditional mutation should be
+   *   applied.
    * @param {google.bigtable.v2.RowFilter} request.predicateFilter
    *   The filter to be applied to the contents of the specified row. Depending
    *   on whether or not any results are yielded, either `true_mutations` or
@@ -618,8 +629,9 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the instance to check permissions for as well as
-   *   respond. Values are of the form `projects/<project>/instances/<instance>`.
+   *   Required. The unique name of the instance to check permissions for as well
+   *   as respond. Values are of the form
+   *   `projects/<project>/instances/<instance>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
@@ -730,19 +742,19 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the read/modify/write rules should be
-   *   applied.
-   *   Values are of the form
+   *   Required. The unique name of the table to which the read/modify/write rules
+   *   should be applied. Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
    * @param {Buffer} request.rowKey
-   *   Required. The key of the row to which the read/modify/write rules should be applied.
+   *   Required. The key of the row to which the read/modify/write rules should be
+   *   applied.
    * @param {number[]} request.rules
-   *   Required. Rules specifying how the specified row's contents are to be transformed
-   *   into writes. Entries are applied in order, meaning that earlier rules will
-   *   affect the results of later ones.
+   *   Required. Rules specifying how the specified row's contents are to be
+   *   transformed into writes. Entries are applied in order, meaning that earlier
+   *   rules will affect the results of later ones.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -993,7 +1005,8 @@ export class BigtableClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.tableName
-   *   Required. The unique name of the table to which the mutations should be applied.
+   *   Required. The unique name of the table to which the mutations should be
+   *   applied.
    * @param {string} request.appProfileId
    *   This value specifies routing for replication. If not specified, the
    *   "default" application profile will be used.
@@ -1050,6 +1063,116 @@ export class BigtableClient {
       this._gaxModule.routingHeader.fromParams(routingParameter);
     this.initialize();
     return this.innerApiCalls.mutateRows(request, options);
+  }
+
+  /**
+   * NOTE: This API is intended to be used by Apache Beam BigtableIO.
+   * Returns the current list of partitions that make up the table's
+   * change stream. The union of partitions will cover the entire keyspace.
+   * Partitions can be read with `ReadChangeStream`.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table from which to get change stream
+   *   partitions. Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   *   Change streaming must be enabled on the table.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   *   Single cluster routing must be configured on the profile.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits [GenerateInitialChangeStreamPartitionsResponse]{@link google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse} on 'data' event.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
+   *   for more details and examples.
+   */
+  generateInitialChangeStreamPartitions(
+    request?: protos.google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest,
+    options?: CallOptions
+  ): gax.CancellableStream {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        table_name: request.tableName ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.generateInitialChangeStreamPartitions(
+      request,
+      options
+    );
+  }
+
+  /**
+   * NOTE: This API is intended to be used by Apache Beam BigtableIO.
+   * Reads changes from a table's change stream. Changes will
+   * reflect both user-initiated mutations and mutations that are caused by
+   * garbage collection.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.tableName
+   *   Required. The unique name of the table from which to read a change stream.
+   *   Values are of the form
+   *   `projects/<project>/instances/<instance>/tables/<table>`.
+   *   Change streaming must be enabled on the table.
+   * @param {string} request.appProfileId
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
+   *   Single cluster routing must be configured on the profile.
+   * @param {google.bigtable.v2.StreamPartition} request.partition
+   *   The partition to read changes from.
+   * @param {google.protobuf.Timestamp} request.startTime
+   *   Start reading the stream at the specified timestamp. This timestamp must
+   *   be within the change stream retention period, less than or equal to the
+   *   current time, and after change stream creation, whichever is greater.
+   *   This value is inclusive and will be truncated to microsecond granularity.
+   * @param {google.bigtable.v2.StreamContinuationTokens} request.continuationTokens
+   *   Tokens that describe how to resume reading a stream where reading
+   *   previously left off. If specified, changes will be read starting at the
+   *   the position. Tokens are delivered on the stream as part of `Heartbeat`
+   *   and `CloseStream` messages.
+   *
+   *   If a single token is provided, the token’s partition must exactly match
+   *   the request’s partition. If multiple tokens are provided, as in the case
+   *   of a partition merge, the union of the token partitions must exactly
+   *   cover the request’s partition. Otherwise, INVALID_ARGUMENT will be
+   *   returned.
+   * @param {google.protobuf.Timestamp} request.endTime
+   *   If specified, OK will be returned when the stream advances beyond
+   *   this time. Otherwise, changes will be continuously delivered on the stream.
+   *   This value is inclusive and will be truncated to microsecond granularity.
+   * @param {google.protobuf.Duration} request.heartbeatDuration
+   *   If specified, the duration between `Heartbeat` messages on the stream.
+   *   Otherwise, defaults to 5 seconds.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits [ReadChangeStreamResponse]{@link google.bigtable.v2.ReadChangeStreamResponse} on 'data' event.
+   *   Please see the
+   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
+   *   for more details and examples.
+   */
+  readChangeStream(
+    request?: protos.google.bigtable.v2.IReadChangeStreamRequest,
+    options?: CallOptions
+  ): gax.CancellableStream {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        table_name: request.tableName ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.readChangeStream(request, options);
   }
 
   // --------------------
