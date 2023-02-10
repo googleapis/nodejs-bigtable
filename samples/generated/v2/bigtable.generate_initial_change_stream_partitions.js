@@ -24,8 +24,8 @@
  */ 
 'use strict';
 
-function main(tableName, entries) {
-  // [START bigtable_v2_generated_Bigtable_MutateRows_async]
+function main(tableName) {
+  // [START bigtable_v2_generated_Bigtable_GenerateInitialChangeStreamPartitions_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
    * It will require modifications to work.
@@ -33,23 +33,18 @@ function main(tableName, entries) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the mutations should be
-   *  applied.
+   *  Required. The unique name of the table from which to get change stream
+   *  partitions. Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>`.
+   *  Change streaming must be enabled on the table.
    */
   // const tableName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
+   *  Single cluster routing must be configured on the profile.
    */
   // const appProfileId = 'abc123'
-  /**
-   *  Required. The row keys and corresponding mutations to be applied in bulk.
-   *  Each entry is applied as an atomic mutation, but the entries may be
-   *  applied in arbitrary order (even between entries for the same row).
-   *  At least one entry must be specified, and in total the entries can
-   *  contain at most 100000 mutations.
-   */
-  // const entries = 1234
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;
@@ -57,22 +52,21 @@ function main(tableName, entries) {
   // Instantiates a client
   const bigtableClient = new BigtableClient();
 
-  async function callMutateRows() {
+  async function callGenerateInitialChangeStreamPartitions() {
     // Construct request
     const request = {
       tableName,
-      entries,
     };
 
     // Run request
-    const stream = await bigtableClient.mutateRows(request);
+    const stream = await bigtableClient.generateInitialChangeStreamPartitions(request);
     stream.on('data', (response) => { console.log(response) });
     stream.on('error', (err) => { throw(err) });
     stream.on('end', () => { /* API call completed */ });
   }
 
-  callMutateRows();
-  // [END bigtable_v2_generated_Bigtable_MutateRows_async]
+  callGenerateInitialChangeStreamPartitions();
+  // [END bigtable_v2_generated_Bigtable_GenerateInitialChangeStreamPartitions_async]
 }
 
 process.on('unhandledRejection', err => {
