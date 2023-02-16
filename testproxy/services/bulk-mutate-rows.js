@@ -39,7 +39,7 @@ const bulkMutateRows = ({clientMap}) =>
     } catch (error) {
       if (error.name === 'PartialFailureError') {
         return {
-          status: {code: grpc.status.OK, message: error.message},
+          status: error,
           entry: Array.from(error.errors.entries()).map(([index, entry]) => ({
             index: index + 1,
             status: entry,
