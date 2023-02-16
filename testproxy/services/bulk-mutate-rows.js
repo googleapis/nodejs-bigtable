@@ -14,38 +14,44 @@
 'use strict';
 
 const grpc = require('@grpc/grpc-js');
-const {BigtableClient} = require('../../build/src/index.js').v2;
 
 const normalizeCallback = require('./utils/normalize-callback.js');
+const getTableInfo = require('./utils/get-table-info');
 
 const bulkMutateRows = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {request: mutateRequest} = request;
-    const {appProfileId, entries, tableName} = mutateRequest;
+    const {entries, tableName} = mutateRequest;
 
     const {clientId} = request;
     const bigtable = clientMap.get(clientId);
-    const client = new BigtableClient(bigtable.options.BigtableClient);
-    const result = await new Promise((res, rej) => {
-      const response = {entries: []};
-      client
-        .mutateRows({
-          appProfileId,
-          entries,
-          tableName,
-        })
-        .on('data', data => {
-          response.entries = [...data.entries];
-        })
-        .on('error', rej)
-        .on('end', () => res(response));
-    });
-
-    return {
-      status: {code: grpc.status.OK, details: []},
-      entry: result.entries,
-    };
+    const table = getTableInfo(bigtable, tableName);
+    try {
+      const mutateOptions = {
+        rawMutation: true,
+      };
+      await table.mutate(entries, mutateOptions);
+      return {
+        status: {code: grpc.status.OK, details: []},
+        entry: [],
+      };
+    } catch (error) {
+      if (error.name === 'PartialFailureError') {
+        return {
+          status: error,
+          entry: Array.from(error.errors.entries()).map(([index, entry]) => ({
+            index: index + 1,
+            status: entry,
+          })),
+        };
+      } else {
+        return {
+          status: error,
+          entry: [],
+        };
+      }
+    }
   });
 
 module.exports = bulkMutateRows;

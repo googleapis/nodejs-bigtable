@@ -25,7 +25,7 @@ const GAX_PROTOS_DIR = resolve(
   '../protos'
 );
 const PROTOS_DIR = resolve(__dirname, '../protos');
-const PROTO_PATH = resolve(PROTOS_DIR, 'v2_test_proxy.proto');
+const PROTO_PATH = resolve(PROTOS_DIR, 'test_proxy.proto');
 const port = parseInt(process.env.PORT, 10) || 9999;
 
 async function loadDescriptor() {
@@ -56,7 +56,8 @@ function startServer(service) {
 
 async function main() {
   const descriptor = await loadDescriptor();
-  const {service} = descriptor.bigtable.client.test.CloudBigtableV2TestProxy;
+  const {service} =
+    descriptor.google.bigtable.testproxy.CloudBigtableV2TestProxy;
   await startServer(service);
 }
 
