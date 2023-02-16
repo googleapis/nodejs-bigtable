@@ -3116,6 +3116,54 @@
                           "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                         }
                       ]
+                    },
+                    "GenerateInitialChangeStreamPartitions": {
+                      "requestType": "GenerateInitialChangeStreamPartitionsRequest",
+                      "responseType": "GenerateInitialChangeStreamPartitionsResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:generateInitialChangeStreamPartitions",
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,app_profile_id"
+                      },
+                      "parsedOptions": [
+                        {
+                          "(google.api.http)": {
+                            "post": "/v2/{table_name=projects/*/instances/*/tables/*}:generateInitialChangeStreamPartitions",
+                            "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name"
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name,app_profile_id"
+                        }
+                      ]
+                    },
+                    "ReadChangeStream": {
+                      "requestType": "ReadChangeStreamRequest",
+                      "responseType": "ReadChangeStreamResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readChangeStream",
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,app_profile_id"
+                      },
+                      "parsedOptions": [
+                        {
+                          "(google.api.http)": {
+                            "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readChangeStream",
+                            "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name"
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name,app_profile_id"
+                        }
+                      ]
                     }
                   }
                 },
@@ -3455,6 +3503,207 @@
                     "row": {
                       "type": "Row",
                       "id": 1
+                    }
+                  }
+                },
+                "GenerateInitialChangeStreamPartitionsRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2
+                    }
+                  }
+                },
+                "GenerateInitialChangeStreamPartitionsResponse": {
+                  "fields": {
+                    "partition": {
+                      "type": "StreamPartition",
+                      "id": 1
+                    }
+                  }
+                },
+                "ReadChangeStreamRequest": {
+                  "oneofs": {
+                    "startFrom": {
+                      "oneof": [
+                        "startTime",
+                        "continuationTokens"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2
+                    },
+                    "partition": {
+                      "type": "StreamPartition",
+                      "id": 3
+                    },
+                    "startTime": {
+                      "type": "google.protobuf.Timestamp",
+                      "id": 4
+                    },
+                    "continuationTokens": {
+                      "type": "StreamContinuationTokens",
+                      "id": 6
+                    },
+                    "endTime": {
+                      "type": "google.protobuf.Timestamp",
+                      "id": 5
+                    },
+                    "heartbeatDuration": {
+                      "type": "google.protobuf.Duration",
+                      "id": 7
+                    }
+                  }
+                },
+                "ReadChangeStreamResponse": {
+                  "oneofs": {
+                    "streamRecord": {
+                      "oneof": [
+                        "dataChange",
+                        "heartbeat",
+                        "closeStream"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "dataChange": {
+                      "type": "DataChange",
+                      "id": 1
+                    },
+                    "heartbeat": {
+                      "type": "Heartbeat",
+                      "id": 2
+                    },
+                    "closeStream": {
+                      "type": "CloseStream",
+                      "id": 3
+                    }
+                  },
+                  "nested": {
+                    "MutationChunk": {
+                      "fields": {
+                        "chunkInfo": {
+                          "type": "ChunkInfo",
+                          "id": 1
+                        },
+                        "mutation": {
+                          "type": "Mutation",
+                          "id": 2
+                        }
+                      },
+                      "nested": {
+                        "ChunkInfo": {
+                          "fields": {
+                            "chunkedValueSize": {
+                              "type": "int32",
+                              "id": 1
+                            },
+                            "chunkedValueOffset": {
+                              "type": "int32",
+                              "id": 2
+                            },
+                            "lastChunk": {
+                              "type": "bool",
+                              "id": 3
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "DataChange": {
+                      "fields": {
+                        "type": {
+                          "type": "Type",
+                          "id": 1
+                        },
+                        "sourceClusterId": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "rowKey": {
+                          "type": "bytes",
+                          "id": 3
+                        },
+                        "commitTimestamp": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4
+                        },
+                        "tiebreaker": {
+                          "type": "int32",
+                          "id": 5
+                        },
+                        "chunks": {
+                          "rule": "repeated",
+                          "type": "MutationChunk",
+                          "id": 6
+                        },
+                        "done": {
+                          "type": "bool",
+                          "id": 8
+                        },
+                        "token": {
+                          "type": "string",
+                          "id": 9
+                        },
+                        "estimatedLowWatermark": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 10
+                        }
+                      },
+                      "nested": {
+                        "Type": {
+                          "values": {
+                            "TYPE_UNSPECIFIED": 0,
+                            "USER": 1,
+                            "GARBAGE_COLLECTION": 2,
+                            "CONTINUATION": 3
+                          }
+                        }
+                      }
+                    },
+                    "Heartbeat": {
+                      "fields": {
+                        "continuationToken": {
+                          "type": "StreamContinuationToken",
+                          "id": 1
+                        },
+                        "estimatedLowWatermark": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "CloseStream": {
+                      "fields": {
+                        "status": {
+                          "type": "google.rpc.Status",
+                          "id": 1
+                        },
+                        "continuationTokens": {
+                          "rule": "repeated",
+                          "type": "StreamContinuationToken",
+                          "id": 2
+                        }
+                      }
                     }
                   }
                 },
@@ -3891,6 +4140,35 @@
                     "incrementAmount": {
                       "type": "int64",
                       "id": 4
+                    }
+                  }
+                },
+                "StreamPartition": {
+                  "fields": {
+                    "rowRange": {
+                      "type": "RowRange",
+                      "id": 1
+                    }
+                  }
+                },
+                "StreamContinuationTokens": {
+                  "fields": {
+                    "tokens": {
+                      "rule": "repeated",
+                      "type": "StreamContinuationToken",
+                      "id": 1
+                    }
+                  }
+                },
+                "StreamContinuationToken": {
+                  "fields": {
+                    "partition": {
+                      "type": "StreamPartition",
+                      "id": 1
+                    },
+                    "token": {
+                      "type": "string",
+                      "id": 2
                     }
                   }
                 },
