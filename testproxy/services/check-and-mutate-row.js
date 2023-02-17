@@ -14,28 +14,31 @@
 'use strict';
 
 const grpc = require('@grpc/grpc-js');
-const {BigtableClient} = require('../../build/src/index.js').v2;
 
 const normalizeCallback = require('./utils/normalize-callback.js');
+const getTableInfo = require('./utils/get-table-info');
 
 const checkAndMutateRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const {request} = rawRequest;
     const {request: checkAndMutateRequest} = request;
-    const {appProfileId, falseMutations, rowKey, tableName, trueMutations} =
+    // TODO: Add appProfileId and predicateFilter
+    // TODO: Invert createFlatMutationsList
+    const {falseMutations, rowKey, tableName, trueMutations} =
       checkAndMutateRequest;
 
     const {clientId} = request;
     const bigtable = clientMap.get(clientId);
-    const client = new BigtableClient(bigtable.options.BigtableClient);
-    const [result] = await client.checkAndMutateRow({
-      appProfileId,
-      falseMutations,
-      rowKey,
-      tableName,
-      trueMutations,
-    });
-
+    const table = getTableInfo(bigtable, tableName);
+    const row = table.row(rowKey);
+    const filter = []; // TODO: This needs to change to an inversion of predicate_filter
+    const config = {
+      onMatch: trueMutations, // TODO: Needs to be inverted
+      onNoMatch: falseMutations, // TODO: Needs to be inverted
+    };
+    // TODO: It looks like the results are passed into the third argument of the callback
+    // TODO: Tests will guide us to rewrite the proxy to parse results of this call correctly
+    const result = await row.filter(filter, config);
     return {
       status: {code: grpc.status.OK, details: []},
       result,
