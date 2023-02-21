@@ -38,6 +38,7 @@ const checkAndMutateRow = ({clientMap}) =>
     };
     // TODO: It looks like the results are passed into the third argument of the callback
     // TODO: Tests will guide us to rewrite the proxy to parse results of this call correctly
+    // TODO: Set {predicateMatched: result.matched}
     const result = await row.filter(filter, config);
     return {
       status: {code: grpc.status.OK, details: []},

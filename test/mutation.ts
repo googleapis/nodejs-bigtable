@@ -17,7 +17,8 @@ import {beforeEach, describe, it, afterEach} from 'mocha';
 import * as Long from 'long';
 import * as sinon from 'sinon';
 
-import {IMutateRowRequest, Mutation, IMutation} from '../src/mutation.js';
+import {IMutateRowRequest, Mutation, IMutation, SetCellObj} from '../src/mutation.js';
+import {InverseMutation} from './utils/inverse-mutation';
 
 const sandbox = sinon.createSandbox();
 
@@ -507,6 +508,25 @@ describe('Bigtable/Mutation', () => {
       assert.strictEqual(mutation.mutations, fakeEncoded);
       assert.strictEqual(mutation.rowKey, data.key);
       assert.strictEqual(convertCalls[0], data.key);
+    });
+  });
+
+  describe('InverseMutation', () => {
+    it('ensure encodeSetCell has the proper inverse', () => {
+      const mutations: SetCellObj[] = [
+        {
+          mutation: 'setCell',
+          setCell: {
+            familyName: '',
+            columnQualifier: Buffer.from(Long.fromNumber(0).toBytesBE()),
+            timestampMicros: '0',
+            value: Buffer.from(Long.fromNumber(0).toBytesBE()),
+          },
+        },
+      ];
+      const inverse = InverseMutation.inverseEncodeSetCell(mutations);
+      const result = Mutation.encodeSetCell(inverse);
+      assert.deepStrictEqual(result, mutations);
     });
   });
 });
