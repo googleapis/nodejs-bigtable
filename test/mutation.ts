@@ -17,7 +17,7 @@ import {beforeEach, describe, it, afterEach} from 'mocha';
 import * as Long from 'long';
 import * as sinon from 'sinon';
 
-import {IMutateRowRequest, Mutation, IMutation, SetCellObj} from '../src/mutation.js';
+import {IMutateRowRequest, Mutation, IMutation, SetCellObj, Data} from '../src/mutation.js';
 import {InverseMutation} from './utils/inverse-mutation';
 
 const sandbox = sinon.createSandbox();
@@ -512,21 +512,47 @@ describe('Bigtable/Mutation', () => {
   });
 
   describe('InverseMutation', () => {
-    it('ensure encodeSetCell has the proper inverse', () => {
-      const mutations: SetCellObj[] = [
-        {
-          mutation: 'setCell',
-          setCell: {
-            familyName: '',
-            columnQualifier: Buffer.from(Long.fromNumber(0).toBytesBE()),
-            timestampMicros: '0',
-            value: Buffer.from(Long.fromNumber(0).toBytesBE()),
+    describe('encodeSetCell', () => {
+      function checkInverse(input: Data) {
+        const mutations = Mutation.encodeSetCell(input);
+        const inverse = InverseMutation.inverseEncodeSetCell(mutations);
+        const result = Mutation.encodeSetCell(inverse);
+        assert.deepStrictEqual(result, mutations);
+      }
+      it('ensure encodeSetCell has the proper inverse with one value', () => {
+        checkInverse({
+          familyName1: {
+            cellName1: {
+              value: 0,
+              timestamp: '0',
+            },
           },
-        },
-      ];
-      const inverse = InverseMutation.inverseEncodeSetCell(mutations);
-      const result = Mutation.encodeSetCell(inverse);
-      assert.deepStrictEqual(result, mutations);
+        });
+      });
+      it('ensure encodeSetCell has the proper inverse with many values', () => {
+        checkInverse({
+          familyName1: {
+            cellName1: {
+              value: 0,
+              timestamp: '0',
+            },
+            cellName2: {
+              value: 0,
+              timestamp: '0',
+            },
+          },
+          familyName2: {
+            cellName3: {
+              value: 0,
+              timestamp: '0',
+            },
+            cellName4: {
+              value: 0,
+              timestamp: '0',
+            },
+          },
+        });
+      });
     });
   });
 });
