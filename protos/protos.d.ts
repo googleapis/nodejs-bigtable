@@ -13311,6 +13311,9 @@ export namespace google {
 
                     /** CloseStream continuationTokens */
                     continuationTokens?: (google.bigtable.v2.IStreamContinuationToken[]|null);
+
+                    /** CloseStream newPartitions */
+                    newPartitions?: (google.bigtable.v2.IStreamPartition[]|null);
                 }
 
                 /** Represents a CloseStream. */
@@ -13327,6 +13330,9 @@ export namespace google {
 
                     /** CloseStream continuationTokens. */
                     public continuationTokens: google.bigtable.v2.IStreamContinuationToken[];
+
+                    /** CloseStream newPartitions. */
+                    public newPartitions: google.bigtable.v2.IStreamPartition[];
 
                     /**
                      * Creates a new CloseStream instance using the specified properties.

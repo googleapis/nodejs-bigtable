@@ -31380,6 +31380,7 @@
                          * @interface ICloseStream
                          * @property {google.rpc.IStatus|null} [status] CloseStream status
                          * @property {Array.<google.bigtable.v2.IStreamContinuationToken>|null} [continuationTokens] CloseStream continuationTokens
+                         * @property {Array.<google.bigtable.v2.IStreamPartition>|null} [newPartitions] CloseStream newPartitions
                          */
     
                         /**
@@ -31392,6 +31393,7 @@
                          */
                         function CloseStream(properties) {
                             this.continuationTokens = [];
+                            this.newPartitions = [];
                             if (properties)
                                 for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                     if (properties[keys[i]] != null)
@@ -31413,6 +31415,14 @@
                          * @instance
                          */
                         CloseStream.prototype.continuationTokens = $util.emptyArray;
+    
+                        /**
+                         * CloseStream newPartitions.
+                         * @member {Array.<google.bigtable.v2.IStreamPartition>} newPartitions
+                         * @memberof google.bigtable.v2.ReadChangeStreamResponse.CloseStream
+                         * @instance
+                         */
+                        CloseStream.prototype.newPartitions = $util.emptyArray;
     
                         /**
                          * Creates a new CloseStream instance using the specified properties.
@@ -31443,6 +31453,9 @@
                             if (message.continuationTokens != null && message.continuationTokens.length)
                                 for (var i = 0; i < message.continuationTokens.length; ++i)
                                     $root.google.bigtable.v2.StreamContinuationToken.encode(message.continuationTokens[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.newPartitions != null && message.newPartitions.length)
+                                for (var i = 0; i < message.newPartitions.length; ++i)
+                                    $root.google.bigtable.v2.StreamPartition.encode(message.newPartitions[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                             return writer;
                         };
     
@@ -31485,6 +31498,12 @@
                                         if (!(message.continuationTokens && message.continuationTokens.length))
                                             message.continuationTokens = [];
                                         message.continuationTokens.push($root.google.bigtable.v2.StreamContinuationToken.decode(reader, reader.uint32()));
+                                        break;
+                                    }
+                                case 3: {
+                                        if (!(message.newPartitions && message.newPartitions.length))
+                                            message.newPartitions = [];
+                                        message.newPartitions.push($root.google.bigtable.v2.StreamPartition.decode(reader, reader.uint32()));
                                         break;
                                     }
                                 default:
@@ -31536,6 +31555,15 @@
                                         return "continuationTokens." + error;
                                 }
                             }
+                            if (message.newPartitions != null && message.hasOwnProperty("newPartitions")) {
+                                if (!Array.isArray(message.newPartitions))
+                                    return "newPartitions: array expected";
+                                for (var i = 0; i < message.newPartitions.length; ++i) {
+                                    var error = $root.google.bigtable.v2.StreamPartition.verify(message.newPartitions[i]);
+                                    if (error)
+                                        return "newPartitions." + error;
+                                }
+                            }
                             return null;
                         };
     
@@ -31566,6 +31594,16 @@
                                     message.continuationTokens[i] = $root.google.bigtable.v2.StreamContinuationToken.fromObject(object.continuationTokens[i]);
                                 }
                             }
+                            if (object.newPartitions) {
+                                if (!Array.isArray(object.newPartitions))
+                                    throw TypeError(".google.bigtable.v2.ReadChangeStreamResponse.CloseStream.newPartitions: array expected");
+                                message.newPartitions = [];
+                                for (var i = 0; i < object.newPartitions.length; ++i) {
+                                    if (typeof object.newPartitions[i] !== "object")
+                                        throw TypeError(".google.bigtable.v2.ReadChangeStreamResponse.CloseStream.newPartitions: object expected");
+                                    message.newPartitions[i] = $root.google.bigtable.v2.StreamPartition.fromObject(object.newPartitions[i]);
+                                }
+                            }
                             return message;
                         };
     
@@ -31582,8 +31620,10 @@
                             if (!options)
                                 options = {};
                             var object = {};
-                            if (options.arrays || options.defaults)
+                            if (options.arrays || options.defaults) {
                                 object.continuationTokens = [];
+                                object.newPartitions = [];
+                            }
                             if (options.defaults)
                                 object.status = null;
                             if (message.status != null && message.hasOwnProperty("status"))
@@ -31592,6 +31632,11 @@
                                 object.continuationTokens = [];
                                 for (var j = 0; j < message.continuationTokens.length; ++j)
                                     object.continuationTokens[j] = $root.google.bigtable.v2.StreamContinuationToken.toObject(message.continuationTokens[j], options);
+                            }
+                            if (message.newPartitions && message.newPartitions.length) {
+                                object.newPartitions = [];
+                                for (var j = 0; j < message.newPartitions.length; ++j)
+                                    object.newPartitions[j] = $root.google.bigtable.v2.StreamPartition.toObject(message.newPartitions[j], options);
                             }
                             return object;
                         };
