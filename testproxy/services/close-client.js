@@ -15,6 +15,8 @@
 
 const normalizeCallback = require('./utils/normalize-callback.js');
 
+const v2 = Symbol.for('v2');
+
 const closeClient = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
     const request = rawRequest.request;
@@ -22,7 +24,8 @@ const closeClient = ({clientMap}) =>
     const bigtable = clientMap.get(clientId);
 
     if (bigtable) {
-      bigtable.close();
+      await bigtable[v2].close();
+      await bigtable.close();
       return {};
     }
   });
