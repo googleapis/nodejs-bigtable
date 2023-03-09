@@ -896,6 +896,9 @@ export class BigtableClient {
     request?: protos.google.bigtable.v2.IReadRowsRequest,
     options?: CallOptions
   ): gax.CancellableStream {
+    console.log('read rows in gapic layer');
+    const now = new Date();
+    console.log(now.getSeconds() * 1000 + now.getMilliseconds());
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};

@@ -761,11 +761,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let chunkTransformer: ChunkTransformer;
     let rowStream: Duplex;
 
+    let now;
+
+    console.log('Start making requests');
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
       // cancelled the stream in the middle of a retry
       retryTimer = null;
-
+      console.log('Making new request');
+      now = new Date();
+      console.log(now.getSeconds() * 1000 + now.getMilliseconds());
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
@@ -868,6 +873,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         numRequestsMade,
         options.gaxOptions
       );
+
+      console.log('Making new request 2');
+      now = new Date();
+      console.log(now.getSeconds() * 1000 + now.getMilliseconds());
 
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
@@ -1389,6 +1398,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     optionsOrCallback?: GetRowsOptions | GetRowsCallback,
     cb?: GetRowsCallback
   ): void | Promise<GetRowsResponse> {
+    console.log('ssss');
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const options =
