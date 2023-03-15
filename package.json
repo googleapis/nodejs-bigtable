@@ -42,7 +42,7 @@
     "pretest": "npm run compile",
     "test": "c8 mocha build/test",
     "test:snap": "SNAPSHOT_UPDATE=1 npm test",
-    "testproxy": "node testproxy/index.js",
+    "testproxy": "npm run compile && node testproxy/index.js",
     "clean": "gts clean",
     "precompile": "gts clean"
   },
