@@ -14,9 +14,10 @@
 'use strict';
 
 const grpc = require('@grpc/grpc-js');
-const {BigtableClient} = require('../../build/src/index.js').v2;
 
 const normalizeCallback = require('./utils/normalize-callback.js');
+
+const v2 = Symbol.for('v2');
 
 const readModifyWriteRow = ({clientMap}) =>
   normalizeCallback(async rawRequest => {
@@ -25,8 +26,7 @@ const readModifyWriteRow = ({clientMap}) =>
     const {appProfileId, rowKey, rules, tableName} = sampleRowKeysRequest;
 
     const {clientId} = request;
-    const bigtable = clientMap.get(clientId);
-    const client = new BigtableClient(bigtable.options.BigtableClient);
+    const client = clientMap.get(clientId)[v2];
     const [result] = await client.readModifyWriteRow({
       appProfileId,
       rowKey,
