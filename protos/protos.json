@@ -3702,6 +3702,11 @@
                           "rule": "repeated",
                           "type": "StreamContinuationToken",
                           "id": 2
+                        },
+                        "newPartitions": {
+                          "rule": "repeated",
+                          "type": "StreamPartition",
+                          "id": 3
                         }
                       }
                     }

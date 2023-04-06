@@ -1,6 +1,6 @@
 {
   "name": "@google-cloud/bigtable",
-  "version": "4.2.0",
+  "version": "4.5.0",
   "description": "Cloud Bigtable Client Library for Node.js",
   "keywords": [
     "bigtable",
@@ -42,7 +42,7 @@
     "pretest": "npm run compile",
     "test": "c8 mocha build/test",
     "test:snap": "SNAPSHOT_UPDATE=1 npm test",
-    "testproxy": "node testproxy/index.js",
+    "testproxy": "npm run compile && node testproxy/index.js",
     "clean": "gts clean",
     "precompile": "gts clean"
   },
