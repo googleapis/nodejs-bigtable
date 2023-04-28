@@ -27092,6 +27092,7 @@
                      * @memberof google.bigtable.v2
                      * @interface IMutateRowsResponse
                      * @property {Array.<google.bigtable.v2.MutateRowsResponse.IEntry>|null} [entries] MutateRowsResponse entries
+                     * @property {google.bigtable.v2.IRateLimitInfo|null} [rateLimitInfo] MutateRowsResponse rateLimitInfo
                      */
     
                     /**
@@ -27117,6 +27118,28 @@
                      * @instance
                      */
                     MutateRowsResponse.prototype.entries = $util.emptyArray;
+    
+                    /**
+                     * MutateRowsResponse rateLimitInfo.
+                     * @member {google.bigtable.v2.IRateLimitInfo|null|undefined} rateLimitInfo
+                     * @memberof google.bigtable.v2.MutateRowsResponse
+                     * @instance
+                     */
+                    MutateRowsResponse.prototype.rateLimitInfo = null;
+    
+                    // OneOf field names bound to virtual getters and setters
+                    var $oneOfFields;
+    
+                    /**
+                     * MutateRowsResponse _rateLimitInfo.
+                     * @member {"rateLimitInfo"|undefined} _rateLimitInfo
+                     * @memberof google.bigtable.v2.MutateRowsResponse
+                     * @instance
+                     */
+                    Object.defineProperty(MutateRowsResponse.prototype, "_rateLimitInfo", {
+                        get: $util.oneOfGetter($oneOfFields = ["rateLimitInfo"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
     
                     /**
                      * Creates a new MutateRowsResponse instance using the specified properties.
@@ -27145,6 +27168,8 @@
                         if (message.entries != null && message.entries.length)
                             for (var i = 0; i < message.entries.length; ++i)
                                 $root.google.bigtable.v2.MutateRowsResponse.Entry.encode(message.entries[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.rateLimitInfo != null && Object.hasOwnProperty.call(message, "rateLimitInfo"))
+                            $root.google.bigtable.v2.RateLimitInfo.encode(message.rateLimitInfo, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         return writer;
                     };
     
@@ -27185,6 +27210,10 @@
                                     message.entries.push($root.google.bigtable.v2.MutateRowsResponse.Entry.decode(reader, reader.uint32()));
                                     break;
                                 }
+                            case 3: {
+                                    message.rateLimitInfo = $root.google.bigtable.v2.RateLimitInfo.decode(reader, reader.uint32());
+                                    break;
+                                }
                             default:
                                 reader.skipType(tag & 7);
                                 break;
@@ -27220,6 +27249,7 @@
                     MutateRowsResponse.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
+                        var properties = {};
                         if (message.entries != null && message.hasOwnProperty("entries")) {
                             if (!Array.isArray(message.entries))
                                 return "entries: array expected";
@@ -27227,6 +27257,14 @@
                                 var error = $root.google.bigtable.v2.MutateRowsResponse.Entry.verify(message.entries[i]);
                                 if (error)
                                     return "entries." + error;
+                            }
+                        }
+                        if (message.rateLimitInfo != null && message.hasOwnProperty("rateLimitInfo")) {
+                            properties._rateLimitInfo = 1;
+                            {
+                                var error = $root.google.bigtable.v2.RateLimitInfo.verify(message.rateLimitInfo);
+                                if (error)
+                                    return "rateLimitInfo." + error;
                             }
                         }
                         return null;
@@ -27254,6 +27292,11 @@
                                 message.entries[i] = $root.google.bigtable.v2.MutateRowsResponse.Entry.fromObject(object.entries[i]);
                             }
                         }
+                        if (object.rateLimitInfo != null) {
+                            if (typeof object.rateLimitInfo !== "object")
+                                throw TypeError(".google.bigtable.v2.MutateRowsResponse.rateLimitInfo: object expected");
+                            message.rateLimitInfo = $root.google.bigtable.v2.RateLimitInfo.fromObject(object.rateLimitInfo);
+                        }
                         return message;
                     };
     
@@ -27276,6 +27319,11 @@
                             object.entries = [];
                             for (var j = 0; j < message.entries.length; ++j)
                                 object.entries[j] = $root.google.bigtable.v2.MutateRowsResponse.Entry.toObject(message.entries[j], options);
+                        }
+                        if (message.rateLimitInfo != null && message.hasOwnProperty("rateLimitInfo")) {
+                            object.rateLimitInfo = $root.google.bigtable.v2.RateLimitInfo.toObject(message.rateLimitInfo, options);
+                            if (options.oneofs)
+                                object._rateLimitInfo = "rateLimitInfo";
                         }
                         return object;
                     };
@@ -27553,6 +27601,238 @@
                     })();
     
                     return MutateRowsResponse;
+                })();
+    
+                v2.RateLimitInfo = (function() {
+    
+                    /**
+                     * Properties of a RateLimitInfo.
+                     * @memberof google.bigtable.v2
+                     * @interface IRateLimitInfo
+                     * @property {google.protobuf.IDuration|null} [period] RateLimitInfo period
+                     * @property {number|null} [factor] RateLimitInfo factor
+                     */
+    
+                    /**
+                     * Constructs a new RateLimitInfo.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a RateLimitInfo.
+                     * @implements IRateLimitInfo
+                     * @constructor
+                     * @param {google.bigtable.v2.IRateLimitInfo=} [properties] Properties to set
+                     */
+                    function RateLimitInfo(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * RateLimitInfo period.
+                     * @member {google.protobuf.IDuration|null|undefined} period
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @instance
+                     */
+                    RateLimitInfo.prototype.period = null;
+    
+                    /**
+                     * RateLimitInfo factor.
+                     * @member {number} factor
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @instance
+                     */
+                    RateLimitInfo.prototype.factor = 0;
+    
+                    /**
+                     * Creates a new RateLimitInfo instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.IRateLimitInfo=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo instance
+                     */
+                    RateLimitInfo.create = function create(properties) {
+                        return new RateLimitInfo(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified RateLimitInfo message. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.IRateLimitInfo} message RateLimitInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RateLimitInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.period != null && Object.hasOwnProperty.call(message, "period"))
+                            $root.google.protobuf.Duration.encode(message.period, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.factor != null && Object.hasOwnProperty.call(message, "factor"))
+                            writer.uint32(/* id 2, wireType 1 =*/17).double(message.factor);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified RateLimitInfo message, length delimited. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.IRateLimitInfo} message RateLimitInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RateLimitInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a RateLimitInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RateLimitInfo.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.RateLimitInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.period = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.factor = reader.double();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a RateLimitInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RateLimitInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a RateLimitInfo message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    RateLimitInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.period != null && message.hasOwnProperty("period")) {
+                            var error = $root.google.protobuf.Duration.verify(message.period);
+                            if (error)
+                                return "period." + error;
+                        }
+                        if (message.factor != null && message.hasOwnProperty("factor"))
+                            if (typeof message.factor !== "number")
+                                return "factor: number expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a RateLimitInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo
+                     */
+                    RateLimitInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.RateLimitInfo)
+                            return object;
+                        var message = new $root.google.bigtable.v2.RateLimitInfo();
+                        if (object.period != null) {
+                            if (typeof object.period !== "object")
+                                throw TypeError(".google.bigtable.v2.RateLimitInfo.period: object expected");
+                            message.period = $root.google.protobuf.Duration.fromObject(object.period);
+                        }
+                        if (object.factor != null)
+                            message.factor = Number(object.factor);
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a RateLimitInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.RateLimitInfo} message RateLimitInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    RateLimitInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.period = null;
+                            object.factor = 0;
+                        }
+                        if (message.period != null && message.hasOwnProperty("period"))
+                            object.period = $root.google.protobuf.Duration.toObject(message.period, options);
+                        if (message.factor != null && message.hasOwnProperty("factor"))
+                            object.factor = options.json && !isFinite(message.factor) ? String(message.factor) : message.factor;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this RateLimitInfo to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    RateLimitInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for RateLimitInfo
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    RateLimitInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.RateLimitInfo";
+                    };
+    
+                    return RateLimitInfo;
                 })();
     
                 v2.CheckAndMutateRowRequest = (function() {

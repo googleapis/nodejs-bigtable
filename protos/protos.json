@@ -3381,11 +3381,25 @@
                   }
                 },
                 "MutateRowsResponse": {
+                  "oneofs": {
+                    "_rateLimitInfo": {
+                      "oneof": [
+                        "rateLimitInfo"
+                      ]
+                    }
+                  },
                   "fields": {
                     "entries": {
                       "rule": "repeated",
                       "type": "Entry",
                       "id": 1
+                    },
+                    "rateLimitInfo": {
+                      "type": "RateLimitInfo",
+                      "id": 3,
+                      "options": {
+                        "proto3_optional": true
+                      }
                     }
                   },
                   "nested": {
@@ -3400,6 +3414,18 @@
                           "id": 2
                         }
                       }
+                    }
+                  }
+                },
+                "RateLimitInfo": {
+                  "fields": {
+                    "period": {
+                      "type": "google.protobuf.Duration",
+                      "id": 1
+                    },
+                    "factor": {
+                      "type": "double",
+                      "id": 2
                     }
                   }
                 },

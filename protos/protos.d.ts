@@ -11551,6 +11551,9 @@ export namespace google {
 
                 /** MutateRowsResponse entries */
                 entries?: (google.bigtable.v2.MutateRowsResponse.IEntry[]|null);
+
+                /** MutateRowsResponse rateLimitInfo */
+                rateLimitInfo?: (google.bigtable.v2.IRateLimitInfo|null);
             }
 
             /** Represents a MutateRowsResponse. */
@@ -11564,6 +11567,12 @@ export namespace google {
 
                 /** MutateRowsResponse entries. */
                 public entries: google.bigtable.v2.MutateRowsResponse.IEntry[];
+
+                /** MutateRowsResponse rateLimitInfo. */
+                public rateLimitInfo?: (google.bigtable.v2.IRateLimitInfo|null);
+
+                /** MutateRowsResponse _rateLimitInfo. */
+                public _rateLimitInfo?: "rateLimitInfo";
 
                 /**
                  * Creates a new MutateRowsResponse instance using the specified properties.
@@ -11747,6 +11756,109 @@ export namespace google {
                      */
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
+            }
+
+            /** Properties of a RateLimitInfo. */
+            interface IRateLimitInfo {
+
+                /** RateLimitInfo period */
+                period?: (google.protobuf.IDuration|null);
+
+                /** RateLimitInfo factor */
+                factor?: (number|null);
+            }
+
+            /** Represents a RateLimitInfo. */
+            class RateLimitInfo implements IRateLimitInfo {
+
+                /**
+                 * Constructs a new RateLimitInfo.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IRateLimitInfo);
+
+                /** RateLimitInfo period. */
+                public period?: (google.protobuf.IDuration|null);
+
+                /** RateLimitInfo factor. */
+                public factor: number;
+
+                /**
+                 * Creates a new RateLimitInfo instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RateLimitInfo instance
+                 */
+                public static create(properties?: google.bigtable.v2.IRateLimitInfo): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Encodes the specified RateLimitInfo message. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                 * @param message RateLimitInfo message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IRateLimitInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RateLimitInfo message, length delimited. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                 * @param message RateLimitInfo message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IRateLimitInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RateLimitInfo message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RateLimitInfo
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Decodes a RateLimitInfo message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RateLimitInfo
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Verifies a RateLimitInfo message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RateLimitInfo message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RateLimitInfo
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Creates a plain object from a RateLimitInfo message. Also converts values to other types if specified.
+                 * @param message RateLimitInfo
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.RateLimitInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RateLimitInfo to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RateLimitInfo
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
             /** Properties of a CheckAndMutateRowRequest. */
