@@ -39303,6 +39303,209 @@
                     return RequestStats;
                 })();
     
+                v2.FeatureFlags = (function() {
+    
+                    /**
+                     * Properties of a FeatureFlags.
+                     * @memberof google.bigtable.v2
+                     * @interface IFeatureFlags
+                     * @property {boolean|null} [mutateRowsRateLimit] FeatureFlags mutateRowsRateLimit
+                     */
+    
+                    /**
+                     * Constructs a new FeatureFlags.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a FeatureFlags.
+                     * @implements IFeatureFlags
+                     * @constructor
+                     * @param {google.bigtable.v2.IFeatureFlags=} [properties] Properties to set
+                     */
+                    function FeatureFlags(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * FeatureFlags mutateRowsRateLimit.
+                     * @member {boolean} mutateRowsRateLimit
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     */
+                    FeatureFlags.prototype.mutateRowsRateLimit = false;
+    
+                    /**
+                     * Creates a new FeatureFlags instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.IFeatureFlags=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags instance
+                     */
+                    FeatureFlags.create = function create(properties) {
+                        return new FeatureFlags(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified FeatureFlags message. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.IFeatureFlags} message FeatureFlags message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FeatureFlags.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.mutateRowsRateLimit != null && Object.hasOwnProperty.call(message, "mutateRowsRateLimit"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).bool(message.mutateRowsRateLimit);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified FeatureFlags message, length delimited. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.IFeatureFlags} message FeatureFlags message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FeatureFlags.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a FeatureFlags message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FeatureFlags.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.FeatureFlags();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 3: {
+                                    message.mutateRowsRateLimit = reader.bool();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a FeatureFlags message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FeatureFlags.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a FeatureFlags message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    FeatureFlags.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
+                            if (typeof message.mutateRowsRateLimit !== "boolean")
+                                return "mutateRowsRateLimit: boolean expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a FeatureFlags message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags
+                     */
+                    FeatureFlags.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.FeatureFlags)
+                            return object;
+                        var message = new $root.google.bigtable.v2.FeatureFlags();
+                        if (object.mutateRowsRateLimit != null)
+                            message.mutateRowsRateLimit = Boolean(object.mutateRowsRateLimit);
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a FeatureFlags message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.FeatureFlags} message FeatureFlags
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    FeatureFlags.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.mutateRowsRateLimit = false;
+                        if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
+                            object.mutateRowsRateLimit = message.mutateRowsRateLimit;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this FeatureFlags to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    FeatureFlags.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for FeatureFlags
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    FeatureFlags.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.FeatureFlags";
+                    };
+    
+                    return FeatureFlags;
+                })();
+    
                 v2.ResponseParams = (function() {
     
                     /**

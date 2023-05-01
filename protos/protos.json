@@ -4258,6 +4258,14 @@
                     }
                   }
                 },
+                "FeatureFlags": {
+                  "fields": {
+                    "mutateRowsRateLimit": {
+                      "type": "bool",
+                      "id": 3
+                    }
+                  }
+                },
                 "ResponseParams": {
                   "oneofs": {
                     "_zoneId": {

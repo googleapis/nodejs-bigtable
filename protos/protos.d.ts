@@ -16395,6 +16395,103 @@ export namespace google {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
+            /** Properties of a FeatureFlags. */
+            interface IFeatureFlags {
+
+                /** FeatureFlags mutateRowsRateLimit */
+                mutateRowsRateLimit?: (boolean|null);
+            }
+
+            /** Represents a FeatureFlags. */
+            class FeatureFlags implements IFeatureFlags {
+
+                /**
+                 * Constructs a new FeatureFlags.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IFeatureFlags);
+
+                /** FeatureFlags mutateRowsRateLimit. */
+                public mutateRowsRateLimit: boolean;
+
+                /**
+                 * Creates a new FeatureFlags instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns FeatureFlags instance
+                 */
+                public static create(properties?: google.bigtable.v2.IFeatureFlags): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Encodes the specified FeatureFlags message. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                 * @param message FeatureFlags message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IFeatureFlags, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified FeatureFlags message, length delimited. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                 * @param message FeatureFlags message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IFeatureFlags, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a FeatureFlags message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns FeatureFlags
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Decodes a FeatureFlags message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns FeatureFlags
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Verifies a FeatureFlags message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a FeatureFlags message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns FeatureFlags
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Creates a plain object from a FeatureFlags message. Also converts values to other types if specified.
+                 * @param message FeatureFlags
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.FeatureFlags, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this FeatureFlags to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for FeatureFlags
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
             /** Properties of a ResponseParams. */
             interface IResponseParams {
 
