@@ -720,7 +720,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    */
   createReadStream(opts?: GetRowsOptions) {
     const options = opts || {};
-    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 3;
+    const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
     let rowKeys: string[];
     let filter: {} | null;
@@ -776,7 +776,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       } as google.bigtable.v2.IReadRowsRequest;
 
       const retryOpts = {
-        currentRetryAttempt: numConsecutiveErrors,
+        currentRetryAttempt: 0, // was numConsecutiveErrors
         // Handling retries in this client. Specify the retry options to
         // make sure nothing is retried in retry-request.
         noResponseRetries: 0,
