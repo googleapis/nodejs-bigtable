@@ -169,11 +169,11 @@ export class ChunkTransformer extends Transform {
    */
   destroy(err?: Error): this {
     if (this._destroyed) return this;
-    this._destroyed = true;
     if (err) {
+      this._destroyed = true;
       this.emit('error', err);
+      this.emit('close');
     }
-    this.emit('close');
     return this;
   }
 
