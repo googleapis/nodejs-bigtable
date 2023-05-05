@@ -167,6 +167,8 @@ export class ChunkTransformer extends Transform {
    * @public
    * @param {error} err error if any
    */
+  // When this function is called in nodejs-bigtable, ensure an error is passed
+  // in to destroy the stream properly.
   destroy(err?: Error): this {
     if (this._destroyed) return this;
     if (err) {
