@@ -1208,10 +1208,14 @@ describe('Bigtable/ChunkTransformer', () => {
     });
     it('should not emit if transform is already destroyed', done => {
       chunkTransformer.on('close', () => {
-        done();
+        assert.fail(
+          'The chunk transformer should not close if no error is provided'
+        );
       });
       chunkTransformer.destroy();
       chunkTransformer.destroy();
+      assert.strictEqual(chunkTransformer._destroyed, false);
+      done();
     });
   });
 });
