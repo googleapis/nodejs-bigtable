@@ -26,8 +26,9 @@ import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
-import {PassThrough} from 'stream';
+import {PassThrough, Transform, Writable} from 'stream';
 const streamEvents = require('stream-events');
+const miss = require('mississippi');
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -491,8 +492,28 @@ describe('Bigtable', () => {
       await table.delete();
     });
 
-    it.only('should finish sending all data before a stream closes', done => {
+    it.only('should finish sending all data before a stream closes', async () => {
+      let rowCount = 0;
       const table = INSTANCE.table(generateId('table'));
+      const transformer = new Transform({
+        objectMode: true,
+        transform(
+          chunk: any,
+          _encoding: any,
+          callback: (err: any, data: any) => void
+        ) {
+          rowCount++;
+          setTimeout(() => {
+            callback(null, chunk);
+          }, 0);
+        },
+      });
+      const output = new Writable({
+        objectMode: true,
+        write(_chunk, _encoding, callback) {
+          callback();
+        },
+      });
       const stream = streamEvents(
         new PassThrough({
           objectMode: true,
@@ -501,31 +522,50 @@ describe('Bigtable', () => {
       table.bigtable.request = (config?: any) => {
         return stream as AbortableDuplex;
       };
-      const readStream = table.createReadStream({});
-      readStream.on('data', (err: any, data: any) => {
-        done();
-      });
-      const chunk = {
-        labels: [],
-        rowKey: Buffer.from('a'),
-        familyName: {value: 'cf1'},
-        qualifier: {value: Buffer.from('a')},
-        timestampMicros: '12',
-        value: Buffer.from('a'),
-        valueSize: 0,
-        commitRow: true,
-        rowStatus: 'commitRow',
-      };
+      const readStream = table.createReadStream({limit: 17733});
+      function ascii(index: number) {
+        return String.fromCharCode(index);
+      }
+      function getChunk(index: number) {
+        return {
+          labels: [],
+          rowKey: Buffer.from(`a${ascii(index)}`),
+          familyName: {value: 'cf1'},
+          qualifier: {value: Buffer.from('a')},
+          timestampMicros: '12',
+          value: Buffer.from('a'),
+          valueSize: 0,
+          commitRow: true,
+          rowStatus: 'commitRow',
+        };
+      }
       const chunks = [];
       for (let i = 0; i < 209; i++) {
-        chunks.push(chunk);
+        chunks.push(getChunk(i));
       }
       const data = {
         chunks,
         lastScannedRowKey: Buffer.from('a'),
       };
       stream.push(data);
-      done();
+      setTimeout(() => {
+        try {
+          stream.emit('end');
+        } catch (err: any) {
+          console.log('test');
+        }
+      }, 10000);
+      await new Promise((resolve: (err?: any) => void, reject) => {
+        miss.pipe(readStream, transformer, output, (err?: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
+      console.log('row count:');
+      console.log(rowCount);
     });
   });
 

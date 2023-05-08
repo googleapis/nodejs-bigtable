@@ -61,6 +61,7 @@
     "is-utf8": "^0.2.1",
     "lodash.snakecase": "^4.1.1",
     "long": "^4.0.0",
+    "mississippi": "^4.0.0",
     "pumpify": "^2.0.0",
     "stream-events": "^1.0.2"
   },
