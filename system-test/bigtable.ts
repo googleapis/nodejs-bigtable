@@ -505,20 +505,19 @@ describe('Bigtable', () => {
       readStream.on('data', (err: any, data: any) => {
         done();
       });
+      const chunk = {
+        labels: [],
+        rowKey: Buffer.from('a'),
+        familyName: {value: 'cf1'},
+        qualifier: {value: Buffer.from('a')},
+        timestampMicros: '12',
+        value: Buffer.from('a'),
+        valueSize: 0,
+        commitRow: true,
+        rowStatus: 'commitRow',
+      };
       const data = {
-        chunks: [
-          {
-            labels: [],
-            rowKey: Buffer.from('a'),
-            familyName: {value: 'cf1'},
-            qualifier: {value: Buffer.from('a')},
-            timestampMicros: '12',
-            value: Buffer.from('a'),
-            valueSize: 0,
-            commitRow: true,
-            rowStatus: 'commitRow',
-          },
-        ],
+        chunks: [chunk],
         lastScannedRowKey: Buffer.from('a'),
       };
       stream.push(data);
