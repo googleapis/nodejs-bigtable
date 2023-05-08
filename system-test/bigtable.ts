@@ -539,21 +539,23 @@ describe('Bigtable', () => {
           rowStatus: 'commitRow',
         };
       }
-      const chunks = [];
-      for (let i = 0; i < 209; i++) {
-        chunks.push(getChunk(i));
-      }
-      const data = {
-        chunks,
-        lastScannedRowKey: Buffer.from('a'),
-      };
-      stream.push(data);
-      setTimeout(() => {
-        try {
-          stream.emit('end');
-        } catch (err: any) {
-          console.log('test');
+      function pushChunks(numChunks: number) {
+        const chunks = [];
+        for (let i = 0; i < numChunks; i++) {
+          chunks.push(getChunk(i));
         }
+        const data = {
+          chunks,
+          lastScannedRowKey: Buffer.from('a'),
+        };
+        stream.push(data);
+      }
+      setTimeout(() => {
+        for (let i = 0; i < 84; i++) {
+          pushChunks(209);
+        }
+        pushChunks(177);
+        stream.emit('end');
       }, 10000);
       await new Promise((resolve: (err?: any) => void, reject) => {
         miss.pipe(readStream, transformer, output, (err?: any) => {
