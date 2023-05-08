@@ -492,8 +492,9 @@ describe('Bigtable', () => {
       await table.delete();
     });
 
-    it.only('should finish sending all data before a stream closes', async () => {
+    it('should finish delivering a chunk every time a chunk is sent', async () => {
       let rowCount = 0;
+      const chunkSize = 209;
       const table = INSTANCE.table(generateId('table'));
       const transformer = new Transform({
         objectMode: true,
@@ -522,7 +523,7 @@ describe('Bigtable', () => {
       table.bigtable.request = (config?: any) => {
         return stream as AbortableDuplex;
       };
-      const readStream = table.createReadStream({limit: 17733});
+      const readStream = table.createReadStream({});
       function ascii(index: number) {
         return String.fromCharCode(index);
       }
@@ -552,11 +553,10 @@ describe('Bigtable', () => {
       }
       setTimeout(() => {
         for (let i = 0; i < 84; i++) {
-          pushChunks(209);
+          pushChunks(chunkSize);
         }
-        pushChunks(177);
         stream.emit('end');
-      }, 10000);
+      }, 100);
       await new Promise((resolve: (err?: any) => void, reject) => {
         miss.pipe(readStream, transformer, output, (err?: any) => {
           if (err) {
@@ -566,8 +566,7 @@ describe('Bigtable', () => {
           }
         });
       });
-      console.log('row count:');
-      console.log(rowCount);
+      assert.strictEqual(rowCount % chunkSize, 0);
     });
   });
 
