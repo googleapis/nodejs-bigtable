@@ -516,8 +516,12 @@ describe('Bigtable', () => {
         commitRow: true,
         rowStatus: 'commitRow',
       };
+      const chunks = [];
+      for (let i = 0; i < 209; i++) {
+        chunks.push(chunk);
+      }
       const data = {
-        chunks: [chunk],
+        chunks,
         lastScannedRowKey: Buffer.from('a'),
       };
       stream.push(data);
