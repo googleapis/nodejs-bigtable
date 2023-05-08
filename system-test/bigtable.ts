@@ -18,16 +18,16 @@ import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
 
-import {Backup, Bigtable, Instance} from '../src';
+import {AbortableDuplex, Backup, Bigtable, Instance} from '../src';
 import {AppProfile} from '../src/app-profile.js';
 import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
-import {generateId} from './common';
-
-const PREFIX = 'gcloud-tests-';
+import {generateId, PREFIX} from './common';
+import {PassThrough} from 'stream';
+const streamEvents = require('stream-events');
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -489,6 +489,40 @@ describe('Bigtable', () => {
       const table = INSTANCE.table(generateId('table'));
       await table.get({autoCreate: true});
       await table.delete();
+    });
+
+    it.only('should finish sending all data before a stream closes', done => {
+      const table = INSTANCE.table(generateId('table'));
+      const stream = streamEvents(
+        new PassThrough({
+          objectMode: true,
+        })
+      );
+      table.bigtable.request = (config?: any) => {
+        return stream as AbortableDuplex;
+      };
+      const readStream = table.createReadStream({});
+      readStream.on('data', (err: any, data: any) => {
+        done();
+      });
+      const data = {
+        chunks: [
+          {
+            labels: [],
+            rowKey: Buffer.from('a'),
+            familyName: {value: 'cf1'},
+            qualifier: {value: Buffer.from('a')},
+            timestampMicros: '12',
+            value: Buffer.from('a'),
+            valueSize: 0,
+            commitRow: true,
+            rowStatus: 'commitRow',
+          },
+        ],
+        lastScannedRowKey: Buffer.from('a'),
+      };
+      stream.push(data);
+      done();
     });
   });
 
