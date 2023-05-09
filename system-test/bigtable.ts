@@ -27,6 +27,7 @@ import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
 import {PassThrough, Transform, Writable} from 'stream';
+const {pipeline} = require('stream');
 const streamEvents = require('stream-events');
 const miss = require('mississippi');
 
@@ -494,6 +495,7 @@ describe('Bigtable', () => {
 
     it('should finish delivering a chunk every time a chunk is sent', async () => {
       let rowCount = 0;
+      let variable = 0;
       const chunkSize = 209;
       const table = INSTANCE.table(generateId('table'));
       const transformer = new Transform({
@@ -504,6 +506,7 @@ describe('Bigtable', () => {
           callback: (err: any, data: any) => void
         ) {
           rowCount++;
+          // console.log(`row count: ${rowCount}`);
           setTimeout(() => {
             callback(null, chunk);
           }, 0);
@@ -528,9 +531,11 @@ describe('Bigtable', () => {
         return String.fromCharCode(index);
       }
       function getChunk(index: number) {
+        variable++;
         return {
           labels: [],
-          rowKey: Buffer.from(`a${ascii(index)}`),
+          rowKey: Buffer.from(variable.toString().padStart(5, '0')),
+          // rowKey: Buffer.from(`a${ascii(index)}`), // Buffer.from(`a${ascii(index)}`),
           familyName: {value: 'cf1'},
           qualifier: {value: Buffer.from('a')},
           timestampMicros: '12',
@@ -551,21 +556,41 @@ describe('Bigtable', () => {
         };
         stream.push(data);
       }
-      setTimeout(() => {
-        for (let i = 0; i < 84; i++) {
+      // setTimeout(() => {
+      //   try {
+      //     for (let i = 0; i < 84; i++) {
+      //       pushChunks(chunkSize);
+      //     }
+      //     stream.emit('end');
+      //   } catch (err) {
+      //     console.log(err);
+      //   }
+      // }, 100);
+      // setTimeout(() => {
+      //   try {
+      for (let i = 0; i < 84; i++) {
+        setTimeout(() => {
           pushChunks(chunkSize);
-        }
-        stream.emit('end');
-      }, 100);
-      await new Promise((resolve: (err?: any) => void, reject) => {
-        miss.pipe(readStream, transformer, output, (err?: any) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
+          if (i === 83) {
+            stream.emit('end');
           }
+        }, i * 100);
+      }
+      try {
+        await new Promise((resolve: (err?: any) => void, reject) => {
+          miss.pipe(readStream, transformer, output, (err?: any) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve();
+            }
+          });
         });
-      });
+      } catch (err) {
+        console.log('test');
+      }
+      console.log('total row count:');
+      console.log(`${rowCount}`);
       assert.strictEqual(rowCount % chunkSize, 0);
     });
   });
