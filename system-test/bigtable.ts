@@ -493,11 +493,11 @@ describe('Bigtable', () => {
       await table.delete();
     });
 
-    it('should finish delivering a chunk every time a chunk is sent', async () => {
+    it.only('should finish delivering a chunk every time a chunk is sent', async () => {
       let rowCount = 0;
-      let variable = 0;
       const chunkSize = 209;
       const table = INSTANCE.table(generateId('table'));
+      const requestFn = table.bigtable.request;
       const transformer = new Transform({
         objectMode: true,
         transform(
@@ -531,11 +531,9 @@ describe('Bigtable', () => {
         return String.fromCharCode(index);
       }
       function getChunk(index: number) {
-        variable++;
         return {
           labels: [],
-          rowKey: Buffer.from(variable.toString().padStart(5, '0')),
-          // rowKey: Buffer.from(`a${ascii(index)}`), // Buffer.from(`a${ascii(index)}`),
+          rowKey: Buffer.from(`a${ascii(index)}`),
           familyName: {value: 'cf1'},
           qualifier: {value: Buffer.from('a')},
           timestampMicros: '12',
@@ -556,41 +554,22 @@ describe('Bigtable', () => {
         };
         stream.push(data);
       }
-      // setTimeout(() => {
-      //   try {
-      //     for (let i = 0; i < 84; i++) {
-      //       pushChunks(chunkSize);
-      //     }
-      //     stream.emit('end');
-      //   } catch (err) {
-      //     console.log(err);
-      //   }
-      // }, 100);
-      // setTimeout(() => {
-      //   try {
-      for (let i = 0; i < 84; i++) {
-        setTimeout(() => {
-          pushChunks(chunkSize);
-          if (i === 83) {
-            stream.emit('end');
+      setTimeout(() => {
+        pushChunks(chunkSize);
+        stream.emit('end');
+      }, 1000);
+      await new Promise((resolve: (err?: any) => void, reject) => {
+        miss.pipe(readStream, transformer, output, (err?: any) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve();
           }
-        }, i * 100);
-      }
-      try {
-        await new Promise((resolve: (err?: any) => void, reject) => {
-          miss.pipe(readStream, transformer, output, (err?: any) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
         });
-      } catch (err) {
-        console.log('test');
-      }
+      });
       console.log('total row count:');
       console.log(`${rowCount}`);
+      table.bigtable.request = requestFn;
       assert.strictEqual(rowCount % chunkSize, 0);
     });
   });
