@@ -492,9 +492,9 @@ describe('Bigtable', () => {
       await table.delete();
     });
 
-    it.only('should finish delivering a chunk every time a chunk is sent', async () => {
+    it('should finish delivering a chunk every time a chunk is sent', async () => {
       let rowCount = 0;
-      const chunkSize = 209;
+      const chunkSize = 20009;
       const table = INSTANCE.table(generateId('table'));
       const requestFn = table.bigtable.request;
       const transformer = new Transform({
