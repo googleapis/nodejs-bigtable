@@ -27,7 +27,7 @@ const sampleRowKeys = ({clientMap}) =>
 
     const {clientId} = request;
     const client = clientMap.get(clientId)[v2];
-    const sample = await new Promise((res, rej) => {
+    const samples = await new Promise((res, rej) => {
       const response = [];
       client
         .sampleRowKeys({
@@ -43,7 +43,7 @@ const sampleRowKeys = ({clientMap}) =>
 
     return {
       status: {code: grpc.status.OK, details: []},
-      sample,
+      samples,
     };
   });
 

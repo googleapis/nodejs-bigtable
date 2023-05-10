@@ -34,13 +34,13 @@ const bulkMutateRows = ({clientMap}) =>
       await table.mutate(entries, mutateOptions);
       return {
         status: {code: grpc.status.OK, details: []},
-        entry: [],
+        entries: [],
       };
     } catch (error) {
       if (error.name === 'PartialFailureError') {
         return {
           status: error,
-          entry: Array.from(error.errors.entries()).map(([index, entry]) => ({
+          entries: Array.from(error.errors.entries()).map(([index, entry]) => ({
             index: index + 1,
             status: entry,
           })),
@@ -48,7 +48,7 @@ const bulkMutateRows = ({clientMap}) =>
       } else {
         return {
           status: error,
-          entry: [],
+          entries: [],
         };
       }
     }
