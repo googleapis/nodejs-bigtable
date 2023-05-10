@@ -29,7 +29,6 @@ import {generateId, PREFIX} from './common';
 import {PassThrough, Transform, Writable} from 'stream';
 const {pipeline} = require('stream');
 const streamEvents = require('stream-events');
-const miss = require('mississippi');
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -559,7 +558,7 @@ describe('Bigtable', () => {
         stream.emit('end');
       }, 1000);
       await new Promise((resolve: (err?: any) => void, reject) => {
-        miss.pipe(readStream, transformer, output, (err?: any) => {
+        pipeline(readStream, transformer, output, (err?: any) => {
           if (err) {
             reject(err);
           } else {
