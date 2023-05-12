@@ -380,11 +380,11 @@ export class Mutation {
    * @private
    */
   static parseColumnName(columnName: string): ParsedColumn {
-    const parts = columnName.split(':');
+    const colonIdx = columnName.indexOf(':');
 
     return {
-      family: parts[0],
-      qualifier: parts[1],
+      family: columnName.slice(0, colonIdx),
+      qualifier: columnName.slice(colonIdx + 1),
     };
   }
 
