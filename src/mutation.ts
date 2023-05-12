@@ -386,7 +386,7 @@ export class Mutation {
       // columnName does not contain ':'
       return {
         family: columnName,
-        qualifier: undefined,
+        qualifier: null,
       };
     }
       
