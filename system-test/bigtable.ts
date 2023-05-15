@@ -551,12 +551,12 @@ describe('Bigtable', () => {
         };
         stream.push(data);
       }
-      setTimeout(() => {
+      process.nextTick(() => {
         for (let i = 0; i < 84; i++) {
           pushChunks(chunkSize);
         }
         stream.emit('end');
-      }, 100);
+      });
       await new Promise((resolve: (err?: any) => void, reject) => {
         miss.pipe(readStream, transformer, output, (err?: any) => {
           if (err) {
