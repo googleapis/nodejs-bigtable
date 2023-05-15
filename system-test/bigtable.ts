@@ -494,7 +494,7 @@ describe('Bigtable', () => {
 
     it('should finish delivering a chunk every time a chunk is sent', async () => {
       let rowCount = 0;
-      const chunkSize = 20009;
+      const chunkSize = 209;
       const table = INSTANCE.table(generateId('table'));
       const requestFn = table.bigtable.request;
       const transformer = new Transform({
@@ -553,10 +553,15 @@ describe('Bigtable', () => {
         };
         stream.push(data);
       }
-      setTimeout(() => {
-        pushChunks(chunkSize);
-        stream.emit('end');
-      }, 1000);
+      let chunksPushed = 0;
+      process.nextTick(() => {
+        if (chunksPushed < 80) {
+          pushChunks(chunkSize);
+          chunksPushed++;
+        } else {
+          stream.emit('end');
+        }
+      });
       await new Promise((resolve: (err?: any) => void, reject) => {
         pipeline(readStream, transformer, output, (err?: any) => {
           if (err) {
