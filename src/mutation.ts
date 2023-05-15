@@ -389,7 +389,7 @@ export class Mutation {
         qualifier: null,
       };
     }
- 
+
     return {
       family: columnName.slice(0, colonIdx),
       qualifier: columnName.slice(colonIdx + 1),
