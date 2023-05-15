@@ -554,14 +554,16 @@ describe('Bigtable', () => {
         stream.push(data);
       }
       let chunksPushed = 0;
-      process.nextTick(() => {
+      const runNextTick = () => {
         if (chunksPushed < 80) {
           pushChunks(chunkSize);
           chunksPushed++;
+          process.nextTick(runNextTick);
         } else {
           stream.emit('end');
         }
-      });
+      };
+      process.nextTick(runNextTick);
       await new Promise((resolve: (err?: any) => void, reject) => {
         pipeline(readStream, transformer, output, (err?: any) => {
           if (err) {
