@@ -381,15 +381,15 @@ export class Mutation {
    */
   static parseColumnName(columnName: string): ParsedColumn {
     const colonIdx = columnName.indexOf(':');
-      
-    if (colonIdx == -1) {
+
+    if (colonIdx === -1) {
       // columnName does not contain ':'
       return {
         family: columnName,
         qualifier: null,
       };
     }
-      
+ 
     return {
       family: columnName.slice(0, colonIdx),
       qualifier: columnName.slice(colonIdx + 1),
