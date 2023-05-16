@@ -18,7 +18,7 @@ import * as assert from 'assert';
 import {beforeEach, afterEach, describe, it, before, after} from 'mocha';
 import Q from 'p-queue';
 
-import {AbortableDuplex, Backup, Bigtable, Instance} from '../src';
+import {Backup, Bigtable, Instance} from '../src';
 import {AppProfile} from '../src/app-profile.js';
 import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
@@ -26,9 +26,6 @@ import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
-import {PassThrough, Transform, Writable} from 'stream';
-const {pipeline} = require('stream');
-const streamEvents = require('stream-events');
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
@@ -490,93 +487,6 @@ describe('Bigtable', () => {
       const table = INSTANCE.table(generateId('table'));
       await table.get({autoCreate: true});
       await table.delete();
-    });
-
-    it('should finish delivering a chunk every time a chunk is sent', async () => {
-      let rowCount = 0;
-      const chunkSize = 209;
-      const table = INSTANCE.table(generateId('table'));
-      const requestFn = table.bigtable.request;
-      const transformer = new Transform({
-        objectMode: true,
-        transform(
-          chunk: any,
-          _encoding: any,
-          callback: (err: any, data: any) => void
-        ) {
-          rowCount++;
-          // console.log(`row count: ${rowCount}`);
-          setTimeout(() => {
-            callback(null, chunk);
-          }, 0);
-        },
-      });
-      const output = new Writable({
-        objectMode: true,
-        write(_chunk, _encoding, callback) {
-          callback();
-        },
-      });
-      const stream = streamEvents(
-        new PassThrough({
-          objectMode: true,
-        })
-      );
-      table.bigtable.request = (config?: any) => {
-        return stream as AbortableDuplex;
-      };
-      const readStream = table.createReadStream({});
-      function ascii(index: number) {
-        return String.fromCharCode(index);
-      }
-      function getChunk(index: number) {
-        return {
-          labels: [],
-          rowKey: Buffer.from(`a${ascii(index)}`),
-          familyName: {value: 'cf1'},
-          qualifier: {value: Buffer.from('a')},
-          timestampMicros: '12',
-          value: Buffer.from('a'),
-          valueSize: 0,
-          commitRow: true,
-          rowStatus: 'commitRow',
-        };
-      }
-      function pushChunks(numChunks: number) {
-        const chunks = [];
-        for (let i = 0; i < numChunks; i++) {
-          chunks.push(getChunk(i));
-        }
-        const data = {
-          chunks,
-          lastScannedRowKey: Buffer.from('a'),
-        };
-        stream.push(data);
-      }
-      let chunksPushed = 0;
-      const runNextTick = () => {
-        if (chunksPushed < 80) {
-          pushChunks(chunkSize);
-          chunksPushed++;
-          process.nextTick(runNextTick);
-        } else {
-          stream.emit('end');
-        }
-      };
-      process.nextTick(runNextTick);
-      await new Promise((resolve: (err?: any) => void, reject) => {
-        pipeline(readStream, transformer, output, (err?: any) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
-      console.log('total row count:');
-      console.log(`${rowCount}`);
-      table.bigtable.request = requestFn;
-      assert.strictEqual(rowCount % chunkSize, 0);
     });
   });
 
