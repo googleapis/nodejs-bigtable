@@ -1,9 +1,7 @@
 import {describe, it} from 'mocha';
-import {generateId} from '../system-test/common';
-import {Bigtable} from '../src';
+import {Bigtable, AbortableDuplex} from '../src';
 import {PassThrough, pipeline, Transform, Writable} from 'stream';
-import * as streamEvents from 'stream-events';
-import {AbortableDuplex} from '../src';
+const streamEvents = require('stream-events');
 import * as assert from 'assert';
 
 describe('Bigtable/Streams', () => {
@@ -13,7 +11,7 @@ describe('Bigtable/Streams', () => {
       const chunkSize = 209;
       const bigtable = new Bigtable();
       const instance = bigtable.instance('fake-instance');
-      const table = instance.table(generateId('table'));
+      const table = instance.table('fake-table');
       const requestFn = table.bigtable.request;
       const transformer = new Transform({
         objectMode: true,
