@@ -882,7 +882,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
           if (
-            chunkTransformer._destroyed ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {
