@@ -32,7 +32,7 @@ export type Value = string | number | boolean;
 
 export interface ParsedColumn {
   family: string | null;
-  qualifier: string | null;
+  qualifier: string | null | undefined;
 }
 export interface ConvertFromBytesOptions {
   userOptions?: ConvertFromBytesUserOptions;
@@ -386,7 +386,7 @@ export class Mutation {
       // columnName does not contain ':'
       return {
         family: columnName,
-        qualifier: null,
+        qualifier: undefined,
       };
     }
 
