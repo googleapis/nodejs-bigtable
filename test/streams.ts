@@ -9,27 +9,6 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 
 describe('Bigtable/Streams', () => {
   describe('createReadStream', () => {
-    let rowCount = 0;
-    const transformer = new Transform({
-      objectMode: true,
-      transform(
-        chunk: any,
-        _encoding: any,
-        callback: (err: any, data: any) => void
-      ) {
-        rowCount++;
-        // console.log(`row count: ${rowCount}`);
-        setTimeout(() => {
-          callback(null, chunk);
-        }, 0);
-      },
-    });
-    const output = new Writable({
-      objectMode: true,
-      write(_chunk, _encoding, callback) {
-        callback();
-      },
-    });
     function ascii(index: number) {
       return String.fromCharCode(index);
     }
@@ -48,6 +27,27 @@ describe('Bigtable/Streams', () => {
     }
 
     it('should finish delivering a chunk every time a chunk is sent', async () => {
+      let rowCount = 0;
+      const transformer = new Transform({
+        objectMode: true,
+        transform(
+          chunk: any,
+          _encoding: any,
+          callback: (err: any, data: any) => void
+        ) {
+          rowCount++;
+          // console.log(`row count: ${rowCount}`);
+          setTimeout(() => {
+            callback(null, chunk);
+          }, 0);
+        },
+      });
+      const output = new Writable({
+        objectMode: true,
+        write(_chunk, _encoding, callback) {
+          callback();
+        },
+      });
       rowCount = 0;
       const chunkSize = 209;
       const bigtable = new Bigtable();
@@ -137,6 +137,7 @@ describe('Bigtable/Streams', () => {
           if (rowId < 300) {
             setTimeout(sendNextRow, 10);
           } else {
+            console.log('ending call');
             call.end();
           }
         }
@@ -144,6 +145,27 @@ describe('Bigtable/Streams', () => {
       };
 
       it('should finish delivering all the data to the user', async () => {
+        let rowCount = 0;
+        const transformer = new Transform({
+          objectMode: true,
+          transform(
+            chunk: any,
+            _encoding: any,
+            callback: (err: any, data: any) => void
+          ) {
+            rowCount++;
+            // console.log(`row count: ${rowCount}`);
+            setTimeout(() => {
+              callback(null, chunk);
+            }, 0);
+          },
+        });
+        const output = new Writable({
+          objectMode: true,
+          write(_chunk, _encoding, callback) {
+            callback();
+          },
+        });
         rowCount = 0;
         const instance = bigtable.instance('fake-instance');
         const table = instance.table('fake-table');
