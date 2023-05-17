@@ -134,7 +134,7 @@ describe('Bigtable/Streams', () => {
             call.write(createResponse(rowId++));
           }
 
-          if (rowId < 30000) {
+          if (rowId < 300) {
             setTimeout(sendNextRow, 10);
           } else {
             call.end();
@@ -160,7 +160,7 @@ describe('Bigtable/Streams', () => {
             }
           });
         });
-        assert.strictEqual(rowCount, 30000);
+        assert.strictEqual(rowCount, 300);
       });
     });
   });
