@@ -143,7 +143,7 @@ describe('Bigtable/Streams', () => {
         sendNextRow();
       };
 
-      it.only('should finish delivering all the data to the user', async () => {
+      it('should finish delivering all the data to the user', async () => {
         rowCount = 0;
         const instance = bigtable.instance('fake-instance');
         const table = instance.table('fake-table');
@@ -161,6 +161,10 @@ describe('Bigtable/Streams', () => {
           });
         });
         assert.strictEqual(rowCount, 300);
+      });
+
+      after(async () => {
+        server.shutdown(() => {});
       });
     });
   });
