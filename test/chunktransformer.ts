@@ -55,6 +55,7 @@ describe('Bigtable/ChunkTransformer', () => {
     rows = [];
     chunkTransformer.push = (row: Row) => {
       rows.push(row);
+      return true;
     };
   });
   afterEach(() => {
@@ -955,7 +956,7 @@ describe('Bigtable/ChunkTransformer', () => {
         'processCellInProgress'
       );
     });
-    it('when current state is NEW_ROW should call processNewRow', () => {
+    it('when current state is NEW_ROW should call processNewRow', async () => {
       const chunk = {
         rowKey: 'key',
         familyName: {value: 'family'},
@@ -968,16 +969,16 @@ describe('Bigtable/ChunkTransformer', () => {
       };
       chunkTransformer.state = RowStateEnum.NEW_ROW;
       const chunks = [chunk];
-      chunkTransformer._transform({chunks}, {}, callback);
+      await chunkTransformer._transform({chunks}, {}, callback);
       assert(processNewRowSpy.called, 'did not call processNewRow');
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
     });
-    it('when current state is ROW_IN_PROGRESS should call processRowInProgress', () => {
+    it('when current state is ROW_IN_PROGRESS should call processRowInProgress', async () => {
       chunkTransformer.row = {key: 'key'};
       chunkTransformer.state = RowStateEnum.ROW_IN_PROGRESS;
       const chunks = [{key: 'key'}];
-      chunkTransformer._transform({chunks}, {}, callback);
+      await chunkTransformer._transform({chunks}, {}, callback);
       assert(
         processRowInProgressSpy.called,
         'did not call processRowInProgress'
@@ -985,11 +986,11 @@ describe('Bigtable/ChunkTransformer', () => {
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
     });
-    it('when current state is CELL_IN_PROGRESS should call processCellInProgress', () => {
+    it('when current state is CELL_IN_PROGRESS should call processCellInProgress', async () => {
       chunkTransformer.row = {key: 'key'};
       chunkTransformer.state = RowStateEnum.CELL_IN_PROGRESS;
       const chunks = [{key: 'key'}];
-      chunkTransformer._transform({chunks}, {}, callback);
+      await chunkTransformer._transform({chunks}, {}, callback);
       assert(
         processCellInProgressSpy.called,
         'did not call processCellInProgress'

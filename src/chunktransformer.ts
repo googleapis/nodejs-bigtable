@@ -132,17 +132,17 @@ export class ChunkTransformer extends Transform {
    * @param {object} [enc] encoding options.
    * @param {callback} next callback will be called once data is processed, with error if any error in processing
    */
-  _transform(data: Data, enc: string, next: Function): void {
+  async _transform(data: Data, enc: string, next: Function): Promise<void> {
     for (const chunk of data.chunks!) {
       switch (this.state) {
         case RowStateEnum.NEW_ROW:
-          this.processNewRow(chunk);
+          await this.processNewRow(chunk);
           break;
         case RowStateEnum.ROW_IN_PROGRESS:
-          this.processRowInProgress(chunk);
+          await this.processRowInProgress(chunk);
           break;
         case RowStateEnum.CELL_IN_PROGRESS:
-          this.processCellInProgress(chunk);
+          await this.processCellInProgress(chunk);
           break;
         default:
           break;
@@ -335,12 +335,24 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk in process
    */
-  moveToNextState(chunk: Chunk): void {
+  async moveToNextState(chunk: Chunk): Promise<void> {
     const row = this.row;
     if (chunk.commitRow) {
-      this.push(row);
+      const willAcceptMore = this.push(row);
       this.commit();
       this.lastRowKey = row!.key;
+      if (!willAcceptMore) {
+        // wait for the stream to drain
+        // _readableState.pipes[0] is the internal stream that would emit
+        // `drain` event when it's ready to accept more data
+        await new Promise(resolve => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ((this as any)._readableState.pipes[0] as Transform).once(
+            'drain',
+            resolve
+          );
+        });
+      }
     } else {
       if (chunk.valueSize! > 0) {
         this.state = RowStateEnum.CELL_IN_PROGRESS;
@@ -355,7 +367,7 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunks} chunk chunk to process
    */
-  processNewRow(chunk: Chunk): void {
+  async processNewRow(chunk: Chunk): Promise<void> {
     const newRowKey = Mutation.convertFromBytes(chunk.rowKey! as Bytes, {
       userOptions: this.options,
     }) as string;
@@ -381,7 +393,7 @@ export class ChunkTransformer extends Transform {
         timestamp: chunk.timestampMicros,
       };
       this.qualifiers.push(this.qualifier);
-      this.moveToNextState(chunk);
+      await this.moveToNextState(chunk);
     }
   }
 
@@ -390,7 +402,7 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to process
    */
-  processRowInProgress(chunk: Chunk): void {
+  async processRowInProgress(chunk: Chunk): Promise<void> {
     this.validateRowInProgress(chunk);
     if (chunk.resetRow) {
       return this.reset();
@@ -419,7 +431,7 @@ export class ChunkTransformer extends Transform {
       timestamp: chunk.timestampMicros,
     };
     this.qualifiers!.push(this.qualifier);
-    this.moveToNextState(chunk);
+    await this.moveToNextState(chunk);
   }
 
   /**
@@ -427,7 +439,7 @@ export class ChunkTransformer extends Transform {
    * @private
    * @param {chunk} chunk chunk to process
    */
-  processCellInProgress(chunk: Chunk): void {
+  async processCellInProgress(chunk: Chunk): Promise<void> {
     this.validateCellInProgress(chunk);
     if (chunk.resetRow) {
       return this.reset();
@@ -450,6 +462,6 @@ export class ChunkTransformer extends Transform {
     } else {
       (this.qualifier!.value as string) += chunkQualifierValue;
     }
-    this.moveToNextState(chunk);
+    await this.moveToNextState(chunk);
   }
 }
