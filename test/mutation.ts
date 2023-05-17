@@ -458,7 +458,7 @@ describe('Bigtable/Mutation', () => {
       const parsed = Mutation.parseColumnName('a');
 
       assert.strictEqual(parsed.family, 'a');
-      assert.strictEqual(parsed.qualifier, null);
+      assert.strictEqual(parsed.qualifier, undefined);
     });
   });
 
