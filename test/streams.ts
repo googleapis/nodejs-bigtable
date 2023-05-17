@@ -134,7 +134,7 @@ describe('Bigtable/Streams', () => {
             call.write(createResponse(rowId++));
           }
 
-          if (rowId < 300) {
+          if (rowId < 30000) {
             setTimeout(sendNextRow, 10);
           } else {
             call.end();
@@ -143,7 +143,7 @@ describe('Bigtable/Streams', () => {
         sendNextRow();
       };
 
-      it('should finish delivering all the data to the user', async () => {
+      it.only('should finish delivering all the data to the user', async () => {
         rowCount = 0;
         const instance = bigtable.instance('fake-instance');
         const table = instance.table('fake-table');
@@ -160,7 +160,7 @@ describe('Bigtable/Streams', () => {
             }
           });
         });
-        assert.strictEqual(rowCount, 300);
+        assert.strictEqual(rowCount, 30000);
       });
     });
   });
