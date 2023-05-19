@@ -745,10 +745,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       filter = Filter.parse(options.filter);
     }
 
+    let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
+
     const userStream = new PassThrough({objectMode: true});
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
       rowStream?.unpipe(userStream);
+      if (chunkTransformer) {
+        chunkTransformer.cancel();
+      }
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
@@ -757,9 +763,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return end();
     };
-
-    let chunkTransformer: ChunkTransformer;
-    let rowStream: Duplex;
 
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
@@ -882,7 +885,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
           if (
-            chunkTransformer._destroyed ||
+            chunkTransformer.canceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {

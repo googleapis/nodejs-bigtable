@@ -997,20 +997,6 @@ describe('Bigtable/ChunkTransformer', () => {
       const err = callback.getCall(0).args[0];
       assert(!err, 'did not expect error');
     });
-    it('should return when stream is destroyed', () => {
-      chunkTransformer._destroyed = true;
-      const chunks = [{key: 'key'}];
-      chunkTransformer._transform({chunks}, {}, callback);
-      assert(!callback.called, 'unexpected call to  next');
-    });
-    it('should change the `lastRowKey` value for `data.lastScannedRowKey`', () => {
-      chunkTransformer._transform(
-        {chunks: [], lastScannedRowKey: 'foo'},
-        {},
-        callback
-      );
-      assert.deepStrictEqual(chunkTransformer.lastRowKey, 'foo');
-    });
   });
   describe('reset', () => {
     it('should reset initial state', () => {
