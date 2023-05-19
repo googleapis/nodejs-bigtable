@@ -185,7 +185,8 @@ export function readRowsImpl(
     let chunksSent = 0;
     const chunks = generateChunks(keyFrom, keyTo, stream);
     let lastScannedRowKey: string | undefined;
-    let firstN: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] = [];
+    let currentResponseChunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] =
+      [];
     let chunkIdx = 0;
     for (const chunk of chunks) {
       if (cancelled) {
@@ -203,17 +204,17 @@ export function readRowsImpl(
       if (chunk.commitRow) {
         debugLog('commit row');
       }
-      firstN.push(chunk);
+      currentResponseChunks.push(chunk);
       ++chunkIdx;
       if (
-        firstN.length === chunksPerResponse ||
+        currentResponseChunks.length === chunksPerResponse ||
         chunkIdx === errorAfterChunkNo
       ) {
         const response: protos.google.bigtable.v2.IReadRowsResponse = {
-          chunks: firstN,
+          chunks: currentResponseChunks,
           lastScannedRowKey,
         };
-        chunksSent += firstN.length;
+        chunksSent += currentResponseChunks.length;
         await new Promise<void>(resolve => {
           setTimeout(async () => {
             if (cancelled) {
@@ -221,8 +222,8 @@ export function readRowsImpl(
               return;
             }
             const canSendMore = stream.write(response);
-            debugLog(`sent ${firstN.length} chunks`);
-            firstN = [];
+            debugLog(`sent ${currentResponseChunks.length} chunks`);
+            currentResponseChunks = [];
             if (!canSendMore) {
               debugLog(
                 `awaiting for back pressure after sending ${chunksSent} chunks`
@@ -246,19 +247,19 @@ export function readRowsImpl(
         }
       }
     }
-    if (!cancelled && firstN.length > 0) {
+    if (!cancelled && currentResponseChunks.length > 0) {
       const response: protos.google.bigtable.v2.IReadRowsResponse = {
-        chunks: firstN,
+        chunks: currentResponseChunks,
         lastScannedRowKey,
       };
-      chunksSent += firstN.length;
+      chunksSent += currentResponseChunks.length;
       await new Promise<void>(resolve => {
         setTimeout(() => {
           stream.write(response);
           resolve();
         }, 0);
       });
-      debugLog(`sent ${firstN.length} remaining chunks`);
+      debugLog(`sent ${currentResponseChunks.length} remaining chunks`);
     }
     debugLog(`in total, sent ${chunksSent} chunks`);
     stream.end();
