@@ -29,13 +29,15 @@ describe('Bigtable/Streams', () => {
   let bigtable: Bigtable;
   let table: Table;
 
-  before(() => {
-    server = new MockServer(() => {
-      bigtable = new Bigtable({
-        apiEndpoint: `localhost:${server.port}`,
-      });
-      table = bigtable.instance('fake-instance').table('fake-table');
+  before(async () => {
+    // make sure we have everything initialized before starting tests
+    const port = await new Promise<string>(resolve => {
+      server = new MockServer(resolve);
     });
+    bigtable = new Bigtable({
+      apiEndpoint: `localhost:${port}`,
+    });
+    table = bigtable.instance('fake-instance').table('fake-table');
     service = new BigtableClientMockService(server);
   });
 
