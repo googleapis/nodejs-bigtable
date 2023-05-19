@@ -40,6 +40,7 @@ describe('Bigtable/Streams', () => {
   });
 
   it('should create read stream and read synchronously', done => {
+    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
 
@@ -71,6 +72,7 @@ describe('Bigtable/Streams', () => {
   });
 
   it('should create read stream and read synchronously using Transform stream', done => {
+    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
 
@@ -120,6 +122,7 @@ describe('Bigtable/Streams', () => {
 
   // TODO(@alexander-fenster): enable after https://github.com/googleapis/nodejs-bigtable/issues/607 is fixed
   it.skip('should create read stream and read asynchronously using Transform stream', done => {
+    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
 
@@ -170,8 +173,10 @@ describe('Bigtable/Streams', () => {
   });
 
   it('should be able to stop reading from the read stream', done => {
+    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
+    // pick any key to stop after
     const stopAfter = 42;
 
     service.setService({
@@ -217,8 +222,10 @@ describe('Bigtable/Streams', () => {
   // before the record is committed, which makes it omit this record when
   // the call is resumed. I believe lastRowKey should only be set in commit().
   it.skip('should silently resume after server or network error', done => {
+    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
+    // the server will error after sending this chunk (not row)
     const errorAfterChunkNo = 423;
 
     service.setService({

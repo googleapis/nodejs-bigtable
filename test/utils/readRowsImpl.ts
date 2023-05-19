@@ -17,7 +17,8 @@ import {protos} from '../../src';
 import {GoogleError, Status} from 'google-gax';
 
 const valueSize = 1024 * 1024;
-const chunkSize = 1023 * 1024 - 1; // make it uneven
+// we want each row to be splitted into 2 chunks of different sizes
+const chunkSize = 1023 * 1024 - 1;
 const chunksPerResponse = 10;
 
 const debug = process.env.BIGTABLE_TEST_DEBUG === 'true';
@@ -40,6 +41,8 @@ function generateChunks(
 
   const chunks: protos.google.bigtable.v2.ReadRowsResponse.ICellChunk[] = [];
   for (let key = keyFrom; key < keyTo; ++key) {
+    // the keys must be increasing, but we also want to keep them readable,
+    // so we'll use keys 00000000, 00000001, 00000002, etc. stored as Buffers
     const binaryKey = Buffer.from(key.toString().padStart(8, '0'));
 
     // primitive support for row ranges
