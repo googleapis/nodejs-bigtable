@@ -122,7 +122,10 @@ describe('Bigtable/Streams', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it('should create read stream and read asynchronously using Transform stream', done => {
+  it('should create read stream and read asynchronously using Transform stream', function (done) {
+    if (process.platform === 'win32') {
+      this.timeout(60000); // it runs much slower on Windows!
+    }
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
