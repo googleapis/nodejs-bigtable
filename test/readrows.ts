@@ -123,7 +123,11 @@ describe('Bigtable/Streams', () => {
   });
 
   // TODO(@alexander-fenster): enable after https://github.com/googleapis/nodejs-bigtable/issues/607 is fixed
-  it.skip('should create read stream and read asynchronously using Transform stream', done => {
+  it.skip('should create read stream and read asynchronously using Transform stream', function (done) {
+    if (process.platform === 'win32') {
+      this.timeout(60000); // it runs much slower on Windows!
+    }
+
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
@@ -219,7 +223,11 @@ describe('Bigtable/Streams', () => {
   });
 
   // TODO(@alexander-fenster): enable after it's fixed
-  it.skip('should be able to stop reading from the read stream when reading asynchronously', done => {
+  it.skip('should be able to stop reading from the read stream when reading asynchronously', function (done) {
+    if (process.platform === 'win32') {
+      this.timeout(60000); // it runs much slower on Windows!
+    }
+
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
@@ -282,12 +290,7 @@ describe('Bigtable/Streams', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  // TODO(@alexander-fenster): enable after the resumption logic is fixed.
-  // Currently, lastRowKey is updated in _transform (chunktransfomer.ts:155)
-  // https://github.com/googleapis/nodejs-bigtable/blob/436e77807e87e13f80ac2bc2c43813b09090000f/src/chunktransformer.ts#L155
-  // before the record is committed, which makes it omit this record when
-  // the call is resumed. I believe lastRowKey should only be set in commit().
-  it.skip('should silently resume after server or network error', done => {
+  it('should silently resume after server or network error', done => {
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
