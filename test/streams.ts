@@ -181,7 +181,7 @@ describe('Bigtable/Streams', () => {
     const keyFrom = 0;
     const keyTo = 1000;
     // pick any key to stop after
-    const stopAfter = 42;
+    const stopAfter = 420;
 
     service.setService({
       ReadRows: readRowsImpl(keyFrom, keyTo),
@@ -218,6 +218,69 @@ describe('Bigtable/Streams', () => {
       assert.strictEqual(lastKeyReceived, stopAfter - 1);
       done();
     });
+  });
+
+  it('should be able to stop reading from the read stream when reading asynchronously', done => {
+    // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
+    const keyFrom = 0;
+    const keyTo = 1000;
+    // pick any key to stop after
+    const stopAfter = 420;
+
+    service.setService({
+      ReadRows: readRowsImpl(keyFrom, keyTo),
+    });
+
+    let receivedRowCount = 0;
+    let lastKeyReceived: number | undefined;
+
+    // BigTable stream
+    const readStream = table.createReadStream({
+      // workaround for https://github.com/grpc/grpc-node/issues/2446, remove when fixed
+      gaxOptions: {
+        timeout: 3000,
+      },
+    });
+
+    // Transform stream
+    const transform = new Transform({
+      objectMode: true,
+      transform: (row, _encoding, callback) => {
+        setTimeout(() => {
+          callback(null, row);
+        }, 0);
+      },
+    });
+
+    // Final stream
+    const passThrough = new PassThrough({
+      objectMode: true,
+    });
+
+    passThrough.on('error', (err: GoogleError) => {
+      done(err);
+    });
+    passThrough.on('data', (row: Row) => {
+      ++receivedRowCount;
+      const key = parseInt(row.id);
+      if (lastKeyReceived && key <= lastKeyReceived) {
+        done(new Error('Test error: keys are not in order'));
+      }
+      lastKeyReceived = key;
+      debugLog(`received row key ${key}`);
+
+      if (receivedRowCount === stopAfter) {
+        debugLog(`requesting to stop after receiving key ${key}`);
+        readStream.end();
+      }
+    });
+    passThrough.on('end', () => {
+      assert.strictEqual(receivedRowCount, stopAfter);
+      assert.strictEqual(lastKeyReceived, stopAfter - 1);
+      done();
+    });
+
+    pipeline(readStream, transform, passThrough, () => {});
   });
 
   it('should silently resume after server or network error', done => {

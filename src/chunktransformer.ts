@@ -80,7 +80,6 @@ export enum RowStateEnum {
 export class ChunkTransformer extends Transform {
   options: TransformOptions;
   _destroyed: boolean;
-  _userCanceled: boolean;
   lastRowKey?: Value;
   state?: number;
   row?: Row;
@@ -92,13 +91,8 @@ export class ChunkTransformer extends Transform {
     super(options);
     this.options = options;
     this._destroyed = false;
-    this._userCanceled = false;
     this.lastRowKey = undefined;
     this.reset();
-  }
-
-  get canceled() {
-    return this._userCanceled;
   }
 
   /**
@@ -453,9 +447,5 @@ export class ChunkTransformer extends Transform {
       (this.qualifier!.value as string) += chunkQualifierValue;
     }
     this.moveToNextState(chunk);
-  }
-
-  cancel(): void {
-    this._userCanceled = true;
   }
 }

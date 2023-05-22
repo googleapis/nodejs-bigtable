@@ -748,13 +748,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let chunkTransformer: ChunkTransformer;
     let rowStream: Duplex;
 
+    let userCanceled = false;
     const userStream = new PassThrough({objectMode: true});
     const end = userStream.end.bind(userStream);
     userStream.end = () => {
       rowStream?.unpipe(userStream);
-      if (chunkTransformer) {
-        chunkTransformer.cancel();
-      }
+      userCanceled = true;
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
@@ -763,6 +762,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return end();
     };
+    let extra = 0;
+    userStream.on('data', () => {
+      if (userCanceled) {
+        console.log('extra data event #', ++extra);
+      }
+    });
 
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
@@ -885,7 +890,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
           if (
-            chunkTransformer.canceled ||
+            userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {
