@@ -199,9 +199,9 @@ export function readRowsImpl(
             'base64'
           ).toString()}`
         );
-        lastScannedRowKey = chunk.rowKey as string;
       }
       if (chunk.commitRow) {
+        lastScannedRowKey = chunk.rowKey as string;
         debugLog('commit row');
       }
       currentResponseChunks.push(chunk);
