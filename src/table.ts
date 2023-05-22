@@ -762,12 +762,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return end();
     };
-    let extra = 0;
-    userStream.on('data', () => {
-      if (userCanceled) {
-        console.log('extra data event #', ++extra);
-      }
-    });
 
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user

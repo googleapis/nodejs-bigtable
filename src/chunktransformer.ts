@@ -147,6 +147,18 @@ export class ChunkTransformer extends Transform {
         default:
           break;
       }
+      if (this._destroyed) {
+        next();
+        return;
+      }
+    }
+    if (data.lastScannedRowKey && data.lastScannedRowKey.length > 0) {
+      this.lastRowKey = Mutation.convertFromBytes(
+        data.lastScannedRowKey as Bytes,
+        {
+          userOptions: this.options,
+        }
+      );
     }
     next();
   }

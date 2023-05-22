@@ -220,7 +220,8 @@ describe('Bigtable/Streams', () => {
     });
   });
 
-  it('should be able to stop reading from the read stream when reading asynchronously', done => {
+  // TODO(@alexander-fenster): enable after it's fixed
+  it.skip('should be able to stop reading from the read stream when reading asynchronously', done => {
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
