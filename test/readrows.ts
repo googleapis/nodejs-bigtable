@@ -23,7 +23,7 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
 
-describe('Bigtable/Streams', () => {
+describe('Bigtable/ReadRows', () => {
   let server: MockServer;
   let service: MockService;
   let bigtable: Bigtable;
