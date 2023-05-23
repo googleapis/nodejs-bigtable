@@ -227,10 +227,12 @@ export class ChunkTransformer extends Transform {
       chunk.familyName ||
       chunk.qualifier ||
       (chunk.value && chunk.value.length !== 0) ||
-      // if it's a number
+      // timestampMicros is an int64 in the protobuf definition,
+      // which can be either a number or an instance of Long.
+      // If it's a number...
       (typeof chunk.timestampMicros === 'number' &&
         chunk.timestampMicros! > 0) ||
-      // if it's an instance of Long
+      // If it's an instance of Long...
       (typeof chunk.timestampMicros === 'object' &&
         'compare' in chunk.timestampMicros &&
         typeof chunk.timestampMicros.compare === 'function' &&
