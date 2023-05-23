@@ -145,7 +145,12 @@ describe('Bigtable/Mutation', () => {
       assert.strictEqual(decoded.toString(), message);
     });
 
-    it('should not create a new Buffer needlessly', () => {
+    it('should not create a new Buffer needlessly', function () {
+      if (process.platform === 'win32') {
+        // stubbing Buffer.from does not work on Windows since sinon 15.1.0
+        // TODO(@alexander-fenster): investigate and report or fix
+        this.skip();
+      }
       const message = 'Hello!';
       const encoded = Buffer.from(message);
       const stub = sandbox.stub(Buffer, 'from');
