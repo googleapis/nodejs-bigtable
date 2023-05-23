@@ -749,10 +749,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     let userCanceled = false;
-    const userStream = new PassThrough({objectMode: true});
-    const end = userStream.end.bind(userStream);
-    userStream.end = () => {
+    const userStream = new PassThrough({
+      objectMode: true,
+      transform(row, _encoding, callback) {
+        if (userCanceled) {
+          callback();
+          return;
+        }
+        callback(null, row);
+      },
+    });
+    const originalEnd = userStream.end.bind(userStream);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
       rowStream?.unpipe(userStream);
+      rowStream.removeListener('end', originalEnd);
       userCanceled = true;
       if (activeRequestStream) {
         activeRequestStream.abort();
@@ -760,7 +771,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (retryTimer) {
         clearTimeout(retryTimer);
       }
-      return end();
+      return originalEnd(chunk, encoding, cb);
     };
 
     const makeNewRequest = () => {
@@ -916,6 +927,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream
         .on('error', (error: ServiceError) => {
           rowStream.unpipe(userStream);
+          rowStream.removeListener('end', originalEnd);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
@@ -949,7 +961,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('end', () => {
           activeRequestStream = null;
         });
-      rowStream.pipe(userStream);
+      rowStream.pipe(userStream, {end: false});
+      rowStream.on('end', originalEnd);
     };
 
     makeNewRequest();
