@@ -20915,6 +20915,214 @@
                         return RestoreInfo;
                     })();
     
+                    v2.ChangeStreamConfig = (function() {
+    
+                        /**
+                         * Properties of a ChangeStreamConfig.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IChangeStreamConfig
+                         * @property {google.protobuf.IDuration|null} [retentionPeriod] ChangeStreamConfig retentionPeriod
+                         */
+    
+                        /**
+                         * Constructs a new ChangeStreamConfig.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ChangeStreamConfig.
+                         * @implements IChangeStreamConfig
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig=} [properties] Properties to set
+                         */
+                        function ChangeStreamConfig(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ChangeStreamConfig retentionPeriod.
+                         * @member {google.protobuf.IDuration|null|undefined} retentionPeriod
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @instance
+                         */
+                        ChangeStreamConfig.prototype.retentionPeriod = null;
+    
+                        /**
+                         * Creates a new ChangeStreamConfig instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig instance
+                         */
+                        ChangeStreamConfig.create = function create(properties) {
+                            return new ChangeStreamConfig(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ChangeStreamConfig message. Does not implicitly {@link google.bigtable.admin.v2.ChangeStreamConfig.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig} message ChangeStreamConfig message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChangeStreamConfig.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.retentionPeriod != null && Object.hasOwnProperty.call(message, "retentionPeriod"))
+                                $root.google.protobuf.Duration.encode(message.retentionPeriod, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ChangeStreamConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ChangeStreamConfig.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig} message ChangeStreamConfig message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChangeStreamConfig.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ChangeStreamConfig message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChangeStreamConfig.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ChangeStreamConfig();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.retentionPeriod = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ChangeStreamConfig message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChangeStreamConfig.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ChangeStreamConfig message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ChangeStreamConfig.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.retentionPeriod != null && message.hasOwnProperty("retentionPeriod")) {
+                                var error = $root.google.protobuf.Duration.verify(message.retentionPeriod);
+                                if (error)
+                                    return "retentionPeriod." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ChangeStreamConfig message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig
+                         */
+                        ChangeStreamConfig.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ChangeStreamConfig)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ChangeStreamConfig();
+                            if (object.retentionPeriod != null) {
+                                if (typeof object.retentionPeriod !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.ChangeStreamConfig.retentionPeriod: object expected");
+                                message.retentionPeriod = $root.google.protobuf.Duration.fromObject(object.retentionPeriod);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ChangeStreamConfig message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.ChangeStreamConfig} message ChangeStreamConfig
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ChangeStreamConfig.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.retentionPeriod = null;
+                            if (message.retentionPeriod != null && message.hasOwnProperty("retentionPeriod"))
+                                object.retentionPeriod = $root.google.protobuf.Duration.toObject(message.retentionPeriod, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ChangeStreamConfig to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ChangeStreamConfig.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for ChangeStreamConfig
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        ChangeStreamConfig.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.ChangeStreamConfig";
+                        };
+    
+                        return ChangeStreamConfig;
+                    })();
+    
                     v2.Table = (function() {
     
                         /**
@@ -20926,6 +21134,7 @@
                          * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
                          * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
                          * @property {google.bigtable.admin.v2.IRestoreInfo|null} [restoreInfo] Table restoreInfo
+                         * @property {google.bigtable.admin.v2.IChangeStreamConfig|null} [changeStreamConfig] Table changeStreamConfig
                          * @property {boolean|null} [deletionProtection] Table deletionProtection
                          */
     
@@ -20987,6 +21196,14 @@
                         Table.prototype.restoreInfo = null;
     
                         /**
+                         * Table changeStreamConfig.
+                         * @member {google.bigtable.admin.v2.IChangeStreamConfig|null|undefined} changeStreamConfig
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.changeStreamConfig = null;
+    
+                        /**
                          * Table deletionProtection.
                          * @member {boolean} deletionProtection
                          * @memberof google.bigtable.admin.v2.Table
@@ -21034,6 +21251,8 @@
                                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
                             if (message.restoreInfo != null && Object.hasOwnProperty.call(message, "restoreInfo"))
                                 $root.google.bigtable.admin.v2.RestoreInfo.encode(message.restoreInfo, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            if (message.changeStreamConfig != null && Object.hasOwnProperty.call(message, "changeStreamConfig"))
+                                $root.google.bigtable.admin.v2.ChangeStreamConfig.encode(message.changeStreamConfig, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
                             if (message.deletionProtection != null && Object.hasOwnProperty.call(message, "deletionProtection"))
                                 writer.uint32(/* id 9, wireType 0 =*/72).bool(message.deletionProtection);
                             return writer;
@@ -21128,6 +21347,10 @@
                                         message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.decode(reader, reader.uint32());
                                         break;
                                     }
+                                case 8: {
+                                        message.changeStreamConfig = $root.google.bigtable.admin.v2.ChangeStreamConfig.decode(reader, reader.uint32());
+                                        break;
+                                    }
                                 case 9: {
                                         message.deletionProtection = reader.bool();
                                         break;
@@ -21203,6 +21426,11 @@
                                 if (error)
                                     return "restoreInfo." + error;
                             }
+                            if (message.changeStreamConfig != null && message.hasOwnProperty("changeStreamConfig")) {
+                                var error = $root.google.bigtable.admin.v2.ChangeStreamConfig.verify(message.changeStreamConfig);
+                                if (error)
+                                    return "changeStreamConfig." + error;
+                            }
                             if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
                                 if (typeof message.deletionProtection !== "boolean")
                                     return "deletionProtection: boolean expected";
@@ -21264,6 +21492,11 @@
                                     throw TypeError(".google.bigtable.admin.v2.Table.restoreInfo: object expected");
                                 message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.fromObject(object.restoreInfo);
                             }
+                            if (object.changeStreamConfig != null) {
+                                if (typeof object.changeStreamConfig !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Table.changeStreamConfig: object expected");
+                                message.changeStreamConfig = $root.google.bigtable.admin.v2.ChangeStreamConfig.fromObject(object.changeStreamConfig);
+                            }
                             if (object.deletionProtection != null)
                                 message.deletionProtection = Boolean(object.deletionProtection);
                             return message;
@@ -21290,6 +21523,7 @@
                                 object.name = "";
                                 object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
                                 object.restoreInfo = null;
+                                object.changeStreamConfig = null;
                                 object.deletionProtection = false;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
@@ -21309,6 +21543,8 @@
                                 object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] === undefined ? message.granularity : $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
                             if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
                                 object.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.toObject(message.restoreInfo, options);
+                            if (message.changeStreamConfig != null && message.hasOwnProperty("changeStreamConfig"))
+                                object.changeStreamConfig = $root.google.bigtable.admin.v2.ChangeStreamConfig.toObject(message.changeStreamConfig, options);
                             if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
                                 object.deletionProtection = message.deletionProtection;
                             return object;

@@ -2489,6 +2489,14 @@
                         }
                       }
                     },
+                    "ChangeStreamConfig": {
+                      "fields": {
+                        "retentionPeriod": {
+                          "type": "google.protobuf.Duration",
+                          "id": 1
+                        }
+                      }
+                    },
                     "Table": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Table",
@@ -2525,6 +2533,10 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "changeStreamConfig": {
+                          "type": "ChangeStreamConfig",
+                          "id": 8
                         },
                         "deletionProtection": {
                           "type": "bool",
