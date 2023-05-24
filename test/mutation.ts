@@ -465,6 +465,13 @@ describe('Bigtable/Mutation', () => {
       assert.strictEqual(parsed.family, 'a');
       assert.strictEqual(parsed.qualifier, undefined);
     });
+
+    it('should parse a qualifier name with colons', () => {
+      const parsed = Mutation.parseColumnName('a:b:c');
+
+      assert.strictEqual(parsed.family, 'a');
+      assert.strictEqual(parsed.qualifier, 'b:c');
+    });
   });
 
   describe('toProto', () => {
