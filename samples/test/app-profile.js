@@ -28,8 +28,8 @@ const appProfileSnippets = require('./app-profile.js');
 const instance = bigtable.instance(INSTANCE_ID);
 
 describe.skip('App Profile Snippets', () => {
-  before(() => {
-    instance.create({
+  before(async () => {
+    const [, operation] = await instance.create({
       clusters: [
         {
           name: CLUSTER_ID,
@@ -39,6 +39,7 @@ describe.skip('App Profile Snippets', () => {
       ],
       type: 'DEVELOPMENT',
     });
+    await operation.promise();
   });
 
   after(() => {

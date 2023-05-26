@@ -20,7 +20,7 @@ import * as gax from 'google-gax';
 import * as proxyquire from 'proxyquire';
 import * as sn from 'sinon';
 
-import {Cluster, CreateClusterOptions} from '../src/cluster.js';
+import {Cluster} from '../src/cluster.js';
 import {Instance, InstanceOptions} from '../src/instance.js';
 import {PassThrough} from 'stream';
 import {RequestOptions} from '../src';
@@ -48,6 +48,7 @@ const fakePromisify = Object.assign({}, promisify, {
     }
     promisified = true;
     assert.deepStrictEqual(options.exclude, [
+      'close',
       'instance',
       'operation',
       'request',
@@ -493,12 +494,10 @@ describe('Bigtable', () => {
     });
 
     it('should respect the clusters option', done => {
-      const fakeLocation = 'a/b/c/d';
-      FakeCluster.getLocation_ = (project: string, location: string) => {
-        assert.strictEqual(project, PROJECT_ID);
-        assert.strictEqual(location, OPTIONS.clusters[0].location);
-        return fakeLocation;
-      };
+      const fakeLocation = Cluster.getLocation_(
+        PROJECT_ID,
+        OPTIONS.clusters[0].location
+      );
       const fakeStorage = 20;
       FakeCluster.getStorageType_ = (storage: {}) => {
         assert.strictEqual(storage, OPTIONS.clusters[0].storage);

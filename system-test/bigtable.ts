@@ -25,9 +25,7 @@ import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
-import {generateId} from './common';
-
-const PREFIX = 'gcloud-tests-';
+import {generateId, PREFIX} from './common';
 
 describe('Bigtable', () => {
   const bigtable = new Bigtable();
