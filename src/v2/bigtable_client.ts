@@ -871,8 +871,8 @@ export class BigtableClient {
    *   Values are of the form
    *   `projects/<project>/instances/<instance>/tables/<table>`.
    * @param {string} request.appProfileId
-   *   This value specifies routing for replication. This API only accepts the
-   *   empty value of app_profile_id.
+   *   This value specifies routing for replication. If not specified, the
+   *   "default" application profile will be used.
    * @param {google.bigtable.v2.RowSet} request.rows
    *   The row keys and/or ranges to read sequentially. If not specified, reads
    *   from all rows.
