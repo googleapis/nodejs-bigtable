@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Long = require("long");
 import type {protobuf as $protobuf} from "google-gax";
+import Long = require("long");
 /** Namespace google. */
 export namespace google {
 
@@ -3385,6 +3385,9 @@ export namespace google {
 
                     /** Instance createTime */
                     createTime?: (google.protobuf.ITimestamp|null);
+
+                    /** Instance satisfiesPzs */
+                    satisfiesPzs?: (boolean|null);
                 }
 
                 /** Represents an Instance. */
@@ -3413,6 +3416,12 @@ export namespace google {
 
                     /** Instance createTime. */
                     public createTime?: (google.protobuf.ITimestamp|null);
+
+                    /** Instance satisfiesPzs. */
+                    public satisfiesPzs?: (boolean|null);
+
+                    /** Instance _satisfiesPzs. */
+                    public _satisfiesPzs?: "satisfiesPzs";
 
                     /**
                      * Creates a new Instance instance using the specified properties.
@@ -3514,6 +3523,9 @@ export namespace google {
 
                     /** AutoscalingTargets cpuUtilizationPercent */
                     cpuUtilizationPercent?: (number|null);
+
+                    /** AutoscalingTargets storageUtilizationGibPerNode */
+                    storageUtilizationGibPerNode?: (number|null);
                 }
 
                 /** Represents an AutoscalingTargets. */
@@ -3527,6 +3539,9 @@ export namespace google {
 
                     /** AutoscalingTargets cpuUtilizationPercent. */
                     public cpuUtilizationPercent: number;
+
+                    /** AutoscalingTargets storageUtilizationGibPerNode. */
+                    public storageUtilizationGibPerNode: number;
 
                     /**
                      * Creates a new AutoscalingTargets instance using the specified properties.
@@ -4807,6 +4822,20 @@ export namespace google {
                     public getTable(request: google.bigtable.admin.v2.IGetTableRequest): Promise<google.bigtable.admin.v2.Table>;
 
                     /**
+                     * Calls UpdateTable.
+                     * @param request UpdateTableRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public updateTable(request: google.bigtable.admin.v2.IUpdateTableRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.UpdateTableCallback): void;
+
+                    /**
+                     * Calls UpdateTable.
+                     * @param request UpdateTableRequest message or plain object
+                     * @returns Promise
+                     */
+                    public updateTable(request: google.bigtable.admin.v2.IUpdateTableRequest): Promise<google.longrunning.Operation>;
+
+                    /**
                      * Calls DeleteTable.
                      * @param request DeleteTableRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Empty
@@ -4819,6 +4848,20 @@ export namespace google {
                      * @returns Promise
                      */
                     public deleteTable(request: google.bigtable.admin.v2.IDeleteTableRequest): Promise<google.protobuf.Empty>;
+
+                    /**
+                     * Calls UndeleteTable.
+                     * @param request UndeleteTableRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public undeleteTable(request: google.bigtable.admin.v2.IUndeleteTableRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTableCallback): void;
+
+                    /**
+                     * Calls UndeleteTable.
+                     * @param request UndeleteTableRequest message or plain object
+                     * @returns Promise
+                     */
+                    public undeleteTable(request: google.bigtable.admin.v2.IUndeleteTableRequest): Promise<google.longrunning.Operation>;
 
                     /**
                      * Calls ModifyColumnFamilies.
@@ -5090,11 +5133,25 @@ export namespace google {
                     type GetTableCallback = (error: (Error|null), response?: google.bigtable.admin.v2.Table) => void;
 
                     /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateTable}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type UpdateTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
                      * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteTable}.
                      * @param error Error, if any
                      * @param [response] Empty
                      */
                     type DeleteTableCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|undeleteTable}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type UndeleteTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
                      * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|modifyColumnFamilies}.
@@ -6312,6 +6369,218 @@ export namespace google {
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
+                /** Properties of an UpdateTableRequest. */
+                interface IUpdateTableRequest {
+
+                    /** UpdateTableRequest table */
+                    table?: (google.bigtable.admin.v2.ITable|null);
+
+                    /** UpdateTableRequest updateMask */
+                    updateMask?: (google.protobuf.IFieldMask|null);
+                }
+
+                /** Represents an UpdateTableRequest. */
+                class UpdateTableRequest implements IUpdateTableRequest {
+
+                    /**
+                     * Constructs a new UpdateTableRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUpdateTableRequest);
+
+                    /** UpdateTableRequest table. */
+                    public table?: (google.bigtable.admin.v2.ITable|null);
+
+                    /** UpdateTableRequest updateMask. */
+                    public updateMask?: (google.protobuf.IFieldMask|null);
+
+                    /**
+                     * Creates a new UpdateTableRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UpdateTableRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUpdateTableRequest): google.bigtable.admin.v2.UpdateTableRequest;
+
+                    /**
+                     * Encodes the specified UpdateTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableRequest.verify|verify} messages.
+                     * @param message UpdateTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUpdateTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UpdateTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableRequest.verify|verify} messages.
+                     * @param message UpdateTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUpdateTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UpdateTableRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UpdateTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UpdateTableRequest;
+
+                    /**
+                     * Decodes an UpdateTableRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UpdateTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UpdateTableRequest;
+
+                    /**
+                     * Verifies an UpdateTableRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UpdateTableRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UpdateTableRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UpdateTableRequest;
+
+                    /**
+                     * Creates a plain object from an UpdateTableRequest message. Also converts values to other types if specified.
+                     * @param message UpdateTableRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UpdateTableRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UpdateTableRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UpdateTableRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an UpdateTableMetadata. */
+                interface IUpdateTableMetadata {
+
+                    /** UpdateTableMetadata name */
+                    name?: (string|null);
+
+                    /** UpdateTableMetadata startTime */
+                    startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UpdateTableMetadata endTime */
+                    endTime?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents an UpdateTableMetadata. */
+                class UpdateTableMetadata implements IUpdateTableMetadata {
+
+                    /**
+                     * Constructs a new UpdateTableMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUpdateTableMetadata);
+
+                    /** UpdateTableMetadata name. */
+                    public name: string;
+
+                    /** UpdateTableMetadata startTime. */
+                    public startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UpdateTableMetadata endTime. */
+                    public endTime?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new UpdateTableMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UpdateTableMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUpdateTableMetadata): google.bigtable.admin.v2.UpdateTableMetadata;
+
+                    /**
+                     * Encodes the specified UpdateTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableMetadata.verify|verify} messages.
+                     * @param message UpdateTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUpdateTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UpdateTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateTableMetadata.verify|verify} messages.
+                     * @param message UpdateTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUpdateTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UpdateTableMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UpdateTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UpdateTableMetadata;
+
+                    /**
+                     * Decodes an UpdateTableMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UpdateTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UpdateTableMetadata;
+
+                    /**
+                     * Verifies an UpdateTableMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UpdateTableMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UpdateTableMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UpdateTableMetadata;
+
+                    /**
+                     * Creates a plain object from an UpdateTableMetadata message. Also converts values to other types if specified.
+                     * @param message UpdateTableMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UpdateTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UpdateTableMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UpdateTableMetadata
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
                 /** Properties of a DeleteTableRequest. */
                 interface IDeleteTableRequest {
 
@@ -6403,6 +6672,212 @@ export namespace google {
 
                     /**
                      * Gets the default type url for DeleteTableRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an UndeleteTableRequest. */
+                interface IUndeleteTableRequest {
+
+                    /** UndeleteTableRequest name */
+                    name?: (string|null);
+                }
+
+                /** Represents an UndeleteTableRequest. */
+                class UndeleteTableRequest implements IUndeleteTableRequest {
+
+                    /**
+                     * Constructs a new UndeleteTableRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUndeleteTableRequest);
+
+                    /** UndeleteTableRequest name. */
+                    public name: string;
+
+                    /**
+                     * Creates a new UndeleteTableRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UndeleteTableRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUndeleteTableRequest): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Encodes the specified UndeleteTableRequest message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
+                     * @param message UndeleteTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUndeleteTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UndeleteTableRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableRequest.verify|verify} messages.
+                     * @param message UndeleteTableRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUndeleteTableRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UndeleteTableRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UndeleteTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Decodes an UndeleteTableRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UndeleteTableRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Verifies an UndeleteTableRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UndeleteTableRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UndeleteTableRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UndeleteTableRequest;
+
+                    /**
+                     * Creates a plain object from an UndeleteTableRequest message. Also converts values to other types if specified.
+                     * @param message UndeleteTableRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UndeleteTableRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UndeleteTableRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UndeleteTableRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an UndeleteTableMetadata. */
+                interface IUndeleteTableMetadata {
+
+                    /** UndeleteTableMetadata name */
+                    name?: (string|null);
+
+                    /** UndeleteTableMetadata startTime */
+                    startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UndeleteTableMetadata endTime */
+                    endTime?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents an UndeleteTableMetadata. */
+                class UndeleteTableMetadata implements IUndeleteTableMetadata {
+
+                    /**
+                     * Constructs a new UndeleteTableMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUndeleteTableMetadata);
+
+                    /** UndeleteTableMetadata name. */
+                    public name: string;
+
+                    /** UndeleteTableMetadata startTime. */
+                    public startTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UndeleteTableMetadata endTime. */
+                    public endTime?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new UndeleteTableMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UndeleteTableMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUndeleteTableMetadata): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Encodes the specified UndeleteTableMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
+                     * @param message UndeleteTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUndeleteTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UndeleteTableMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UndeleteTableMetadata.verify|verify} messages.
+                     * @param message UndeleteTableMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUndeleteTableMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UndeleteTableMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UndeleteTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Decodes an UndeleteTableMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UndeleteTableMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Verifies an UndeleteTableMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UndeleteTableMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UndeleteTableMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UndeleteTableMetadata;
+
+                    /**
+                     * Creates a plain object from an UndeleteTableMetadata message. Also converts values to other types if specified.
+                     * @param message UndeleteTableMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UndeleteTableMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UndeleteTableMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UndeleteTableMetadata
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
@@ -8640,6 +9115,9 @@ export namespace google {
 
                     /** Table restoreInfo */
                     restoreInfo?: (google.bigtable.admin.v2.IRestoreInfo|null);
+
+                    /** Table deletionProtection */
+                    deletionProtection?: (boolean|null);
                 }
 
                 /** Represents a Table. */
@@ -8665,6 +9143,9 @@ export namespace google {
 
                     /** Table restoreInfo. */
                     public restoreInfo?: (google.bigtable.admin.v2.IRestoreInfo|null);
+
+                    /** Table deletionProtection. */
+                    public deletionProtection: boolean;
 
                     /**
                      * Creates a new Table instance using the specified properties.
@@ -9945,6 +10426,34 @@ export namespace google {
                  * @returns Promise
                  */
                 public readModifyWriteRow(request: google.bigtable.v2.IReadModifyWriteRowRequest): Promise<google.bigtable.v2.ReadModifyWriteRowResponse>;
+
+                /**
+                 * Calls GenerateInitialChangeStreamPartitions.
+                 * @param request GenerateInitialChangeStreamPartitionsRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and GenerateInitialChangeStreamPartitionsResponse
+                 */
+                public generateInitialChangeStreamPartitions(request: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest, callback: google.bigtable.v2.Bigtable.GenerateInitialChangeStreamPartitionsCallback): void;
+
+                /**
+                 * Calls GenerateInitialChangeStreamPartitions.
+                 * @param request GenerateInitialChangeStreamPartitionsRequest message or plain object
+                 * @returns Promise
+                 */
+                public generateInitialChangeStreamPartitions(request: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest): Promise<google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse>;
+
+                /**
+                 * Calls ReadChangeStream.
+                 * @param request ReadChangeStreamRequest message or plain object
+                 * @param callback Node-style callback called with the error, if any, and ReadChangeStreamResponse
+                 */
+                public readChangeStream(request: google.bigtable.v2.IReadChangeStreamRequest, callback: google.bigtable.v2.Bigtable.ReadChangeStreamCallback): void;
+
+                /**
+                 * Calls ReadChangeStream.
+                 * @param request ReadChangeStreamRequest message or plain object
+                 * @returns Promise
+                 */
+                public readChangeStream(request: google.bigtable.v2.IReadChangeStreamRequest): Promise<google.bigtable.v2.ReadChangeStreamResponse>;
             }
 
             namespace Bigtable {
@@ -9997,6 +10506,20 @@ export namespace google {
                  * @param [response] ReadModifyWriteRowResponse
                  */
                 type ReadModifyWriteRowCallback = (error: (Error|null), response?: google.bigtable.v2.ReadModifyWriteRowResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|generateInitialChangeStreamPartitions}.
+                 * @param error Error, if any
+                 * @param [response] GenerateInitialChangeStreamPartitionsResponse
+                 */
+                type GenerateInitialChangeStreamPartitionsCallback = (error: (Error|null), response?: google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse) => void;
+
+                /**
+                 * Callback as used by {@link google.bigtable.v2.Bigtable|readChangeStream}.
+                 * @param error Error, if any
+                 * @param [response] ReadChangeStreamResponse
+                 */
+                type ReadChangeStreamCallback = (error: (Error|null), response?: google.bigtable.v2.ReadChangeStreamResponse) => void;
             }
 
             /** Properties of a ReadRowsRequest. */
@@ -10016,6 +10539,9 @@ export namespace google {
 
                 /** ReadRowsRequest rowsLimit */
                 rowsLimit?: (number|Long|string|null);
+
+                /** ReadRowsRequest requestStatsView */
+                requestStatsView?: (google.bigtable.v2.ReadRowsRequest.RequestStatsView|keyof typeof google.bigtable.v2.ReadRowsRequest.RequestStatsView|null);
             }
 
             /** Represents a ReadRowsRequest. */
@@ -10041,6 +10567,9 @@ export namespace google {
 
                 /** ReadRowsRequest rowsLimit. */
                 public rowsLimit: (number|Long|string);
+
+                /** ReadRowsRequest requestStatsView. */
+                public requestStatsView: (google.bigtable.v2.ReadRowsRequest.RequestStatsView|keyof typeof google.bigtable.v2.ReadRowsRequest.RequestStatsView);
 
                 /**
                  * Creates a new ReadRowsRequest instance using the specified properties.
@@ -10120,6 +10649,16 @@ export namespace google {
                 public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
+            namespace ReadRowsRequest {
+
+                /** RequestStatsView enum. */
+                enum RequestStatsView {
+                    REQUEST_STATS_VIEW_UNSPECIFIED = 0,
+                    REQUEST_STATS_NONE = 1,
+                    REQUEST_STATS_FULL = 2
+                }
+            }
+
             /** Properties of a ReadRowsResponse. */
             interface IReadRowsResponse {
 
@@ -10128,6 +10667,9 @@ export namespace google {
 
                 /** ReadRowsResponse lastScannedRowKey */
                 lastScannedRowKey?: (Uint8Array|string|null);
+
+                /** ReadRowsResponse requestStats */
+                requestStats?: (google.bigtable.v2.IRequestStats|null);
             }
 
             /** Represents a ReadRowsResponse. */
@@ -10144,6 +10686,9 @@ export namespace google {
 
                 /** ReadRowsResponse lastScannedRowKey. */
                 public lastScannedRowKey: (Uint8Array|string);
+
+                /** ReadRowsResponse requestStats. */
+                public requestStats?: (google.bigtable.v2.IRequestStats|null);
 
                 /**
                  * Creates a new ReadRowsResponse instance using the specified properties.
@@ -11832,6 +12377,1040 @@ export namespace google {
                  * @returns The default type url
                  */
                 public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a GenerateInitialChangeStreamPartitionsRequest. */
+            interface IGenerateInitialChangeStreamPartitionsRequest {
+
+                /** GenerateInitialChangeStreamPartitionsRequest tableName */
+                tableName?: (string|null);
+
+                /** GenerateInitialChangeStreamPartitionsRequest appProfileId */
+                appProfileId?: (string|null);
+            }
+
+            /** Represents a GenerateInitialChangeStreamPartitionsRequest. */
+            class GenerateInitialChangeStreamPartitionsRequest implements IGenerateInitialChangeStreamPartitionsRequest {
+
+                /**
+                 * Constructs a new GenerateInitialChangeStreamPartitionsRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest);
+
+                /** GenerateInitialChangeStreamPartitionsRequest tableName. */
+                public tableName: string;
+
+                /** GenerateInitialChangeStreamPartitionsRequest appProfileId. */
+                public appProfileId: string;
+
+                /**
+                 * Creates a new GenerateInitialChangeStreamPartitionsRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GenerateInitialChangeStreamPartitionsRequest instance
+                 */
+                public static create(properties?: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest): google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest;
+
+                /**
+                 * Encodes the specified GenerateInitialChangeStreamPartitionsRequest message. Does not implicitly {@link google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest.verify|verify} messages.
+                 * @param message GenerateInitialChangeStreamPartitionsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GenerateInitialChangeStreamPartitionsRequest message, length delimited. Does not implicitly {@link google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest.verify|verify} messages.
+                 * @param message GenerateInitialChangeStreamPartitionsRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GenerateInitialChangeStreamPartitionsRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GenerateInitialChangeStreamPartitionsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest;
+
+                /**
+                 * Decodes a GenerateInitialChangeStreamPartitionsRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GenerateInitialChangeStreamPartitionsRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest;
+
+                /**
+                 * Verifies a GenerateInitialChangeStreamPartitionsRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GenerateInitialChangeStreamPartitionsRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GenerateInitialChangeStreamPartitionsRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest;
+
+                /**
+                 * Creates a plain object from a GenerateInitialChangeStreamPartitionsRequest message. Also converts values to other types if specified.
+                 * @param message GenerateInitialChangeStreamPartitionsRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GenerateInitialChangeStreamPartitionsRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for GenerateInitialChangeStreamPartitionsRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a GenerateInitialChangeStreamPartitionsResponse. */
+            interface IGenerateInitialChangeStreamPartitionsResponse {
+
+                /** GenerateInitialChangeStreamPartitionsResponse partition */
+                partition?: (google.bigtable.v2.IStreamPartition|null);
+            }
+
+            /** Represents a GenerateInitialChangeStreamPartitionsResponse. */
+            class GenerateInitialChangeStreamPartitionsResponse implements IGenerateInitialChangeStreamPartitionsResponse {
+
+                /**
+                 * Constructs a new GenerateInitialChangeStreamPartitionsResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsResponse);
+
+                /** GenerateInitialChangeStreamPartitionsResponse partition. */
+                public partition?: (google.bigtable.v2.IStreamPartition|null);
+
+                /**
+                 * Creates a new GenerateInitialChangeStreamPartitionsResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns GenerateInitialChangeStreamPartitionsResponse instance
+                 */
+                public static create(properties?: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsResponse): google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse;
+
+                /**
+                 * Encodes the specified GenerateInitialChangeStreamPartitionsResponse message. Does not implicitly {@link google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse.verify|verify} messages.
+                 * @param message GenerateInitialChangeStreamPartitionsResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified GenerateInitialChangeStreamPartitionsResponse message, length delimited. Does not implicitly {@link google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse.verify|verify} messages.
+                 * @param message GenerateInitialChangeStreamPartitionsResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IGenerateInitialChangeStreamPartitionsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a GenerateInitialChangeStreamPartitionsResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns GenerateInitialChangeStreamPartitionsResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse;
+
+                /**
+                 * Decodes a GenerateInitialChangeStreamPartitionsResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns GenerateInitialChangeStreamPartitionsResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse;
+
+                /**
+                 * Verifies a GenerateInitialChangeStreamPartitionsResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a GenerateInitialChangeStreamPartitionsResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns GenerateInitialChangeStreamPartitionsResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse;
+
+                /**
+                 * Creates a plain object from a GenerateInitialChangeStreamPartitionsResponse message. Also converts values to other types if specified.
+                 * @param message GenerateInitialChangeStreamPartitionsResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this GenerateInitialChangeStreamPartitionsResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for GenerateInitialChangeStreamPartitionsResponse
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ReadChangeStreamRequest. */
+            interface IReadChangeStreamRequest {
+
+                /** ReadChangeStreamRequest tableName */
+                tableName?: (string|null);
+
+                /** ReadChangeStreamRequest appProfileId */
+                appProfileId?: (string|null);
+
+                /** ReadChangeStreamRequest partition */
+                partition?: (google.bigtable.v2.IStreamPartition|null);
+
+                /** ReadChangeStreamRequest startTime */
+                startTime?: (google.protobuf.ITimestamp|null);
+
+                /** ReadChangeStreamRequest continuationTokens */
+                continuationTokens?: (google.bigtable.v2.IStreamContinuationTokens|null);
+
+                /** ReadChangeStreamRequest endTime */
+                endTime?: (google.protobuf.ITimestamp|null);
+
+                /** ReadChangeStreamRequest heartbeatDuration */
+                heartbeatDuration?: (google.protobuf.IDuration|null);
+            }
+
+            /** Represents a ReadChangeStreamRequest. */
+            class ReadChangeStreamRequest implements IReadChangeStreamRequest {
+
+                /**
+                 * Constructs a new ReadChangeStreamRequest.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IReadChangeStreamRequest);
+
+                /** ReadChangeStreamRequest tableName. */
+                public tableName: string;
+
+                /** ReadChangeStreamRequest appProfileId. */
+                public appProfileId: string;
+
+                /** ReadChangeStreamRequest partition. */
+                public partition?: (google.bigtable.v2.IStreamPartition|null);
+
+                /** ReadChangeStreamRequest startTime. */
+                public startTime?: (google.protobuf.ITimestamp|null);
+
+                /** ReadChangeStreamRequest continuationTokens. */
+                public continuationTokens?: (google.bigtable.v2.IStreamContinuationTokens|null);
+
+                /** ReadChangeStreamRequest endTime. */
+                public endTime?: (google.protobuf.ITimestamp|null);
+
+                /** ReadChangeStreamRequest heartbeatDuration. */
+                public heartbeatDuration?: (google.protobuf.IDuration|null);
+
+                /** ReadChangeStreamRequest startFrom. */
+                public startFrom?: ("startTime"|"continuationTokens");
+
+                /**
+                 * Creates a new ReadChangeStreamRequest instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ReadChangeStreamRequest instance
+                 */
+                public static create(properties?: google.bigtable.v2.IReadChangeStreamRequest): google.bigtable.v2.ReadChangeStreamRequest;
+
+                /**
+                 * Encodes the specified ReadChangeStreamRequest message. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamRequest.verify|verify} messages.
+                 * @param message ReadChangeStreamRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IReadChangeStreamRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ReadChangeStreamRequest message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamRequest.verify|verify} messages.
+                 * @param message ReadChangeStreamRequest message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IReadChangeStreamRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ReadChangeStreamRequest message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ReadChangeStreamRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadChangeStreamRequest;
+
+                /**
+                 * Decodes a ReadChangeStreamRequest message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ReadChangeStreamRequest
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadChangeStreamRequest;
+
+                /**
+                 * Verifies a ReadChangeStreamRequest message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ReadChangeStreamRequest message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ReadChangeStreamRequest
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadChangeStreamRequest;
+
+                /**
+                 * Creates a plain object from a ReadChangeStreamRequest message. Also converts values to other types if specified.
+                 * @param message ReadChangeStreamRequest
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.ReadChangeStreamRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ReadChangeStreamRequest to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ReadChangeStreamRequest
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ReadChangeStreamResponse. */
+            interface IReadChangeStreamResponse {
+
+                /** ReadChangeStreamResponse dataChange */
+                dataChange?: (google.bigtable.v2.ReadChangeStreamResponse.IDataChange|null);
+
+                /** ReadChangeStreamResponse heartbeat */
+                heartbeat?: (google.bigtable.v2.ReadChangeStreamResponse.IHeartbeat|null);
+
+                /** ReadChangeStreamResponse closeStream */
+                closeStream?: (google.bigtable.v2.ReadChangeStreamResponse.ICloseStream|null);
+            }
+
+            /** Represents a ReadChangeStreamResponse. */
+            class ReadChangeStreamResponse implements IReadChangeStreamResponse {
+
+                /**
+                 * Constructs a new ReadChangeStreamResponse.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IReadChangeStreamResponse);
+
+                /** ReadChangeStreamResponse dataChange. */
+                public dataChange?: (google.bigtable.v2.ReadChangeStreamResponse.IDataChange|null);
+
+                /** ReadChangeStreamResponse heartbeat. */
+                public heartbeat?: (google.bigtable.v2.ReadChangeStreamResponse.IHeartbeat|null);
+
+                /** ReadChangeStreamResponse closeStream. */
+                public closeStream?: (google.bigtable.v2.ReadChangeStreamResponse.ICloseStream|null);
+
+                /** ReadChangeStreamResponse streamRecord. */
+                public streamRecord?: ("dataChange"|"heartbeat"|"closeStream");
+
+                /**
+                 * Creates a new ReadChangeStreamResponse instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ReadChangeStreamResponse instance
+                 */
+                public static create(properties?: google.bigtable.v2.IReadChangeStreamResponse): google.bigtable.v2.ReadChangeStreamResponse;
+
+                /**
+                 * Encodes the specified ReadChangeStreamResponse message. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.verify|verify} messages.
+                 * @param message ReadChangeStreamResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IReadChangeStreamResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ReadChangeStreamResponse message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.verify|verify} messages.
+                 * @param message ReadChangeStreamResponse message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IReadChangeStreamResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ReadChangeStreamResponse message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ReadChangeStreamResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadChangeStreamResponse;
+
+                /**
+                 * Decodes a ReadChangeStreamResponse message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ReadChangeStreamResponse
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadChangeStreamResponse;
+
+                /**
+                 * Verifies a ReadChangeStreamResponse message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ReadChangeStreamResponse message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ReadChangeStreamResponse
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadChangeStreamResponse;
+
+                /**
+                 * Creates a plain object from a ReadChangeStreamResponse message. Also converts values to other types if specified.
+                 * @param message ReadChangeStreamResponse
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.ReadChangeStreamResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ReadChangeStreamResponse to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ReadChangeStreamResponse
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            namespace ReadChangeStreamResponse {
+
+                /** Properties of a MutationChunk. */
+                interface IMutationChunk {
+
+                    /** MutationChunk chunkInfo */
+                    chunkInfo?: (google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.IChunkInfo|null);
+
+                    /** MutationChunk mutation */
+                    mutation?: (google.bigtable.v2.IMutation|null);
+                }
+
+                /** Represents a MutationChunk. */
+                class MutationChunk implements IMutationChunk {
+
+                    /**
+                     * Constructs a new MutationChunk.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.v2.ReadChangeStreamResponse.IMutationChunk);
+
+                    /** MutationChunk chunkInfo. */
+                    public chunkInfo?: (google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.IChunkInfo|null);
+
+                    /** MutationChunk mutation. */
+                    public mutation?: (google.bigtable.v2.IMutation|null);
+
+                    /**
+                     * Creates a new MutationChunk instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns MutationChunk instance
+                     */
+                    public static create(properties?: google.bigtable.v2.ReadChangeStreamResponse.IMutationChunk): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk;
+
+                    /**
+                     * Encodes the specified MutationChunk message. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.verify|verify} messages.
+                     * @param message MutationChunk message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.v2.ReadChangeStreamResponse.IMutationChunk, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified MutationChunk message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.verify|verify} messages.
+                     * @param message MutationChunk message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.v2.ReadChangeStreamResponse.IMutationChunk, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a MutationChunk message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns MutationChunk
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk;
+
+                    /**
+                     * Decodes a MutationChunk message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns MutationChunk
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk;
+
+                    /**
+                     * Verifies a MutationChunk message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a MutationChunk message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns MutationChunk
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk;
+
+                    /**
+                     * Creates a plain object from a MutationChunk message. Also converts values to other types if specified.
+                     * @param message MutationChunk
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this MutationChunk to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for MutationChunk
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                namespace MutationChunk {
+
+                    /** Properties of a ChunkInfo. */
+                    interface IChunkInfo {
+
+                        /** ChunkInfo chunkedValueSize */
+                        chunkedValueSize?: (number|null);
+
+                        /** ChunkInfo chunkedValueOffset */
+                        chunkedValueOffset?: (number|null);
+
+                        /** ChunkInfo lastChunk */
+                        lastChunk?: (boolean|null);
+                    }
+
+                    /** Represents a ChunkInfo. */
+                    class ChunkInfo implements IChunkInfo {
+
+                        /**
+                         * Constructs a new ChunkInfo.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.IChunkInfo);
+
+                        /** ChunkInfo chunkedValueSize. */
+                        public chunkedValueSize: number;
+
+                        /** ChunkInfo chunkedValueOffset. */
+                        public chunkedValueOffset: number;
+
+                        /** ChunkInfo lastChunk. */
+                        public lastChunk: boolean;
+
+                        /**
+                         * Creates a new ChunkInfo instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns ChunkInfo instance
+                         */
+                        public static create(properties?: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.IChunkInfo): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo;
+
+                        /**
+                         * Encodes the specified ChunkInfo message. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo.verify|verify} messages.
+                         * @param message ChunkInfo message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.IChunkInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified ChunkInfo message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo.verify|verify} messages.
+                         * @param message ChunkInfo message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.IChunkInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a ChunkInfo message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns ChunkInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo;
+
+                        /**
+                         * Decodes a ChunkInfo message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns ChunkInfo
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo;
+
+                        /**
+                         * Verifies a ChunkInfo message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a ChunkInfo message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns ChunkInfo
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo;
+
+                        /**
+                         * Creates a plain object from a ChunkInfo message. Also converts values to other types if specified.
+                         * @param message ChunkInfo
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.v2.ReadChangeStreamResponse.MutationChunk.ChunkInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this ChunkInfo to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for ChunkInfo
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+                }
+
+                /** Properties of a DataChange. */
+                interface IDataChange {
+
+                    /** DataChange type */
+                    type?: (google.bigtable.v2.ReadChangeStreamResponse.DataChange.Type|keyof typeof google.bigtable.v2.ReadChangeStreamResponse.DataChange.Type|null);
+
+                    /** DataChange sourceClusterId */
+                    sourceClusterId?: (string|null);
+
+                    /** DataChange rowKey */
+                    rowKey?: (Uint8Array|string|null);
+
+                    /** DataChange commitTimestamp */
+                    commitTimestamp?: (google.protobuf.ITimestamp|null);
+
+                    /** DataChange tiebreaker */
+                    tiebreaker?: (number|null);
+
+                    /** DataChange chunks */
+                    chunks?: (google.bigtable.v2.ReadChangeStreamResponse.IMutationChunk[]|null);
+
+                    /** DataChange done */
+                    done?: (boolean|null);
+
+                    /** DataChange token */
+                    token?: (string|null);
+
+                    /** DataChange estimatedLowWatermark */
+                    estimatedLowWatermark?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents a DataChange. */
+                class DataChange implements IDataChange {
+
+                    /**
+                     * Constructs a new DataChange.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.v2.ReadChangeStreamResponse.IDataChange);
+
+                    /** DataChange type. */
+                    public type: (google.bigtable.v2.ReadChangeStreamResponse.DataChange.Type|keyof typeof google.bigtable.v2.ReadChangeStreamResponse.DataChange.Type);
+
+                    /** DataChange sourceClusterId. */
+                    public sourceClusterId: string;
+
+                    /** DataChange rowKey. */
+                    public rowKey: (Uint8Array|string);
+
+                    /** DataChange commitTimestamp. */
+                    public commitTimestamp?: (google.protobuf.ITimestamp|null);
+
+                    /** DataChange tiebreaker. */
+                    public tiebreaker: number;
+
+                    /** DataChange chunks. */
+                    public chunks: google.bigtable.v2.ReadChangeStreamResponse.IMutationChunk[];
+
+                    /** DataChange done. */
+                    public done: boolean;
+
+                    /** DataChange token. */
+                    public token: string;
+
+                    /** DataChange estimatedLowWatermark. */
+                    public estimatedLowWatermark?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new DataChange instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns DataChange instance
+                     */
+                    public static create(properties?: google.bigtable.v2.ReadChangeStreamResponse.IDataChange): google.bigtable.v2.ReadChangeStreamResponse.DataChange;
+
+                    /**
+                     * Encodes the specified DataChange message. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.DataChange.verify|verify} messages.
+                     * @param message DataChange message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.v2.ReadChangeStreamResponse.IDataChange, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified DataChange message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.DataChange.verify|verify} messages.
+                     * @param message DataChange message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.v2.ReadChangeStreamResponse.IDataChange, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a DataChange message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns DataChange
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadChangeStreamResponse.DataChange;
+
+                    /**
+                     * Decodes a DataChange message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns DataChange
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadChangeStreamResponse.DataChange;
+
+                    /**
+                     * Verifies a DataChange message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a DataChange message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns DataChange
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadChangeStreamResponse.DataChange;
+
+                    /**
+                     * Creates a plain object from a DataChange message. Also converts values to other types if specified.
+                     * @param message DataChange
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.v2.ReadChangeStreamResponse.DataChange, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this DataChange to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for DataChange
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                namespace DataChange {
+
+                    /** Type enum. */
+                    enum Type {
+                        TYPE_UNSPECIFIED = 0,
+                        USER = 1,
+                        GARBAGE_COLLECTION = 2,
+                        CONTINUATION = 3
+                    }
+                }
+
+                /** Properties of a Heartbeat. */
+                interface IHeartbeat {
+
+                    /** Heartbeat continuationToken */
+                    continuationToken?: (google.bigtable.v2.IStreamContinuationToken|null);
+
+                    /** Heartbeat estimatedLowWatermark */
+                    estimatedLowWatermark?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents a Heartbeat. */
+                class Heartbeat implements IHeartbeat {
+
+                    /**
+                     * Constructs a new Heartbeat.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.v2.ReadChangeStreamResponse.IHeartbeat);
+
+                    /** Heartbeat continuationToken. */
+                    public continuationToken?: (google.bigtable.v2.IStreamContinuationToken|null);
+
+                    /** Heartbeat estimatedLowWatermark. */
+                    public estimatedLowWatermark?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new Heartbeat instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns Heartbeat instance
+                     */
+                    public static create(properties?: google.bigtable.v2.ReadChangeStreamResponse.IHeartbeat): google.bigtable.v2.ReadChangeStreamResponse.Heartbeat;
+
+                    /**
+                     * Encodes the specified Heartbeat message. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.Heartbeat.verify|verify} messages.
+                     * @param message Heartbeat message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.v2.ReadChangeStreamResponse.IHeartbeat, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified Heartbeat message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.Heartbeat.verify|verify} messages.
+                     * @param message Heartbeat message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.v2.ReadChangeStreamResponse.IHeartbeat, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a Heartbeat message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns Heartbeat
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadChangeStreamResponse.Heartbeat;
+
+                    /**
+                     * Decodes a Heartbeat message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns Heartbeat
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadChangeStreamResponse.Heartbeat;
+
+                    /**
+                     * Verifies a Heartbeat message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a Heartbeat message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns Heartbeat
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadChangeStreamResponse.Heartbeat;
+
+                    /**
+                     * Creates a plain object from a Heartbeat message. Also converts values to other types if specified.
+                     * @param message Heartbeat
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.v2.ReadChangeStreamResponse.Heartbeat, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this Heartbeat to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for Heartbeat
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a CloseStream. */
+                interface ICloseStream {
+
+                    /** CloseStream status */
+                    status?: (google.rpc.IStatus|null);
+
+                    /** CloseStream continuationTokens */
+                    continuationTokens?: (google.bigtable.v2.IStreamContinuationToken[]|null);
+
+                    /** CloseStream newPartitions */
+                    newPartitions?: (google.bigtable.v2.IStreamPartition[]|null);
+                }
+
+                /** Represents a CloseStream. */
+                class CloseStream implements ICloseStream {
+
+                    /**
+                     * Constructs a new CloseStream.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.v2.ReadChangeStreamResponse.ICloseStream);
+
+                    /** CloseStream status. */
+                    public status?: (google.rpc.IStatus|null);
+
+                    /** CloseStream continuationTokens. */
+                    public continuationTokens: google.bigtable.v2.IStreamContinuationToken[];
+
+                    /** CloseStream newPartitions. */
+                    public newPartitions: google.bigtable.v2.IStreamPartition[];
+
+                    /**
+                     * Creates a new CloseStream instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns CloseStream instance
+                     */
+                    public static create(properties?: google.bigtable.v2.ReadChangeStreamResponse.ICloseStream): google.bigtable.v2.ReadChangeStreamResponse.CloseStream;
+
+                    /**
+                     * Encodes the specified CloseStream message. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.CloseStream.verify|verify} messages.
+                     * @param message CloseStream message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.v2.ReadChangeStreamResponse.ICloseStream, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified CloseStream message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadChangeStreamResponse.CloseStream.verify|verify} messages.
+                     * @param message CloseStream message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.v2.ReadChangeStreamResponse.ICloseStream, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a CloseStream message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns CloseStream
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadChangeStreamResponse.CloseStream;
+
+                    /**
+                     * Decodes a CloseStream message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns CloseStream
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadChangeStreamResponse.CloseStream;
+
+                    /**
+                     * Verifies a CloseStream message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a CloseStream message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns CloseStream
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadChangeStreamResponse.CloseStream;
+
+                    /**
+                     * Creates a plain object from a CloseStream message. Also converts values to other types if specified.
+                     * @param message CloseStream
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.v2.ReadChangeStreamResponse.CloseStream, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this CloseStream to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for CloseStream
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
             }
 
             /** Properties of a Row. */
@@ -13986,6 +15565,827 @@ export namespace google {
 
                 /**
                  * Gets the default type url for ReadModifyWriteRule
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a StreamPartition. */
+            interface IStreamPartition {
+
+                /** StreamPartition rowRange */
+                rowRange?: (google.bigtable.v2.IRowRange|null);
+            }
+
+            /** Represents a StreamPartition. */
+            class StreamPartition implements IStreamPartition {
+
+                /**
+                 * Constructs a new StreamPartition.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IStreamPartition);
+
+                /** StreamPartition rowRange. */
+                public rowRange?: (google.bigtable.v2.IRowRange|null);
+
+                /**
+                 * Creates a new StreamPartition instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns StreamPartition instance
+                 */
+                public static create(properties?: google.bigtable.v2.IStreamPartition): google.bigtable.v2.StreamPartition;
+
+                /**
+                 * Encodes the specified StreamPartition message. Does not implicitly {@link google.bigtable.v2.StreamPartition.verify|verify} messages.
+                 * @param message StreamPartition message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IStreamPartition, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified StreamPartition message, length delimited. Does not implicitly {@link google.bigtable.v2.StreamPartition.verify|verify} messages.
+                 * @param message StreamPartition message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IStreamPartition, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a StreamPartition message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns StreamPartition
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.StreamPartition;
+
+                /**
+                 * Decodes a StreamPartition message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns StreamPartition
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.StreamPartition;
+
+                /**
+                 * Verifies a StreamPartition message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a StreamPartition message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns StreamPartition
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.StreamPartition;
+
+                /**
+                 * Creates a plain object from a StreamPartition message. Also converts values to other types if specified.
+                 * @param message StreamPartition
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.StreamPartition, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this StreamPartition to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for StreamPartition
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a StreamContinuationTokens. */
+            interface IStreamContinuationTokens {
+
+                /** StreamContinuationTokens tokens */
+                tokens?: (google.bigtable.v2.IStreamContinuationToken[]|null);
+            }
+
+            /** Represents a StreamContinuationTokens. */
+            class StreamContinuationTokens implements IStreamContinuationTokens {
+
+                /**
+                 * Constructs a new StreamContinuationTokens.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IStreamContinuationTokens);
+
+                /** StreamContinuationTokens tokens. */
+                public tokens: google.bigtable.v2.IStreamContinuationToken[];
+
+                /**
+                 * Creates a new StreamContinuationTokens instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns StreamContinuationTokens instance
+                 */
+                public static create(properties?: google.bigtable.v2.IStreamContinuationTokens): google.bigtable.v2.StreamContinuationTokens;
+
+                /**
+                 * Encodes the specified StreamContinuationTokens message. Does not implicitly {@link google.bigtable.v2.StreamContinuationTokens.verify|verify} messages.
+                 * @param message StreamContinuationTokens message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IStreamContinuationTokens, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified StreamContinuationTokens message, length delimited. Does not implicitly {@link google.bigtable.v2.StreamContinuationTokens.verify|verify} messages.
+                 * @param message StreamContinuationTokens message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IStreamContinuationTokens, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a StreamContinuationTokens message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns StreamContinuationTokens
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.StreamContinuationTokens;
+
+                /**
+                 * Decodes a StreamContinuationTokens message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns StreamContinuationTokens
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.StreamContinuationTokens;
+
+                /**
+                 * Verifies a StreamContinuationTokens message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a StreamContinuationTokens message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns StreamContinuationTokens
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.StreamContinuationTokens;
+
+                /**
+                 * Creates a plain object from a StreamContinuationTokens message. Also converts values to other types if specified.
+                 * @param message StreamContinuationTokens
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.StreamContinuationTokens, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this StreamContinuationTokens to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for StreamContinuationTokens
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a StreamContinuationToken. */
+            interface IStreamContinuationToken {
+
+                /** StreamContinuationToken partition */
+                partition?: (google.bigtable.v2.IStreamPartition|null);
+
+                /** StreamContinuationToken token */
+                token?: (string|null);
+            }
+
+            /** Represents a StreamContinuationToken. */
+            class StreamContinuationToken implements IStreamContinuationToken {
+
+                /**
+                 * Constructs a new StreamContinuationToken.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IStreamContinuationToken);
+
+                /** StreamContinuationToken partition. */
+                public partition?: (google.bigtable.v2.IStreamPartition|null);
+
+                /** StreamContinuationToken token. */
+                public token: string;
+
+                /**
+                 * Creates a new StreamContinuationToken instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns StreamContinuationToken instance
+                 */
+                public static create(properties?: google.bigtable.v2.IStreamContinuationToken): google.bigtable.v2.StreamContinuationToken;
+
+                /**
+                 * Encodes the specified StreamContinuationToken message. Does not implicitly {@link google.bigtable.v2.StreamContinuationToken.verify|verify} messages.
+                 * @param message StreamContinuationToken message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IStreamContinuationToken, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified StreamContinuationToken message, length delimited. Does not implicitly {@link google.bigtable.v2.StreamContinuationToken.verify|verify} messages.
+                 * @param message StreamContinuationToken message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IStreamContinuationToken, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a StreamContinuationToken message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns StreamContinuationToken
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.StreamContinuationToken;
+
+                /**
+                 * Decodes a StreamContinuationToken message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns StreamContinuationToken
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.StreamContinuationToken;
+
+                /**
+                 * Verifies a StreamContinuationToken message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a StreamContinuationToken message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns StreamContinuationToken
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.StreamContinuationToken;
+
+                /**
+                 * Creates a plain object from a StreamContinuationToken message. Also converts values to other types if specified.
+                 * @param message StreamContinuationToken
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.StreamContinuationToken, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this StreamContinuationToken to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for StreamContinuationToken
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ReadIterationStats. */
+            interface IReadIterationStats {
+
+                /** ReadIterationStats rowsSeenCount */
+                rowsSeenCount?: (number|Long|string|null);
+
+                /** ReadIterationStats rowsReturnedCount */
+                rowsReturnedCount?: (number|Long|string|null);
+
+                /** ReadIterationStats cellsSeenCount */
+                cellsSeenCount?: (number|Long|string|null);
+
+                /** ReadIterationStats cellsReturnedCount */
+                cellsReturnedCount?: (number|Long|string|null);
+            }
+
+            /** Represents a ReadIterationStats. */
+            class ReadIterationStats implements IReadIterationStats {
+
+                /**
+                 * Constructs a new ReadIterationStats.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IReadIterationStats);
+
+                /** ReadIterationStats rowsSeenCount. */
+                public rowsSeenCount: (number|Long|string);
+
+                /** ReadIterationStats rowsReturnedCount. */
+                public rowsReturnedCount: (number|Long|string);
+
+                /** ReadIterationStats cellsSeenCount. */
+                public cellsSeenCount: (number|Long|string);
+
+                /** ReadIterationStats cellsReturnedCount. */
+                public cellsReturnedCount: (number|Long|string);
+
+                /**
+                 * Creates a new ReadIterationStats instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ReadIterationStats instance
+                 */
+                public static create(properties?: google.bigtable.v2.IReadIterationStats): google.bigtable.v2.ReadIterationStats;
+
+                /**
+                 * Encodes the specified ReadIterationStats message. Does not implicitly {@link google.bigtable.v2.ReadIterationStats.verify|verify} messages.
+                 * @param message ReadIterationStats message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IReadIterationStats, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ReadIterationStats message, length delimited. Does not implicitly {@link google.bigtable.v2.ReadIterationStats.verify|verify} messages.
+                 * @param message ReadIterationStats message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IReadIterationStats, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ReadIterationStats message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ReadIterationStats
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ReadIterationStats;
+
+                /**
+                 * Decodes a ReadIterationStats message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ReadIterationStats
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ReadIterationStats;
+
+                /**
+                 * Verifies a ReadIterationStats message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ReadIterationStats message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ReadIterationStats
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ReadIterationStats;
+
+                /**
+                 * Creates a plain object from a ReadIterationStats message. Also converts values to other types if specified.
+                 * @param message ReadIterationStats
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.ReadIterationStats, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ReadIterationStats to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ReadIterationStats
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a RequestLatencyStats. */
+            interface IRequestLatencyStats {
+
+                /** RequestLatencyStats frontendServerLatency */
+                frontendServerLatency?: (google.protobuf.IDuration|null);
+            }
+
+            /** Represents a RequestLatencyStats. */
+            class RequestLatencyStats implements IRequestLatencyStats {
+
+                /**
+                 * Constructs a new RequestLatencyStats.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IRequestLatencyStats);
+
+                /** RequestLatencyStats frontendServerLatency. */
+                public frontendServerLatency?: (google.protobuf.IDuration|null);
+
+                /**
+                 * Creates a new RequestLatencyStats instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RequestLatencyStats instance
+                 */
+                public static create(properties?: google.bigtable.v2.IRequestLatencyStats): google.bigtable.v2.RequestLatencyStats;
+
+                /**
+                 * Encodes the specified RequestLatencyStats message. Does not implicitly {@link google.bigtable.v2.RequestLatencyStats.verify|verify} messages.
+                 * @param message RequestLatencyStats message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IRequestLatencyStats, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RequestLatencyStats message, length delimited. Does not implicitly {@link google.bigtable.v2.RequestLatencyStats.verify|verify} messages.
+                 * @param message RequestLatencyStats message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IRequestLatencyStats, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RequestLatencyStats message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RequestLatencyStats
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.RequestLatencyStats;
+
+                /**
+                 * Decodes a RequestLatencyStats message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RequestLatencyStats
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.RequestLatencyStats;
+
+                /**
+                 * Verifies a RequestLatencyStats message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RequestLatencyStats message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RequestLatencyStats
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.RequestLatencyStats;
+
+                /**
+                 * Creates a plain object from a RequestLatencyStats message. Also converts values to other types if specified.
+                 * @param message RequestLatencyStats
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.RequestLatencyStats, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RequestLatencyStats to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RequestLatencyStats
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a FullReadStatsView. */
+            interface IFullReadStatsView {
+
+                /** FullReadStatsView readIterationStats */
+                readIterationStats?: (google.bigtable.v2.IReadIterationStats|null);
+
+                /** FullReadStatsView requestLatencyStats */
+                requestLatencyStats?: (google.bigtable.v2.IRequestLatencyStats|null);
+            }
+
+            /** Represents a FullReadStatsView. */
+            class FullReadStatsView implements IFullReadStatsView {
+
+                /**
+                 * Constructs a new FullReadStatsView.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IFullReadStatsView);
+
+                /** FullReadStatsView readIterationStats. */
+                public readIterationStats?: (google.bigtable.v2.IReadIterationStats|null);
+
+                /** FullReadStatsView requestLatencyStats. */
+                public requestLatencyStats?: (google.bigtable.v2.IRequestLatencyStats|null);
+
+                /**
+                 * Creates a new FullReadStatsView instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns FullReadStatsView instance
+                 */
+                public static create(properties?: google.bigtable.v2.IFullReadStatsView): google.bigtable.v2.FullReadStatsView;
+
+                /**
+                 * Encodes the specified FullReadStatsView message. Does not implicitly {@link google.bigtable.v2.FullReadStatsView.verify|verify} messages.
+                 * @param message FullReadStatsView message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IFullReadStatsView, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified FullReadStatsView message, length delimited. Does not implicitly {@link google.bigtable.v2.FullReadStatsView.verify|verify} messages.
+                 * @param message FullReadStatsView message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IFullReadStatsView, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a FullReadStatsView message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns FullReadStatsView
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.FullReadStatsView;
+
+                /**
+                 * Decodes a FullReadStatsView message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns FullReadStatsView
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.FullReadStatsView;
+
+                /**
+                 * Verifies a FullReadStatsView message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a FullReadStatsView message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns FullReadStatsView
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.FullReadStatsView;
+
+                /**
+                 * Creates a plain object from a FullReadStatsView message. Also converts values to other types if specified.
+                 * @param message FullReadStatsView
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.FullReadStatsView, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this FullReadStatsView to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for FullReadStatsView
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a RequestStats. */
+            interface IRequestStats {
+
+                /** RequestStats fullReadStatsView */
+                fullReadStatsView?: (google.bigtable.v2.IFullReadStatsView|null);
+            }
+
+            /** Represents a RequestStats. */
+            class RequestStats implements IRequestStats {
+
+                /**
+                 * Constructs a new RequestStats.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IRequestStats);
+
+                /** RequestStats fullReadStatsView. */
+                public fullReadStatsView?: (google.bigtable.v2.IFullReadStatsView|null);
+
+                /** RequestStats statsView. */
+                public statsView?: "fullReadStatsView";
+
+                /**
+                 * Creates a new RequestStats instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RequestStats instance
+                 */
+                public static create(properties?: google.bigtable.v2.IRequestStats): google.bigtable.v2.RequestStats;
+
+                /**
+                 * Encodes the specified RequestStats message. Does not implicitly {@link google.bigtable.v2.RequestStats.verify|verify} messages.
+                 * @param message RequestStats message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IRequestStats, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RequestStats message, length delimited. Does not implicitly {@link google.bigtable.v2.RequestStats.verify|verify} messages.
+                 * @param message RequestStats message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IRequestStats, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RequestStats message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RequestStats
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.RequestStats;
+
+                /**
+                 * Decodes a RequestStats message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RequestStats
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.RequestStats;
+
+                /**
+                 * Verifies a RequestStats message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RequestStats message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RequestStats
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.RequestStats;
+
+                /**
+                 * Creates a plain object from a RequestStats message. Also converts values to other types if specified.
+                 * @param message RequestStats
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.RequestStats, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RequestStats to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RequestStats
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a ResponseParams. */
+            interface IResponseParams {
+
+                /** ResponseParams zoneId */
+                zoneId?: (string|null);
+
+                /** ResponseParams clusterId */
+                clusterId?: (string|null);
+            }
+
+            /** Represents a ResponseParams. */
+            class ResponseParams implements IResponseParams {
+
+                /**
+                 * Constructs a new ResponseParams.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IResponseParams);
+
+                /** ResponseParams zoneId. */
+                public zoneId?: (string|null);
+
+                /** ResponseParams clusterId. */
+                public clusterId?: (string|null);
+
+                /** ResponseParams _zoneId. */
+                public _zoneId?: "zoneId";
+
+                /** ResponseParams _clusterId. */
+                public _clusterId?: "clusterId";
+
+                /**
+                 * Creates a new ResponseParams instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns ResponseParams instance
+                 */
+                public static create(properties?: google.bigtable.v2.IResponseParams): google.bigtable.v2.ResponseParams;
+
+                /**
+                 * Encodes the specified ResponseParams message. Does not implicitly {@link google.bigtable.v2.ResponseParams.verify|verify} messages.
+                 * @param message ResponseParams message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IResponseParams, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified ResponseParams message, length delimited. Does not implicitly {@link google.bigtable.v2.ResponseParams.verify|verify} messages.
+                 * @param message ResponseParams message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IResponseParams, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a ResponseParams message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns ResponseParams
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.ResponseParams;
+
+                /**
+                 * Decodes a ResponseParams message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns ResponseParams
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.ResponseParams;
+
+                /**
+                 * Verifies a ResponseParams message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a ResponseParams message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns ResponseParams
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.ResponseParams;
+
+                /**
+                 * Creates a plain object from a ResponseParams message. Also converts values to other types if specified.
+                 * @param message ResponseParams
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.ResponseParams, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this ResponseParams to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for ResponseParams
                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                  * @returns The default type url
                  */
