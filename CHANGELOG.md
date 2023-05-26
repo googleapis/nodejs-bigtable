@@ -4,6 +4,13 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.6.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.2...v4.6.0) (2023-05-26)
+
+
+### Features
+
+* Add ChangeStreamConfig to CreateTable and UpdateTable ([#1269](https://github.com/googleapis/nodejs-bigtable/issues/1269)) ([2b05fa4](https://github.com/googleapis/nodejs-bigtable/commit/2b05fa4c7ad37fa4478f5de3cf5645b44b34ecfc))
+
 ## [4.5.2](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.1...v4.5.2) (2023-05-24)
 
 

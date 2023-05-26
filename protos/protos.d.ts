@@ -9098,6 +9098,103 @@ export namespace google {
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
+                /** Properties of a ChangeStreamConfig. */
+                interface IChangeStreamConfig {
+
+                    /** ChangeStreamConfig retentionPeriod */
+                    retentionPeriod?: (google.protobuf.IDuration|null);
+                }
+
+                /** Represents a ChangeStreamConfig. */
+                class ChangeStreamConfig implements IChangeStreamConfig {
+
+                    /**
+                     * Constructs a new ChangeStreamConfig.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IChangeStreamConfig);
+
+                    /** ChangeStreamConfig retentionPeriod. */
+                    public retentionPeriod?: (google.protobuf.IDuration|null);
+
+                    /**
+                     * Creates a new ChangeStreamConfig instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ChangeStreamConfig instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IChangeStreamConfig): google.bigtable.admin.v2.ChangeStreamConfig;
+
+                    /**
+                     * Encodes the specified ChangeStreamConfig message. Does not implicitly {@link google.bigtable.admin.v2.ChangeStreamConfig.verify|verify} messages.
+                     * @param message ChangeStreamConfig message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IChangeStreamConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ChangeStreamConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ChangeStreamConfig.verify|verify} messages.
+                     * @param message ChangeStreamConfig message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IChangeStreamConfig, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ChangeStreamConfig message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ChangeStreamConfig
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ChangeStreamConfig;
+
+                    /**
+                     * Decodes a ChangeStreamConfig message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ChangeStreamConfig
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ChangeStreamConfig;
+
+                    /**
+                     * Verifies a ChangeStreamConfig message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ChangeStreamConfig message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ChangeStreamConfig
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ChangeStreamConfig;
+
+                    /**
+                     * Creates a plain object from a ChangeStreamConfig message. Also converts values to other types if specified.
+                     * @param message ChangeStreamConfig
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ChangeStreamConfig, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ChangeStreamConfig to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ChangeStreamConfig
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
                 /** Properties of a Table. */
                 interface ITable {
 
@@ -9115,6 +9212,9 @@ export namespace google {
 
                     /** Table restoreInfo */
                     restoreInfo?: (google.bigtable.admin.v2.IRestoreInfo|null);
+
+                    /** Table changeStreamConfig */
+                    changeStreamConfig?: (google.bigtable.admin.v2.IChangeStreamConfig|null);
 
                     /** Table deletionProtection */
                     deletionProtection?: (boolean|null);
@@ -9143,6 +9243,9 @@ export namespace google {
 
                     /** Table restoreInfo. */
                     public restoreInfo?: (google.bigtable.admin.v2.IRestoreInfo|null);
+
+                    /** Table changeStreamConfig. */
+                    public changeStreamConfig?: (google.bigtable.admin.v2.IChangeStreamConfig|null);
 
                     /** Table deletionProtection. */
                     public deletionProtection: boolean;
@@ -11551,6 +11654,9 @@ export namespace google {
 
                 /** MutateRowsResponse entries */
                 entries?: (google.bigtable.v2.MutateRowsResponse.IEntry[]|null);
+
+                /** MutateRowsResponse rateLimitInfo */
+                rateLimitInfo?: (google.bigtable.v2.IRateLimitInfo|null);
             }
 
             /** Represents a MutateRowsResponse. */
@@ -11564,6 +11670,12 @@ export namespace google {
 
                 /** MutateRowsResponse entries. */
                 public entries: google.bigtable.v2.MutateRowsResponse.IEntry[];
+
+                /** MutateRowsResponse rateLimitInfo. */
+                public rateLimitInfo?: (google.bigtable.v2.IRateLimitInfo|null);
+
+                /** MutateRowsResponse _rateLimitInfo. */
+                public _rateLimitInfo?: "rateLimitInfo";
 
                 /**
                  * Creates a new MutateRowsResponse instance using the specified properties.
@@ -11747,6 +11859,109 @@ export namespace google {
                      */
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
+            }
+
+            /** Properties of a RateLimitInfo. */
+            interface IRateLimitInfo {
+
+                /** RateLimitInfo period */
+                period?: (google.protobuf.IDuration|null);
+
+                /** RateLimitInfo factor */
+                factor?: (number|null);
+            }
+
+            /** Represents a RateLimitInfo. */
+            class RateLimitInfo implements IRateLimitInfo {
+
+                /**
+                 * Constructs a new RateLimitInfo.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IRateLimitInfo);
+
+                /** RateLimitInfo period. */
+                public period?: (google.protobuf.IDuration|null);
+
+                /** RateLimitInfo factor. */
+                public factor: number;
+
+                /**
+                 * Creates a new RateLimitInfo instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns RateLimitInfo instance
+                 */
+                public static create(properties?: google.bigtable.v2.IRateLimitInfo): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Encodes the specified RateLimitInfo message. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                 * @param message RateLimitInfo message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IRateLimitInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified RateLimitInfo message, length delimited. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                 * @param message RateLimitInfo message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IRateLimitInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a RateLimitInfo message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns RateLimitInfo
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Decodes a RateLimitInfo message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns RateLimitInfo
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Verifies a RateLimitInfo message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a RateLimitInfo message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns RateLimitInfo
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.RateLimitInfo;
+
+                /**
+                 * Creates a plain object from a RateLimitInfo message. Also converts values to other types if specified.
+                 * @param message RateLimitInfo
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.RateLimitInfo, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this RateLimitInfo to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for RateLimitInfo
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
             }
 
             /** Properties of a CheckAndMutateRowRequest. */
@@ -16277,6 +16492,103 @@ export namespace google {
 
                 /**
                  * Gets the default type url for RequestStats
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
+            }
+
+            /** Properties of a FeatureFlags. */
+            interface IFeatureFlags {
+
+                /** FeatureFlags mutateRowsRateLimit */
+                mutateRowsRateLimit?: (boolean|null);
+            }
+
+            /** Represents a FeatureFlags. */
+            class FeatureFlags implements IFeatureFlags {
+
+                /**
+                 * Constructs a new FeatureFlags.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.bigtable.v2.IFeatureFlags);
+
+                /** FeatureFlags mutateRowsRateLimit. */
+                public mutateRowsRateLimit: boolean;
+
+                /**
+                 * Creates a new FeatureFlags instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns FeatureFlags instance
+                 */
+                public static create(properties?: google.bigtable.v2.IFeatureFlags): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Encodes the specified FeatureFlags message. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                 * @param message FeatureFlags message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.bigtable.v2.IFeatureFlags, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified FeatureFlags message, length delimited. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                 * @param message FeatureFlags message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.bigtable.v2.IFeatureFlags, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a FeatureFlags message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns FeatureFlags
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Decodes a FeatureFlags message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns FeatureFlags
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Verifies a FeatureFlags message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a FeatureFlags message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns FeatureFlags
+                 */
+                public static fromObject(object: { [k: string]: any }): google.bigtable.v2.FeatureFlags;
+
+                /**
+                 * Creates a plain object from a FeatureFlags message. Also converts values to other types if specified.
+                 * @param message FeatureFlags
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.bigtable.v2.FeatureFlags, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this FeatureFlags to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for FeatureFlags
                  * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                  * @returns The default type url
                  */
