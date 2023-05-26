@@ -490,22 +490,22 @@ Please use the format 'my-instance' or '${bigtable.projectName}/instances/my-ins
     const callback =
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
 
-    const reqOpts = {
-      parent: this.name,
-      tableId: id,
-      table: {
-        // The granularity at which timestamps are stored in the table.
-        // Currently only milliseconds is supported, so it's not
-        // configurable.
+    // The granularity at which timestamps are stored in the table.
+    // Currently only milliseconds is supported, so it's not
+    // configurable.
+    const table = Object.assign(
+      {
         granularity: 0,
       },
-    } as google.bigtable.admin.v2.CreateTableRequest;
-    Object.assign(
-      reqOpts,
       options.deletionProtection
         ? {deletionProtection: options.deletionProtection}
         : null
     );
+    const reqOpts = {
+      parent: this.name,
+      tableId: id,
+      table,
+    } as google.bigtable.admin.v2.CreateTableRequest;
 
     if (options.splits) {
       reqOpts.initialSplits = options.splits.map(key => ({
