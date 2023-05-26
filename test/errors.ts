@@ -37,23 +37,21 @@ describe('Bigtable/Errors', () => {
   let server: MockServer;
   let bigtable: Bigtable;
   let table: any;
+  let service: MockService;
 
-  before(done => {
-    server = new MockServer(() => {
-      bigtable = new Bigtable({
-        apiEndpoint: `localhost:${server.port}`,
-      });
-      table = bigtable.instance('fake-instance').table('fake-table');
-      done();
+  before(async () => {
+    // make sure we have everything initialized before starting tests
+    const port = await new Promise<string>(resolve => {
+      server = new MockServer(resolve);
     });
+    bigtable = new Bigtable({
+      apiEndpoint: `localhost:${port}`,
+    });
+    service = new BigtableClientMockService(server);
+    table = bigtable.instance('fake-instance').table('fake-table');
   });
 
   describe('with the bigtable data client', () => {
-    let service: MockService;
-    before(async () => {
-      service = new BigtableClientMockService(server);
-    });
-
     describe('sends errors through a streaming request', () => {
       const errorDetails =
         'Table not found: projects/my-project/instances/my-instance/tables/my-table';
