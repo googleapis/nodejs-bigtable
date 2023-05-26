@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import {GetRowsOptions, PrefixRange} from '../table';
+import {Mutation} from '../mutation';
 
 export class TableUtils {
   static getRanges(options: GetRowsOptions) {
@@ -47,6 +48,23 @@ export class TableUtils {
       });
     }
     return ranges;
+  }
+
+  // TODO: lhs and rhs type shouldn't be string, it could be
+  // string, number, Uint8Array, boolean. Fix the type
+  // and clean up the casting.
+  static lessThan(lhs: string, rhs: string) {
+    const lhsBytes = Mutation.convertToBytes(lhs);
+    const rhsBytes = Mutation.convertToBytes(rhs);
+    return (lhsBytes as Buffer).compare(rhsBytes as Uint8Array) === -1;
+  }
+
+  static greaterThan(lhs: string, rhs: string) {
+    return this.lessThan(rhs, lhs);
+  }
+
+  static lessThanOrEqualTo(lhs: string, rhs: string) {
+    return !this.greaterThan(lhs, rhs);
   }
 
   static createPrefixRange(start: string): PrefixRange {

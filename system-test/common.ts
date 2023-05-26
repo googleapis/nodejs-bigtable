@@ -16,10 +16,11 @@ import * as uuid from 'uuid';
 import {Cluster} from '../src/cluster';
 import * as inst from '../src/instance';
 
-export const PREFIX = 'gcloud-tests-';
+export const PREFIX = 'gt-';
 
 export function generateId(resourceType: string) {
-  return PREFIX + resourceType + '-' + uuid.v1().substr(0, 8);
+  const newUuid = uuid.v1().substr(4, 4);
+  return `${PREFIX}${resourceType}-${newUuid}-${Date.now()}`;
 }
 
 export class FakeCluster extends Cluster {

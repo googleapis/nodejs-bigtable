@@ -963,6 +963,13 @@
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Instance",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}"
                       },
+                      "oneofs": {
+                        "_satisfiesPzs": {
+                          "oneof": [
+                            "satisfiesPzs"
+                          ]
+                        }
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -994,6 +1001,14 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "satisfiesPzs": {
+                          "type": "bool",
+                          "id": 8,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY",
+                            "proto3_optional": true
+                          }
                         }
                       },
                       "nested": {
@@ -1018,6 +1033,10 @@
                         "cpuUtilizationPercent": {
                           "type": "int32",
                           "id": 2
+                        },
+                        "storageUtilizationGibPerNode": {
+                          "type": "int32",
+                          "id": 3
                         }
                       }
                     },
@@ -1363,6 +1382,34 @@
                             }
                           ]
                         },
+                        "UpdateTable": {
+                          "requestType": "UpdateTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{table.name=projects/*/instances/*/tables/*}",
+                            "(google.api.http).body": "table",
+                            "(google.api.method_signature)": "table,update_mask",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateTableMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "patch": "/v2/{table.name=projects/*/instances/*/tables/*}",
+                                "body": "table"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "table,update_mask"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Table",
+                                "metadata_type": "UpdateTableMetadata"
+                              }
+                            }
+                          ]
+                        },
                         "DeleteTable": {
                           "requestType": "DeleteTableRequest",
                           "responseType": "google.protobuf.Empty",
@@ -1378,6 +1425,34 @@
                             },
                             {
                               "(google.api.method_signature)": "name"
+                            }
+                          ]
+                        },
+                        "UndeleteTable": {
+                          "requestType": "UndeleteTableRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "name",
+                            "(google.longrunning.operation_info).response_type": "Table",
+                            "(google.longrunning.operation_info).metadata_type": "UndeleteTableMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "post": "/v2/{name=projects/*/instances/*/tables/*}:undelete",
+                                "body": "*"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "name"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Table",
+                                "metadata_type": "UndeleteTableMetadata"
+                              }
                             }
                           ]
                         },
@@ -1970,6 +2045,40 @@
                         }
                       }
                     },
+                    "UpdateTableRequest": {
+                      "fields": {
+                        "table": {
+                          "type": "Table",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
                     "DeleteTableRequest": {
                       "fields": {
                         "name": {
@@ -1979,6 +2088,34 @@
                             "(google.api.field_behavior)": "REQUIRED",
                             "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
                           }
+                        }
+                      }
+                    },
+                    "UndeleteTableRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                          }
+                        }
+                      }
+                    },
+                    "UndeleteTableMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "startTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "endTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
                         }
                       }
                     },
@@ -2388,6 +2525,10 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "deletionProtection": {
+                          "type": "bool",
+                          "id": 9
                         }
                       },
                       "nested": {
@@ -2695,12 +2836,12 @@
                 "csharp_namespace": "Google.Cloud.Bigtable.V2",
                 "go_package": "google.golang.org/genproto/googleapis/bigtable/v2;bigtable",
                 "java_multiple_files": true,
-                "java_outer_classname": "DataProto",
+                "java_outer_classname": "ResponseParamsProto",
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Instance",
-                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}"
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Table",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
               },
               "nested": {
                 "Bigtable": {
@@ -2975,6 +3116,54 @@
                           "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                         }
                       ]
+                    },
+                    "GenerateInitialChangeStreamPartitions": {
+                      "requestType": "GenerateInitialChangeStreamPartitionsRequest",
+                      "responseType": "GenerateInitialChangeStreamPartitionsResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:generateInitialChangeStreamPartitions",
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,app_profile_id"
+                      },
+                      "parsedOptions": [
+                        {
+                          "(google.api.http)": {
+                            "post": "/v2/{table_name=projects/*/instances/*/tables/*}:generateInitialChangeStreamPartitions",
+                            "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name"
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name,app_profile_id"
+                        }
+                      ]
+                    },
+                    "ReadChangeStream": {
+                      "requestType": "ReadChangeStreamRequest",
+                      "responseType": "ReadChangeStreamResponse",
+                      "responseStream": true,
+                      "options": {
+                        "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readChangeStream",
+                        "(google.api.http).body": "*",
+                        "(google.api.method_signature)": "table_name,app_profile_id"
+                      },
+                      "parsedOptions": [
+                        {
+                          "(google.api.http)": {
+                            "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readChangeStream",
+                            "body": "*"
+                          }
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name"
+                        },
+                        {
+                          "(google.api.method_signature)": "table_name,app_profile_id"
+                        }
+                      ]
                     }
                   }
                 },
@@ -3003,6 +3192,19 @@
                     "rowsLimit": {
                       "type": "int64",
                       "id": 4
+                    },
+                    "requestStatsView": {
+                      "type": "RequestStatsView",
+                      "id": 6
+                    }
+                  },
+                  "nested": {
+                    "RequestStatsView": {
+                      "values": {
+                        "REQUEST_STATS_VIEW_UNSPECIFIED": 0,
+                        "REQUEST_STATS_NONE": 1,
+                        "REQUEST_STATS_FULL": 2
+                      }
                     }
                   }
                 },
@@ -3016,6 +3218,10 @@
                     "lastScannedRowKey": {
                       "type": "bytes",
                       "id": 2
+                    },
+                    "requestStats": {
+                      "type": "RequestStats",
+                      "id": 3
                     }
                   },
                   "nested": {
@@ -3297,6 +3503,212 @@
                     "row": {
                       "type": "Row",
                       "id": 1
+                    }
+                  }
+                },
+                "GenerateInitialChangeStreamPartitionsRequest": {
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2
+                    }
+                  }
+                },
+                "GenerateInitialChangeStreamPartitionsResponse": {
+                  "fields": {
+                    "partition": {
+                      "type": "StreamPartition",
+                      "id": 1
+                    }
+                  }
+                },
+                "ReadChangeStreamRequest": {
+                  "oneofs": {
+                    "startFrom": {
+                      "oneof": [
+                        "startTime",
+                        "continuationTokens"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "tableName": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "appProfileId": {
+                      "type": "string",
+                      "id": 2
+                    },
+                    "partition": {
+                      "type": "StreamPartition",
+                      "id": 3
+                    },
+                    "startTime": {
+                      "type": "google.protobuf.Timestamp",
+                      "id": 4
+                    },
+                    "continuationTokens": {
+                      "type": "StreamContinuationTokens",
+                      "id": 6
+                    },
+                    "endTime": {
+                      "type": "google.protobuf.Timestamp",
+                      "id": 5
+                    },
+                    "heartbeatDuration": {
+                      "type": "google.protobuf.Duration",
+                      "id": 7
+                    }
+                  }
+                },
+                "ReadChangeStreamResponse": {
+                  "oneofs": {
+                    "streamRecord": {
+                      "oneof": [
+                        "dataChange",
+                        "heartbeat",
+                        "closeStream"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "dataChange": {
+                      "type": "DataChange",
+                      "id": 1
+                    },
+                    "heartbeat": {
+                      "type": "Heartbeat",
+                      "id": 2
+                    },
+                    "closeStream": {
+                      "type": "CloseStream",
+                      "id": 3
+                    }
+                  },
+                  "nested": {
+                    "MutationChunk": {
+                      "fields": {
+                        "chunkInfo": {
+                          "type": "ChunkInfo",
+                          "id": 1
+                        },
+                        "mutation": {
+                          "type": "Mutation",
+                          "id": 2
+                        }
+                      },
+                      "nested": {
+                        "ChunkInfo": {
+                          "fields": {
+                            "chunkedValueSize": {
+                              "type": "int32",
+                              "id": 1
+                            },
+                            "chunkedValueOffset": {
+                              "type": "int32",
+                              "id": 2
+                            },
+                            "lastChunk": {
+                              "type": "bool",
+                              "id": 3
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "DataChange": {
+                      "fields": {
+                        "type": {
+                          "type": "Type",
+                          "id": 1
+                        },
+                        "sourceClusterId": {
+                          "type": "string",
+                          "id": 2
+                        },
+                        "rowKey": {
+                          "type": "bytes",
+                          "id": 3
+                        },
+                        "commitTimestamp": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4
+                        },
+                        "tiebreaker": {
+                          "type": "int32",
+                          "id": 5
+                        },
+                        "chunks": {
+                          "rule": "repeated",
+                          "type": "MutationChunk",
+                          "id": 6
+                        },
+                        "done": {
+                          "type": "bool",
+                          "id": 8
+                        },
+                        "token": {
+                          "type": "string",
+                          "id": 9
+                        },
+                        "estimatedLowWatermark": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 10
+                        }
+                      },
+                      "nested": {
+                        "Type": {
+                          "values": {
+                            "TYPE_UNSPECIFIED": 0,
+                            "USER": 1,
+                            "GARBAGE_COLLECTION": 2,
+                            "CONTINUATION": 3
+                          }
+                        }
+                      }
+                    },
+                    "Heartbeat": {
+                      "fields": {
+                        "continuationToken": {
+                          "type": "StreamContinuationToken",
+                          "id": 1
+                        },
+                        "estimatedLowWatermark": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "CloseStream": {
+                      "fields": {
+                        "status": {
+                          "type": "google.rpc.Status",
+                          "id": 1
+                        },
+                        "continuationTokens": {
+                          "rule": "repeated",
+                          "type": "StreamContinuationToken",
+                          "id": 2
+                        },
+                        "newPartitions": {
+                          "rule": "repeated",
+                          "type": "StreamPartition",
+                          "id": 3
+                        }
+                      }
                     }
                   }
                 },
@@ -3733,6 +4145,120 @@
                     "incrementAmount": {
                       "type": "int64",
                       "id": 4
+                    }
+                  }
+                },
+                "StreamPartition": {
+                  "fields": {
+                    "rowRange": {
+                      "type": "RowRange",
+                      "id": 1
+                    }
+                  }
+                },
+                "StreamContinuationTokens": {
+                  "fields": {
+                    "tokens": {
+                      "rule": "repeated",
+                      "type": "StreamContinuationToken",
+                      "id": 1
+                    }
+                  }
+                },
+                "StreamContinuationToken": {
+                  "fields": {
+                    "partition": {
+                      "type": "StreamPartition",
+                      "id": 1
+                    },
+                    "token": {
+                      "type": "string",
+                      "id": 2
+                    }
+                  }
+                },
+                "ReadIterationStats": {
+                  "fields": {
+                    "rowsSeenCount": {
+                      "type": "int64",
+                      "id": 1
+                    },
+                    "rowsReturnedCount": {
+                      "type": "int64",
+                      "id": 2
+                    },
+                    "cellsSeenCount": {
+                      "type": "int64",
+                      "id": 3
+                    },
+                    "cellsReturnedCount": {
+                      "type": "int64",
+                      "id": 4
+                    }
+                  }
+                },
+                "RequestLatencyStats": {
+                  "fields": {
+                    "frontendServerLatency": {
+                      "type": "google.protobuf.Duration",
+                      "id": 1
+                    }
+                  }
+                },
+                "FullReadStatsView": {
+                  "fields": {
+                    "readIterationStats": {
+                      "type": "ReadIterationStats",
+                      "id": 1
+                    },
+                    "requestLatencyStats": {
+                      "type": "RequestLatencyStats",
+                      "id": 2
+                    }
+                  }
+                },
+                "RequestStats": {
+                  "oneofs": {
+                    "statsView": {
+                      "oneof": [
+                        "fullReadStatsView"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "fullReadStatsView": {
+                      "type": "FullReadStatsView",
+                      "id": 1
+                    }
+                  }
+                },
+                "ResponseParams": {
+                  "oneofs": {
+                    "_zoneId": {
+                      "oneof": [
+                        "zoneId"
+                      ]
+                    },
+                    "_clusterId": {
+                      "oneof": [
+                        "clusterId"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "zoneId": {
+                      "type": "string",
+                      "id": 1,
+                      "options": {
+                        "proto3_optional": true
+                      }
+                    },
+                    "clusterId": {
+                      "type": "string",
+                      "id": 2,
+                      "options": {
+                        "proto3_optional": true
+                      }
                     }
                   }
                 }

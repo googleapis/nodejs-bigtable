@@ -4,6 +4,80 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [4.5.2](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.1...v4.5.2) (2023-05-24)
+
+
+### Bug Fixes
+
+* Parsing for qualifiers with colon characters ([#1277](https://github.com/googleapis/nodejs-bigtable/issues/1277)) ([b80f533](https://github.com/googleapis/nodejs-bigtable/commit/b80f5338ae1721659c61e48d80ba976c148c8087))
+
+## [4.5.1](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.0...v4.5.1) (2023-04-28)
+
+
+### Bug Fixes
+
+* Remove bigtable instances left over when system tests run ([#1265](https://github.com/googleapis/nodejs-bigtable/issues/1265)) ([0526612](https://github.com/googleapis/nodejs-bigtable/commit/0526612c1023816053775fa1956cbb8b97f49b00))
+
+## [4.5.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.4.0...v4.5.0) (2023-03-20)
+
+
+### Features
+
+* Add npm run compile to the testproxy command ([#1258](https://github.com/googleapis/nodejs-bigtable/issues/1258)) ([52c06a2](https://github.com/googleapis/nodejs-bigtable/commit/52c06a2684824f10e218856f632da7e4e252b2bf))
+
+
+### Bug Fixes
+
+* Always set the retry attempt to 0 for now ([#1251](https://github.com/googleapis/nodejs-bigtable/issues/1251)) ([5ee6f19](https://github.com/googleapis/nodejs-bigtable/commit/5ee6f19f6dd6fee0d48e692242e99c1966bb8df6))
+
+## [4.4.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.3.0...v4.4.0) (2023-03-01)
+
+
+### Features
+
+* Add new_partitions field for CloseStream for Cloud Bigtable ChangeStream ([#1247](https://github.com/googleapis/nodejs-bigtable/issues/1247)) ([ecbdb52](https://github.com/googleapis/nodejs-bigtable/commit/ecbdb52ddc920bd493b284fb7d96b359a2f773f9))
+
+## [4.3.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.2.0...v4.3.0) (2023-02-10)
+
+
+### Features
+
+* Publish the Cloud Bigtable Change Streams ([#1237](https://github.com/googleapis/nodejs-bigtable/issues/1237)) ([000a353](https://github.com/googleapis/nodejs-bigtable/commit/000a353f05fa65bc0a7dc551c777ac55c6c08875))
+
+
+### Bug Fixes
+
+* Out of order read rows fix ([#1231](https://github.com/googleapis/nodejs-bigtable/issues/1231)) ([7dbaa6e](https://github.com/googleapis/nodejs-bigtable/commit/7dbaa6eebc5df6c073c78ff77f38b70c3e6f29d5))
+
+## [4.2.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.1.1...v4.2.0) (2023-01-31)
+
+
+### Features
+
+* Added SuggestConversationSummary RPC ([#1182](https://github.com/googleapis/nodejs-bigtable/issues/1182)) ([355925e](https://github.com/googleapis/nodejs-bigtable/commit/355925ee519fa27e216a76c500ab8c94de1d2c96))
+
+## [4.1.1](https://github.com/googleapis/nodejs-bigtable/compare/v4.1.0...v4.1.1) (2023-01-30)
+
+
+### Bug Fixes
+
+* **deps:** Use google-gax v3.5.2 ([#1186](https://github.com/googleapis/nodejs-bigtable/issues/1186)) ([4b1dd6e](https://github.com/googleapis/nodejs-bigtable/commit/4b1dd6e8d0f1b215a3e8183e5893e9dd01c15eed))
+* Pipe metadata along ([#1178](https://github.com/googleapis/nodejs-bigtable/issues/1178)) ([0822e4d](https://github.com/googleapis/nodejs-bigtable/commit/0822e4d17d28e47b5377d6d3853a4c5bc125a2e9))
+
+## [4.1.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.5...v4.1.0) (2022-09-26)
+
+
+### Features
+
+* Publish the RequestStats proto ([#1177](https://github.com/googleapis/nodejs-bigtable/issues/1177)) ([89dfc83](https://github.com/googleapis/nodejs-bigtable/commit/89dfc83b4fed199d70934c34ab7f4c4d17796418))
+
+## [4.0.5](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.4...v4.0.5) (2022-09-23)
+
+
+### Bug Fixes
+
+* Test is less restrictive to allow changes ([#1160](https://github.com/googleapis/nodejs-bigtable/issues/1160)) ([7d05b96](https://github.com/googleapis/nodejs-bigtable/commit/7d05b96f0adcbcdab2598ea52bc6a60005c7251b))
+
 ## [4.0.4](https://github.com/googleapis/nodejs-bigtable/compare/v4.0.3...v4.0.4) (2022-09-14)
 
 
