@@ -32,7 +32,7 @@ export type Value = string | number | boolean;
 
 export interface ParsedColumn {
   family: string | null;
-  qualifier: string | null;
+  qualifier: string | null | undefined;
 }
 export interface ConvertFromBytesOptions {
   userOptions?: ConvertFromBytesUserOptions;
@@ -380,11 +380,19 @@ export class Mutation {
    * @private
    */
   static parseColumnName(columnName: string): ParsedColumn {
-    const parts = columnName.split(':');
+    const colonIdx = columnName.indexOf(':');
+
+    if (colonIdx === -1) {
+      // columnName does not contain ':'
+      return {
+        family: columnName,
+        qualifier: undefined,
+      };
+    }
 
     return {
-      family: parts[0],
-      qualifier: parts[1],
+      family: columnName.slice(0, colonIdx),
+      qualifier: columnName.slice(colonIdx + 1),
     };
   }
 

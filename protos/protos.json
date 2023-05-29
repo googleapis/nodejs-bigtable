@@ -2489,6 +2489,14 @@
                         }
                       }
                     },
+                    "ChangeStreamConfig": {
+                      "fields": {
+                        "retentionPeriod": {
+                          "type": "google.protobuf.Duration",
+                          "id": 1
+                        }
+                      }
+                    },
                     "Table": {
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Table",
@@ -2525,6 +2533,10 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "changeStreamConfig": {
+                          "type": "ChangeStreamConfig",
+                          "id": 8
                         },
                         "deletionProtection": {
                           "type": "bool",
@@ -3381,11 +3393,25 @@
                   }
                 },
                 "MutateRowsResponse": {
+                  "oneofs": {
+                    "_rateLimitInfo": {
+                      "oneof": [
+                        "rateLimitInfo"
+                      ]
+                    }
+                  },
                   "fields": {
                     "entries": {
                       "rule": "repeated",
                       "type": "Entry",
                       "id": 1
+                    },
+                    "rateLimitInfo": {
+                      "type": "RateLimitInfo",
+                      "id": 3,
+                      "options": {
+                        "proto3_optional": true
+                      }
                     }
                   },
                   "nested": {
@@ -3400,6 +3426,18 @@
                           "id": 2
                         }
                       }
+                    }
+                  }
+                },
+                "RateLimitInfo": {
+                  "fields": {
+                    "period": {
+                      "type": "google.protobuf.Duration",
+                      "id": 1
+                    },
+                    "factor": {
+                      "type": "double",
+                      "id": 2
                     }
                   }
                 },
@@ -4229,6 +4267,14 @@
                     "fullReadStatsView": {
                       "type": "FullReadStatsView",
                       "id": 1
+                    }
+                  }
+                },
+                "FeatureFlags": {
+                  "fields": {
+                    "mutateRowsRateLimit": {
+                      "type": "bool",
+                      "id": 3
                     }
                   }
                 },

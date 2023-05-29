@@ -20915,6 +20915,214 @@
                         return RestoreInfo;
                     })();
     
+                    v2.ChangeStreamConfig = (function() {
+    
+                        /**
+                         * Properties of a ChangeStreamConfig.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface IChangeStreamConfig
+                         * @property {google.protobuf.IDuration|null} [retentionPeriod] ChangeStreamConfig retentionPeriod
+                         */
+    
+                        /**
+                         * Constructs a new ChangeStreamConfig.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a ChangeStreamConfig.
+                         * @implements IChangeStreamConfig
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig=} [properties] Properties to set
+                         */
+                        function ChangeStreamConfig(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * ChangeStreamConfig retentionPeriod.
+                         * @member {google.protobuf.IDuration|null|undefined} retentionPeriod
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @instance
+                         */
+                        ChangeStreamConfig.prototype.retentionPeriod = null;
+    
+                        /**
+                         * Creates a new ChangeStreamConfig instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig instance
+                         */
+                        ChangeStreamConfig.create = function create(properties) {
+                            return new ChangeStreamConfig(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified ChangeStreamConfig message. Does not implicitly {@link google.bigtable.admin.v2.ChangeStreamConfig.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig} message ChangeStreamConfig message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChangeStreamConfig.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.retentionPeriod != null && Object.hasOwnProperty.call(message, "retentionPeriod"))
+                                $root.google.protobuf.Duration.encode(message.retentionPeriod, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified ChangeStreamConfig message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ChangeStreamConfig.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.IChangeStreamConfig} message ChangeStreamConfig message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        ChangeStreamConfig.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a ChangeStreamConfig message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChangeStreamConfig.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.ChangeStreamConfig();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.retentionPeriod = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a ChangeStreamConfig message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        ChangeStreamConfig.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a ChangeStreamConfig message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        ChangeStreamConfig.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.retentionPeriod != null && message.hasOwnProperty("retentionPeriod")) {
+                                var error = $root.google.protobuf.Duration.verify(message.retentionPeriod);
+                                if (error)
+                                    return "retentionPeriod." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a ChangeStreamConfig message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.ChangeStreamConfig} ChangeStreamConfig
+                         */
+                        ChangeStreamConfig.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.ChangeStreamConfig)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.ChangeStreamConfig();
+                            if (object.retentionPeriod != null) {
+                                if (typeof object.retentionPeriod !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.ChangeStreamConfig.retentionPeriod: object expected");
+                                message.retentionPeriod = $root.google.protobuf.Duration.fromObject(object.retentionPeriod);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a ChangeStreamConfig message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {google.bigtable.admin.v2.ChangeStreamConfig} message ChangeStreamConfig
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        ChangeStreamConfig.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults)
+                                object.retentionPeriod = null;
+                            if (message.retentionPeriod != null && message.hasOwnProperty("retentionPeriod"))
+                                object.retentionPeriod = $root.google.protobuf.Duration.toObject(message.retentionPeriod, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this ChangeStreamConfig to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        ChangeStreamConfig.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for ChangeStreamConfig
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.ChangeStreamConfig
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        ChangeStreamConfig.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.ChangeStreamConfig";
+                        };
+    
+                        return ChangeStreamConfig;
+                    })();
+    
                     v2.Table = (function() {
     
                         /**
@@ -20926,6 +21134,7 @@
                          * @property {Object.<string,google.bigtable.admin.v2.IColumnFamily>|null} [columnFamilies] Table columnFamilies
                          * @property {google.bigtable.admin.v2.Table.TimestampGranularity|null} [granularity] Table granularity
                          * @property {google.bigtable.admin.v2.IRestoreInfo|null} [restoreInfo] Table restoreInfo
+                         * @property {google.bigtable.admin.v2.IChangeStreamConfig|null} [changeStreamConfig] Table changeStreamConfig
                          * @property {boolean|null} [deletionProtection] Table deletionProtection
                          */
     
@@ -20987,6 +21196,14 @@
                         Table.prototype.restoreInfo = null;
     
                         /**
+                         * Table changeStreamConfig.
+                         * @member {google.bigtable.admin.v2.IChangeStreamConfig|null|undefined} changeStreamConfig
+                         * @memberof google.bigtable.admin.v2.Table
+                         * @instance
+                         */
+                        Table.prototype.changeStreamConfig = null;
+    
+                        /**
                          * Table deletionProtection.
                          * @member {boolean} deletionProtection
                          * @memberof google.bigtable.admin.v2.Table
@@ -21034,6 +21251,8 @@
                                 writer.uint32(/* id 4, wireType 0 =*/32).int32(message.granularity);
                             if (message.restoreInfo != null && Object.hasOwnProperty.call(message, "restoreInfo"))
                                 $root.google.bigtable.admin.v2.RestoreInfo.encode(message.restoreInfo, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            if (message.changeStreamConfig != null && Object.hasOwnProperty.call(message, "changeStreamConfig"))
+                                $root.google.bigtable.admin.v2.ChangeStreamConfig.encode(message.changeStreamConfig, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
                             if (message.deletionProtection != null && Object.hasOwnProperty.call(message, "deletionProtection"))
                                 writer.uint32(/* id 9, wireType 0 =*/72).bool(message.deletionProtection);
                             return writer;
@@ -21128,6 +21347,10 @@
                                         message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.decode(reader, reader.uint32());
                                         break;
                                     }
+                                case 8: {
+                                        message.changeStreamConfig = $root.google.bigtable.admin.v2.ChangeStreamConfig.decode(reader, reader.uint32());
+                                        break;
+                                    }
                                 case 9: {
                                         message.deletionProtection = reader.bool();
                                         break;
@@ -21203,6 +21426,11 @@
                                 if (error)
                                     return "restoreInfo." + error;
                             }
+                            if (message.changeStreamConfig != null && message.hasOwnProperty("changeStreamConfig")) {
+                                var error = $root.google.bigtable.admin.v2.ChangeStreamConfig.verify(message.changeStreamConfig);
+                                if (error)
+                                    return "changeStreamConfig." + error;
+                            }
                             if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
                                 if (typeof message.deletionProtection !== "boolean")
                                     return "deletionProtection: boolean expected";
@@ -21264,6 +21492,11 @@
                                     throw TypeError(".google.bigtable.admin.v2.Table.restoreInfo: object expected");
                                 message.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.fromObject(object.restoreInfo);
                             }
+                            if (object.changeStreamConfig != null) {
+                                if (typeof object.changeStreamConfig !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.Table.changeStreamConfig: object expected");
+                                message.changeStreamConfig = $root.google.bigtable.admin.v2.ChangeStreamConfig.fromObject(object.changeStreamConfig);
+                            }
                             if (object.deletionProtection != null)
                                 message.deletionProtection = Boolean(object.deletionProtection);
                             return message;
@@ -21290,6 +21523,7 @@
                                 object.name = "";
                                 object.granularity = options.enums === String ? "TIMESTAMP_GRANULARITY_UNSPECIFIED" : 0;
                                 object.restoreInfo = null;
+                                object.changeStreamConfig = null;
                                 object.deletionProtection = false;
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
@@ -21309,6 +21543,8 @@
                                 object.granularity = options.enums === String ? $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] === undefined ? message.granularity : $root.google.bigtable.admin.v2.Table.TimestampGranularity[message.granularity] : message.granularity;
                             if (message.restoreInfo != null && message.hasOwnProperty("restoreInfo"))
                                 object.restoreInfo = $root.google.bigtable.admin.v2.RestoreInfo.toObject(message.restoreInfo, options);
+                            if (message.changeStreamConfig != null && message.hasOwnProperty("changeStreamConfig"))
+                                object.changeStreamConfig = $root.google.bigtable.admin.v2.ChangeStreamConfig.toObject(message.changeStreamConfig, options);
                             if (message.deletionProtection != null && message.hasOwnProperty("deletionProtection"))
                                 object.deletionProtection = message.deletionProtection;
                             return object;
@@ -27092,6 +27328,7 @@
                      * @memberof google.bigtable.v2
                      * @interface IMutateRowsResponse
                      * @property {Array.<google.bigtable.v2.MutateRowsResponse.IEntry>|null} [entries] MutateRowsResponse entries
+                     * @property {google.bigtable.v2.IRateLimitInfo|null} [rateLimitInfo] MutateRowsResponse rateLimitInfo
                      */
     
                     /**
@@ -27117,6 +27354,28 @@
                      * @instance
                      */
                     MutateRowsResponse.prototype.entries = $util.emptyArray;
+    
+                    /**
+                     * MutateRowsResponse rateLimitInfo.
+                     * @member {google.bigtable.v2.IRateLimitInfo|null|undefined} rateLimitInfo
+                     * @memberof google.bigtable.v2.MutateRowsResponse
+                     * @instance
+                     */
+                    MutateRowsResponse.prototype.rateLimitInfo = null;
+    
+                    // OneOf field names bound to virtual getters and setters
+                    var $oneOfFields;
+    
+                    /**
+                     * MutateRowsResponse _rateLimitInfo.
+                     * @member {"rateLimitInfo"|undefined} _rateLimitInfo
+                     * @memberof google.bigtable.v2.MutateRowsResponse
+                     * @instance
+                     */
+                    Object.defineProperty(MutateRowsResponse.prototype, "_rateLimitInfo", {
+                        get: $util.oneOfGetter($oneOfFields = ["rateLimitInfo"]),
+                        set: $util.oneOfSetter($oneOfFields)
+                    });
     
                     /**
                      * Creates a new MutateRowsResponse instance using the specified properties.
@@ -27145,6 +27404,8 @@
                         if (message.entries != null && message.entries.length)
                             for (var i = 0; i < message.entries.length; ++i)
                                 $root.google.bigtable.v2.MutateRowsResponse.Entry.encode(message.entries[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.rateLimitInfo != null && Object.hasOwnProperty.call(message, "rateLimitInfo"))
+                            $root.google.bigtable.v2.RateLimitInfo.encode(message.rateLimitInfo, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                         return writer;
                     };
     
@@ -27185,6 +27446,10 @@
                                     message.entries.push($root.google.bigtable.v2.MutateRowsResponse.Entry.decode(reader, reader.uint32()));
                                     break;
                                 }
+                            case 3: {
+                                    message.rateLimitInfo = $root.google.bigtable.v2.RateLimitInfo.decode(reader, reader.uint32());
+                                    break;
+                                }
                             default:
                                 reader.skipType(tag & 7);
                                 break;
@@ -27220,6 +27485,7 @@
                     MutateRowsResponse.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
+                        var properties = {};
                         if (message.entries != null && message.hasOwnProperty("entries")) {
                             if (!Array.isArray(message.entries))
                                 return "entries: array expected";
@@ -27227,6 +27493,14 @@
                                 var error = $root.google.bigtable.v2.MutateRowsResponse.Entry.verify(message.entries[i]);
                                 if (error)
                                     return "entries." + error;
+                            }
+                        }
+                        if (message.rateLimitInfo != null && message.hasOwnProperty("rateLimitInfo")) {
+                            properties._rateLimitInfo = 1;
+                            {
+                                var error = $root.google.bigtable.v2.RateLimitInfo.verify(message.rateLimitInfo);
+                                if (error)
+                                    return "rateLimitInfo." + error;
                             }
                         }
                         return null;
@@ -27254,6 +27528,11 @@
                                 message.entries[i] = $root.google.bigtable.v2.MutateRowsResponse.Entry.fromObject(object.entries[i]);
                             }
                         }
+                        if (object.rateLimitInfo != null) {
+                            if (typeof object.rateLimitInfo !== "object")
+                                throw TypeError(".google.bigtable.v2.MutateRowsResponse.rateLimitInfo: object expected");
+                            message.rateLimitInfo = $root.google.bigtable.v2.RateLimitInfo.fromObject(object.rateLimitInfo);
+                        }
                         return message;
                     };
     
@@ -27276,6 +27555,11 @@
                             object.entries = [];
                             for (var j = 0; j < message.entries.length; ++j)
                                 object.entries[j] = $root.google.bigtable.v2.MutateRowsResponse.Entry.toObject(message.entries[j], options);
+                        }
+                        if (message.rateLimitInfo != null && message.hasOwnProperty("rateLimitInfo")) {
+                            object.rateLimitInfo = $root.google.bigtable.v2.RateLimitInfo.toObject(message.rateLimitInfo, options);
+                            if (options.oneofs)
+                                object._rateLimitInfo = "rateLimitInfo";
                         }
                         return object;
                     };
@@ -27553,6 +27837,238 @@
                     })();
     
                     return MutateRowsResponse;
+                })();
+    
+                v2.RateLimitInfo = (function() {
+    
+                    /**
+                     * Properties of a RateLimitInfo.
+                     * @memberof google.bigtable.v2
+                     * @interface IRateLimitInfo
+                     * @property {google.protobuf.IDuration|null} [period] RateLimitInfo period
+                     * @property {number|null} [factor] RateLimitInfo factor
+                     */
+    
+                    /**
+                     * Constructs a new RateLimitInfo.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a RateLimitInfo.
+                     * @implements IRateLimitInfo
+                     * @constructor
+                     * @param {google.bigtable.v2.IRateLimitInfo=} [properties] Properties to set
+                     */
+                    function RateLimitInfo(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * RateLimitInfo period.
+                     * @member {google.protobuf.IDuration|null|undefined} period
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @instance
+                     */
+                    RateLimitInfo.prototype.period = null;
+    
+                    /**
+                     * RateLimitInfo factor.
+                     * @member {number} factor
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @instance
+                     */
+                    RateLimitInfo.prototype.factor = 0;
+    
+                    /**
+                     * Creates a new RateLimitInfo instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.IRateLimitInfo=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo instance
+                     */
+                    RateLimitInfo.create = function create(properties) {
+                        return new RateLimitInfo(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified RateLimitInfo message. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.IRateLimitInfo} message RateLimitInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RateLimitInfo.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.period != null && Object.hasOwnProperty.call(message, "period"))
+                            $root.google.protobuf.Duration.encode(message.period, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                        if (message.factor != null && Object.hasOwnProperty.call(message, "factor"))
+                            writer.uint32(/* id 2, wireType 1 =*/17).double(message.factor);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified RateLimitInfo message, length delimited. Does not implicitly {@link google.bigtable.v2.RateLimitInfo.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.IRateLimitInfo} message RateLimitInfo message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    RateLimitInfo.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a RateLimitInfo message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RateLimitInfo.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.RateLimitInfo();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 1: {
+                                    message.period = $root.google.protobuf.Duration.decode(reader, reader.uint32());
+                                    break;
+                                }
+                            case 2: {
+                                    message.factor = reader.double();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a RateLimitInfo message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    RateLimitInfo.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a RateLimitInfo message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    RateLimitInfo.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.period != null && message.hasOwnProperty("period")) {
+                            var error = $root.google.protobuf.Duration.verify(message.period);
+                            if (error)
+                                return "period." + error;
+                        }
+                        if (message.factor != null && message.hasOwnProperty("factor"))
+                            if (typeof message.factor !== "number")
+                                return "factor: number expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a RateLimitInfo message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.RateLimitInfo} RateLimitInfo
+                     */
+                    RateLimitInfo.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.RateLimitInfo)
+                            return object;
+                        var message = new $root.google.bigtable.v2.RateLimitInfo();
+                        if (object.period != null) {
+                            if (typeof object.period !== "object")
+                                throw TypeError(".google.bigtable.v2.RateLimitInfo.period: object expected");
+                            message.period = $root.google.protobuf.Duration.fromObject(object.period);
+                        }
+                        if (object.factor != null)
+                            message.factor = Number(object.factor);
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a RateLimitInfo message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {google.bigtable.v2.RateLimitInfo} message RateLimitInfo
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    RateLimitInfo.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults) {
+                            object.period = null;
+                            object.factor = 0;
+                        }
+                        if (message.period != null && message.hasOwnProperty("period"))
+                            object.period = $root.google.protobuf.Duration.toObject(message.period, options);
+                        if (message.factor != null && message.hasOwnProperty("factor"))
+                            object.factor = options.json && !isFinite(message.factor) ? String(message.factor) : message.factor;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this RateLimitInfo to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    RateLimitInfo.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for RateLimitInfo
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.RateLimitInfo
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    RateLimitInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.RateLimitInfo";
+                    };
+    
+                    return RateLimitInfo;
                 })();
     
                 v2.CheckAndMutateRowRequest = (function() {
@@ -39021,6 +39537,209 @@
                     };
     
                     return RequestStats;
+                })();
+    
+                v2.FeatureFlags = (function() {
+    
+                    /**
+                     * Properties of a FeatureFlags.
+                     * @memberof google.bigtable.v2
+                     * @interface IFeatureFlags
+                     * @property {boolean|null} [mutateRowsRateLimit] FeatureFlags mutateRowsRateLimit
+                     */
+    
+                    /**
+                     * Constructs a new FeatureFlags.
+                     * @memberof google.bigtable.v2
+                     * @classdesc Represents a FeatureFlags.
+                     * @implements IFeatureFlags
+                     * @constructor
+                     * @param {google.bigtable.v2.IFeatureFlags=} [properties] Properties to set
+                     */
+                    function FeatureFlags(properties) {
+                        if (properties)
+                            for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                if (properties[keys[i]] != null)
+                                    this[keys[i]] = properties[keys[i]];
+                    }
+    
+                    /**
+                     * FeatureFlags mutateRowsRateLimit.
+                     * @member {boolean} mutateRowsRateLimit
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     */
+                    FeatureFlags.prototype.mutateRowsRateLimit = false;
+    
+                    /**
+                     * Creates a new FeatureFlags instance using the specified properties.
+                     * @function create
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.IFeatureFlags=} [properties] Properties to set
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags instance
+                     */
+                    FeatureFlags.create = function create(properties) {
+                        return new FeatureFlags(properties);
+                    };
+    
+                    /**
+                     * Encodes the specified FeatureFlags message. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                     * @function encode
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.IFeatureFlags} message FeatureFlags message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FeatureFlags.encode = function encode(message, writer) {
+                        if (!writer)
+                            writer = $Writer.create();
+                        if (message.mutateRowsRateLimit != null && Object.hasOwnProperty.call(message, "mutateRowsRateLimit"))
+                            writer.uint32(/* id 3, wireType 0 =*/24).bool(message.mutateRowsRateLimit);
+                        return writer;
+                    };
+    
+                    /**
+                     * Encodes the specified FeatureFlags message, length delimited. Does not implicitly {@link google.bigtable.v2.FeatureFlags.verify|verify} messages.
+                     * @function encodeDelimited
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.IFeatureFlags} message FeatureFlags message or plain object to encode
+                     * @param {$protobuf.Writer} [writer] Writer to encode to
+                     * @returns {$protobuf.Writer} Writer
+                     */
+                    FeatureFlags.encodeDelimited = function encodeDelimited(message, writer) {
+                        return this.encode(message, writer).ldelim();
+                    };
+    
+                    /**
+                     * Decodes a FeatureFlags message from the specified reader or buffer.
+                     * @function decode
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @param {number} [length] Message length if known beforehand
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FeatureFlags.decode = function decode(reader, length) {
+                        if (!(reader instanceof $Reader))
+                            reader = $Reader.create(reader);
+                        var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.v2.FeatureFlags();
+                        while (reader.pos < end) {
+                            var tag = reader.uint32();
+                            switch (tag >>> 3) {
+                            case 3: {
+                                    message.mutateRowsRateLimit = reader.bool();
+                                    break;
+                                }
+                            default:
+                                reader.skipType(tag & 7);
+                                break;
+                            }
+                        }
+                        return message;
+                    };
+    
+                    /**
+                     * Decodes a FeatureFlags message from the specified reader or buffer, length delimited.
+                     * @function decodeDelimited
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    FeatureFlags.decodeDelimited = function decodeDelimited(reader) {
+                        if (!(reader instanceof $Reader))
+                            reader = new $Reader(reader);
+                        return this.decode(reader, reader.uint32());
+                    };
+    
+                    /**
+                     * Verifies a FeatureFlags message.
+                     * @function verify
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {Object.<string,*>} message Plain object to verify
+                     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                     */
+                    FeatureFlags.verify = function verify(message) {
+                        if (typeof message !== "object" || message === null)
+                            return "object expected";
+                        if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
+                            if (typeof message.mutateRowsRateLimit !== "boolean")
+                                return "mutateRowsRateLimit: boolean expected";
+                        return null;
+                    };
+    
+                    /**
+                     * Creates a FeatureFlags message from a plain object. Also converts values to their respective internal types.
+                     * @function fromObject
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {Object.<string,*>} object Plain object
+                     * @returns {google.bigtable.v2.FeatureFlags} FeatureFlags
+                     */
+                    FeatureFlags.fromObject = function fromObject(object) {
+                        if (object instanceof $root.google.bigtable.v2.FeatureFlags)
+                            return object;
+                        var message = new $root.google.bigtable.v2.FeatureFlags();
+                        if (object.mutateRowsRateLimit != null)
+                            message.mutateRowsRateLimit = Boolean(object.mutateRowsRateLimit);
+                        return message;
+                    };
+    
+                    /**
+                     * Creates a plain object from a FeatureFlags message. Also converts values to other types if specified.
+                     * @function toObject
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {google.bigtable.v2.FeatureFlags} message FeatureFlags
+                     * @param {$protobuf.IConversionOptions} [options] Conversion options
+                     * @returns {Object.<string,*>} Plain object
+                     */
+                    FeatureFlags.toObject = function toObject(message, options) {
+                        if (!options)
+                            options = {};
+                        var object = {};
+                        if (options.defaults)
+                            object.mutateRowsRateLimit = false;
+                        if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
+                            object.mutateRowsRateLimit = message.mutateRowsRateLimit;
+                        return object;
+                    };
+    
+                    /**
+                     * Converts this FeatureFlags to JSON.
+                     * @function toJSON
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     * @returns {Object.<string,*>} JSON object
+                     */
+                    FeatureFlags.prototype.toJSON = function toJSON() {
+                        return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                    };
+    
+                    /**
+                     * Gets the default type url for FeatureFlags
+                     * @function getTypeUrl
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @static
+                     * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns {string} The default type url
+                     */
+                    FeatureFlags.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                        if (typeUrlPrefix === undefined) {
+                            typeUrlPrefix = "type.googleapis.com";
+                        }
+                        return typeUrlPrefix + "/google.bigtable.v2.FeatureFlags";
+                    };
+    
+                    return FeatureFlags;
                 })();
     
                 v2.ResponseParams = (function() {

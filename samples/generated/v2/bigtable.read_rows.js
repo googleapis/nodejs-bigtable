@@ -39,8 +39,8 @@ function main(tableName) {
    */
   // const tableName = 'abc123'
   /**
-   *  This value specifies routing for replication. This API only accepts the
-   *  empty value of app_profile_id.
+   *  This value specifies routing for replication. If not specified, the
+   *  "default" application profile will be used.
    */
   // const appProfileId = 'abc123'
   /**
