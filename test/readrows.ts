@@ -211,7 +211,7 @@ describe('Bigtable/ReadRows', () => {
 
       if (receivedRowCount === stopAfter) {
         debugLog(`requesting to stop after receiving key ${key}`);
-        readStream.end();
+        // readStream.end();
       }
     });
     readStream.on('end', () => {
@@ -277,7 +277,8 @@ describe('Bigtable/ReadRows', () => {
 
       if (receivedRowCount === stopAfter) {
         debugLog(`requesting to stop after receiving key ${key}`);
-        readStream.end();
+        table.cancelled7 = true;
+        readStream.destroy();
       }
     });
     passThrough.on('end', () => {

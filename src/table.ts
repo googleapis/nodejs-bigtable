@@ -16,7 +16,7 @@ import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
 import {ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
-import {PassThrough, Transform} from 'stream';
+import {PassThrough, Transform, Readable} from 'stream';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const concat = require('concat-stream');
@@ -400,12 +400,14 @@ export class Table {
   bigtable: Bigtable;
   instance: Instance;
   name: string;
+  cancelled7: boolean;
   id: string;
   metadata?: google.bigtable.admin.v2.ITable;
   maxRetries?: number;
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
+    this.cancelled7 = false;
 
     let name;
 
@@ -749,25 +751,42 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     let userCanceled = false;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const thisTable = this;
+    let userStreamCounter = 0;
+    // let userStreamCounter = 0;
+    const userStream = new Readable({
+      objectMode: true,
+      read(size) {
+        userStreamCounter++;
+        console.log(`userStreamCounter: ${userStreamCounter}`);
+        this.push('foo');
+      },
+    });
+    /*
     const userStream = new PassThrough({
       objectMode: true,
       transform(row, _encoding, callback) {
-        if (userCanceled) {
+        if (userCanceled || thisTable.cancelled7) {
           callback();
           return;
         }
+        userStreamCounter++;
+        console.log(`user stream counter: ${userStreamCounter}`);
         callback(null, row);
       },
     });
+    */
 
     // The caller should be able to call userStream.end() to stop receiving
     // more rows and cancel the stream prematurely. But also, the 'end' event
     // will be emitted if the stream ended normally. To tell these two
     // situations apart, we'll save the "original" end() function, and
     // will call it on rowStream.on('end').
-    const originalEnd = userStream.end.bind(userStream);
+    // const originalEnd = userStream.end.bind(userStream);
 
     // Taking care of this extra listener when piping and unpiping userStream:
+    /*
     const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
       rowStream.pipe(userStream, {end: false});
       rowStream.on('end', originalEnd);
@@ -776,19 +795,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream?.unpipe(userStream);
       rowStream?.removeListener('end', originalEnd);
     };
+    */
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
-      rowStreamUnpipe(rowStream, userStream);
+
+    userStream.on('end', (chunk?: any, encoding?: any, cb?: () => void) => {
       userCanceled = true;
+      // rowStreamUnpipe(rowStream, userStream);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
       if (retryTimer) {
         clearTimeout(retryTimer);
       }
-      return originalEnd(chunk, encoding, cb);
-    };
+      // return originalEnd(chunk, encoding, cb);
+    });
 
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
@@ -858,13 +879,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         // we've already read all the rows, end the stream and
         // do not retry.
         if (hasLimit && rowsLimit === rowsRead) {
-          userStream.end();
+          // userStream.end();
           return;
         }
         // If all the row keys and ranges are read, end the stream
         // and do not retry.
         if (rowKeys.length === 0 && ranges.length === 0) {
-          userStream.end();
+          // userStream.end();
           return;
         }
       }
@@ -925,7 +946,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         objectMode: true,
       });
 
-      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
+      rowStream = pumpify.obj([
+        requestStream,
+        chunkTransformer,
+        toRowStream,
+        userStream,
+      ]);
 
       // Retry on "received rst stream" errors
       const isRstStreamError = (error: ServiceError): boolean => {
@@ -942,12 +968,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
-          rowStreamUnpipe(rowStream, userStream);
+          // rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
-            userStream.end();
+            // userStream.end();
             return;
           }
           numConsecutiveErrors++;
@@ -976,7 +1002,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('end', () => {
           activeRequestStream = null;
         });
-      rowStreamPipe(rowStream, userStream);
+      // rowStreamPipe(rowStream, userStream);
+      // rowStream.pipe(userStream);
+      // rowStreamPipe(rowStream, userStream);
     };
 
     makeNewRequest();
