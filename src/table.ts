@@ -980,7 +980,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         objectMode: true,
       });
 
-      userStream = new MyDuplex();
+      userStream = new MyDuplex({objectMode: true});
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
       // userStream = new MyReadable(rowStream, {objectMode: true});
       // Retry on "received rst stream" errors
