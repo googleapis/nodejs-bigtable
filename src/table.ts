@@ -785,64 +785,37 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     let userCanceled = false;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     let userStream = new MyDuplex({objectMode: true});
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const thisTable = this;
-    // let userStreamCounter = 0;
-    // let userStreamCounter = 0;
-    // const userStream = new MyReadable({ objectMode: true });
-    /*
-    const userStream = new PassThrough({
-      objectMode: true,
-      transform(row, _encoding, callback) {
-        if (userCanceled || thisTable.cancelled7) {
-          callback();
-          return;
-        }
-        userStreamCounter++;
-        console.log(`user stream counter: ${userStreamCounter}`);
-        callback(null, row);
-      },
-    });
-    */
 
     // The caller should be able to call userStream.end() to stop receiving
     // more rows and cancel the stream prematurely. But also, the 'end' event
     // will be emitted if the stream ended normally. To tell these two
     // situations apart, we'll save the "original" end() function, and
     // will call it on rowStream.on('end').
-    // const originalEnd = userStream.end.bind(userStream);
+    const originalEnd = userStream.end.bind(userStream);
 
     // Taking care of this extra listener when piping and unpiping userStream:
-    const rowStreamPipe = (
-      rowStream: Duplex,
-      userStream: PassThrough | Duplex
-    ) => {
+    const rowStreamPipe = (rowStream: Duplex, userStream: Duplex) => {
       rowStream.pipe(userStream, {end: false});
-      // rowStream.on('end', originalEnd);
+      rowStream.on('end', originalEnd);
     };
-    /*
-    const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
+    const rowStreamUnpipe = (rowStream: Duplex, userStream: Duplex) => {
       rowStream?.unpipe(userStream);
       rowStream?.removeListener('end', originalEnd);
     };
-    */
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-    userStream.on('end', (chunk?: any, encoding?: any, cb?: () => void) => {
+    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
+      rowStreamUnpipe(rowStream, userStream);
       userCanceled = true;
-      // rowStreamUnpipe(rowStream, userStream);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
       if (retryTimer) {
         clearTimeout(retryTimer);
       }
-      // return originalEnd(chunk, encoding, cb);
-    });
+      return originalEnd(chunk, encoding, cb);
+    };
 
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
@@ -998,7 +971,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
-          // rowStreamUnpipe(rowStream, userStream);
+          rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
@@ -1033,8 +1006,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           activeRequestStream = null;
         });
       rowStreamPipe(rowStream, userStream);
-      // rowStream.pipe(userStream);
-      // rowStreamPipe(rowStream, userStream);
     };
 
     makeNewRequest();
