@@ -9,7 +9,8 @@
 
 ### Bug Fixes
 
-* Properly handle asynchronous read from stream ([#1284](https://github.com/googleapis/nodejs-bigtable/issues/1284)) ([55d86ba](https://github.com/googleapis/nodejs-bigtable/commit/55d86baaf554247c0c3d063fc790a37569f3e77b))
+* Properly handle asynchronous read from stream ([#1284](https://github.com/googleapis/nodejs-bigtable/issues/1284)) ([55d86ba](https://github.com/googleapis/nodejs-bigtable/commit/55d86baaf554247c0c3d063fc790a37569f3e77b)). This could result in silently dropped rows in a `createReadStream`. The bug is active when the `ReadRows` stream would be piped into a consumer that would defer the processing of the rows until the next event loop run (i.e. use a `Transform` that would defer the callback invocation via `setTimeout()`).
+
 
 ## [4.6.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.2...v4.6.0) (2023-05-26)
 
