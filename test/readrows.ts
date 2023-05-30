@@ -122,8 +122,7 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  // TODO(@alexander-fenster): enable after https://github.com/googleapis/nodejs-bigtable/issues/607 is fixed
-  it.skip('should create read stream and read asynchronously using Transform stream', function (done) {
+  it('should create read stream and read asynchronously using Transform stream', function (done) {
     if (process.platform === 'win32') {
       this.timeout(60000); // it runs much slower on Windows!
     }
@@ -222,7 +221,7 @@ describe('Bigtable/ReadRows', () => {
     });
   });
 
-  // TODO(@alexander-fenster): enable after it's fixed
+  // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
   it.skip('should be able to stop reading from the read stream when reading asynchronously', function (done) {
     if (process.platform === 'win32') {
       this.timeout(60000); // it runs much slower on Windows!
