@@ -398,17 +398,38 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  */
 
 class MyReadable extends Readable {
-  kSource: Duplex;
-  constructor(source: Duplex, options: any) {
+  kSource: any;
+  constructor(source: any, options: any) {
     super(options);
     this.kSource = source;
   }
 
   _read(size: number) {
     const data = this.kSource.read(size);
-    this.push(Buffer.from('test', 'utf8'));
+    // this.push(Buffer.from('test', 'utf8'));
+    if (data) {
+      this.push(Buffer.from('test', 'utf8'));
+    }
   }
 }
+
+class MyDuplex extends Duplex {
+  _write(chunk: any, encoding: BufferEncoding, callback: () => void) {
+    console.log('writing chunk');
+    this.push(chunk);
+    callback();
+  }
+
+  _read(size: number) {
+    console.log('read');
+    // const data = this.kSource.read(size);
+    // this.push(Buffer.from('test', 'utf8'));
+    // if (data) {
+    //   this.push(Buffer.from('test', 'utf8'));
+    // }
+  }
+}
+
 export class Table {
   bigtable: Bigtable;
   instance: Instance;
@@ -766,7 +787,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let userCanceled = false;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    let userStream = new MyReadable(rowStream, {objectMode: true});
+    let userStream = new MyDuplex({objectMode: true});
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisTable = this;
     // let userStreamCounter = 0;
@@ -795,11 +816,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     // const originalEnd = userStream.end.bind(userStream);
 
     // Taking care of this extra listener when piping and unpiping userStream:
-    /*
-    const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
+    const rowStreamPipe = (
+      rowStream: Duplex,
+      userStream: PassThrough | Duplex
+    ) => {
       rowStream.pipe(userStream, {end: false});
-      rowStream.on('end', originalEnd);
+      // rowStream.on('end', originalEnd);
     };
+    /*
     const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
       rowStream?.unpipe(userStream);
       rowStream?.removeListener('end', originalEnd);
@@ -950,13 +974,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           rowsRead++;
           const row = this.row(rowData.key);
           row.data = rowData.data;
+          console.log(`rowsRead: ${rowsRead}`);
           next(null, row);
         },
         objectMode: true,
       });
 
+      userStream = new MyDuplex();
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
-      userStream = new MyReadable(rowStream, {objectMode: true});
+      // userStream = new MyReadable(rowStream, {objectMode: true});
       // Retry on "received rst stream" errors
       const isRstStreamError = (error: ServiceError): boolean => {
         if (error.code === 13 && error.message) {
@@ -1006,7 +1032,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('end', () => {
           activeRequestStream = null;
         });
-      // rowStreamPipe(rowStream, userStream);
+      rowStreamPipe(rowStream, userStream);
       // rowStream.pipe(userStream);
       // rowStreamPipe(rowStream, userStream);
     };
