@@ -398,16 +398,15 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  */
 
 class MyReadable extends Readable {
-  kSource: any;
-  constructor(source: any, options: any) {
+  kSource: Duplex;
+  constructor(source: Duplex, options: any) {
     super(options);
     this.kSource = source;
   }
 
   _read(size: number) {
-    this.kSource.fetchSomeData(size, (data: any, encoding: any) => {
-      this.push(Buffer.from(data, encoding));
-    });
+    const data = this.kSource.read(size);
+    this.push(Buffer.from('test', 'utf8'));
   }
 }
 export class Table {
@@ -767,7 +766,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let userCanceled = false;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const userStream = new MyReadable(rowStream, {objectMode: true});
+    let userStream = new MyReadable(rowStream, {objectMode: true});
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisTable = this;
     // let userStreamCounter = 0;
@@ -957,7 +956,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       });
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
-
+      userStream = new MyReadable(rowStream, {objectMode: true});
       // Retry on "received rst stream" errors
       const isRstStreamError = (error: ServiceError): boolean => {
         if (error.code === 13 && error.message) {
@@ -1012,6 +1011,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // rowStreamPipe(rowStream, userStream);
     };
 
+    makeNewRequest();
     return userStream;
   }
 
