@@ -396,6 +396,20 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  * const table = instance.table('prezzy');
  * ```
  */
+
+class MyReadable extends Readable {
+  kSource: any;
+  constructor(source: any, options: any) {
+    super(options);
+    this.kSource = source;
+  }
+
+  _read(size: number) {
+    this.kSource.fetchSomeData(size, (data: any, encoding: any) => {
+      this.push(Buffer.from(data, encoding));
+    });
+  }
+}
 export class Table {
   bigtable: Bigtable;
   instance: Instance;
@@ -751,18 +765,14 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     let userCanceled = false;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const userStream = new MyReadable(rowStream, {objectMode: true});
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisTable = this;
-    let userStreamCounter = 0;
     // let userStreamCounter = 0;
-    const userStream = new Readable({
-      objectMode: true,
-      read(size) {
-        userStreamCounter++;
-        console.log(`userStreamCounter: ${userStreamCounter}`);
-        this.push('foo');
-      },
-    });
+    // let userStreamCounter = 0;
+    // const userStream = new MyReadable({ objectMode: true });
     /*
     const userStream = new PassThrough({
       objectMode: true,
@@ -946,12 +956,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         objectMode: true,
       });
 
-      rowStream = pumpify.obj([
-        requestStream,
-        chunkTransformer,
-        toRowStream,
-        userStream,
-      ]);
+      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
       // Retry on "received rst stream" errors
       const isRstStreamError = (error: ServiceError): boolean => {
@@ -1007,7 +1012,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // rowStreamPipe(rowStream, userStream);
     };
 
-    makeNewRequest();
     return userStream;
   }
 
