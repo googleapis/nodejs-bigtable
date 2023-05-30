@@ -24,6 +24,7 @@ const CHUNK_PER_RESPONSE = 10;
 const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
 
 export function debugLog(text: string) {
+  console.log(text);
   if (DEBUG) {
     console.log(text);
   }
