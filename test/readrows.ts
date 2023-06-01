@@ -264,6 +264,7 @@ describe('Bigtable/ReadRows', () => {
     });
 
     passThrough.on('error', (err: GoogleError) => {
+      console.log('catching error on passthrough');
       done(err);
     });
     passThrough.on('data', (row: Row) => {

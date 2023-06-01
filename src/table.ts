@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {GoogleError, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform, Readable} from 'stream';
 
@@ -413,7 +413,23 @@ class MyReadable extends Readable {
   }
 }
 
-class MyDuplex extends Duplex {
+class InternalDuplex extends Duplex {
+  _write(chunk: any, encoding: BufferEncoding, callback: () => void) {
+    this.push(chunk);
+    callback();
+  }
+
+  _read(size: number) {}
+}
+
+class UserFacingDuplex extends Duplex {
+  // end(cb?: () => void)
+  // end(chunk: any, cb?: () => void)
+  end(cb?: () => void): this {
+    this.destroy();
+    return this;
+  }
+
   _write(chunk: any, encoding: BufferEncoding, callback: () => void) {
     console.log('writing chunk');
     this.push(chunk);
@@ -422,11 +438,6 @@ class MyDuplex extends Duplex {
 
   _read(size: number) {
     console.log('read');
-    // const data = this.kSource.read(size);
-    // this.push(Buffer.from('test', 'utf8'));
-    // if (data) {
-    //   this.push(Buffer.from('test', 'utf8'));
-    // }
   }
 }
 
@@ -785,7 +796,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     let userCanceled = false;
-    let userStream = new MyDuplex({objectMode: true});
+    const internalDuplex: InternalDuplex = new InternalDuplex({
+      objectMode: true,
+    });
+    const userStream: UserFacingDuplex = new UserFacingDuplex({
+      objectMode: true,
+    });
 
     // The caller should be able to call userStream.end() to stop receiving
     // more rows and cancel the stream prematurely. But also, the 'end' event
@@ -814,7 +830,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (retryTimer) {
         clearTimeout(retryTimer);
       }
-      return originalEnd(chunk, encoding, cb);
+      return originalEnd(chunk);
     };
 
     const makeNewRequest = () => {
@@ -953,7 +969,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         objectMode: true,
       });
 
-      userStream = new MyDuplex({objectMode: true});
+      // userStream = new MyDuplex({objectMode: true});
+      userStream.on('error', (err: GoogleError) => {
+        console.log('catching error');
+        console.log(err);
+      });
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
       // userStream = new MyReadable(rowStream, {objectMode: true});
       // Retry on "received rst stream" errors
@@ -994,6 +1014,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             );
             retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
           } else {
+            console.log('error on the user stream');
             userStream.emit('error', error);
           }
         })
@@ -1005,7 +1026,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('end', () => {
           activeRequestStream = null;
         });
-      rowStreamPipe(rowStream, userStream);
+      rowStreamPipe(rowStream, internalDuplex);
+      rowStreamPipe(internalDuplex, userStream);
     };
 
     makeNewRequest();
