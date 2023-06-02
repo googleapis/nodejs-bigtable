@@ -274,12 +274,10 @@ describe('Bigtable/ReadRows', () => {
       }
       lastKeyReceived = key;
       debugLog(`received row key ${key}`);
-      debugLog(`received row key count ${receivedRowCount}`);
 
       if (receivedRowCount === stopAfter) {
         debugLog(`requesting to stop after receiving key ${key}`);
-        table.cancelled7 = true;
-        readStream.destroy();
+        readStream.end();
       }
     });
     passThrough.on('end', () => {

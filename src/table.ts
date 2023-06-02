@@ -397,22 +397,6 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
  * ```
  */
 
-class MyReadable extends Readable {
-  kSource: any;
-  constructor(source: any, options: any) {
-    super(options);
-    this.kSource = source;
-  }
-
-  _read(size: number) {
-    const data = this.kSource.read(size);
-    // this.push(Buffer.from('test', 'utf8'));
-    if (data) {
-      this.push(Buffer.from('test', 'utf8'));
-    }
-  }
-}
-
 class MyDuplex extends Duplex {
   _write(chunk: any, encoding: BufferEncoding, callback: () => void) {
     console.log('writing chunk');
@@ -420,28 +404,19 @@ class MyDuplex extends Duplex {
     callback();
   }
 
-  _read(size: number) {
-    console.log('read');
-    // const data = this.kSource.read(size);
-    // this.push(Buffer.from('test', 'utf8'));
-    // if (data) {
-    //   this.push(Buffer.from('test', 'utf8'));
-    // }
-  }
+  _read(size: number) {}
 }
 
 export class Table {
   bigtable: Bigtable;
   instance: Instance;
   name: string;
-  cancelled7: boolean;
   id: string;
   metadata?: google.bigtable.admin.v2.ITable;
   maxRetries?: number;
   constructor(instance: Instance, id: string) {
     this.bigtable = instance.bigtable;
     this.instance = instance;
-    this.cancelled7 = false;
 
     let name;
 
@@ -785,7 +760,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let rowStream: Duplex;
 
     let userCanceled = false;
-    let userStream = new MyDuplex({objectMode: true});
+    const userStream = new MyDuplex({objectMode: true, highWaterMark: 0});
 
     // The caller should be able to call userStream.end() to stop receiving
     // more rows and cancel the stream prematurely. But also, the 'end' event
@@ -885,13 +860,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         // we've already read all the rows, end the stream and
         // do not retry.
         if (hasLimit && rowsLimit === rowsRead) {
-          // userStream.end();
+          userStream.end();
           return;
         }
         // If all the row keys and ranges are read, end the stream
         // and do not retry.
         if (rowKeys.length === 0 && ranges.length === 0) {
-          // userStream.end();
+          userStream.end();
           return;
         }
       }
@@ -953,9 +928,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         objectMode: true,
       });
 
-      userStream = new MyDuplex({objectMode: true});
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
-      // userStream = new MyReadable(rowStream, {objectMode: true});
       // Retry on "received rst stream" errors
       const isRstStreamError = (error: ServiceError): boolean => {
         if (error.code === 13 && error.message) {
@@ -976,7 +949,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
             // it when the user calls `.abort()`.
-            // userStream.end();
+            userStream.end();
             return;
           }
           numConsecutiveErrors++;

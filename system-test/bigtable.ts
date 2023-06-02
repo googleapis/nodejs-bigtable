@@ -808,7 +808,7 @@ describe('Bigtable', () => {
         const stream = TABLE.createReadStream()
           .on('error', done)
           .on('data', row => {
-            // stream.end();
+            stream.end();
             rows.push(row);
           })
           .on('end', () => {
@@ -920,7 +920,7 @@ describe('Bigtable', () => {
             .on('error', reject)
             .on('data', row => {
               rows.push(row);
-              // stream.end();
+              stream.end();
             })
             .on('end', () => {
               assert.strictEqual(rows.length, 1);
