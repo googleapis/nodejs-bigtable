@@ -251,6 +251,8 @@ describe('Bigtable/ReadRows', () => {
     // Transform stream
     const transform = new Transform({
       objectMode: true,
+      readableHighWaterMark: 0,
+      writableHighWaterMark: 0,
       transform: (row, _encoding, callback) => {
         setTimeout(() => {
           callback(null, row);
