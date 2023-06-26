@@ -24707,6 +24707,7 @@
                      * @property {google.bigtable.v2.IRowFilter|null} [filter] ReadRowsRequest filter
                      * @property {number|Long|null} [rowsLimit] ReadRowsRequest rowsLimit
                      * @property {google.bigtable.v2.ReadRowsRequest.RequestStatsView|null} [requestStatsView] ReadRowsRequest requestStatsView
+                     * @property {boolean|null} [reversed] ReadRowsRequest reversed
                      */
     
                     /**
@@ -24773,6 +24774,14 @@
                     ReadRowsRequest.prototype.requestStatsView = 0;
     
                     /**
+                     * ReadRowsRequest reversed.
+                     * @member {boolean} reversed
+                     * @memberof google.bigtable.v2.ReadRowsRequest
+                     * @instance
+                     */
+                    ReadRowsRequest.prototype.reversed = false;
+    
+                    /**
                      * Creates a new ReadRowsRequest instance using the specified properties.
                      * @function create
                      * @memberof google.bigtable.v2.ReadRowsRequest
@@ -24808,6 +24817,8 @@
                             writer.uint32(/* id 5, wireType 2 =*/42).string(message.appProfileId);
                         if (message.requestStatsView != null && Object.hasOwnProperty.call(message, "requestStatsView"))
                             writer.uint32(/* id 6, wireType 0 =*/48).int32(message.requestStatsView);
+                        if (message.reversed != null && Object.hasOwnProperty.call(message, "reversed"))
+                            writer.uint32(/* id 7, wireType 0 =*/56).bool(message.reversed);
                         return writer;
                     };
     
@@ -24864,6 +24875,10 @@
                                 }
                             case 6: {
                                     message.requestStatsView = reader.int32();
+                                    break;
+                                }
+                            case 7: {
+                                    message.reversed = reader.bool();
                                     break;
                                 }
                             default:
@@ -24929,6 +24944,9 @@
                             case 2:
                                 break;
                             }
+                        if (message.reversed != null && message.hasOwnProperty("reversed"))
+                            if (typeof message.reversed !== "boolean")
+                                return "reversed: boolean expected";
                         return null;
                     };
     
@@ -24987,6 +25005,8 @@
                             message.requestStatsView = 2;
                             break;
                         }
+                        if (object.reversed != null)
+                            message.reversed = Boolean(object.reversed);
                         return message;
                     };
     
@@ -25014,6 +25034,7 @@
                                 object.rowsLimit = options.longs === String ? "0" : 0;
                             object.appProfileId = "";
                             object.requestStatsView = options.enums === String ? "REQUEST_STATS_VIEW_UNSPECIFIED" : 0;
+                            object.reversed = false;
                         }
                         if (message.tableName != null && message.hasOwnProperty("tableName"))
                             object.tableName = message.tableName;
@@ -25030,6 +25051,8 @@
                             object.appProfileId = message.appProfileId;
                         if (message.requestStatsView != null && message.hasOwnProperty("requestStatsView"))
                             object.requestStatsView = options.enums === String ? $root.google.bigtable.v2.ReadRowsRequest.RequestStatsView[message.requestStatsView] === undefined ? message.requestStatsView : $root.google.bigtable.v2.ReadRowsRequest.RequestStatsView[message.requestStatsView] : message.requestStatsView;
+                        if (message.reversed != null && message.hasOwnProperty("reversed"))
+                            object.reversed = message.reversed;
                         return object;
                     };
     
@@ -39545,6 +39568,7 @@
                      * Properties of a FeatureFlags.
                      * @memberof google.bigtable.v2
                      * @interface IFeatureFlags
+                     * @property {boolean|null} [reverseScans] FeatureFlags reverseScans
                      * @property {boolean|null} [mutateRowsRateLimit] FeatureFlags mutateRowsRateLimit
                      */
     
@@ -39562,6 +39586,14 @@
                                 if (properties[keys[i]] != null)
                                     this[keys[i]] = properties[keys[i]];
                     }
+    
+                    /**
+                     * FeatureFlags reverseScans.
+                     * @member {boolean} reverseScans
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     */
+                    FeatureFlags.prototype.reverseScans = false;
     
                     /**
                      * FeatureFlags mutateRowsRateLimit.
@@ -39595,6 +39627,8 @@
                     FeatureFlags.encode = function encode(message, writer) {
                         if (!writer)
                             writer = $Writer.create();
+                        if (message.reverseScans != null && Object.hasOwnProperty.call(message, "reverseScans"))
+                            writer.uint32(/* id 1, wireType 0 =*/8).bool(message.reverseScans);
                         if (message.mutateRowsRateLimit != null && Object.hasOwnProperty.call(message, "mutateRowsRateLimit"))
                             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.mutateRowsRateLimit);
                         return writer;
@@ -39631,6 +39665,10 @@
                         while (reader.pos < end) {
                             var tag = reader.uint32();
                             switch (tag >>> 3) {
+                            case 1: {
+                                    message.reverseScans = reader.bool();
+                                    break;
+                                }
                             case 3: {
                                     message.mutateRowsRateLimit = reader.bool();
                                     break;
@@ -39670,6 +39708,9 @@
                     FeatureFlags.verify = function verify(message) {
                         if (typeof message !== "object" || message === null)
                             return "object expected";
+                        if (message.reverseScans != null && message.hasOwnProperty("reverseScans"))
+                            if (typeof message.reverseScans !== "boolean")
+                                return "reverseScans: boolean expected";
                         if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
                             if (typeof message.mutateRowsRateLimit !== "boolean")
                                 return "mutateRowsRateLimit: boolean expected";
@@ -39688,6 +39729,8 @@
                         if (object instanceof $root.google.bigtable.v2.FeatureFlags)
                             return object;
                         var message = new $root.google.bigtable.v2.FeatureFlags();
+                        if (object.reverseScans != null)
+                            message.reverseScans = Boolean(object.reverseScans);
                         if (object.mutateRowsRateLimit != null)
                             message.mutateRowsRateLimit = Boolean(object.mutateRowsRateLimit);
                         return message;
@@ -39706,8 +39749,12 @@
                         if (!options)
                             options = {};
                         var object = {};
-                        if (options.defaults)
+                        if (options.defaults) {
+                            object.reverseScans = false;
                             object.mutateRowsRateLimit = false;
+                        }
+                        if (message.reverseScans != null && message.hasOwnProperty("reverseScans"))
+                            object.reverseScans = message.reverseScans;
                         if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
                             object.mutateRowsRateLimit = message.mutateRowsRateLimit;
                         return object;

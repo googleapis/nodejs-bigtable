@@ -3208,6 +3208,10 @@
                     "requestStatsView": {
                       "type": "RequestStatsView",
                       "id": 6
+                    },
+                    "reversed": {
+                      "type": "bool",
+                      "id": 7
                     }
                   },
                   "nested": {
@@ -4272,6 +4276,10 @@
                 },
                 "FeatureFlags": {
                   "fields": {
+                    "reverseScans": {
+                      "type": "bool",
+                      "id": 1
+                    },
                     "mutateRowsRateLimit": {
                       "type": "bool",
                       "id": 3

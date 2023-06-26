@@ -10645,6 +10645,9 @@ export namespace google {
 
                 /** ReadRowsRequest requestStatsView */
                 requestStatsView?: (google.bigtable.v2.ReadRowsRequest.RequestStatsView|keyof typeof google.bigtable.v2.ReadRowsRequest.RequestStatsView|null);
+
+                /** ReadRowsRequest reversed */
+                reversed?: (boolean|null);
             }
 
             /** Represents a ReadRowsRequest. */
@@ -10673,6 +10676,9 @@ export namespace google {
 
                 /** ReadRowsRequest requestStatsView. */
                 public requestStatsView: (google.bigtable.v2.ReadRowsRequest.RequestStatsView|keyof typeof google.bigtable.v2.ReadRowsRequest.RequestStatsView);
+
+                /** ReadRowsRequest reversed. */
+                public reversed: boolean;
 
                 /**
                  * Creates a new ReadRowsRequest instance using the specified properties.
@@ -16501,6 +16507,9 @@ export namespace google {
             /** Properties of a FeatureFlags. */
             interface IFeatureFlags {
 
+                /** FeatureFlags reverseScans */
+                reverseScans?: (boolean|null);
+
                 /** FeatureFlags mutateRowsRateLimit */
                 mutateRowsRateLimit?: (boolean|null);
             }
@@ -16513,6 +16522,9 @@ export namespace google {
                  * @param [properties] Properties to set
                  */
                 constructor(properties?: google.bigtable.v2.IFeatureFlags);
+
+                /** FeatureFlags reverseScans. */
+                public reverseScans: boolean;
 
                 /** FeatureFlags mutateRowsRateLimit. */
                 public mutateRowsRateLimit: boolean;

@@ -884,6 +884,15 @@ export class BigtableClient {
    *   default (zero) is to return all results.
    * @param {google.bigtable.v2.ReadRowsRequest.RequestStatsView} request.requestStatsView
    *   The view into RequestStats, as described above.
+   * @param {boolean} request.reversed
+   *   Experimental API - Please note that this API is currently experimental
+   *   and can change in the future.
+   *
+   *   Return rows in lexiographical descending order of the row keys. The row
+   *   contents will not be affected by this flag.
+   *   Example result set: [
+   *   {key: "k2", "f:col1": "v1", "f:col2": "v1"}, {key: "k1", "f:col1": "v2",
+   *   "f:col2": "v2"} ].
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
