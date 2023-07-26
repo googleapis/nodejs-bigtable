@@ -39570,6 +39570,7 @@
                      * @interface IFeatureFlags
                      * @property {boolean|null} [reverseScans] FeatureFlags reverseScans
                      * @property {boolean|null} [mutateRowsRateLimit] FeatureFlags mutateRowsRateLimit
+                     * @property {boolean|null} [lastScannedRowResponses] FeatureFlags lastScannedRowResponses
                      */
     
                     /**
@@ -39604,6 +39605,14 @@
                     FeatureFlags.prototype.mutateRowsRateLimit = false;
     
                     /**
+                     * FeatureFlags lastScannedRowResponses.
+                     * @member {boolean} lastScannedRowResponses
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     */
+                    FeatureFlags.prototype.lastScannedRowResponses = false;
+    
+                    /**
                      * Creates a new FeatureFlags instance using the specified properties.
                      * @function create
                      * @memberof google.bigtable.v2.FeatureFlags
@@ -39631,6 +39640,8 @@
                             writer.uint32(/* id 1, wireType 0 =*/8).bool(message.reverseScans);
                         if (message.mutateRowsRateLimit != null && Object.hasOwnProperty.call(message, "mutateRowsRateLimit"))
                             writer.uint32(/* id 3, wireType 0 =*/24).bool(message.mutateRowsRateLimit);
+                        if (message.lastScannedRowResponses != null && Object.hasOwnProperty.call(message, "lastScannedRowResponses"))
+                            writer.uint32(/* id 4, wireType 0 =*/32).bool(message.lastScannedRowResponses);
                         return writer;
                     };
     
@@ -39671,6 +39682,10 @@
                                 }
                             case 3: {
                                     message.mutateRowsRateLimit = reader.bool();
+                                    break;
+                                }
+                            case 4: {
+                                    message.lastScannedRowResponses = reader.bool();
                                     break;
                                 }
                             default:
@@ -39714,6 +39729,9 @@
                         if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
                             if (typeof message.mutateRowsRateLimit !== "boolean")
                                 return "mutateRowsRateLimit: boolean expected";
+                        if (message.lastScannedRowResponses != null && message.hasOwnProperty("lastScannedRowResponses"))
+                            if (typeof message.lastScannedRowResponses !== "boolean")
+                                return "lastScannedRowResponses: boolean expected";
                         return null;
                     };
     
@@ -39733,6 +39751,8 @@
                             message.reverseScans = Boolean(object.reverseScans);
                         if (object.mutateRowsRateLimit != null)
                             message.mutateRowsRateLimit = Boolean(object.mutateRowsRateLimit);
+                        if (object.lastScannedRowResponses != null)
+                            message.lastScannedRowResponses = Boolean(object.lastScannedRowResponses);
                         return message;
                     };
     
@@ -39752,11 +39772,14 @@
                         if (options.defaults) {
                             object.reverseScans = false;
                             object.mutateRowsRateLimit = false;
+                            object.lastScannedRowResponses = false;
                         }
                         if (message.reverseScans != null && message.hasOwnProperty("reverseScans"))
                             object.reverseScans = message.reverseScans;
                         if (message.mutateRowsRateLimit != null && message.hasOwnProperty("mutateRowsRateLimit"))
                             object.mutateRowsRateLimit = message.mutateRowsRateLimit;
+                        if (message.lastScannedRowResponses != null && message.hasOwnProperty("lastScannedRowResponses"))
+                            object.lastScannedRowResponses = message.lastScannedRowResponses;
                         return object;
                     };
     

@@ -4283,6 +4283,10 @@
                     "mutateRowsRateLimit": {
                       "type": "bool",
                       "id": 3
+                    },
+                    "lastScannedRowResponses": {
+                      "type": "bool",
+                      "id": 4
                     }
                   }
                 },

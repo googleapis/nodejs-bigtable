@@ -16512,6 +16512,9 @@ export namespace google {
 
                 /** FeatureFlags mutateRowsRateLimit */
                 mutateRowsRateLimit?: (boolean|null);
+
+                /** FeatureFlags lastScannedRowResponses */
+                lastScannedRowResponses?: (boolean|null);
             }
 
             /** Represents a FeatureFlags. */
@@ -16528,6 +16531,9 @@ export namespace google {
 
                 /** FeatureFlags mutateRowsRateLimit. */
                 public mutateRowsRateLimit: boolean;
+
+                /** FeatureFlags lastScannedRowResponses. */
+                public lastScannedRowResponses: boolean;
 
                 /**
                  * Creates a new FeatureFlags instance using the specified properties.
