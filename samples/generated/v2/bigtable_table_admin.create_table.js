@@ -59,7 +59,7 @@ function main(parent, tableId, table) {
    *      - Tablet 4 `[customer_2, other)      => {"customer_2"}.`
    *      - Tablet 5 `[other, )                => {"other", "zz"}.`
    */
-  // const initialSplits = 1234
+  // const initialSplits = [1,2,3,4]
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;

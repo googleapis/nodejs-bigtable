@@ -47,13 +47,13 @@ function main(tableName, rowKey, rules) {
    *  Required. The key of the row to which the read/modify/write rules should be
    *  applied.
    */
-  // const rowKey = 'Buffer.from('string')'
+  // const rowKey = Buffer.from('string')
   /**
    *  Required. Rules specifying how the specified row's contents are to be
    *  transformed into writes. Entries are applied in order, meaning that earlier
    *  rules will affect the results of later ones.
    */
-  // const rules = 1234
+  // const rules = [1,2,3,4]
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;

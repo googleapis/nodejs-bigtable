@@ -51,7 +51,7 @@ function main(parent, instanceId, instance, clusters) {
    *  Fields marked `OutputOnly` must be left blank.
    *  Currently, at most four clusters can be specified.
    */
-  // const clusters = 1234
+  // const clusters = [1,2,3,4]
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
