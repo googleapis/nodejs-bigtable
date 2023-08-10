@@ -22,7 +22,7 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
-import { UntypedHandleCall } from '@grpc/grpc-js';
+import {UntypedHandleCall} from '@grpc/grpc-js';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
