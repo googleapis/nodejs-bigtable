@@ -405,7 +405,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.IMutateRowResponse,
       protos.google.bigtable.v2.IMutateRowRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   mutateRow(
@@ -443,7 +443,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.IMutateRowResponse,
       protos.google.bigtable.v2.IMutateRowRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -536,7 +536,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.ICheckAndMutateRowResponse,
       protos.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   checkAndMutateRow(
@@ -576,7 +576,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.ICheckAndMutateRowResponse,
       protos.google.bigtable.v2.ICheckAndMutateRowRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -650,7 +650,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.IPingAndWarmResponse,
       protos.google.bigtable.v2.IPingAndWarmRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   pingAndWarm(
@@ -688,7 +688,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.IPingAndWarmResponse,
       protos.google.bigtable.v2.IPingAndWarmRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -770,7 +770,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.IReadModifyWriteRowResponse,
       protos.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   readModifyWriteRow(
@@ -810,7 +810,7 @@ export class BigtableClient {
     [
       protos.google.bigtable.v2.IReadModifyWriteRowResponse,
       protos.google.bigtable.v2.IReadModifyWriteRowRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
