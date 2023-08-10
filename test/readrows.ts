@@ -22,6 +22,7 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
+import { UntypedHandleCall } from '@grpc/grpc-js';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -47,7 +48,7 @@ describe('Bigtable/ReadRows', () => {
     const keyTo = 1000;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -79,7 +80,7 @@ describe('Bigtable/ReadRows', () => {
     const keyTo = 1000;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -132,7 +133,7 @@ describe('Bigtable/ReadRows', () => {
     const keyTo = 1000;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -185,7 +186,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 42;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -234,7 +235,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 420;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -297,7 +298,7 @@ describe('Bigtable/ReadRows', () => {
     const errorAfterChunkNo = 423;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo),
+      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo) as any,
     });
 
     let receivedRowCount = 0;
