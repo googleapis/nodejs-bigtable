@@ -72,7 +72,7 @@ export type CreateAppProfileCallback = (
 ) => void;
 export type CreateAppProfileResponse = [
   AppProfile,
-  google.bigtable.admin.v2.IAppProfile
+  google.bigtable.admin.v2.IAppProfile,
 ];
 export type DeleteAppProfileCallback = (
   err: ServiceError | null,
@@ -91,7 +91,7 @@ export type GetAppProfileMetadataCallback = (
 ) => void;
 export type GetAppProfileMetadataResponse = [
   google.bigtable.admin.v2.IAppProfile,
-  google.bigtable.admin.v2.IAppProfile
+  google.bigtable.admin.v2.IAppProfile,
 ];
 export type GetAppProfileCallback = (
   err: ServiceError | null,
@@ -100,7 +100,7 @@ export type GetAppProfileCallback = (
 ) => void;
 export type GetAppProfileResponse = [
   AppProfile,
-  google.bigtable.admin.v2.IAppProfile
+  google.bigtable.admin.v2.IAppProfile,
 ];
 export type GetAppProfilesCallback = (
   err: ServiceError | null,
@@ -109,7 +109,7 @@ export type GetAppProfilesCallback = (
 ) => void;
 export type GetAppProfilesResponse = [
   AppProfile[],
-  google.bigtable.admin.v2.IAppProfile[]
+  google.bigtable.admin.v2.IAppProfile[],
 ];
 export type SetAppProfileMetadataCallback = (
   err: ServiceError | null,
