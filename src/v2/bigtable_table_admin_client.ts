@@ -297,6 +297,12 @@ export class BigtableTableAdminClient {
     const restoreTableMetadata = protoFilesRoot.lookup(
       '.google.bigtable.admin.v2.RestoreTableMetadata'
     ) as gax.protobuf.Type;
+    const copyBackupResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.Backup'
+    ) as gax.protobuf.Type;
+    const copyBackupMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.CopyBackupMetadata'
+    ) as gax.protobuf.Type;
 
     this.descriptors.longrunning = {
       createTableFromSnapshot: new this._gaxModule.LongrunningDescriptor(
@@ -332,6 +338,11 @@ export class BigtableTableAdminClient {
         this.operationsClient,
         restoreTableResponse.decode.bind(restoreTableResponse),
         restoreTableMetadata.decode.bind(restoreTableMetadata)
+      ),
+      copyBackup: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        copyBackupResponse.decode.bind(copyBackupResponse),
+        copyBackupMetadata.decode.bind(copyBackupMetadata)
       ),
     };
 
@@ -406,6 +417,7 @@ export class BigtableTableAdminClient {
       'deleteBackup',
       'listBackups',
       'restoreTable',
+      'copyBackup',
       'getIamPolicy',
       'setIamPolicy',
       'testIamPermissions',
@@ -513,8 +525,8 @@ export class BigtableTableAdminClient {
    *   Required. The unique name of the instance in which to create the table.
    *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.tableId
-   *   Required. The name by which the new table should be referred to within the parent
-   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *   Required. The name by which the new table should be referred to within the
+   *   parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    *   Maximum 50 characters.
    * @param {google.bigtable.admin.v2.Table} request.table
    *   Required. The Table to create.
@@ -798,10 +810,10 @@ export class BigtableTableAdminClient {
    *   Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {number[]} request.modifications
-   *   Required. Modifications to be atomically applied to the specified table's families.
-   *   Entries are applied in order, meaning that earlier modifications can be
-   *   masked by later ones (in the case of repeated updates to the same family,
-   *   for example).
+   *   Required. Modifications to be atomically applied to the specified table's
+   *   families. Entries are applied in order, meaning that earlier modifications
+   *   can be masked by later ones (in the case of repeated updates to the same
+   *   family, for example).
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -987,8 +999,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the Table for which to create a consistency token.
-   *   Values are of the form
+   *   Required. The unique name of the Table for which to create a consistency
+   *   token. Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -1091,8 +1103,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the Table for which to check replication consistency.
-   *   Values are of the form
+   *   Required. The unique name of the Table for which to check replication
+   *   consistency. Values are of the form
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {string} request.consistencyToken
    *   Required. The token created using GenerateConsistencyToken for the Table.
@@ -1456,6 +1468,7 @@ export class BigtableTableAdminClient {
    *   Required. The backup to update. `backup.name`, and the fields to be updated
    *   as specified by `update_mask` are required. Other fields are ignored.
    *   Update is only supported for the following fields:
+   *
    *    * `backup.expire_time`.
    * @param {google.protobuf.FieldMask} request.updateMask
    *   Required. A mask specifying which fields (e.g. `expire_time`) in the
@@ -1810,7 +1823,8 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.setIamPolicy(request, options, callback);
   }
   /**
-   * Returns permissions that the caller has on the specified Table or Backup resource.
+   * Returns permissions that the caller has on the specified Table or Backup
+   * resource.
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -1914,12 +1928,12 @@ export class BigtableTableAdminClient {
    *   Required. The unique name of the instance in which to create the table.
    *   Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.tableId
-   *   Required. The name by which the new table should be referred to within the parent
-   *   instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *   Required. The name by which the new table should be referred to within the
+   *   parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    * @param {string} request.sourceSnapshot
-   *   Required. The unique name of the snapshot from which to restore the table. The
-   *   snapshot and the table must be in the same instance.
-   *   Values are of the form
+   *   Required. The unique name of the snapshot from which to restore the table.
+   *   The snapshot and the table must be in the same instance. Values are of the
+   *   form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
@@ -2363,9 +2377,9 @@ export class BigtableTableAdminClient {
    *   Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    * @param {string} request.snapshotId
-   *   Required. The ID by which the new snapshot should be referred to within the parent
-   *   cluster, e.g., `mysnapshot` of the form: `{@link protos.-_.a-zA-Z0-9|_a-zA-Z0-9}*`
-   *   rather than
+   *   Required. The ID by which the new snapshot should be referred to within the
+   *   parent cluster, e.g., `mysnapshot` of the form:
+   *   `{@link protos.-_.a-zA-Z0-9|_a-zA-Z0-9}*` rather than
    *   `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/mysnapshot`.
    * @param {google.protobuf.Duration} request.ttl
    *   The amount of time that the new snapshot can stay active after it is
@@ -2510,8 +2524,8 @@ export class BigtableTableAdminClient {
    * {@link protos.google.longrunning.Operation.metadata|metadata} field type is
    * {@link protos.google.bigtable.admin.v2.CreateBackupMetadata|CreateBackupMetadata}. The
    * {@link protos.google.longrunning.Operation.response|response} field type is
-   * {@link protos.google.bigtable.admin.v2.Backup|Backup}, if successful. Cancelling the returned operation will stop the
-   * creation and delete the backup.
+   * {@link protos.google.bigtable.admin.v2.Backup|Backup}, if successful. Cancelling the
+   * returned operation will stop the creation and delete the backup.
    *
    * @param {Object} request
    *   The request object that will be sent.
@@ -2658,8 +2672,7 @@ export class BigtableTableAdminClient {
     >;
   }
   /**
-   * Create a new table by restoring from a completed backup. The new table
-   * must be in the same project as the instance containing the backup.  The
+   * Create a new table by restoring from a completed backup.  The
    * returned table {@link protos.google.longrunning.Operation|long-running operation} can
    * be used to track the progress of the operation, and to cancel it.  The
    * {@link protos.google.longrunning.Operation.metadata|metadata} field type is
@@ -2671,8 +2684,7 @@ export class BigtableTableAdminClient {
    *   The request object that will be sent.
    * @param {string} request.parent
    *   Required. The name of the instance in which to create the restored
-   *   table. This instance must be in the same project as the source backup.
-   *   Values are of the form `projects/<project>/instances/<instance>`.
+   *   table. Values are of the form `projects/<project>/instances/<instance>`.
    * @param {string} request.tableId
    *   Required. The id of the table to create and restore to. This
    *   table must not already exist. The `table_id` appended to
@@ -2811,16 +2823,176 @@ export class BigtableTableAdminClient {
     >;
   }
   /**
+   * Copy a Cloud Bigtable backup to a new backup in the destination cluster
+   * located in the destination instance and project.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The name of the destination cluster that will contain the backup
+   *   copy. The cluster must already exists. Values are of the form:
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   * @param {string} request.backupId
+   *   Required. The id of the new backup. The `backup_id` along with `parent`
+   *   are combined as {parent}/backups/{backup_id} to create the full backup
+   *   name, of the form:
+   *   `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup_id}`.
+   *   This string must be between 1 and 50 characters in length and match the
+   *   regex {@link protos.-_.a-zA-Z0-9|_a-zA-Z0-9}*.
+   * @param {string} request.sourceBackup
+   *   Required. The source backup to be copied from.
+   *   The source backup needs to be in READY state for it to be copied.
+   *   Copying a copied backup is not allowed.
+   *   Once CopyBackup is in progress, the source backup cannot be deleted or
+   *   cleaned up on expiration until CopyBackup is finished.
+   *   Values are of the form:
+   *   `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
+   * @param {google.protobuf.Timestamp} request.expireTime
+   *   Required. Required. The expiration time of the copied backup with
+   *   microsecond granularity that must be at least 6 hours and at most 30 days
+   *   from the time the request is received. Once the `expire_time` has
+   *   passed, Cloud Bigtable will delete the backup and free the resources used
+   *   by the backup.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing
+   *   a long running operation. Its `promise()` method returns a promise
+   *   you can `await` for.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.copy_backup.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_async
+   */
+  copyBackup(
+    request?: protos.google.bigtable.admin.v2.ICopyBackupRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.IBackup,
+        protos.google.bigtable.admin.v2.ICopyBackupMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined,
+    ]
+  >;
+  copyBackup(
+    request: protos.google.bigtable.admin.v2.ICopyBackupRequest,
+    options: CallOptions,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IBackup,
+        protos.google.bigtable.admin.v2.ICopyBackupMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  copyBackup(
+    request: protos.google.bigtable.admin.v2.ICopyBackupRequest,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IBackup,
+        protos.google.bigtable.admin.v2.ICopyBackupMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  copyBackup(
+    request?: protos.google.bigtable.admin.v2.ICopyBackupRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          LROperation<
+            protos.google.bigtable.admin.v2.IBackup,
+            protos.google.bigtable.admin.v2.ICopyBackupMetadata
+          >,
+          protos.google.longrunning.IOperation | null | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IBackup,
+        protos.google.bigtable.admin.v2.ICopyBackupMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.IBackup,
+        protos.google.bigtable.admin.v2.ICopyBackupMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined,
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        parent: request.parent ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.copyBackup(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by `copyBackup()`.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.copy_backup.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_async
+   */
+  async checkCopyBackupProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.Backup,
+      protos.google.bigtable.admin.v2.CopyBackupMetadata
+    >
+  > {
+    const request =
+      new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
+        {name}
+      );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(
+      operation,
+      this.descriptors.longrunning.copyBackup,
+      this._gaxModule.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.Backup,
+      protos.google.bigtable.admin.v2.CopyBackupMetadata
+    >;
+  }
+  /**
    * Lists all tables served from a specified instance.
    *
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be listed.
-   *   Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be
+   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
-   *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
+   *   NAME_ONLY view (default) and REPLICATION_VIEW are supported.
    * @param {number} request.pageSize
    *   Maximum number of results per page.
    *
@@ -2919,11 +3091,11 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be listed.
-   *   Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be
+   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
-   *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
+   *   NAME_ONLY view (default) and REPLICATION_VIEW are supported.
    * @param {number} request.pageSize
    *   Maximum number of results per page.
    *
@@ -2976,11 +3148,11 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which tables should be listed.
-   *   Values are of the form `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance for which tables should be
+   *   listed. Values are of the form `projects/{project}/instances/{instance}`.
    * @param {google.bigtable.admin.v2.Table.View} request.view
    *   The view to be applied to the returned tables' fields.
-   *   Only NAME_ONLY view (default) and REPLICATION_VIEW are supported.
+   *   NAME_ONLY view (default) and REPLICATION_VIEW are supported.
    * @param {number} request.pageSize
    *   Maximum number of results per page.
    *
@@ -3038,8 +3210,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be listed.
-   *   Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be
+   *   listed. Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -3134,8 +3306,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be listed.
-   *   Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be
+   *   listed. Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -3184,8 +3356,8 @@ export class BigtableTableAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the cluster for which snapshots should be listed.
-   *   Values are of the form
+   *   Required. The unique name of the cluster for which snapshots should be
+   *   listed. Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *   Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *   e.g., `projects/{project}/instances/{instance}/clusters/-`.
@@ -3247,13 +3419,14 @@ export class BigtableTableAdminClient {
    *   roughly synonymous with equality. Filter rules are case insensitive.
    *
    *   The fields eligible for filtering are:
-   *     * `name`
-   *     * `source_table`
-   *     * `state`
-   *     * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `size_bytes`
+   *
+   *   * `name`
+   *   * `source_table`
+   *   * `state`
+   *   * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `size_bytes`
    *
    *   To filter on multiple expressions, provide each separate expression within
    *   parentheses. By default, each expression is an AND expression. However,
@@ -3261,29 +3434,31 @@ export class BigtableTableAdminClient {
    *
    *   Some examples of using filters are:
    *
-   *     * `name:"exact"` --> The backup's name is the string "exact".
-   *     * `name:howl` --> The backup's name contains the string "howl".
-   *     * `source_table:prod`
-   *            --> The source_table's name contains the string "prod".
-   *     * `state:CREATING` --> The backup is pending creation.
-   *     * `state:READY` --> The backup is fully created and ready for use.
-   *     * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
-   *            --> The backup name contains the string "howl" and start_time
-   *                of the backup is before 2018-03-28T14:50:00Z.
-   *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
+   *   * `name:"exact"` --> The backup's name is the string "exact".
+   *   * `name:howl` --> The backup's name contains the string "howl".
+   *   * `source_table:prod`
+   *          --> The source_table's name contains the string "prod".
+   *   * `state:CREATING` --> The backup is pending creation.
+   *   * `state:READY` --> The backup is fully created and ready for use.
+   *   * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
+   *          --> The backup name contains the string "howl" and start_time
+   *              of the backup is before 2018-03-28T14:50:00Z.
+   *   * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
    * @param {string} request.orderBy
    *   An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in {@link protos.google.bigtable.admin.v2.Backup|Backup}. The full
-   *   syntax is described at https://aip.dev/132#ordering.
+   *   The string value should specify one or more fields in
+   *   {@link protos.google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
+   *   https://aip.dev/132#ordering.
    *
    *   Fields supported are:
-   *      * name
-   *      * source_table
-   *      * expire_time
-   *      * start_time
-   *      * end_time
-   *      * size_bytes
-   *      * state
+   *
+   *   * name
+   *   * source_table
+   *   * expire_time
+   *   * start_time
+   *   * end_time
+   *   * size_bytes
+   *   * state
    *
    *   For example, "start_time". The default sorting order is ascending.
    *   To specify descending order for the field, a suffix " desc" should
@@ -3297,9 +3472,10 @@ export class BigtableTableAdminClient {
    *   less, defaults to the server's maximum allowed page size.
    * @param {string} request.pageToken
    *   If non-empty, `page_token` should contain a
-   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token} from a
-   *   previous {@link protos.google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the same `parent` and with the same
-   *   `filter`.
+   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
+   *   from a previous
+   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
+   *   same `parent` and with the same `filter`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -3399,13 +3575,14 @@ export class BigtableTableAdminClient {
    *   roughly synonymous with equality. Filter rules are case insensitive.
    *
    *   The fields eligible for filtering are:
-   *     * `name`
-   *     * `source_table`
-   *     * `state`
-   *     * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `size_bytes`
+   *
+   *   * `name`
+   *   * `source_table`
+   *   * `state`
+   *   * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `size_bytes`
    *
    *   To filter on multiple expressions, provide each separate expression within
    *   parentheses. By default, each expression is an AND expression. However,
@@ -3413,29 +3590,31 @@ export class BigtableTableAdminClient {
    *
    *   Some examples of using filters are:
    *
-   *     * `name:"exact"` --> The backup's name is the string "exact".
-   *     * `name:howl` --> The backup's name contains the string "howl".
-   *     * `source_table:prod`
-   *            --> The source_table's name contains the string "prod".
-   *     * `state:CREATING` --> The backup is pending creation.
-   *     * `state:READY` --> The backup is fully created and ready for use.
-   *     * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
-   *            --> The backup name contains the string "howl" and start_time
-   *                of the backup is before 2018-03-28T14:50:00Z.
-   *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
+   *   * `name:"exact"` --> The backup's name is the string "exact".
+   *   * `name:howl` --> The backup's name contains the string "howl".
+   *   * `source_table:prod`
+   *          --> The source_table's name contains the string "prod".
+   *   * `state:CREATING` --> The backup is pending creation.
+   *   * `state:READY` --> The backup is fully created and ready for use.
+   *   * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
+   *          --> The backup name contains the string "howl" and start_time
+   *              of the backup is before 2018-03-28T14:50:00Z.
+   *   * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
    * @param {string} request.orderBy
    *   An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in {@link protos.google.bigtable.admin.v2.Backup|Backup}. The full
-   *   syntax is described at https://aip.dev/132#ordering.
+   *   The string value should specify one or more fields in
+   *   {@link protos.google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
+   *   https://aip.dev/132#ordering.
    *
    *   Fields supported are:
-   *      * name
-   *      * source_table
-   *      * expire_time
-   *      * start_time
-   *      * end_time
-   *      * size_bytes
-   *      * state
+   *
+   *   * name
+   *   * source_table
+   *   * expire_time
+   *   * start_time
+   *   * end_time
+   *   * size_bytes
+   *   * state
    *
    *   For example, "start_time". The default sorting order is ascending.
    *   To specify descending order for the field, a suffix " desc" should
@@ -3449,9 +3628,10 @@ export class BigtableTableAdminClient {
    *   less, defaults to the server's maximum allowed page size.
    * @param {string} request.pageToken
    *   If non-empty, `page_token` should contain a
-   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token} from a
-   *   previous {@link protos.google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the same `parent` and with the same
-   *   `filter`.
+   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
+   *   from a previous
+   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
+   *   same `parent` and with the same `filter`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
@@ -3505,13 +3685,14 @@ export class BigtableTableAdminClient {
    *   roughly synonymous with equality. Filter rules are case insensitive.
    *
    *   The fields eligible for filtering are:
-   *     * `name`
-   *     * `source_table`
-   *     * `state`
-   *     * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *     * `size_bytes`
+   *
+   *   * `name`
+   *   * `source_table`
+   *   * `state`
+   *   * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *   * `size_bytes`
    *
    *   To filter on multiple expressions, provide each separate expression within
    *   parentheses. By default, each expression is an AND expression. However,
@@ -3519,29 +3700,31 @@ export class BigtableTableAdminClient {
    *
    *   Some examples of using filters are:
    *
-   *     * `name:"exact"` --> The backup's name is the string "exact".
-   *     * `name:howl` --> The backup's name contains the string "howl".
-   *     * `source_table:prod`
-   *            --> The source_table's name contains the string "prod".
-   *     * `state:CREATING` --> The backup is pending creation.
-   *     * `state:READY` --> The backup is fully created and ready for use.
-   *     * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
-   *            --> The backup name contains the string "howl" and start_time
-   *                of the backup is before 2018-03-28T14:50:00Z.
-   *     * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
+   *   * `name:"exact"` --> The backup's name is the string "exact".
+   *   * `name:howl` --> The backup's name contains the string "howl".
+   *   * `source_table:prod`
+   *          --> The source_table's name contains the string "prod".
+   *   * `state:CREATING` --> The backup is pending creation.
+   *   * `state:READY` --> The backup is fully created and ready for use.
+   *   * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
+   *          --> The backup name contains the string "howl" and start_time
+   *              of the backup is before 2018-03-28T14:50:00Z.
+   *   * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
    * @param {string} request.orderBy
    *   An expression for specifying the sort order of the results of the request.
-   *   The string value should specify one or more fields in {@link protos.google.bigtable.admin.v2.Backup|Backup}. The full
-   *   syntax is described at https://aip.dev/132#ordering.
+   *   The string value should specify one or more fields in
+   *   {@link protos.google.bigtable.admin.v2.Backup|Backup}. The full syntax is described at
+   *   https://aip.dev/132#ordering.
    *
    *   Fields supported are:
-   *      * name
-   *      * source_table
-   *      * expire_time
-   *      * start_time
-   *      * end_time
-   *      * size_bytes
-   *      * state
+   *
+   *   * name
+   *   * source_table
+   *   * expire_time
+   *   * start_time
+   *   * end_time
+   *   * size_bytes
+   *   * state
    *
    *   For example, "start_time". The default sorting order is ascending.
    *   To specify descending order for the field, a suffix " desc" should
@@ -3555,9 +3738,10 @@ export class BigtableTableAdminClient {
    *   less, defaults to the server's maximum allowed page size.
    * @param {string} request.pageToken
    *   If non-empty, `page_token` should contain a
-   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token} from a
-   *   previous {@link protos.google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the same `parent` and with the same
-   *   `filter`.
+   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse.next_page_token|next_page_token}
+   *   from a previous
+   *   {@link protos.google.bigtable.admin.v2.ListBackupsResponse|ListBackupsResponse} to the
+   *   same `parent` and with the same `filter`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Object}

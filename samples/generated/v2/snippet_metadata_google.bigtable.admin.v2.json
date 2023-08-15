@@ -1862,7 +1862,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 121,
+          "end": 123,
           "type": "FULL"
         }
       ],
@@ -1911,14 +1911,14 @@
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_RestoreTable_async",
       "title": "bigtable restoreTable Sample",
       "origin": "API_DEFINITION",
-      "description": " Create a new table by restoring from a completed backup. The new table must be in the same project as the instance containing the backup.  The returned table [long-running operation][google.longrunning.Operation] can be used to track the progress of the operation, and to cancel it.  The [metadata][google.longrunning.Operation.metadata] field type is [RestoreTableMetadata][google.bigtable.admin.RestoreTableMetadata].  The [response][google.longrunning.Operation.response] type is [Table][google.bigtable.admin.v2.Table], if successful.",
+      "description": " Create a new table by restoring from a completed backup.  The returned table [long-running operation][google.longrunning.Operation] can be used to track the progress of the operation, and to cancel it.  The [metadata][google.longrunning.Operation.metadata] field type is [RestoreTableMetadata][google.bigtable.admin.RestoreTableMetadata].  The [response][google.longrunning.Operation.response] type is [Table][google.bigtable.admin.v2.Table], if successful.",
       "canonical": true,
       "file": "bigtable_table_admin.restore_table.js",
       "language": "JAVASCRIPT",
       "segments": [
         {
           "start": 25,
-          "end": 69,
+          "end": 68,
           "type": "FULL"
         }
       ],
@@ -1948,6 +1948,58 @@
         "method": {
           "shortName": "RestoreTable",
           "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.RestoreTable",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_async",
+      "title": "bigtable copyBackup Sample",
+      "origin": "API_DEFINITION",
+      "description": " Copy a Cloud Bigtable backup to a new backup in the destination cluster located in the destination instance and project.",
+      "canonical": true,
+      "file": "bigtable_table_admin.copy_backup.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 86,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "CopyBackup",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CopyBackup",
+        "async": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "backup_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "source_backup",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "expire_time",
+            "type": ".google.protobuf.Timestamp"
+          }
+        ],
+        "resultType": ".google.longrunning.Operation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CopyBackup",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CopyBackup",
           "service": {
             "shortName": "BigtableTableAdmin",
             "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"

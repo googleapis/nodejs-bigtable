@@ -34,8 +34,8 @@ function main(parent, tableId, table) {
    */
   // const parent = 'abc123'
   /**
-   *  Required. The name by which the new table should be referred to within the parent
-   *  instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *  Required. The name by which the new table should be referred to within the
+   *  parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    *  Maximum 50 characters.
    */
   // const tableId = 'abc123'

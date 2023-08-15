@@ -11811,6 +11811,39 @@
                          */
     
                         /**
+                         * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|copyBackup}.
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @typedef CopyBackupCallback
+                         * @type {function}
+                         * @param {Error|null} error Error, if any
+                         * @param {google.longrunning.Operation} [response] Operation
+                         */
+    
+                        /**
+                         * Calls CopyBackup.
+                         * @function copyBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.ICopyBackupRequest} request CopyBackupRequest message or plain object
+                         * @param {google.bigtable.admin.v2.BigtableTableAdmin.CopyBackupCallback} callback Node-style callback called with the error, if any, and Operation
+                         * @returns {undefined}
+                         * @variation 1
+                         */
+                        Object.defineProperty(BigtableTableAdmin.prototype.copyBackup = function copyBackup(request, callback) {
+                            return this.rpcCall(copyBackup, $root.google.bigtable.admin.v2.CopyBackupRequest, $root.google.longrunning.Operation, request, callback);
+                        }, "name", { value: "CopyBackup" });
+    
+                        /**
+                         * Calls CopyBackup.
+                         * @function copyBackup
+                         * @memberof google.bigtable.admin.v2.BigtableTableAdmin
+                         * @instance
+                         * @param {google.bigtable.admin.v2.ICopyBackupRequest} request CopyBackupRequest message or plain object
+                         * @returns {Promise<google.longrunning.Operation>} Promise
+                         * @variation 2
+                         */
+    
+                        /**
                          * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getIamPolicy}.
                          * @memberof google.bigtable.admin.v2.BigtableTableAdmin
                          * @typedef GetIamPolicyCallback
@@ -20645,6 +20678,544 @@
                         return ListBackupsResponse;
                     })();
     
+                    v2.CopyBackupRequest = (function() {
+    
+                        /**
+                         * Properties of a CopyBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ICopyBackupRequest
+                         * @property {string|null} [parent] CopyBackupRequest parent
+                         * @property {string|null} [backupId] CopyBackupRequest backupId
+                         * @property {string|null} [sourceBackup] CopyBackupRequest sourceBackup
+                         * @property {google.protobuf.ITimestamp|null} [expireTime] CopyBackupRequest expireTime
+                         */
+    
+                        /**
+                         * Constructs a new CopyBackupRequest.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a CopyBackupRequest.
+                         * @implements ICopyBackupRequest
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ICopyBackupRequest=} [properties] Properties to set
+                         */
+                        function CopyBackupRequest(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * CopyBackupRequest parent.
+                         * @member {string} parent
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @instance
+                         */
+                        CopyBackupRequest.prototype.parent = "";
+    
+                        /**
+                         * CopyBackupRequest backupId.
+                         * @member {string} backupId
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @instance
+                         */
+                        CopyBackupRequest.prototype.backupId = "";
+    
+                        /**
+                         * CopyBackupRequest sourceBackup.
+                         * @member {string} sourceBackup
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @instance
+                         */
+                        CopyBackupRequest.prototype.sourceBackup = "";
+    
+                        /**
+                         * CopyBackupRequest expireTime.
+                         * @member {google.protobuf.ITimestamp|null|undefined} expireTime
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @instance
+                         */
+                        CopyBackupRequest.prototype.expireTime = null;
+    
+                        /**
+                         * Creates a new CopyBackupRequest instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICopyBackupRequest=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.CopyBackupRequest} CopyBackupRequest instance
+                         */
+                        CopyBackupRequest.create = function create(properties) {
+                            return new CopyBackupRequest(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified CopyBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICopyBackupRequest} message CopyBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CopyBackupRequest.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.parent != null && Object.hasOwnProperty.call(message, "parent"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.parent);
+                            if (message.backupId != null && Object.hasOwnProperty.call(message, "backupId"))
+                                writer.uint32(/* id 2, wireType 2 =*/18).string(message.backupId);
+                            if (message.sourceBackup != null && Object.hasOwnProperty.call(message, "sourceBackup"))
+                                writer.uint32(/* id 3, wireType 2 =*/26).string(message.sourceBackup);
+                            if (message.expireTime != null && Object.hasOwnProperty.call(message, "expireTime"))
+                                $root.google.protobuf.Timestamp.encode(message.expireTime, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified CopyBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICopyBackupRequest} message CopyBackupRequest message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CopyBackupRequest.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a CopyBackupRequest message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.CopyBackupRequest} CopyBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CopyBackupRequest.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CopyBackupRequest();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.parent = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.backupId = reader.string();
+                                        break;
+                                    }
+                                case 3: {
+                                        message.sourceBackup = reader.string();
+                                        break;
+                                    }
+                                case 4: {
+                                        message.expireTime = $root.google.protobuf.Timestamp.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a CopyBackupRequest message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.CopyBackupRequest} CopyBackupRequest
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CopyBackupRequest.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a CopyBackupRequest message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        CopyBackupRequest.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                if (!$util.isString(message.parent))
+                                    return "parent: string expected";
+                            if (message.backupId != null && message.hasOwnProperty("backupId"))
+                                if (!$util.isString(message.backupId))
+                                    return "backupId: string expected";
+                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
+                                if (!$util.isString(message.sourceBackup))
+                                    return "sourceBackup: string expected";
+                            if (message.expireTime != null && message.hasOwnProperty("expireTime")) {
+                                var error = $root.google.protobuf.Timestamp.verify(message.expireTime);
+                                if (error)
+                                    return "expireTime." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a CopyBackupRequest message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.CopyBackupRequest} CopyBackupRequest
+                         */
+                        CopyBackupRequest.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.CopyBackupRequest)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.CopyBackupRequest();
+                            if (object.parent != null)
+                                message.parent = String(object.parent);
+                            if (object.backupId != null)
+                                message.backupId = String(object.backupId);
+                            if (object.sourceBackup != null)
+                                message.sourceBackup = String(object.sourceBackup);
+                            if (object.expireTime != null) {
+                                if (typeof object.expireTime !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CopyBackupRequest.expireTime: object expected");
+                                message.expireTime = $root.google.protobuf.Timestamp.fromObject(object.expireTime);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a CopyBackupRequest message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {google.bigtable.admin.v2.CopyBackupRequest} message CopyBackupRequest
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        CopyBackupRequest.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.parent = "";
+                                object.backupId = "";
+                                object.sourceBackup = "";
+                                object.expireTime = null;
+                            }
+                            if (message.parent != null && message.hasOwnProperty("parent"))
+                                object.parent = message.parent;
+                            if (message.backupId != null && message.hasOwnProperty("backupId"))
+                                object.backupId = message.backupId;
+                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
+                                object.sourceBackup = message.sourceBackup;
+                            if (message.expireTime != null && message.hasOwnProperty("expireTime"))
+                                object.expireTime = $root.google.protobuf.Timestamp.toObject(message.expireTime, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this CopyBackupRequest to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        CopyBackupRequest.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for CopyBackupRequest
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.CopyBackupRequest
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        CopyBackupRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.CopyBackupRequest";
+                        };
+    
+                        return CopyBackupRequest;
+                    })();
+    
+                    v2.CopyBackupMetadata = (function() {
+    
+                        /**
+                         * Properties of a CopyBackupMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @interface ICopyBackupMetadata
+                         * @property {string|null} [name] CopyBackupMetadata name
+                         * @property {google.bigtable.admin.v2.IBackupInfo|null} [sourceBackupInfo] CopyBackupMetadata sourceBackupInfo
+                         * @property {google.bigtable.admin.v2.IOperationProgress|null} [progress] CopyBackupMetadata progress
+                         */
+    
+                        /**
+                         * Constructs a new CopyBackupMetadata.
+                         * @memberof google.bigtable.admin.v2
+                         * @classdesc Represents a CopyBackupMetadata.
+                         * @implements ICopyBackupMetadata
+                         * @constructor
+                         * @param {google.bigtable.admin.v2.ICopyBackupMetadata=} [properties] Properties to set
+                         */
+                        function CopyBackupMetadata(properties) {
+                            if (properties)
+                                for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                    if (properties[keys[i]] != null)
+                                        this[keys[i]] = properties[keys[i]];
+                        }
+    
+                        /**
+                         * CopyBackupMetadata name.
+                         * @member {string} name
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @instance
+                         */
+                        CopyBackupMetadata.prototype.name = "";
+    
+                        /**
+                         * CopyBackupMetadata sourceBackupInfo.
+                         * @member {google.bigtable.admin.v2.IBackupInfo|null|undefined} sourceBackupInfo
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @instance
+                         */
+                        CopyBackupMetadata.prototype.sourceBackupInfo = null;
+    
+                        /**
+                         * CopyBackupMetadata progress.
+                         * @member {google.bigtable.admin.v2.IOperationProgress|null|undefined} progress
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @instance
+                         */
+                        CopyBackupMetadata.prototype.progress = null;
+    
+                        /**
+                         * Creates a new CopyBackupMetadata instance using the specified properties.
+                         * @function create
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICopyBackupMetadata=} [properties] Properties to set
+                         * @returns {google.bigtable.admin.v2.CopyBackupMetadata} CopyBackupMetadata instance
+                         */
+                        CopyBackupMetadata.create = function create(properties) {
+                            return new CopyBackupMetadata(properties);
+                        };
+    
+                        /**
+                         * Encodes the specified CopyBackupMetadata message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
+                         * @function encode
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICopyBackupMetadata} message CopyBackupMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CopyBackupMetadata.encode = function encode(message, writer) {
+                            if (!writer)
+                                writer = $Writer.create();
+                            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                                writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                            if (message.sourceBackupInfo != null && Object.hasOwnProperty.call(message, "sourceBackupInfo"))
+                                $root.google.bigtable.admin.v2.BackupInfo.encode(message.sourceBackupInfo, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.progress != null && Object.hasOwnProperty.call(message, "progress"))
+                                $root.google.bigtable.admin.v2.OperationProgress.encode(message.progress, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                            return writer;
+                        };
+    
+                        /**
+                         * Encodes the specified CopyBackupMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
+                         * @function encodeDelimited
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.ICopyBackupMetadata} message CopyBackupMetadata message or plain object to encode
+                         * @param {$protobuf.Writer} [writer] Writer to encode to
+                         * @returns {$protobuf.Writer} Writer
+                         */
+                        CopyBackupMetadata.encodeDelimited = function encodeDelimited(message, writer) {
+                            return this.encode(message, writer).ldelim();
+                        };
+    
+                        /**
+                         * Decodes a CopyBackupMetadata message from the specified reader or buffer.
+                         * @function decode
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @param {number} [length] Message length if known beforehand
+                         * @returns {google.bigtable.admin.v2.CopyBackupMetadata} CopyBackupMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CopyBackupMetadata.decode = function decode(reader, length) {
+                            if (!(reader instanceof $Reader))
+                                reader = $Reader.create(reader);
+                            var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.CopyBackupMetadata();
+                            while (reader.pos < end) {
+                                var tag = reader.uint32();
+                                switch (tag >>> 3) {
+                                case 1: {
+                                        message.name = reader.string();
+                                        break;
+                                    }
+                                case 2: {
+                                        message.sourceBackupInfo = $root.google.bigtable.admin.v2.BackupInfo.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 3: {
+                                        message.progress = $root.google.bigtable.admin.v2.OperationProgress.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                default:
+                                    reader.skipType(tag & 7);
+                                    break;
+                                }
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Decodes a CopyBackupMetadata message from the specified reader or buffer, length delimited.
+                         * @function decodeDelimited
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                         * @returns {google.bigtable.admin.v2.CopyBackupMetadata} CopyBackupMetadata
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        CopyBackupMetadata.decodeDelimited = function decodeDelimited(reader) {
+                            if (!(reader instanceof $Reader))
+                                reader = new $Reader(reader);
+                            return this.decode(reader, reader.uint32());
+                        };
+    
+                        /**
+                         * Verifies a CopyBackupMetadata message.
+                         * @function verify
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {Object.<string,*>} message Plain object to verify
+                         * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                         */
+                        CopyBackupMetadata.verify = function verify(message) {
+                            if (typeof message !== "object" || message === null)
+                                return "object expected";
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                if (!$util.isString(message.name))
+                                    return "name: string expected";
+                            if (message.sourceBackupInfo != null && message.hasOwnProperty("sourceBackupInfo")) {
+                                var error = $root.google.bigtable.admin.v2.BackupInfo.verify(message.sourceBackupInfo);
+                                if (error)
+                                    return "sourceBackupInfo." + error;
+                            }
+                            if (message.progress != null && message.hasOwnProperty("progress")) {
+                                var error = $root.google.bigtable.admin.v2.OperationProgress.verify(message.progress);
+                                if (error)
+                                    return "progress." + error;
+                            }
+                            return null;
+                        };
+    
+                        /**
+                         * Creates a CopyBackupMetadata message from a plain object. Also converts values to their respective internal types.
+                         * @function fromObject
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {Object.<string,*>} object Plain object
+                         * @returns {google.bigtable.admin.v2.CopyBackupMetadata} CopyBackupMetadata
+                         */
+                        CopyBackupMetadata.fromObject = function fromObject(object) {
+                            if (object instanceof $root.google.bigtable.admin.v2.CopyBackupMetadata)
+                                return object;
+                            var message = new $root.google.bigtable.admin.v2.CopyBackupMetadata();
+                            if (object.name != null)
+                                message.name = String(object.name);
+                            if (object.sourceBackupInfo != null) {
+                                if (typeof object.sourceBackupInfo !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CopyBackupMetadata.sourceBackupInfo: object expected");
+                                message.sourceBackupInfo = $root.google.bigtable.admin.v2.BackupInfo.fromObject(object.sourceBackupInfo);
+                            }
+                            if (object.progress != null) {
+                                if (typeof object.progress !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.CopyBackupMetadata.progress: object expected");
+                                message.progress = $root.google.bigtable.admin.v2.OperationProgress.fromObject(object.progress);
+                            }
+                            return message;
+                        };
+    
+                        /**
+                         * Creates a plain object from a CopyBackupMetadata message. Also converts values to other types if specified.
+                         * @function toObject
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {google.bigtable.admin.v2.CopyBackupMetadata} message CopyBackupMetadata
+                         * @param {$protobuf.IConversionOptions} [options] Conversion options
+                         * @returns {Object.<string,*>} Plain object
+                         */
+                        CopyBackupMetadata.toObject = function toObject(message, options) {
+                            if (!options)
+                                options = {};
+                            var object = {};
+                            if (options.defaults) {
+                                object.name = "";
+                                object.sourceBackupInfo = null;
+                                object.progress = null;
+                            }
+                            if (message.name != null && message.hasOwnProperty("name"))
+                                object.name = message.name;
+                            if (message.sourceBackupInfo != null && message.hasOwnProperty("sourceBackupInfo"))
+                                object.sourceBackupInfo = $root.google.bigtable.admin.v2.BackupInfo.toObject(message.sourceBackupInfo, options);
+                            if (message.progress != null && message.hasOwnProperty("progress"))
+                                object.progress = $root.google.bigtable.admin.v2.OperationProgress.toObject(message.progress, options);
+                            return object;
+                        };
+    
+                        /**
+                         * Converts this CopyBackupMetadata to JSON.
+                         * @function toJSON
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @instance
+                         * @returns {Object.<string,*>} JSON object
+                         */
+                        CopyBackupMetadata.prototype.toJSON = function toJSON() {
+                            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                        };
+    
+                        /**
+                         * Gets the default type url for CopyBackupMetadata
+                         * @function getTypeUrl
+                         * @memberof google.bigtable.admin.v2.CopyBackupMetadata
+                         * @static
+                         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns {string} The default type url
+                         */
+                        CopyBackupMetadata.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                            if (typeUrlPrefix === undefined) {
+                                typeUrlPrefix = "type.googleapis.com";
+                            }
+                            return typeUrlPrefix + "/google.bigtable.admin.v2.CopyBackupMetadata";
+                        };
+    
+                        return CopyBackupMetadata;
+                    })();
+    
                     v2.RestoreInfo = (function() {
     
                         /**
@@ -23620,6 +24191,7 @@
                          * @interface IBackup
                          * @property {string|null} [name] Backup name
                          * @property {string|null} [sourceTable] Backup sourceTable
+                         * @property {string|null} [sourceBackup] Backup sourceBackup
                          * @property {google.protobuf.ITimestamp|null} [expireTime] Backup expireTime
                          * @property {google.protobuf.ITimestamp|null} [startTime] Backup startTime
                          * @property {google.protobuf.ITimestamp|null} [endTime] Backup endTime
@@ -23658,6 +24230,14 @@
                          * @instance
                          */
                         Backup.prototype.sourceTable = "";
+    
+                        /**
+                         * Backup sourceBackup.
+                         * @member {string} sourceBackup
+                         * @memberof google.bigtable.admin.v2.Backup
+                         * @instance
+                         */
+                        Backup.prototype.sourceBackup = "";
     
                         /**
                          * Backup expireTime.
@@ -23747,6 +24327,8 @@
                                 writer.uint32(/* id 7, wireType 0 =*/56).int32(message.state);
                             if (message.encryptionInfo != null && Object.hasOwnProperty.call(message, "encryptionInfo"))
                                 $root.google.bigtable.admin.v2.EncryptionInfo.encode(message.encryptionInfo, writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
+                            if (message.sourceBackup != null && Object.hasOwnProperty.call(message, "sourceBackup"))
+                                writer.uint32(/* id 10, wireType 2 =*/82).string(message.sourceBackup);
                             return writer;
                         };
     
@@ -23787,6 +24369,10 @@
                                     }
                                 case 2: {
                                         message.sourceTable = reader.string();
+                                        break;
+                                    }
+                                case 10: {
+                                        message.sourceBackup = reader.string();
                                         break;
                                     }
                                 case 3: {
@@ -23854,6 +24440,9 @@
                             if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
                                 if (!$util.isString(message.sourceTable))
                                     return "sourceTable: string expected";
+                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
+                                if (!$util.isString(message.sourceBackup))
+                                    return "sourceBackup: string expected";
                             if (message.expireTime != null && message.hasOwnProperty("expireTime")) {
                                 var error = $root.google.protobuf.Timestamp.verify(message.expireTime);
                                 if (error)
@@ -23905,6 +24494,8 @@
                                 message.name = String(object.name);
                             if (object.sourceTable != null)
                                 message.sourceTable = String(object.sourceTable);
+                            if (object.sourceBackup != null)
+                                message.sourceBackup = String(object.sourceBackup);
                             if (object.expireTime != null) {
                                 if (typeof object.expireTime !== "object")
                                     throw TypeError(".google.bigtable.admin.v2.Backup.expireTime: object expected");
@@ -23983,6 +24574,7 @@
                                     object.sizeBytes = options.longs === String ? "0" : 0;
                                 object.state = options.enums === String ? "STATE_UNSPECIFIED" : 0;
                                 object.encryptionInfo = null;
+                                object.sourceBackup = "";
                             }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
@@ -24003,6 +24595,8 @@
                                 object.state = options.enums === String ? $root.google.bigtable.admin.v2.Backup.State[message.state] === undefined ? message.state : $root.google.bigtable.admin.v2.Backup.State[message.state] : message.state;
                             if (message.encryptionInfo != null && message.hasOwnProperty("encryptionInfo"))
                                 object.encryptionInfo = $root.google.bigtable.admin.v2.EncryptionInfo.toObject(message.encryptionInfo, options);
+                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
+                                object.sourceBackup = message.sourceBackup;
                             return object;
                         };
     
@@ -24061,6 +24655,7 @@
                          * @property {google.protobuf.ITimestamp|null} [startTime] BackupInfo startTime
                          * @property {google.protobuf.ITimestamp|null} [endTime] BackupInfo endTime
                          * @property {string|null} [sourceTable] BackupInfo sourceTable
+                         * @property {string|null} [sourceBackup] BackupInfo sourceBackup
                          */
     
                         /**
@@ -24111,6 +24706,14 @@
                         BackupInfo.prototype.sourceTable = "";
     
                         /**
+                         * BackupInfo sourceBackup.
+                         * @member {string} sourceBackup
+                         * @memberof google.bigtable.admin.v2.BackupInfo
+                         * @instance
+                         */
+                        BackupInfo.prototype.sourceBackup = "";
+    
+                        /**
                          * Creates a new BackupInfo instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.BackupInfo
@@ -24142,6 +24745,8 @@
                                 $root.google.protobuf.Timestamp.encode(message.endTime, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
                             if (message.sourceTable != null && Object.hasOwnProperty.call(message, "sourceTable"))
                                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.sourceTable);
+                            if (message.sourceBackup != null && Object.hasOwnProperty.call(message, "sourceBackup"))
+                                writer.uint32(/* id 10, wireType 2 =*/82).string(message.sourceBackup);
                             return writer;
                         };
     
@@ -24190,6 +24795,10 @@
                                     }
                                 case 4: {
                                         message.sourceTable = reader.string();
+                                        break;
+                                    }
+                                case 10: {
+                                        message.sourceBackup = reader.string();
                                         break;
                                     }
                                 default:
@@ -24243,6 +24852,9 @@
                             if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
                                 if (!$util.isString(message.sourceTable))
                                     return "sourceTable: string expected";
+                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
+                                if (!$util.isString(message.sourceBackup))
+                                    return "sourceBackup: string expected";
                             return null;
                         };
     
@@ -24272,6 +24884,8 @@
                             }
                             if (object.sourceTable != null)
                                 message.sourceTable = String(object.sourceTable);
+                            if (object.sourceBackup != null)
+                                message.sourceBackup = String(object.sourceBackup);
                             return message;
                         };
     
@@ -24293,6 +24907,7 @@
                                 object.startTime = null;
                                 object.endTime = null;
                                 object.sourceTable = "";
+                                object.sourceBackup = "";
                             }
                             if (message.backup != null && message.hasOwnProperty("backup"))
                                 object.backup = message.backup;
@@ -24302,6 +24917,8 @@
                                 object.endTime = $root.google.protobuf.Timestamp.toObject(message.endTime, options);
                             if (message.sourceTable != null && message.hasOwnProperty("sourceTable"))
                                 object.sourceTable = message.sourceTable;
+                            if (message.sourceBackup != null && message.hasOwnProperty("sourceBackup"))
+                                object.sourceBackup = message.sourceBackup;
                             return object;
                         };
     

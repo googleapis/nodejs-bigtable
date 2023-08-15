@@ -30,8 +30,7 @@ function main(parent, tableId) {
    */
   /**
    *  Required. The name of the instance in which to create the restored
-   *  table. This instance must be in the same project as the source backup.
-   *  Values are of the form `projects/<project>/instances/<instance>`.
+   *  table. Values are of the form `projects/<project>/instances/<instance>`.
    */
   // const parent = 'abc123'
   /**

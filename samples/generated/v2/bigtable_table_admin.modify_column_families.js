@@ -35,10 +35,10 @@ function main(name, modifications) {
    */
   // const name = 'abc123'
   /**
-   *  Required. Modifications to be atomically applied to the specified table's families.
-   *  Entries are applied in order, meaning that earlier modifications can be
-   *  masked by later ones (in the case of repeated updates to the same family,
-   *  for example).
+   *  Required. Modifications to be atomically applied to the specified table's
+   *  families. Entries are applied in order, meaning that earlier modifications
+   *  can be masked by later ones (in the case of repeated updates to the same
+   *  family, for example).
    */
   // const modifications = [1,2,3,4]
 
