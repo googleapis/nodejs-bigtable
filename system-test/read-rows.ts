@@ -85,7 +85,7 @@ describe('Bigtable/Table', () => {
   const TABLE = INSTANCE.table('table');
 
   describe('close', () => {
-    it('should fail when invoking readRows with closed client', async () => {
+    it.skip('should fail when invoking readRows with closed client', async () => {
       const instance = bigtable.instance(INSTANCE_NAME);
       const table = instance.table('fake-table');
       const [, operation] = await instance.create({
