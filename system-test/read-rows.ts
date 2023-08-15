@@ -108,11 +108,14 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(err.message, 'The client has already been closed.');
       }
     });
+    /*
+    Add this block back in when the previous test is skipped
     after(async () => {
       const bigtableSecondClient = new Bigtable();
       const instance = bigtableSecondClient.instance(INSTANCE_NAME);
       await instance.delete({});
     });
+    */
   });
 
   describe('createReadStream', () => {
