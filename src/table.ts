@@ -353,7 +353,7 @@ export type GetReplicationStatesCallback = (
 ) => void;
 export type GetReplicationStatesResponse = [
   Map<string, google.bigtable.admin.v2.Table.IClusterState>,
-  google.bigtable.admin.v2.ITable
+  google.bigtable.admin.v2.ITable,
 ];
 export type GetRowsCallback = (
   err: ServiceError | null,
@@ -1930,9 +1930,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
 
       // set timeout for 10 minutes
-      const timeoutAfterTenMinutes = setTimeout(() => {
-        callback!(null, false);
-      }, 10 * 60 * 1000);
+      const timeoutAfterTenMinutes = setTimeout(
+        () => {
+          callback!(null, false);
+        },
+        10 * 60 * 1000
+      );
 
       // method checks if retrial is required & init retrial with 5 sec
       // delay

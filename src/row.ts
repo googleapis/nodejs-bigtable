@@ -87,7 +87,7 @@ export type CreateRulesCallback = (
   apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse
 ) => void;
 export type CreateRulesResponse = [
-  google.bigtable.v2.IReadModifyWriteRowResponse
+  google.bigtable.v2.IReadModifyWriteRowResponse,
 ];
 export type CreateRowCallback = (
   err: ServiceError | PartialFailureError | null,
@@ -113,7 +113,7 @@ export type FilterCallback = (
 ) => void;
 export type FilterResponse = [
   boolean | null,
-  google.bigtable.v2.ICheckAndMutateRowResponse
+  google.bigtable.v2.ICheckAndMutateRowResponse,
 ];
 export type IncrementCallback = (
   err: ServiceError | null,
@@ -122,7 +122,7 @@ export type IncrementCallback = (
 ) => void;
 export type IncrementResponse = [
   number | null,
-  google.bigtable.v2.IReadModifyWriteRowResponse
+  google.bigtable.v2.IReadModifyWriteRowResponse,
 ];
 
 /**
