@@ -751,6 +751,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     let userCanceled = false;
     const userStream = new PassThrough({
       objectMode: true,
+      readableHighWaterMark: 0,
       transform(row, _encoding, callback) {
         if (userCanceled) {
           callback();
