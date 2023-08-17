@@ -155,8 +155,9 @@ describe('Bigtable', () => {
 
     it('should test Iam permissions for the instance', async () => {
       const permissions = ['bigtable.tables.get', 'bigtable.tables.readRows'];
-      const [grantedPermissions] =
-        await INSTANCE.testIamPermissions(permissions);
+      const [grantedPermissions] = await INSTANCE.testIamPermissions(
+        permissions
+      );
       assert.strictEqual(grantedPermissions.length, permissions.length);
       permissions.forEach(permission => {
         assert.strictEqual(grantedPermissions.includes(permission), true);
