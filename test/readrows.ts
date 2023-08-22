@@ -22,6 +22,7 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
+import {UntypedHandleCall} from '@grpc/grpc-js';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -47,7 +48,7 @@ describe('Bigtable/ReadRows', () => {
     const keyTo = 1000;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -79,7 +80,7 @@ describe('Bigtable/ReadRows', () => {
     const keyTo = 1000;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -132,7 +133,7 @@ describe('Bigtable/ReadRows', () => {
     const keyTo = 1000;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -185,7 +186,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 42;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -222,7 +223,7 @@ describe('Bigtable/ReadRows', () => {
   });
 
   // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
-  it.skip('should be able to stop reading from the read stream when reading asynchronously', function (done) {
+  it('should be able to stop reading from the read stream when reading asynchronously', function (done) {
     if (process.platform === 'win32') {
       this.timeout(60000); // it runs much slower on Windows!
     }
@@ -234,7 +235,7 @@ describe('Bigtable/ReadRows', () => {
     const stopAfter = 420;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo),
+      ReadRows: readRowsImpl(keyFrom, keyTo) as any,
     });
 
     let receivedRowCount = 0;
@@ -251,6 +252,7 @@ describe('Bigtable/ReadRows', () => {
     // Transform stream
     const transform = new Transform({
       objectMode: true,
+      writableHighWaterMark: 0,
       transform: (row, _encoding, callback) => {
         setTimeout(() => {
           callback(null, row);
@@ -297,7 +299,7 @@ describe('Bigtable/ReadRows', () => {
     const errorAfterChunkNo = 423;
 
     service.setService({
-      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo),
+      ReadRows: readRowsImpl(keyFrom, keyTo, errorAfterChunkNo) as any,
     });
 
     let receivedRowCount = 0;
