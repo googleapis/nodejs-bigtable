@@ -23,7 +23,7 @@ import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
-import {ServiceError, GrpcClient, GoogleError} from 'google-gax';
+import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
 import {PassThrough} from 'stream';
 
 const {grpc} = new GrpcClient();
@@ -85,7 +85,7 @@ describe('Bigtable/Table', () => {
   const TABLE = INSTANCE.table('table');
 
   describe('close', () => {
-    it.skip('should fail when invoking readRows with closed client', async () => {
+    it('should fail when invoking readRows with closed client', async () => {
       const instance = bigtable.instance(INSTANCE_NAME);
       const table = instance.table('fake-table');
       const [, operation] = await instance.create({
@@ -96,7 +96,15 @@ describe('Bigtable/Table', () => {
         },
       });
       await operation.promise();
-      await table.create({});
+      const gaxOptions: CallOptions = {
+        retry: {
+          retryCodes: [grpc.status.DEADLINE_EXCEEDED, grpc.status.NOT_FOUND],
+        },
+        maxRetries: 10,
+      };
+      await table.create({
+        gaxOptions,
+      });
       await table.getRows(); // This is done to initialize the data client
       await bigtable.close();
       try {
@@ -108,14 +116,11 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(err.message, 'The client has already been closed.');
       }
     });
-    /*
-    Add this block back in when the previous test is skipped
     after(async () => {
       const bigtableSecondClient = new Bigtable();
       const instance = bigtableSecondClient.instance(INSTANCE_NAME);
       await instance.delete({});
     });
-    */
   });
 
   describe('createReadStream', () => {
