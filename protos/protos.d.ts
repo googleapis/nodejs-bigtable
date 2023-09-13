@@ -16770,6 +16770,9 @@ export namespace google {
                 /** FeatureFlags mutateRowsRateLimit */
                 mutateRowsRateLimit?: (boolean|null);
 
+                /** FeatureFlags mutateRowsRateLimit2 */
+                mutateRowsRateLimit2?: (boolean|null);
+
                 /** FeatureFlags lastScannedRowResponses */
                 lastScannedRowResponses?: (boolean|null);
             }
@@ -16788,6 +16791,9 @@ export namespace google {
 
                 /** FeatureFlags mutateRowsRateLimit. */
                 public mutateRowsRateLimit: boolean;
+
+                /** FeatureFlags mutateRowsRateLimit2. */
+                public mutateRowsRateLimit2: boolean;
 
                 /** FeatureFlags lastScannedRowResponses. */
                 public lastScannedRowResponses: boolean;

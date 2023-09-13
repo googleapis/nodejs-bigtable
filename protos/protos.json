@@ -4391,6 +4391,10 @@
                       "type": "bool",
                       "id": 3
                     },
+                    "mutateRowsRateLimit2": {
+                      "type": "bool",
+                      "id": 5
+                    },
                     "lastScannedRowResponses": {
                       "type": "bool",
                       "id": 4
