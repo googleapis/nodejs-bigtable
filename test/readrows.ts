@@ -223,7 +223,7 @@ describe('Bigtable/ReadRows', () => {
   });
 
   // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
-  it.skip('should be able to stop reading from the read stream when reading asynchronously', function (done) {
+  it('should be able to stop reading from the read stream when reading asynchronously', function (done) {
     if (process.platform === 'win32') {
       this.timeout(60000); // it runs much slower on Windows!
     }
@@ -252,6 +252,7 @@ describe('Bigtable/ReadRows', () => {
     // Transform stream
     const transform = new Transform({
       objectMode: true,
+      writableHighWaterMark: 0,
       transform: (row, _encoding, callback) => {
         setTimeout(() => {
           callback(null, row);
