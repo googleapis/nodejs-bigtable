@@ -4,6 +4,32 @@
 
 [1]: https://www.npmjs.com/package/@google-cloud/bigtable?activeTab=versions
 
+## [5.0.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.6.1...v5.0.0) (2023-08-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to Node 14 ([#1311](https://github.com/googleapis/nodejs-bigtable/issues/1311))
+
+### Miscellaneous Chores
+
+* Upgrade to Node 14 ([#1311](https://github.com/googleapis/nodejs-bigtable/issues/1311)) ([4330cb2](https://github.com/googleapis/nodejs-bigtable/commit/4330cb238ec887e85456cde0f18f3881caca5e14))
+
+## [4.6.1](https://github.com/googleapis/nodejs-bigtable/compare/v4.6.0...v4.6.1) (2023-05-30)
+
+
+### Bug Fixes
+
+* Properly handle asynchronous read from stream ([#1284](https://github.com/googleapis/nodejs-bigtable/issues/1284)) ([55d86ba](https://github.com/googleapis/nodejs-bigtable/commit/55d86baaf554247c0c3d063fc790a37569f3e77b)). This could result in silently dropped rows in a `createReadStream`. The bug is active when the `ReadRows` stream would be piped into a consumer that would defer the processing of the rows until the next event loop run (i.e. use a `Transform` that would defer the callback invocation via `setTimeout()`).
+
+
+## [4.6.0](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.2...v4.6.0) (2023-05-26)
+
+
+### Features
+
+* Add ChangeStreamConfig to CreateTable and UpdateTable ([#1269](https://github.com/googleapis/nodejs-bigtable/issues/1269)) ([2b05fa4](https://github.com/googleapis/nodejs-bigtable/commit/2b05fa4c7ad37fa4478f5de3cf5645b44b34ecfc))
+
 ## [4.5.2](https://github.com/googleapis/nodejs-bigtable/compare/v4.5.1...v4.5.2) (2023-05-24)
 
 

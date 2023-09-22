@@ -353,7 +353,7 @@ export type GetReplicationStatesCallback = (
 ) => void;
 export type GetReplicationStatesResponse = [
   Map<string, google.bigtable.admin.v2.Table.IClusterState>,
-  google.bigtable.admin.v2.ITable
+  google.bigtable.admin.v2.ITable,
 ];
 export type GetRowsCallback = (
   err: ServiceError | null,
@@ -745,21 +745,51 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       filter = Filter.parse(options.filter);
     }
 
-    const userStream = new PassThrough({objectMode: true});
-    const end = userStream.end.bind(userStream);
-    userStream.end = () => {
+    let chunkTransformer: ChunkTransformer;
+    let rowStream: Duplex;
+
+    let userCanceled = false;
+    const userStream = new PassThrough({
+      objectMode: true,
+      readableHighWaterMark: 0,
+      transform(row, _encoding, callback) {
+        if (userCanceled) {
+          callback();
+          return;
+        }
+        callback(null, row);
+      },
+    });
+
+    // The caller should be able to call userStream.end() to stop receiving
+    // more rows and cancel the stream prematurely. But also, the 'end' event
+    // will be emitted if the stream ended normally. To tell these two
+    // situations apart, we'll save the "original" end() function, and
+    // will call it on rowStream.on('end').
+    const originalEnd = userStream.end.bind(userStream);
+
+    // Taking care of this extra listener when piping and unpiping userStream:
+    const rowStreamPipe = (rowStream: Duplex, userStream: PassThrough) => {
+      rowStream.pipe(userStream, {end: false});
+      rowStream.on('end', originalEnd);
+    };
+    const rowStreamUnpipe = (rowStream: Duplex, userStream: PassThrough) => {
       rowStream?.unpipe(userStream);
+      rowStream?.removeListener('end', originalEnd);
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    userStream.end = (chunk?: any, encoding?: any, cb?: () => void) => {
+      rowStreamUnpipe(rowStream, userStream);
+      userCanceled = true;
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
       if (retryTimer) {
         clearTimeout(retryTimer);
       }
-      return end();
+      return originalEnd(chunk, encoding, cb);
     };
-
-    let chunkTransformer: ChunkTransformer;
-    let rowStream: Duplex;
 
     const makeNewRequest = () => {
       // Avoid cancelling an expired timer if user
@@ -882,7 +912,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
           if (
-            chunkTransformer._destroyed ||
+            userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (userStream as any)._writableState.ended
           ) {
@@ -913,7 +943,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       rowStream
         .on('error', (error: ServiceError) => {
-          rowStream.unpipe(userStream);
+          rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
           if (IGNORED_STATUS_CODES.has(error.code)) {
             // We ignore the `cancelled` "error", since we are the ones who cause
@@ -947,7 +977,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('end', () => {
           activeRequestStream = null;
         });
-      rowStream.pipe(userStream);
+      rowStreamPipe(rowStream, userStream);
     };
 
     makeNewRequest();
@@ -1901,9 +1931,12 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
 
       // set timeout for 10 minutes
-      const timeoutAfterTenMinutes = setTimeout(() => {
-        callback!(null, false);
-      }, 10 * 60 * 1000);
+      const timeoutAfterTenMinutes = setTimeout(
+        () => {
+          callback!(null, false);
+        },
+        10 * 60 * 1000
+      );
 
       // method checks if retrial is required & init retrial with 5 sec
       // delay

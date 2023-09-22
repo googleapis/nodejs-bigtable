@@ -133,7 +133,7 @@ export interface GetBackupsOptions {
 export type GetBackupsResponse = [
   Backup[],
   GetBackupsOptions,
-  google.bigtable.admin.v2.IListBackupsResponse
+  google.bigtable.admin.v2.IListBackupsResponse,
 ];
 export type GetBackupsCallback = (
   err: ServiceError | null,

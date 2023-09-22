@@ -129,10 +129,10 @@ export class ChunkTransformer extends Transform {
    * @public
    *
    * @param {object} data readrows response containing array of chunks.
-   * @param {object} [enc] encoding options.
+   * @param {object} [_encoding] encoding options.
    * @param {callback} next callback will be called once data is processed, with error if any error in processing
    */
-  _transform(data: Data, enc: string, next: Function): void {
+  _transform(data: Data, _encoding: string, next: Function): void {
     for (const chunk of data.chunks!) {
       switch (this.state) {
         case RowStateEnum.NEW_ROW:
@@ -148,6 +148,7 @@ export class ChunkTransformer extends Transform {
           break;
       }
       if (this._destroyed) {
+        next();
         return;
       }
     }
@@ -226,7 +227,16 @@ export class ChunkTransformer extends Transform {
       chunk.familyName ||
       chunk.qualifier ||
       (chunk.value && chunk.value.length !== 0) ||
-      chunk.timestampMicros! > 0;
+      // timestampMicros is an int64 in the protobuf definition,
+      // which can be either a number or an instance of Long.
+      // If it's a number...
+      (typeof chunk.timestampMicros === 'number' &&
+        chunk.timestampMicros! > 0) ||
+      // If it's an instance of Long...
+      (typeof chunk.timestampMicros === 'object' &&
+        'compare' in chunk.timestampMicros &&
+        typeof chunk.timestampMicros.compare === 'function' &&
+        chunk.timestampMicros.compare(0) === 1);
     if (chunk.resetRow && containsData) {
       this.destroy(
         new TransformError({

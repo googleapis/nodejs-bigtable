@@ -552,7 +552,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.ICreateTableRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   createTable(
@@ -592,7 +592,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.ICreateTableRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -642,7 +642,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.IGetTableRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getTable(
@@ -680,7 +680,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.IGetTableRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -727,7 +727,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteTableRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   deleteTable(
@@ -767,7 +767,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteTableRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -822,7 +822,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   modifyColumnFamilies(
@@ -868,7 +868,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable,
       protos.google.bigtable.admin.v2.IModifyColumnFamiliesRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -922,7 +922,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDropRowRangeRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   dropRowRange(
@@ -962,7 +962,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDropRowRangeRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1015,7 +1015,7 @@ export class BigtableTableAdminClient {
         | protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest
         | undefined
       ),
-      {} | undefined
+      {} | undefined,
     ]
   >;
   generateConsistencyToken(
@@ -1064,7 +1064,7 @@ export class BigtableTableAdminClient {
         | protos.google.bigtable.admin.v2.IGenerateConsistencyTokenRequest
         | undefined
       ),
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1119,7 +1119,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ICheckConsistencyResponse,
       protos.google.bigtable.admin.v2.ICheckConsistencyRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   checkConsistency(
@@ -1165,7 +1165,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ICheckConsistencyResponse,
       protos.google.bigtable.admin.v2.ICheckConsistencyRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1218,7 +1218,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ISnapshot,
       protos.google.bigtable.admin.v2.IGetSnapshotRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getSnapshot(
@@ -1258,7 +1258,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ISnapshot,
       protos.google.bigtable.admin.v2.IGetSnapshotRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1311,7 +1311,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteSnapshotRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   deleteSnapshot(
@@ -1351,7 +1351,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteSnapshotRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1398,7 +1398,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IGetBackupRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getBackup(
@@ -1436,7 +1436,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IGetBackupRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1490,7 +1490,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IUpdateBackupRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   updateBackup(
@@ -1530,7 +1530,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.IBackup,
       protos.google.bigtable.admin.v2.IUpdateBackupRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1577,7 +1577,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteBackupRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   deleteBackup(
@@ -1617,7 +1617,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.protobuf.IEmpty,
       protos.google.bigtable.admin.v2.IDeleteBackupRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1668,7 +1668,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.IGetIamPolicyRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   getIamPolicy(
@@ -1706,7 +1706,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.IGetIamPolicyRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1764,7 +1764,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.ISetIamPolicyRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   setIamPolicy(
@@ -1802,7 +1802,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.iam.v1.IPolicy,
       protos.google.iam.v1.ISetIamPolicyRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1853,7 +1853,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.iam.v1.ITestIamPermissionsResponse,
       protos.google.iam.v1.ITestIamPermissionsRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   testIamPermissions(
@@ -1891,7 +1891,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.iam.v1.ITestIamPermissionsResponse,
       protos.google.iam.v1.ITestIamPermissionsRequest | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -1958,7 +1958,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   createTableFromSnapshot(
@@ -2011,7 +2011,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.ICreateTableFromSnapshotMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2081,11 +2081,15 @@ export class BigtableTableAdminClient {
    *   The table's `name` field is used to identify the table to update.
    * @param {google.protobuf.FieldMask} request.updateMask
    *   Required. The list of fields to update.
-   *   A mask specifying which fields (e.g. `deletion_protection`) in the `table`
+   *   A mask specifying which fields (e.g. `change_stream_config`) in the `table`
    *   field should be updated. This mask is relative to the `table` field, not to
    *   the request message. The wildcard (*) path is currently not supported.
-   *   Currently UpdateTable is only supported for the following field:
-   *    * `deletion_protection`
+   *   Currently UpdateTable is only supported for the following fields:
+   *
+   *   * `change_stream_config`
+   *   * `change_stream_config.retention_period`
+   *   * `deletion_protection`
+   *
    *   If `column_families` is set in `update_mask`, it will return an
    *   UNIMPLEMENTED error.
    * @param {object} [options]
@@ -2110,7 +2114,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.IUpdateTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   updateTable(
@@ -2163,7 +2167,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.IUpdateTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2250,7 +2254,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.IUndeleteTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   undeleteTable(
@@ -2303,7 +2307,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.IUndeleteTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2413,7 +2417,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.ISnapshotTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   snapshotTable(
@@ -2466,7 +2470,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.ISnapshotTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2569,7 +2573,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.ICreateBackupMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   createBackup(
@@ -2622,7 +2626,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.ICreateBackupMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2724,7 +2728,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.IRestoreTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   >;
   restoreTable(
@@ -2777,7 +2781,7 @@ export class BigtableTableAdminClient {
         protos.google.bigtable.admin.v2.IRestoreTableMetadata
       >,
       protos.google.longrunning.IOperation | undefined,
-      {} | undefined
+      {} | undefined,
     ]
   > | void {
     request = request || {};
@@ -2876,7 +2880,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable[],
       protos.google.bigtable.admin.v2.IListTablesRequest | null,
-      protos.google.bigtable.admin.v2.IListTablesResponse
+      protos.google.bigtable.admin.v2.IListTablesResponse,
     ]
   >;
   listTables(
@@ -2916,7 +2920,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ITable[],
       protos.google.bigtable.admin.v2.IListTablesRequest | null,
-      protos.google.bigtable.admin.v2.IListTablesResponse
+      protos.google.bigtable.admin.v2.IListTablesResponse,
     ]
   > | void {
     request = request || {};
@@ -3094,7 +3098,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ISnapshot[],
       protos.google.bigtable.admin.v2.IListSnapshotsRequest | null,
-      protos.google.bigtable.admin.v2.IListSnapshotsResponse
+      protos.google.bigtable.admin.v2.IListSnapshotsResponse,
     ]
   >;
   listSnapshots(
@@ -3134,7 +3138,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.ISnapshot[],
       protos.google.bigtable.admin.v2.IListSnapshotsRequest | null,
-      protos.google.bigtable.admin.v2.IListSnapshotsResponse
+      protos.google.bigtable.admin.v2.IListSnapshotsResponse,
     ]
   > | void {
     request = request || {};
@@ -3349,7 +3353,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.IBackup[],
       protos.google.bigtable.admin.v2.IListBackupsRequest | null,
-      protos.google.bigtable.admin.v2.IListBackupsResponse
+      protos.google.bigtable.admin.v2.IListBackupsResponse,
     ]
   >;
   listBackups(
@@ -3389,7 +3393,7 @@ export class BigtableTableAdminClient {
     [
       protos.google.bigtable.admin.v2.IBackup[],
       protos.google.bigtable.admin.v2.IListBackupsRequest | null,
-      protos.google.bigtable.admin.v2.IListBackupsResponse
+      protos.google.bigtable.admin.v2.IListBackupsResponse,
     ]
   > | void {
     request = request || {};
