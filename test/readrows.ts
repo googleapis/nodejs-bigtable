@@ -220,7 +220,7 @@ describe('Bigtable/ReadRows', () => {
   // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
   it('should be able to stop reading from the read stream when reading asynchronously', function (done) {
     if (process.platform === 'win32') {
-      this.timeout(60000); // it runs much slower on Windows!
+      this.timeout(600000); // it runs much slower on Windows!
     }
 
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
