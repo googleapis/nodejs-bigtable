@@ -192,12 +192,7 @@ describe('Bigtable/ReadRows', () => {
     let receivedRowCount = 0;
     let lastKeyReceived: number | undefined;
 
-    const readStream = table.createReadStream({
-      // workaround for https://github.com/grpc/grpc-node/issues/2446, remove when fixed
-      gaxOptions: {
-        timeout: 3000,
-      },
-    });
+    const readStream = table.createReadStream();
     readStream.on('error', (err: GoogleError) => {
       done(err);
     });
