@@ -90,7 +90,7 @@
     "p-queue": "^6.0.2",
     "pack-n-play": "^1.0.0-2",
     "proxyquire": "^2.0.0",
-    "sinon": "^15.0.0",
+    "sinon": "^16.0.0",
     "snap-shot-it": "^7.9.1",
     "tcp-port-used": "^1.0.2",
     "ts-loader": "^9.0.0",
