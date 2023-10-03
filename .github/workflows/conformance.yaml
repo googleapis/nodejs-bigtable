@@ -18,7 +18,7 @@ on:
     branches:
     - main
   pull_request:
-name: conformance
+name: conformance7
 jobs:
   conformance:
     runs-on: ubuntu-latest
