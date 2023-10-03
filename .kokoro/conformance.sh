@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+echo "test1"
+
 set -eo pipefail
 
 export NPM_CONFIG_PREFIX=${HOME}/.npm-global
