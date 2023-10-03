@@ -58,3 +58,21 @@ jobs:
       - uses: JustinBeckwith/linkinator-action@v1
         with:
           paths: docs/
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
+      with:
+        repository: googleapis/cloud-bigtable-clients-test
+        ref: main
+        path: cloud-bigtable-clients-test
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 14
+    - uses: actions/setup-go@v4
+      with:
+        go-version: '>=1.20.2'
+    - run: npm install
+    - run: go version
+    - run: .kokoro/conformance.sh
