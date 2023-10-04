@@ -30,8 +30,10 @@ echo "test3"
 # Build and start the proxy in a separate process
 pushd .
 npm install
-npm run testproxy
+nohup npm run testproxy
+echo "test31"
 proxyPID=$!
+echo "test32"
 popd
 
 echo "test4"
