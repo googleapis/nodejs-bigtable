@@ -14,28 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-echo "test1"
-
 set -eo pipefail
-
-echo "test2"
 
 export NPM_CONFIG_PREFIX=${HOME}/.npm-global
 
 ## cd to the parent directory, i.e. the root of the git repo
 cd $(dirname $0)/..
 
-echo "test3"
-
 # Build and start the proxy in a separate process
 pushd .
 npm install
 nohup npm run testproxy &
 proxyPID=$!
-echo "test32"
 popd
-
-echo "test4"
 
 # Run the conformance test
 pushd .
@@ -46,12 +37,8 @@ eval "go test -v -proxy_addr=:9999 -skip `cat ../../testproxy/known_failures.txt
 RETURN_CODE=$?
 popd
 
-echo "test5"
-
 # Stop the proxy
 kill $proxyPID
-
-echo "test6"
 
 echo "exiting with ${RETURN_CODE}"
 exit ${RETURN_CODE}
