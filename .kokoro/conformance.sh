@@ -53,10 +53,5 @@ kill $proxyPID
 
 echo "test6"
 
-# fix output location of logs
-bash .kokoro/coerce_logs.sh
-
-echo "test7"
-
 echo "exiting with ${RETURN_CODE}"
 exit ${RETURN_CODE}
