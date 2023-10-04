@@ -18,10 +18,14 @@ echo "test1"
 
 set -eo pipefail
 
+echo "test2"
+
 export NPM_CONFIG_PREFIX=${HOME}/.npm-global
 
 ## cd to the parent directory, i.e. the root of the git repo
 cd $(dirname $0)/..
+
+echo "test3"
 
 # Build and start the proxy in a separate process
 pushd .
@@ -30,6 +34,8 @@ npm run testproxy
 proxyPID=$!
 popd
 
+echo "test4"
+
 # Run the conformance test
 pushd .
 cd cloud-bigtable-clients-test/tests
@@ -37,11 +43,17 @@ eval "go test -v -skip `cat ../test-proxy/known_failures.txt` -proxy_addr=:9999"
 RETURN_CODE=$?
 popd
 
+echo "test5"
+
 # Stop the proxy
 kill $proxyPID
 
+echo "test6"
+
 # fix output location of logs
 bash .kokoro/coerce_logs.sh
+
+echo "test7"
 
 echo "exiting with ${RETURN_CODE}"
 exit ${RETURN_CODE}
