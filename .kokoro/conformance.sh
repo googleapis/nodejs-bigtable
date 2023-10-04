@@ -30,8 +30,7 @@ echo "test3"
 # Build and start the proxy in a separate process
 pushd .
 npm install
-nohup npm run testproxy
-echo "test31"
+nohup npm run testproxy &
 proxyPID=$!
 echo "test32"
 popd
@@ -40,6 +39,8 @@ echo "test4"
 
 # Run the conformance test
 pushd .
+pwd
+ls
 cd cloud-bigtable-clients-test/tests
 eval "go test -v -skip `cat ../test-proxy/known_failures.txt` -proxy_addr=:9999"
 RETURN_CODE=$?
