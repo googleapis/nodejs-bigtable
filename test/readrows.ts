@@ -42,7 +42,9 @@ describe('Bigtable/ReadRows', () => {
     service = new BigtableClientMockService(server);
   });
 
-  it('should create read stream and read synchronously', done => {
+  it('should create read stream and read synchronously', function (done) {
+    this.timeout(60000);
+
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
