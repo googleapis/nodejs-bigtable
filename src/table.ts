@@ -972,6 +972,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('data', _ => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
+          console.log(
+            `Response in createReadStream: ${_.data.myfamily.mycolumn[0].value.length}`
+          );
           numConsecutiveErrors = 0;
         })
         .on('end', () => {

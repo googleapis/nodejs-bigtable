@@ -868,6 +868,12 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
+          .on('data', data => {
+            if (data.chunks) {
+              console.log(`Response in prepareGaxRequest: ${data.chunks[0].value.length}`);
+            }
+            console.log('example');
+          })
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
