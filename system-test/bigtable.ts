@@ -708,7 +708,6 @@ describe('Bigtable', () => {
       });
 
       it.only('should insert a row from buffer and get the same data back', async () => {
-        // TODO: Clear data at this key
         const data = Uint8Array.from([
           0x1f, 0x8b, 0x8, 0x0, 0x34, 0x30, 0x8, 0x63, 0x0, 0x3, 0xa5, 0x92,
           0x3b, 0x6e, 0x54, 0x41, 0x10, 0x45, 0x7, 0x82, 0x21, 0x61, 0x25, 0x44,
@@ -731,7 +730,7 @@ describe('Bigtable', () => {
             },
           },
         });
-        const [row] = await TABLE.row(key).get();
+        const [row] = await TABLE.row(key).get({decode: false});
         const lengthOfResult = row.data['follows']['jadams'][0].value.length;
         const lengthOfData = data.length;
         assert.strictEqual(lengthOfResult, lengthOfData);
