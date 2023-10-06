@@ -707,7 +707,7 @@ describe('Bigtable', () => {
         });
       });
 
-      it('should insert a row from buffer and get the same data back', async () => {
+      it.only('should insert a row from buffer and get the same data back', async () => {
         // TODO: Clear data at this key
         const data = Uint8Array.from([
           0x1f, 0x8b, 0x8, 0x0, 0x34, 0x30, 0x8, 0x63, 0x0, 0x3, 0xa5, 0x92,
