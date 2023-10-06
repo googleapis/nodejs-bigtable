@@ -29,8 +29,8 @@ function main(name) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the cluster to be deleted. Values are of the form
-   *  `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   *  Required. The unique name of the cluster to be deleted. Values are of the
+   *  form `projects/{project}/instances/{instance}/clusters/{cluster}`.
    */
   // const name = 'abc123'
 

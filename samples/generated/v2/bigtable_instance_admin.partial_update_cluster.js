@@ -29,8 +29,8 @@ function main(cluster, updateMask) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The Cluster which contains the partial updates to be applied, subject to
-   *  the update_mask.
+   *  Required. The Cluster which contains the partial updates to be applied,
+   *  subject to the update_mask.
    */
   // const cluster = {}
   /**

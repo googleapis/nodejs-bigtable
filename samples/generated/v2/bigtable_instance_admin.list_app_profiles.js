@@ -29,8 +29,8 @@ function main(parent) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance for which a list of app profiles is
-   *  requested. Values are of the form
+   *  Required. The unique name of the instance for which a list of app profiles
+   *  is requested. Values are of the form
    *  `projects/{project}/instances/{instance}`.
    *  Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
    *  e.g., `projects/myproject/instances/-`.

@@ -29,8 +29,8 @@ function main(parent) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the project for which a list of instances is requested.
-   *  Values are of the form `projects/{project}`.
+   *  Required. The unique name of the project for which a list of instances is
+   *  requested. Values are of the form `projects/{project}`.
    */
   // const parent = 'abc123'
   /**

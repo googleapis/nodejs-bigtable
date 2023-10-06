@@ -585,8 +585,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the project for which a list of instances is requested.
-   *   Values are of the form `projects/{project}`.
+   *   Required. The unique name of the project for which a list of instances is
+   *   requested. Values are of the form `projects/{project}`.
    * @param {string} request.pageToken
    *   DEPRECATED: This field is unused and ignored.
    * @param {object} [options]
@@ -698,9 +698,9 @@ export class BigtableInstanceAdminClient {
    *   * No more than 64 labels can be associated with a given resource.
    *   * Keys and values must both be under 128 bytes.
    * @param {google.protobuf.Timestamp} request.createTime
-   *   Output only. A server-assigned timestamp representing when this Instance was created.
-   *   For instances created before this field was added (August 2021), this value
-   *   is `seconds: 0, nanos: 1`.
+   *   Output only. A server-assigned timestamp representing when this Instance
+   *   was created. For instances created before this field was added (August
+   *   2021), this value is `seconds: 0, nanos: 1`.
    * @param {boolean} request.satisfiesPzs
    *   Output only. Reserved for future use.
    * @param {object} [options]
@@ -952,10 +952,11 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which a list of clusters is requested.
-   *   Values are of the form `projects/{project}/instances/{instance}`.
-   *   Use `{instance} = '-'` to list Clusters for all Instances in a project,
-   *   e.g., `projects/myproject/instances/-`.
+   *   Required. The unique name of the instance for which a list of clusters is
+   *   requested. Values are of the form
+   *   `projects/{project}/instances/{instance}`. Use `{instance} = '-'` to list
+   *   Clusters for all Instances in a project, e.g.,
+   *   `projects/myproject/instances/-`.
    * @param {string} request.pageToken
    *   DEPRECATED: This field is unused and ignored.
    * @param {object} [options]
@@ -1041,8 +1042,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the cluster to be deleted. Values are of the form
-   *   `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   *   Required. The unique name of the cluster to be deleted. Values are of the
+   *   form `projects/{project}/instances/{instance}/clusters/{cluster}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1126,12 +1127,11 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance in which to create the new app profile.
-   *   Values are of the form
-   *   `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance in which to create the new app
+   *   profile. Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.appProfileId
-   *   Required. The ID to be used when referring to the new app profile within its
-   *   instance, e.g., just `myprofile` rather than
+   *   Required. The ID to be used when referring to the new app profile within
+   *   its instance, e.g., just `myprofile` rather than
    *   `projects/myproject/instances/myinstance/appProfiles/myprofile`.
    * @param {google.bigtable.admin.v2.AppProfile} request.appProfile
    *   Required. The app profile to be created.
@@ -1227,8 +1227,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the requested app profile. Values are of the form
-   *   `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
+   *   Required. The unique name of the requested app profile. Values are of the
+   *   form `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1312,7 +1312,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.name
-   *   Required. The unique name of the app profile to be deleted. Values are of the form
+   *   Required. The unique name of the app profile to be deleted. Values are of
+   *   the form
    *   `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
    * @param {boolean} request.ignoreWarnings
    *   Required. If true, ignore safety checks when deleting the app profile.
@@ -1682,11 +1683,11 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the project in which to create the new instance.
-   *   Values are of the form `projects/{project}`.
+   *   Required. The unique name of the project in which to create the new
+   *   instance. Values are of the form `projects/{project}`.
    * @param {string} request.instanceId
-   *   Required. The ID to be used when referring to the new instance within its project,
-   *   e.g., just `myinstance` rather than
+   *   Required. The ID to be used when referring to the new instance within its
+   *   project, e.g., just `myinstance` rather than
    *   `projects/myproject/instances/myinstance`.
    * @param {google.bigtable.admin.v2.Instance} request.instance
    *   Required. The instance to create.
@@ -1978,12 +1979,11 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance in which to create the new cluster.
-   *   Values are of the form
-   *   `projects/{project}/instances/{instance}`.
+   *   Required. The unique name of the instance in which to create the new
+   *   cluster. Values are of the form `projects/{project}/instances/{instance}`.
    * @param {string} request.clusterId
-   *   Required. The ID to be used when referring to the new cluster within its instance,
-   *   e.g., just `mycluster` rather than
+   *   Required. The ID to be used when referring to the new cluster within its
+   *   instance, e.g., just `mycluster` rather than
    *   `projects/myproject/instances/myinstance/clusters/mycluster`.
    * @param {google.bigtable.admin.v2.Cluster} request.cluster
    *   Required. The cluster to be created.
@@ -2130,8 +2130,8 @@ export class BigtableInstanceAdminClient {
    *   The unique name of the cluster. Values are of the form
    *   `projects/{project}/instances/{instance}/clusters/{@link protos.-a-z0-9|a-z}*`.
    * @param {string} request.location
-   *   Immutable. The location where this cluster's nodes and storage reside. For best
-   *   performance, clients should be located as close as possible to this
+   *   Immutable. The location where this cluster's nodes and storage reside. For
+   *   best performance, clients should be located as close as possible to this
    *   cluster. Currently only zones are supported, so values should be of the
    *   form `projects/{project}/locations/{zone}`.
    * @param {google.bigtable.admin.v2.Cluster.State} request.state
@@ -2292,8 +2292,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {google.bigtable.admin.v2.Cluster} request.cluster
-   *   Required. The Cluster which contains the partial updates to be applied, subject to
-   *   the update_mask.
+   *   Required. The Cluster which contains the partial updates to be applied,
+   *   subject to the update_mask.
    * @param {google.protobuf.FieldMask} request.updateMask
    *   Required. The subset of Cluster fields which should be replaced.
    * @param {object} [options]
@@ -2572,8 +2572,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which a list of app profiles is
-   *   requested. Values are of the form
+   *   Required. The unique name of the instance for which a list of app profiles
+   *   is requested. Values are of the form
    *   `projects/{project}/instances/{instance}`.
    *   Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
    *   e.g., `projects/myproject/instances/-`.
@@ -2681,8 +2681,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which a list of app profiles is
-   *   requested. Values are of the form
+   *   Required. The unique name of the instance for which a list of app profiles
+   *   is requested. Values are of the form
    *   `projects/{project}/instances/{instance}`.
    *   Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
    *   e.g., `projects/myproject/instances/-`.
@@ -2738,8 +2738,8 @@ export class BigtableInstanceAdminClient {
    * @param {Object} request
    *   The request object that will be sent.
    * @param {string} request.parent
-   *   Required. The unique name of the instance for which a list of app profiles is
-   *   requested. Values are of the form
+   *   Required. The unique name of the instance for which a list of app profiles
+   *   is requested. Values are of the form
    *   `projects/{project}/instances/{instance}`.
    *   Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
    *   e.g., `projects/myproject/instances/-`.

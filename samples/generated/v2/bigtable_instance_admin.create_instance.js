@@ -29,13 +29,13 @@ function main(parent, instanceId, instance, clusters) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the project in which to create the new instance.
-   *  Values are of the form `projects/{project}`.
+   *  Required. The unique name of the project in which to create the new
+   *  instance. Values are of the form `projects/{project}`.
    */
   // const parent = 'abc123'
   /**
-   *  Required. The ID to be used when referring to the new instance within its project,
-   *  e.g., just `myinstance` rather than
+   *  Required. The ID to be used when referring to the new instance within its
+   *  project, e.g., just `myinstance` rather than
    *  `projects/myproject/instances/myinstance`.
    */
   // const instanceId = 'abc123'

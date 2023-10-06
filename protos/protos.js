@@ -9689,6 +9689,8 @@
                          * @property {string|null} [description] AppProfile description
                          * @property {google.bigtable.admin.v2.AppProfile.IMultiClusterRoutingUseAny|null} [multiClusterRoutingUseAny] AppProfile multiClusterRoutingUseAny
                          * @property {google.bigtable.admin.v2.AppProfile.ISingleClusterRouting|null} [singleClusterRouting] AppProfile singleClusterRouting
+                         * @property {google.bigtable.admin.v2.AppProfile.Priority|null} [priority] AppProfile priority
+                         * @property {google.bigtable.admin.v2.AppProfile.IStandardIsolation|null} [standardIsolation] AppProfile standardIsolation
                          */
     
                         /**
@@ -9746,6 +9748,22 @@
                          */
                         AppProfile.prototype.singleClusterRouting = null;
     
+                        /**
+                         * AppProfile priority.
+                         * @member {google.bigtable.admin.v2.AppProfile.Priority|null|undefined} priority
+                         * @memberof google.bigtable.admin.v2.AppProfile
+                         * @instance
+                         */
+                        AppProfile.prototype.priority = null;
+    
+                        /**
+                         * AppProfile standardIsolation.
+                         * @member {google.bigtable.admin.v2.AppProfile.IStandardIsolation|null|undefined} standardIsolation
+                         * @memberof google.bigtable.admin.v2.AppProfile
+                         * @instance
+                         */
+                        AppProfile.prototype.standardIsolation = null;
+    
                         // OneOf field names bound to virtual getters and setters
                         var $oneOfFields;
     
@@ -9757,6 +9775,17 @@
                          */
                         Object.defineProperty(AppProfile.prototype, "routingPolicy", {
                             get: $util.oneOfGetter($oneOfFields = ["multiClusterRoutingUseAny", "singleClusterRouting"]),
+                            set: $util.oneOfSetter($oneOfFields)
+                        });
+    
+                        /**
+                         * AppProfile isolation.
+                         * @member {"priority"|"standardIsolation"|undefined} isolation
+                         * @memberof google.bigtable.admin.v2.AppProfile
+                         * @instance
+                         */
+                        Object.defineProperty(AppProfile.prototype, "isolation", {
+                            get: $util.oneOfGetter($oneOfFields = ["priority", "standardIsolation"]),
                             set: $util.oneOfSetter($oneOfFields)
                         });
     
@@ -9794,6 +9823,10 @@
                                 $root.google.bigtable.admin.v2.AppProfile.MultiClusterRoutingUseAny.encode(message.multiClusterRoutingUseAny, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
                             if (message.singleClusterRouting != null && Object.hasOwnProperty.call(message, "singleClusterRouting"))
                                 $root.google.bigtable.admin.v2.AppProfile.SingleClusterRouting.encode(message.singleClusterRouting, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                            if (message.priority != null && Object.hasOwnProperty.call(message, "priority"))
+                                writer.uint32(/* id 7, wireType 0 =*/56).int32(message.priority);
+                            if (message.standardIsolation != null && Object.hasOwnProperty.call(message, "standardIsolation"))
+                                $root.google.bigtable.admin.v2.AppProfile.StandardIsolation.encode(message.standardIsolation, writer.uint32(/* id 11, wireType 2 =*/90).fork()).ldelim();
                             return writer;
                         };
     
@@ -9846,6 +9879,14 @@
                                     }
                                 case 6: {
                                         message.singleClusterRouting = $root.google.bigtable.admin.v2.AppProfile.SingleClusterRouting.decode(reader, reader.uint32());
+                                        break;
+                                    }
+                                case 7: {
+                                        message.priority = reader.int32();
+                                        break;
+                                    }
+                                case 11: {
+                                        message.standardIsolation = $root.google.bigtable.admin.v2.AppProfile.StandardIsolation.decode(reader, reader.uint32());
                                         break;
                                     }
                                 default:
@@ -9911,6 +9952,28 @@
                                         return "singleClusterRouting." + error;
                                 }
                             }
+                            if (message.priority != null && message.hasOwnProperty("priority")) {
+                                properties.isolation = 1;
+                                switch (message.priority) {
+                                default:
+                                    return "priority: enum value expected";
+                                case 0:
+                                case 1:
+                                case 2:
+                                case 3:
+                                    break;
+                                }
+                            }
+                            if (message.standardIsolation != null && message.hasOwnProperty("standardIsolation")) {
+                                if (properties.isolation === 1)
+                                    return "isolation: multiple values";
+                                properties.isolation = 1;
+                                {
+                                    var error = $root.google.bigtable.admin.v2.AppProfile.StandardIsolation.verify(message.standardIsolation);
+                                    if (error)
+                                        return "standardIsolation." + error;
+                                }
+                            }
                             return null;
                         };
     
@@ -9941,6 +10004,35 @@
                                 if (typeof object.singleClusterRouting !== "object")
                                     throw TypeError(".google.bigtable.admin.v2.AppProfile.singleClusterRouting: object expected");
                                 message.singleClusterRouting = $root.google.bigtable.admin.v2.AppProfile.SingleClusterRouting.fromObject(object.singleClusterRouting);
+                            }
+                            switch (object.priority) {
+                            default:
+                                if (typeof object.priority === "number") {
+                                    message.priority = object.priority;
+                                    break;
+                                }
+                                break;
+                            case "PRIORITY_UNSPECIFIED":
+                            case 0:
+                                message.priority = 0;
+                                break;
+                            case "PRIORITY_LOW":
+                            case 1:
+                                message.priority = 1;
+                                break;
+                            case "PRIORITY_MEDIUM":
+                            case 2:
+                                message.priority = 2;
+                                break;
+                            case "PRIORITY_HIGH":
+                            case 3:
+                                message.priority = 3;
+                                break;
+                            }
+                            if (object.standardIsolation != null) {
+                                if (typeof object.standardIsolation !== "object")
+                                    throw TypeError(".google.bigtable.admin.v2.AppProfile.standardIsolation: object expected");
+                                message.standardIsolation = $root.google.bigtable.admin.v2.AppProfile.StandardIsolation.fromObject(object.standardIsolation);
                             }
                             return message;
                         };
@@ -9978,6 +10070,16 @@
                                 object.singleClusterRouting = $root.google.bigtable.admin.v2.AppProfile.SingleClusterRouting.toObject(message.singleClusterRouting, options);
                                 if (options.oneofs)
                                     object.routingPolicy = "singleClusterRouting";
+                            }
+                            if (message.priority != null && message.hasOwnProperty("priority")) {
+                                object.priority = options.enums === String ? $root.google.bigtable.admin.v2.AppProfile.Priority[message.priority] === undefined ? message.priority : $root.google.bigtable.admin.v2.AppProfile.Priority[message.priority] : message.priority;
+                                if (options.oneofs)
+                                    object.isolation = "priority";
+                            }
+                            if (message.standardIsolation != null && message.hasOwnProperty("standardIsolation")) {
+                                object.standardIsolation = $root.google.bigtable.admin.v2.AppProfile.StandardIsolation.toObject(message.standardIsolation, options);
+                                if (options.oneofs)
+                                    object.isolation = "standardIsolation";
                             }
                             return object;
                         };
@@ -10452,6 +10554,256 @@
                             };
     
                             return SingleClusterRouting;
+                        })();
+    
+                        /**
+                         * Priority enum.
+                         * @name google.bigtable.admin.v2.AppProfile.Priority
+                         * @enum {number}
+                         * @property {number} PRIORITY_UNSPECIFIED=0 PRIORITY_UNSPECIFIED value
+                         * @property {number} PRIORITY_LOW=1 PRIORITY_LOW value
+                         * @property {number} PRIORITY_MEDIUM=2 PRIORITY_MEDIUM value
+                         * @property {number} PRIORITY_HIGH=3 PRIORITY_HIGH value
+                         */
+                        AppProfile.Priority = (function() {
+                            var valuesById = {}, values = Object.create(valuesById);
+                            values[valuesById[0] = "PRIORITY_UNSPECIFIED"] = 0;
+                            values[valuesById[1] = "PRIORITY_LOW"] = 1;
+                            values[valuesById[2] = "PRIORITY_MEDIUM"] = 2;
+                            values[valuesById[3] = "PRIORITY_HIGH"] = 3;
+                            return values;
+                        })();
+    
+                        AppProfile.StandardIsolation = (function() {
+    
+                            /**
+                             * Properties of a StandardIsolation.
+                             * @memberof google.bigtable.admin.v2.AppProfile
+                             * @interface IStandardIsolation
+                             * @property {google.bigtable.admin.v2.AppProfile.Priority|null} [priority] StandardIsolation priority
+                             */
+    
+                            /**
+                             * Constructs a new StandardIsolation.
+                             * @memberof google.bigtable.admin.v2.AppProfile
+                             * @classdesc Represents a StandardIsolation.
+                             * @implements IStandardIsolation
+                             * @constructor
+                             * @param {google.bigtable.admin.v2.AppProfile.IStandardIsolation=} [properties] Properties to set
+                             */
+                            function StandardIsolation(properties) {
+                                if (properties)
+                                    for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+    
+                            /**
+                             * StandardIsolation priority.
+                             * @member {google.bigtable.admin.v2.AppProfile.Priority} priority
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @instance
+                             */
+                            StandardIsolation.prototype.priority = 0;
+    
+                            /**
+                             * Creates a new StandardIsolation instance using the specified properties.
+                             * @function create
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {google.bigtable.admin.v2.AppProfile.IStandardIsolation=} [properties] Properties to set
+                             * @returns {google.bigtable.admin.v2.AppProfile.StandardIsolation} StandardIsolation instance
+                             */
+                            StandardIsolation.create = function create(properties) {
+                                return new StandardIsolation(properties);
+                            };
+    
+                            /**
+                             * Encodes the specified StandardIsolation message. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.StandardIsolation.verify|verify} messages.
+                             * @function encode
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {google.bigtable.admin.v2.AppProfile.IStandardIsolation} message StandardIsolation message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            StandardIsolation.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.priority != null && Object.hasOwnProperty.call(message, "priority"))
+                                    writer.uint32(/* id 1, wireType 0 =*/8).int32(message.priority);
+                                return writer;
+                            };
+    
+                            /**
+                             * Encodes the specified StandardIsolation message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.StandardIsolation.verify|verify} messages.
+                             * @function encodeDelimited
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {google.bigtable.admin.v2.AppProfile.IStandardIsolation} message StandardIsolation message or plain object to encode
+                             * @param {$protobuf.Writer} [writer] Writer to encode to
+                             * @returns {$protobuf.Writer} Writer
+                             */
+                            StandardIsolation.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+    
+                            /**
+                             * Decodes a StandardIsolation message from the specified reader or buffer.
+                             * @function decode
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @param {number} [length] Message length if known beforehand
+                             * @returns {google.bigtable.admin.v2.AppProfile.StandardIsolation} StandardIsolation
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            StandardIsolation.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                var end = length === undefined ? reader.len : reader.pos + length, message = new $root.google.bigtable.admin.v2.AppProfile.StandardIsolation();
+                                while (reader.pos < end) {
+                                    var tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1: {
+                                            message.priority = reader.int32();
+                                            break;
+                                        }
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Decodes a StandardIsolation message from the specified reader or buffer, length delimited.
+                             * @function decodeDelimited
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+                             * @returns {google.bigtable.admin.v2.AppProfile.StandardIsolation} StandardIsolation
+                             * @throws {Error} If the payload is not a reader or valid buffer
+                             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                             */
+                            StandardIsolation.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+    
+                            /**
+                             * Verifies a StandardIsolation message.
+                             * @function verify
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {Object.<string,*>} message Plain object to verify
+                             * @returns {string|null} `null` if valid, otherwise the reason why it is not
+                             */
+                            StandardIsolation.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.priority != null && message.hasOwnProperty("priority"))
+                                    switch (message.priority) {
+                                    default:
+                                        return "priority: enum value expected";
+                                    case 0:
+                                    case 1:
+                                    case 2:
+                                    case 3:
+                                        break;
+                                    }
+                                return null;
+                            };
+    
+                            /**
+                             * Creates a StandardIsolation message from a plain object. Also converts values to their respective internal types.
+                             * @function fromObject
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {Object.<string,*>} object Plain object
+                             * @returns {google.bigtable.admin.v2.AppProfile.StandardIsolation} StandardIsolation
+                             */
+                            StandardIsolation.fromObject = function fromObject(object) {
+                                if (object instanceof $root.google.bigtable.admin.v2.AppProfile.StandardIsolation)
+                                    return object;
+                                var message = new $root.google.bigtable.admin.v2.AppProfile.StandardIsolation();
+                                switch (object.priority) {
+                                default:
+                                    if (typeof object.priority === "number") {
+                                        message.priority = object.priority;
+                                        break;
+                                    }
+                                    break;
+                                case "PRIORITY_UNSPECIFIED":
+                                case 0:
+                                    message.priority = 0;
+                                    break;
+                                case "PRIORITY_LOW":
+                                case 1:
+                                    message.priority = 1;
+                                    break;
+                                case "PRIORITY_MEDIUM":
+                                case 2:
+                                    message.priority = 2;
+                                    break;
+                                case "PRIORITY_HIGH":
+                                case 3:
+                                    message.priority = 3;
+                                    break;
+                                }
+                                return message;
+                            };
+    
+                            /**
+                             * Creates a plain object from a StandardIsolation message. Also converts values to other types if specified.
+                             * @function toObject
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {google.bigtable.admin.v2.AppProfile.StandardIsolation} message StandardIsolation
+                             * @param {$protobuf.IConversionOptions} [options] Conversion options
+                             * @returns {Object.<string,*>} Plain object
+                             */
+                            StandardIsolation.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                var object = {};
+                                if (options.defaults)
+                                    object.priority = options.enums === String ? "PRIORITY_UNSPECIFIED" : 0;
+                                if (message.priority != null && message.hasOwnProperty("priority"))
+                                    object.priority = options.enums === String ? $root.google.bigtable.admin.v2.AppProfile.Priority[message.priority] === undefined ? message.priority : $root.google.bigtable.admin.v2.AppProfile.Priority[message.priority] : message.priority;
+                                return object;
+                            };
+    
+                            /**
+                             * Converts this StandardIsolation to JSON.
+                             * @function toJSON
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @instance
+                             * @returns {Object.<string,*>} JSON object
+                             */
+                            StandardIsolation.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+    
+                            /**
+                             * Gets the default type url for StandardIsolation
+                             * @function getTypeUrl
+                             * @memberof google.bigtable.admin.v2.AppProfile.StandardIsolation
+                             * @static
+                             * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                             * @returns {string} The default type url
+                             */
+                            StandardIsolation.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+                                if (typeUrlPrefix === undefined) {
+                                    typeUrlPrefix = "type.googleapis.com";
+                                }
+                                return typeUrlPrefix + "/google.bigtable.admin.v2.AppProfile.StandardIsolation";
+                            };
+    
+                            return StandardIsolation;
                         })();
     
                         return AppProfile;

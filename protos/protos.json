@@ -1173,6 +1173,12 @@
                             "multiClusterRoutingUseAny",
                             "singleClusterRouting"
                           ]
+                        },
+                        "isolation": {
+                          "oneof": [
+                            "priority",
+                            "standardIsolation"
+                          ]
                         }
                       },
                       "fields": {
@@ -1195,6 +1201,17 @@
                         "singleClusterRouting": {
                           "type": "SingleClusterRouting",
                           "id": 6
+                        },
+                        "priority": {
+                          "type": "Priority",
+                          "id": 7,
+                          "options": {
+                            "deprecated": true
+                          }
+                        },
+                        "standardIsolation": {
+                          "type": "StandardIsolation",
+                          "id": 11
                         }
                       },
                       "nested": {
@@ -1216,6 +1233,22 @@
                             "allowTransactionalWrites": {
                               "type": "bool",
                               "id": 2
+                            }
+                          }
+                        },
+                        "Priority": {
+                          "values": {
+                            "PRIORITY_UNSPECIFIED": 0,
+                            "PRIORITY_LOW": 1,
+                            "PRIORITY_MEDIUM": 2,
+                            "PRIORITY_HIGH": 3
+                          }
+                        },
+                        "StandardIsolation": {
+                          "fields": {
+                            "priority": {
+                              "type": "Priority",
+                              "id": 1
                             }
                           }
                         }

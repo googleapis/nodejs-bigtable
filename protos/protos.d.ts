@@ -4186,6 +4186,12 @@ export namespace google {
 
                     /** AppProfile singleClusterRouting */
                     singleClusterRouting?: (google.bigtable.admin.v2.AppProfile.ISingleClusterRouting|null);
+
+                    /** AppProfile priority */
+                    priority?: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority|null);
+
+                    /** AppProfile standardIsolation */
+                    standardIsolation?: (google.bigtable.admin.v2.AppProfile.IStandardIsolation|null);
                 }
 
                 /** Represents an AppProfile. */
@@ -4212,8 +4218,17 @@ export namespace google {
                     /** AppProfile singleClusterRouting. */
                     public singleClusterRouting?: (google.bigtable.admin.v2.AppProfile.ISingleClusterRouting|null);
 
+                    /** AppProfile priority. */
+                    public priority?: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority|null);
+
+                    /** AppProfile standardIsolation. */
+                    public standardIsolation?: (google.bigtable.admin.v2.AppProfile.IStandardIsolation|null);
+
                     /** AppProfile routingPolicy. */
                     public routingPolicy?: ("multiClusterRoutingUseAny"|"singleClusterRouting");
+
+                    /** AppProfile isolation. */
+                    public isolation?: ("priority"|"standardIsolation");
 
                     /**
                      * Creates a new AppProfile instance using the specified properties.
@@ -4489,6 +4504,111 @@ export namespace google {
 
                         /**
                          * Gets the default type url for SingleClusterRouting
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Priority enum. */
+                    enum Priority {
+                        PRIORITY_UNSPECIFIED = 0,
+                        PRIORITY_LOW = 1,
+                        PRIORITY_MEDIUM = 2,
+                        PRIORITY_HIGH = 3
+                    }
+
+                    /** Properties of a StandardIsolation. */
+                    interface IStandardIsolation {
+
+                        /** StandardIsolation priority */
+                        priority?: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority|null);
+                    }
+
+                    /** Represents a StandardIsolation. */
+                    class StandardIsolation implements IStandardIsolation {
+
+                        /**
+                         * Constructs a new StandardIsolation.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.AppProfile.IStandardIsolation);
+
+                        /** StandardIsolation priority. */
+                        public priority: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority);
+
+                        /**
+                         * Creates a new StandardIsolation instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns StandardIsolation instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.AppProfile.IStandardIsolation): google.bigtable.admin.v2.AppProfile.StandardIsolation;
+
+                        /**
+                         * Encodes the specified StandardIsolation message. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.StandardIsolation.verify|verify} messages.
+                         * @param message StandardIsolation message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.AppProfile.IStandardIsolation, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified StandardIsolation message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.StandardIsolation.verify|verify} messages.
+                         * @param message StandardIsolation message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.AppProfile.IStandardIsolation, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a StandardIsolation message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns StandardIsolation
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AppProfile.StandardIsolation;
+
+                        /**
+                         * Decodes a StandardIsolation message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns StandardIsolation
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AppProfile.StandardIsolation;
+
+                        /**
+                         * Verifies a StandardIsolation message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a StandardIsolation message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns StandardIsolation
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AppProfile.StandardIsolation;
+
+                        /**
+                         * Creates a plain object from a StandardIsolation message. Also converts values to other types if specified.
+                         * @param message StandardIsolation
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.AppProfile.StandardIsolation, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this StandardIsolation to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for StandardIsolation
                          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                          * @returns The default type url
                          */
