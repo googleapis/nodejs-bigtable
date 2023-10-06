@@ -911,6 +911,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
+          console.log(
+            `Response in toRowStream: ${rowData.data.follows.jadams[0].value.length}`
+          );
           if (
             userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

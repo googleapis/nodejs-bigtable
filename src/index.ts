@@ -819,7 +819,17 @@ export class Bigtable {
     };
 
     if (isStreamMode) {
-      stream = streamEvents(new PassThrough({objectMode: true}));
+      stream = streamEvents(
+        new PassThrough({
+          objectMode: true,
+          transform(row, _encoding, callback) {
+            if (row && row.chunks) {
+              console.log(`Response in request stream: ${row.chunks[0].value.length}`);
+            }
+            callback(null, row);
+          },
+        })
+      );
       stream.abort = () => {
         if (gaxStream && gaxStream.cancel) {
           gaxStream.cancel();
