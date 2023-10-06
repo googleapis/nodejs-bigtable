@@ -911,9 +911,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       const toRowStream = new Transform({
         transform: (rowData, _, next) => {
-          console.log(
-            `Response in toRowStream: ${rowData.data.follows.jadams[0].value.length}`
-          );
           if (
             userCanceled ||
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -975,9 +972,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         .on('data', _ => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
-          console.log(
-            `Response in createReadStream: ${_.data.myfamily.mycolumn[0].value.length}`
-          );
           numConsecutiveErrors = 0;
         })
         .on('end', () => {

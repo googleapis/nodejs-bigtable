@@ -819,17 +819,7 @@ export class Bigtable {
     };
 
     if (isStreamMode) {
-      stream = streamEvents(
-        new PassThrough({
-          objectMode: true,
-          transform(row, _encoding, callback) {
-            if (row && row.chunks) {
-              console.log(`Response in request stream: ${row.chunks[0].value.length}`);
-            }
-            callback(null, row);
-          },
-        })
-      );
+      stream = streamEvents(new PassThrough({objectMode: true}));
       stream.abort = () => {
         if (gaxStream && gaxStream.cancel) {
           gaxStream.cancel();
@@ -878,12 +868,6 @@ export class Bigtable {
         gaxStream
           .on('error', stream.destroy.bind(stream))
           .on('metadata', stream.emit.bind(stream, 'metadata'))
-          .on('data', data => {
-            if (data.chunks) {
-              console.log(`Response in prepareGaxRequest: ${data.chunks[0].value.length}`);
-            }
-            console.log('example');
-          })
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
