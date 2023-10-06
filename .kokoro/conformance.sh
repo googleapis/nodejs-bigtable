@@ -30,8 +30,6 @@ popd
 
 # Run the conformance test
 pushd .
-pwd
-ls
 cd cloud-bigtable-clients-test/tests
 eval "go test -v -proxy_addr=:9999 -skip `cat ../../testproxy/known_failures.txt`"
 RETURN_CODE=$?
