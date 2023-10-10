@@ -30,7 +30,7 @@ popd
 
 # Run the conformance test
 cd cloud-bigtable-clients-test/tests
-eval "go test -v -proxy_addr=:9999 -skip `cat ../../testproxy/known_failures.txt`"
+eval "go test -v -proxy_addr=:9999"
 RETURN_CODE=$?
 
 # Stop the proxy
