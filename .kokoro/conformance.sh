@@ -21,6 +21,14 @@ export NPM_CONFIG_PREFIX=${HOME}/.npm-global
 ## cd to the parent directory, i.e. the root of the git repo
 cd $(dirname $0)/..
 
+# Stop the testbench & cleanup environment variables
+function cleanup() {
+    echo "Cleanup testbench"
+    # Stop the proxy
+    kill $proxyPID
+}
+trap cleanup EXIT
+
 # Build and start the proxy in a separate process
 pushd .
 npm install
@@ -32,9 +40,6 @@ popd
 cd cloud-bigtable-clients-test/tests
 eval "go test -v -proxy_addr=:9999"
 RETURN_CODE=$?
-
-# Stop the proxy
-kill $proxyPID
 
 echo "exiting with ${RETURN_CODE}"
 exit ${RETURN_CODE}
