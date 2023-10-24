@@ -32,7 +32,7 @@ jobs:
         repository: googleapis/cloud-bigtable-clients-test
         ref: main
         path: cloud-bigtable-clients-test
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node }}
     - uses: actions/setup-go@v4
