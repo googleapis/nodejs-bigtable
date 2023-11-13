@@ -189,24 +189,29 @@ export class BigtableClient {
     this.descriptors.stream = {
       readRows: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        opts.fallback === 'rest',
+        true
       ),
       sampleRowKeys: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        opts.fallback === 'rest',
+        true
       ),
       mutateRows: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        opts.fallback === 'rest',
+        true
       ),
       generateInitialChangeStreamPartitions:
         new this._gaxModule.StreamDescriptor(
           this._gaxModule.StreamType.SERVER_STREAMING,
-          opts.fallback === 'rest'
+          opts.fallback === 'rest',
+          true
         ),
       readChangeStream: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        opts.fallback === 'rest',
+        true
       ),
     };
 
