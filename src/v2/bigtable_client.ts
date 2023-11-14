@@ -896,6 +896,7 @@ export class BigtableClient {
     request?: protos.google.bigtable.v2.IReadRowsRequest,
     options?: CallOptions
   ): gax.CancellableStream {
+    console.timeEnd('before-gapic');
     request = request || {};
     options = options || {};
     options.otherArgs = options.otherArgs || {};

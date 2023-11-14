@@ -66,7 +66,11 @@ const readRows = ({clientMap}) =>
     const table = getTableInfo(bigtable, tableName);
     const rowsOptions = getRowsOptions(readRowsRequest);
     try {
+      console.time('to-end');
+      console.time('readRows');
       const [rows] = await table.getRows(rowsOptions);
+      console.timeEnd('from-end');
+      console.timeEnd('readRows');
       return {
         status: {code: grpc.status.OK, details: []},
         rows: rows.map(getRowResponse),
