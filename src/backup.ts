@@ -267,7 +267,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       parent: destination.cluster.name,
       backupId: destination.id,
       sourceBackup: `${this.cluster.name}/backups/${this.id}`,
-      expireTime: this.metadata?.expireTime,
+      expireTime: destination.metadata?.expireTime,
     };
     this.bigtable.request(
       {
