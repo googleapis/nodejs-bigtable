@@ -29,8 +29,8 @@ function main(name) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the Table for which to create a consistency token.
-   *  Values are of the form
+   *  Required. The unique name of the Table for which to create a consistency
+   *  token. Values are of the form
    *  `projects/{project}/instances/{instance}/tables/{table}`.
    */
   // const name = 'abc123'

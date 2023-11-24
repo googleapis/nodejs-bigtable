@@ -88,8 +88,7 @@ export class BigtableClient {
    *     API remote host.
    * @param {gax.ClientConfig} [options.clientConfig] - Client configuration override.
    *     Follows the structure of {@link gapicConfig}.
-   * @param {boolean | "rest"} [options.fallback] - Use HTTP fallback mode.
-   *     Pass "rest" to use HTTP/1.1 REST API instead of gRPC.
+   * @param {boolean} [options.fallback] - Use HTTP/1.1 REST mode.
    *     For more information, please check the
    *     {@link https://github.com/googleapis/gax-nodejs/blob/main/client-libraries.md#http11-rest-api-mode documentation}.
    * @param {gax} [gaxInstance]: loaded instance of `google-gax`. Useful if you
@@ -97,7 +96,7 @@ export class BigtableClient {
    *     HTTP implementation. Load only fallback version and pass it to the constructor:
    *     ```
    *     const gax = require('google-gax/build/src/fallback'); // avoids loading google-gax with gRPC
-   *     const client = new BigtableClient({fallback: 'rest'}, gax);
+   *     const client = new BigtableClient({fallback: true}, gax);
    *     ```
    */
   constructor(
@@ -163,7 +162,7 @@ export class BigtableClient {
     }
     if (!opts.fallback) {
       clientHeader.push(`grpc/${this._gaxGrpc.grpcVersion}`);
-    } else if (opts.fallback === 'rest') {
+    } else {
       clientHeader.push(`rest/${this._gaxGrpc.grpcVersion}`);
     }
     if (opts.libName && opts.libVersion) {
@@ -189,24 +188,24 @@ export class BigtableClient {
     this.descriptors.stream = {
       readRows: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        !!opts.fallback
       ),
       sampleRowKeys: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        !!opts.fallback
       ),
       mutateRows: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        !!opts.fallback
       ),
       generateInitialChangeStreamPartitions:
         new this._gaxModule.StreamDescriptor(
           this._gaxModule.StreamType.SERVER_STREAMING,
-          opts.fallback === 'rest'
+          !!opts.fallback
         ),
       readChangeStream: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
-        opts.fallback === 'rest'
+        !!opts.fallback
       ),
     };
 
@@ -393,9 +392,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing {@link google.bigtable.v2.MutateRowResponse | MutateRowResponse}.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
+   *   The first element of the array is an object representing {@link protos.google.bigtable.v2.MutateRowResponse|MutateRowResponse}.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
    *   for more details and examples.
    */
   mutateRow(
@@ -524,9 +522,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing {@link google.bigtable.v2.CheckAndMutateRowResponse | CheckAndMutateRowResponse}.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
+   *   The first element of the array is an object representing {@link protos.google.bigtable.v2.CheckAndMutateRowResponse|CheckAndMutateRowResponse}.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
    *   for more details and examples.
    */
   checkAndMutateRow(
@@ -638,9 +635,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing {@link google.bigtable.v2.PingAndWarmResponse | PingAndWarmResponse}.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
+   *   The first element of the array is an object representing {@link protos.google.bigtable.v2.PingAndWarmResponse|PingAndWarmResponse}.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
    *   for more details and examples.
    */
   pingAndWarm(
@@ -758,9 +754,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
-   *   The first element of the array is an object representing {@link google.bigtable.v2.ReadModifyWriteRowResponse | ReadModifyWriteRowResponse}.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods)
+   *   The first element of the array is an object representing {@link protos.google.bigtable.v2.ReadModifyWriteRowResponse|ReadModifyWriteRowResponse}.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
    *   for more details and examples.
    */
   readModifyWriteRow(
@@ -884,12 +879,24 @@ export class BigtableClient {
    *   default (zero) is to return all results.
    * @param {google.bigtable.v2.ReadRowsRequest.RequestStatsView} request.requestStatsView
    *   The view into RequestStats, as described above.
+   * @param {boolean} request.reversed
+   *   Experimental API - Please note that this API is currently experimental
+   *   and can change in the future.
+   *
+   *   Return rows in lexiographical descending order of the row keys. The row
+   *   contents will not be affected by this flag.
+   *
+   *   Example result set:
+   *
+   *       [
+   *         {key: "k2", "f:col1": "v1", "f:col2": "v1"},
+   *         {key: "k1", "f:col1": "v2", "f:col2": "v2"}
+   *       ]
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
-   *   An object stream which emits {@link google.bigtable.v2.ReadRowsResponse | ReadRowsResponse} on 'data' event.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
+   *   An object stream which emits {@link protos.google.bigtable.v2.ReadRowsResponse|ReadRowsResponse} on 'data' event.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
    *   for more details and examples.
    */
   readRows(
@@ -951,9 +958,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
-   *   An object stream which emits {@link google.bigtable.v2.SampleRowKeysResponse | SampleRowKeysResponse} on 'data' event.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
+   *   An object stream which emits {@link protos.google.bigtable.v2.SampleRowKeysResponse|SampleRowKeysResponse} on 'data' event.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
    *   for more details and examples.
    */
   sampleRowKeys(
@@ -1019,9 +1025,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
-   *   An object stream which emits {@link google.bigtable.v2.MutateRowsResponse | MutateRowsResponse} on 'data' event.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
+   *   An object stream which emits {@link protos.google.bigtable.v2.MutateRowsResponse|MutateRowsResponse} on 'data' event.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
    *   for more details and examples.
    */
   mutateRows(
@@ -1085,9 +1090,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
-   *   An object stream which emits {@link google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse | GenerateInitialChangeStreamPartitionsResponse} on 'data' event.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
+   *   An object stream which emits {@link protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse|GenerateInitialChangeStreamPartitionsResponse} on 'data' event.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
    *   for more details and examples.
    */
   generateInitialChangeStreamPartitions(
@@ -1154,9 +1158,8 @@ export class BigtableClient {
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Stream}
-   *   An object stream which emits {@link google.bigtable.v2.ReadChangeStreamResponse | ReadChangeStreamResponse} on 'data' event.
-   *   Please see the
-   *   [documentation](https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming)
+   *   An object stream which emits {@link protos.google.bigtable.v2.ReadChangeStreamResponse|ReadChangeStreamResponse} on 'data' event.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#server-streaming | documentation }
    *   for more details and examples.
    */
   readChangeStream(

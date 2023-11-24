@@ -34,8 +34,8 @@ function main(location, state, defaultStorageType, encryptionConfig) {
    */
   // const name = 'abc123'
   /**
-   *  Immutable. The location where this cluster's nodes and storage reside. For best
-   *  performance, clients should be located as close as possible to this
+   *  Immutable. The location where this cluster's nodes and storage reside. For
+   *  best performance, clients should be located as close as possible to this
    *  cluster. Currently only zones are supported, so values should be of the
    *  form `projects/{project}/locations/{zone}`.
    */

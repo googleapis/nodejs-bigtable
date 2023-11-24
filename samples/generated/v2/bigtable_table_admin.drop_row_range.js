@@ -38,7 +38,7 @@ function main(name) {
    *  Delete all rows that start with this row key prefix. Prefix cannot be
    *  zero length.
    */
-  // const rowKeyPrefix = 'Buffer.from('string')'
+  // const rowKeyPrefix = Buffer.from('string')
   /**
    *  Delete all rows in the table. Setting this to false is a no-op.
    */

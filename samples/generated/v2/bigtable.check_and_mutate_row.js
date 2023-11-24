@@ -47,7 +47,7 @@ function main(tableName, rowKey) {
    *  Required. The key of the row to which the conditional mutation should be
    *  applied.
    */
-  // const rowKey = 'Buffer.from('string')'
+  // const rowKey = Buffer.from('string')
   /**
    *  The filter to be applied to the contents of the specified row. Depending
    *  on whether or not any results are yielded, either `true_mutations` or
@@ -62,7 +62,7 @@ function main(tableName, rowKey) {
    *  Must contain at least one entry if `false_mutations` is empty, and at most
    *  100000.
    */
-  // const trueMutations = 1234
+  // const trueMutations = [1,2,3,4]
   /**
    *  Changes to be atomically applied to the specified row if `predicate_filter`
    *  does not yield any cells when applied to `row_key`. Entries are applied in
@@ -70,7 +70,7 @@ function main(tableName, rowKey) {
    *  Must contain at least one entry if `true_mutations` is empty, and at most
    *  100000.
    */
-  // const falseMutations = 1234
+  // const falseMutations = [1,2,3,4]
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;

@@ -29,8 +29,8 @@ function main(parent) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the cluster for which snapshots should be listed.
-   *  Values are of the form
+   *  Required. The unique name of the cluster for which snapshots should be
+   *  listed. Values are of the form
    *  `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *  Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *  e.g., `projects/{project}/instances/{instance}/clusters/-`.
