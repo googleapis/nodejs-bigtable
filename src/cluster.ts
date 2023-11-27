@@ -101,6 +101,11 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
   gaxOptions?: CallOptions;
 }
 
+export interface CopyBackupConfig extends ModifiableBackupFields {
+  parent?: Cluster;
+  backupId?: string;
+}
+
 export type CopyBackupCallback = (
   err: ServiceError | Error | null,
   operation?: Operation
@@ -320,11 +325,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       },
     };
 
-    if (reqOpts.backup.expireTime instanceof Date) {
-      reqOpts.backup.expireTime = new PreciseDate(
-        reqOpts.backup.expireTime
-      ).toStruct();
-    }
+    ClusterUtils.setExpiryTime(reqOpts.backup);
 
     delete reqOpts.backup.table;
     delete reqOpts.backup.gaxOptions;

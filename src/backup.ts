@@ -36,9 +36,11 @@ import {
   IOperation,
   CopyBackupCallback,
   CopyBackupResponse,
+  CopyBackupConfig,
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
+import {ClusterUtils} from './utils/cluster';
 
 type IEmpty = google.protobuf.IEmpty;
 export type IBackup = google.bigtable.admin.v2.IBackup;
@@ -250,10 +252,11 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param destination
    * @param callback
    */
-  copy(destination: Backup): Promise<CopyBackupResponse>;
-  copy(destination: Backup, callback?: CopyBackupCallback): void;
+  // TODO: Make sure promise type and callback type actually line up.
+  copy(config: CopyBackupConfig): Promise<CopyBackupResponse>;
+  copy(config: CopyBackupConfig, callback?: CopyBackupCallback): void;
   copy(
-    destination: Backup,
+    config: CopyBackupConfig,
     gaxOptionsOrCallback?: CallOptions | CopyBackupCallback,
     cb?: CopyBackupCallback
   ): void | Promise<CopyBackupResponse> {
@@ -264,11 +267,12 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         ? gaxOptionsOrCallback
         : ({} as CallOptions);
     const reqOpts = {
-      parent: destination.cluster.name,
-      backupId: destination.id,
+      parent: config.parent?.name,
+      backupId: config?.backupId,
       sourceBackup: `${this.cluster.name}/backups/${this.id}`,
-      expireTime: destination.metadata?.expireTime,
+      expireTime: config?.expireTime,
     };
+    ClusterUtils.setExpiryTime(reqOpts);
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',

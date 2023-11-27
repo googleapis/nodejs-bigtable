@@ -240,7 +240,10 @@ describe('Bigtable/Backup', () => {
       const backupId = generateId('backup');
       const newBackupId = generateId('backup');
       const backup = new Backup(CLUSTER, backupId);
-      const copiedBackup = new Backup(CLUSTER, newBackupId);
+      const config = {
+        parent: CLUSTER,
+        backupId: newBackupId,
+      };
       const callback: (err: any, config: any) => void = (
         err: ServiceError | Error | null,
         config: any
@@ -255,10 +258,11 @@ describe('Bigtable/Backup', () => {
         });
         done();
       };
-      backup.copy(copiedBackup, callback);
+      backup.copy(config, callback);
     });
     it('should correctly copy backup from the Cluster to another project', done => {
       const otherInstanceName = 'projects/project2/instances/instance2';
+      /*
       const CLUSTER2 = {
         bigtable: {} as Bigtable,
         name: otherInstanceName,
@@ -266,10 +270,14 @@ describe('Bigtable/Backup', () => {
           name: 'instance-name',
         },
       } as clusterTypes.Cluster;
+       */
       const backupId = generateId('backup');
       const newBackupId = generateId('backup');
       const backup = new Backup(CLUSTER, backupId);
-      const copiedBackup = new Backup(CLUSTER2, newBackupId);
+      const config = {
+        parent: CLUSTER,
+        backupId: newBackupId,
+      };
       const callback: (err: any, config: any) => void = (
         err: ServiceError | Error | null,
         config: any
@@ -284,7 +292,7 @@ describe('Bigtable/Backup', () => {
         });
         done();
       };
-      backup.copy(copiedBackup, callback);
+      backup.copy(config, callback);
     });
   });
 
