@@ -805,6 +805,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         appProfileId: this.bigtable.appProfileId,
       } as google.bigtable.v2.IReadRowsRequest;
 
+      /*
       const retryOpts = {
         currentRetryAttempt: 0, // was numConsecutiveErrors
         // Handling retries in this client. Specify the retry options to
@@ -814,6 +815,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           return false;
         },
       };
+       */
+      const retryOpts = undefined;
 
       if (lastRowKey) {
         // Readjust and/or remove ranges based on previous valid row reads.
@@ -1587,6 +1590,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           : entryBatch.map(Mutation.parse),
       };
 
+      /*
       const retryOpts = {
         currentRetryAttempt: numRequestsMade,
         // Handling retries in this client. Specify the retry options to
@@ -1596,6 +1600,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           return false;
         },
       };
+       */
+      const retryOpts = undefined;
 
       options.gaxOptions = populateAttemptHeader(
         numRequestsMade,

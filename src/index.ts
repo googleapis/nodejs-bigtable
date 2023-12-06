@@ -846,6 +846,7 @@ export class Bigtable {
     }
 
     function makeRequestStream() {
+      /*
       const retryRequestOptions = Object.assign(
         {
           currentRetryAttempt: 0,
@@ -854,6 +855,8 @@ export class Bigtable {
         },
         config.retryOpts
       );
+      */
+      const retryRequestOptions = undefined;
 
       config.gaxOpts = Object.assign(config.gaxOpts || {}, {
         retryRequestOptions,
