@@ -253,19 +253,12 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param callback
    */
   // TODO: Make sure promise type and callback type actually line up.
-  copy(config: DestinationBackupConfig): Promise<CopyBackupResponse>;
   copy(config: DestinationBackupConfig, callback?: CopyBackupCallback): void;
+  copy(config: DestinationBackupConfig): Promise<CopyBackupResponse>;
   copy(
     config: DestinationBackupConfig,
-    gaxOptionsOrCallback?: CallOptions | CopyBackupCallback,
-    cb?: CopyBackupCallback
+    callback?: CopyBackupCallback
   ): void | Promise<CopyBackupResponse> {
-    const callback =
-      typeof gaxOptionsOrCallback === 'function' ? gaxOptionsOrCallback : cb!;
-    const gaxOptions =
-      typeof gaxOptionsOrCallback === 'object'
-        ? gaxOptionsOrCallback
-        : ({} as CallOptions);
     const reqOpts = {
       parent: config.parent?.name,
       backupId: config?.backupId,
@@ -278,10 +271,10 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         client: 'BigtableTableAdminClient',
         method: 'copyBackup',
         reqOpts,
-        gaxOpts: gaxOptions,
+        gaxOpts: config.gaxOptions,
       },
       (err, resp) => {
-        callback(err, resp);
+        callback!(err, resp);
       }
     );
   }
