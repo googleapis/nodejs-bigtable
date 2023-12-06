@@ -29,8 +29,8 @@ function main(name) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the requested app profile. Values are of the form
-   *  `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
+   *  Required. The unique name of the requested app profile. Values are of the
+   *  form `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
    */
   // const name = 'abc123'
 

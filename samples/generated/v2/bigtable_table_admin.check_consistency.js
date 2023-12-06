@@ -29,8 +29,8 @@ function main(name, consistencyToken) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the Table for which to check replication consistency.
-   *  Values are of the form
+   *  Required. The unique name of the Table for which to check replication
+   *  consistency. Values are of the form
    *  `projects/{project}/instances/{instance}/tables/{table}`.
    */
   // const name = 'abc123'

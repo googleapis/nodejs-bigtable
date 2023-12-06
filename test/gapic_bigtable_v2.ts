@@ -749,7 +749,9 @@ describe('v2.BigtableClient', () => {
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.readRows(request);
+      const stream = client.readRows(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',
@@ -860,7 +862,9 @@ describe('v2.BigtableClient', () => {
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.sampleRowKeys(request);
+      const stream = client.sampleRowKeys(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',
@@ -971,7 +975,9 @@ describe('v2.BigtableClient', () => {
       request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.mutateRows(request);
+      const stream = client.mutateRows(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',
@@ -1093,7 +1099,9 @@ describe('v2.BigtableClient', () => {
       request.tableName = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.generateInitialChangeStreamPartitions(request);
+      const stream = client.generateInitialChangeStreamPartitions(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',
@@ -1215,7 +1223,9 @@ describe('v2.BigtableClient', () => {
       request.tableName = defaultValue1;
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.readChangeStream(request);
+      const stream = client.readChangeStream(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',

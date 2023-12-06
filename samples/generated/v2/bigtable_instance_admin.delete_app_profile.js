@@ -29,7 +29,8 @@ function main(name, ignoreWarnings) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the app profile to be deleted. Values are of the form
+   *  Required. The unique name of the app profile to be deleted. Values are of
+   *  the form
    *  `projects/{project}/instances/{instance}/appProfiles/{app_profile}`.
    */
   // const name = 'abc123'

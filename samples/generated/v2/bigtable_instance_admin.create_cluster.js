@@ -29,14 +29,13 @@ function main(parent, clusterId, cluster) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance in which to create the new cluster.
-   *  Values are of the form
-   *  `projects/{project}/instances/{instance}`.
+   *  Required. The unique name of the instance in which to create the new
+   *  cluster. Values are of the form `projects/{project}/instances/{instance}`.
    */
   // const parent = 'abc123'
   /**
-   *  Required. The ID to be used when referring to the new cluster within its instance,
-   *  e.g., just `mycluster` rather than
+   *  Required. The ID to be used when referring to the new cluster within its
+   *  instance, e.g., just `mycluster` rather than
    *  `projects/myproject/instances/myinstance/clusters/mycluster`.
    */
   // const clusterId = 'abc123'

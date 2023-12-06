@@ -29,14 +29,13 @@ function main(parent, appProfileId, appProfile) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance in which to create the new app profile.
-   *  Values are of the form
-   *  `projects/{project}/instances/{instance}`.
+   *  Required. The unique name of the instance in which to create the new app
+   *  profile. Values are of the form `projects/{project}/instances/{instance}`.
    */
   // const parent = 'abc123'
   /**
-   *  Required. The ID to be used when referring to the new app profile within its
-   *  instance, e.g., just `myprofile` rather than
+   *  Required. The ID to be used when referring to the new app profile within
+   *  its instance, e.g., just `myprofile` rather than
    *  `projects/myproject/instances/myinstance/appProfiles/myprofile`.
    */
   // const appProfileId = 'abc123'
