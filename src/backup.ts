@@ -36,7 +36,7 @@ import {
   IOperation,
   CopyBackupCallback,
   CopyBackupResponse,
-  DestinationBackupConfig,
+  CopyBackupConfig,
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
@@ -253,10 +253,10 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param callback
    */
   // TODO: Make sure promise type and callback type actually line up.
-  copy(config: DestinationBackupConfig, callback: CopyBackupCallback): void;
-  copy(config: DestinationBackupConfig): Promise<CopyBackupResponse>;
+  copy(config: CopyBackupConfig, callback: CopyBackupCallback): void;
+  copy(config: CopyBackupConfig): Promise<CopyBackupResponse>;
   copy(
-    config: DestinationBackupConfig,
+    config: CopyBackupConfig,
     callback?: CopyBackupCallback
   ): void | Promise<CopyBackupResponse> {
     const reqOpts = {

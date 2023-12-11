@@ -20,7 +20,7 @@ import Q from 'p-queue';
 
 import {Backup, Bigtable, Instance, InstanceOptions} from '../src';
 import {AppProfile} from '../src/app-profile.js';
-import {Cluster, DestinationBackupConfig} from '../src/cluster.js';
+import {Cluster, CopyBackupConfig} from '../src/cluster.js';
 import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';
@@ -124,7 +124,7 @@ describe.only('Bigtable', () => {
     );
     async function testCopyBackup(
       backup: Backup,
-      config: DestinationBackupConfig
+      config: CopyBackupConfig
     ) {
       try {
         // Get a list of backup ids before the copy
@@ -1488,7 +1488,7 @@ describe.only('Bigtable', () => {
     describe('copying backups', () => {
       async function testCopyBackup(
         backup: Backup,
-        config: DestinationBackupConfig
+        config: CopyBackupConfig
       ) {
         // Get a list of backup ids before the copy
         const [backupsBeforeCopy] = await INSTANCE.getBackups();

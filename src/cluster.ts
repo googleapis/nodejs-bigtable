@@ -101,7 +101,7 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
   gaxOptions?: CallOptions;
 }
 
-export interface DestinationBackupConfig extends ModifiableBackupFields {
+export interface CopyBackupConfig extends ModifiableBackupFields {
   parent?: Cluster;
   gaxOptions?: CallOptions;
   backupId?: string;
