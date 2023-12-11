@@ -253,7 +253,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param callback
    */
   // TODO: Make sure promise type and callback type actually line up.
-  copy(config: DestinationBackupConfig, callback?: CopyBackupCallback): void;
+  copy(config: DestinationBackupConfig, callback: CopyBackupCallback): void;
   copy(config: DestinationBackupConfig): Promise<CopyBackupResponse>;
   copy(
     config: DestinationBackupConfig,
