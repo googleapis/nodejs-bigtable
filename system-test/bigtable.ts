@@ -122,10 +122,7 @@ describe.only('Bigtable', () => {
     const copyExpireTime = new PreciseDate(
       PreciseDate.now() + (8 + 600) * 60 * 60 * 1000
     );
-    async function testCopyBackup(
-      backup: Backup,
-      config: CopyBackupConfig
-    ) {
+    async function testCopyBackup(backup: Backup, config: CopyBackupConfig) {
       try {
         // Get a list of backup ids before the copy
         const [backupsBeforeCopy] = await INSTANCE.getBackups();
@@ -1486,10 +1483,7 @@ describe.only('Bigtable', () => {
       Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
     describe('copying backups', () => {
-      async function testCopyBackup(
-        backup: Backup,
-        config: CopyBackupConfig
-      ) {
+      async function testCopyBackup(backup: Backup, config: CopyBackupConfig) {
         // Get a list of backup ids before the copy
         const [backupsBeforeCopy] = await INSTANCE.getBackups();
         const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
