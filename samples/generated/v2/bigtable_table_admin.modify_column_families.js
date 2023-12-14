@@ -41,6 +41,10 @@ function main(name, modifications) {
    *  family, for example).
    */
   // const modifications = [1,2,3,4]
+  /**
+   *  Optional. If true, ignore safety checks when modifying the column families.
+   */
+  // const ignoreWarnings = true
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;

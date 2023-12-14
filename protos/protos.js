@@ -16179,6 +16179,7 @@
                          * @interface IModifyColumnFamiliesRequest
                          * @property {string|null} [name] ModifyColumnFamiliesRequest name
                          * @property {Array.<google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification>|null} [modifications] ModifyColumnFamiliesRequest modifications
+                         * @property {boolean|null} [ignoreWarnings] ModifyColumnFamiliesRequest ignoreWarnings
                          */
     
                         /**
@@ -16214,6 +16215,14 @@
                         ModifyColumnFamiliesRequest.prototype.modifications = $util.emptyArray;
     
                         /**
+                         * ModifyColumnFamiliesRequest ignoreWarnings.
+                         * @member {boolean} ignoreWarnings
+                         * @memberof google.bigtable.admin.v2.ModifyColumnFamiliesRequest
+                         * @instance
+                         */
+                        ModifyColumnFamiliesRequest.prototype.ignoreWarnings = false;
+    
+                        /**
                          * Creates a new ModifyColumnFamiliesRequest instance using the specified properties.
                          * @function create
                          * @memberof google.bigtable.admin.v2.ModifyColumnFamiliesRequest
@@ -16242,6 +16251,8 @@
                             if (message.modifications != null && message.modifications.length)
                                 for (var i = 0; i < message.modifications.length; ++i)
                                     $root.google.bigtable.admin.v2.ModifyColumnFamiliesRequest.Modification.encode(message.modifications[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                            if (message.ignoreWarnings != null && Object.hasOwnProperty.call(message, "ignoreWarnings"))
+                                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.ignoreWarnings);
                             return writer;
                         };
     
@@ -16284,6 +16295,10 @@
                                         if (!(message.modifications && message.modifications.length))
                                             message.modifications = [];
                                         message.modifications.push($root.google.bigtable.admin.v2.ModifyColumnFamiliesRequest.Modification.decode(reader, reader.uint32()));
+                                        break;
+                                    }
+                                case 3: {
+                                        message.ignoreWarnings = reader.bool();
                                         break;
                                     }
                                 default:
@@ -16333,6 +16348,9 @@
                                         return "modifications." + error;
                                 }
                             }
+                            if (message.ignoreWarnings != null && message.hasOwnProperty("ignoreWarnings"))
+                                if (typeof message.ignoreWarnings !== "boolean")
+                                    return "ignoreWarnings: boolean expected";
                             return null;
                         };
     
@@ -16360,6 +16378,8 @@
                                     message.modifications[i] = $root.google.bigtable.admin.v2.ModifyColumnFamiliesRequest.Modification.fromObject(object.modifications[i]);
                                 }
                             }
+                            if (object.ignoreWarnings != null)
+                                message.ignoreWarnings = Boolean(object.ignoreWarnings);
                             return message;
                         };
     
@@ -16378,8 +16398,10 @@
                             var object = {};
                             if (options.arrays || options.defaults)
                                 object.modifications = [];
-                            if (options.defaults)
+                            if (options.defaults) {
                                 object.name = "";
+                                object.ignoreWarnings = false;
+                            }
                             if (message.name != null && message.hasOwnProperty("name"))
                                 object.name = message.name;
                             if (message.modifications && message.modifications.length) {
@@ -16387,6 +16409,8 @@
                                 for (var j = 0; j < message.modifications.length; ++j)
                                     object.modifications[j] = $root.google.bigtable.admin.v2.ModifyColumnFamiliesRequest.Modification.toObject(message.modifications[j], options);
                             }
+                            if (message.ignoreWarnings != null && message.hasOwnProperty("ignoreWarnings"))
+                                object.ignoreWarnings = message.ignoreWarnings;
                             return object;
                         };
     

@@ -813,6 +813,8 @@ export class BigtableTableAdminClient {
    *   families. Entries are applied in order, meaning that earlier modifications
    *   can be masked by later ones (in the case of repeated updates to the same
    *   family, for example).
+   * @param {boolean} [request.ignoreWarnings]
+   *   Optional. If true, ignore safety checks when modifying the column families.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.

@@ -7033,6 +7033,9 @@ export namespace google {
 
                     /** ModifyColumnFamiliesRequest modifications */
                     modifications?: (google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification[]|null);
+
+                    /** ModifyColumnFamiliesRequest ignoreWarnings */
+                    ignoreWarnings?: (boolean|null);
                 }
 
                 /** Represents a ModifyColumnFamiliesRequest. */
@@ -7049,6 +7052,9 @@ export namespace google {
 
                     /** ModifyColumnFamiliesRequest modifications. */
                     public modifications: google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification[];
+
+                    /** ModifyColumnFamiliesRequest ignoreWarnings. */
+                    public ignoreWarnings: boolean;
 
                     /**
                      * Creates a new ModifyColumnFamiliesRequest instance using the specified properties.
