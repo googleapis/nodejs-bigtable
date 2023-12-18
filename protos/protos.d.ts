@@ -16901,6 +16901,12 @@ export namespace google {
 
                 /** FeatureFlags lastScannedRowResponses */
                 lastScannedRowResponses?: (boolean|null);
+
+                /** FeatureFlags routingCookie */
+                routingCookie?: (boolean|null);
+
+                /** FeatureFlags retryInfo */
+                retryInfo?: (boolean|null);
             }
 
             /** Represents a FeatureFlags. */
@@ -16923,6 +16929,12 @@ export namespace google {
 
                 /** FeatureFlags lastScannedRowResponses. */
                 public lastScannedRowResponses: boolean;
+
+                /** FeatureFlags routingCookie. */
+                public routingCookie: boolean;
+
+                /** FeatureFlags retryInfo. */
+                public retryInfo: boolean;
 
                 /**
                  * Creates a new FeatureFlags instance using the specified properties.

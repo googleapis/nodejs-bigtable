@@ -4438,6 +4438,14 @@
                     "lastScannedRowResponses": {
                       "type": "bool",
                       "id": 4
+                    },
+                    "routingCookie": {
+                      "type": "bool",
+                      "id": 6
+                    },
+                    "retryInfo": {
+                      "type": "bool",
+                      "id": 7
                     }
                   }
                 },

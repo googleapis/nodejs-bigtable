@@ -40565,6 +40565,8 @@
                      * @property {boolean|null} [mutateRowsRateLimit] FeatureFlags mutateRowsRateLimit
                      * @property {boolean|null} [mutateRowsRateLimit2] FeatureFlags mutateRowsRateLimit2
                      * @property {boolean|null} [lastScannedRowResponses] FeatureFlags lastScannedRowResponses
+                     * @property {boolean|null} [routingCookie] FeatureFlags routingCookie
+                     * @property {boolean|null} [retryInfo] FeatureFlags retryInfo
                      */
     
                     /**
@@ -40615,6 +40617,22 @@
                     FeatureFlags.prototype.lastScannedRowResponses = false;
     
                     /**
+                     * FeatureFlags routingCookie.
+                     * @member {boolean} routingCookie
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     */
+                    FeatureFlags.prototype.routingCookie = false;
+    
+                    /**
+                     * FeatureFlags retryInfo.
+                     * @member {boolean} retryInfo
+                     * @memberof google.bigtable.v2.FeatureFlags
+                     * @instance
+                     */
+                    FeatureFlags.prototype.retryInfo = false;
+    
+                    /**
                      * Creates a new FeatureFlags instance using the specified properties.
                      * @function create
                      * @memberof google.bigtable.v2.FeatureFlags
@@ -40646,6 +40664,10 @@
                             writer.uint32(/* id 4, wireType 0 =*/32).bool(message.lastScannedRowResponses);
                         if (message.mutateRowsRateLimit2 != null && Object.hasOwnProperty.call(message, "mutateRowsRateLimit2"))
                             writer.uint32(/* id 5, wireType 0 =*/40).bool(message.mutateRowsRateLimit2);
+                        if (message.routingCookie != null && Object.hasOwnProperty.call(message, "routingCookie"))
+                            writer.uint32(/* id 6, wireType 0 =*/48).bool(message.routingCookie);
+                        if (message.retryInfo != null && Object.hasOwnProperty.call(message, "retryInfo"))
+                            writer.uint32(/* id 7, wireType 0 =*/56).bool(message.retryInfo);
                         return writer;
                     };
     
@@ -40696,6 +40718,14 @@
                                     message.lastScannedRowResponses = reader.bool();
                                     break;
                                 }
+                            case 6: {
+                                    message.routingCookie = reader.bool();
+                                    break;
+                                }
+                            case 7: {
+                                    message.retryInfo = reader.bool();
+                                    break;
+                                }
                             default:
                                 reader.skipType(tag & 7);
                                 break;
@@ -40743,6 +40773,12 @@
                         if (message.lastScannedRowResponses != null && message.hasOwnProperty("lastScannedRowResponses"))
                             if (typeof message.lastScannedRowResponses !== "boolean")
                                 return "lastScannedRowResponses: boolean expected";
+                        if (message.routingCookie != null && message.hasOwnProperty("routingCookie"))
+                            if (typeof message.routingCookie !== "boolean")
+                                return "routingCookie: boolean expected";
+                        if (message.retryInfo != null && message.hasOwnProperty("retryInfo"))
+                            if (typeof message.retryInfo !== "boolean")
+                                return "retryInfo: boolean expected";
                         return null;
                     };
     
@@ -40766,6 +40802,10 @@
                             message.mutateRowsRateLimit2 = Boolean(object.mutateRowsRateLimit2);
                         if (object.lastScannedRowResponses != null)
                             message.lastScannedRowResponses = Boolean(object.lastScannedRowResponses);
+                        if (object.routingCookie != null)
+                            message.routingCookie = Boolean(object.routingCookie);
+                        if (object.retryInfo != null)
+                            message.retryInfo = Boolean(object.retryInfo);
                         return message;
                     };
     
@@ -40787,6 +40827,8 @@
                             object.mutateRowsRateLimit = false;
                             object.lastScannedRowResponses = false;
                             object.mutateRowsRateLimit2 = false;
+                            object.routingCookie = false;
+                            object.retryInfo = false;
                         }
                         if (message.reverseScans != null && message.hasOwnProperty("reverseScans"))
                             object.reverseScans = message.reverseScans;
@@ -40796,6 +40838,10 @@
                             object.lastScannedRowResponses = message.lastScannedRowResponses;
                         if (message.mutateRowsRateLimit2 != null && message.hasOwnProperty("mutateRowsRateLimit2"))
                             object.mutateRowsRateLimit2 = message.mutateRowsRateLimit2;
+                        if (message.routingCookie != null && message.hasOwnProperty("routingCookie"))
+                            object.routingCookie = message.routingCookie;
+                        if (message.retryInfo != null && message.hasOwnProperty("retryInfo"))
+                            object.retryInfo = message.retryInfo;
                         return object;
                     };
     
