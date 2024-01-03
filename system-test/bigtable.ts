@@ -28,6 +28,13 @@ import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
 
+function replaceProjectName(name: string): string {
+  return name
+    .split('/')
+    .map((item, index) => (index === 1 ? '{{projectId}}' : item))
+    .join('/');
+}
+
 describe.only('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
@@ -139,7 +146,13 @@ describe.only('Bigtable', () => {
         const id = config.backupId;
         const name = config.parent.name;
         const backupPath = `${config.parent.name}/backups/${id}`;
-        assert.strictEqual(operation?.metadata?.name, backupPath);
+        assert(operation);
+        assert(operation.metadata);
+        // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
+        assert.strictEqual(
+          replaceProjectName(operation.metadata.name),
+          backupPath
+        );
         // Check that there is now one more backup
         const [backupsAfterCopy] = await INSTANCE.getBackups();
         const newBackups = backupsAfterCopy.filter(
@@ -147,14 +160,15 @@ describe.only('Bigtable', () => {
         );
         assert.strictEqual(newBackups.length, 1);
         const [fetchedNewBackup] = newBackups;
+        // Ensure the fetched backup matches
         assert.strictEqual(fetchedNewBackup.id, id);
-        assert.strictEqual(fetchedNewBackup.name, name);
+        assert.strictEqual(fetchedNewBackup.name, backupPath);
       } catch (e) {
         console.log('test');
       }
     }
 
-    it('should create backup of a table and copy it', async () => {
+    it('should create backup of a table and copy it in the same cluster', async () => {
       const expireTimeEncoded = new PreciseDate(expireTime).toStruct();
       const copyExpireTimeEncoded = new PreciseDate(copyExpireTime).toStruct();
       const backupId = generateId('backup');
@@ -1330,6 +1344,9 @@ describe.only('Bigtable', () => {
     const updateExpireTime = new PreciseDate(
       expireTime.getTime() + 2 + 60 * 60 * 1000
     );
+    const sourceExpireTime = new PreciseDate(
+      PreciseDate.now() + (8 + 300) * 60 * 60 * 1000
+    );
     const copyExpireTime = new PreciseDate(
       PreciseDate.now() + (8 + 600) * 60 * 60 * 1000
     );
@@ -1484,13 +1501,18 @@ describe.only('Bigtable', () => {
       Object.keys(policy).forEach(key => assert(key in updatedPolicy));
     });
     describe('copying backups', () => {
+      const sourceExpireTime = new PreciseDate(
+        PreciseDate.now() + (8 + 300) * 60 * 60 * 1000
+      );
+      const copyExpireTime = new PreciseDate(
+        PreciseDate.now() + (8 + 600) * 60 * 60 * 1000
+      );
       async function testCopyBackup(backup: Backup, config: CopyBackupConfig) {
         // Get a list of backup ids before the copy
         const [backupsBeforeCopy] = await INSTANCE.getBackups();
         const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
         // Copy the backup
-        const results = await backup.copy(config);
-        const [, operation] = results;
+        const [, operation] = await backup.copy(config);
         await operation.promise();
         assert(config.parent);
         const clusterName = `${config.parent.name.replace(
@@ -1498,9 +1520,14 @@ describe.only('Bigtable', () => {
           backup.bigtable.projectId
         )}`;
         const id = config.backupId;
-        const name = config.parent.name;
         const backupPath = `${config.parent.name}/backups/${id}`;
-        assert.strictEqual(operation?.metadata?.name, backupPath);
+        assert(operation);
+        assert(operation.metadata);
+        // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
+        assert.strictEqual(
+          replaceProjectName(operation.metadata.name),
+          backupPath
+        );
         // Check that there is now one more backup
         const [backupsAfterCopy] = await INSTANCE.getBackups();
         const newBackups = backupsAfterCopy.filter(
@@ -1508,22 +1535,19 @@ describe.only('Bigtable', () => {
         );
         assert.strictEqual(newBackups.length, 1);
         const [fetchedNewBackup] = newBackups;
+        // Ensure the fetched backup matches
         assert.strictEqual(fetchedNewBackup.id, id);
-        assert.strictEqual(fetchedNewBackup.name, name);
+        assert.strictEqual(fetchedNewBackup.name, backupPath);
       }
 
       it('should create backup of a table and copy it', async () => {
-        const expireTimeEncoded = new PreciseDate(expireTime).toStruct();
-        const copyExpireTimeEncoded = new PreciseDate(
-          copyExpireTime
-        ).toStruct();
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
-          expireTime,
+          expireTime: sourceExpireTime,
         });
         await op.promise();
         await backup.getMetadata();
-        assert.deepStrictEqual(backup.expireDate, expireTime);
+        assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
         const newBackupId = generateId('backup');
         const config = {
           parent: backup.cluster,
@@ -1537,11 +1561,11 @@ describe.only('Bigtable', () => {
       it('should create backup of a table and copy it on another cluster', async () => {
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
-          expireTime,
+          expireTime: sourceExpireTime,
         });
         await op.promise();
         await backup.getMetadata();
-        assert.deepStrictEqual(backup.expireDate, expireTime);
+        assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
         // Create another instance
         const instanceId = generateId('instance');
         const instance = bigtable.instance(instanceId);
