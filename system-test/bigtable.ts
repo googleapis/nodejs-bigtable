@@ -20,7 +20,8 @@ import Q from 'p-queue';
 
 import {Backup, Bigtable, Instance, InstanceOptions} from '../src';
 import {AppProfile} from '../src/app-profile.js';
-import {Cluster, CopyBackupConfig} from '../src/cluster.js';
+import {CopyBackupConfig} from '../src/backup.js';
+import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
 import {Table} from '../src/table.js';

@@ -34,13 +34,24 @@ import {
   CreateBackupCallback,
   CreateBackupResponse,
   IOperation,
-  CopyBackupCallback,
-  CopyBackupResponse,
-  CopyBackupConfig,
 } from './cluster';
 import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
 import {ClusterUtils} from './utils/cluster';
+
+// This type is used to ensure that the promise/callback types are the same.
+type GenericCallback<PromiseValue extends any[]> = (
+  err: ServiceError | Error | null,
+  ...args: PromiseValue
+) => void;
+
+export type CopyBackupResponse = [Operation];
+export type CopyBackupCallback = GenericCallback<CopyBackupResponse>;
+export interface CopyBackupConfig extends ModifiableBackupFields {
+  parent?: Cluster;
+  gaxOptions?: CallOptions;
+  backupId?: string;
+}
 
 type IEmpty = google.protobuf.IEmpty;
 export type IBackup = google.bigtable.admin.v2.IBackup;
@@ -249,15 +260,18 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
 
   /**
    *
-   * @param destination
+   * @param config
    * @param callback
    */
   // TODO: Make sure promise type and callback type actually line up.
-  copy(config: CopyBackupConfig, callback: CopyBackupCallback): void;
+  copy(
+    config: CopyBackupConfig,
+    callback: GenericCallback<CopyBackupResponse>
+  ): void;
   copy(config: CopyBackupConfig): Promise<CopyBackupResponse>;
   copy(
     config: CopyBackupConfig,
-    callback?: CopyBackupCallback
+    callback?: GenericCallback<CopyBackupResponse>
   ): void | Promise<CopyBackupResponse> {
     const reqOpts = {
       parent: config.parent?.name,

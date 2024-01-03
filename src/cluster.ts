@@ -101,18 +101,6 @@ export interface CreateBackupConfig extends ModifiableBackupFields {
   gaxOptions?: CallOptions;
 }
 
-export interface CopyBackupConfig extends ModifiableBackupFields {
-  parent?: Cluster;
-  gaxOptions?: CallOptions;
-  backupId?: string;
-}
-
-export type CopyBackupCallback = (
-  err: ServiceError | Error | null,
-  operation?: Operation
-) => void;
-export type CopyBackupResponse = [Operation];
-
 export type CreateBackupCallback = (
   err: ServiceError | Error | null,
   backup?: Backup,
