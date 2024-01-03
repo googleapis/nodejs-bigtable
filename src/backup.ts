@@ -39,14 +39,8 @@ import {CallOptions, LROperation, Operation, ServiceError} from 'google-gax';
 import {Instance} from './instance';
 import {ClusterUtils} from './utils/cluster';
 
-// This type is used to ensure that the promise/callback types are the same.
-type GenericCallback<PromiseValue extends any[]> = (
-  err: ServiceError | Error | null,
-  ...args: PromiseValue
-) => void;
-
-export type CopyBackupResponse = [Operation];
-export type CopyBackupCallback = GenericCallback<CopyBackupResponse>;
+export type CopyBackupResponse = GenericBackupPromise<Operation>;
+export type CopyBackupCallback = GenericBackupCallback<Operation>;
 export interface CopyBackupConfig extends ModifiableBackupFields {
   parent?: Cluster;
   gaxOptions?: CallOptions;
@@ -74,6 +68,7 @@ export interface GenericBackupCallback<T> {
     apiResponse?: T | null
   ): void;
 }
+export type GenericBackupPromise<T> = [Backup, T];
 
 export type DeleteBackupCallback = (
   err: ServiceError | null,
@@ -264,14 +259,11 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
    * @param callback
    */
   // TODO: Make sure promise type and callback type actually line up.
-  copy(
-    config: CopyBackupConfig,
-    callback: GenericCallback<CopyBackupResponse>
-  ): void;
+  copy(config: CopyBackupConfig, callback: CopyBackupCallback): void;
   copy(config: CopyBackupConfig): Promise<CopyBackupResponse>;
   copy(
     config: CopyBackupConfig,
-    callback?: GenericCallback<CopyBackupResponse>
+    callback?: CopyBackupCallback
   ): void | Promise<CopyBackupResponse> {
     const reqOpts = {
       parent: config.parent?.name,
@@ -287,8 +279,12 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
         reqOpts,
         gaxOpts: config.gaxOptions,
       },
-      (err, resp) => {
-        callback!(err, resp);
+      (err, ...args) => {
+        if (err) {
+          callback!(err, this, ...args);
+          return;
+        }
+        callback!(null, this, ...args);
       }
     );
   }

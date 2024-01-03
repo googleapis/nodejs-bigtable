@@ -129,7 +129,7 @@ describe.only('Bigtable', () => {
         const [backupsBeforeCopy] = await INSTANCE.getBackups();
         const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
         // Copy the backup
-        const [operation] = await backup.copy(config);
+        const [, operation] = await backup.copy(config);
         await operation.promise();
         assert(config.parent);
         const clusterName = `${config.parent.name.replace(
@@ -1490,7 +1490,7 @@ describe.only('Bigtable', () => {
         const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
         // Copy the backup
         const results = await backup.copy(config);
-        const [operation] = results;
+        const [, operation] = results;
         await operation.promise();
         assert(config.parent);
         const clusterName = `${config.parent.name.replace(
