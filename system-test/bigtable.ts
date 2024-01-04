@@ -123,6 +123,111 @@ describe.only('Bigtable', () => {
   });
 
   describe('copying backup debugging', () => {
+    const sourceExpireTime = new PreciseDate(
+      PreciseDate.now() + (8 + 300) * 60 * 60 * 1000
+    );
+    const copyExpireTime = new PreciseDate(
+      PreciseDate.now() + (8 + 600) * 60 * 60 * 1000
+    );
+    /*
+      This function ensures that when a backup is copied using the provided
+      config that a new backup is created on the instance.
+     */
+    async function testCopyBackup(
+      backup: Backup,
+      config: CopyBackupConfig,
+      instance: Instance
+    ) {
+      // Get a list of backup ids before the copy
+      const [backupsBeforeCopy] = await instance.getBackups();
+      const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
+      // Copy the backup
+      // TODO: Check that the backup returned is actually the new backup
+      const [, operation] = await backup.copy(config);
+      await operation.promise();
+      assert(config.parent);
+      const id = config.backupId;
+      const backupPath = `${config.parent.name}/backups/${id}`;
+      assert(operation);
+      assert(operation.metadata);
+      // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
+      assert.strictEqual(
+        replaceProjectName(operation.metadata.name),
+        backupPath
+      );
+      // Check that there is now one more backup
+      const [backupsAfterCopy] = await instance.getBackups();
+      const newBackups = backupsAfterCopy.filter(
+        backup => !backupIdsBeforeCopy.includes(backup.id)
+      );
+      assert.strictEqual(newBackups.length, 1);
+      const [fetchedNewBackup] = newBackups;
+      // Ensure the fetched backup matches the config
+      assert.strictEqual(fetchedNewBackup.id, id);
+      assert.strictEqual(fetchedNewBackup.name, backupPath);
+      await config.parent.backup(fetchedNewBackup.id).delete();
+    }
+
+    it('should create backup of a table and copy it in the same cluster', async () => {
+      const backupId = generateId('backup');
+      const [backup, op] = await TABLE.createBackup(backupId, {
+        expireTime: sourceExpireTime,
+      });
+      await op.promise();
+      await backup.getMetadata();
+      assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+      const newBackupId = generateId('backup');
+      const config = {
+        parent: backup.cluster,
+        backupId: newBackupId,
+        expireTime: copyExpireTime,
+      };
+      // const newBackup = backup.cluster.backup(newBackupId);
+      // newBackup.expireDate = backup.expireDate.getTime() + 1000 * 60 * 60;
+      await testCopyBackup(backup, config, INSTANCE);
+    });
+    it('should create backup of a table and copy it on another cluster of another instance', async () => {
+      const backupId = generateId('backup');
+      const [backup, op] = await TABLE.createBackup(backupId, {
+        expireTime: sourceExpireTime,
+      });
+      await op.promise();
+      await backup.getMetadata();
+      assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+      // Create another instance
+      const instanceId = generateId('instance');
+      const instance = bigtable.instance(instanceId);
+      const destinationClusterId = generateId('cluster');
+      const instanceOptions: InstanceOptions = {
+        clusters: [
+          {
+            id: destinationClusterId,
+            nodes: 3,
+            location: 'us-central1-f',
+            storage: 'ssd',
+          },
+        ],
+        labels: {'prod-label': 'prod-label'},
+        type: 'production',
+      };
+      // Create production instance with given options
+      const [, operation] = await instance.create(instanceOptions);
+      await operation.promise();
+      // Create the copy and test the copied backup
+      await testCopyBackup(
+        backup,
+        {
+          parent: new Cluster(instance, destinationClusterId),
+          backupId: generateId('backup'),
+          expireTime: copyExpireTime,
+        },
+        instance
+      );
+      await instance.delete();
+    });
+  });
+  /*
+  describe('copying backup debugging', () => {
     const expireTime = new PreciseDate(PreciseDate.now() + 8 * 60 * 60 * 1000);
     const sourceExpireTime = new PreciseDate(
       PreciseDate.now() + (8 + 300) * 60 * 60 * 1000
@@ -193,6 +298,7 @@ describe.only('Bigtable', () => {
       }
     });
   });
+  */
 
   describe('instances', () => {
     it('should get a list of instances', async () => {
@@ -1507,9 +1613,17 @@ describe.only('Bigtable', () => {
       const copyExpireTime = new PreciseDate(
         PreciseDate.now() + (8 + 600) * 60 * 60 * 1000
       );
-      async function testCopyBackup(backup: Backup, config: CopyBackupConfig) {
+      /*
+        This function ensures that when a backup is copied using the provided
+        config that a new backup is created on the instance.
+       */
+      async function testCopyBackup(
+        backup: Backup,
+        config: CopyBackupConfig,
+        instance: Instance
+      ) {
         // Get a list of backup ids before the copy
-        const [backupsBeforeCopy] = await INSTANCE.getBackups();
+        const [backupsBeforeCopy] = await instance.getBackups();
         const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
         // Copy the backup
         const [, operation] = await backup.copy(config);
@@ -1529,7 +1643,7 @@ describe.only('Bigtable', () => {
           backupPath
         );
         // Check that there is now one more backup
-        const [backupsAfterCopy] = await INSTANCE.getBackups();
+        const [backupsAfterCopy] = await instance.getBackups();
         const newBackups = backupsAfterCopy.filter(
           backup => !backupIdsBeforeCopy.includes(backup.id)
         );
@@ -1540,7 +1654,7 @@ describe.only('Bigtable', () => {
         assert.strictEqual(fetchedNewBackup.name, backupPath);
       }
 
-      it('should create backup of a table and copy it', async () => {
+      it('should create backup of a table and copy it in the same cluster', async () => {
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
           expireTime: sourceExpireTime,
@@ -1556,9 +1670,9 @@ describe.only('Bigtable', () => {
         };
         // const newBackup = backup.cluster.backup(newBackupId);
         // newBackup.expireDate = backup.expireDate.getTime() + 1000 * 60 * 60;
-        await testCopyBackup(backup, config);
+        await testCopyBackup(backup, config, INSTANCE);
       });
-      it('should create backup of a table and copy it on another cluster', async () => {
+      it('should create backup of a table and copy it on another cluster of another instance', async () => {
         const backupId = generateId('backup');
         const [backup, op] = await TABLE.createBackup(backupId, {
           expireTime: sourceExpireTime,
@@ -1569,11 +1683,11 @@ describe.only('Bigtable', () => {
         // Create another instance
         const instanceId = generateId('instance');
         const instance = bigtable.instance(instanceId);
-        const clusterId = generateId('cluster');
+        const destinationClusterId = generateId('cluster');
         const instanceOptions: InstanceOptions = {
           clusters: [
             {
-              id: clusterId,
+              id: destinationClusterId,
               nodes: 3,
               location: 'us-central1-f',
               storage: 'ssd',
@@ -1585,17 +1699,16 @@ describe.only('Bigtable', () => {
         // Create production instance with given options
         const [, operation] = await instance.create(instanceOptions);
         await operation.promise();
-        // Create and test the backup
-        const cluster = new Cluster(instance, clusterId);
-        const newBackupId = generateId('backup');
-        const config = {
-          parent: cluster,
-          backupId: newBackupId,
-          expireTime: copyExpireTime,
-        };
-        const newBackup = cluster.backup(newBackupId);
-        await testCopyBackup(backup, config);
-        await newBackup.delete();
+        // Create the copy and test the copied backup
+        await testCopyBackup(
+          backup,
+          {
+            parent: new Cluster(instance, destinationClusterId),
+            backupId: generateId('backup'),
+            expireTime: copyExpireTime,
+          },
+          instance
+        );
         await instance.delete();
       });
     });
