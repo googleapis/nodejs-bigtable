@@ -165,6 +165,7 @@ describe.only('Bigtable', () => {
       // Ensure the fetched backup matches the config
       assert.strictEqual(fetchedNewBackup.id, id);
       assert.strictEqual(fetchedNewBackup.name, backupPath);
+      // Delete the copied backup
       await config.parent.backup(fetchedNewBackup.id).delete();
     }
 
@@ -224,6 +225,35 @@ describe.only('Bigtable', () => {
         instance
       );
       await instance.delete();
+    });
+    it('should create backup of a table and copy it on another cluster of the same instance', async () => {
+      const backupId = generateId('backup');
+      const [backup, op] = await TABLE.createBackup(backupId, {
+        expireTime: sourceExpireTime,
+      });
+      await op.promise();
+      await backup.getMetadata();
+      assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+      // Create another instance
+      const destinationClusterId = generateId('cluster');
+      // Create production instance with given options
+      const [, operation] = await INSTANCE.cluster(destinationClusterId).create(
+        {
+          location: 'us-central1-b',
+          nodes: 3,
+        }
+      );
+      await operation.promise();
+      // Create the copy and test the copied backup
+      await testCopyBackup(
+        backup,
+        {
+          parent: new Cluster(INSTANCE, destinationClusterId),
+          backupId: generateId('backup'),
+          expireTime: copyExpireTime,
+        },
+        INSTANCE
+      );
     });
   });
   /*
