@@ -255,6 +255,50 @@ describe.only('Bigtable', () => {
         INSTANCE
       );
     });
+    it('should create backup of a table and copy it on another project', async () => {
+      const backupId = generateId('backup');
+      const [backup, op] = await TABLE.createBackup(backupId, {
+        expireTime: sourceExpireTime,
+      });
+      await op.promise();
+      await backup.getMetadata();
+      assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+      // Create another instance
+      const options = process.env.GCLOUD_PROJECT2
+        ? {projectId: process.env.GCLOUD_PROJECT2}
+        : {};
+      const bigtable = new Bigtable(options);
+      const instanceId = generateId('instance');
+      const instance = bigtable.instance(instanceId);
+      const destinationClusterId = generateId('cluster');
+      {
+        // Create production instance with given options
+        const instanceOptions: InstanceOptions = {
+          clusters: [
+            {
+              id: destinationClusterId,
+              nodes: 3,
+              location: 'us-central1-f',
+              storage: 'ssd',
+            },
+          ],
+          labels: {'prod-label': 'prod-label'},
+          type: 'production',
+        };
+        const [, operation] = await instance.create(instanceOptions);
+        await operation.promise();
+      }
+      // Create the copy and test the copied backup
+      await testCopyBackup(
+        backup,
+        {
+          parent: new Cluster(instance, destinationClusterId),
+          backupId: generateId('backup'),
+          expireTime: copyExpireTime,
+        },
+        instance
+      );
+    });
   });
   /*
   describe('copying backup debugging', () => {
