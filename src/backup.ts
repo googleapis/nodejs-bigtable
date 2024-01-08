@@ -281,10 +281,10 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       },
       (err, ...args) => {
         if (err) {
-          callback!(err, config.parent.backup(config.id), ...args);
+          callback!(err, undefined, ...args);
           return;
         }
-        callback!(null, this, ...args);
+        callback!(null, config.parent.backup(config.id), ...args);
       }
     );
   }
