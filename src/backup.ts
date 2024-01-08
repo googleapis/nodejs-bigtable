@@ -284,6 +284,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
           callback!(err, undefined, ...args);
           return;
         }
+        // Second argument is a backup for the new backup id
         callback!(null, config.parent.backup(config.id), ...args);
       }
     );
