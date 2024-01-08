@@ -42,9 +42,9 @@ import {ClusterUtils} from './utils/cluster';
 export type CopyBackupResponse = GenericBackupPromise<Operation>;
 export type CopyBackupCallback = GenericBackupCallback<Operation>;
 export interface CopyBackupConfig extends ModifiableBackupFields {
-  parent?: Cluster;
+  parent: Cluster;
   gaxOptions?: CallOptions;
-  backupId?: string;
+  id: string; // TODO: See if this can be generated automatically.
 }
 
 type IEmpty = google.protobuf.IEmpty;
@@ -266,8 +266,8 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     callback?: CopyBackupCallback
   ): void | Promise<CopyBackupResponse> {
     const reqOpts = {
-      parent: config.parent?.name,
-      backupId: config?.backupId,
+      parent: config.parent.name,
+      backupId: config?.id,
       sourceBackup: `${this.cluster.name}/backups/${this.id}`,
       expireTime: config?.expireTime,
     };
@@ -281,7 +281,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       },
       (err, ...args) => {
         if (err) {
-          callback!(err, this, ...args);
+          callback!(err, config.parent.backup(config.id), ...args);
           return;
         }
         callback!(null, this, ...args);

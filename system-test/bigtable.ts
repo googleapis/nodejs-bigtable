@@ -152,7 +152,7 @@ describe.only('Bigtable', () => {
       const [, operation] = await backup.copy(config);
       await operation.promise();
       assert(config.parent);
-      const id = config.backupId;
+      const id = config.id;
       const backupPath = `${config.parent.name}/backups/${id}`;
       assert(operation);
       assert(operation.metadata);
@@ -176,7 +176,7 @@ describe.only('Bigtable', () => {
     }
 
     describe('should create backup of a table and copy it in the same cluster', async () => {
-      async function testWithCreateConfig(
+      async function testWithExpiryTimes(
         sourceTestExpireTime: BackupTimestamp,
         copyTestExpireTime: BackupTimestamp
       ) {
@@ -190,13 +190,24 @@ describe.only('Bigtable', () => {
         const newBackupId = generateId('backup');
         const config = {
           parent: backup.cluster,
-          backupId: newBackupId,
+          id: newBackupId,
           expireTime: copyTestExpireTime,
         };
         await testCopyBackup(backup, config, INSTANCE);
       }
-      it('should copy to the same cluster with precise date source expiry time', async () => {
-        await testWithCreateConfig(sourceExpireTime, copyExpireTime);
+      it('should copy to the same cluster with precise date expiry times', async () => {
+        await testWithExpiryTimes(sourceExpireTime, copyExpireTime);
+      });
+      it('should copy to the same cluster with timestamp expiry times', async () => {
+        // Calling toStruct converts times to a timestamp object.
+        // For example: sourceTestExpireTime = {seconds: 1706659851, nanos: 981000000}
+        const sourceTestExpireTime = sourceExpireTime.toStruct();
+        const copyTestExpireTime = copyExpireTime.toStruct();
+        await testWithExpiryTimes(sourceTestExpireTime, copyTestExpireTime);
+      });
+      it('should copy to the same cluster with date expiry times', async () => {
+        // TODO: Construct dates
+        await testWithExpiryTimes(sourceExpireTime, copyExpireTime);
       });
     });
     it('should create backup of a table and copy it on another cluster of another instance', async () => {
@@ -231,7 +242,7 @@ describe.only('Bigtable', () => {
         backup,
         {
           parent: new Cluster(instance, destinationClusterId),
-          backupId: generateId('backup'),
+          id: generateId('backup'),
           expireTime: copyExpireTime,
         },
         instance
@@ -261,7 +272,7 @@ describe.only('Bigtable', () => {
         backup,
         {
           parent: new Cluster(INSTANCE, destinationClusterId),
-          backupId: generateId('backup'),
+          id: generateId('backup'),
           expireTime: copyExpireTime,
         },
         INSTANCE
@@ -305,11 +316,59 @@ describe.only('Bigtable', () => {
         backup,
         {
           parent: new Cluster(instance, destinationClusterId),
+          id: generateId('backup'),
+          expireTime: copyExpireTime,
+        },
+        instance
+      );
+    });
+    it('should restore a copied backup', async () => {
+      /*
+      const backupId = generateId('backup');
+      const [backup, op] = await TABLE.createBackup(backupId, {
+        expireTime: sourceExpireTime,
+      });
+      await op.promise();
+      await backup.getMetadata();
+      assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+      // Create another instance
+      const options = process.env.GCLOUD_PROJECT2
+        ? {projectId: process.env.GCLOUD_PROJECT2}
+        : {};
+      const bigtable = new Bigtable(options);
+      const instanceId = generateId('instance');
+      const instance = bigtable.instance(instanceId);
+      const destinationClusterId = generateId('cluster');
+      {
+        // Create production instance with given options
+        const instanceOptions: InstanceOptions = {
+          clusters: [
+            {
+              id: destinationClusterId,
+              nodes: 3,
+              location: 'us-central1-f',
+              storage: 'ssd',
+            },
+          ],
+          labels: {'prod-label': 'prod-label'},
+          type: 'production',
+        };
+        const [, operation] = await instance.create(instanceOptions);
+        await operation.promise();
+      }
+      const [, operation] = await backup.copy(config);
+      await operation.promise();
+      // Create the copy and test the copied backup
+      await testCopyBackup(
+        backup,
+        {
+          parent: new Cluster(instance, destinationClusterId),
           backupId: generateId('backup'),
           expireTime: copyExpireTime,
         },
         instance
       );
+      */
     });
   });
 
@@ -1646,7 +1705,7 @@ describe.only('Bigtable', () => {
           '{{projectId}}',
           backup.bigtable.projectId
         )}`;
-        const id = config.backupId;
+        const id = config.id;
         const backupPath = `${config.parent.name}/backups/${id}`;
         assert(operation);
         assert(operation.metadata);
@@ -1678,7 +1737,7 @@ describe.only('Bigtable', () => {
         const newBackupId = generateId('backup');
         const config = {
           parent: backup.cluster,
-          backupId: newBackupId,
+          id: newBackupId,
           expireTime: copyExpireTime,
         };
         // const newBackup = backup.cluster.backup(newBackupId);
@@ -1717,7 +1776,7 @@ describe.only('Bigtable', () => {
           backup,
           {
             parent: new Cluster(instance, destinationClusterId),
-            backupId: generateId('backup'),
+            id: generateId('backup'),
             expireTime: copyExpireTime,
           },
           instance

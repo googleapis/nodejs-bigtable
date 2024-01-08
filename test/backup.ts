@@ -242,7 +242,7 @@ describe('Bigtable/Backup', () => {
       const backup = new Backup(CLUSTER, backupId);
       const config = {
         parent: CLUSTER,
-        backupId: newBackupId,
+        id: newBackupId,
       };
       const callback: (err: any, config: any) => void = (
         err: ServiceError | Error | null,
@@ -252,7 +252,7 @@ describe('Bigtable/Backup', () => {
         assert.strictEqual(config.method, 'copyBackup');
         assert.deepStrictEqual(config.reqOpts, {
           parent: 'a/b/c/d',
-          backupId: newBackupId,
+          id: newBackupId,
           sourceBackup: `a/b/c/d/backups/${backupId}`,
           expireTime: undefined,
         });
@@ -276,7 +276,7 @@ describe('Bigtable/Backup', () => {
       const backup = new Backup(CLUSTER, backupId);
       const config = {
         parent: CLUSTER,
-        backupId: newBackupId,
+        id: newBackupId,
       };
       const callback: (err: any, config: any) => void = (
         err: ServiceError | Error | null,
@@ -286,7 +286,7 @@ describe('Bigtable/Backup', () => {
         assert.strictEqual(config.method, 'copyBackup');
         assert.deepStrictEqual(config.reqOpts, {
           parent: otherInstanceName,
-          backupId: newBackupId,
+          id: newBackupId,
           sourceBackup: `a/b/c/d/backups/${backupId}`,
           expireTime: undefined,
         });
