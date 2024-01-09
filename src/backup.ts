@@ -44,7 +44,7 @@ export type CopyBackupCallback = GenericBackupCallback<Operation>;
 export interface CopyBackupConfig extends ModifiableBackupFields {
   parent: Cluster;
   gaxOptions?: CallOptions;
-  id: string; // TODO: See if this can be generated automatically.
+  id: string;
 }
 
 type IEmpty = google.protobuf.IEmpty;
