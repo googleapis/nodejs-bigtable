@@ -136,7 +136,7 @@ describe.only('Bigtable', () => {
       PreciseDate.now() + (8 + 600) * 60 * 60 * 1000;
     const copyExpireTime = new PreciseDate(copyExpireTimeMilliseconds);
     /*
-      This function ensures that when a backup is copied using the provided
+      This function checks that when a backup is copied using the provided
       config that a new backup is created on the instance.
      */
     async function testCopyBackup(
