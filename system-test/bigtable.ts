@@ -148,7 +148,6 @@ describe.only('Bigtable', () => {
       const [backupsBeforeCopy] = await instance.getBackups();
       const backupIdsBeforeCopy = backupsBeforeCopy.map(backup => backup.id);
       // Copy the backup
-      // TODO: Check that the backup returned is actually the new backup
       const [newBackup, operation] = await backup.copy(config);
       assert.strictEqual(config.id, newBackup.id);
       await operation.promise();
