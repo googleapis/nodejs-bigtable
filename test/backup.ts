@@ -18,7 +18,7 @@ import * as assert from 'assert';
 import {before, beforeEach, describe, it, afterEach} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
-import {ServiceError} from 'google-gax';
+import {Operation, ServiceError} from 'google-gax';
 
 import * as clusterTypes from '../src/cluster';
 import * as backupTypes from '../src/backup';
@@ -28,6 +28,8 @@ import * as sinon from 'sinon';
 import {Bigtable, RequestOptions} from '../src';
 import {Table} from '../src/table';
 import {generateId} from '../system-test/common';
+import {Backup, CopyBackupConfig} from '../src/backup';
+import {Cluster} from '../src/cluster';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
@@ -236,59 +238,50 @@ describe('Bigtable/Backup', () => {
       };
     });
 
-    it('should correctly copy backup from the Cluster', done => {
-      const backupId = generateId('backup');
-      const newBackupId = generateId('backup');
-      const backup = new Backup(CLUSTER, backupId);
-      const config = {
-        parent: CLUSTER,
-        id: newBackupId,
-      };
-      const callback: (err: any, config: any) => void = (
-        err: ServiceError | Error | null,
-        config: any
-      ) => {
-        assert.strictEqual(config.client, 'BigtableTableAdminClient');
-        assert.strictEqual(config.method, 'copyBackup');
-        assert.deepStrictEqual(config.reqOpts, {
-          parent: 'a/b/c/d',
-          id: newBackupId,
-          sourceBackup: `a/b/c/d/backups/${backupId}`,
-          expireTime: undefined,
-        });
-        done();
-      };
-      backup.copy(config, callback);
-    });
     it('should correctly copy backup from the Cluster to another project', done => {
-      const otherInstanceName = 'projects/project2/instances/instance2';
-      /*
-      const CLUSTER2 = {
-        bigtable: {} as Bigtable,
-        name: otherInstanceName,
-        instance: {
-          name: 'instance-name',
-        },
-      } as clusterTypes.Cluster;
-       */
+      const destinationProjectId = generateId('project');
+      const bigtable = new Bigtable({projectId: destinationProjectId});
       const backupId = generateId('backup');
       const newBackupId = generateId('backup');
       const backup = new Backup(CLUSTER, backupId);
+      const destinationInstanceId = generateId('instance');
+      const destinationClusterId = generateId('cluster');
+      const instance = new FakeInstance(bigtable, destinationInstanceId);
+      const destinationCluster = new clusterTypes.Cluster(
+        instance,
+        destinationClusterId
+      );
       const config = {
-        parent: CLUSTER,
+        parent: destinationCluster,
         id: newBackupId,
+        expireTime: new PreciseDate(177),
       };
-      const callback: (err: any, config: any) => void = (
-        err: ServiceError | Error | null,
-        config: any
+
+      // config is object received in request function so must be of type any
+      // so that this test can compile and so that asserts can test its properties.
+      const callback: (
+        err?: ServiceError | Error | null,
+        backup?: Backup | null,
+        config?: any
+      ) => void = (
+        err?: ServiceError | Error | null,
+        backup?: Backup | null,
+        config?: any
       ) => {
-        assert.strictEqual(config.client, 'BigtableTableAdminClient');
-        assert.strictEqual(config.method, 'copyBackup');
-        assert.deepStrictEqual(config.reqOpts, {
-          parent: otherInstanceName,
-          id: newBackupId,
+        assert.strictEqual(
+          backup?.name,
+          `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}/backups/${newBackupId}`
+        );
+        assert.strictEqual(config?.client, 'BigtableTableAdminClient');
+        assert.strictEqual(config?.method, 'copyBackup');
+        assert.deepStrictEqual(config?.reqOpts, {
+          parent: `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}`,
+          backupId: newBackupId,
           sourceBackup: `a/b/c/d/backups/${backupId}`,
-          expireTime: undefined,
+          expireTime: {
+            seconds: 0,
+            nanos: 177000000,
+          },
         });
         done();
       };
