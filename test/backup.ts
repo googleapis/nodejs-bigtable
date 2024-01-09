@@ -255,6 +255,9 @@ describe('Bigtable/Backup', () => {
         parent: destinationCluster,
         id: newBackupId,
         expireTime: new PreciseDate(177),
+        gaxOptions: {
+          timeout: 139,
+        },
       };
 
       // config is object received in request function so must be of type any
@@ -282,6 +285,9 @@ describe('Bigtable/Backup', () => {
             seconds: 0,
             nanos: 177000000,
           },
+        });
+        assert.deepStrictEqual(config?.gaxOpts, {
+          timeout: 139,
         });
         done();
       };
