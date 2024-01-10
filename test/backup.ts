@@ -531,7 +531,7 @@ describe('Bigtable/Backup', () => {
         assert.strictEqual(config.client, 'BigtableTableAdminClient');
         assert.strictEqual(config.method, 'restoreTable');
         assert.deepStrictEqual(config.reqOpts, {
-          cluster: backup.cluster.instance.name,
+          parent: backup.cluster.instance.name,
           tableId,
           backup: backup.name,
         });
