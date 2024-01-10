@@ -269,7 +269,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   ): void | Promise<CopyBackupResponse> {
     const reqOpts = {
       parent: config.cluster.name,
-      backupId: config?.id,
+      backupId: config.id,
       sourceBackup: `${this.cluster.name}/backups/${this.id}`,
       expireTime: config?.expireTime,
     };

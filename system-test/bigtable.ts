@@ -34,14 +34,7 @@ import {CreateBackupConfig, Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
 
-function replaceProjectName(name: string): string {
-  return name
-    .split('/')
-    .map((item, index) => (index === 1 ? '{{projectId}}' : item))
-    .join('/');
-}
-
-describe.only('Bigtable', () => {
+describe('Bigtable', () => {
   const bigtable = new Bigtable();
   const INSTANCE = bigtable.instance(generateId('instance'));
   const DIFF_INSTANCE = bigtable.instance(generateId('d-inst'));
@@ -1441,6 +1434,7 @@ describe.only('Bigtable', () => {
       const copyExpireTimeMilliseconds =
         PreciseDate.now() + (8 + 600) * 60 * 60 * 1000;
       const copyExpireTime = new PreciseDate(copyExpireTimeMilliseconds);
+
       /*
         This function checks that when a backup is copied using the provided
         config that a new backup is created on the instance.
@@ -1463,8 +1457,12 @@ describe.only('Bigtable', () => {
         assert(operation);
         assert(operation.metadata);
         // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
+        // the split/map/join functions replace the project name with the {{projectId}} string
         assert.strictEqual(
-          replaceProjectName(operation.metadata.name),
+          operation.metadata.name
+            .split('/')
+            .map((item, index) => (index === 1 ? '{{projectId}}' : item))
+            .join('/'),
           backupPath
         );
         // Check that there is now one more backup
