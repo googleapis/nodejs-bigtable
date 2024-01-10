@@ -278,7 +278,7 @@ describe('Bigtable/Backup', () => {
         assert.strictEqual(config?.client, 'BigtableTableAdminClient');
         assert.strictEqual(config?.method, 'copyBackup');
         assert.deepStrictEqual(config?.reqOpts, {
-          cluster: `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}`,
+          parent: `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}`,
           backupId: newBackupId,
           sourceBackup: `a/b/c/d/backups/${backupId}`,
           expireTime: {
