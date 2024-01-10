@@ -254,9 +254,12 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   }
 
   /**
+   * Copy this backup
    *
-   * @param config
-   * @param callback
+   * @param {CopyBackupConfig} [config] The config that specifies all of the
+   * information about the destination backup.
+   * @param {CopyBackupCallback} [callback] The callback function that passes an
+   * error or results back to the user.
    */
   copy(config: CopyBackupConfig, callback: CopyBackupCallback): void;
   copy(config: CopyBackupConfig): Promise<CopyBackupResponse>;
