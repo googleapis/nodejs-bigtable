@@ -42,7 +42,7 @@ import {ClusterUtils} from './utils/cluster';
 export type CopyBackupResponse = GenericBackupPromise<Operation>;
 export type CopyBackupCallback = GenericBackupCallback<Operation>;
 export interface CopyBackupConfig extends ModifiableBackupFields {
-  parent: Cluster;
+  cluster: Cluster;
   gaxOptions?: CallOptions;
   id: string;
 }
@@ -268,7 +268,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
     callback?: CopyBackupCallback
   ): void | Promise<CopyBackupResponse> {
     const reqOpts = {
-      parent: config.parent.name,
+      parent: config.cluster.name,
       backupId: config?.id,
       sourceBackup: `${this.cluster.name}/backups/${this.id}`,
       expireTime: config?.expireTime,
@@ -287,7 +287,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
           return;
         }
         // Second argument is a backup for the new backup id
-        callback!(null, config.parent.backup(config.id), ...args);
+        callback!(null, config.cluster.backup(config.id), ...args);
       }
     );
   }

@@ -1457,9 +1457,9 @@ describe.only('Bigtable', () => {
         const [newBackup, operation] = await backup.copy(config);
         assert.strictEqual(config.id, newBackup.id);
         await operation.promise();
-        assert(config.parent);
+        assert(config.cluster);
         const id = config.id;
-        const backupPath = `${config.parent.name}/backups/${id}`;
+        const backupPath = `${config.cluster.name}/backups/${id}`;
         assert(operation);
         assert(operation.metadata);
         // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
@@ -1478,7 +1478,7 @@ describe.only('Bigtable', () => {
         assert.strictEqual(fetchedNewBackup.id, id);
         assert.strictEqual(fetchedNewBackup.name, backupPath);
         // Delete the copied backup
-        await config.parent.backup(fetchedNewBackup.id).delete();
+        await config.cluster.backup(fetchedNewBackup.id).delete();
       }
 
       describe('should create backup of a table and copy it in the same cluster', async () => {
@@ -1549,7 +1549,7 @@ describe.only('Bigtable', () => {
         await testCopyBackup(
           backup,
           {
-            parent: new Cluster(instance, destinationClusterId),
+            cluster: new Cluster(instance, destinationClusterId),
             id: generateId('backup'),
             expireTime: copyExpireTime,
           },
@@ -1579,7 +1579,7 @@ describe.only('Bigtable', () => {
         await testCopyBackup(
           backup,
           {
-            parent: new Cluster(INSTANCE, destinationClusterId),
+            cluster: new Cluster(INSTANCE, destinationClusterId),
             id: generateId('backup'),
             expireTime: copyExpireTime,
           },
@@ -1623,7 +1623,7 @@ describe.only('Bigtable', () => {
         await testCopyBackup(
           backup,
           {
-            parent: new Cluster(instance, destinationClusterId),
+            cluster: new Cluster(instance, destinationClusterId),
             id: generateId('backup'),
             expireTime: copyExpireTime,
           },
@@ -1652,7 +1652,7 @@ describe.only('Bigtable', () => {
         await op.promise();
         // Copy the backup
         const config = {
-          parent: backup.cluster,
+          cluster: backup.cluster,
           id: generateId('backup'),
           expireTime: copyExpireTime,
         };
