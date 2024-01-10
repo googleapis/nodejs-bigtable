@@ -1271,12 +1271,6 @@ describe('Bigtable', () => {
     const updateExpireTime = new PreciseDate(
       expireTime.getTime() + 2 + 60 * 60 * 1000
     );
-    const sourceExpireTime = new PreciseDate(
-      PreciseDate.now() + (8 + 300) * 60 * 60 * 1000
-    );
-    const copyExpireTime = new PreciseDate(
-      PreciseDate.now() + (8 + 600) * 60 * 60 * 1000
-    );
 
     before(async () => {
       const [backup, op] = await CLUSTER.createBackup(backupIdFromCluster, {
