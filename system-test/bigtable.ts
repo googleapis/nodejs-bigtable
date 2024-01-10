@@ -1495,7 +1495,7 @@ describe.only('Bigtable', () => {
           assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
           const newBackupId = generateId('backup');
           const config = {
-            parent: backup.cluster,
+            cluster: backup.cluster,
             id: newBackupId,
             expireTime: copyTestExpireTime,
           };

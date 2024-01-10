@@ -252,7 +252,7 @@ describe('Bigtable/Backup', () => {
         destinationClusterId
       );
       const config = {
-        parent: destinationCluster,
+        cluster: destinationCluster,
         id: newBackupId,
         expireTime: new PreciseDate(177),
         gaxOptions: {
