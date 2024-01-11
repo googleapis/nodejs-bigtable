@@ -1483,8 +1483,8 @@ describe('Bigtable', () => {
             expireTime: sourceTestExpireTime,
           });
           {
-            // Check expiry time for running operation.
             await op.promise();
+            // Check expiry time for running operation.
             await backup.getMetadata();
             assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
           }
@@ -1521,8 +1521,8 @@ describe('Bigtable', () => {
           expireTime: sourceExpireTime,
         });
         {
-          // Check the expiry time.
           await op.promise();
+          // Check the expiry time.
           await backup.getMetadata();
           assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
         }
@@ -1564,8 +1564,8 @@ describe('Bigtable', () => {
           expireTime: sourceExpireTime,
         });
         {
-          // Check the expiry time.
           await op.promise();
+          // Check the expiry time.
           await backup.getMetadata();
           assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
         }
@@ -1592,18 +1592,21 @@ describe('Bigtable', () => {
         );
       });
       it('should create backup of a table and copy it on another project', async () => {
-        const backupId = generateId('backup');
-        const [backup, op] = await TABLE.createBackup(backupId, {
+        const [backup, op] = await TABLE.createBackup(generateId('backup'), {
           expireTime: sourceExpireTime,
         });
-        await op.promise();
-        await backup.getMetadata();
-        assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+        {
+          await op.promise();
+          // Check the expiry time.
+          await backup.getMetadata();
+          assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+        }
         // Create another instance
-        const options = process.env.GCLOUD_PROJECT2
-          ? {projectId: process.env.GCLOUD_PROJECT2}
-          : {};
-        const bigtable = new Bigtable(options);
+        const bigtable = new Bigtable(
+          process.env.GCLOUD_PROJECT2
+            ? {projectId: process.env.GCLOUD_PROJECT2}
+            : {}
+        );
         const instanceId = generateId('instance');
         const instance = bigtable.instance(instanceId);
         const destinationClusterId = generateId('cluster');
