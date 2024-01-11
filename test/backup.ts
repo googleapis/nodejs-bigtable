@@ -259,8 +259,9 @@ describe('Bigtable/Backup', () => {
         },
       };
 
-      // config is object received in request function so must be of type any
-      // so that this test can compile and so that asserts can test its properties.
+      // In callback, config is object received in request function so must be
+      // of type any so that this test can compile and so that asserts can test
+      // its properties.
       const callback: (
         err?: ServiceError | Error | null,
         backup?: Backup | null,
