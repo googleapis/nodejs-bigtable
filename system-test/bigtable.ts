@@ -1524,24 +1524,25 @@ describe('Bigtable', () => {
         await backup.getMetadata();
         assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
         // Create another instance
-        const instanceId = generateId('instance');
-        const instance = bigtable.instance(instanceId);
+        const instance = bigtable.instance(generateId('instance'));
         const destinationClusterId = generateId('cluster');
-        const instanceOptions: InstanceOptions = {
-          clusters: [
-            {
-              id: destinationClusterId,
-              nodes: 3,
-              location: 'us-central1-f',
-              storage: 'ssd',
-            },
-          ],
-          labels: {'prod-label': 'prod-label'},
-          type: 'production',
-        };
-        // Create production instance with given options
-        const [, operation] = await instance.create(instanceOptions);
-        await operation.promise();
+        {
+          // Create production instance with given options
+          const instanceOptions: InstanceOptions = {
+            clusters: [
+              {
+                id: destinationClusterId,
+                nodes: 3,
+                location: 'us-central1-f',
+                storage: 'ssd',
+              },
+            ],
+            labels: {'prod-label': 'prod-label'},
+            type: 'production',
+          };
+          const [, operation] = await instance.create(instanceOptions);
+          await operation.promise();
+        }
         // Create the copy and test the copied backup
         await testCopyBackup(
           backup,
