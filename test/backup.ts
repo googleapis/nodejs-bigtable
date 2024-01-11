@@ -237,7 +237,7 @@ describe('Bigtable/Backup', () => {
       };
     });
 
-    it('should correctly copy backup from the Cluster to a custom project', done => {
+    it('should correctly copy backup from the cluster to a custom project', done => {
       const destinationProjectId = generateId('project');
       const bigtable = new Bigtable({projectId: destinationProjectId});
       const backupId = generateId('backup');
