@@ -1520,9 +1520,12 @@ describe('Bigtable', () => {
         const [backup, op] = await TABLE.createBackup(generateId('backup'), {
           expireTime: sourceExpireTime,
         });
-        await op.promise();
-        await backup.getMetadata();
-        assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+        {
+          // Check the expiry time.
+          await op.promise();
+          await backup.getMetadata();
+          assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+        }
         // Create another instance
         const instance = bigtable.instance(generateId('instance'));
         const destinationClusterId = generateId('cluster');
@@ -1563,9 +1566,8 @@ describe('Bigtable', () => {
         await op.promise();
         await backup.getMetadata();
         assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
-        // Create another instance
         const destinationClusterId = generateId('cluster');
-        // Create production instance with given options
+        // Create destination cluster with given options
         const [, operation] = await INSTANCE.cluster(
           destinationClusterId
         ).create({
