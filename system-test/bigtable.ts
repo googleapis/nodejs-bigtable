@@ -1447,10 +1447,10 @@ describe('Bigtable', () => {
         await operation.promise();
         const id = config.id;
         const backupPath = `${config.cluster.name}/backups/${id}`;
-        assert(operation);
-        assert(operation.metadata);
         // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
         // the split/map/join functions replace the project name with the {{projectId}} string
+        assert(operation);
+        assert(operation.metadata);
         assert.strictEqual(
           operation.metadata.name
             .split('/')
