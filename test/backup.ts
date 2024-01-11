@@ -28,8 +28,7 @@ import * as sinon from 'sinon';
 import {Bigtable, RequestOptions} from '../src';
 import {Table} from '../src/table';
 import {generateId} from '../system-test/common';
-import {Backup, CopyBackupConfig} from '../src/backup';
-import {Cluster} from '../src/cluster';
+import {Backup} from '../src/backup';
 
 let promisified = false;
 const fakePromisify = Object.assign({}, promisify, {
