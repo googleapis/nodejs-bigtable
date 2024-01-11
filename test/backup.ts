@@ -246,52 +246,44 @@ describe('Bigtable/Backup', () => {
       const destinationInstanceId = generateId('instance');
       const destinationClusterId = generateId('cluster');
       const instance = new FakeInstance(bigtable, destinationInstanceId);
-      const destinationCluster = new clusterTypes.Cluster(
-        instance,
-        destinationClusterId
-      );
-      const config = {
-        cluster: destinationCluster,
-        id: newBackupId,
-        expireTime: new PreciseDate(177),
-        gaxOptions: {
-          timeout: 139,
-        },
-      };
-
       // In callback, config is object received in request function so must be
       // of type any so that this test can compile and so that asserts can test
       // its properties.
-      const callback: (
-        err?: ServiceError | Error | null,
-        backup?: Backup | null,
-        config?: any
-      ) => void = (
-        err?: ServiceError | Error | null,
-        backup?: Backup | null,
-        config?: any
-      ) => {
-        assert.strictEqual(
-          backup?.name,
-          `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}/backups/${newBackupId}`
-        );
-        assert.strictEqual(config?.client, 'BigtableTableAdminClient');
-        assert.strictEqual(config?.method, 'copyBackup');
-        assert.deepStrictEqual(config?.reqOpts, {
-          parent: `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}`,
-          backupId: newBackupId,
-          sourceBackup: `a/b/c/d/backups/${backupId}`,
-          expireTime: {
-            seconds: 0,
-            nanos: 177000000,
+      backup.copy(
+        {
+          cluster: new clusterTypes.Cluster(instance, destinationClusterId),
+          id: newBackupId,
+          expireTime: new PreciseDate(177),
+          gaxOptions: {
+            timeout: 139,
           },
-        });
-        assert.deepStrictEqual(config?.gaxOpts, {
-          timeout: 139,
-        });
-        done();
-      };
-      backup.copy(config, callback);
+        },
+        (
+          err?: ServiceError | Error | null,
+          backup?: Backup | null,
+          config?: any
+        ) => {
+          assert.strictEqual(
+            backup?.name,
+            `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}/backups/${newBackupId}`
+          );
+          assert.strictEqual(config?.client, 'BigtableTableAdminClient');
+          assert.strictEqual(config?.method, 'copyBackup');
+          assert.deepStrictEqual(config?.reqOpts, {
+            parent: `projects/${destinationProjectId}/instances/${destinationInstanceId}/clusters/${destinationClusterId}`,
+            backupId: newBackupId,
+            sourceBackup: `a/b/c/d/backups/${backupId}`,
+            expireTime: {
+              seconds: 0,
+              nanos: 177000000,
+            },
+          });
+          assert.deepStrictEqual(config?.gaxOpts, {
+            timeout: 139,
+          });
+          done();
+        }
+      );
     });
   });
 
