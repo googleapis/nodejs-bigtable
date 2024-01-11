@@ -1657,18 +1657,21 @@ describe('Bigtable', () => {
           ]);
         }
         // Create the backup
-        const [backup, op] = await table.createBackup(backupId, {
-          expireTime: sourceExpireTime,
-        });
-        await op.promise();
+        const [backup, createBackupOperation] = await table.createBackup(
+          backupId,
+          {
+            expireTime: sourceExpireTime,
+          }
+        );
+        await createBackupOperation.promise();
         // Copy the backup
         const config = {
           cluster: backup.cluster,
           id: generateId('backup'),
           expireTime: copyExpireTime,
         };
-        const [newBackup, operation] = await backup.copy(config);
-        await operation.promise();
+        const [newBackup, copyOperation] = await backup.copy(config);
+        await copyOperation.promise();
         // Restore a table from the copied backup
         const [newTable, restoreOperation] =
           await newBackup.restore('new-table');
