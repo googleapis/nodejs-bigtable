@@ -1637,6 +1637,7 @@ describe('Bigtable', () => {
           },
           instance
         );
+        await instance.delete();
       });
       it('should restore a copied backup', async () => {
         const backupId = generateId('backup');
