@@ -1447,17 +1447,19 @@ describe('Bigtable', () => {
         await operation.promise();
         const id = config.id;
         const backupPath = `${config.cluster.name}/backups/${id}`;
-        // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
-        // the split/map/join functions replace the project name with the {{projectId}} string
-        assert(operation);
-        assert(operation.metadata);
-        assert.strictEqual(
-          operation.metadata.name
-            .split('/')
-            .map((item, index) => (index === 1 ? '{{projectId}}' : item))
-            .join('/'),
-          backupPath
-        );
+        {
+          // Ensure that the backup specified by the config and id match the backup name for the operation returned by the server.
+          // the split/map/join functions replace the project name with the {{projectId}} string
+          assert(operation);
+          assert(operation.metadata);
+          assert.strictEqual(
+            operation.metadata.name
+              .split('/')
+              .map((item, index) => (index === 1 ? '{{projectId}}' : item))
+              .join('/'),
+            backupPath
+          );
+        }
         // Check that there is now one more backup
         const [backupsAfterCopy] = await instance.getBackups();
         const newBackups = backupsAfterCopy.filter(
@@ -1477,20 +1479,24 @@ describe('Bigtable', () => {
           sourceTestExpireTime: BackupTimestamp,
           copyTestExpireTime: BackupTimestamp
         ) {
-          const backupId = generateId('backup');
-          const [backup, op] = await TABLE.createBackup(backupId, {
+          const [backup, op] = await TABLE.createBackup(generateId('backup'), {
             expireTime: sourceTestExpireTime,
           });
-          await op.promise();
-          await backup.getMetadata();
-          assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
-          const newBackupId = generateId('backup');
-          const config = {
-            cluster: backup.cluster,
-            id: newBackupId,
-            expireTime: copyTestExpireTime,
-          };
-          await testCopyBackup(backup, config, INSTANCE);
+          {
+            // Check expiry time for running operation.
+            await op.promise();
+            await backup.getMetadata();
+            assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+          }
+          await testCopyBackup(
+            backup,
+            {
+              cluster: backup.cluster,
+              id: generateId('backup'),
+              expireTime: copyTestExpireTime,
+            },
+            INSTANCE
+          );
         }
         it('should copy to the same cluster with precise date expiry times', async () => {
           await testWithExpiryTimes(sourceExpireTime, copyExpireTime);
