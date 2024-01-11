@@ -30,7 +30,7 @@ import {CopyBackupConfig} from '../src/backup.js';
 import {Cluster} from '../src/cluster.js';
 import {Family} from '../src/family.js';
 import {Row} from '../src/row.js';
-import {CreateBackupConfig, Table} from '../src/table.js';
+import {Table} from '../src/table.js';
 import {RawFilter} from '../src/filter';
 import {generateId, PREFIX} from './common';
 
