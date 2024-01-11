@@ -1445,7 +1445,6 @@ describe('Bigtable', () => {
         const [newBackup, operation] = await backup.copy(config);
         assert.strictEqual(config.id, newBackup.id);
         await operation.promise();
-        assert(config.cluster);
         const id = config.id;
         const backupPath = `${config.cluster.name}/backups/${id}`;
         assert(operation);
