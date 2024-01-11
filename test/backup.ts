@@ -18,7 +18,7 @@ import * as assert from 'assert';
 import {before, beforeEach, describe, it, afterEach} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
-import {Operation, ServiceError} from 'google-gax';
+import {ServiceError} from 'google-gax';
 
 import * as clusterTypes from '../src/cluster';
 import * as backupTypes from '../src/backup';
