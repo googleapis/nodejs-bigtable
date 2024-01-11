@@ -1517,8 +1517,7 @@ describe('Bigtable', () => {
         });
       });
       it('should create backup of a table and copy it on another cluster of another instance', async () => {
-        const backupId = generateId('backup');
-        const [backup, op] = await TABLE.createBackup(backupId, {
+        const [backup, op] = await TABLE.createBackup(generateId('backup'), {
           expireTime: sourceExpireTime,
         });
         await op.promise();
