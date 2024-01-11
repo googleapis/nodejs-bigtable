@@ -1641,18 +1641,21 @@ describe('Bigtable', () => {
       it('should restore a copied backup', async () => {
         const backupId = generateId('backup');
         const table = INSTANCE.table('old-table');
-        await table.create();
-        await table.createFamily('follows');
-        await table.insert([
-          {
-            key: 'some-data-to-copy-key',
-            data: {
-              follows: {
-                copyData: 'data-to-copy',
+        {
+          // Create a table and insert data into it.
+          await table.create();
+          await table.createFamily('follows');
+          await table.insert([
+            {
+              key: 'some-data-to-copy-key',
+              data: {
+                follows: {
+                  copyData: 'data-to-copy',
+                },
               },
             },
-          },
-        ]);
+          ]);
+        }
         // Create the backup
         const [backup, op] = await table.createBackup(backupId, {
           expireTime: sourceExpireTime,
