@@ -1563,18 +1563,23 @@ describe('Bigtable', () => {
         const [backup, op] = await TABLE.createBackup(backupId, {
           expireTime: sourceExpireTime,
         });
-        await op.promise();
-        await backup.getMetadata();
-        assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+        {
+          // Check the expiry time.
+          await op.promise();
+          await backup.getMetadata();
+          assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
+        }
         const destinationClusterId = generateId('cluster');
-        // Create destination cluster with given options
-        const [, operation] = await INSTANCE.cluster(
-          destinationClusterId
-        ).create({
-          location: 'us-central1-b',
-          nodes: 3,
-        });
-        await operation.promise();
+        {
+          // Create destination cluster with given options
+          const [, operation] = await INSTANCE.cluster(
+            destinationClusterId
+          ).create({
+            location: 'us-central1-b',
+            nodes: 3,
+          });
+          await operation.promise();
+        }
         // Create the copy and test the copied backup
         await testCopyBackup(
           backup,
