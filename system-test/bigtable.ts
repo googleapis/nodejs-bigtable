@@ -1503,10 +1503,11 @@ describe('Bigtable', () => {
         });
         it('should copy to the same cluster with timestamp expiry times', async () => {
           // Calling toStruct converts times to a timestamp object.
-          // For example: sourceTestExpireTime = {seconds: 1706659851, nanos: 981000000}
-          const sourceTestExpireTime = sourceExpireTime.toStruct();
-          const copyTestExpireTime = copyExpireTime.toStruct();
-          await testWithExpiryTimes(sourceTestExpireTime, copyTestExpireTime);
+          // For example: sourceExpireTime.toStruct() = {seconds: 1706659851, nanos: 981000000}
+          await testWithExpiryTimes(
+            sourceExpireTime.toStruct(),
+            copyExpireTime.toStruct()
+          );
         });
         it('should copy to the same cluster with date expiry times', async () => {
           await testWithExpiryTimes(
