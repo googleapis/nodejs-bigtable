@@ -1458,6 +1458,9 @@ describe('Bigtable', () => {
               .map((item, index) => (index === 1 ? '{{projectId}}' : item))
               .join('/'),
             backupPath
+              .split('/')
+              .map((item, index) => (index === 1 ? '{{projectId}}' : item))
+              .join('/'),
           );
         }
         // Check that there is now one more backup
