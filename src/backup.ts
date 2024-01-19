@@ -273,7 +273,7 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
       sourceBackup: `${this.cluster.name}/backups/${this.id}`,
       expireTime: config?.expireTime,
     };
-    ClusterUtils.setExpiryTime(reqOpts);
+    ClusterUtils.setBackupExpiryTime(reqOpts);
     this.bigtable.request(
       {
         client: 'BigtableTableAdminClient',

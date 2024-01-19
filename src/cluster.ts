@@ -314,7 +314,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       },
     };
 
-    ClusterUtils.setExpiryTime(reqOpts.backup);
+    ClusterUtils.setBackupExpiryTime(reqOpts.backup);
 
     delete reqOpts.backup.table;
     delete reqOpts.backup.gaxOptions;
