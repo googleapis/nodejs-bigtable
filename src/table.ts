@@ -894,7 +894,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
-      const gaxOpts = populateAttemptHeader(
+      options.gaxOptions = populateAttemptHeader(
         numRequestsMade,
         options.gaxOptions
       );
@@ -903,7 +903,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         client: 'BigtableClient',
         method: 'readRows',
         reqOpts,
-        gaxOpts,
+        gaxOpts: options.gaxOptions,
         retryOpts,
       });
 
