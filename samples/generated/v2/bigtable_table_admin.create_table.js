@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ function main(parent, tableId, table) {
    */
   // const parent = 'abc123'
   /**
-   *  Required. The name by which the new table should be referred to within the parent
-   *  instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *  Required. The name by which the new table should be referred to within the
+   *  parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    *  Maximum 50 characters.
    */
   // const tableId = 'abc123'
@@ -59,7 +59,7 @@ function main(parent, tableId, table) {
    *      - Tablet 4 `[customer_2, other)      => {"customer_2"}.`
    *      - Tablet 5 `[other, )                => {"other", "zz"}.`
    */
-  // const initialSplits = 1234
+  // const initialSplits = [1,2,3,4]
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;

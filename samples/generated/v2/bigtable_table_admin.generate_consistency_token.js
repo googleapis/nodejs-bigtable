@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ function main(name) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the Table for which to create a consistency token.
-   *  Values are of the form
+   *  Required. The unique name of the Table for which to create a consistency
+   *  token. Values are of the form
    *  `projects/{project}/instances/{instance}/tables/{table}`.
    */
   // const name = 'abc123'

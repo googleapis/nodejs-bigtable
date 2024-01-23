@@ -1173,6 +1173,12 @@
                             "multiClusterRoutingUseAny",
                             "singleClusterRouting"
                           ]
+                        },
+                        "isolation": {
+                          "oneof": [
+                            "priority",
+                            "standardIsolation"
+                          ]
                         }
                       },
                       "fields": {
@@ -1195,6 +1201,17 @@
                         "singleClusterRouting": {
                           "type": "SingleClusterRouting",
                           "id": 6
+                        },
+                        "priority": {
+                          "type": "Priority",
+                          "id": 7,
+                          "options": {
+                            "deprecated": true
+                          }
+                        },
+                        "standardIsolation": {
+                          "type": "StandardIsolation",
+                          "id": 11
                         }
                       },
                       "nested": {
@@ -1216,6 +1233,22 @@
                             "allowTransactionalWrites": {
                               "type": "bool",
                               "id": 2
+                            }
+                          }
+                        },
+                        "Priority": {
+                          "values": {
+                            "PRIORITY_UNSPECIFIED": 0,
+                            "PRIORITY_LOW": 1,
+                            "PRIORITY_MEDIUM": 2,
+                            "PRIORITY_HIGH": 3
+                          }
+                        },
+                        "StandardIsolation": {
+                          "fields": {
+                            "priority": {
+                              "type": "Priority",
+                              "id": 1
                             }
                           }
                         }
@@ -1740,6 +1773,34 @@
                             }
                           ]
                         },
+                        "CopyBackup": {
+                          "requestType": "CopyBackupRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups:copy",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,backup_id,source_backup,expire_time",
+                            "(google.longrunning.operation_info).response_type": "Backup",
+                            "(google.longrunning.operation_info).metadata_type": "CopyBackupMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups:copy",
+                                "body": "*"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "parent,backup_id,source_backup,expire_time"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Backup",
+                                "metadata_type": "CopyBackupMetadata"
+                              }
+                            }
+                          ]
+                        },
                         "GetIamPolicy": {
                           "requestType": "google.iam.v1.GetIamPolicyRequest",
                           "responseType": "google.iam.v1.Policy",
@@ -2136,6 +2197,13 @@
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
+                        },
+                        "ignoreWarnings": {
+                          "type": "bool",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
                         }
                       },
                       "nested": {
@@ -2470,6 +2538,59 @@
                         }
                       }
                     },
+                    "CopyBackupRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
+                          }
+                        },
+                        "backupId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
+                          }
+                        },
+                        "expireTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CopyBackupMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
+                          }
+                        },
+                        "sourceBackupInfo": {
+                          "type": "BackupInfo",
+                          "id": 2
+                        },
+                        "progress": {
+                          "type": "OperationProgress",
+                          "id": 3
+                        }
+                      }
+                    },
                     "RestoreInfo": {
                       "oneofs": {
                         "sourceInfo": {
@@ -2698,15 +2819,24 @@
                         },
                         "sourceTable": {
                           "type": "Table",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "dataSizeBytes": {
                           "type": "int64",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "createTime": {
                           "type": "google.protobuf.Timestamp",
-                          "id": 4
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "deleteTime": {
                           "type": "google.protobuf.Timestamp",
@@ -2714,7 +2844,10 @@
                         },
                         "state": {
                           "type": "State",
-                          "id": 6
+                          "id": 6,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "description": {
                           "type": "string",
@@ -2746,6 +2879,13 @@
                           "id": 2,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 10,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
                         },
                         "expireTime": {
@@ -2827,6 +2967,13 @@
                         "sourceTable": {
                           "type": "string",
                           "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
+                        },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 10,
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
@@ -3208,6 +3355,10 @@
                     "requestStatsView": {
                       "type": "RequestStatsView",
                       "id": 6
+                    },
+                    "reversed": {
+                      "type": "bool",
+                      "id": 7
                     }
                   },
                   "nested": {
@@ -4272,9 +4423,29 @@
                 },
                 "FeatureFlags": {
                   "fields": {
+                    "reverseScans": {
+                      "type": "bool",
+                      "id": 1
+                    },
                     "mutateRowsRateLimit": {
                       "type": "bool",
                       "id": 3
+                    },
+                    "mutateRowsRateLimit2": {
+                      "type": "bool",
+                      "id": 5
+                    },
+                    "lastScannedRowResponses": {
+                      "type": "bool",
+                      "id": 4
+                    },
+                    "routingCookie": {
+                      "type": "bool",
+                      "id": 6
+                    },
+                    "retryInfo": {
+                      "type": "bool",
+                      "id": 7
                     }
                   }
                 },
