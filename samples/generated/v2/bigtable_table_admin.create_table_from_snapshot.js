@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ function main(parent, tableId, sourceSnapshot) {
    */
   // const parent = 'abc123'
   /**
-   *  Required. The name by which the new table should be referred to within the parent
-   *  instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
+   *  Required. The name by which the new table should be referred to within the
+   *  parent instance, e.g., `foobar` rather than `{parent}/tables/foobar`.
    */
   // const tableId = 'abc123'
   /**
-   *  Required. The unique name of the snapshot from which to restore the table. The
-   *  snapshot and the table must be in the same instance.
-   *  Values are of the form
+   *  Required. The unique name of the snapshot from which to restore the table.
+   *  The snapshot and the table must be in the same instance. Values are of the
+   *  form
    *  `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
    */
   // const sourceSnapshot = 'abc123'

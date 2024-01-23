@@ -20,8 +20,8 @@
 
 'use strict';
 
-function main(parent, backupId, backup) {
-  // [START bigtableadmin_v2_generated_BigtableTableAdmin_CreateBackup_async]
+function main(parent, backupId, sourceBackup, expireTime) {
+  // [START bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
    * It will require modifications to work.
@@ -29,24 +29,38 @@ function main(parent, backupId, backup) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. This must be one of the clusters in the instance in which this
-   *  table is located. The backup will be stored in this cluster. Values are
-   *  of the form `projects/{project}/instances/{instance}/clusters/{cluster}`.
+   *  Required. The name of the destination cluster that will contain the backup
+   *  copy. The cluster must already exists. Values are of the form:
+   *  `projects/{project}/instances/{instance}/clusters/{cluster}`.
    */
   // const parent = 'abc123'
   /**
-   *  Required. The id of the backup to be created. The `backup_id` along with
-   *  the parent `parent` are combined as {parent}/backups/{backup_id} to create
-   *  the full backup name, of the form:
+   *  Required. The id of the new backup. The `backup_id` along with `parent`
+   *  are combined as {parent}/backups/{backup_id} to create the full backup
+   *  name, of the form:
    *  `projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup_id}`.
    *  This string must be between 1 and 50 characters in length and match the
    *  regex _a-zA-Z0-9 -_.a-zA-Z0-9 *.
    */
   // const backupId = 'abc123'
   /**
-   *  Required. The backup to create.
+   *  Required. The source backup to be copied from.
+   *  The source backup needs to be in READY state for it to be copied.
+   *  Copying a copied backup is not allowed.
+   *  Once CopyBackup is in progress, the source backup cannot be deleted or
+   *  cleaned up on expiration until CopyBackup is finished.
+   *  Values are of the form:
+   *  `projects/<project>/instances/<instance>/clusters/<cluster>/backups/<backup>`.
    */
-  // const backup = {}
+  // const sourceBackup = 'abc123'
+  /**
+   *  Required. Required. The expiration time of the copied backup with
+   *  microsecond granularity that must be at least 6 hours and at most 30 days
+   *  from the time the request is received. Once the `expire_time` has
+   *  passed, Cloud Bigtable will delete the backup and free the resources used
+   *  by the backup.
+   */
+  // const expireTime = {}
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;
@@ -54,22 +68,23 @@ function main(parent, backupId, backup) {
   // Instantiates a client
   const adminClient = new BigtableTableAdminClient();
 
-  async function callCreateBackup() {
+  async function callCopyBackup() {
     // Construct request
     const request = {
       parent,
       backupId,
-      backup,
+      sourceBackup,
+      expireTime,
     };
 
     // Run request
-    const [operation] = await adminClient.createBackup(request);
+    const [operation] = await adminClient.copyBackup(request);
     const [response] = await operation.promise();
     console.log(response);
   }
 
-  callCreateBackup();
-  // [END bigtableadmin_v2_generated_BigtableTableAdmin_CreateBackup_async]
+  callCopyBackup();
+  // [END bigtableadmin_v2_generated_BigtableTableAdmin_CopyBackup_async]
 }
 
 process.on('unhandledRejection', err => {

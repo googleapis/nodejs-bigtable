@@ -347,6 +347,11 @@
                 "restoreTable"
               ]
             },
+            "CopyBackup": {
+              "methods": [
+                "copyBackup"
+              ]
+            },
             "ListTables": {
               "methods": [
                 "listTables",
@@ -476,6 +481,11 @@
             "RestoreTable": {
               "methods": [
                 "restoreTable"
+              ]
+            },
+            "CopyBackup": {
+              "methods": [
+                "copyBackup"
               ]
             },
             "ListTables": {

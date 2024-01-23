@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@ function main(location, state, defaultStorageType, encryptionConfig) {
    */
   // const name = 'abc123'
   /**
-   *  Immutable. The location where this cluster's nodes and storage reside. For best
-   *  performance, clients should be located as close as possible to this
+   *  Immutable. The location where this cluster's nodes and storage reside. For
+   *  best performance, clients should be located as close as possible to this
    *  cluster. Currently only zones are supported, so values should be of the
    *  form `projects/{project}/locations/{zone}`.
    */
