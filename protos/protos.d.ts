@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -4186,12 +4186,6 @@ export namespace google {
 
                     /** AppProfile singleClusterRouting */
                     singleClusterRouting?: (google.bigtable.admin.v2.AppProfile.ISingleClusterRouting|null);
-
-                    /** AppProfile priority */
-                    priority?: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority|null);
-
-                    /** AppProfile standardIsolation */
-                    standardIsolation?: (google.bigtable.admin.v2.AppProfile.IStandardIsolation|null);
                 }
 
                 /** Represents an AppProfile. */
@@ -4218,17 +4212,8 @@ export namespace google {
                     /** AppProfile singleClusterRouting. */
                     public singleClusterRouting?: (google.bigtable.admin.v2.AppProfile.ISingleClusterRouting|null);
 
-                    /** AppProfile priority. */
-                    public priority?: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority|null);
-
-                    /** AppProfile standardIsolation. */
-                    public standardIsolation?: (google.bigtable.admin.v2.AppProfile.IStandardIsolation|null);
-
                     /** AppProfile routingPolicy. */
                     public routingPolicy?: ("multiClusterRoutingUseAny"|"singleClusterRouting");
-
-                    /** AppProfile isolation. */
-                    public isolation?: ("priority"|"standardIsolation");
 
                     /**
                      * Creates a new AppProfile instance using the specified properties.
@@ -4504,111 +4489,6 @@ export namespace google {
 
                         /**
                          * Gets the default type url for SingleClusterRouting
-                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                         * @returns The default type url
-                         */
-                        public static getTypeUrl(typeUrlPrefix?: string): string;
-                    }
-
-                    /** Priority enum. */
-                    enum Priority {
-                        PRIORITY_UNSPECIFIED = 0,
-                        PRIORITY_LOW = 1,
-                        PRIORITY_MEDIUM = 2,
-                        PRIORITY_HIGH = 3
-                    }
-
-                    /** Properties of a StandardIsolation. */
-                    interface IStandardIsolation {
-
-                        /** StandardIsolation priority */
-                        priority?: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority|null);
-                    }
-
-                    /** Represents a StandardIsolation. */
-                    class StandardIsolation implements IStandardIsolation {
-
-                        /**
-                         * Constructs a new StandardIsolation.
-                         * @param [properties] Properties to set
-                         */
-                        constructor(properties?: google.bigtable.admin.v2.AppProfile.IStandardIsolation);
-
-                        /** StandardIsolation priority. */
-                        public priority: (google.bigtable.admin.v2.AppProfile.Priority|keyof typeof google.bigtable.admin.v2.AppProfile.Priority);
-
-                        /**
-                         * Creates a new StandardIsolation instance using the specified properties.
-                         * @param [properties] Properties to set
-                         * @returns StandardIsolation instance
-                         */
-                        public static create(properties?: google.bigtable.admin.v2.AppProfile.IStandardIsolation): google.bigtable.admin.v2.AppProfile.StandardIsolation;
-
-                        /**
-                         * Encodes the specified StandardIsolation message. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.StandardIsolation.verify|verify} messages.
-                         * @param message StandardIsolation message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encode(message: google.bigtable.admin.v2.AppProfile.IStandardIsolation, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Encodes the specified StandardIsolation message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.StandardIsolation.verify|verify} messages.
-                         * @param message StandardIsolation message or plain object to encode
-                         * @param [writer] Writer to encode to
-                         * @returns Writer
-                         */
-                        public static encodeDelimited(message: google.bigtable.admin.v2.AppProfile.IStandardIsolation, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                        /**
-                         * Decodes a StandardIsolation message from the specified reader or buffer.
-                         * @param reader Reader or buffer to decode from
-                         * @param [length] Message length if known beforehand
-                         * @returns StandardIsolation
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AppProfile.StandardIsolation;
-
-                        /**
-                         * Decodes a StandardIsolation message from the specified reader or buffer, length delimited.
-                         * @param reader Reader or buffer to decode from
-                         * @returns StandardIsolation
-                         * @throws {Error} If the payload is not a reader or valid buffer
-                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                         */
-                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AppProfile.StandardIsolation;
-
-                        /**
-                         * Verifies a StandardIsolation message.
-                         * @param message Plain object to verify
-                         * @returns `null` if valid, otherwise the reason why it is not
-                         */
-                        public static verify(message: { [k: string]: any }): (string|null);
-
-                        /**
-                         * Creates a StandardIsolation message from a plain object. Also converts values to their respective internal types.
-                         * @param object Plain object
-                         * @returns StandardIsolation
-                         */
-                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AppProfile.StandardIsolation;
-
-                        /**
-                         * Creates a plain object from a StandardIsolation message. Also converts values to other types if specified.
-                         * @param message StandardIsolation
-                         * @param [options] Conversion options
-                         * @returns Plain object
-                         */
-                        public static toObject(message: google.bigtable.admin.v2.AppProfile.StandardIsolation, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                        /**
-                         * Converts this StandardIsolation to JSON.
-                         * @returns JSON object
-                         */
-                        public toJSON(): { [k: string]: any };
-
-                        /**
-                         * Gets the default type url for StandardIsolation
                          * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                          * @returns The default type url
                          */
@@ -5180,20 +5060,6 @@ export namespace google {
                     public restoreTable(request: google.bigtable.admin.v2.IRestoreTableRequest): Promise<google.longrunning.Operation>;
 
                     /**
-                     * Calls CopyBackup.
-                     * @param request CopyBackupRequest message or plain object
-                     * @param callback Node-style callback called with the error, if any, and Operation
-                     */
-                    public copyBackup(request: google.bigtable.admin.v2.ICopyBackupRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.CopyBackupCallback): void;
-
-                    /**
-                     * Calls CopyBackup.
-                     * @param request CopyBackupRequest message or plain object
-                     * @returns Promise
-                     */
-                    public copyBackup(request: google.bigtable.admin.v2.ICopyBackupRequest): Promise<google.longrunning.Operation>;
-
-                    /**
                      * Calls GetIamPolicy.
                      * @param request GetIamPolicyRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Policy
@@ -5384,13 +5250,6 @@ export namespace google {
                      * @param [response] Operation
                      */
                     type RestoreTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
-
-                    /**
-                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|copyBackup}.
-                     * @param error Error, if any
-                     * @param [response] Operation
-                     */
-                    type CopyBackupCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
 
                     /**
                      * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getIamPolicy}.
@@ -7033,9 +6892,6 @@ export namespace google {
 
                     /** ModifyColumnFamiliesRequest modifications */
                     modifications?: (google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification[]|null);
-
-                    /** ModifyColumnFamiliesRequest ignoreWarnings */
-                    ignoreWarnings?: (boolean|null);
                 }
 
                 /** Represents a ModifyColumnFamiliesRequest. */
@@ -7052,9 +6908,6 @@ export namespace google {
 
                     /** ModifyColumnFamiliesRequest modifications. */
                     public modifications: google.bigtable.admin.v2.ModifyColumnFamiliesRequest.IModification[];
-
-                    /** ModifyColumnFamiliesRequest ignoreWarnings. */
-                    public ignoreWarnings: boolean;
 
                     /**
                      * Creates a new ModifyColumnFamiliesRequest instance using the specified properties.
@@ -9139,230 +8992,6 @@ export namespace google {
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
-                /** Properties of a CopyBackupRequest. */
-                interface ICopyBackupRequest {
-
-                    /** CopyBackupRequest parent */
-                    parent?: (string|null);
-
-                    /** CopyBackupRequest backupId */
-                    backupId?: (string|null);
-
-                    /** CopyBackupRequest sourceBackup */
-                    sourceBackup?: (string|null);
-
-                    /** CopyBackupRequest expireTime */
-                    expireTime?: (google.protobuf.ITimestamp|null);
-                }
-
-                /** Represents a CopyBackupRequest. */
-                class CopyBackupRequest implements ICopyBackupRequest {
-
-                    /**
-                     * Constructs a new CopyBackupRequest.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.ICopyBackupRequest);
-
-                    /** CopyBackupRequest parent. */
-                    public parent: string;
-
-                    /** CopyBackupRequest backupId. */
-                    public backupId: string;
-
-                    /** CopyBackupRequest sourceBackup. */
-                    public sourceBackup: string;
-
-                    /** CopyBackupRequest expireTime. */
-                    public expireTime?: (google.protobuf.ITimestamp|null);
-
-                    /**
-                     * Creates a new CopyBackupRequest instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns CopyBackupRequest instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.ICopyBackupRequest): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Encodes the specified CopyBackupRequest message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
-                     * @param message CopyBackupRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.ICopyBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified CopyBackupRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupRequest.verify|verify} messages.
-                     * @param message CopyBackupRequest message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.ICopyBackupRequest, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes a CopyBackupRequest message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns CopyBackupRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Decodes a CopyBackupRequest message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns CopyBackupRequest
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Verifies a CopyBackupRequest message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates a CopyBackupRequest message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns CopyBackupRequest
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CopyBackupRequest;
-
-                    /**
-                     * Creates a plain object from a CopyBackupRequest message. Also converts values to other types if specified.
-                     * @param message CopyBackupRequest
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.CopyBackupRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this CopyBackupRequest to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-
-                    /**
-                     * Gets the default type url for CopyBackupRequest
-                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns The default type url
-                     */
-                    public static getTypeUrl(typeUrlPrefix?: string): string;
-                }
-
-                /** Properties of a CopyBackupMetadata. */
-                interface ICopyBackupMetadata {
-
-                    /** CopyBackupMetadata name */
-                    name?: (string|null);
-
-                    /** CopyBackupMetadata sourceBackupInfo */
-                    sourceBackupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
-
-                    /** CopyBackupMetadata progress */
-                    progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-                }
-
-                /** Represents a CopyBackupMetadata. */
-                class CopyBackupMetadata implements ICopyBackupMetadata {
-
-                    /**
-                     * Constructs a new CopyBackupMetadata.
-                     * @param [properties] Properties to set
-                     */
-                    constructor(properties?: google.bigtable.admin.v2.ICopyBackupMetadata);
-
-                    /** CopyBackupMetadata name. */
-                    public name: string;
-
-                    /** CopyBackupMetadata sourceBackupInfo. */
-                    public sourceBackupInfo?: (google.bigtable.admin.v2.IBackupInfo|null);
-
-                    /** CopyBackupMetadata progress. */
-                    public progress?: (google.bigtable.admin.v2.IOperationProgress|null);
-
-                    /**
-                     * Creates a new CopyBackupMetadata instance using the specified properties.
-                     * @param [properties] Properties to set
-                     * @returns CopyBackupMetadata instance
-                     */
-                    public static create(properties?: google.bigtable.admin.v2.ICopyBackupMetadata): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Encodes the specified CopyBackupMetadata message. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
-                     * @param message CopyBackupMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encode(message: google.bigtable.admin.v2.ICopyBackupMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Encodes the specified CopyBackupMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CopyBackupMetadata.verify|verify} messages.
-                     * @param message CopyBackupMetadata message or plain object to encode
-                     * @param [writer] Writer to encode to
-                     * @returns Writer
-                     */
-                    public static encodeDelimited(message: google.bigtable.admin.v2.ICopyBackupMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
-
-                    /**
-                     * Decodes a CopyBackupMetadata message from the specified reader or buffer.
-                     * @param reader Reader or buffer to decode from
-                     * @param [length] Message length if known beforehand
-                     * @returns CopyBackupMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Decodes a CopyBackupMetadata message from the specified reader or buffer, length delimited.
-                     * @param reader Reader or buffer to decode from
-                     * @returns CopyBackupMetadata
-                     * @throws {Error} If the payload is not a reader or valid buffer
-                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-                     */
-                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Verifies a CopyBackupMetadata message.
-                     * @param message Plain object to verify
-                     * @returns `null` if valid, otherwise the reason why it is not
-                     */
-                    public static verify(message: { [k: string]: any }): (string|null);
-
-                    /**
-                     * Creates a CopyBackupMetadata message from a plain object. Also converts values to their respective internal types.
-                     * @param object Plain object
-                     * @returns CopyBackupMetadata
-                     */
-                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CopyBackupMetadata;
-
-                    /**
-                     * Creates a plain object from a CopyBackupMetadata message. Also converts values to other types if specified.
-                     * @param message CopyBackupMetadata
-                     * @param [options] Conversion options
-                     * @returns Plain object
-                     */
-                    public static toObject(message: google.bigtable.admin.v2.CopyBackupMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
-
-                    /**
-                     * Converts this CopyBackupMetadata to JSON.
-                     * @returns JSON object
-                     */
-                    public toJSON(): { [k: string]: any };
-
-                    /**
-                     * Gets the default type url for CopyBackupMetadata
-                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
-                     * @returns The default type url
-                     */
-                    public static getTypeUrl(typeUrlPrefix?: string): string;
-                }
-
                 /** Properties of a RestoreInfo. */
                 interface IRestoreInfo {
 
@@ -10517,9 +10146,6 @@ export namespace google {
                     /** Backup sourceTable */
                     sourceTable?: (string|null);
 
-                    /** Backup sourceBackup */
-                    sourceBackup?: (string|null);
-
                     /** Backup expireTime */
                     expireTime?: (google.protobuf.ITimestamp|null);
 
@@ -10553,9 +10179,6 @@ export namespace google {
 
                     /** Backup sourceTable. */
                     public sourceTable: string;
-
-                    /** Backup sourceBackup. */
-                    public sourceBackup: string;
 
                     /** Backup expireTime. */
                     public expireTime?: (google.protobuf.ITimestamp|null);
@@ -10677,9 +10300,6 @@ export namespace google {
 
                     /** BackupInfo sourceTable */
                     sourceTable?: (string|null);
-
-                    /** BackupInfo sourceBackup */
-                    sourceBackup?: (string|null);
                 }
 
                 /** Represents a BackupInfo. */
@@ -10702,9 +10322,6 @@ export namespace google {
 
                     /** BackupInfo sourceTable. */
                     public sourceTable: string;
-
-                    /** BackupInfo sourceBackup. */
-                    public sourceBackup: string;
 
                     /**
                      * Creates a new BackupInfo instance using the specified properties.
@@ -11028,9 +10645,6 @@ export namespace google {
 
                 /** ReadRowsRequest requestStatsView */
                 requestStatsView?: (google.bigtable.v2.ReadRowsRequest.RequestStatsView|keyof typeof google.bigtable.v2.ReadRowsRequest.RequestStatsView|null);
-
-                /** ReadRowsRequest reversed */
-                reversed?: (boolean|null);
             }
 
             /** Represents a ReadRowsRequest. */
@@ -11059,9 +10673,6 @@ export namespace google {
 
                 /** ReadRowsRequest requestStatsView. */
                 public requestStatsView: (google.bigtable.v2.ReadRowsRequest.RequestStatsView|keyof typeof google.bigtable.v2.ReadRowsRequest.RequestStatsView);
-
-                /** ReadRowsRequest reversed. */
-                public reversed: boolean;
 
                 /**
                  * Creates a new ReadRowsRequest instance using the specified properties.
@@ -16890,23 +16501,8 @@ export namespace google {
             /** Properties of a FeatureFlags. */
             interface IFeatureFlags {
 
-                /** FeatureFlags reverseScans */
-                reverseScans?: (boolean|null);
-
                 /** FeatureFlags mutateRowsRateLimit */
                 mutateRowsRateLimit?: (boolean|null);
-
-                /** FeatureFlags mutateRowsRateLimit2 */
-                mutateRowsRateLimit2?: (boolean|null);
-
-                /** FeatureFlags lastScannedRowResponses */
-                lastScannedRowResponses?: (boolean|null);
-
-                /** FeatureFlags routingCookie */
-                routingCookie?: (boolean|null);
-
-                /** FeatureFlags retryInfo */
-                retryInfo?: (boolean|null);
             }
 
             /** Represents a FeatureFlags. */
@@ -16918,23 +16514,8 @@ export namespace google {
                  */
                 constructor(properties?: google.bigtable.v2.IFeatureFlags);
 
-                /** FeatureFlags reverseScans. */
-                public reverseScans: boolean;
-
                 /** FeatureFlags mutateRowsRateLimit. */
                 public mutateRowsRateLimit: boolean;
-
-                /** FeatureFlags mutateRowsRateLimit2. */
-                public mutateRowsRateLimit2: boolean;
-
-                /** FeatureFlags lastScannedRowResponses. */
-                public lastScannedRowResponses: boolean;
-
-                /** FeatureFlags routingCookie. */
-                public routingCookie: boolean;
-
-                /** FeatureFlags retryInfo. */
-                public retryInfo: boolean;
 
                 /**
                  * Creates a new FeatureFlags instance using the specified properties.
@@ -18725,6 +18306,9 @@ export namespace google {
 
             /** MethodSettings longRunning */
             longRunning?: (google.api.MethodSettings.ILongRunning|null);
+
+            /** MethodSettings autoPopulatedFields */
+            autoPopulatedFields?: (string[]|null);
         }
 
         /** Represents a MethodSettings. */
@@ -18741,6 +18325,9 @@ export namespace google {
 
             /** MethodSettings longRunning. */
             public longRunning?: (google.api.MethodSettings.ILongRunning|null);
+
+            /** MethodSettings autoPopulatedFields. */
+            public autoPopulatedFields: string[];
 
             /**
              * Creates a new MethodSettings instance using the specified properties.
@@ -18978,7 +18565,8 @@ export namespace google {
             INPUT_ONLY = 4,
             IMMUTABLE = 5,
             UNORDERED_LIST = 6,
-            NON_EMPTY_DEFAULT = 7
+            NON_EMPTY_DEFAULT = 7,
+            IDENTIFIER = 8
         }
 
         /** Properties of a ResourceDescriptor. */
@@ -19534,6 +19122,21 @@ export namespace google {
             public static getTypeUrl(typeUrlPrefix?: string): string;
         }
 
+        /** Edition enum. */
+        enum Edition {
+            EDITION_UNKNOWN = 0,
+            EDITION_PROTO2 = 998,
+            EDITION_PROTO3 = 999,
+            EDITION_2023 = 1000,
+            EDITION_2024 = 1001,
+            EDITION_1_TEST_ONLY = 1,
+            EDITION_2_TEST_ONLY = 2,
+            EDITION_99997_TEST_ONLY = 99997,
+            EDITION_99998_TEST_ONLY = 99998,
+            EDITION_99999_TEST_ONLY = 99999,
+            EDITION_MAX = 2147483647
+        }
+
         /** Properties of a FileDescriptorProto. */
         interface IFileDescriptorProto {
 
@@ -19574,7 +19177,7 @@ export namespace google {
             syntax?: (string|null);
 
             /** FileDescriptorProto edition */
-            edition?: (string|null);
+            edition?: (google.protobuf.Edition|keyof typeof google.protobuf.Edition|null);
         }
 
         /** Represents a FileDescriptorProto. */
@@ -19623,7 +19226,7 @@ export namespace google {
             public syntax: string;
 
             /** FileDescriptorProto edition. */
-            public edition: string;
+            public edition: (google.protobuf.Edition|keyof typeof google.protobuf.Edition);
 
             /**
              * Creates a new FileDescriptorProto instance using the specified properties.
@@ -20498,8 +20101,8 @@ export namespace google {
             /** Label enum. */
             enum Label {
                 LABEL_OPTIONAL = 1,
-                LABEL_REQUIRED = 2,
-                LABEL_REPEATED = 3
+                LABEL_REPEATED = 3,
+                LABEL_REQUIRED = 2
             }
         }
 
@@ -21211,9 +20814,6 @@ export namespace google {
             /** FileOptions pyGenericServices */
             pyGenericServices?: (boolean|null);
 
-            /** FileOptions phpGenericServices */
-            phpGenericServices?: (boolean|null);
-
             /** FileOptions deprecated */
             deprecated?: (boolean|null);
 
@@ -21289,9 +20889,6 @@ export namespace google {
 
             /** FileOptions pyGenericServices. */
             public pyGenericServices: boolean;
-
-            /** FileOptions phpGenericServices. */
-            public phpGenericServices: boolean;
 
             /** FileOptions deprecated. */
             public deprecated: boolean;
@@ -21766,7 +21363,7 @@ export namespace google {
             interface IEditionDefault {
 
                 /** EditionDefault edition */
-                edition?: (string|null);
+                edition?: (google.protobuf.Edition|keyof typeof google.protobuf.Edition|null);
 
                 /** EditionDefault value */
                 value?: (string|null);
@@ -21782,7 +21379,7 @@ export namespace google {
                 constructor(properties?: google.protobuf.FieldOptions.IEditionDefault);
 
                 /** EditionDefault edition. */
-                public edition: string;
+                public edition: (google.protobuf.Edition|keyof typeof google.protobuf.Edition);
 
                 /** EditionDefault value. */
                 public value: string;
@@ -22708,17 +22305,14 @@ export namespace google {
             /** FeatureSet repeatedFieldEncoding */
             repeatedFieldEncoding?: (google.protobuf.FeatureSet.RepeatedFieldEncoding|keyof typeof google.protobuf.FeatureSet.RepeatedFieldEncoding|null);
 
-            /** FeatureSet stringFieldValidation */
-            stringFieldValidation?: (google.protobuf.FeatureSet.StringFieldValidation|keyof typeof google.protobuf.FeatureSet.StringFieldValidation|null);
+            /** FeatureSet utf8Validation */
+            utf8Validation?: (google.protobuf.FeatureSet.Utf8Validation|keyof typeof google.protobuf.FeatureSet.Utf8Validation|null);
 
             /** FeatureSet messageEncoding */
             messageEncoding?: (google.protobuf.FeatureSet.MessageEncoding|keyof typeof google.protobuf.FeatureSet.MessageEncoding|null);
 
             /** FeatureSet jsonFormat */
             jsonFormat?: (google.protobuf.FeatureSet.JsonFormat|keyof typeof google.protobuf.FeatureSet.JsonFormat|null);
-
-            /** FeatureSet rawFeatures */
-            rawFeatures?: (google.protobuf.IFeatureSet|null);
         }
 
         /** Represents a FeatureSet. */
@@ -22739,17 +22333,14 @@ export namespace google {
             /** FeatureSet repeatedFieldEncoding. */
             public repeatedFieldEncoding: (google.protobuf.FeatureSet.RepeatedFieldEncoding|keyof typeof google.protobuf.FeatureSet.RepeatedFieldEncoding);
 
-            /** FeatureSet stringFieldValidation. */
-            public stringFieldValidation: (google.protobuf.FeatureSet.StringFieldValidation|keyof typeof google.protobuf.FeatureSet.StringFieldValidation);
+            /** FeatureSet utf8Validation. */
+            public utf8Validation: (google.protobuf.FeatureSet.Utf8Validation|keyof typeof google.protobuf.FeatureSet.Utf8Validation);
 
             /** FeatureSet messageEncoding. */
             public messageEncoding: (google.protobuf.FeatureSet.MessageEncoding|keyof typeof google.protobuf.FeatureSet.MessageEncoding);
 
             /** FeatureSet jsonFormat. */
             public jsonFormat: (google.protobuf.FeatureSet.JsonFormat|keyof typeof google.protobuf.FeatureSet.JsonFormat);
-
-            /** FeatureSet rawFeatures. */
-            public rawFeatures?: (google.protobuf.IFeatureSet|null);
 
             /**
              * Creates a new FeatureSet instance using the specified properties.
@@ -22853,11 +22444,10 @@ export namespace google {
                 EXPANDED = 2
             }
 
-            /** StringFieldValidation enum. */
-            enum StringFieldValidation {
-                STRING_FIELD_VALIDATION_UNKNOWN = 0,
-                MANDATORY = 1,
-                HINT = 2,
+            /** Utf8Validation enum. */
+            enum Utf8Validation {
+                UTF8_VALIDATION_UNKNOWN = 0,
+                VERIFY = 2,
                 NONE = 3
             }
 
@@ -22873,6 +22463,221 @@ export namespace google {
                 JSON_FORMAT_UNKNOWN = 0,
                 ALLOW = 1,
                 LEGACY_BEST_EFFORT = 2
+            }
+        }
+
+        /** Properties of a FeatureSetDefaults. */
+        interface IFeatureSetDefaults {
+
+            /** FeatureSetDefaults defaults */
+            defaults?: (google.protobuf.FeatureSetDefaults.IFeatureSetEditionDefault[]|null);
+
+            /** FeatureSetDefaults minimumEdition */
+            minimumEdition?: (google.protobuf.Edition|keyof typeof google.protobuf.Edition|null);
+
+            /** FeatureSetDefaults maximumEdition */
+            maximumEdition?: (google.protobuf.Edition|keyof typeof google.protobuf.Edition|null);
+        }
+
+        /** Represents a FeatureSetDefaults. */
+        class FeatureSetDefaults implements IFeatureSetDefaults {
+
+            /**
+             * Constructs a new FeatureSetDefaults.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: google.protobuf.IFeatureSetDefaults);
+
+            /** FeatureSetDefaults defaults. */
+            public defaults: google.protobuf.FeatureSetDefaults.IFeatureSetEditionDefault[];
+
+            /** FeatureSetDefaults minimumEdition. */
+            public minimumEdition: (google.protobuf.Edition|keyof typeof google.protobuf.Edition);
+
+            /** FeatureSetDefaults maximumEdition. */
+            public maximumEdition: (google.protobuf.Edition|keyof typeof google.protobuf.Edition);
+
+            /**
+             * Creates a new FeatureSetDefaults instance using the specified properties.
+             * @param [properties] Properties to set
+             * @returns FeatureSetDefaults instance
+             */
+            public static create(properties?: google.protobuf.IFeatureSetDefaults): google.protobuf.FeatureSetDefaults;
+
+            /**
+             * Encodes the specified FeatureSetDefaults message. Does not implicitly {@link google.protobuf.FeatureSetDefaults.verify|verify} messages.
+             * @param message FeatureSetDefaults message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: google.protobuf.IFeatureSetDefaults, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Encodes the specified FeatureSetDefaults message, length delimited. Does not implicitly {@link google.protobuf.FeatureSetDefaults.verify|verify} messages.
+             * @param message FeatureSetDefaults message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encodeDelimited(message: google.protobuf.IFeatureSetDefaults, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes a FeatureSetDefaults message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns FeatureSetDefaults
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.FeatureSetDefaults;
+
+            /**
+             * Decodes a FeatureSetDefaults message from the specified reader or buffer, length delimited.
+             * @param reader Reader or buffer to decode from
+             * @returns FeatureSetDefaults
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.FeatureSetDefaults;
+
+            /**
+             * Verifies a FeatureSetDefaults message.
+             * @param message Plain object to verify
+             * @returns `null` if valid, otherwise the reason why it is not
+             */
+            public static verify(message: { [k: string]: any }): (string|null);
+
+            /**
+             * Creates a FeatureSetDefaults message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns FeatureSetDefaults
+             */
+            public static fromObject(object: { [k: string]: any }): google.protobuf.FeatureSetDefaults;
+
+            /**
+             * Creates a plain object from a FeatureSetDefaults message. Also converts values to other types if specified.
+             * @param message FeatureSetDefaults
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: google.protobuf.FeatureSetDefaults, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this FeatureSetDefaults to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+
+            /**
+             * Gets the default type url for FeatureSetDefaults
+             * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+             * @returns The default type url
+             */
+            public static getTypeUrl(typeUrlPrefix?: string): string;
+        }
+
+        namespace FeatureSetDefaults {
+
+            /** Properties of a FeatureSetEditionDefault. */
+            interface IFeatureSetEditionDefault {
+
+                /** FeatureSetEditionDefault edition */
+                edition?: (google.protobuf.Edition|keyof typeof google.protobuf.Edition|null);
+
+                /** FeatureSetEditionDefault features */
+                features?: (google.protobuf.IFeatureSet|null);
+            }
+
+            /** Represents a FeatureSetEditionDefault. */
+            class FeatureSetEditionDefault implements IFeatureSetEditionDefault {
+
+                /**
+                 * Constructs a new FeatureSetEditionDefault.
+                 * @param [properties] Properties to set
+                 */
+                constructor(properties?: google.protobuf.FeatureSetDefaults.IFeatureSetEditionDefault);
+
+                /** FeatureSetEditionDefault edition. */
+                public edition: (google.protobuf.Edition|keyof typeof google.protobuf.Edition);
+
+                /** FeatureSetEditionDefault features. */
+                public features?: (google.protobuf.IFeatureSet|null);
+
+                /**
+                 * Creates a new FeatureSetEditionDefault instance using the specified properties.
+                 * @param [properties] Properties to set
+                 * @returns FeatureSetEditionDefault instance
+                 */
+                public static create(properties?: google.protobuf.FeatureSetDefaults.IFeatureSetEditionDefault): google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault;
+
+                /**
+                 * Encodes the specified FeatureSetEditionDefault message. Does not implicitly {@link google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault.verify|verify} messages.
+                 * @param message FeatureSetEditionDefault message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encode(message: google.protobuf.FeatureSetDefaults.IFeatureSetEditionDefault, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Encodes the specified FeatureSetEditionDefault message, length delimited. Does not implicitly {@link google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault.verify|verify} messages.
+                 * @param message FeatureSetEditionDefault message or plain object to encode
+                 * @param [writer] Writer to encode to
+                 * @returns Writer
+                 */
+                public static encodeDelimited(message: google.protobuf.FeatureSetDefaults.IFeatureSetEditionDefault, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                /**
+                 * Decodes a FeatureSetEditionDefault message from the specified reader or buffer.
+                 * @param reader Reader or buffer to decode from
+                 * @param [length] Message length if known beforehand
+                 * @returns FeatureSetEditionDefault
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault;
+
+                /**
+                 * Decodes a FeatureSetEditionDefault message from the specified reader or buffer, length delimited.
+                 * @param reader Reader or buffer to decode from
+                 * @returns FeatureSetEditionDefault
+                 * @throws {Error} If the payload is not a reader or valid buffer
+                 * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                 */
+                public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault;
+
+                /**
+                 * Verifies a FeatureSetEditionDefault message.
+                 * @param message Plain object to verify
+                 * @returns `null` if valid, otherwise the reason why it is not
+                 */
+                public static verify(message: { [k: string]: any }): (string|null);
+
+                /**
+                 * Creates a FeatureSetEditionDefault message from a plain object. Also converts values to their respective internal types.
+                 * @param object Plain object
+                 * @returns FeatureSetEditionDefault
+                 */
+                public static fromObject(object: { [k: string]: any }): google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault;
+
+                /**
+                 * Creates a plain object from a FeatureSetEditionDefault message. Also converts values to other types if specified.
+                 * @param message FeatureSetEditionDefault
+                 * @param [options] Conversion options
+                 * @returns Plain object
+                 */
+                public static toObject(message: google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                /**
+                 * Converts this FeatureSetEditionDefault to JSON.
+                 * @returns JSON object
+                 */
+                public toJSON(): { [k: string]: any };
+
+                /**
+                 * Gets the default type url for FeatureSetEditionDefault
+                 * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                 * @returns The default type url
+                 */
+                public static getTypeUrl(typeUrlPrefix?: string): string;
             }
         }
 
