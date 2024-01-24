@@ -1330,7 +1330,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 63,
+          "end": 67,
           "type": "FULL"
         }
       ],
@@ -1346,6 +1346,10 @@
           {
             "name": "modifications",
             "type": "TYPE_MESSAGE[]"
+          },
+          {
+            "name": "ignore_warnings",
+            "type": "TYPE_BOOL"
           }
         ],
         "resultType": ".google.bigtable.admin.v2.Table",
