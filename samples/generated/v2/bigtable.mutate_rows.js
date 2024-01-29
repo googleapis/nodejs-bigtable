@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ function main(tableName, entries) {
    *  At least one entry must be specified, and in total the entries can
    *  contain at most 100000 mutations.
    */
-  // const entries = 1234
+  // const entries = [1,2,3,4]
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;

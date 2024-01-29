@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,9 +41,9 @@ function main(name, cluster, snapshotId) {
    */
   // const cluster = 'abc123'
   /**
-   *  Required. The ID by which the new snapshot should be referred to within the parent
-   *  cluster, e.g., `mysnapshot` of the form: `[_a-zA-Z0-9][-_.a-zA-Z0-9]*`
-   *  rather than
+   *  Required. The ID by which the new snapshot should be referred to within the
+   *  parent cluster, e.g., `mysnapshot` of the form:
+   *  `[_a-zA-Z0-9][-_.a-zA-Z0-9]*` rather than
    *  `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/mysnapshot`.
    */
   // const snapshotId = 'abc123'

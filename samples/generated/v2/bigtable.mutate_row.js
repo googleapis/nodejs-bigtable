@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,13 +46,13 @@ function main(tableName, rowKey, mutations) {
   /**
    *  Required. The key of the row to which the mutation should be applied.
    */
-  // const rowKey = 'Buffer.from('string')'
+  // const rowKey = Buffer.from('string')
   /**
    *  Required. Changes to be atomically applied to the specified row. Entries
    *  are applied in order, meaning that earlier mutations can be masked by later
    *  ones. Must contain at least one entry and at most 100000.
    */
-  // const mutations = 1234
+  // const mutations = [1,2,3,4]
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;
