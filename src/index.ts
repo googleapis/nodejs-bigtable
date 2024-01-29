@@ -866,9 +866,15 @@ export class Bigtable {
 
         gaxStream = requestFn!();
         gaxStream
-          .on('error', stream.destroy.bind(stream))
+          .on('error', (err: ServiceError) => {
+            console.log('getting error');
+            stream.destroy.bind(stream)
+          })
           .on('metadata', stream.emit.bind(stream, 'metadata'))
           .on('request', stream.emit.bind(stream, 'request'))
+          .on('end', () => {
+            console.log('gax stream ended');
+          })
           .pipe(stream);
       });
     }
@@ -882,6 +888,7 @@ export class Bigtable {
         gaxStream = requestFn!();
         gaxStream
           .on('error', (err: Error) => {
+            console.log('getting error 2');
             stream.destroy(err);
           })
           .on('metadata', metadata => {
