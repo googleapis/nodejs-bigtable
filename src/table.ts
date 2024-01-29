@@ -1597,7 +1597,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         },
       };
 
-      options.gaxOptions = populateAttemptHeader(
+      const gaxOpts = populateAttemptHeader(
         numRequestsMade,
         options.gaxOptions
       );
@@ -1607,13 +1607,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
           client: 'BigtableClient',
           method: 'mutateRows',
           reqOpts,
-          gaxOpts: options.gaxOptions,
+          gaxOpts,
           retryOpts,
         })
         .on('error', (err: ServiceError) => {
+          console.log('received an error');
           onBatchResponse(err);
         })
         .on('data', (obj: google.bigtable.v2.IMutateRowsResponse) => {
+          console.log('received data');
           obj.entries!.forEach(entry => {
             const originalEntry = entryBatch[entry.index as number];
             const originalEntriesIndex = entryToIndex.get(originalEntry)!;
@@ -1633,7 +1635,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             mutationErrorsByEntryIndex.set(originalEntriesIndex, errorDetails);
           });
         })
-        .on('end', onBatchResponse);
+        .on('end', () => {
+          console.log('closed the stream');
+          onBatchResponse(null);
+        });
       numRequestsMade++;
     };
 
