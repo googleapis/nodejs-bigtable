@@ -1575,6 +1575,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     };
 
     const makeNextBatchRequest = () => {
+      console.log('making mutate rows request');
       const entryBatch = entries.filter((entry: Entry, index: number) => {
         return pendingEntryIndices.has(index);
       });
