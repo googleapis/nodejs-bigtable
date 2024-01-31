@@ -1638,7 +1638,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         })
         .on('end', () => {
           console.log('closed the stream');
-          // onBatchResponse(null);
+          onBatchResponse(null);
         });
       numRequestsMade++;
     };

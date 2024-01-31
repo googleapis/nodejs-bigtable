@@ -868,12 +868,15 @@ export class Bigtable {
         gaxStream
           .on('error', (err: ServiceError) => {
             console.log('getting error');
-            stream.destroy.bind(stream)
+            stream.destroy.bind(stream);
           })
           .on('metadata', stream.emit.bind(stream, 'metadata'))
           .on('request', stream.emit.bind(stream, 'request'))
           .on('end', () => {
             console.log('gax stream ended');
+          })
+          .on('data', (err: ServiceError) => {
+            console.log('received data from gax stream');
           })
           .pipe(stream);
       });
