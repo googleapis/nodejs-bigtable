@@ -64,7 +64,7 @@ function main(parent) {
     };
 
     // Run request
-    const iterable = await adminClient.listAppProfilesAsync(request);
+    const iterable = adminClient.listAppProfilesAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }
