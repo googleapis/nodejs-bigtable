@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ function main(parent) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the cluster for which snapshots should be listed.
-   *  Values are of the form
+   *  Required. The unique name of the cluster for which snapshots should be
+   *  listed. Values are of the form
    *  `projects/{project}/instances/{instance}/clusters/{cluster}`.
    *  Use `{cluster} = '-'` to list snapshots for all clusters in an instance,
    *  e.g., `projects/{project}/instances/{instance}/clusters/-`.

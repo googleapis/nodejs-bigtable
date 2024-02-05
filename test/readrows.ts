@@ -42,7 +42,9 @@ describe('Bigtable/ReadRows', () => {
     service = new BigtableClientMockService(server);
   });
 
-  it('should create read stream and read synchronously', done => {
+  it('should create read stream and read synchronously', function (done) {
+    this.timeout(60000);
+
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
@@ -192,12 +194,7 @@ describe('Bigtable/ReadRows', () => {
     let receivedRowCount = 0;
     let lastKeyReceived: number | undefined;
 
-    const readStream = table.createReadStream({
-      // workaround for https://github.com/grpc/grpc-node/issues/2446, remove when fixed
-      gaxOptions: {
-        timeout: 3000,
-      },
-    });
+    const readStream = table.createReadStream();
     readStream.on('error', (err: GoogleError) => {
       done(err);
     });
@@ -223,9 +220,9 @@ describe('Bigtable/ReadRows', () => {
   });
 
   // TODO: enable after https://github.com/googleapis/nodejs-bigtable/issues/1286 is fixed
-  it.skip('should be able to stop reading from the read stream when reading asynchronously', function (done) {
+  it('should be able to stop reading from the read stream when reading asynchronously', function (done) {
     if (process.platform === 'win32') {
-      this.timeout(60000); // it runs much slower on Windows!
+      this.timeout(600000); // it runs much slower on Windows!
     }
 
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
@@ -242,16 +239,12 @@ describe('Bigtable/ReadRows', () => {
     let lastKeyReceived: number | undefined;
 
     // BigTable stream
-    const readStream = table.createReadStream({
-      // workaround for https://github.com/grpc/grpc-node/issues/2446, remove when fixed
-      gaxOptions: {
-        timeout: 3000,
-      },
-    });
+    const readStream = table.createReadStream();
 
     // Transform stream
     const transform = new Transform({
       objectMode: true,
+      writableHighWaterMark: 0,
       transform: (row, _encoding, callback) => {
         setTimeout(() => {
           callback(null, row);
