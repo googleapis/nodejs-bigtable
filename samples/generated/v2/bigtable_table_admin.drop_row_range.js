@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ function main(name) {
    *  Delete all rows that start with this row key prefix. Prefix cannot be
    *  zero length.
    */
-  // const rowKeyPrefix = 'Buffer.from('string')'
+  // const rowKeyPrefix = Buffer.from('string')
   /**
    *  Delete all rows in the table. Setting this to false is a no-op.
    */

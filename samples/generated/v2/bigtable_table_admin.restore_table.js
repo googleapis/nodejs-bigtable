@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ function main(parent, tableId) {
    */
   /**
    *  Required. The name of the instance in which to create the restored
-   *  table. This instance must be in the same project as the source backup.
-   *  Values are of the form `projects/<project>/instances/<instance>`.
+   *  table. Values are of the form `projects/<project>/instances/<instance>`.
    */
   // const parent = 'abc123'
   /**
