@@ -90,13 +90,65 @@ function stubServerStreamingCall<ResponseType>(
 describe('v2.BigtableClient', () => {
   describe('Common methods', () => {
     it('has servicePath', () => {
-      const servicePath = bigtableModule.v2.BigtableClient.servicePath;
-      assert(servicePath);
+      const client = new bigtableModule.v2.BigtableClient();
+      const servicePath = client.servicePath;
+      assert.strictEqual(servicePath, 'bigtable.googleapis.com');
     });
 
     it('has apiEndpoint', () => {
-      const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
-      assert(apiEndpoint);
+      const client = new bigtableModule.v2.BigtableClient();
+      const apiEndpoint = client.apiEndpoint;
+      assert.strictEqual(apiEndpoint, 'bigtable.googleapis.com');
+    });
+
+    it('has universeDomain', () => {
+      const client = new bigtableModule.v2.BigtableClient();
+      const universeDomain = client.universeDomain;
+      assert.strictEqual(universeDomain, 'googleapis.com');
+    });
+
+    if (
+      typeof process !== 'undefined' &&
+      typeof process.emitWarning === 'function'
+    ) {
+      it('throws DeprecationWarning if static servicePath is used', () => {
+        const stub = sinon.stub(process, 'emitWarning');
+        const servicePath = bigtableModule.v2.BigtableClient.servicePath;
+        assert.strictEqual(servicePath, 'bigtable.googleapis.com');
+        assert(stub.called);
+        stub.restore();
+      });
+
+      it('throws DeprecationWarning if static apiEndpoint is used', () => {
+        const stub = sinon.stub(process, 'emitWarning');
+        const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
+        assert.strictEqual(apiEndpoint, 'bigtable.googleapis.com');
+        assert(stub.called);
+        stub.restore();
+      });
+    }
+    it('sets servicePath according to universe domain camelCase', () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        universeDomain: 'example.com',
+      });
+      const servicePath = client.servicePath;
+      assert.strictEqual(servicePath, 'bigtable.example.com');
+    });
+
+    it('sets servicePath according to universe domain snakeCase', () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        universe_domain: 'example.com',
+      });
+      const servicePath = client.servicePath;
+      assert.strictEqual(servicePath, 'bigtable.example.com');
+    });
+    it('does not allow setting both universeDomain and universe_domain', () => {
+      assert.throws(() => {
+        new bigtableModule.v2.BigtableClient({
+          universe_domain: 'example.com',
+          universeDomain: 'example.net',
+        });
+      });
     });
 
     it('has port', () => {
@@ -750,11 +802,7 @@ describe('v2.BigtableClient', () => {
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.readRows(request, {
-        retry: {
-          shouldRetryFn: () => {
-            return false;
-          },
-        },
+        retryRequestOptions: {noResponseRetries: 0},
       });
       const promise = new Promise((resolve, reject) => {
         stream.on(
@@ -867,11 +915,7 @@ describe('v2.BigtableClient', () => {
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.sampleRowKeys(request, {
-        retry: {
-          shouldRetryFn: () => {
-            return false;
-          },
-        },
+        retryRequestOptions: {noResponseRetries: 0},
       });
       const promise = new Promise((resolve, reject) => {
         stream.on(
@@ -984,11 +1028,7 @@ describe('v2.BigtableClient', () => {
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.mutateRows(request, {
-        retry: {
-          shouldRetryFn: () => {
-            return false;
-          },
-        },
+        retryRequestOptions: {noResponseRetries: 0},
       });
       const promise = new Promise((resolve, reject) => {
         stream.on(
@@ -1112,11 +1152,7 @@ describe('v2.BigtableClient', () => {
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.generateInitialChangeStreamPartitions(request, {
-        retry: {
-          shouldRetryFn: () => {
-            return false;
-          },
-        },
+        retryRequestOptions: {noResponseRetries: 0},
       });
       const promise = new Promise((resolve, reject) => {
         stream.on(
@@ -1240,11 +1276,7 @@ describe('v2.BigtableClient', () => {
       const expectedError = new Error('The client has already been closed.');
       client.close();
       const stream = client.readChangeStream(request, {
-        retry: {
-          shouldRetryFn: () => {
-            return false;
-          },
-        },
+        retryRequestOptions: {noResponseRetries: 0},
       });
       const promise = new Promise((resolve, reject) => {
         stream.on(
