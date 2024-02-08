@@ -162,15 +162,67 @@ function stubAsyncIterationCall<ResponseType>(
 describe('v2.BigtableTableAdminClient', () => {
   describe('Common methods', () => {
     it('has servicePath', () => {
-      const servicePath =
-        bigtabletableadminModule.v2.BigtableTableAdminClient.servicePath;
-      assert(servicePath);
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient();
+      const servicePath = client.servicePath;
+      assert.strictEqual(servicePath, 'bigtableadmin.googleapis.com');
     });
 
     it('has apiEndpoint', () => {
-      const apiEndpoint =
-        bigtabletableadminModule.v2.BigtableTableAdminClient.apiEndpoint;
-      assert(apiEndpoint);
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient();
+      const apiEndpoint = client.apiEndpoint;
+      assert.strictEqual(apiEndpoint, 'bigtableadmin.googleapis.com');
+    });
+
+    it('has universeDomain', () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient();
+      const universeDomain = client.universeDomain;
+      assert.strictEqual(universeDomain, 'googleapis.com');
+    });
+
+    if (
+      typeof process !== 'undefined' &&
+      typeof process.emitWarning === 'function'
+    ) {
+      it('throws DeprecationWarning if static servicePath is used', () => {
+        const stub = sinon.stub(process, 'emitWarning');
+        const servicePath =
+          bigtabletableadminModule.v2.BigtableTableAdminClient.servicePath;
+        assert.strictEqual(servicePath, 'bigtableadmin.googleapis.com');
+        assert(stub.called);
+        stub.restore();
+      });
+
+      it('throws DeprecationWarning if static apiEndpoint is used', () => {
+        const stub = sinon.stub(process, 'emitWarning');
+        const apiEndpoint =
+          bigtabletableadminModule.v2.BigtableTableAdminClient.apiEndpoint;
+        assert.strictEqual(apiEndpoint, 'bigtableadmin.googleapis.com');
+        assert(stub.called);
+        stub.restore();
+      });
+    }
+    it('sets servicePath according to universe domain camelCase', () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        universeDomain: 'example.com',
+      });
+      const servicePath = client.servicePath;
+      assert.strictEqual(servicePath, 'bigtableadmin.example.com');
+    });
+
+    it('sets servicePath according to universe domain snakeCase', () => {
+      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
+        universe_domain: 'example.com',
+      });
+      const servicePath = client.servicePath;
+      assert.strictEqual(servicePath, 'bigtableadmin.example.com');
+    });
+    it('does not allow setting both universeDomain and universe_domain', () => {
+      assert.throws(() => {
+        new bigtabletableadminModule.v2.BigtableTableAdminClient({
+          universe_domain: 'example.com',
+          universeDomain: 'example.net',
+        });
+      });
     });
 
     it('has port', () => {
