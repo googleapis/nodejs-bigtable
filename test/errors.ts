@@ -21,9 +21,9 @@ import {Bigtable} from '../src';
 import * as assert from 'assert';
 
 import {GoogleError, grpc, ServiceError} from 'google-gax';
-import {MockServer} from '../src/util/mock-servers/mock-server';
-import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
-import {MockService} from '../src/util/mock-servers/mock-service';
+import {MockServer} from './helpers/mock-servers/mock-server';
+import {BigtableClientMockService} from './helpers/mock-servers/service-implementations/bigtable-client-mock-service';
+import {MockService} from './helpers/mock-servers/mock-service';
 
 function isServiceError(error: any): error is ServiceError {
   return (

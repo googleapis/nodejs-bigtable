@@ -52,6 +52,7 @@
     "@google-cloud/promisify": "^4.0.0",
     "arrify": "^2.0.0",
     "concat-stream": "^2.0.0",
+    "deep-equal": "^2.0.5",
     "dot-prop": "^6.0.0",
     "escape-string-regexp": "^4.0.0",
     "extend": "^3.0.2",
