@@ -816,44 +816,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       if (lastRowKey) {
-        // Readjust and/or remove ranges based on previous valid row reads.
-        // Iterate backward since items may need to be removed.
-        for (let index = ranges.length - 1; index >= 0; index--) {
-          const range = ranges[index];
-          const startValue = is.object(range.start)
-            ? (range.start as BoundData).value
-            : range.start;
-          const endValue = is.object(range.end)
-            ? (range.end as BoundData).value
-            : range.end;
-          const startKeyIsRead =
-            !startValue ||
-            TableUtils.lessThanOrEqualTo(
-              startValue as string,
-              lastRowKey as string
-            );
-          const endKeyIsNotRead =
-            !endValue ||
-            (endValue as Buffer).length === 0 ||
-            TableUtils.lessThan(lastRowKey as string, endValue as string);
-          if (startKeyIsRead) {
-            if (endKeyIsNotRead) {
-              // EndKey is not read, reset the range to start from lastRowKey open
-              range.start = {
-                value: lastRowKey,
-                inclusive: false,
-              };
-            } else {
-              // EndKey is read, remove this range
-              ranges.splice(index, 1);
-            }
-          }
-        }
-
-        // Remove rowKeys already read.
-        rowKeys = rowKeys.filter(rowKey =>
-          TableUtils.greaterThan(rowKey, lastRowKey as string)
-        );
+        TableUtils.spliceRanges(ranges, lastRowKey);
+        rowKeys = TableUtils.getRowKeys(rowKeys, lastRowKey);
 
         // If there was a row limit in the original request and
         // we've already read all the rows, end the stream and
