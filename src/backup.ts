@@ -254,10 +254,15 @@ Please use the format 'my-backup' or '${cluster.name}/backups/my-backup'.`);
   }
 
   /**
-   * Copy this backup
+   * When this backup object represents a backup that has already been created,
+   * copy will copy this created backup to the location and with the settings
+   * specified by the config parameter. After running this function the original
+   * backup will exist as well as a second backup matching the parameters given
+   * by the config argument.
    *
    * @param {CopyBackupConfig} [config] The config that specifies all of the
-   * information about the destination backup.
+   * information about the destination backup which is the new backup that gets
+   * created as a result of calling copy.
    * @param {CopyBackupCallback} [callback] The callback function that passes an
    * error or results back to the user.
    */
