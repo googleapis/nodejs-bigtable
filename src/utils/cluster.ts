@@ -166,7 +166,7 @@ export class ClusterUtils {
     };
   }
 
-  static setBackupExpiryTime(backup: ModifiableBackupFields) {
+  static formatBackupExpiryTime(backup: ModifiableBackupFields) {
     if (backup.expireTime instanceof Date) {
       backup.expireTime = new PreciseDate(backup.expireTime).toStruct();
     }
