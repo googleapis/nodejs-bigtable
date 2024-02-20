@@ -1603,7 +1603,6 @@ describe('Bigtable', () => {
           await backup.getMetadata();
           assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
         }
-        console.log(`Project 2: ${process.env.GCLOUD_PROJECT2}`);
         // Create client, instance, cluster for second project
         const bigtable = new Bigtable(
           process.env.GCLOUD_PROJECT2
