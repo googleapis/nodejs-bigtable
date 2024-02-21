@@ -43,6 +43,7 @@ describe('Bigtable/ReadRows', () => {
   });
 
   it('should create read stream and read synchronously', function (done) {
+    console.log('test');
     this.timeout(60000);
 
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
