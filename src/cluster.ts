@@ -314,11 +314,7 @@ Please use the format 'my-cluster' or '${instance.name}/clusters/my-cluster'.`);
       },
     };
 
-    if (reqOpts.backup.expireTime instanceof Date) {
-      reqOpts.backup.expireTime = new PreciseDate(
-        reqOpts.backup.expireTime
-      ).toStruct();
-    }
+    ClusterUtils.formatBackupExpiryTime(reqOpts.backup);
 
     delete reqOpts.backup.table;
     delete reqOpts.backup.gaxOptions;
