@@ -201,6 +201,9 @@ export class BigtableInstanceAdminClient {
       appProfilePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/appProfiles/{app_profile}'
       ),
+      authorizedViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}'
+      ),
       backupPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}'
       ),
@@ -3132,6 +3135,81 @@ export class BigtableInstanceAdminClient {
   matchAppProfileFromAppProfileName(appProfileName: string) {
     return this.pathTemplates.appProfilePathTemplate.match(appProfileName)
       .app_profile;
+  }
+
+  /**
+   * Return a fully-qualified authorizedView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} table
+   * @param {string} authorized_view
+   * @returns {string} Resource name string.
+   */
+  authorizedViewPath(
+    project: string,
+    instance: string,
+    table: string,
+    authorizedView: string
+  ) {
+    return this.pathTemplates.authorizedViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      table: table,
+      authorized_view: authorizedView,
+    });
+  }
+
+  /**
+   * Parse the project from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).project;
+  }
+
+  /**
+   * Parse the instance from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).instance;
+  }
+
+  /**
+   * Parse the table from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the table.
+   */
+  matchTableFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).table;
+  }
+
+  /**
+   * Parse the authorized_view from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the authorized_view.
+   */
+  matchAuthorizedViewFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).authorized_view;
   }
 
   /**

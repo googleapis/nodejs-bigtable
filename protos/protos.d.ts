@@ -4984,6 +4984,76 @@ export namespace google {
                     public undeleteTable(request: google.bigtable.admin.v2.IUndeleteTableRequest): Promise<google.longrunning.Operation>;
 
                     /**
+                     * Calls CreateAuthorizedView.
+                     * @param request CreateAuthorizedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public createAuthorizedView(request: google.bigtable.admin.v2.ICreateAuthorizedViewRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.CreateAuthorizedViewCallback): void;
+
+                    /**
+                     * Calls CreateAuthorizedView.
+                     * @param request CreateAuthorizedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public createAuthorizedView(request: google.bigtable.admin.v2.ICreateAuthorizedViewRequest): Promise<google.longrunning.Operation>;
+
+                    /**
+                     * Calls ListAuthorizedViews.
+                     * @param request ListAuthorizedViewsRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and ListAuthorizedViewsResponse
+                     */
+                    public listAuthorizedViews(request: google.bigtable.admin.v2.IListAuthorizedViewsRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.ListAuthorizedViewsCallback): void;
+
+                    /**
+                     * Calls ListAuthorizedViews.
+                     * @param request ListAuthorizedViewsRequest message or plain object
+                     * @returns Promise
+                     */
+                    public listAuthorizedViews(request: google.bigtable.admin.v2.IListAuthorizedViewsRequest): Promise<google.bigtable.admin.v2.ListAuthorizedViewsResponse>;
+
+                    /**
+                     * Calls GetAuthorizedView.
+                     * @param request GetAuthorizedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and AuthorizedView
+                     */
+                    public getAuthorizedView(request: google.bigtable.admin.v2.IGetAuthorizedViewRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.GetAuthorizedViewCallback): void;
+
+                    /**
+                     * Calls GetAuthorizedView.
+                     * @param request GetAuthorizedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public getAuthorizedView(request: google.bigtable.admin.v2.IGetAuthorizedViewRequest): Promise<google.bigtable.admin.v2.AuthorizedView>;
+
+                    /**
+                     * Calls UpdateAuthorizedView.
+                     * @param request UpdateAuthorizedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Operation
+                     */
+                    public updateAuthorizedView(request: google.bigtable.admin.v2.IUpdateAuthorizedViewRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.UpdateAuthorizedViewCallback): void;
+
+                    /**
+                     * Calls UpdateAuthorizedView.
+                     * @param request UpdateAuthorizedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public updateAuthorizedView(request: google.bigtable.admin.v2.IUpdateAuthorizedViewRequest): Promise<google.longrunning.Operation>;
+
+                    /**
+                     * Calls DeleteAuthorizedView.
+                     * @param request DeleteAuthorizedViewRequest message or plain object
+                     * @param callback Node-style callback called with the error, if any, and Empty
+                     */
+                    public deleteAuthorizedView(request: google.bigtable.admin.v2.IDeleteAuthorizedViewRequest, callback: google.bigtable.admin.v2.BigtableTableAdmin.DeleteAuthorizedViewCallback): void;
+
+                    /**
+                     * Calls DeleteAuthorizedView.
+                     * @param request DeleteAuthorizedViewRequest message or plain object
+                     * @returns Promise
+                     */
+                    public deleteAuthorizedView(request: google.bigtable.admin.v2.IDeleteAuthorizedViewRequest): Promise<google.protobuf.Empty>;
+
+                    /**
                      * Calls ModifyColumnFamilies.
                      * @param request ModifyColumnFamiliesRequest message or plain object
                      * @param callback Node-style callback called with the error, if any, and Table
@@ -5286,6 +5356,41 @@ export namespace google {
                      * @param [response] Operation
                      */
                     type UndeleteTableCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|createAuthorizedView}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type CreateAuthorizedViewCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|listAuthorizedViews}.
+                     * @param error Error, if any
+                     * @param [response] ListAuthorizedViewsResponse
+                     */
+                    type ListAuthorizedViewsCallback = (error: (Error|null), response?: google.bigtable.admin.v2.ListAuthorizedViewsResponse) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|getAuthorizedView}.
+                     * @param error Error, if any
+                     * @param [response] AuthorizedView
+                     */
+                    type GetAuthorizedViewCallback = (error: (Error|null), response?: google.bigtable.admin.v2.AuthorizedView) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|updateAuthorizedView}.
+                     * @param error Error, if any
+                     * @param [response] Operation
+                     */
+                    type UpdateAuthorizedViewCallback = (error: (Error|null), response?: google.longrunning.Operation) => void;
+
+                    /**
+                     * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|deleteAuthorizedView}.
+                     * @param error Error, if any
+                     * @param [response] Empty
+                     */
+                    type DeleteAuthorizedViewCallback = (error: (Error|null), response?: google.protobuf.Empty) => void;
 
                     /**
                      * Callback as used by {@link google.bigtable.admin.v2.BigtableTableAdmin|modifyColumnFamilies}.
@@ -9363,6 +9468,866 @@ export namespace google {
                     public static getTypeUrl(typeUrlPrefix?: string): string;
                 }
 
+                /** Properties of a CreateAuthorizedViewRequest. */
+                interface ICreateAuthorizedViewRequest {
+
+                    /** CreateAuthorizedViewRequest parent */
+                    parent?: (string|null);
+
+                    /** CreateAuthorizedViewRequest authorizedViewId */
+                    authorizedViewId?: (string|null);
+
+                    /** CreateAuthorizedViewRequest authorizedView */
+                    authorizedView?: (google.bigtable.admin.v2.IAuthorizedView|null);
+                }
+
+                /** Represents a CreateAuthorizedViewRequest. */
+                class CreateAuthorizedViewRequest implements ICreateAuthorizedViewRequest {
+
+                    /**
+                     * Constructs a new CreateAuthorizedViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.ICreateAuthorizedViewRequest);
+
+                    /** CreateAuthorizedViewRequest parent. */
+                    public parent: string;
+
+                    /** CreateAuthorizedViewRequest authorizedViewId. */
+                    public authorizedViewId: string;
+
+                    /** CreateAuthorizedViewRequest authorizedView. */
+                    public authorizedView?: (google.bigtable.admin.v2.IAuthorizedView|null);
+
+                    /**
+                     * Creates a new CreateAuthorizedViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns CreateAuthorizedViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.ICreateAuthorizedViewRequest): google.bigtable.admin.v2.CreateAuthorizedViewRequest;
+
+                    /**
+                     * Encodes the specified CreateAuthorizedViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.CreateAuthorizedViewRequest.verify|verify} messages.
+                     * @param message CreateAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.ICreateAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified CreateAuthorizedViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateAuthorizedViewRequest.verify|verify} messages.
+                     * @param message CreateAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.ICreateAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a CreateAuthorizedViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns CreateAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CreateAuthorizedViewRequest;
+
+                    /**
+                     * Decodes a CreateAuthorizedViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns CreateAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CreateAuthorizedViewRequest;
+
+                    /**
+                     * Verifies a CreateAuthorizedViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a CreateAuthorizedViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns CreateAuthorizedViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CreateAuthorizedViewRequest;
+
+                    /**
+                     * Creates a plain object from a CreateAuthorizedViewRequest message. Also converts values to other types if specified.
+                     * @param message CreateAuthorizedViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.CreateAuthorizedViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this CreateAuthorizedViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for CreateAuthorizedViewRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a CreateAuthorizedViewMetadata. */
+                interface ICreateAuthorizedViewMetadata {
+
+                    /** CreateAuthorizedViewMetadata originalRequest */
+                    originalRequest?: (google.bigtable.admin.v2.ICreateAuthorizedViewRequest|null);
+
+                    /** CreateAuthorizedViewMetadata requestTime */
+                    requestTime?: (google.protobuf.ITimestamp|null);
+
+                    /** CreateAuthorizedViewMetadata finishTime */
+                    finishTime?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents a CreateAuthorizedViewMetadata. */
+                class CreateAuthorizedViewMetadata implements ICreateAuthorizedViewMetadata {
+
+                    /**
+                     * Constructs a new CreateAuthorizedViewMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.ICreateAuthorizedViewMetadata);
+
+                    /** CreateAuthorizedViewMetadata originalRequest. */
+                    public originalRequest?: (google.bigtable.admin.v2.ICreateAuthorizedViewRequest|null);
+
+                    /** CreateAuthorizedViewMetadata requestTime. */
+                    public requestTime?: (google.protobuf.ITimestamp|null);
+
+                    /** CreateAuthorizedViewMetadata finishTime. */
+                    public finishTime?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new CreateAuthorizedViewMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns CreateAuthorizedViewMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.ICreateAuthorizedViewMetadata): google.bigtable.admin.v2.CreateAuthorizedViewMetadata;
+
+                    /**
+                     * Encodes the specified CreateAuthorizedViewMetadata message. Does not implicitly {@link google.bigtable.admin.v2.CreateAuthorizedViewMetadata.verify|verify} messages.
+                     * @param message CreateAuthorizedViewMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.ICreateAuthorizedViewMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified CreateAuthorizedViewMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.CreateAuthorizedViewMetadata.verify|verify} messages.
+                     * @param message CreateAuthorizedViewMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.ICreateAuthorizedViewMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a CreateAuthorizedViewMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns CreateAuthorizedViewMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.CreateAuthorizedViewMetadata;
+
+                    /**
+                     * Decodes a CreateAuthorizedViewMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns CreateAuthorizedViewMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.CreateAuthorizedViewMetadata;
+
+                    /**
+                     * Verifies a CreateAuthorizedViewMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a CreateAuthorizedViewMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns CreateAuthorizedViewMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.CreateAuthorizedViewMetadata;
+
+                    /**
+                     * Creates a plain object from a CreateAuthorizedViewMetadata message. Also converts values to other types if specified.
+                     * @param message CreateAuthorizedViewMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.CreateAuthorizedViewMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this CreateAuthorizedViewMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for CreateAuthorizedViewMetadata
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a ListAuthorizedViewsRequest. */
+                interface IListAuthorizedViewsRequest {
+
+                    /** ListAuthorizedViewsRequest parent */
+                    parent?: (string|null);
+
+                    /** ListAuthorizedViewsRequest pageSize */
+                    pageSize?: (number|null);
+
+                    /** ListAuthorizedViewsRequest pageToken */
+                    pageToken?: (string|null);
+
+                    /** ListAuthorizedViewsRequest view */
+                    view?: (google.bigtable.admin.v2.AuthorizedView.ResponseView|keyof typeof google.bigtable.admin.v2.AuthorizedView.ResponseView|null);
+                }
+
+                /** Represents a ListAuthorizedViewsRequest. */
+                class ListAuthorizedViewsRequest implements IListAuthorizedViewsRequest {
+
+                    /**
+                     * Constructs a new ListAuthorizedViewsRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListAuthorizedViewsRequest);
+
+                    /** ListAuthorizedViewsRequest parent. */
+                    public parent: string;
+
+                    /** ListAuthorizedViewsRequest pageSize. */
+                    public pageSize: number;
+
+                    /** ListAuthorizedViewsRequest pageToken. */
+                    public pageToken: string;
+
+                    /** ListAuthorizedViewsRequest view. */
+                    public view: (google.bigtable.admin.v2.AuthorizedView.ResponseView|keyof typeof google.bigtable.admin.v2.AuthorizedView.ResponseView);
+
+                    /**
+                     * Creates a new ListAuthorizedViewsRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListAuthorizedViewsRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListAuthorizedViewsRequest): google.bigtable.admin.v2.ListAuthorizedViewsRequest;
+
+                    /**
+                     * Encodes the specified ListAuthorizedViewsRequest message. Does not implicitly {@link google.bigtable.admin.v2.ListAuthorizedViewsRequest.verify|verify} messages.
+                     * @param message ListAuthorizedViewsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListAuthorizedViewsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListAuthorizedViewsRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListAuthorizedViewsRequest.verify|verify} messages.
+                     * @param message ListAuthorizedViewsRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListAuthorizedViewsRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListAuthorizedViewsRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListAuthorizedViewsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListAuthorizedViewsRequest;
+
+                    /**
+                     * Decodes a ListAuthorizedViewsRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListAuthorizedViewsRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListAuthorizedViewsRequest;
+
+                    /**
+                     * Verifies a ListAuthorizedViewsRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListAuthorizedViewsRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListAuthorizedViewsRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListAuthorizedViewsRequest;
+
+                    /**
+                     * Creates a plain object from a ListAuthorizedViewsRequest message. Also converts values to other types if specified.
+                     * @param message ListAuthorizedViewsRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListAuthorizedViewsRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListAuthorizedViewsRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ListAuthorizedViewsRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a ListAuthorizedViewsResponse. */
+                interface IListAuthorizedViewsResponse {
+
+                    /** ListAuthorizedViewsResponse authorizedViews */
+                    authorizedViews?: (google.bigtable.admin.v2.IAuthorizedView[]|null);
+
+                    /** ListAuthorizedViewsResponse nextPageToken */
+                    nextPageToken?: (string|null);
+                }
+
+                /** Represents a ListAuthorizedViewsResponse. */
+                class ListAuthorizedViewsResponse implements IListAuthorizedViewsResponse {
+
+                    /**
+                     * Constructs a new ListAuthorizedViewsResponse.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IListAuthorizedViewsResponse);
+
+                    /** ListAuthorizedViewsResponse authorizedViews. */
+                    public authorizedViews: google.bigtable.admin.v2.IAuthorizedView[];
+
+                    /** ListAuthorizedViewsResponse nextPageToken. */
+                    public nextPageToken: string;
+
+                    /**
+                     * Creates a new ListAuthorizedViewsResponse instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns ListAuthorizedViewsResponse instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IListAuthorizedViewsResponse): google.bigtable.admin.v2.ListAuthorizedViewsResponse;
+
+                    /**
+                     * Encodes the specified ListAuthorizedViewsResponse message. Does not implicitly {@link google.bigtable.admin.v2.ListAuthorizedViewsResponse.verify|verify} messages.
+                     * @param message ListAuthorizedViewsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IListAuthorizedViewsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified ListAuthorizedViewsResponse message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.ListAuthorizedViewsResponse.verify|verify} messages.
+                     * @param message ListAuthorizedViewsResponse message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IListAuthorizedViewsResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a ListAuthorizedViewsResponse message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns ListAuthorizedViewsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.ListAuthorizedViewsResponse;
+
+                    /**
+                     * Decodes a ListAuthorizedViewsResponse message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns ListAuthorizedViewsResponse
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.ListAuthorizedViewsResponse;
+
+                    /**
+                     * Verifies a ListAuthorizedViewsResponse message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a ListAuthorizedViewsResponse message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns ListAuthorizedViewsResponse
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.ListAuthorizedViewsResponse;
+
+                    /**
+                     * Creates a plain object from a ListAuthorizedViewsResponse message. Also converts values to other types if specified.
+                     * @param message ListAuthorizedViewsResponse
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.ListAuthorizedViewsResponse, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this ListAuthorizedViewsResponse to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for ListAuthorizedViewsResponse
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a GetAuthorizedViewRequest. */
+                interface IGetAuthorizedViewRequest {
+
+                    /** GetAuthorizedViewRequest name */
+                    name?: (string|null);
+
+                    /** GetAuthorizedViewRequest view */
+                    view?: (google.bigtable.admin.v2.AuthorizedView.ResponseView|keyof typeof google.bigtable.admin.v2.AuthorizedView.ResponseView|null);
+                }
+
+                /** Represents a GetAuthorizedViewRequest. */
+                class GetAuthorizedViewRequest implements IGetAuthorizedViewRequest {
+
+                    /**
+                     * Constructs a new GetAuthorizedViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IGetAuthorizedViewRequest);
+
+                    /** GetAuthorizedViewRequest name. */
+                    public name: string;
+
+                    /** GetAuthorizedViewRequest view. */
+                    public view: (google.bigtable.admin.v2.AuthorizedView.ResponseView|keyof typeof google.bigtable.admin.v2.AuthorizedView.ResponseView);
+
+                    /**
+                     * Creates a new GetAuthorizedViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns GetAuthorizedViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IGetAuthorizedViewRequest): google.bigtable.admin.v2.GetAuthorizedViewRequest;
+
+                    /**
+                     * Encodes the specified GetAuthorizedViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.GetAuthorizedViewRequest.verify|verify} messages.
+                     * @param message GetAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IGetAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified GetAuthorizedViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.GetAuthorizedViewRequest.verify|verify} messages.
+                     * @param message GetAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IGetAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a GetAuthorizedViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns GetAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.GetAuthorizedViewRequest;
+
+                    /**
+                     * Decodes a GetAuthorizedViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns GetAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.GetAuthorizedViewRequest;
+
+                    /**
+                     * Verifies a GetAuthorizedViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a GetAuthorizedViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns GetAuthorizedViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.GetAuthorizedViewRequest;
+
+                    /**
+                     * Creates a plain object from a GetAuthorizedViewRequest message. Also converts values to other types if specified.
+                     * @param message GetAuthorizedViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.GetAuthorizedViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this GetAuthorizedViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for GetAuthorizedViewRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an UpdateAuthorizedViewRequest. */
+                interface IUpdateAuthorizedViewRequest {
+
+                    /** UpdateAuthorizedViewRequest authorizedView */
+                    authorizedView?: (google.bigtable.admin.v2.IAuthorizedView|null);
+
+                    /** UpdateAuthorizedViewRequest updateMask */
+                    updateMask?: (google.protobuf.IFieldMask|null);
+
+                    /** UpdateAuthorizedViewRequest ignoreWarnings */
+                    ignoreWarnings?: (boolean|null);
+                }
+
+                /** Represents an UpdateAuthorizedViewRequest. */
+                class UpdateAuthorizedViewRequest implements IUpdateAuthorizedViewRequest {
+
+                    /**
+                     * Constructs a new UpdateAuthorizedViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUpdateAuthorizedViewRequest);
+
+                    /** UpdateAuthorizedViewRequest authorizedView. */
+                    public authorizedView?: (google.bigtable.admin.v2.IAuthorizedView|null);
+
+                    /** UpdateAuthorizedViewRequest updateMask. */
+                    public updateMask?: (google.protobuf.IFieldMask|null);
+
+                    /** UpdateAuthorizedViewRequest ignoreWarnings. */
+                    public ignoreWarnings: boolean;
+
+                    /**
+                     * Creates a new UpdateAuthorizedViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UpdateAuthorizedViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUpdateAuthorizedViewRequest): google.bigtable.admin.v2.UpdateAuthorizedViewRequest;
+
+                    /**
+                     * Encodes the specified UpdateAuthorizedViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.UpdateAuthorizedViewRequest.verify|verify} messages.
+                     * @param message UpdateAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUpdateAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UpdateAuthorizedViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateAuthorizedViewRequest.verify|verify} messages.
+                     * @param message UpdateAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUpdateAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UpdateAuthorizedViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UpdateAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UpdateAuthorizedViewRequest;
+
+                    /**
+                     * Decodes an UpdateAuthorizedViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UpdateAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UpdateAuthorizedViewRequest;
+
+                    /**
+                     * Verifies an UpdateAuthorizedViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UpdateAuthorizedViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UpdateAuthorizedViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UpdateAuthorizedViewRequest;
+
+                    /**
+                     * Creates a plain object from an UpdateAuthorizedViewRequest message. Also converts values to other types if specified.
+                     * @param message UpdateAuthorizedViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UpdateAuthorizedViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UpdateAuthorizedViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UpdateAuthorizedViewRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of an UpdateAuthorizedViewMetadata. */
+                interface IUpdateAuthorizedViewMetadata {
+
+                    /** UpdateAuthorizedViewMetadata originalRequest */
+                    originalRequest?: (google.bigtable.admin.v2.IUpdateAuthorizedViewRequest|null);
+
+                    /** UpdateAuthorizedViewMetadata requestTime */
+                    requestTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UpdateAuthorizedViewMetadata finishTime */
+                    finishTime?: (google.protobuf.ITimestamp|null);
+                }
+
+                /** Represents an UpdateAuthorizedViewMetadata. */
+                class UpdateAuthorizedViewMetadata implements IUpdateAuthorizedViewMetadata {
+
+                    /**
+                     * Constructs a new UpdateAuthorizedViewMetadata.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata);
+
+                    /** UpdateAuthorizedViewMetadata originalRequest. */
+                    public originalRequest?: (google.bigtable.admin.v2.IUpdateAuthorizedViewRequest|null);
+
+                    /** UpdateAuthorizedViewMetadata requestTime. */
+                    public requestTime?: (google.protobuf.ITimestamp|null);
+
+                    /** UpdateAuthorizedViewMetadata finishTime. */
+                    public finishTime?: (google.protobuf.ITimestamp|null);
+
+                    /**
+                     * Creates a new UpdateAuthorizedViewMetadata instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns UpdateAuthorizedViewMetadata instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata): google.bigtable.admin.v2.UpdateAuthorizedViewMetadata;
+
+                    /**
+                     * Encodes the specified UpdateAuthorizedViewMetadata message. Does not implicitly {@link google.bigtable.admin.v2.UpdateAuthorizedViewMetadata.verify|verify} messages.
+                     * @param message UpdateAuthorizedViewMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified UpdateAuthorizedViewMetadata message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.UpdateAuthorizedViewMetadata.verify|verify} messages.
+                     * @param message UpdateAuthorizedViewMetadata message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an UpdateAuthorizedViewMetadata message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns UpdateAuthorizedViewMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.UpdateAuthorizedViewMetadata;
+
+                    /**
+                     * Decodes an UpdateAuthorizedViewMetadata message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns UpdateAuthorizedViewMetadata
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.UpdateAuthorizedViewMetadata;
+
+                    /**
+                     * Verifies an UpdateAuthorizedViewMetadata message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an UpdateAuthorizedViewMetadata message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns UpdateAuthorizedViewMetadata
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.UpdateAuthorizedViewMetadata;
+
+                    /**
+                     * Creates a plain object from an UpdateAuthorizedViewMetadata message. Also converts values to other types if specified.
+                     * @param message UpdateAuthorizedViewMetadata
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.UpdateAuthorizedViewMetadata, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this UpdateAuthorizedViewMetadata to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for UpdateAuthorizedViewMetadata
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a DeleteAuthorizedViewRequest. */
+                interface IDeleteAuthorizedViewRequest {
+
+                    /** DeleteAuthorizedViewRequest name */
+                    name?: (string|null);
+
+                    /** DeleteAuthorizedViewRequest etag */
+                    etag?: (string|null);
+                }
+
+                /** Represents a DeleteAuthorizedViewRequest. */
+                class DeleteAuthorizedViewRequest implements IDeleteAuthorizedViewRequest {
+
+                    /**
+                     * Constructs a new DeleteAuthorizedViewRequest.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IDeleteAuthorizedViewRequest);
+
+                    /** DeleteAuthorizedViewRequest name. */
+                    public name: string;
+
+                    /** DeleteAuthorizedViewRequest etag. */
+                    public etag: string;
+
+                    /**
+                     * Creates a new DeleteAuthorizedViewRequest instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns DeleteAuthorizedViewRequest instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IDeleteAuthorizedViewRequest): google.bigtable.admin.v2.DeleteAuthorizedViewRequest;
+
+                    /**
+                     * Encodes the specified DeleteAuthorizedViewRequest message. Does not implicitly {@link google.bigtable.admin.v2.DeleteAuthorizedViewRequest.verify|verify} messages.
+                     * @param message DeleteAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IDeleteAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified DeleteAuthorizedViewRequest message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.DeleteAuthorizedViewRequest.verify|verify} messages.
+                     * @param message DeleteAuthorizedViewRequest message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IDeleteAuthorizedViewRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a DeleteAuthorizedViewRequest message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns DeleteAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.DeleteAuthorizedViewRequest;
+
+                    /**
+                     * Decodes a DeleteAuthorizedViewRequest message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns DeleteAuthorizedViewRequest
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.DeleteAuthorizedViewRequest;
+
+                    /**
+                     * Verifies a DeleteAuthorizedViewRequest message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a DeleteAuthorizedViewRequest message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns DeleteAuthorizedViewRequest
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.DeleteAuthorizedViewRequest;
+
+                    /**
+                     * Creates a plain object from a DeleteAuthorizedViewRequest message. Also converts values to other types if specified.
+                     * @param message DeleteAuthorizedViewRequest
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.DeleteAuthorizedViewRequest, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this DeleteAuthorizedViewRequest to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for DeleteAuthorizedViewRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
                 /** Properties of a RestoreInfo. */
                 interface IRestoreInfo {
 
@@ -9831,6 +10796,341 @@ export namespace google {
                         REPLICATION_VIEW = 3,
                         ENCRYPTION_VIEW = 5,
                         FULL = 4
+                    }
+                }
+
+                /** Properties of an AuthorizedView. */
+                interface IAuthorizedView {
+
+                    /** AuthorizedView name */
+                    name?: (string|null);
+
+                    /** AuthorizedView subsetView */
+                    subsetView?: (google.bigtable.admin.v2.AuthorizedView.ISubsetView|null);
+
+                    /** AuthorizedView etag */
+                    etag?: (string|null);
+
+                    /** AuthorizedView deletionProtection */
+                    deletionProtection?: (boolean|null);
+                }
+
+                /** Represents an AuthorizedView. */
+                class AuthorizedView implements IAuthorizedView {
+
+                    /**
+                     * Constructs a new AuthorizedView.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IAuthorizedView);
+
+                    /** AuthorizedView name. */
+                    public name: string;
+
+                    /** AuthorizedView subsetView. */
+                    public subsetView?: (google.bigtable.admin.v2.AuthorizedView.ISubsetView|null);
+
+                    /** AuthorizedView etag. */
+                    public etag: string;
+
+                    /** AuthorizedView deletionProtection. */
+                    public deletionProtection: boolean;
+
+                    /** AuthorizedView authorizedView. */
+                    public authorizedView?: "subsetView";
+
+                    /**
+                     * Creates a new AuthorizedView instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns AuthorizedView instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IAuthorizedView): google.bigtable.admin.v2.AuthorizedView;
+
+                    /**
+                     * Encodes the specified AuthorizedView message. Does not implicitly {@link google.bigtable.admin.v2.AuthorizedView.verify|verify} messages.
+                     * @param message AuthorizedView message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IAuthorizedView, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified AuthorizedView message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AuthorizedView.verify|verify} messages.
+                     * @param message AuthorizedView message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IAuthorizedView, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes an AuthorizedView message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns AuthorizedView
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AuthorizedView;
+
+                    /**
+                     * Decodes an AuthorizedView message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns AuthorizedView
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AuthorizedView;
+
+                    /**
+                     * Verifies an AuthorizedView message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates an AuthorizedView message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns AuthorizedView
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AuthorizedView;
+
+                    /**
+                     * Creates a plain object from an AuthorizedView message. Also converts values to other types if specified.
+                     * @param message AuthorizedView
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.AuthorizedView, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this AuthorizedView to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for AuthorizedView
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                namespace AuthorizedView {
+
+                    /** Properties of a FamilySubsets. */
+                    interface IFamilySubsets {
+
+                        /** FamilySubsets qualifiers */
+                        qualifiers?: (Uint8Array[]|null);
+
+                        /** FamilySubsets qualifierPrefixes */
+                        qualifierPrefixes?: (Uint8Array[]|null);
+                    }
+
+                    /** Represents a FamilySubsets. */
+                    class FamilySubsets implements IFamilySubsets {
+
+                        /**
+                         * Constructs a new FamilySubsets.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.AuthorizedView.IFamilySubsets);
+
+                        /** FamilySubsets qualifiers. */
+                        public qualifiers: Uint8Array[];
+
+                        /** FamilySubsets qualifierPrefixes. */
+                        public qualifierPrefixes: Uint8Array[];
+
+                        /**
+                         * Creates a new FamilySubsets instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns FamilySubsets instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.AuthorizedView.IFamilySubsets): google.bigtable.admin.v2.AuthorizedView.FamilySubsets;
+
+                        /**
+                         * Encodes the specified FamilySubsets message. Does not implicitly {@link google.bigtable.admin.v2.AuthorizedView.FamilySubsets.verify|verify} messages.
+                         * @param message FamilySubsets message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.AuthorizedView.IFamilySubsets, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified FamilySubsets message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AuthorizedView.FamilySubsets.verify|verify} messages.
+                         * @param message FamilySubsets message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.AuthorizedView.IFamilySubsets, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a FamilySubsets message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns FamilySubsets
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AuthorizedView.FamilySubsets;
+
+                        /**
+                         * Decodes a FamilySubsets message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns FamilySubsets
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AuthorizedView.FamilySubsets;
+
+                        /**
+                         * Verifies a FamilySubsets message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a FamilySubsets message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns FamilySubsets
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AuthorizedView.FamilySubsets;
+
+                        /**
+                         * Creates a plain object from a FamilySubsets message. Also converts values to other types if specified.
+                         * @param message FamilySubsets
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.AuthorizedView.FamilySubsets, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this FamilySubsets to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for FamilySubsets
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a SubsetView. */
+                    interface ISubsetView {
+
+                        /** SubsetView rowPrefixes */
+                        rowPrefixes?: (Uint8Array[]|null);
+
+                        /** SubsetView familySubsets */
+                        familySubsets?: ({ [k: string]: google.bigtable.admin.v2.AuthorizedView.IFamilySubsets }|null);
+                    }
+
+                    /** Represents a SubsetView. */
+                    class SubsetView implements ISubsetView {
+
+                        /**
+                         * Constructs a new SubsetView.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.AuthorizedView.ISubsetView);
+
+                        /** SubsetView rowPrefixes. */
+                        public rowPrefixes: Uint8Array[];
+
+                        /** SubsetView familySubsets. */
+                        public familySubsets: { [k: string]: google.bigtable.admin.v2.AuthorizedView.IFamilySubsets };
+
+                        /**
+                         * Creates a new SubsetView instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns SubsetView instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.AuthorizedView.ISubsetView): google.bigtable.admin.v2.AuthorizedView.SubsetView;
+
+                        /**
+                         * Encodes the specified SubsetView message. Does not implicitly {@link google.bigtable.admin.v2.AuthorizedView.SubsetView.verify|verify} messages.
+                         * @param message SubsetView message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.AuthorizedView.ISubsetView, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified SubsetView message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AuthorizedView.SubsetView.verify|verify} messages.
+                         * @param message SubsetView message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.AuthorizedView.ISubsetView, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a SubsetView message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns SubsetView
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AuthorizedView.SubsetView;
+
+                        /**
+                         * Decodes a SubsetView message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns SubsetView
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AuthorizedView.SubsetView;
+
+                        /**
+                         * Verifies a SubsetView message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a SubsetView message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns SubsetView
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AuthorizedView.SubsetView;
+
+                        /**
+                         * Creates a plain object from a SubsetView message. Also converts values to other types if specified.
+                         * @param message SubsetView
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.AuthorizedView.SubsetView, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this SubsetView to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for SubsetView
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** ResponseView enum. */
+                    enum ResponseView {
+                        RESPONSE_VIEW_UNSPECIFIED = 0,
+                        NAME_ONLY = 1,
+                        BASIC = 2,
+                        FULL = 3
                     }
                 }
 

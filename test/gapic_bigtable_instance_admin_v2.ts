@@ -3959,6 +3959,84 @@ describe('v2.BigtableInstanceAdminClient', () => {
       });
     });
 
+    describe('authorizedView', () => {
+      const fakePath = '/rendered/path/authorizedView';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+        table: 'tableValue',
+        authorized_view: 'authorizedViewValue',
+      };
+      const client =
+        new bigtableinstanceadminModule.v2.BigtableInstanceAdminClient({
+          credentials: {client_email: 'bogus', private_key: 'bogus'},
+          projectId: 'bogus',
+        });
+      client.initialize();
+      client.pathTemplates.authorizedViewPathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.authorizedViewPathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
+
+      it('authorizedViewPath', () => {
+        const result = client.authorizedViewPath(
+          'projectValue',
+          'instanceValue',
+          'tableValue',
+          'authorizedViewValue'
+        );
+        assert.strictEqual(result, fakePath);
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.render as SinonStub)
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromAuthorizedViewName', () => {
+        const result = client.matchProjectFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromAuthorizedViewName', () => {
+        const result = client.matchInstanceFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchTableFromAuthorizedViewName', () => {
+        const result = client.matchTableFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'tableValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchAuthorizedViewFromAuthorizedViewName', () => {
+        const result =
+          client.matchAuthorizedViewFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'authorizedViewValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
     describe('backup', () => {
       const fakePath = '/rendered/path/backup';
       const expectedParameters = {
