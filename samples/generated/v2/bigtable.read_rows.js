@@ -24,7 +24,7 @@
  */ 
 'use strict';
 
-function main(tableName) {
+function main() {
   // [START bigtable_v2_generated_Bigtable_ReadRows_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
@@ -33,11 +33,17 @@ function main(tableName) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table from which to read.
+   *  Optional. The unique name of the table from which to read.
    *  Values are of the form
    *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
+  /**
+   *  Optional. The unique name of the AuthorizedView from which to read.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   */
+  // const authorizedViewName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
@@ -84,7 +90,6 @@ function main(tableName) {
   async function callReadRows() {
     // Construct request
     const request = {
-      tableName,
     };
 
     // Run request

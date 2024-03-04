@@ -3350,8 +3350,8 @@
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Table",
-                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/AuthorizedView",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}"
               },
               "nested": {
                 "Bigtable": {
@@ -3367,15 +3367,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3387,6 +3393,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3405,14 +3415,18 @@
                       "responseStream": true,
                       "options": {
                         "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
-                            "get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys"
+                            "get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
+                            "additional_bindings": {
+                              "get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys"
+                            }
                           }
                         },
                         {
@@ -3424,6 +3438,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3442,15 +3460,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRow",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,mutations,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRow",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3462,6 +3486,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3481,15 +3509,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRows",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,entries,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRows",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3501,6 +3535,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3519,15 +3557,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:checkAndMutateRow",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:checkAndMutateRow",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:checkAndMutateRow",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:checkAndMutateRow",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3539,6 +3583,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3595,15 +3643,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readModifyWriteRow",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readModifyWriteRow",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3615,6 +3669,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3683,8 +3741,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 9,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3796,8 +3862,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 4,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3824,8 +3898,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 6,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3858,8 +3940,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 5,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3949,8 +4039,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 9,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -4013,8 +4111,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 6,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {

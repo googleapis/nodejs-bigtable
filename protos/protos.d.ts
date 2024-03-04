@@ -12314,6 +12314,9 @@ export namespace google {
                 /** ReadRowsRequest tableName */
                 tableName?: (string|null);
 
+                /** ReadRowsRequest authorizedViewName */
+                authorizedViewName?: (string|null);
+
                 /** ReadRowsRequest appProfileId */
                 appProfileId?: (string|null);
 
@@ -12344,6 +12347,9 @@ export namespace google {
 
                 /** ReadRowsRequest tableName. */
                 public tableName: string;
+
+                /** ReadRowsRequest authorizedViewName. */
+                public authorizedViewName: string;
 
                 /** ReadRowsRequest appProfileId. */
                 public appProfileId: string;
@@ -12717,6 +12723,9 @@ export namespace google {
                 /** SampleRowKeysRequest tableName */
                 tableName?: (string|null);
 
+                /** SampleRowKeysRequest authorizedViewName */
+                authorizedViewName?: (string|null);
+
                 /** SampleRowKeysRequest appProfileId */
                 appProfileId?: (string|null);
             }
@@ -12732,6 +12741,9 @@ export namespace google {
 
                 /** SampleRowKeysRequest tableName. */
                 public tableName: string;
+
+                /** SampleRowKeysRequest authorizedViewName. */
+                public authorizedViewName: string;
 
                 /** SampleRowKeysRequest appProfileId. */
                 public appProfileId: string;
@@ -12923,6 +12935,9 @@ export namespace google {
                 /** MutateRowRequest tableName */
                 tableName?: (string|null);
 
+                /** MutateRowRequest authorizedViewName */
+                authorizedViewName?: (string|null);
+
                 /** MutateRowRequest appProfileId */
                 appProfileId?: (string|null);
 
@@ -12944,6 +12959,9 @@ export namespace google {
 
                 /** MutateRowRequest tableName. */
                 public tableName: string;
+
+                /** MutateRowRequest authorizedViewName. */
+                public authorizedViewName: string;
 
                 /** MutateRowRequest appProfileId. */
                 public appProfileId: string;
@@ -13129,6 +13147,9 @@ export namespace google {
                 /** MutateRowsRequest tableName */
                 tableName?: (string|null);
 
+                /** MutateRowsRequest authorizedViewName */
+                authorizedViewName?: (string|null);
+
                 /** MutateRowsRequest appProfileId */
                 appProfileId?: (string|null);
 
@@ -13147,6 +13168,9 @@ export namespace google {
 
                 /** MutateRowsRequest tableName. */
                 public tableName: string;
+
+                /** MutateRowsRequest authorizedViewName. */
+                public authorizedViewName: string;
 
                 /** MutateRowsRequest appProfileId. */
                 public appProfileId: string;
@@ -13659,6 +13683,9 @@ export namespace google {
                 /** CheckAndMutateRowRequest tableName */
                 tableName?: (string|null);
 
+                /** CheckAndMutateRowRequest authorizedViewName */
+                authorizedViewName?: (string|null);
+
                 /** CheckAndMutateRowRequest appProfileId */
                 appProfileId?: (string|null);
 
@@ -13686,6 +13713,9 @@ export namespace google {
 
                 /** CheckAndMutateRowRequest tableName. */
                 public tableName: string;
+
+                /** CheckAndMutateRowRequest authorizedViewName. */
+                public authorizedViewName: string;
 
                 /** CheckAndMutateRowRequest appProfileId. */
                 public appProfileId: string;
@@ -14077,6 +14107,9 @@ export namespace google {
                 /** ReadModifyWriteRowRequest tableName */
                 tableName?: (string|null);
 
+                /** ReadModifyWriteRowRequest authorizedViewName */
+                authorizedViewName?: (string|null);
+
                 /** ReadModifyWriteRowRequest appProfileId */
                 appProfileId?: (string|null);
 
@@ -14098,6 +14131,9 @@ export namespace google {
 
                 /** ReadModifyWriteRowRequest tableName. */
                 public tableName: string;
+
+                /** ReadModifyWriteRowRequest authorizedViewName. */
+                public authorizedViewName: string;
 
                 /** ReadModifyWriteRowRequest appProfileId. */
                 public appProfileId: string;
