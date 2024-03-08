@@ -11,7 +11,7 @@
                     "csharp_namespace": "Google.Cloud.Bigtable.Admin.V2",
                     "go_package": "google.golang.org/genproto/googleapis/bigtable/admin/v2;admin",
                     "java_multiple_files": true,
-                    "java_outer_classname": "TableProto",
+                    "java_outer_classname": "TypesProto",
                     "java_package": "com.google.bigtable.admin.v2",
                     "php_namespace": "Google\\Cloud\\Bigtable\\Admin\\V2",
                     "ruby_package": "Google::Cloud::Bigtable::Admin::V2",
@@ -2343,6 +2343,13 @@
                             "drop": {
                               "type": "bool",
                               "id": 4
+                            },
+                            "updateMask": {
+                              "type": "google.protobuf.FieldMask",
+                              "id": 6,
+                              "options": {
+                                "(google.api.field_behavior)": "OPTIONAL"
+                              }
                             }
                           }
                         }
@@ -3070,6 +3077,10 @@
                         "gcRule": {
                           "type": "GcRule",
                           "id": 1
+                        },
+                        "valueType": {
+                          "type": "Type",
+                          "id": 3
                         }
                       }
                     },
@@ -3335,6 +3346,129 @@
                       "values": {
                         "RESTORE_SOURCE_TYPE_UNSPECIFIED": 0,
                         "BACKUP": 1
+                      }
+                    },
+                    "Type": {
+                      "oneofs": {
+                        "kind": {
+                          "oneof": [
+                            "bytesType",
+                            "int64Type",
+                            "aggregateType"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "bytesType": {
+                          "type": "Bytes",
+                          "id": 1
+                        },
+                        "int64Type": {
+                          "type": "Int64",
+                          "id": 5
+                        },
+                        "aggregateType": {
+                          "type": "Aggregate",
+                          "id": 6
+                        }
+                      },
+                      "nested": {
+                        "Bytes": {
+                          "fields": {
+                            "encoding": {
+                              "type": "Encoding",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Encoding": {
+                              "oneofs": {
+                                "encoding": {
+                                  "oneof": [
+                                    "raw"
+                                  ]
+                                }
+                              },
+                              "fields": {
+                                "raw": {
+                                  "type": "Raw",
+                                  "id": 1
+                                }
+                              },
+                              "nested": {
+                                "Raw": {
+                                  "fields": {}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "Int64": {
+                          "fields": {
+                            "encoding": {
+                              "type": "Encoding",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Encoding": {
+                              "oneofs": {
+                                "encoding": {
+                                  "oneof": [
+                                    "bigEndianBytes"
+                                  ]
+                                }
+                              },
+                              "fields": {
+                                "bigEndianBytes": {
+                                  "type": "BigEndianBytes",
+                                  "id": 1
+                                }
+                              },
+                              "nested": {
+                                "BigEndianBytes": {
+                                  "fields": {
+                                    "bytesType": {
+                                      "type": "Bytes",
+                                      "id": 1
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "Aggregate": {
+                          "oneofs": {
+                            "aggregator": {
+                              "oneof": [
+                                "sum"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "inputType": {
+                              "type": "Type",
+                              "id": 1
+                            },
+                            "stateType": {
+                              "type": "Type",
+                              "id": 2,
+                              "options": {
+                                "(google.api.field_behavior)": "OUTPUT_ONLY"
+                              }
+                            },
+                            "sum": {
+                              "type": "Sum",
+                              "id": 4
+                            }
+                          },
+                          "nested": {
+                            "Sum": {
+                              "fields": {}
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -4414,6 +4548,31 @@
                     }
                   }
                 },
+                "Value": {
+                  "oneofs": {
+                    "kind": {
+                      "oneof": [
+                        "rawValue",
+                        "rawTimestampMicros",
+                        "intValue"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "rawValue": {
+                      "type": "bytes",
+                      "id": 8
+                    },
+                    "rawTimestampMicros": {
+                      "type": "int64",
+                      "id": 9
+                    },
+                    "intValue": {
+                      "type": "int64",
+                      "id": 6
+                    }
+                  }
+                },
                 "RowRange": {
                   "oneofs": {
                     "startKey": {
@@ -4692,6 +4851,7 @@
                     "mutation": {
                       "oneof": [
                         "setCell",
+                        "addToCell",
                         "deleteFromColumn",
                         "deleteFromFamily",
                         "deleteFromRow"
@@ -4702,6 +4862,10 @@
                     "setCell": {
                       "type": "SetCell",
                       "id": 1
+                    },
+                    "addToCell": {
+                      "type": "AddToCell",
+                      "id": 5
                     },
                     "deleteFromColumn": {
                       "type": "DeleteFromColumn",
@@ -4733,6 +4897,26 @@
                         },
                         "value": {
                           "type": "bytes",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "AddToCell": {
+                      "fields": {
+                        "familyName": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "columnQualifier": {
+                          "type": "Value",
+                          "id": 2
+                        },
+                        "timestamp": {
+                          "type": "Value",
+                          "id": 3
+                        },
+                        "input": {
+                          "type": "Value",
                           "id": 4
                         }
                       }
