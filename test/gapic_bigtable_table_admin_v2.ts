@@ -161,12 +161,6 @@ function stubAsyncIterationCall<ResponseType>(
 
 describe('v2.BigtableTableAdminClient', () => {
   describe('Common methods', () => {
-    it('has servicePath', () => {
-      const client = new bigtabletableadminModule.v2.BigtableTableAdminClient();
-      const servicePath = client.servicePath;
-      assert.strictEqual(servicePath, 'bigtableadmin.googleapis.com');
-    });
-
     it('has apiEndpoint', () => {
       const client = new bigtabletableadminModule.v2.BigtableTableAdminClient();
       const apiEndpoint = client.apiEndpoint;
@@ -201,19 +195,19 @@ describe('v2.BigtableTableAdminClient', () => {
         stub.restore();
       });
     }
-    it('sets servicePath according to universe domain camelCase', () => {
+    it('sets apiEndpoint according to universe domain camelCase', () => {
       const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
         universeDomain: 'example.com',
       });
-      const servicePath = client.servicePath;
+      const servicePath = client.apiEndpoint;
       assert.strictEqual(servicePath, 'bigtableadmin.example.com');
     });
 
-    it('sets servicePath according to universe domain snakeCase', () => {
+    it('sets apiEndpoint according to universe domain snakeCase', () => {
       const client = new bigtabletableadminModule.v2.BigtableTableAdminClient({
         universe_domain: 'example.com',
       });
-      const servicePath = client.servicePath;
+      const servicePath = client.apiEndpoint;
       assert.strictEqual(servicePath, 'bigtableadmin.example.com');
     });
     it('does not allow setting both universeDomain and universe_domain', () => {
