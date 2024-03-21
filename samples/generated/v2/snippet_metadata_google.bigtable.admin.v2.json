@@ -1702,7 +1702,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 60,
+          "end": 72,
           "type": "FULL"
         }
       ],
@@ -1718,6 +1718,14 @@
           {
             "name": "consistency_token",
             "type": "TYPE_STRING"
+          },
+          {
+            "name": "standard_read_remote_writes",
+            "type": ".google.bigtable.admin.v2.StandardReadRemoteWrites"
+          },
+          {
+            "name": "data_boost_read_local_writes",
+            "type": ".google.bigtable.admin.v2.DataBoostReadLocalWrites"
           }
         ],
         "resultType": ".google.bigtable.admin.v2.CheckConsistencyResponse",

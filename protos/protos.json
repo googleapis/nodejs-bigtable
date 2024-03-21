@@ -1177,7 +1177,8 @@
                         "isolation": {
                           "oneof": [
                             "priority",
-                            "standardIsolation"
+                            "standardIsolation",
+                            "dataBoostIsolationReadOnly"
                           ]
                         }
                       },
@@ -1212,6 +1213,10 @@
                         "standardIsolation": {
                           "type": "StandardIsolation",
                           "id": 11
+                        },
+                        "dataBoostIsolationReadOnly": {
+                          "type": "DataBoostIsolationReadOnly",
+                          "id": 10
                         }
                       },
                       "nested": {
@@ -1249,6 +1254,32 @@
                             "priority": {
                               "type": "Priority",
                               "id": 1
+                            }
+                          }
+                        },
+                        "DataBoostIsolationReadOnly": {
+                          "oneofs": {
+                            "_computeBillingOwner": {
+                              "oneof": [
+                                "computeBillingOwner"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "computeBillingOwner": {
+                              "type": "ComputeBillingOwner",
+                              "id": 1,
+                              "options": {
+                                "proto3_optional": true
+                              }
+                            }
+                          },
+                          "nested": {
+                            "ComputeBillingOwner": {
+                              "values": {
+                                "COMPUTE_BILLING_OWNER_UNSPECIFIED": 0,
+                                "HOST_PAYS": 1
+                              }
                             }
                           }
                         }
@@ -2376,6 +2407,14 @@
                       }
                     },
                     "CheckConsistencyRequest": {
+                      "oneofs": {
+                        "mode": {
+                          "oneof": [
+                            "standardReadRemoteWrites",
+                            "dataBoostReadLocalWrites"
+                          ]
+                        }
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -2391,8 +2430,22 @@
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
+                        },
+                        "standardReadRemoteWrites": {
+                          "type": "StandardReadRemoteWrites",
+                          "id": 3
+                        },
+                        "dataBoostReadLocalWrites": {
+                          "type": "DataBoostReadLocalWrites",
+                          "id": 4
                         }
                       }
+                    },
+                    "StandardReadRemoteWrites": {
+                      "fields": {}
+                    },
+                    "DataBoostReadLocalWrites": {
+                      "fields": {}
                     },
                     "CheckConsistencyResponse": {
                       "fields": {

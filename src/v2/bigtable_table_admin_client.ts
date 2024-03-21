@@ -1385,6 +1385,14 @@ export class BigtableTableAdminClient {
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {string} request.consistencyToken
    *   Required. The token created using GenerateConsistencyToken for the Table.
+   * @param {google.bigtable.admin.v2.StandardReadRemoteWrites} request.standardReadRemoteWrites
+   *   Checks that reads using an app profile with `StandardIsolation` can
+   *   see all writes committed before the token was created, even if the
+   *   read and write target different clusters.
+   * @param {google.bigtable.admin.v2.DataBoostReadLocalWrites} request.dataBoostReadLocalWrites
+   *   Checks that reads using an app profile with `DataBoostIsolationReadOnly`
+   *   can see all writes committed before the token was created, but only if
+   *   the read and write target the same cluster.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.

@@ -4192,6 +4192,9 @@ export namespace google {
 
                     /** AppProfile standardIsolation */
                     standardIsolation?: (google.bigtable.admin.v2.AppProfile.IStandardIsolation|null);
+
+                    /** AppProfile dataBoostIsolationReadOnly */
+                    dataBoostIsolationReadOnly?: (google.bigtable.admin.v2.AppProfile.IDataBoostIsolationReadOnly|null);
                 }
 
                 /** Represents an AppProfile. */
@@ -4224,11 +4227,14 @@ export namespace google {
                     /** AppProfile standardIsolation. */
                     public standardIsolation?: (google.bigtable.admin.v2.AppProfile.IStandardIsolation|null);
 
+                    /** AppProfile dataBoostIsolationReadOnly. */
+                    public dataBoostIsolationReadOnly?: (google.bigtable.admin.v2.AppProfile.IDataBoostIsolationReadOnly|null);
+
                     /** AppProfile routingPolicy. */
                     public routingPolicy?: ("multiClusterRoutingUseAny"|"singleClusterRouting");
 
                     /** AppProfile isolation. */
-                    public isolation?: ("priority"|"standardIsolation");
+                    public isolation?: ("priority"|"standardIsolation"|"dataBoostIsolationReadOnly");
 
                     /**
                      * Creates a new AppProfile instance using the specified properties.
@@ -4613,6 +4619,115 @@ export namespace google {
                          * @returns The default type url
                          */
                         public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    /** Properties of a DataBoostIsolationReadOnly. */
+                    interface IDataBoostIsolationReadOnly {
+
+                        /** DataBoostIsolationReadOnly computeBillingOwner */
+                        computeBillingOwner?: (google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|keyof typeof google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|null);
+                    }
+
+                    /** Represents a DataBoostIsolationReadOnly. */
+                    class DataBoostIsolationReadOnly implements IDataBoostIsolationReadOnly {
+
+                        /**
+                         * Constructs a new DataBoostIsolationReadOnly.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.AppProfile.IDataBoostIsolationReadOnly);
+
+                        /** DataBoostIsolationReadOnly computeBillingOwner. */
+                        public computeBillingOwner?: (google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|keyof typeof google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.ComputeBillingOwner|null);
+
+                        /** DataBoostIsolationReadOnly _computeBillingOwner. */
+                        public _computeBillingOwner?: "computeBillingOwner";
+
+                        /**
+                         * Creates a new DataBoostIsolationReadOnly instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns DataBoostIsolationReadOnly instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.AppProfile.IDataBoostIsolationReadOnly): google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly;
+
+                        /**
+                         * Encodes the specified DataBoostIsolationReadOnly message. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.verify|verify} messages.
+                         * @param message DataBoostIsolationReadOnly message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.AppProfile.IDataBoostIsolationReadOnly, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified DataBoostIsolationReadOnly message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly.verify|verify} messages.
+                         * @param message DataBoostIsolationReadOnly message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.AppProfile.IDataBoostIsolationReadOnly, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes a DataBoostIsolationReadOnly message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns DataBoostIsolationReadOnly
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly;
+
+                        /**
+                         * Decodes a DataBoostIsolationReadOnly message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns DataBoostIsolationReadOnly
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly;
+
+                        /**
+                         * Verifies a DataBoostIsolationReadOnly message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates a DataBoostIsolationReadOnly message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns DataBoostIsolationReadOnly
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly;
+
+                        /**
+                         * Creates a plain object from a DataBoostIsolationReadOnly message. Also converts values to other types if specified.
+                         * @param message DataBoostIsolationReadOnly
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.AppProfile.DataBoostIsolationReadOnly, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this DataBoostIsolationReadOnly to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for DataBoostIsolationReadOnly
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
+                    }
+
+                    namespace DataBoostIsolationReadOnly {
+
+                        /** ComputeBillingOwner enum. */
+                        enum ComputeBillingOwner {
+                            COMPUTE_BILLING_OWNER_UNSPECIFIED = 0,
+                            HOST_PAYS = 1
+                        }
                     }
                 }
 
@@ -7568,6 +7683,12 @@ export namespace google {
 
                     /** CheckConsistencyRequest consistencyToken */
                     consistencyToken?: (string|null);
+
+                    /** CheckConsistencyRequest standardReadRemoteWrites */
+                    standardReadRemoteWrites?: (google.bigtable.admin.v2.IStandardReadRemoteWrites|null);
+
+                    /** CheckConsistencyRequest dataBoostReadLocalWrites */
+                    dataBoostReadLocalWrites?: (google.bigtable.admin.v2.IDataBoostReadLocalWrites|null);
                 }
 
                 /** Represents a CheckConsistencyRequest. */
@@ -7584,6 +7705,15 @@ export namespace google {
 
                     /** CheckConsistencyRequest consistencyToken. */
                     public consistencyToken: string;
+
+                    /** CheckConsistencyRequest standardReadRemoteWrites. */
+                    public standardReadRemoteWrites?: (google.bigtable.admin.v2.IStandardReadRemoteWrites|null);
+
+                    /** CheckConsistencyRequest dataBoostReadLocalWrites. */
+                    public dataBoostReadLocalWrites?: (google.bigtable.admin.v2.IDataBoostReadLocalWrites|null);
+
+                    /** CheckConsistencyRequest mode. */
+                    public mode?: ("standardReadRemoteWrites"|"dataBoostReadLocalWrites");
 
                     /**
                      * Creates a new CheckConsistencyRequest instance using the specified properties.
@@ -7657,6 +7787,188 @@ export namespace google {
 
                     /**
                      * Gets the default type url for CheckConsistencyRequest
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a StandardReadRemoteWrites. */
+                interface IStandardReadRemoteWrites {
+                }
+
+                /** Represents a StandardReadRemoteWrites. */
+                class StandardReadRemoteWrites implements IStandardReadRemoteWrites {
+
+                    /**
+                     * Constructs a new StandardReadRemoteWrites.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IStandardReadRemoteWrites);
+
+                    /**
+                     * Creates a new StandardReadRemoteWrites instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns StandardReadRemoteWrites instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IStandardReadRemoteWrites): google.bigtable.admin.v2.StandardReadRemoteWrites;
+
+                    /**
+                     * Encodes the specified StandardReadRemoteWrites message. Does not implicitly {@link google.bigtable.admin.v2.StandardReadRemoteWrites.verify|verify} messages.
+                     * @param message StandardReadRemoteWrites message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IStandardReadRemoteWrites, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified StandardReadRemoteWrites message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.StandardReadRemoteWrites.verify|verify} messages.
+                     * @param message StandardReadRemoteWrites message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IStandardReadRemoteWrites, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a StandardReadRemoteWrites message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns StandardReadRemoteWrites
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.StandardReadRemoteWrites;
+
+                    /**
+                     * Decodes a StandardReadRemoteWrites message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns StandardReadRemoteWrites
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.StandardReadRemoteWrites;
+
+                    /**
+                     * Verifies a StandardReadRemoteWrites message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a StandardReadRemoteWrites message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns StandardReadRemoteWrites
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.StandardReadRemoteWrites;
+
+                    /**
+                     * Creates a plain object from a StandardReadRemoteWrites message. Also converts values to other types if specified.
+                     * @param message StandardReadRemoteWrites
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.StandardReadRemoteWrites, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this StandardReadRemoteWrites to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for StandardReadRemoteWrites
+                     * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                     * @returns The default type url
+                     */
+                    public static getTypeUrl(typeUrlPrefix?: string): string;
+                }
+
+                /** Properties of a DataBoostReadLocalWrites. */
+                interface IDataBoostReadLocalWrites {
+                }
+
+                /** Represents a DataBoostReadLocalWrites. */
+                class DataBoostReadLocalWrites implements IDataBoostReadLocalWrites {
+
+                    /**
+                     * Constructs a new DataBoostReadLocalWrites.
+                     * @param [properties] Properties to set
+                     */
+                    constructor(properties?: google.bigtable.admin.v2.IDataBoostReadLocalWrites);
+
+                    /**
+                     * Creates a new DataBoostReadLocalWrites instance using the specified properties.
+                     * @param [properties] Properties to set
+                     * @returns DataBoostReadLocalWrites instance
+                     */
+                    public static create(properties?: google.bigtable.admin.v2.IDataBoostReadLocalWrites): google.bigtable.admin.v2.DataBoostReadLocalWrites;
+
+                    /**
+                     * Encodes the specified DataBoostReadLocalWrites message. Does not implicitly {@link google.bigtable.admin.v2.DataBoostReadLocalWrites.verify|verify} messages.
+                     * @param message DataBoostReadLocalWrites message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encode(message: google.bigtable.admin.v2.IDataBoostReadLocalWrites, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Encodes the specified DataBoostReadLocalWrites message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.DataBoostReadLocalWrites.verify|verify} messages.
+                     * @param message DataBoostReadLocalWrites message or plain object to encode
+                     * @param [writer] Writer to encode to
+                     * @returns Writer
+                     */
+                    public static encodeDelimited(message: google.bigtable.admin.v2.IDataBoostReadLocalWrites, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                    /**
+                     * Decodes a DataBoostReadLocalWrites message from the specified reader or buffer.
+                     * @param reader Reader or buffer to decode from
+                     * @param [length] Message length if known beforehand
+                     * @returns DataBoostReadLocalWrites
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.DataBoostReadLocalWrites;
+
+                    /**
+                     * Decodes a DataBoostReadLocalWrites message from the specified reader or buffer, length delimited.
+                     * @param reader Reader or buffer to decode from
+                     * @returns DataBoostReadLocalWrites
+                     * @throws {Error} If the payload is not a reader or valid buffer
+                     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                     */
+                    public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.DataBoostReadLocalWrites;
+
+                    /**
+                     * Verifies a DataBoostReadLocalWrites message.
+                     * @param message Plain object to verify
+                     * @returns `null` if valid, otherwise the reason why it is not
+                     */
+                    public static verify(message: { [k: string]: any }): (string|null);
+
+                    /**
+                     * Creates a DataBoostReadLocalWrites message from a plain object. Also converts values to their respective internal types.
+                     * @param object Plain object
+                     * @returns DataBoostReadLocalWrites
+                     */
+                    public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.DataBoostReadLocalWrites;
+
+                    /**
+                     * Creates a plain object from a DataBoostReadLocalWrites message. Also converts values to other types if specified.
+                     * @param message DataBoostReadLocalWrites
+                     * @param [options] Conversion options
+                     * @returns Plain object
+                     */
+                    public static toObject(message: google.bigtable.admin.v2.DataBoostReadLocalWrites, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                    /**
+                     * Converts this DataBoostReadLocalWrites to JSON.
+                     * @returns JSON object
+                     */
+                    public toJSON(): { [k: string]: any };
+
+                    /**
+                     * Gets the default type url for DataBoostReadLocalWrites
                      * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
                      * @returns The default type url
                      */
