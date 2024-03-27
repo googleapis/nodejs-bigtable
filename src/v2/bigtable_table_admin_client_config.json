@@ -61,6 +61,26 @@
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
+        "CreateAuthorizedView": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "ListAuthorizedViews": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "GetAuthorizedView": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "UpdateAuthorizedView": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "DeleteAuthorizedView": {
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
         "ModifyColumnFamilies": {
           "timeout_millis": 300000,
           "retry_codes_name": "non_idempotent",

@@ -24,7 +24,7 @@
  */ 
 'use strict';
 
-function main(tableName, entries) {
+function main(entries) {
   // [START bigtable_v2_generated_Bigtable_MutateRows_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
@@ -33,10 +33,19 @@ function main(tableName, entries) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the mutations should be
+   *  Optional. The unique name of the table to which the mutations should be
    *  applied.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
+  /**
+   *  Optional. The unique name of the AuthorizedView to which the mutations
+   *  should be applied.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   */
+  // const authorizedViewName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
@@ -60,7 +69,6 @@ function main(tableName, entries) {
   async function callMutateRows() {
     // Construct request
     const request = {
-      tableName,
       entries,
     };
 

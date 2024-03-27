@@ -705,14 +705,14 @@ export class Row {
       !Array.isArray(columnsOrOptionsOrCallback)
         ? columnsOrOptionsOrCallback
         : typeof optionsOrCallback === 'object'
-        ? optionsOrCallback
-        : {};
+          ? optionsOrCallback
+          : {};
     const callback =
       typeof columnsOrOptionsOrCallback === 'function'
         ? columnsOrOptionsOrCallback
         : typeof optionsOrCallback === 'function'
-        ? optionsOrCallback
-        : cb!;
+          ? optionsOrCallback
+          : cb!;
 
     let filter;
     columns = arrify(columns);
@@ -864,14 +864,14 @@ export class Row {
       typeof valueOrOptionsOrCallback === 'object'
         ? valueOrOptionsOrCallback
         : typeof optionsOrCallback === 'object'
-        ? optionsOrCallback
-        : {};
+          ? optionsOrCallback
+          : {};
     const callback =
       typeof valueOrOptionsOrCallback === 'function'
         ? valueOrOptionsOrCallback
         : typeof optionsOrCallback === 'function'
-        ? optionsOrCallback
-        : cb!;
+          ? optionsOrCallback
+          : cb!;
 
     const reqOpts = {
       column,
