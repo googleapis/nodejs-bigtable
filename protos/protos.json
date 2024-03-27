@@ -5140,6 +5140,10 @@
                     "retryInfo": {
                       "type": "bool",
                       "id": 7
+                    },
+                    "clientSideMetricsEnabled": {
+                      "type": "bool",
+                      "id": 8
                     }
                   }
                 },

@@ -19715,6 +19715,9 @@ export namespace google {
 
                 /** FeatureFlags retryInfo */
                 retryInfo?: (boolean|null);
+
+                /** FeatureFlags clientSideMetricsEnabled */
+                clientSideMetricsEnabled?: (boolean|null);
             }
 
             /** Represents a FeatureFlags. */
@@ -19743,6 +19746,9 @@ export namespace google {
 
                 /** FeatureFlags retryInfo. */
                 public retryInfo: boolean;
+
+                /** FeatureFlags clientSideMetricsEnabled. */
+                public clientSideMetricsEnabled: boolean;
 
                 /**
                  * Creates a new FeatureFlags instance using the specified properties.
