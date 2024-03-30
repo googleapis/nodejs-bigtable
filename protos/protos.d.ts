@@ -10872,6 +10872,9 @@ export namespace google {
 
                     /** Table deletionProtection */
                     deletionProtection?: (boolean|null);
+
+                    /** Table automatedBackupPolicy */
+                    automatedBackupPolicy?: (google.bigtable.admin.v2.Table.IAutomatedBackupPolicy|null);
                 }
 
                 /** Represents a Table. */
@@ -10903,6 +10906,12 @@ export namespace google {
 
                     /** Table deletionProtection. */
                     public deletionProtection: boolean;
+
+                    /** Table automatedBackupPolicy. */
+                    public automatedBackupPolicy?: (google.bigtable.admin.v2.Table.IAutomatedBackupPolicy|null);
+
+                    /** Table automatedBackupConfig. */
+                    public automatedBackupConfig?: "automatedBackupPolicy";
 
                     /**
                      * Creates a new Table instance using the specified properties.
@@ -11114,6 +11123,109 @@ export namespace google {
                         REPLICATION_VIEW = 3,
                         ENCRYPTION_VIEW = 5,
                         FULL = 4
+                    }
+
+                    /** Properties of an AutomatedBackupPolicy. */
+                    interface IAutomatedBackupPolicy {
+
+                        /** AutomatedBackupPolicy retentionPeriod */
+                        retentionPeriod?: (google.protobuf.IDuration|null);
+
+                        /** AutomatedBackupPolicy frequency */
+                        frequency?: (google.protobuf.IDuration|null);
+                    }
+
+                    /** Represents an AutomatedBackupPolicy. */
+                    class AutomatedBackupPolicy implements IAutomatedBackupPolicy {
+
+                        /**
+                         * Constructs a new AutomatedBackupPolicy.
+                         * @param [properties] Properties to set
+                         */
+                        constructor(properties?: google.bigtable.admin.v2.Table.IAutomatedBackupPolicy);
+
+                        /** AutomatedBackupPolicy retentionPeriod. */
+                        public retentionPeriod?: (google.protobuf.IDuration|null);
+
+                        /** AutomatedBackupPolicy frequency. */
+                        public frequency?: (google.protobuf.IDuration|null);
+
+                        /**
+                         * Creates a new AutomatedBackupPolicy instance using the specified properties.
+                         * @param [properties] Properties to set
+                         * @returns AutomatedBackupPolicy instance
+                         */
+                        public static create(properties?: google.bigtable.admin.v2.Table.IAutomatedBackupPolicy): google.bigtable.admin.v2.Table.AutomatedBackupPolicy;
+
+                        /**
+                         * Encodes the specified AutomatedBackupPolicy message. Does not implicitly {@link google.bigtable.admin.v2.Table.AutomatedBackupPolicy.verify|verify} messages.
+                         * @param message AutomatedBackupPolicy message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encode(message: google.bigtable.admin.v2.Table.IAutomatedBackupPolicy, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Encodes the specified AutomatedBackupPolicy message, length delimited. Does not implicitly {@link google.bigtable.admin.v2.Table.AutomatedBackupPolicy.verify|verify} messages.
+                         * @param message AutomatedBackupPolicy message or plain object to encode
+                         * @param [writer] Writer to encode to
+                         * @returns Writer
+                         */
+                        public static encodeDelimited(message: google.bigtable.admin.v2.Table.IAutomatedBackupPolicy, writer?: $protobuf.Writer): $protobuf.Writer;
+
+                        /**
+                         * Decodes an AutomatedBackupPolicy message from the specified reader or buffer.
+                         * @param reader Reader or buffer to decode from
+                         * @param [length] Message length if known beforehand
+                         * @returns AutomatedBackupPolicy
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): google.bigtable.admin.v2.Table.AutomatedBackupPolicy;
+
+                        /**
+                         * Decodes an AutomatedBackupPolicy message from the specified reader or buffer, length delimited.
+                         * @param reader Reader or buffer to decode from
+                         * @returns AutomatedBackupPolicy
+                         * @throws {Error} If the payload is not a reader or valid buffer
+                         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+                         */
+                        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): google.bigtable.admin.v2.Table.AutomatedBackupPolicy;
+
+                        /**
+                         * Verifies an AutomatedBackupPolicy message.
+                         * @param message Plain object to verify
+                         * @returns `null` if valid, otherwise the reason why it is not
+                         */
+                        public static verify(message: { [k: string]: any }): (string|null);
+
+                        /**
+                         * Creates an AutomatedBackupPolicy message from a plain object. Also converts values to their respective internal types.
+                         * @param object Plain object
+                         * @returns AutomatedBackupPolicy
+                         */
+                        public static fromObject(object: { [k: string]: any }): google.bigtable.admin.v2.Table.AutomatedBackupPolicy;
+
+                        /**
+                         * Creates a plain object from an AutomatedBackupPolicy message. Also converts values to other types if specified.
+                         * @param message AutomatedBackupPolicy
+                         * @param [options] Conversion options
+                         * @returns Plain object
+                         */
+                        public static toObject(message: google.bigtable.admin.v2.Table.AutomatedBackupPolicy, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+                        /**
+                         * Converts this AutomatedBackupPolicy to JSON.
+                         * @returns JSON object
+                         */
+                        public toJSON(): { [k: string]: any };
+
+                        /**
+                         * Gets the default type url for AutomatedBackupPolicy
+                         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+                         * @returns The default type url
+                         */
+                        public static getTypeUrl(typeUrlPrefix?: string): string;
                     }
                 }
 
@@ -20594,6 +20706,9 @@ export namespace google {
 
             /** Publishing protoReferenceDocumentationUri */
             protoReferenceDocumentationUri?: (string|null);
+
+            /** Publishing restReferenceDocumentationUri */
+            restReferenceDocumentationUri?: (string|null);
         }
 
         /** Represents a Publishing. */
@@ -20634,6 +20749,9 @@ export namespace google {
 
             /** Publishing protoReferenceDocumentationUri. */
             public protoReferenceDocumentationUri: string;
+
+            /** Publishing restReferenceDocumentationUri. */
+            public restReferenceDocumentationUri: string;
 
             /**
              * Creates a new Publishing instance using the specified properties.
@@ -25052,6 +25170,9 @@ export namespace google {
 
             /** ServiceOptions .google.api.oauthScopes */
             ".google.api.oauthScopes"?: (string|null);
+
+            /** ServiceOptions .google.api.apiVersion */
+            ".google.api.apiVersion"?: (string|null);
         }
 
         /** Represents a ServiceOptions. */
