@@ -283,7 +283,7 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it('should silently resume after server or network error', function (done) {
+  it.only('should silently resume after server or network error', function (done) {
     this.timeout(600000);
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
@@ -298,12 +298,14 @@ describe('Bigtable/ReadRows', () => {
     let receivedRowCount = 0;
     let lastKeyReceived: number | undefined;
 
+    console.log('createreadstream');
     const readStream = table.createReadStream();
     readStream.on('error', (err: GoogleError) => {
       done(err);
     });
     readStream.on('data', (row: Row) => {
       ++receivedRowCount;
+      console.log(`row data ${receivedRowCount}`);
       const key = parseInt(row.id);
       if (lastKeyReceived && key <= lastKeyReceived) {
         done(new Error('Test error: keys are not in order'));
