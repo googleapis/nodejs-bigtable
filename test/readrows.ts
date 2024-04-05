@@ -283,7 +283,7 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it.only('should silently resume after server or network error', function (done) {
+  it('should silently resume after server or network error', function (done) {
     this.timeout(6000000);
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
