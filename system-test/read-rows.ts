@@ -23,7 +23,7 @@ import {describe, it, afterEach, beforeEach} from 'mocha';
 import * as sinon from 'sinon';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
-import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
+import {ServiceError, GrpcClient, GoogleError} from 'google-gax';
 import {PassThrough} from 'stream';
 
 const {grpc} = new GrpcClient();
@@ -96,15 +96,7 @@ describe('Bigtable/Table', () => {
         },
       });
       await operation.promise();
-      const gaxOptions: CallOptions = {
-        retry: {
-          retryCodes: [grpc.status.DEADLINE_EXCEEDED, grpc.status.NOT_FOUND],
-        },
-        maxRetries: 10,
-      };
-      await table.create({
-        gaxOptions,
-      });
+      await table.create({});
       await table.getRows(); // This is done to initialize the data client
       await bigtable.close();
       try {
