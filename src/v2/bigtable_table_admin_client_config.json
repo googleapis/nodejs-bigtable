@@ -53,7 +53,7 @@
           "retry_params_name": "default"
         },
         "DeleteTable": {
-          "timeout_millis": 60000,
+          "timeout_millis": 300000,
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
@@ -96,7 +96,7 @@
           "retry_params_name": "264268458a9e88347dbacbd9398202ff5885a40b"
         },
         "DeleteSnapshot": {
-          "timeout_millis": 60000,
+          "timeout_millis": 300000,
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
@@ -116,7 +116,7 @@
           "retry_params_name": "default"
         },
         "DeleteBackup": {
-          "timeout_millis": 60000,
+          "timeout_millis": 300000,
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
@@ -127,6 +127,10 @@
         },
         "RestoreTable": {
           "timeout_millis": 60000,
+          "retry_codes_name": "non_idempotent",
+          "retry_params_name": "default"
+        },
+        "CopyBackup": {
           "retry_codes_name": "non_idempotent",
           "retry_params_name": "default"
         },
