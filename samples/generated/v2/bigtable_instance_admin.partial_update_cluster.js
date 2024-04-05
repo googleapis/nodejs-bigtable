@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ function main(cluster, updateMask) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The Cluster which contains the partial updates to be applied, subject to
-   *  the update_mask.
+   *  Required. The Cluster which contains the partial updates to be applied,
+   *  subject to the update_mask.
    */
   // const cluster = {}
   /**

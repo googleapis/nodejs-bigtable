@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ function main(parent, instanceId, instance, clusters) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the project in which to create the new instance.
-   *  Values are of the form `projects/{project}`.
+   *  Required. The unique name of the project in which to create the new
+   *  instance. Values are of the form `projects/{project}`.
    */
   // const parent = 'abc123'
   /**
-   *  Required. The ID to be used when referring to the new instance within its project,
-   *  e.g., just `myinstance` rather than
+   *  Required. The ID to be used when referring to the new instance within its
+   *  project, e.g., just `myinstance` rather than
    *  `projects/myproject/instances/myinstance`.
    */
   // const instanceId = 'abc123'
@@ -51,7 +51,7 @@ function main(parent, instanceId, instance, clusters) {
    *  Fields marked `OutputOnly` must be left blank.
    *  Currently, at most four clusters can be specified.
    */
-  // const clusters = 1234
+  // const clusters = [1,2,3,4]
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
