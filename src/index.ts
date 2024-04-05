@@ -796,6 +796,7 @@ export class Bigtable {
           // Lazily instantiate client.
           const clientOptions = this.options[config.client]!;
           gaxClient = new v2[config.client](clientOptions);
+          // gaxClient = new v2[config.client](Object.assign(clientOptions, {grpc: grpcFromPackageJson}));
           this.api[config.client] = gaxClient;
         }
         let reqOpts = extend(true, {}, config.reqOpts);

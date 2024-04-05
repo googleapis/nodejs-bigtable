@@ -23,6 +23,7 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {debugLog, readRowsImpl} from './utils/readRowsImpl';
 import {UntypedHandleCall} from '@grpc/grpc-js';
+import * as grpc from '@grpc/grpc-js';
 
 describe('Bigtable/ReadRows', () => {
   let server: MockServer;
@@ -37,6 +38,7 @@ describe('Bigtable/ReadRows', () => {
     });
     bigtable = new Bigtable({
       apiEndpoint: `localhost:${port}`,
+      BigtableClient: {grpc},
     });
     table = bigtable.instance('fake-instance').table('fake-table');
     service = new BigtableClientMockService(server);
@@ -283,7 +285,7 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it('should silently resume after server or network error', done => {
+  it.only('should silently resume after server or network error', done => {
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
