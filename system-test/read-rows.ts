@@ -12,19 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bigtable} from '../src';
+import {Bigtable, Table} from '../src';
 import {Mutation} from '../src/mutation.js';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: Test[];
 };
 import {google} from '../protos/protos';
 import * as assert from 'assert';
-import {describe, it, afterEach, beforeEach} from 'mocha';
+import {describe, it, afterEach, beforeEach, before} from 'mocha';
 import * as sinon from 'sinon';
 import {EventEmitter} from 'events';
 import {Test} from './testTypes';
 import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
 import {PassThrough} from 'stream';
+import {MockServer} from '../src/util/mock-servers/mock-server';
+import {MockService} from '../src/util/mock-servers/mock-service';
+import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 
 const {grpc} = new GrpcClient();
 
@@ -214,6 +217,30 @@ describe('Bigtable/Table', () => {
           'not all the responses were used'
         );
         assert.deepStrictEqual(requestedOptions, test.request_options);
+      });
+    });
+  });
+  describe('createReadStream using mock server', () => {
+    let server: MockServer;
+    let service: MockService;
+    let bigtable = new Bigtable();
+    let table: Table;
+
+    before(async () => {
+      // make sure we have everything initialized before starting tests
+      const port = await new Promise<string>(resolve => {
+        server = new MockServer(resolve);
+      });
+      bigtable = new Bigtable({
+        apiEndpoint: `localhost:${port}`,
+      });
+      table = bigtable.instance('fake-instance').table('fake-table');
+      service = new BigtableClientMockService(server);
+    });
+
+    tests.forEach(test => {
+      it(test.name, () => {
+
       });
     });
   });
