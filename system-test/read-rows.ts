@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bigtable, Table} from '../src';
+import {Bigtable, protos, Table} from '../src';
 import {Mutation} from '../src/mutation.js';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: Test[];
@@ -28,6 +28,7 @@ import {PassThrough} from 'stream';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
+import {ServerWritableStream} from '@grpc/grpc-js';
 
 const {grpc} = new GrpcClient();
 
@@ -76,6 +77,33 @@ function rowResponse(rowKey: {}) {
     commitRow: true,
     value: 'value',
   };
+}
+
+function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
+  const requestOptions = {} as google.bigtable.v2.IRowSet;
+  if (request.rows && request.rows.rowRanges) {
+    requestOptions.rowRanges = request.rows.rowRanges.map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (range: any) => {
+        const convertedRowRange = {} as {[index: string]: string};
+        Object.keys(range).forEach(
+          key => (convertedRowRange[key] = range[key].asciiSlice())
+        );
+        return convertedRowRange;
+      }
+    );
+  }
+  if (request.rows && request.rows.rowKeys) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requestOptions.rowKeys = request.rows.rowKeys.map((rowKeys: any) =>
+      rowKeys.asciiSlice()
+    );
+  }
+  if (request.rowsLimit) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (requestOptions as any).rowsLimit = request.rowsLimit;
+  }
+  return requestOptions;
 }
 
 describe('Bigtable/Table', () => {
@@ -155,30 +183,7 @@ describe('Bigtable/Table', () => {
       requestedOptions = [];
       stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
         const reqOpts = cfg.reqOpts;
-        const requestOptions = {} as google.bigtable.v2.IRowSet;
-        if (reqOpts.rows && reqOpts.rows.rowRanges) {
-          requestOptions.rowRanges = reqOpts.rows.rowRanges.map(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (range: any) => {
-              const convertedRowRange = {} as {[index: string]: string};
-              Object.keys(range).forEach(
-                key => (convertedRowRange[key] = range[key].asciiSlice())
-              );
-              return convertedRowRange;
-            }
-          );
-        }
-        if (reqOpts.rows && reqOpts.rows.rowKeys) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          requestOptions.rowKeys = reqOpts.rows.rowKeys.map((rowKeys: any) =>
-            rowKeys.asciiSlice()
-          );
-        }
-        if (reqOpts.rowsLimit) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (requestOptions as any).rowsLimit = reqOpts.rowsLimit;
-        }
-        requestedOptions.push(requestOptions);
+        requestedOptions.push(getRequestOptions(reqOpts));
         rowKeysRead.push([]);
         const requestStream = new PassThrough({objectMode: true});
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -220,13 +225,13 @@ describe('Bigtable/Table', () => {
       });
     });
   });
-  describe('createReadStream using mock server', () => {
+  describe.only('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
     let table: Table;
 
-    before(async () => {
+    beforeEach(async () => {
       // make sure we have everything initialized before starting tests
       const port = await new Promise<string>(resolve => {
         server = new MockServer(resolve);
@@ -239,8 +244,58 @@ describe('Bigtable/Table', () => {
     });
 
     tests.forEach(test => {
-      it(test.name, () => {
-
+      it(test.name, done => {
+        const requestedOptions: google.bigtable.v2.IRowSet[] = [];
+        // TODO: Replace any[]
+        const responses: any[] = test.responses as any[];
+        const rowKeysRead: any[] = [];
+        let endCalled = false;
+        let error: ServiceError | null = null;
+        table.maxRetries = test.max_retries;
+        service.setService({
+          ReadRows: (
+            stream: ServerWritableStream<
+              protos.google.bigtable.v2.IReadRowsRequest,
+              protos.google.bigtable.v2.IReadRowsResponse
+            >
+          ) => {
+            const response = responses!.shift();
+            assert(response);
+            requestedOptions.push(getRequestOptions(stream.request));
+            stream.write({chunks: response.row_keys.map(rowResponse)});
+            if (response.end_with_error) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const error: any = new Error();
+              error.code = response.end_with_error;
+              stream.emit('error', error);
+            } else {
+              stream.end();
+            }
+          },
+        });
+        table
+          .createReadStream(test.createReadStream_options)
+          .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
+          .on('end', () => {
+            // TODO: Fix later
+            endCalled = true;
+            if (test.error) {
+              assert(!endCalled, ".on('end') should not have been invoked");
+              assert.strictEqual(error!.code, test.error);
+            } else {
+              assert(endCalled, ".on('end') should have been invoked");
+              assert.ifError(error);
+            }
+            assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
+            assert.strictEqual(
+              responses.length,
+              0,
+              'not all the responses were used'
+            );
+            assert.deepStrictEqual(requestedOptions, test.request_options);
+            done();
+          })
+          .on('error', err => (error = err as ServiceError));
       });
     });
   });
