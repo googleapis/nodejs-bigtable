@@ -96,6 +96,17 @@ function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (range: any) => {
         const convertedRowRange = {} as {[index: string]: string};
+        {
+          // startKey and endKey get filled in during the grpc request.
+          // They should be removed as the test data does not look
+          // for these properties in the request.
+          if (range.startKey) {
+            delete range.startKey;
+          }
+          if (range.endKey) {
+            delete range.endKey;
+          }
+        }
         Object.keys(range).forEach(
           key => (convertedRowRange[key] = range[key].asciiSlice())
         );
@@ -261,12 +272,32 @@ describe('Bigtable/Table', () => {
 
     tests.forEach(test => {
       it(test.name, done => {
+        // These variables store request/response data capturing data sent
+        // and received when using readRows with retries. This data is evaluated
+        // in checkResults at the end of the test for correctness.
         const requestedOptions: google.bigtable.v2.IRowSet[] = [];
-        // TODO: Replace any[]
         const responses: any[] = test.responses as any[];
         const rowKeysRead: any[] = [];
         let endCalled = false;
         let error: ServiceError | null = null;
+        function checkResults() {
+          if (test.error) {
+            assert(!endCalled, ".on('end') should not have been invoked");
+            assert.strictEqual(error!.code, test.error);
+          } else {
+            assert(endCalled, ".on('end') should have been invoked");
+            assert.ifError(error);
+          }
+          assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
+          assert.strictEqual(
+            responses.length,
+            0,
+            'not all the responses were used'
+          );
+          assert.deepStrictEqual(requestedOptions, test.request_options);
+          done();
+        }
+
         table.maxRetries = test.max_retries;
         service.setService({
           ReadRows: (
@@ -297,29 +328,15 @@ describe('Bigtable/Table', () => {
           .createReadStream(test.createReadStream_options)
           .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
           .on('end', () => {
-            // TODO: Fix later
             endCalled = true;
-            if (test.error) {
-              assert(!endCalled, ".on('end') should not have been invoked");
-              assert.strictEqual(error!.code, test.error);
-            } else {
-              assert(endCalled, ".on('end') should have been invoked");
-              assert.ifError(error);
-            }
-            assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
-            assert.strictEqual(
-              responses.length,
-              0,
-              'not all the responses were used'
-            );
-            assert.deepStrictEqual(requestedOptions, test.request_options);
-            done();
-          })
-          .on('error', err => {
-            console.log('test');
-            error = err as ServiceError;
-            throw err;
+            checkResults();
           });
+        /*
+          .on('error', err => {
+            error = err as ServiceError;
+            checkResults();
+          });
+             */
       });
     });
   });
