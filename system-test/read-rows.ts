@@ -128,7 +128,7 @@ function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
   // shorter.
   if (request.rowsLimit && request.rowsLimit !== '0') {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (requestOptions as any).rowsLimit = request.rowsLimit;
+    (requestOptions as any).rowsLimit = parseInt(request.rowsLimit);
   }
   return requestOptions;
 }
@@ -258,7 +258,7 @@ describe('Bigtable/Table', () => {
     let bigtable = new Bigtable();
     let table: Table;
 
-    beforeEach(async () => {
+    before(async () => {
       // make sure we have everything initialized before starting tests
       const port = await new Promise<string>(resolve => {
         server = new MockServer(resolve);
@@ -306,14 +306,15 @@ describe('Bigtable/Table', () => {
               protos.google.bigtable.v2.IReadRowsResponse
             >
           ) => {
-            console.log('entering readrows');
             const response = responses!.shift();
             assert(response);
             rowKeysRead.push([]);
             requestedOptions.push(getRequestOptions(stream.request));
-            stream.write({
-              chunks: response.row_keys.map(rowResponseFromServer),
-            });
+            if (response.row_keys) {
+              stream.write({
+                chunks: response.row_keys.map(rowResponseFromServer),
+              });
+            }
             if (response.end_with_error) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const error: any = new Error();
@@ -330,13 +331,11 @@ describe('Bigtable/Table', () => {
           .on('end', () => {
             endCalled = true;
             checkResults();
-          });
-        /*
+          })
           .on('error', err => {
             error = err as ServiceError;
             checkResults();
           });
-             */
       });
     });
   });
