@@ -154,7 +154,7 @@ describe('Bigtable/Table', () => {
         // in checkResults at the end of the test for correctness.
         const requestedOptions: google.bigtable.v2.IRowSet[] = [];
         const responses = test.responses;
-        const rowKeysRead: any[] = [];
+        const rowKeysRead: string[][] = [];
         let endCalled = false;
         let error: ServiceError | null = null;
         function checkResults() {
