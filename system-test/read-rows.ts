@@ -130,7 +130,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe.only('createReadStream using mock server', () => {
+  describe('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
