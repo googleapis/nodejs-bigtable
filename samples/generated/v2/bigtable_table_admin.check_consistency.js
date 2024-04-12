@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,18 @@ function main(name, consistencyToken) {
    *  Required. The token created using GenerateConsistencyToken for the Table.
    */
   // const consistencyToken = 'abc123'
+  /**
+   *  Checks that reads using an app profile with `StandardIsolation` can
+   *  see all writes committed before the token was created, even if the
+   *  read and write target different clusters.
+   */
+  // const standardReadRemoteWrites = {}
+  /**
+   *  Checks that reads using an app profile with `DataBoostIsolationReadOnly`
+   *  can see all writes committed before the token was created, but only if
+   *  the read and write target the same cluster.
+   */
+  // const dataBoostReadLocalWrites = {}
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;

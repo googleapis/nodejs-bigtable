@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import type {
 import {Transform} from 'stream';
 import * as protos from '../../protos/protos';
 import jsonProtos = require('../../protos/protos.json');
+
 /**
  * Client JSON configuration object, loaded from
  * `src/v2/bigtable_table_admin_client_config.json`.
@@ -56,6 +57,8 @@ export class BigtableTableAdminClient {
   private _gaxGrpc: gax.GrpcClient | gax.fallback.GrpcClient;
   private _protos: {};
   private _defaults: {[method: string]: gax.CallSettings};
+  private _universeDomain: string;
+  private _servicePath: string;
   auth: gax.GoogleAuth;
   descriptors: Descriptors = {
     page: {},
@@ -114,8 +117,27 @@ export class BigtableTableAdminClient {
   ) {
     // Ensure that options include all the required fields.
     const staticMembers = this.constructor as typeof BigtableTableAdminClient;
+    if (
+      opts?.universe_domain &&
+      opts?.universeDomain &&
+      opts?.universe_domain !== opts?.universeDomain
+    ) {
+      throw new Error(
+        'Please set either universe_domain or universeDomain, but not both.'
+      );
+    }
+    const universeDomainEnvVar =
+      typeof process === 'object' && typeof process.env === 'object'
+        ? process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN']
+        : undefined;
+    this._universeDomain =
+      opts?.universeDomain ??
+      opts?.universe_domain ??
+      universeDomainEnvVar ??
+      'googleapis.com';
+    this._servicePath = 'bigtableadmin.' + this._universeDomain;
     const servicePath =
-      opts?.servicePath || opts?.apiEndpoint || staticMembers.servicePath;
+      opts?.servicePath || opts?.apiEndpoint || this._servicePath;
     this._providedCustomServicePath = !!(
       opts?.servicePath || opts?.apiEndpoint
     );
@@ -130,7 +152,7 @@ export class BigtableTableAdminClient {
     opts.numericEnums = true;
 
     // If scopes are unset in options and we're connecting to a non-default endpoint, set scopes just in case.
-    if (servicePath !== staticMembers.servicePath && !('scopes' in opts)) {
+    if (servicePath !== this._servicePath && !('scopes' in opts)) {
       opts['scopes'] = staticMembers.scopes;
     }
 
@@ -155,16 +177,16 @@ export class BigtableTableAdminClient {
     this.auth.useJWTAccessWithScope = true;
 
     // Set defaultServicePath on the auth object.
-    this.auth.defaultServicePath = staticMembers.servicePath;
+    this.auth.defaultServicePath = this._servicePath;
 
     // Set the default scopes in auth client if needed.
-    if (servicePath === staticMembers.servicePath) {
+    if (servicePath === this._servicePath) {
       this.auth.defaultScopes = staticMembers.scopes;
     }
 
     // Determine the client header string.
     const clientHeader = [`gax/${this._gaxModule.version}`, `gapic/${version}`];
-    if (typeof process !== 'undefined' && 'versions' in process) {
+    if (typeof process === 'object' && 'versions' in process) {
       clientHeader.push(`gl-node/${process.versions.node}`);
     } else {
       clientHeader.push(`gl-web/${this._gaxModule.version}`);
@@ -187,6 +209,9 @@ export class BigtableTableAdminClient {
       appProfilePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/appProfiles/{app_profile}'
       ),
+      authorizedViewPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}'
+      ),
       backupPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}/backups/{backup}'
       ),
@@ -198,6 +223,9 @@ export class BigtableTableAdminClient {
       ),
       instancePathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}'
+      ),
+      projectPathTemplate: new this._gaxModule.PathTemplate(
+        'projects/{project}'
       ),
       snapshotPathTemplate: new this._gaxModule.PathTemplate(
         'projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}'
@@ -215,6 +243,11 @@ export class BigtableTableAdminClient {
         'pageToken',
         'nextPageToken',
         'tables'
+      ),
+      listAuthorizedViews: new this._gaxModule.PageDescriptor(
+        'pageToken',
+        'nextPageToken',
+        'authorizedViews'
       ),
       listSnapshots: new this._gaxModule.PageDescriptor(
         'pageToken',
@@ -278,6 +311,18 @@ export class BigtableTableAdminClient {
     const undeleteTableMetadata = protoFilesRoot.lookup(
       '.google.bigtable.admin.v2.UndeleteTableMetadata'
     ) as gax.protobuf.Type;
+    const createAuthorizedViewResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.AuthorizedView'
+    ) as gax.protobuf.Type;
+    const createAuthorizedViewMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.CreateAuthorizedViewMetadata'
+    ) as gax.protobuf.Type;
+    const updateAuthorizedViewResponse = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.AuthorizedView'
+    ) as gax.protobuf.Type;
+    const updateAuthorizedViewMetadata = protoFilesRoot.lookup(
+      '.google.bigtable.admin.v2.UpdateAuthorizedViewMetadata'
+    ) as gax.protobuf.Type;
     const snapshotTableResponse = protoFilesRoot.lookup(
       '.google.bigtable.admin.v2.Snapshot'
     ) as gax.protobuf.Type;
@@ -322,6 +367,16 @@ export class BigtableTableAdminClient {
         this.operationsClient,
         undeleteTableResponse.decode.bind(undeleteTableResponse),
         undeleteTableMetadata.decode.bind(undeleteTableMetadata)
+      ),
+      createAuthorizedView: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        createAuthorizedViewResponse.decode.bind(createAuthorizedViewResponse),
+        createAuthorizedViewMetadata.decode.bind(createAuthorizedViewMetadata)
+      ),
+      updateAuthorizedView: new this._gaxModule.LongrunningDescriptor(
+        this.operationsClient,
+        updateAuthorizedViewResponse.decode.bind(updateAuthorizedViewResponse),
+        updateAuthorizedViewMetadata.decode.bind(updateAuthorizedViewMetadata)
       ),
       snapshotTable: new this._gaxModule.LongrunningDescriptor(
         this.operationsClient,
@@ -402,6 +457,11 @@ export class BigtableTableAdminClient {
       'updateTable',
       'deleteTable',
       'undeleteTable',
+      'createAuthorizedView',
+      'listAuthorizedViews',
+      'getAuthorizedView',
+      'updateAuthorizedView',
+      'deleteAuthorizedView',
       'modifyColumnFamilies',
       'dropRowRange',
       'generateConsistencyToken',
@@ -455,19 +515,50 @@ export class BigtableTableAdminClient {
 
   /**
    * The DNS address for this API service.
+   * @deprecated Use the apiEndpoint method of the client instance.
    * @returns {string} The DNS address for this service.
    */
   static get servicePath() {
+    if (
+      typeof process === 'object' &&
+      typeof process.emitWarning === 'function'
+    ) {
+      process.emitWarning(
+        'Static servicePath is deprecated, please use the instance method instead.',
+        'DeprecationWarning'
+      );
+    }
     return 'bigtableadmin.googleapis.com';
   }
 
   /**
-   * The DNS address for this API service - same as servicePath(),
-   * exists for compatibility reasons.
+   * The DNS address for this API service - same as servicePath.
+   * @deprecated Use the apiEndpoint method of the client instance.
    * @returns {string} The DNS address for this service.
    */
   static get apiEndpoint() {
+    if (
+      typeof process === 'object' &&
+      typeof process.emitWarning === 'function'
+    ) {
+      process.emitWarning(
+        'Static apiEndpoint is deprecated, please use the instance method instead.',
+        'DeprecationWarning'
+      );
+    }
     return 'bigtableadmin.googleapis.com';
+  }
+
+  /**
+   * The DNS address for this API service.
+   * @returns {string} The DNS address for this service.
+   */
+  get apiEndpoint() {
+    return this._servicePath;
+  }
+
+  get universeDomain() {
+    return this._universeDomain;
   }
 
   /**
@@ -797,6 +888,198 @@ export class BigtableTableAdminClient {
     return this.innerApiCalls.deleteTable(request, options, callback);
   }
   /**
+   * Gets information from a specified AuthorizedView.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the requested AuthorizedView.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}`.
+   * @param {google.bigtable.admin.v2.AuthorizedView.ResponseView} [request.view]
+   *   Optional. The resource_view to be applied to the returned AuthorizedView's
+   *   fields. Default to BASIC.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing {@link protos.google.bigtable.admin.v2.AuthorizedView|AuthorizedView}.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.get_authorized_view.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_GetAuthorizedView_async
+   */
+  getAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      protos.google.bigtable.admin.v2.IAuthorizedView,
+      protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest | undefined,
+      {} | undefined,
+    ]
+  >;
+  getAuthorizedView(
+    request: protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest,
+    options: CallOptions,
+    callback: Callback<
+      protos.google.bigtable.admin.v2.IAuthorizedView,
+      | protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest
+      | null
+      | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  getAuthorizedView(
+    request: protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest,
+    callback: Callback<
+      protos.google.bigtable.admin.v2.IAuthorizedView,
+      | protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest
+      | null
+      | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  getAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          protos.google.bigtable.admin.v2.IAuthorizedView,
+          | protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest
+          | null
+          | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      protos.google.bigtable.admin.v2.IAuthorizedView,
+      | protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest
+      | null
+      | undefined,
+      {} | null | undefined
+    >
+  ): Promise<
+    [
+      protos.google.bigtable.admin.v2.IAuthorizedView,
+      protos.google.bigtable.admin.v2.IGetAuthorizedViewRequest | undefined,
+      {} | undefined,
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        name: request.name ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.getAuthorizedView(request, options, callback);
+  }
+  /**
+   * Permanently deletes a specified AuthorizedView.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.name
+   *   Required. The unique name of the AuthorizedView to be deleted.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}`.
+   * @param {string} [request.etag]
+   *   Optional. The current etag of the AuthorizedView.
+   *   If an etag is provided and does not match the current etag of the
+   *   AuthorizedView, deletion will be blocked and an ABORTED error will be
+   *   returned.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing {@link protos.google.protobuf.Empty|Empty}.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#regular-methods | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.delete_authorized_view.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_DeleteAuthorizedView_async
+   */
+  deleteAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      protos.google.protobuf.IEmpty,
+      protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest | undefined,
+      {} | undefined,
+    ]
+  >;
+  deleteAuthorizedView(
+    request: protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest,
+    options: CallOptions,
+    callback: Callback<
+      protos.google.protobuf.IEmpty,
+      | protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest
+      | null
+      | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  deleteAuthorizedView(
+    request: protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest,
+    callback: Callback<
+      protos.google.protobuf.IEmpty,
+      | protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest
+      | null
+      | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  deleteAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          protos.google.protobuf.IEmpty,
+          | protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest
+          | null
+          | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      protos.google.protobuf.IEmpty,
+      | protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest
+      | null
+      | undefined,
+      {} | null | undefined
+    >
+  ): Promise<
+    [
+      protos.google.protobuf.IEmpty,
+      protos.google.bigtable.admin.v2.IDeleteAuthorizedViewRequest | undefined,
+      {} | undefined,
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        name: request.name ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.deleteAuthorizedView(request, options, callback);
+  }
+  /**
    * Performs a series of column family modifications on the specified table.
    * Either all or none of the modifications will occur before this method
    * returns, but data requests received prior to that point may see a table
@@ -813,6 +1096,8 @@ export class BigtableTableAdminClient {
    *   families. Entries are applied in order, meaning that earlier modifications
    *   can be masked by later ones (in the case of repeated updates to the same
    *   family, for example).
+   * @param {boolean} [request.ignoreWarnings]
+   *   Optional. If true, ignore safety checks when modifying the column families.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -1107,6 +1392,14 @@ export class BigtableTableAdminClient {
    *   `projects/{project}/instances/{instance}/tables/{table}`.
    * @param {string} request.consistencyToken
    *   Required. The token created using GenerateConsistencyToken for the Table.
+   * @param {google.bigtable.admin.v2.StandardReadRemoteWrites} request.standardReadRemoteWrites
+   *   Checks that reads using an app profile with `StandardIsolation` can
+   *   see all writes committed before the token was created, even if the
+   *   read and write target different clusters.
+   * @param {google.bigtable.admin.v2.DataBoostReadLocalWrites} request.dataBoostReadLocalWrites
+   *   Checks that reads using an app profile with `DataBoostIsolationReadOnly`
+   *   can see all writes committed before the token was created, but only if
+   *   the read and write target the same cluster.
    * @param {object} [options]
    *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
    * @returns {Promise} - The promise which resolves to an array.
@@ -2356,6 +2649,301 @@ export class BigtableTableAdminClient {
     >;
   }
   /**
+   * Creates a new AuthorizedView in a table.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. This is the name of the table the AuthorizedView belongs to.
+   *   Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {string} request.authorizedViewId
+   *   Required. The id of the AuthorizedView to create. This AuthorizedView must
+   *   not already exist. The `authorized_view_id` appended to `parent` forms the
+   *   full AuthorizedView name of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}/authorizedView/{authorized_view}`.
+   * @param {google.bigtable.admin.v2.AuthorizedView} request.authorizedView
+   *   Required. The AuthorizedView to create.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing
+   *   a long running operation. Its `promise()` method returns a promise
+   *   you can `await` for.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.create_authorized_view.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CreateAuthorizedView_async
+   */
+  createAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.ICreateAuthorizedViewRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.ICreateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined,
+    ]
+  >;
+  createAuthorizedView(
+    request: protos.google.bigtable.admin.v2.ICreateAuthorizedViewRequest,
+    options: CallOptions,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.ICreateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  createAuthorizedView(
+    request: protos.google.bigtable.admin.v2.ICreateAuthorizedViewRequest,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.ICreateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  createAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.ICreateAuthorizedViewRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          LROperation<
+            protos.google.bigtable.admin.v2.IAuthorizedView,
+            protos.google.bigtable.admin.v2.ICreateAuthorizedViewMetadata
+          >,
+          protos.google.longrunning.IOperation | null | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.ICreateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.ICreateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined,
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        parent: request.parent ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.createAuthorizedView(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by `createAuthorizedView()`.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.create_authorized_view.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_CreateAuthorizedView_async
+   */
+  async checkCreateAuthorizedViewProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.AuthorizedView,
+      protos.google.bigtable.admin.v2.CreateAuthorizedViewMetadata
+    >
+  > {
+    const request =
+      new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
+        {name}
+      );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(
+      operation,
+      this.descriptors.longrunning.createAuthorizedView,
+      this._gaxModule.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.AuthorizedView,
+      protos.google.bigtable.admin.v2.CreateAuthorizedViewMetadata
+    >;
+  }
+  /**
+   * Updates an AuthorizedView in a table.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {google.bigtable.admin.v2.AuthorizedView} request.authorizedView
+   *   Required. The AuthorizedView to update. The `name` in `authorized_view` is
+   *   used to identify the AuthorizedView. AuthorizedView name must in this
+   *   format
+   *   projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>
+   * @param {google.protobuf.FieldMask} [request.updateMask]
+   *   Optional. The list of fields to update.
+   *   A mask specifying which fields in the AuthorizedView resource should be
+   *   updated. This mask is relative to the AuthorizedView resource, not to the
+   *   request message. A field will be overwritten if it is in the mask. If
+   *   empty, all fields set in the request will be overwritten. A special value
+   *   `*` means to overwrite all fields (including fields not set in the
+   *   request).
+   * @param {boolean} [request.ignoreWarnings]
+   *   Optional. If true, ignore the safety checks when updating the
+   *   AuthorizedView.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is an object representing
+   *   a long running operation. Its `promise()` method returns a promise
+   *   you can `await` for.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.update_authorized_view.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_UpdateAuthorizedView_async
+   */
+  updateAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.IUpdateAuthorizedViewRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined,
+    ]
+  >;
+  updateAuthorizedView(
+    request: protos.google.bigtable.admin.v2.IUpdateAuthorizedViewRequest,
+    options: CallOptions,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  updateAuthorizedView(
+    request: protos.google.bigtable.admin.v2.IUpdateAuthorizedViewRequest,
+    callback: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): void;
+  updateAuthorizedView(
+    request?: protos.google.bigtable.admin.v2.IUpdateAuthorizedViewRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | Callback<
+          LROperation<
+            protos.google.bigtable.admin.v2.IAuthorizedView,
+            protos.google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata
+          >,
+          protos.google.longrunning.IOperation | null | undefined,
+          {} | null | undefined
+        >,
+    callback?: Callback<
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | null | undefined,
+      {} | null | undefined
+    >
+  ): Promise<
+    [
+      LROperation<
+        protos.google.bigtable.admin.v2.IAuthorizedView,
+        protos.google.bigtable.admin.v2.IUpdateAuthorizedViewMetadata
+      >,
+      protos.google.longrunning.IOperation | undefined,
+      {} | undefined,
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        'authorized_view.name': request.authorizedView!.name ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.updateAuthorizedView(request, options, callback);
+  }
+  /**
+   * Check the status of the long running operation returned by `updateAuthorizedView()`.
+   * @param {String} name
+   *   The operation name that will be passed.
+   * @returns {Promise} - The promise which resolves to an object.
+   *   The decoded operation object has result and metadata field to get information from.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#long-running-operations | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.update_authorized_view.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_UpdateAuthorizedView_async
+   */
+  async checkUpdateAuthorizedViewProgress(
+    name: string
+  ): Promise<
+    LROperation<
+      protos.google.bigtable.admin.v2.AuthorizedView,
+      protos.google.bigtable.admin.v2.UpdateAuthorizedViewMetadata
+    >
+  > {
+    const request =
+      new this._gaxModule.operationsProtos.google.longrunning.GetOperationRequest(
+        {name}
+      );
+    const [operation] = await this.operationsClient.getOperation(request);
+    const decodeOperation = new this._gaxModule.Operation(
+      operation,
+      this.descriptors.longrunning.updateAuthorizedView,
+      this._gaxModule.createDefaultBackoffSettings()
+    );
+    return decodeOperation as LROperation<
+      protos.google.bigtable.admin.v2.AuthorizedView,
+      protos.google.bigtable.admin.v2.UpdateAuthorizedViewMetadata
+    >;
+  }
+  /**
    * Creates a new snapshot in the specified cluster from the specified
    * source table. The cluster and the table must be in the same instance.
    *
@@ -3198,6 +3786,231 @@ export class BigtableTableAdminClient {
     ) as AsyncIterable<protos.google.bigtable.admin.v2.ITable>;
   }
   /**
+   * Lists all AuthorizedViews from a specific table.
+   *
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the table for which AuthorizedViews should be
+   *   listed. Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {number} [request.pageSize]
+   *   Optional. Maximum number of results per page.
+   *
+   *   A page_size of zero lets the server choose the number of items to return.
+   *   A page_size which is strictly positive will return at most that many items.
+   *   A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls are not required
+   *   to pass a page_size. If a page_size is set in subsequent calls, it must
+   *   match the page_size given in the first request.
+   * @param {string} [request.pageToken]
+   *   Optional. The value of `next_page_token` returned by a previous call.
+   * @param {google.bigtable.admin.v2.AuthorizedView.ResponseView} [request.view]
+   *   Optional. The resource_view to be applied to the returned views' fields.
+   *   Default to NAME_ONLY.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Promise} - The promise which resolves to an array.
+   *   The first element of the array is Array of {@link protos.google.bigtable.admin.v2.AuthorizedView|AuthorizedView}.
+   *   The client library will perform auto-pagination by default: it will call the API as many
+   *   times as needed and will merge results from all the pages into this array.
+   *   Note that it can affect your quota.
+   *   We recommend using `listAuthorizedViewsAsync()`
+   *   method described below for async iteration which you can stop as needed.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+   *   for more details and examples.
+   */
+  listAuthorizedViews(
+    request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+    options?: CallOptions
+  ): Promise<
+    [
+      protos.google.bigtable.admin.v2.IAuthorizedView[],
+      protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest | null,
+      protos.google.bigtable.admin.v2.IListAuthorizedViewsResponse,
+    ]
+  >;
+  listAuthorizedViews(
+    request: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+    options: CallOptions,
+    callback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+      | protos.google.bigtable.admin.v2.IListAuthorizedViewsResponse
+      | null
+      | undefined,
+      protos.google.bigtable.admin.v2.IAuthorizedView
+    >
+  ): void;
+  listAuthorizedViews(
+    request: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+    callback: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+      | protos.google.bigtable.admin.v2.IListAuthorizedViewsResponse
+      | null
+      | undefined,
+      protos.google.bigtable.admin.v2.IAuthorizedView
+    >
+  ): void;
+  listAuthorizedViews(
+    request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+    optionsOrCallback?:
+      | CallOptions
+      | PaginationCallback<
+          protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+          | protos.google.bigtable.admin.v2.IListAuthorizedViewsResponse
+          | null
+          | undefined,
+          protos.google.bigtable.admin.v2.IAuthorizedView
+        >,
+    callback?: PaginationCallback<
+      protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+      | protos.google.bigtable.admin.v2.IListAuthorizedViewsResponse
+      | null
+      | undefined,
+      protos.google.bigtable.admin.v2.IAuthorizedView
+    >
+  ): Promise<
+    [
+      protos.google.bigtable.admin.v2.IAuthorizedView[],
+      protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest | null,
+      protos.google.bigtable.admin.v2.IListAuthorizedViewsResponse,
+    ]
+  > | void {
+    request = request || {};
+    let options: CallOptions;
+    if (typeof optionsOrCallback === 'function' && callback === undefined) {
+      callback = optionsOrCallback;
+      options = {};
+    } else {
+      options = optionsOrCallback as CallOptions;
+    }
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        parent: request.parent ?? '',
+      });
+    this.initialize();
+    return this.innerApiCalls.listAuthorizedViews(request, options, callback);
+  }
+
+  /**
+   * Equivalent to `method.name.toCamelCase()`, but returns a NodeJS Stream object.
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the table for which AuthorizedViews should be
+   *   listed. Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {number} [request.pageSize]
+   *   Optional. Maximum number of results per page.
+   *
+   *   A page_size of zero lets the server choose the number of items to return.
+   *   A page_size which is strictly positive will return at most that many items.
+   *   A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls are not required
+   *   to pass a page_size. If a page_size is set in subsequent calls, it must
+   *   match the page_size given in the first request.
+   * @param {string} [request.pageToken]
+   *   Optional. The value of `next_page_token` returned by a previous call.
+   * @param {google.bigtable.admin.v2.AuthorizedView.ResponseView} [request.view]
+   *   Optional. The resource_view to be applied to the returned views' fields.
+   *   Default to NAME_ONLY.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Stream}
+   *   An object stream which emits an object representing {@link protos.google.bigtable.admin.v2.AuthorizedView|AuthorizedView} on 'data' event.
+   *   The client library will perform auto-pagination by default: it will call the API as many
+   *   times as needed. Note that it can affect your quota.
+   *   We recommend using `listAuthorizedViewsAsync()`
+   *   method described below for async iteration which you can stop as needed.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+   *   for more details and examples.
+   */
+  listAuthorizedViewsStream(
+    request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+    options?: CallOptions
+  ): Transform {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        parent: request.parent ?? '',
+      });
+    const defaultCallSettings = this._defaults['listAuthorizedViews'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listAuthorizedViews.createStream(
+      this.innerApiCalls.listAuthorizedViews as GaxCall,
+      request,
+      callSettings
+    );
+  }
+
+  /**
+   * Equivalent to `listAuthorizedViews`, but returns an iterable object.
+   *
+   * `for`-`await`-`of` syntax is used with the iterable to get response elements on-demand.
+   * @param {Object} request
+   *   The request object that will be sent.
+   * @param {string} request.parent
+   *   Required. The unique name of the table for which AuthorizedViews should be
+   *   listed. Values are of the form
+   *   `projects/{project}/instances/{instance}/tables/{table}`.
+   * @param {number} [request.pageSize]
+   *   Optional. Maximum number of results per page.
+   *
+   *   A page_size of zero lets the server choose the number of items to return.
+   *   A page_size which is strictly positive will return at most that many items.
+   *   A negative page_size will cause an error.
+   *
+   *   Following the first request, subsequent paginated calls are not required
+   *   to pass a page_size. If a page_size is set in subsequent calls, it must
+   *   match the page_size given in the first request.
+   * @param {string} [request.pageToken]
+   *   Optional. The value of `next_page_token` returned by a previous call.
+   * @param {google.bigtable.admin.v2.AuthorizedView.ResponseView} [request.view]
+   *   Optional. The resource_view to be applied to the returned views' fields.
+   *   Default to NAME_ONLY.
+   * @param {object} [options]
+   *   Call options. See {@link https://googleapis.dev/nodejs/google-gax/latest/interfaces/CallOptions.html|CallOptions} for more details.
+   * @returns {Object}
+   *   An iterable Object that allows {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols | async iteration }.
+   *   When you iterate the returned iterable, each element will be an object representing
+   *   {@link protos.google.bigtable.admin.v2.AuthorizedView|AuthorizedView}. The API will be called under the hood as needed, once per the page,
+   *   so you can stop the iteration when you don't need more results.
+   *   Please see the {@link https://github.com/googleapis/gax-nodejs/blob/master/client-libraries.md#auto-pagination | documentation }
+   *   for more details and examples.
+   * @example <caption>include:samples/generated/v2/bigtable_table_admin.list_authorized_views.js</caption>
+   * region_tag:bigtableadmin_v2_generated_BigtableTableAdmin_ListAuthorizedViews_async
+   */
+  listAuthorizedViewsAsync(
+    request?: protos.google.bigtable.admin.v2.IListAuthorizedViewsRequest,
+    options?: CallOptions
+  ): AsyncIterable<protos.google.bigtable.admin.v2.IAuthorizedView> {
+    request = request || {};
+    options = options || {};
+    options.otherArgs = options.otherArgs || {};
+    options.otherArgs.headers = options.otherArgs.headers || {};
+    options.otherArgs.headers['x-goog-request-params'] =
+      this._gaxModule.routingHeader.fromParams({
+        parent: request.parent ?? '',
+      });
+    const defaultCallSettings = this._defaults['listAuthorizedViews'];
+    const callSettings = defaultCallSettings.merge(options);
+    this.initialize();
+    return this.descriptors.page.listAuthorizedViews.asyncIterate(
+      this.innerApiCalls['listAuthorizedViews'] as GaxCall,
+      request as {},
+      callSettings
+    ) as AsyncIterable<protos.google.bigtable.admin.v2.IAuthorizedView>;
+  }
+  /**
    * Lists all snapshots associated with the specified cluster.
    *
    * Note: This is a private alpha release of Cloud Bigtable snapshots. This
@@ -3831,6 +4644,81 @@ export class BigtableTableAdminClient {
   }
 
   /**
+   * Return a fully-qualified authorizedView resource name string.
+   *
+   * @param {string} project
+   * @param {string} instance
+   * @param {string} table
+   * @param {string} authorized_view
+   * @returns {string} Resource name string.
+   */
+  authorizedViewPath(
+    project: string,
+    instance: string,
+    table: string,
+    authorizedView: string
+  ) {
+    return this.pathTemplates.authorizedViewPathTemplate.render({
+      project: project,
+      instance: instance,
+      table: table,
+      authorized_view: authorizedView,
+    });
+  }
+
+  /**
+   * Parse the project from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).project;
+  }
+
+  /**
+   * Parse the instance from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the instance.
+   */
+  matchInstanceFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).instance;
+  }
+
+  /**
+   * Parse the table from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the table.
+   */
+  matchTableFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).table;
+  }
+
+  /**
+   * Parse the authorized_view from AuthorizedView resource.
+   *
+   * @param {string} authorizedViewName
+   *   A fully-qualified path representing AuthorizedView resource.
+   * @returns {string} A string representing the authorized_view.
+   */
+  matchAuthorizedViewFromAuthorizedViewName(authorizedViewName: string) {
+    return this.pathTemplates.authorizedViewPathTemplate.match(
+      authorizedViewName
+    ).authorized_view;
+  }
+
+  /**
    * Return a fully-qualified backup resource name string.
    *
    * @param {string} project
@@ -4051,6 +4939,29 @@ export class BigtableTableAdminClient {
    */
   matchInstanceFromInstanceName(instanceName: string) {
     return this.pathTemplates.instancePathTemplate.match(instanceName).instance;
+  }
+
+  /**
+   * Return a fully-qualified project resource name string.
+   *
+   * @param {string} project
+   * @returns {string} Resource name string.
+   */
+  projectPath(project: string) {
+    return this.pathTemplates.projectPathTemplate.render({
+      project: project,
+    });
+  }
+
+  /**
+   * Parse the project from Project resource.
+   *
+   * @param {string} projectName
+   *   A fully-qualified path representing Project resource.
+   * @returns {string} A string representing the project.
+   */
+  matchProjectFromProjectName(projectName: string) {
+    return this.pathTemplates.projectPathTemplate.match(projectName).project;
   }
 
   /**
