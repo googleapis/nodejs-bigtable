@@ -13,71 +13,20 @@
 // limitations under the License.
 
 import {Bigtable, protos, Table} from '../src';
-import {Mutation} from '../src/mutation.js';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
-  tests: Test[];
+  tests: ReadRowsTest[];
 };
 import {google} from '../protos/protos';
 import * as assert from 'assert';
-import {describe, it, afterEach, beforeEach, before} from 'mocha';
-import * as sinon from 'sinon';
-import {EventEmitter} from 'events';
-import {Test} from './testTypes';
-import {ServiceError, GrpcClient, GoogleError, CallOptions} from 'google-gax';
-import {PassThrough} from 'stream';
+import {describe, it, before} from 'mocha';
+import {ReadRowsTest} from './testTypes';
+import {ServiceError, GrpcClient, CallOptions} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {ServerWritableStream} from '@grpc/grpc-js';
 
 const {grpc} = new GrpcClient();
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function dispatch(emitter: EventEmitter, response: any) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const emits: any[] = [{name: 'request'}];
-  if (response.row_keys) {
-    emits.push.apply(emits, [
-      {name: 'response', arg: 200},
-      {
-        name: 'data',
-        arg: {chunks: response.row_keys.map(rowResponse)},
-      },
-    ]);
-  }
-  if (response.end_with_error) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const error: any = new Error();
-    error.code = response.end_with_error;
-    emits.push({name: 'error', arg: error});
-  } else {
-    emits.push({name: 'end'});
-  }
-  let index = 0;
-  setImmediate(next);
-
-  function next() {
-    if (index < emits.length) {
-      const emit = emits[index];
-      index++;
-      emitter.emit(emit.name, emit.arg);
-      setImmediate(next);
-    }
-  }
-}
-
-function rowResponse(rowKey: {}) {
-  return {
-    rowKey: Mutation.convertToBytes(rowKey),
-    familyName: {value: 'family'},
-    qualifier: {value: 'qualifier'},
-    valueSize: 0,
-    timestampMicros: 0,
-    labels: [],
-    commitRow: true,
-    value: 'value',
-  };
-}
 
 function rowResponseFromServer(rowKey: string) {
   return {
@@ -181,83 +130,11 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe('createReadStream', () => {
-    let clock: sinon.SinonFakeTimers;
-    let endCalled: boolean;
-    let error: ServiceError | null;
-    let requestedOptions: Array<{}>;
-    let responses: Array<{}> | null;
-    let rowKeysRead: Array<Array<{}>>;
-    let stub: sinon.SinonStub;
-
-    beforeEach(() => {
-      clock = sinon.useFakeTimers({
-        toFake: [
-          'setTimeout',
-          'clearTimeout',
-          'setImmediate',
-          'clearImmediate',
-          'setInterval',
-          'clearInterval',
-          'Date',
-          'nextTick',
-        ],
-      });
-      endCalled = false;
-      error = null;
-      responses = null;
-      rowKeysRead = [];
-      requestedOptions = [];
-      stub = sinon.stub(bigtable, 'request').callsFake(cfg => {
-        const reqOpts = cfg.reqOpts;
-        requestedOptions.push(getRequestOptions(reqOpts));
-        rowKeysRead.push([]);
-        const requestStream = new PassThrough({objectMode: true});
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (requestStream as any).abort = () => {};
-        dispatch(requestStream, responses!.shift());
-        return requestStream;
-      });
-    });
-
-    afterEach(() => {
-      clock.restore();
-      stub.restore();
-    });
-
-    tests.forEach(test => {
-      it(test.name, () => {
-        responses = test.responses;
-        TABLE.maxRetries = test.max_retries;
-        TABLE.createReadStream(test.createReadStream_options)
-          .on('data', row => rowKeysRead[rowKeysRead.length - 1].push(row.id))
-          .on('end', () => (endCalled = true))
-          .on('error', err => (error = err as ServiceError));
-        clock.runAll();
-
-        if (test.error) {
-          assert(!endCalled, ".on('end') should not have been invoked");
-          assert.strictEqual(error!.code, test.error);
-        } else {
-          assert(endCalled, ".on('end') shoud have been invoked");
-          assert.ifError(error);
-        }
-        assert.deepStrictEqual(rowKeysRead, test.row_keys_read);
-        assert.strictEqual(
-          responses.length,
-          0,
-          'not all the responses were used'
-        );
-        assert.deepStrictEqual(requestedOptions, test.request_options);
-      });
-    });
-  });
   describe.only('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
     let table: Table;
-
     before(async () => {
       // make sure we have everything initialized before starting tests
       const port = await new Promise<string>(resolve => {
@@ -276,7 +153,7 @@ describe('Bigtable/Table', () => {
         // and received when using readRows with retries. This data is evaluated
         // in checkResults at the end of the test for correctness.
         const requestedOptions: google.bigtable.v2.IRowSet[] = [];
-        const responses: any[] = test.responses as any[];
+        const responses = test.responses;
         const rowKeysRead: any[] = [];
         let endCalled = false;
         let error: ServiceError | null = null;
