@@ -79,6 +79,16 @@ function rowResponse(rowKey: {}) {
   };
 }
 
+function rowResponseFromServer(rowKey: string) {
+  return {
+    rowKey: Buffer.from(rowKey).toString('base64'),
+    familyName: {value: 'family'},
+    qualifier: {value: Buffer.from('qualifier').toString('base64')},
+    commitRow: true,
+    value: Buffer.from(rowKey).toString('base64'),
+  };
+}
+
 function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
   const requestOptions = {} as google.bigtable.v2.IRowSet;
   if (request.rows && request.rows.rowRanges) {
@@ -99,7 +109,13 @@ function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
       rowKeys.asciiSlice()
     );
   }
-  if (request.rowsLimit) {
+  // The grpc protocol sets rowsLimit to '0' if rowsLimit is not provided in the
+  // grpc request.
+  //
+  // Do not append rowsLimit to collection of request options if received grpc
+  // rows limit is '0' so that test data in read-rows-retry-test.json remains
+  // shorter.
+  if (request.rowsLimit && request.rowsLimit !== '0') {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (requestOptions as any).rowsLimit = request.rowsLimit;
   }
@@ -259,10 +275,14 @@ describe('Bigtable/Table', () => {
               protos.google.bigtable.v2.IReadRowsResponse
             >
           ) => {
+            console.log('entering readrows');
             const response = responses!.shift();
             assert(response);
+            rowKeysRead.push([]);
             requestedOptions.push(getRequestOptions(stream.request));
-            stream.write({chunks: response.row_keys.map(rowResponse)});
+            stream.write({
+              chunks: response.row_keys.map(rowResponseFromServer),
+            });
             if (response.end_with_error) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const error: any = new Error();
@@ -295,7 +315,11 @@ describe('Bigtable/Table', () => {
             assert.deepStrictEqual(requestedOptions, test.request_options);
             done();
           })
-          .on('error', err => (error = err as ServiceError));
+          .on('error', err => {
+            console.log('test');
+            error = err as ServiceError;
+            throw err;
+          });
       });
     });
   });
