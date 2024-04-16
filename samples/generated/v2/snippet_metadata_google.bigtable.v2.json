@@ -22,7 +22,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 97,
+          "end": 102,
           "type": "FULL"
         }
       ],
@@ -33,6 +33,10 @@
         "parameters": [
           {
             "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -86,7 +90,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 66,
+          "end": 72,
           "type": "FULL"
         }
       ],
@@ -97,6 +101,10 @@
         "parameters": [
           {
             "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -130,7 +138,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 76,
+          "end": 83,
           "type": "FULL"
         }
       ],
@@ -141,6 +149,10 @@
         "parameters": [
           {
             "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -182,7 +194,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 74,
+          "end": 82,
           "type": "FULL"
         }
       ],
@@ -193,6 +205,10 @@
         "parameters": [
           {
             "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -230,7 +246,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 93,
+          "end": 100,
           "type": "FULL"
         }
       ],
@@ -241,6 +257,10 @@
         "parameters": [
           {
             "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
             "type": "TYPE_STRING"
           },
           {
@@ -334,7 +354,7 @@
       "segments": [
         {
           "start": 29,
-          "end": 77,
+          "end": 84,
           "type": "FULL"
         }
       ],
@@ -345,6 +365,10 @@
         "parameters": [
           {
             "name": "table_name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_name",
             "type": "TYPE_STRING"
           },
           {

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
  */ 
 'use strict';
 
-function main(tableName, rowKey, rules) {
+function main(rowKey, rules) {
   // [START bigtable_v2_generated_Bigtable_ReadModifyWriteRow_async]
   /**
    * This snippet has been automatically generated and should be regarded as a code template only.
@@ -33,11 +33,19 @@ function main(tableName, rowKey, rules) {
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the read/modify/write rules
-   *  should be applied. Values are of the form
+   *  Optional. The unique name of the table to which the read/modify/write rules
+   *  should be applied.
+   *  Values are of the form
    *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
+  /**
+   *  Optional. The unique name of the AuthorizedView to which the
+   *  read/modify/write rules should be applied.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   */
+  // const authorizedViewName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
@@ -64,7 +72,6 @@ function main(tableName, rowKey, rules) {
   async function callReadModifyWriteRow() {
     // Construct request
     const request = {
-      tableName,
       rowKey,
       rules,
     };
