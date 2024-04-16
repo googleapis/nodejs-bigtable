@@ -114,7 +114,7 @@ function main(parent) {
     };
 
     // Run request
-    const iterable = await adminClient.listBackupsAsync(request);
+    const iterable = adminClient.listBackupsAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }

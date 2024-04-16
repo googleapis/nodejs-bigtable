@@ -75,7 +75,7 @@ function main(parent) {
     };
 
     // Run request
-    const iterable = await adminClient.listHotTabletsAsync(request);
+    const iterable = adminClient.listHotTabletsAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }

@@ -66,7 +66,7 @@ function main(parent) {
     };
 
     // Run request
-    const iterable = await adminClient.listTablesAsync(request);
+    const iterable = adminClient.listTablesAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }
