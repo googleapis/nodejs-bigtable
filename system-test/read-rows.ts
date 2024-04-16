@@ -147,6 +147,10 @@ describe('Bigtable/Table', () => {
       service = new BigtableClientMockService(server);
     });
 
+    after(async () => {
+      server.shutdown(() => {});
+    });
+
     tests.forEach(test => {
       it(test.name, done => {
         // These variables store request/response data capturing data sent
