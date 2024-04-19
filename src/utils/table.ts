@@ -103,7 +103,9 @@ export class TableUtils {
       }
     }
   }
-
+  static lessThanOrEqualTo(lhs: string, rhs: string) {
+    return !this.greaterThan(lhs, rhs);
+  }
   static getRowKeys(
     rowKeys: string[],
     lastRowKey: string | number | true | Uint8Array
