@@ -13,7 +13,12 @@
 // limitations under the License.
 
 import * as protos from '../../protos/protos';
-import {ICluster, SetClusterMetadataOptions} from '../cluster';
+import {
+  BasicClusterConfig,
+  Cluster,
+  ICluster,
+  SetClusterMetadataOptions,
+} from '../cluster';
 import {google} from '../../protos/protos';
 
 export class ClusterUtils {
@@ -53,6 +58,7 @@ export class ClusterUtils {
       }
     }
   }
+
   static getUpdateMask(metadata: SetClusterMetadataOptions): string[] {
     const updateMask: string[] = [];
     if (metadata.nodes) {
@@ -83,6 +89,21 @@ export class ClusterUtils {
       );
     }
     return updateMask;
+  }
+
+  static getClusterBaseConfigWithFullLocation(
+    metadata: BasicClusterConfig,
+    projectId: string,
+    name: string | undefined
+  ): google.bigtable.admin.v2.ICluster {
+    const metadataClone = Object.assign({}, metadata);
+    if (metadataClone.location) {
+      metadataClone.location = Cluster.getLocation_(
+        projectId,
+        metadataClone.location
+      );
+    }
+    return ClusterUtils.getClusterBaseConfig(metadataClone, name);
   }
 
   static getClusterBaseConfig(

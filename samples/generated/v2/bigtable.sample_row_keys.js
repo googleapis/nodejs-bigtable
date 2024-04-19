@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,17 +24,27 @@
  */ 
 'use strict';
 
-function main(tableName) {
+function main() {
   // [START bigtable_v2_generated_Bigtable_SampleRowKeys_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table from which to sample row keys.
+   *  Optional. The unique name of the table from which to sample row keys.
    *  Values are of the form
    *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
+  /**
+   *  Optional. The unique name of the AuthorizedView from which to sample row
+   *  keys.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   */
+  // const authorizedViewName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
@@ -50,7 +60,6 @@ function main(tableName) {
   async function callSampleRowKeys() {
     // Construct request
     const request = {
-      tableName,
     };
 
     // Run request

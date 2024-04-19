@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package google.bigtable.admin.v2;
 
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
+import "google/bigtable/admin/v2/types.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "google/rpc/status.proto";
@@ -34,7 +35,6 @@ option (google.api.resource_definition) = {
   pattern: "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}"
 };
 
-
 // Information about a table restore.
 message RestoreInfo {
   // The type of the restore source.
@@ -46,6 +46,16 @@ message RestoreInfo {
     // may no longer exist.
     BackupInfo backup_info = 2;
   }
+}
+
+// Change stream configuration.
+message ChangeStreamConfig {
+  // How long the change stream should be retained. Change stream data older
+  // than the retention period will not be returned when reading the change
+  // stream from the table.
+  // Values must be at least 1 day and at most 7 days, and will be truncated to
+  // microsecond granularity.
+  google.protobuf.Duration retention_period = 1;
 }
 
 // A collection of user data indexed by row, column, and timestamp.
@@ -88,14 +98,16 @@ message Table {
     }
 
     // Output only. The state of replication for the table in this cluster.
-    ReplicationState replication_state = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+    ReplicationState replication_state = 1
+        [(google.api.field_behavior) = OUTPUT_ONLY];
 
     // Output only. The encryption information for the table in this cluster.
     // If the encryption key protecting this resource is customer managed, then
     // its version can be rotated in Cloud Key Management Service (Cloud KMS).
     // The primary version of the key and its status will be reflected here when
     // changes propagate from Cloud KMS.
-    repeated EncryptionInfo encryption_info = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+    repeated EncryptionInfo encryption_info = 2
+        [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 
   // Possible timestamp granularities to use when keeping multiple versions
@@ -131,6 +143,19 @@ message Table {
     FULL = 4;
   }
 
+  // Defines an automated backup policy for a table
+  message AutomatedBackupPolicy {
+    // Required. How long the automated backups should be retained. The only
+    // supported value at this time is 3 days.
+    google.protobuf.Duration retention_period = 1
+        [(google.api.field_behavior) = REQUIRED];
+
+    // Required. How frequently automated backups should occur. The only
+    // supported value at this time is 24 hours.
+    google.protobuf.Duration frequency = 2
+        [(google.api.field_behavior) = REQUIRED];
+  }
+
   // The unique name of the table. Values are of the form
   // `projects/{project}/instances/{instance}/tables/[_a-zA-Z0-9][-_.a-zA-Z0-9]*`.
   // Views: `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
@@ -141,21 +166,117 @@ message Table {
   // particular cluster (for example, if its zone is unavailable), then
   // there will be an entry for the cluster with UNKNOWN `replication_status`.
   // Views: `REPLICATION_VIEW`, `ENCRYPTION_VIEW`, `FULL`
-  map<string, ClusterState> cluster_states = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  map<string, ClusterState> cluster_states = 2
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The column families configured for this table, mapped by column family ID.
-  // Views: `SCHEMA_VIEW`, `FULL`
+  // Views: `SCHEMA_VIEW`, `STATS_VIEW`, `FULL`
   map<string, ColumnFamily> column_families = 3;
 
-  // Immutable. The granularity (i.e. `MILLIS`) at which timestamps are stored in this
-  // table. Timestamps not matching the granularity will be rejected.
-  // If unspecified at creation time, the value will be set to `MILLIS`.
-  // Views: `SCHEMA_VIEW`, `FULL`.
-  TimestampGranularity granularity = 4 [(google.api.field_behavior) = IMMUTABLE];
+  // Immutable. The granularity (i.e. `MILLIS`) at which timestamps are stored
+  // in this table. Timestamps not matching the granularity will be rejected. If
+  // unspecified at creation time, the value will be set to `MILLIS`. Views:
+  // `SCHEMA_VIEW`, `FULL`.
+  TimestampGranularity granularity = 4
+      [(google.api.field_behavior) = IMMUTABLE];
 
-  // Output only. If this table was restored from another data source (e.g. a backup), this
-  // field will be populated with information about the restore.
+  // Output only. If this table was restored from another data source (e.g. a
+  // backup), this field will be populated with information about the restore.
   RestoreInfo restore_info = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // If specified, enable the change stream on this table.
+  // Otherwise, the change stream is disabled and the change stream is not
+  // retained.
+  ChangeStreamConfig change_stream_config = 8;
+
+  // Set to true to make the table protected against data loss. i.e. deleting
+  // the following resources through Admin APIs are prohibited:
+  //
+  // * The table.
+  // * The column families in the table.
+  // * The instance containing the table.
+  //
+  // Note one can still delete the data stored in the table through Data APIs.
+  bool deletion_protection = 9;
+
+  oneof automated_backup_config {
+    // If specified, automated backups are enabled for this table.
+    // Otherwise, automated backups are disabled.
+    AutomatedBackupPolicy automated_backup_policy = 13;
+  }
+}
+
+// AuthorizedViews represent subsets of a particular Cloud Bigtable table. Users
+// can configure access to each Authorized View independently from the table and
+// use the existing Data APIs to access the subset of data.
+message AuthorizedView {
+  option (google.api.resource) = {
+    type: "bigtableadmin.googleapis.com/AuthorizedView"
+    pattern: "projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}"
+    plural: "authorizedViews"
+    singular: "authorizedView"
+  };
+
+  // Subsets of a column family that are included in this AuthorizedView.
+  message FamilySubsets {
+    // Individual exact column qualifiers to be included in the AuthorizedView.
+    repeated bytes qualifiers = 1;
+
+    // Prefixes for qualifiers to be included in the AuthorizedView. Every
+    // qualifier starting with one of these prefixes is included in the
+    // AuthorizedView. To provide access to all qualifiers, include the empty
+    // string as a prefix
+    // ("").
+    repeated bytes qualifier_prefixes = 2;
+  }
+
+  // Defines a simple AuthorizedView that is a subset of the underlying Table.
+  message SubsetView {
+    // Row prefixes to be included in the AuthorizedView.
+    // To provide access to all rows, include the empty string as a prefix ("").
+    repeated bytes row_prefixes = 1;
+
+    // Map from column family name to the columns in this family to be included
+    // in the AuthorizedView.
+    map<string, FamilySubsets> family_subsets = 2;
+  }
+
+  // Defines a subset of an AuthorizedView's fields.
+  enum ResponseView {
+    // Uses the default view for each method as documented in the request.
+    RESPONSE_VIEW_UNSPECIFIED = 0;
+
+    // Only populates `name`.
+    NAME_ONLY = 1;
+
+    // Only populates the AuthorizedView's basic metadata. This includes:
+    // name, deletion_protection, etag.
+    BASIC = 2;
+
+    // Populates every fields.
+    FULL = 3;
+  }
+
+  // Identifier. The name of this AuthorizedView.
+  // Values are of the form
+  // `projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}`
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The type of this AuthorizedView.
+  oneof authorized_view {
+    // An AuthorizedView permitting access to an explicit subset of a Table.
+    SubsetView subset_view = 2;
+  }
+
+  // The etag for this AuthorizedView.
+  // If this is provided on update, it must match the server's etag. The server
+  // returns ABORTED error on a mismatched etag.
+  string etag = 3;
+
+  // Set to true to make the AuthorizedView protected against deletion.
+  // The parent Table and containing Instance cannot be deleted if an
+  // AuthorizedView has this bit set.
+  bool deletion_protection = 4;
 }
 
 // A set of columns within a table which share a common configuration.
@@ -167,6 +288,18 @@ message ColumnFamily {
   // so it's possible for reads to return a cell even if it matches the active
   // GC expression for its family.
   GcRule gc_rule = 1;
+
+  // The type of data stored in each of this family's cell values, including its
+  // full encoding. If omitted, the family only serves raw untyped bytes.
+  //
+  // For now, only the `Aggregate` type is supported.
+  //
+  // `Aggregate` can only be set at family creation and is immutable afterwards.
+  //
+  //
+  // If `value_type` is `Aggregate`, written data must be compatible with:
+  //  * `value_type.input_type` for `AddInput` mutations
+  Type value_type = 3;
 }
 
 // Rule for determining which cells to delete during garbage collection.
@@ -227,14 +360,17 @@ message EncryptionInfo {
   }
 
   // Output only. The type of encryption used to protect this resource.
-  EncryptionType encryption_type = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  EncryptionType encryption_type = 3
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Output only. The status of encrypt/decrypt calls on underlying data for this resource.
-  // Regardless of status, the existing data is always encrypted at rest.
-  google.rpc.Status encryption_status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The status of encrypt/decrypt calls on underlying data for
+  // this resource. Regardless of status, the existing data is always encrypted
+  // at rest.
+  google.rpc.Status encryption_status = 4
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Output only. The version of the Cloud KMS key specified in the parent cluster that is
-  // in use for the data underlying this table.
+  // Output only. The version of the Cloud KMS key specified in the parent
+  // cluster that is in use for the data underlying this table.
   string kms_key_version = 2 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.resource_reference) = {
@@ -270,32 +406,33 @@ message Snapshot {
     CREATING = 2;
   }
 
-  // Output only. The unique name of the snapshot.
+  // The unique name of the snapshot.
   // Values are of the form
   // `projects/{project}/instances/{instance}/clusters/{cluster}/snapshots/{snapshot}`.
   string name = 1;
 
   // Output only. The source table at the time the snapshot was taken.
-  Table source_table = 2;
+  Table source_table = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. The size of the data in the source table at the time the
   // snapshot was taken. In some cases, this value may be computed
   // asynchronously via a background process and a placeholder of 0 will be used
   // in the meantime.
-  int64 data_size_bytes = 3;
+  int64 data_size_bytes = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. The time when the snapshot is created.
-  google.protobuf.Timestamp create_time = 4;
+  google.protobuf.Timestamp create_time = 4
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Output only. The time when the snapshot will be deleted. The maximum amount
-  // of time a snapshot can stay active is 365 days. If 'ttl' is not specified,
+  // The time when the snapshot will be deleted. The maximum amount of time a
+  // snapshot can stay active is 365 days. If 'ttl' is not specified,
   // the default maximum of 365 days will be used.
   google.protobuf.Timestamp delete_time = 5;
 
   // Output only. The current state of the snapshot.
-  State state = 6;
+  State state = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Output only. Description of the snapshot.
+  // Description of the snapshot.
   string description = 7;
 }
 
@@ -331,30 +468,39 @@ message Backup {
   // `projects/{project}/instances/{instance}/clusters/{cluster}`.
   string name = 1;
 
-  // Required. Immutable. Name of the table from which this backup was created. This needs
-  // to be in the same instance as the backup. Values are of the form
+  // Required. Immutable. Name of the table from which this backup was created.
+  // This needs to be in the same instance as the backup. Values are of the form
   // `projects/{project}/instances/{instance}/tables/{source_table}`.
   string source_table = 2 [
     (google.api.field_behavior) = IMMUTABLE,
     (google.api.field_behavior) = REQUIRED
   ];
 
+  // Output only. Name of the backup from which this backup was copied. If a
+  // backup is not created by copying a backup, this field will be empty. Values
+  // are of the form: projects/<project>/instances/<instance>/backups/<backup>.
+  string source_backup = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // Required. The expiration time of the backup, with microseconds
-  // granularity that must be at least 6 hours and at most 30 days
+  // granularity that must be at least 6 hours and at most 90 days
   // from the time the request is received. Once the `expire_time`
   // has passed, Cloud Bigtable will delete the backup and free the
   // resources used by the backup.
-  google.protobuf.Timestamp expire_time = 3 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.Timestamp expire_time = 3
+      [(google.api.field_behavior) = REQUIRED];
 
   // Output only. `start_time` is the time that the backup was started
   // (i.e. approximately the time the
-  // [CreateBackup][google.bigtable.admin.v2.BigtableTableAdmin.CreateBackup] request is received).  The
-  // row data in this backup will be no older than this timestamp.
-  google.protobuf.Timestamp start_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // [CreateBackup][google.bigtable.admin.v2.BigtableTableAdmin.CreateBackup]
+  // request is received).  The row data in this backup will be no older than
+  // this timestamp.
+  google.protobuf.Timestamp start_time = 4
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. `end_time` is the time that the backup was finished. The row
   // data in the backup will be no newer than this timestamp.
-  google.protobuf.Timestamp end_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp end_time = 5
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. Size of the backup in bytes.
   int64 size_bytes = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -363,7 +509,8 @@ message Backup {
   State state = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. The encryption information for the backup.
-  EncryptionInfo encryption_info = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  EncryptionInfo encryption_info = 9
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Information about a backup.
@@ -373,14 +520,21 @@ message BackupInfo {
 
   // Output only. The time that the backup was started. Row data in the backup
   // will be no older than this timestamp.
-  google.protobuf.Timestamp start_time = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp start_time = 2
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. This time that the backup was finished. Row data in the
   // backup will be no newer than this timestamp.
-  google.protobuf.Timestamp end_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp end_time = 3
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output only. Name of the table the backup was created from.
   string source_table = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. Name of the backup from which this backup was copied. If a
+  // backup is not created by copying a backup, this field will be empty. Values
+  // are of the form: projects/<project>/instances/<instance>/backups/<backup>.
+  string source_backup = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Indicates the type of the restore source.

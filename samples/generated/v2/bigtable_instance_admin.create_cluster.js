@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,17 +23,19 @@
 function main(parent, clusterId, cluster) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_CreateCluster_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance in which to create the new cluster.
-   *  Values are of the form
-   *  `projects/{project}/instances/{instance}`.
+   *  Required. The unique name of the instance in which to create the new
+   *  cluster. Values are of the form `projects/{project}/instances/{instance}`.
    */
   // const parent = 'abc123'
   /**
-   *  Required. The ID to be used when referring to the new cluster within its instance,
-   *  e.g., just `mycluster` rather than
+   *  Required. The ID to be used when referring to the new cluster within its
+   *  instance, e.g., just `mycluster` rather than
    *  `projects/myproject/instances/myinstance/clusters/mycluster`.
    */
   // const clusterId = 'abc123'

@@ -87,7 +87,7 @@ export type CreateRulesCallback = (
   apiResponse?: google.bigtable.v2.IReadModifyWriteRowResponse
 ) => void;
 export type CreateRulesResponse = [
-  google.bigtable.v2.IReadModifyWriteRowResponse
+  google.bigtable.v2.IReadModifyWriteRowResponse,
 ];
 export type CreateRowCallback = (
   err: ServiceError | PartialFailureError | null,
@@ -113,7 +113,7 @@ export type FilterCallback = (
 ) => void;
 export type FilterResponse = [
   boolean | null,
-  google.bigtable.v2.ICheckAndMutateRowResponse
+  google.bigtable.v2.ICheckAndMutateRowResponse,
 ];
 export type IncrementCallback = (
   err: ServiceError | null,
@@ -122,7 +122,7 @@ export type IncrementCallback = (
 ) => void;
 export type IncrementResponse = [
   number | null,
-  google.bigtable.v2.IReadModifyWriteRowResponse
+  google.bigtable.v2.IReadModifyWriteRowResponse,
 ];
 
 /**
@@ -705,14 +705,14 @@ export class Row {
       !Array.isArray(columnsOrOptionsOrCallback)
         ? columnsOrOptionsOrCallback
         : typeof optionsOrCallback === 'object'
-        ? optionsOrCallback
-        : {};
+          ? optionsOrCallback
+          : {};
     const callback =
       typeof columnsOrOptionsOrCallback === 'function'
         ? columnsOrOptionsOrCallback
         : typeof optionsOrCallback === 'function'
-        ? optionsOrCallback
-        : cb!;
+          ? optionsOrCallback
+          : cb!;
 
     let filter;
     columns = arrify(columns);
@@ -864,14 +864,14 @@ export class Row {
       typeof valueOrOptionsOrCallback === 'object'
         ? valueOrOptionsOrCallback
         : typeof optionsOrCallback === 'object'
-        ? optionsOrCallback
-        : {};
+          ? optionsOrCallback
+          : {};
     const callback =
       typeof valueOrOptionsOrCallback === 'function'
         ? valueOrOptionsOrCallback
         : typeof optionsOrCallback === 'function'
-        ? optionsOrCallback
-        : cb!;
+          ? optionsOrCallback
+          : cb!;
 
     const reqOpts = {
       column,

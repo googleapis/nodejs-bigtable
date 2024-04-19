@@ -58,7 +58,7 @@ export interface GetInstancesCallback {
 export type GetInstancesResponse = [
   Instance[],
   string[],
-  google.bigtable.admin.v2.IListInstancesResponse
+  google.bigtable.admin.v2.IListInstancesResponse,
 ];
 
 export type RequestCallback<T> = (err: ServiceError | null, resp?: T) => void;
@@ -596,49 +596,47 @@ export class Bigtable {
       reqOpts.instance!.type = Instance.getTypeType_(options.type);
     }
 
-    reqOpts.clusters = arrify(options.clusters).reduce((clusters, cluster) => {
-      if (!cluster.id) {
-        throw new Error(
-          'A cluster was provided without an `id` property defined.'
-        );
-      }
+    reqOpts.clusters = arrify(options.clusters).reduce(
+      (clusters, cluster) => {
+        if (!cluster.id) {
+          throw new Error(
+            'A cluster was provided without an `id` property defined.'
+          );
+        }
 
-      if (
-        typeof cluster.key !== 'undefined' &&
-        typeof cluster.encryption !== 'undefined'
-      ) {
-        throw new Error(
-          'A cluster was provided with both `encryption` and `key` defined.'
-        );
-      }
-      ClusterUtils.validateClusterMetadata(cluster);
-      const clusterClone = Object.assign({}, cluster);
-      if (clusterClone.location) {
-        clusterClone.location = Cluster.getLocation_(
-          this.projectId,
-          clusterClone.location
-        );
-      }
-      clusters[cluster.id!] = ClusterUtils.getClusterBaseConfig(
-        clusterClone,
-        undefined
-      );
-      Object.assign(clusters[cluster.id!], {
-        defaultStorageType: Cluster.getStorageType_(cluster.storage!),
-      });
+        if (
+          typeof cluster.key !== 'undefined' &&
+          typeof cluster.encryption !== 'undefined'
+        ) {
+          throw new Error(
+            'A cluster was provided with both `encryption` and `key` defined.'
+          );
+        }
+        ClusterUtils.validateClusterMetadata(cluster);
+        clusters[cluster.id!] =
+          ClusterUtils.getClusterBaseConfigWithFullLocation(
+            cluster,
+            this.projectId,
+            undefined
+          );
+        Object.assign(clusters[cluster.id!], {
+          defaultStorageType: Cluster.getStorageType_(cluster.storage!),
+        });
 
-      if (cluster.key) {
-        clusters[cluster.id!].encryptionConfig = {
-          kmsKeyName: cluster.key,
-        };
-      }
+        if (cluster.key) {
+          clusters[cluster.id!].encryptionConfig = {
+            kmsKeyName: cluster.key,
+          };
+        }
 
-      if (cluster.encryption) {
-        clusters[cluster.id!].encryptionConfig = cluster.encryption;
-      }
+        if (cluster.encryption) {
+          clusters[cluster.id!].encryptionConfig = cluster.encryption;
+        }
 
-      return clusters;
-    }, {} as {[index: string]: google.bigtable.admin.v2.ICluster});
+        return clusters;
+      },
+      {} as {[index: string]: google.bigtable.admin.v2.ICluster}
+    );
 
     this.request(
       {
@@ -869,6 +867,7 @@ export class Bigtable {
         gaxStream = requestFn!();
         gaxStream
           .on('error', stream.destroy.bind(stream))
+          .on('metadata', stream.emit.bind(stream, 'metadata'))
           .on('request', stream.emit.bind(stream, 'request'))
           .pipe(stream);
       });
@@ -884,6 +883,9 @@ export class Bigtable {
         gaxStream
           .on('error', (err: Error) => {
             stream.destroy(err);
+          })
+          .on('metadata', metadata => {
+            stream.emit('metadata', metadata);
           })
           .on('response', response => {
             stream.emit('response', response);
@@ -940,7 +942,7 @@ export class Bigtable {
  * that a callback is omitted.
  */
 promisifyAll(Bigtable, {
-  exclude: ['instance', 'operation', 'request'],
+  exclude: ['close', 'instance', 'operation', 'request'],
 });
 
 /**

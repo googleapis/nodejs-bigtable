@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@
 function main(name, modifications) {
   // [START bigtableadmin_v2_generated_BigtableTableAdmin_ModifyColumnFamilies_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
@@ -32,12 +35,16 @@ function main(name, modifications) {
    */
   // const name = 'abc123'
   /**
-   *  Required. Modifications to be atomically applied to the specified table's families.
-   *  Entries are applied in order, meaning that earlier modifications can be
-   *  masked by later ones (in the case of repeated updates to the same family,
-   *  for example).
+   *  Required. Modifications to be atomically applied to the specified table's
+   *  families. Entries are applied in order, meaning that earlier modifications
+   *  can be masked by later ones (in the case of repeated updates to the same
+   *  family, for example).
    */
-  // const modifications = 1234
+  // const modifications = [1,2,3,4]
+  /**
+   *  Optional. If true, ignore safety checks when modifying the column families.
+   */
+  // const ignoreWarnings = true
 
   // Imports the Admin library
   const {BigtableTableAdminClient} = require('@google-cloud/bigtable').v2;

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,11 +23,14 @@
 function main(parent) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_ListAppProfiles_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the instance for which a list of app profiles is
-   *  requested. Values are of the form
+   *  Required. The unique name of the instance for which a list of app profiles
+   *  is requested. Values are of the form
    *  `projects/{project}/instances/{instance}`.
    *  Use `{instance} = '-'` to list AppProfiles for all Instances in a project,
    *  e.g., `projects/myproject/instances/-`.
@@ -61,7 +64,7 @@ function main(parent) {
     };
 
     // Run request
-    const iterable = await adminClient.listAppProfilesAsync(request);
+    const iterable = adminClient.listAppProfilesAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }

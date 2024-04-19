@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,17 +24,26 @@
  */ 
 'use strict';
 
-function main(tableName) {
+function main() {
   // [START bigtable_v2_generated_Bigtable_ReadRows_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table from which to read.
+   *  Optional. The unique name of the table from which to read.
    *  Values are of the form
    *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
+  /**
+   *  Optional. The unique name of the AuthorizedView from which to read.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   */
+  // const authorizedViewName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
@@ -55,6 +64,22 @@ function main(tableName) {
    *  default (zero) is to return all results.
    */
   // const rowsLimit = 1234
+  /**
+   *  The view into RequestStats, as described above.
+   */
+  // const requestStatsView = {}
+  /**
+   *  Experimental API - Please note that this API is currently experimental
+   *  and can change in the future.
+   *  Return rows in lexiographical descending order of the row keys. The row
+   *  contents will not be affected by this flag.
+   *  Example result set:
+   *      
+   *        {key: "k2", "f:col1": "v1", "f:col2": "v1"},
+   *        {key: "k1", "f:col1": "v2", "f:col2": "v2"}
+   *       
+   */
+  // const reversed = true
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;
@@ -65,7 +90,6 @@ function main(tableName) {
   async function callReadRows() {
     // Construct request
     const request = {
-      tableName,
     };
 
     // Run request

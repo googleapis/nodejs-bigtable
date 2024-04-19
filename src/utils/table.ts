@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {GetRowsOptions, PrefixRange, Table} from '../table';
+import {GetRowsOptions, PrefixRange} from '../table';
 import {Mutation} from '../mutation';
 import * as is from 'is';
 import {BoundData} from '../filter';
@@ -37,7 +37,7 @@ export class TableUtils {
           'prefix should be used exclusively to ranges/start/end/prefixes.'
         );
       }
-      ranges.push(Table.createPrefixRange(options.prefix));
+      ranges.push(this.createPrefixRange(options.prefix));
     }
     if (options.prefixes) {
       if (options.ranges || options.start || options.end || options.prefix) {
@@ -46,7 +46,7 @@ export class TableUtils {
         );
       }
       options.prefixes.forEach(prefix => {
-        ranges.push(Table.createPrefixRange(prefix));
+        ranges.push(this.createPrefixRange(prefix));
       });
     }
     return ranges;

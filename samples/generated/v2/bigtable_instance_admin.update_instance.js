@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,12 @@
 
 'use strict';
 
-function main(displayName, createTime) {
+function main(displayName, createTime, satisfiesPzs) {
   // [START bigtableadmin_v2_generated_BigtableInstanceAdmin_UpdateInstance_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
@@ -57,13 +60,17 @@ function main(displayName, createTime) {
    *  * No more than 64 labels can be associated with a given resource.
    *  * Keys and values must both be under 128 bytes.
    */
-  // const labels = 1234
+  // const labels = [1,2,3,4]
   /**
-   *  Output only. A server-assigned timestamp representing when this Instance was created.
-   *  For instances created before this field was added (August 2021), this value
-   *  is `seconds: 0, nanos: 1`.
+   *  Output only. A server-assigned timestamp representing when this Instance
+   *  was created. For instances created before this field was added (August
+   *  2021), this value is `seconds: 0, nanos: 1`.
    */
   // const createTime = {}
+  /**
+   *  Output only. Reserved for future use.
+   */
+  // const satisfiesPzs = true
 
   // Imports the Admin library
   const {BigtableInstanceAdminClient} = require('@google-cloud/bigtable').v2;
@@ -76,6 +83,7 @@ function main(displayName, createTime) {
     const request = {
       displayName,
       createTime,
+      satisfiesPzs,
     };
 
     // Run request

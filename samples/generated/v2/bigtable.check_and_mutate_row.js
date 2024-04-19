@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,27 +24,38 @@
  */ 
 'use strict';
 
-function main(tableName, rowKey) {
+function main(rowKey) {
   // [START bigtable_v2_generated_Bigtable_CheckAndMutateRow_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
-   *  Required. The unique name of the table to which the conditional mutation should be
-   *  applied.
+   *  Optional. The unique name of the table to which the conditional mutation
+   *  should be applied.
    *  Values are of the form
    *  `projects/<project>/instances/<instance>/tables/<table>`.
    */
   // const tableName = 'abc123'
+  /**
+   *  Optional. The unique name of the AuthorizedView to which the conditional
+   *  mutation should be applied.
+   *  Values are of the form
+   *  `projects/<project>/instances/<instance>/tables/<table>/authorizedViews/<authorized_view>`.
+   */
+  // const authorizedViewName = 'abc123'
   /**
    *  This value specifies routing for replication. If not specified, the
    *  "default" application profile will be used.
    */
   // const appProfileId = 'abc123'
   /**
-   *  Required. The key of the row to which the conditional mutation should be applied.
+   *  Required. The key of the row to which the conditional mutation should be
+   *  applied.
    */
-  // const rowKey = 'Buffer.from('string')'
+  // const rowKey = Buffer.from('string')
   /**
    *  The filter to be applied to the contents of the specified row. Depending
    *  on whether or not any results are yielded, either `true_mutations` or
@@ -59,7 +70,7 @@ function main(tableName, rowKey) {
    *  Must contain at least one entry if `false_mutations` is empty, and at most
    *  100000.
    */
-  // const trueMutations = 1234
+  // const trueMutations = [1,2,3,4]
   /**
    *  Changes to be atomically applied to the specified row if `predicate_filter`
    *  does not yield any cells when applied to `row_key`. Entries are applied in
@@ -67,7 +78,7 @@ function main(tableName, rowKey) {
    *  Must contain at least one entry if `true_mutations` is empty, and at most
    *  100000.
    */
-  // const falseMutations = 1234
+  // const falseMutations = [1,2,3,4]
 
   // Imports the Bigtable library
   const {BigtableClient} = require('@google-cloud/bigtable').v2;
@@ -78,7 +89,6 @@ function main(tableName, rowKey) {
   async function callCheckAndMutateRow() {
     // Construct request
     const request = {
-      tableName,
       rowKey,
     };
 

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@
 function main(parent) {
   // [START bigtableadmin_v2_generated_BigtableTableAdmin_ListBackups_async]
   /**
+   * This snippet has been automatically generated and should be regarded as a code template only.
+   * It will require modifications to work.
+   * It may require correct/in-range values for request initialization.
    * TODO(developer): Uncomment these variables before running the sample.
    */
   /**
@@ -40,41 +43,42 @@ function main(parent) {
    *  <, >, <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
    *  roughly synonymous with equality. Filter rules are case insensitive.
    *  The fields eligible for filtering are:
-   *    * `name`
-   *    * `source_table`
-   *    * `state`
-   *    * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *    * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *    * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
-   *    * `size_bytes`
+   *  * `name`
+   *  * `source_table`
+   *  * `state`
+   *  * `start_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *  * `end_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *  * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)
+   *  * `size_bytes`
    *  To filter on multiple expressions, provide each separate expression within
    *  parentheses. By default, each expression is an AND expression. However,
    *  you can include AND, OR, and NOT expressions explicitly.
    *  Some examples of using filters are:
-   *    * `name:"exact"` --> The backup's name is the string "exact".
-   *    * `name:howl` --> The backup's name contains the string "howl".
-   *    * `source_table:prod`
-   *           --> The source_table's name contains the string "prod".
-   *    * `state:CREATING` --> The backup is pending creation.
-   *    * `state:READY` --> The backup is fully created and ready for use.
-   *    * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
-   *           --> The backup name contains the string "howl" and start_time
-   *               of the backup is before 2018-03-28T14:50:00Z.
-   *    * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
+   *  * `name:"exact"` --> The backup's name is the string "exact".
+   *  * `name:howl` --> The backup's name contains the string "howl".
+   *  * `source_table:prod`
+   *         --> The source_table's name contains the string "prod".
+   *  * `state:CREATING` --> The backup is pending creation.
+   *  * `state:READY` --> The backup is fully created and ready for use.
+   *  * `(name:howl) AND (start_time < \"2018-03-28T14:50:00Z\")`
+   *         --> The backup name contains the string "howl" and start_time
+   *             of the backup is before 2018-03-28T14:50:00Z.
+   *  * `size_bytes > 10000000000` --> The backup's size is greater than 10GB
    */
   // const filter = 'abc123'
   /**
    *  An expression for specifying the sort order of the results of the request.
-   *  The string value should specify one or more fields in Backup google.bigtable.admin.v2.Backup. The full
-   *  syntax is described at https://aip.dev/132#ordering.
+   *  The string value should specify one or more fields in
+   *  Backup google.bigtable.admin.v2.Backup. The full syntax is described at
+   *  https://aip.dev/132#ordering.
    *  Fields supported are:
-   *     * name
-   *     * source_table
-   *     * expire_time
-   *     * start_time
-   *     * end_time
-   *     * size_bytes
-   *     * state
+   *  * name
+   *  * source_table
+   *  * expire_time
+   *  * start_time
+   *  * end_time
+   *  * size_bytes
+   *  * state
    *  For example, "start_time". The default sorting order is ascending.
    *  To specify descending order for the field, a suffix " desc" should
    *  be appended to the field name. For example, "start_time desc".
@@ -90,9 +94,10 @@ function main(parent) {
   // const pageSize = 1234
   /**
    *  If non-empty, `page_token` should contain a
-   *  next_page_token google.bigtable.admin.v2.ListBackupsResponse.next_page_token  from a
-   *  previous ListBackupsResponse google.bigtable.admin.v2.ListBackupsResponse  to the same `parent` and with the same
-   *  `filter`.
+   *  next_page_token google.bigtable.admin.v2.ListBackupsResponse.next_page_token 
+   *  from a previous
+   *  ListBackupsResponse google.bigtable.admin.v2.ListBackupsResponse  to the
+   *  same `parent` and with the same `filter`.
    */
   // const pageToken = 'abc123'
 
@@ -109,7 +114,7 @@ function main(parent) {
     };
 
     // Run request
-    const iterable = await adminClient.listBackupsAsync(request);
+    const iterable = adminClient.listBackupsAsync(request);
     for await (const response of iterable) {
         console.log(response);
     }

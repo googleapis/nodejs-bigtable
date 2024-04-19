@@ -257,6 +257,16 @@
                 "deleteTable"
               ]
             },
+            "GetAuthorizedView": {
+              "methods": [
+                "getAuthorizedView"
+              ]
+            },
+            "DeleteAuthorizedView": {
+              "methods": [
+                "deleteAuthorizedView"
+              ]
+            },
             "ModifyColumnFamilies": {
               "methods": [
                 "modifyColumnFamilies"
@@ -322,6 +332,26 @@
                 "createTableFromSnapshot"
               ]
             },
+            "UpdateTable": {
+              "methods": [
+                "updateTable"
+              ]
+            },
+            "UndeleteTable": {
+              "methods": [
+                "undeleteTable"
+              ]
+            },
+            "CreateAuthorizedView": {
+              "methods": [
+                "createAuthorizedView"
+              ]
+            },
+            "UpdateAuthorizedView": {
+              "methods": [
+                "updateAuthorizedView"
+              ]
+            },
             "SnapshotTable": {
               "methods": [
                 "snapshotTable"
@@ -337,11 +367,23 @@
                 "restoreTable"
               ]
             },
+            "CopyBackup": {
+              "methods": [
+                "copyBackup"
+              ]
+            },
             "ListTables": {
               "methods": [
                 "listTables",
                 "listTablesStream",
                 "listTablesAsync"
+              ]
+            },
+            "ListAuthorizedViews": {
+              "methods": [
+                "listAuthorizedViews",
+                "listAuthorizedViewsStream",
+                "listAuthorizedViewsAsync"
               ]
             },
             "ListSnapshots": {
@@ -378,6 +420,16 @@
                 "deleteTable"
               ]
             },
+            "GetAuthorizedView": {
+              "methods": [
+                "getAuthorizedView"
+              ]
+            },
+            "DeleteAuthorizedView": {
+              "methods": [
+                "deleteAuthorizedView"
+              ]
+            },
             "ModifyColumnFamilies": {
               "methods": [
                 "modifyColumnFamilies"
@@ -443,6 +495,26 @@
                 "createTableFromSnapshot"
               ]
             },
+            "UpdateTable": {
+              "methods": [
+                "updateTable"
+              ]
+            },
+            "UndeleteTable": {
+              "methods": [
+                "undeleteTable"
+              ]
+            },
+            "CreateAuthorizedView": {
+              "methods": [
+                "createAuthorizedView"
+              ]
+            },
+            "UpdateAuthorizedView": {
+              "methods": [
+                "updateAuthorizedView"
+              ]
+            },
             "SnapshotTable": {
               "methods": [
                 "snapshotTable"
@@ -458,11 +530,23 @@
                 "restoreTable"
               ]
             },
+            "CopyBackup": {
+              "methods": [
+                "copyBackup"
+              ]
+            },
             "ListTables": {
               "methods": [
                 "listTables",
                 "listTablesStream",
                 "listTablesAsync"
+              ]
+            },
+            "ListAuthorizedViews": {
+              "methods": [
+                "listAuthorizedViews",
+                "listAuthorizedViewsStream",
+                "listAuthorizedViewsAsync"
               ]
             },
             "ListSnapshots": {

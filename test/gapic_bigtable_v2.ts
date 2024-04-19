@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,21 @@ import * as bigtableModule from '../src';
 import {PassThrough} from 'stream';
 
 import {protobuf} from 'google-gax';
+
+// Dynamically loaded proto JSON is needed to get the type information
+// to fill in default values for request objects
+const root = protobuf.Root.fromJSON(
+  require('../protos/protos.json')
+).resolveAll();
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getTypeDefaultValue(typeName: string, fields: string[]) {
+  let type = root.lookupType(typeName) as protobuf.Type;
+  for (const field of fields.slice(0, -1)) {
+    type = type.fields[field]?.resolvedType as protobuf.Type;
+  }
+  return type.fields[fields[fields.length - 1]]?.defaultValue;
+}
 
 function generateSampleMessage<T extends object>(instance: T) {
   const filledObject = (
@@ -73,99 +88,179 @@ function stubServerStreamingCall<ResponseType>(
 }
 
 describe('v2.BigtableClient', () => {
-  it('has servicePath', () => {
-    const servicePath = bigtableModule.v2.BigtableClient.servicePath;
-    assert(servicePath);
-  });
-
-  it('has apiEndpoint', () => {
-    const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
-    assert(apiEndpoint);
-  });
-
-  it('has port', () => {
-    const port = bigtableModule.v2.BigtableClient.port;
-    assert(port);
-    assert(typeof port === 'number');
-  });
-
-  it('should create a client with no option', () => {
-    const client = new bigtableModule.v2.BigtableClient();
-    assert(client);
-  });
-
-  it('should create a client with gRPC fallback', () => {
-    const client = new bigtableModule.v2.BigtableClient({
-      fallback: true,
+  describe('Common methods', () => {
+    it('has apiEndpoint', () => {
+      const client = new bigtableModule.v2.BigtableClient();
+      const apiEndpoint = client.apiEndpoint;
+      assert.strictEqual(apiEndpoint, 'bigtable.googleapis.com');
     });
-    assert(client);
-  });
 
-  it('has initialize method and supports deferred initialization', async () => {
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('has universeDomain', () => {
+      const client = new bigtableModule.v2.BigtableClient();
+      const universeDomain = client.universeDomain;
+      assert.strictEqual(universeDomain, 'googleapis.com');
     });
-    assert.strictEqual(client.bigtableStub, undefined);
-    await client.initialize();
-    assert(client.bigtableStub);
-  });
 
-  it('has close method for the initialized client', done => {
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
-    });
-    client.initialize();
-    assert(client.bigtableStub);
-    client.close().then(() => {
-      done();
-    });
-  });
+    if (
+      typeof process === 'object' &&
+      typeof process.emitWarning === 'function'
+    ) {
+      it('throws DeprecationWarning if static servicePath is used', () => {
+        const stub = sinon.stub(process, 'emitWarning');
+        const servicePath = bigtableModule.v2.BigtableClient.servicePath;
+        assert.strictEqual(servicePath, 'bigtable.googleapis.com');
+        assert(stub.called);
+        stub.restore();
+      });
 
-  it('has close method for the non-initialized client', done => {
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+      it('throws DeprecationWarning if static apiEndpoint is used', () => {
+        const stub = sinon.stub(process, 'emitWarning');
+        const apiEndpoint = bigtableModule.v2.BigtableClient.apiEndpoint;
+        assert.strictEqual(apiEndpoint, 'bigtable.googleapis.com');
+        assert(stub.called);
+        stub.restore();
+      });
+    }
+    it('sets apiEndpoint according to universe domain camelCase', () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        universeDomain: 'example.com',
+      });
+      const servicePath = client.apiEndpoint;
+      assert.strictEqual(servicePath, 'bigtable.example.com');
     });
-    assert.strictEqual(client.bigtableStub, undefined);
-    client.close().then(() => {
-      done();
-    });
-  });
 
-  it('has getProjectId method', async () => {
-    const fakeProjectId = 'fake-project-id';
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
+    it('sets apiEndpoint according to universe domain snakeCase', () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        universe_domain: 'example.com',
+      });
+      const servicePath = client.apiEndpoint;
+      assert.strictEqual(servicePath, 'bigtable.example.com');
     });
-    client.auth.getProjectId = sinon.stub().resolves(fakeProjectId);
-    const result = await client.getProjectId();
-    assert.strictEqual(result, fakeProjectId);
-    assert((client.auth.getProjectId as SinonStub).calledWithExactly());
-  });
 
-  it('has getProjectId method with callback', async () => {
-    const fakeProjectId = 'fake-project-id';
-    const client = new bigtableModule.v2.BigtableClient({
-      credentials: {client_email: 'bogus', private_key: 'bogus'},
-      projectId: 'bogus',
-    });
-    client.auth.getProjectId = sinon
-      .stub()
-      .callsArgWith(0, null, fakeProjectId);
-    const promise = new Promise((resolve, reject) => {
-      client.getProjectId((err?: Error | null, projectId?: string | null) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(projectId);
-        }
+    if (typeof process === 'object' && 'env' in process) {
+      describe('GOOGLE_CLOUD_UNIVERSE_DOMAIN environment variable', () => {
+        it('sets apiEndpoint from environment variable', () => {
+          const saved = process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'];
+          process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'] = 'example.com';
+          const client = new bigtableModule.v2.BigtableClient();
+          const servicePath = client.apiEndpoint;
+          assert.strictEqual(servicePath, 'bigtable.example.com');
+          if (saved) {
+            process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'] = saved;
+          } else {
+            delete process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'];
+          }
+        });
+
+        it('value configured in code has priority over environment variable', () => {
+          const saved = process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'];
+          process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'] = 'example.com';
+          const client = new bigtableModule.v2.BigtableClient({
+            universeDomain: 'configured.example.com',
+          });
+          const servicePath = client.apiEndpoint;
+          assert.strictEqual(servicePath, 'bigtable.configured.example.com');
+          if (saved) {
+            process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'] = saved;
+          } else {
+            delete process.env['GOOGLE_CLOUD_UNIVERSE_DOMAIN'];
+          }
+        });
+      });
+    }
+    it('does not allow setting both universeDomain and universe_domain', () => {
+      assert.throws(() => {
+        new bigtableModule.v2.BigtableClient({
+          universe_domain: 'example.com',
+          universeDomain: 'example.net',
+        });
       });
     });
-    const result = await promise;
-    assert.strictEqual(result, fakeProjectId);
+
+    it('has port', () => {
+      const port = bigtableModule.v2.BigtableClient.port;
+      assert(port);
+      assert(typeof port === 'number');
+    });
+
+    it('should create a client with no option', () => {
+      const client = new bigtableModule.v2.BigtableClient();
+      assert(client);
+    });
+
+    it('should create a client with gRPC fallback', () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        fallback: true,
+      });
+      assert(client);
+    });
+
+    it('has initialize method and supports deferred initialization', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      assert.strictEqual(client.bigtableStub, undefined);
+      await client.initialize();
+      assert(client.bigtableStub);
+    });
+
+    it('has close method for the initialized client', done => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      assert(client.bigtableStub);
+      client.close().then(() => {
+        done();
+      });
+    });
+
+    it('has close method for the non-initialized client', done => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      assert.strictEqual(client.bigtableStub, undefined);
+      client.close().then(() => {
+        done();
+      });
+    });
+
+    it('has getProjectId method', async () => {
+      const fakeProjectId = 'fake-project-id';
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.auth.getProjectId = sinon.stub().resolves(fakeProjectId);
+      const result = await client.getProjectId();
+      assert.strictEqual(result, fakeProjectId);
+      assert((client.auth.getProjectId as SinonStub).calledWithExactly());
+    });
+
+    it('has getProjectId method with callback', async () => {
+      const fakeProjectId = 'fake-project-id';
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.auth.getProjectId = sinon
+        .stub()
+        .callsArgWith(0, null, fakeProjectId);
+      const promise = new Promise((resolve, reject) => {
+        client.getProjectId((err?: Error | null, projectId?: string | null) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(projectId);
+          }
+        });
+      });
+      const result = await promise;
+      assert.strictEqual(result, fakeProjectId);
+    });
   });
 
   describe('mutateRow', () => {
@@ -178,25 +273,25 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowResponse()
       );
       client.innerApiCalls.mutateRow = stubSimpleCall(expectedResponse);
       const [response] = await client.mutateRow(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.mutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRow without error using callback', async () => {
@@ -208,14 +303,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowResponse()
       );
@@ -238,11 +330,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.mutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRow with error', async () => {
@@ -254,22 +349,22 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedError = new Error('expected');
       client.innerApiCalls.mutateRow = stubSimpleCall(undefined, expectedError);
       await assert.rejects(client.mutateRow(request), expectedError);
-      assert(
-        (client.innerApiCalls.mutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRow with closed client', async () => {
@@ -281,6 +376,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowRequest()
       );
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.mutateRow(request), expectedError);
@@ -297,25 +395,25 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowResponse()
       );
       client.innerApiCalls.checkAndMutateRow = stubSimpleCall(expectedResponse);
       const [response] = await client.checkAndMutateRow(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.checkAndMutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkAndMutateRow without error using callback', async () => {
@@ -327,14 +425,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowResponse()
       );
@@ -357,11 +452,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.checkAndMutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkAndMutateRow with error', async () => {
@@ -373,25 +471,25 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedError = new Error('expected');
       client.innerApiCalls.checkAndMutateRow = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.checkAndMutateRow(request), expectedError);
-      assert(
-        (client.innerApiCalls.checkAndMutateRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.checkAndMutateRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes checkAndMutateRow with closed client', async () => {
@@ -403,6 +501,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.CheckAndMutateRowRequest()
       );
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.checkAndMutateRow(request), expectedError);
@@ -419,25 +520,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template is empty
+      request.appProfileId = 'value';
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmResponse()
       );
       client.innerApiCalls.pingAndWarm = stubSimpleCall(expectedResponse);
       const [response] = await client.pingAndWarm(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.pingAndWarm as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes pingAndWarm without error using callback', async () => {
@@ -449,14 +548,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template is empty
+      request.appProfileId = 'value';
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmResponse()
       );
@@ -479,11 +573,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.pingAndWarm as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes pingAndWarm with error', async () => {
@@ -495,25 +592,23 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template is empty
+      request.appProfileId = 'value';
+      const expectedHeaderRequestParams = 'app_profile_id=value';
       const expectedError = new Error('expected');
       client.innerApiCalls.pingAndWarm = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.pingAndWarm(request), expectedError);
-      assert(
-        (client.innerApiCalls.pingAndWarm as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.pingAndWarm as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes pingAndWarm with closed client', async () => {
@@ -525,6 +620,8 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.PingAndWarmRequest()
       );
+      // path template is empty
+      request.appProfileId = 'value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.pingAndWarm(request), expectedError);
@@ -541,14 +638,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowResponse()
       );
@@ -556,11 +650,14 @@ describe('v2.BigtableClient', () => {
         stubSimpleCall(expectedResponse);
       const [response] = await client.readModifyWriteRow(request);
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.readModifyWriteRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readModifyWriteRow without error using callback', async () => {
@@ -572,14 +669,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowResponse()
       );
@@ -602,11 +696,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.readModifyWriteRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions /*, callback defined above */)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readModifyWriteRow with error', async () => {
@@ -618,25 +715,25 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedError = new Error('expected');
       client.innerApiCalls.readModifyWriteRow = stubSimpleCall(
         undefined,
         expectedError
       );
       await assert.rejects(client.readModifyWriteRow(request), expectedError);
-      assert(
-        (client.innerApiCalls.readModifyWriteRow as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions, undefined)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readModifyWriteRow as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readModifyWriteRow with closed client', async () => {
@@ -648,6 +745,9 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadModifyWriteRowRequest()
       );
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
       await assert.rejects(client.readModifyWriteRow(request), expectedError);
@@ -664,14 +764,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsResponse()
       );
@@ -690,11 +787,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.readRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readRows with error', async () => {
@@ -706,14 +806,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedError = new Error('expected');
       client.innerApiCalls.readRows = stubServerStreamingCall(
         undefined,
@@ -732,11 +829,14 @@ describe('v2.BigtableClient', () => {
         });
       });
       await assert.rejects(promise, expectedError);
-      assert(
-        (client.innerApiCalls.readRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes readRows with closed client', async () => {
@@ -748,9 +848,14 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.ReadRowsRequest()
       );
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.readRows(request);
+      const stream = client.readRows(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',
@@ -776,14 +881,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysResponse()
       );
@@ -803,11 +905,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.sampleRowKeys as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes sampleRowKeys with error', async () => {
@@ -819,14 +924,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedError = new Error('expected');
       client.innerApiCalls.sampleRowKeys = stubServerStreamingCall(
         undefined,
@@ -845,11 +947,14 @@ describe('v2.BigtableClient', () => {
         });
       });
       await assert.rejects(promise, expectedError);
-      assert(
-        (client.innerApiCalls.sampleRowKeys as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.sampleRowKeys as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes sampleRowKeys with closed client', async () => {
@@ -861,9 +966,14 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.SampleRowKeysRequest()
       );
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.sampleRowKeys(request);
+      const stream = client.sampleRowKeys(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',
@@ -889,14 +999,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedResponse = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsResponse()
       );
@@ -916,11 +1023,14 @@ describe('v2.BigtableClient', () => {
       });
       const response = await promise;
       assert.deepStrictEqual(response, expectedResponse);
-      assert(
-        (client.innerApiCalls.mutateRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRows with error', async () => {
@@ -932,14 +1042,11 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
-      const expectedHeaderRequestParams = '';
-      const expectedOptions = {
-        otherArgs: {
-          headers: {
-            'x-goog-request-params': expectedHeaderRequestParams,
-          },
-        },
-      };
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
+      const expectedHeaderRequestParams =
+        'authorized_view_name=projects%2Fvalue%2Finstances%2Fvalue%2Ftables%2Fvalue%2FauthorizedViews%2Fvalue';
       const expectedError = new Error('expected');
       client.innerApiCalls.mutateRows = stubServerStreamingCall(
         undefined,
@@ -958,11 +1065,14 @@ describe('v2.BigtableClient', () => {
         });
       });
       await assert.rejects(promise, expectedError);
-      assert(
-        (client.innerApiCalls.mutateRows as SinonStub)
-          .getCall(0)
-          .calledWith(request, expectedOptions)
-      );
+      const actualRequest = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.mutateRows as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
     });
 
     it('invokes mutateRows with closed client', async () => {
@@ -974,9 +1084,14 @@ describe('v2.BigtableClient', () => {
       const request = generateSampleMessage(
         new protos.google.bigtable.v2.MutateRowsRequest()
       );
+      // path template: {authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}
+      request.authorizedViewName =
+        'projects/value/instances/value/tables/value/authorizedViews/value';
       const expectedError = new Error('The client has already been closed.');
       client.close();
-      const stream = client.mutateRows(request);
+      const stream = client.mutateRows(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
       const promise = new Promise((resolve, reject) => {
         stream.on(
           'data',
@@ -992,7 +1107,332 @@ describe('v2.BigtableClient', () => {
     });
   });
 
+  describe('generateInitialChangeStreamPartitions', () => {
+    it('invokes generateInitialChangeStreamPartitions without error', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest()
+      );
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest',
+        ['tableName']
+      );
+      request.tableName = defaultValue1;
+      const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+      const expectedResponse = generateSampleMessage(
+        new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse()
+      );
+      client.innerApiCalls.generateInitialChangeStreamPartitions =
+        stubServerStreamingCall(expectedResponse);
+      const stream = client.generateInitialChangeStreamPartitions(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (
+            response: protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse
+          ) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      const response = await promise;
+      assert.deepStrictEqual(response, expectedResponse);
+      const actualRequest = (
+        client.innerApiCalls.generateInitialChangeStreamPartitions as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.generateInitialChangeStreamPartitions as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+    });
+
+    it('invokes generateInitialChangeStreamPartitions with error', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest()
+      );
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest',
+        ['tableName']
+      );
+      request.tableName = defaultValue1;
+      const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+      const expectedError = new Error('expected');
+      client.innerApiCalls.generateInitialChangeStreamPartitions =
+        stubServerStreamingCall(undefined, expectedError);
+      const stream = client.generateInitialChangeStreamPartitions(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (
+            response: protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse
+          ) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+      const actualRequest = (
+        client.innerApiCalls.generateInitialChangeStreamPartitions as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.generateInitialChangeStreamPartitions as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+    });
+
+    it('invokes generateInitialChangeStreamPartitions with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest()
+      );
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.v2.GenerateInitialChangeStreamPartitionsRequest',
+        ['tableName']
+      );
+      request.tableName = defaultValue1;
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.generateInitialChangeStreamPartitions(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (
+            response: protos.google.bigtable.v2.GenerateInitialChangeStreamPartitionsResponse
+          ) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+    });
+  });
+
+  describe('readChangeStream', () => {
+    it('invokes readChangeStream without error', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.ReadChangeStreamRequest()
+      );
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.v2.ReadChangeStreamRequest',
+        ['tableName']
+      );
+      request.tableName = defaultValue1;
+      const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+      const expectedResponse = generateSampleMessage(
+        new protos.google.bigtable.v2.ReadChangeStreamResponse()
+      );
+      client.innerApiCalls.readChangeStream =
+        stubServerStreamingCall(expectedResponse);
+      const stream = client.readChangeStream(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.ReadChangeStreamResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      const response = await promise;
+      assert.deepStrictEqual(response, expectedResponse);
+      const actualRequest = (
+        client.innerApiCalls.readChangeStream as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readChangeStream as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+    });
+
+    it('invokes readChangeStream with error', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.ReadChangeStreamRequest()
+      );
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.v2.ReadChangeStreamRequest',
+        ['tableName']
+      );
+      request.tableName = defaultValue1;
+      const expectedHeaderRequestParams = `table_name=${defaultValue1}`;
+      const expectedError = new Error('expected');
+      client.innerApiCalls.readChangeStream = stubServerStreamingCall(
+        undefined,
+        expectedError
+      );
+      const stream = client.readChangeStream(request);
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.ReadChangeStreamResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+      const actualRequest = (
+        client.innerApiCalls.readChangeStream as SinonStub
+      ).getCall(0).args[0];
+      assert.deepStrictEqual(actualRequest, request);
+      const actualHeaderRequestParams = (
+        client.innerApiCalls.readChangeStream as SinonStub
+      ).getCall(0).args[1].otherArgs.headers['x-goog-request-params'];
+      assert(actualHeaderRequestParams.includes(expectedHeaderRequestParams));
+    });
+
+    it('invokes readChangeStream with closed client', async () => {
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      const request = generateSampleMessage(
+        new protos.google.bigtable.v2.ReadChangeStreamRequest()
+      );
+      const defaultValue1 = getTypeDefaultValue(
+        '.google.bigtable.v2.ReadChangeStreamRequest',
+        ['tableName']
+      );
+      request.tableName = defaultValue1;
+      const expectedError = new Error('The client has already been closed.');
+      client.close();
+      const stream = client.readChangeStream(request, {
+        retryRequestOptions: {noResponseRetries: 0},
+      });
+      const promise = new Promise((resolve, reject) => {
+        stream.on(
+          'data',
+          (response: protos.google.bigtable.v2.ReadChangeStreamResponse) => {
+            resolve(response);
+          }
+        );
+        stream.on('error', (err: Error) => {
+          reject(err);
+        });
+      });
+      await assert.rejects(promise, expectedError);
+    });
+  });
+
   describe('Path templates', () => {
+    describe('authorizedView', () => {
+      const fakePath = '/rendered/path/authorizedView';
+      const expectedParameters = {
+        project: 'projectValue',
+        instance: 'instanceValue',
+        table: 'tableValue',
+        authorized_view: 'authorizedViewValue',
+      };
+      const client = new bigtableModule.v2.BigtableClient({
+        credentials: {client_email: 'bogus', private_key: 'bogus'},
+        projectId: 'bogus',
+      });
+      client.initialize();
+      client.pathTemplates.authorizedViewPathTemplate.render = sinon
+        .stub()
+        .returns(fakePath);
+      client.pathTemplates.authorizedViewPathTemplate.match = sinon
+        .stub()
+        .returns(expectedParameters);
+
+      it('authorizedViewPath', () => {
+        const result = client.authorizedViewPath(
+          'projectValue',
+          'instanceValue',
+          'tableValue',
+          'authorizedViewValue'
+        );
+        assert.strictEqual(result, fakePath);
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.render as SinonStub)
+            .getCall(-1)
+            .calledWith(expectedParameters)
+        );
+      });
+
+      it('matchProjectFromAuthorizedViewName', () => {
+        const result = client.matchProjectFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'projectValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchInstanceFromAuthorizedViewName', () => {
+        const result = client.matchInstanceFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'instanceValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchTableFromAuthorizedViewName', () => {
+        const result = client.matchTableFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'tableValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+
+      it('matchAuthorizedViewFromAuthorizedViewName', () => {
+        const result =
+          client.matchAuthorizedViewFromAuthorizedViewName(fakePath);
+        assert.strictEqual(result, 'authorizedViewValue');
+        assert(
+          (client.pathTemplates.authorizedViewPathTemplate.match as SinonStub)
+            .getCall(-1)
+            .calledWith(fakePath)
+        );
+      });
+    });
+
     describe('instance', () => {
       const fakePath = '/rendered/path/instance';
       const expectedParameters = {
