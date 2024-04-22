@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {GoogleError, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
@@ -796,14 +796,21 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
+      const shouldRetryFn = function checkRetry(error: GoogleError) {
+        numConsecutiveErrors++;
+        numRequestsMade++;
+        return (
+          numConsecutiveErrors <= maxRetries &&
+          error.code &&
+          (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+        );
+      };
       const retryOpts = {
         currentRetryAttempt: 0, // was numConsecutiveErrors
         // Handling retries in this client. Specify the retry options to
         // make sure nothing is retried in retry-request.
         noResponseRetries: 0,
-        shouldRetryFn: (_: any) => {
-          return false;
-        },
+        shouldRetryFn,
       };
 
       if (lastRowKey) {
@@ -867,7 +874,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
       // Retry on "received rst stream" errors
-      const isRstStreamError = (error: ServiceError): boolean => {
+      const isRstStreamError = (error: GoogleError): boolean => {
         if (error.code === 13 && error.message) {
           const error_message = (error.message || '').toLowerCase();
           return (
@@ -880,6 +887,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       rowStream
+        /*
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
@@ -907,6 +915,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.emit('error', error);
           }
         })
+        */
         .on('data', _ => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
