@@ -445,6 +445,7 @@ export class Bigtable {
       {},
       baseOptions,
       {
+        gaxServerStreamingRetries: true,
         servicePath: customEndpointBaseUrl || defaultBaseUrl,
         'grpc.callInvocationTransformer': grpcGcp.gcpCallInvocationTransformer,
         'grpc.channelFactoryOverride': grpcGcp.gcpChannelFactoryOverride,
