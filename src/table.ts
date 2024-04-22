@@ -874,7 +874,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
 
       // Retry on "received rst stream" errors
-      const isRstStreamError = (error: GoogleError): boolean => {
+      const isRstStreamError = (error: GoogleError | ServiceError): boolean => {
         if (error.code === 13 && error.message) {
           const error_message = (error.message || '').toLowerCase();
           return (
@@ -887,7 +887,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       };
 
       rowStream
-        /*
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
@@ -915,7 +914,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.emit('error', error);
           }
         })
-        */
         .on('data', _ => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
