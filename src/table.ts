@@ -719,7 +719,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    * region_tag:bigtable_api_table_readstream
    */
   createReadStream(opts?: GetRowsOptions) {
-    const options = opts || {};
+    const options: GetRowsOptions = opts || {};
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
     let rowKeys: string[];
@@ -1576,7 +1576,11 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     makeNextBatchRequest();
   }
 
-  #readRowsReqOpts(ranges: PrefixRange[], rowKeys: string[], options: any) {
+  #readRowsReqOpts(
+    ranges: PrefixRange[],
+    rowKeys: string[],
+    options: GetRowsOptions
+  ) {
     const reqOpts = {
       tableName: this.name,
       appProfileId: this.bigtable.appProfileId,
