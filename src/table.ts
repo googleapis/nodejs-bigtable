@@ -723,7 +723,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
     let rowKeys: string[];
-    let filter: {} | null;
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
