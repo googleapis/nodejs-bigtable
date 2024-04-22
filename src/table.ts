@@ -741,10 +741,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       ranges.push({});
     }
 
-    if (options.filter) {
-      filter = Filter.parse(options.filter);
-    }
-
     let chunkTransformer: ChunkTransformer;
     let rowStream: Duplex;
 
@@ -829,7 +825,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
       }
 
-      const reqOpts: any = this.readRowsReqOpts(ranges, rowKeys, options);
+      const reqOpts: any = this.#readRowsReqOpts(ranges, rowKeys, options);
 
       if (hasLimit) {
         reqOpts.rowsLimit = rowsLimit - rowsRead;
@@ -1581,11 +1577,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     makeNextBatchRequest();
   }
 
-  private readRowsReqOpts(
-    ranges: PrefixRange[],
-    rowKeys: string[],
-    options: any
-  ) {
+  #readRowsReqOpts(ranges: PrefixRange[], rowKeys: string[], options: any) {
     const reqOpts = {
       tableName: this.name,
       appProfileId: this.bigtable.appProfileId,
@@ -1611,6 +1603,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     if (filter) {
       reqOpts.filter = Filter.parse(filter);
     }
+
     return reqOpts;
   }
 
@@ -2023,7 +2016,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
  * that a callback is omitted.
  */
 promisifyAll(Table, {
-  exclude: ['family', 'row'],
+  exclude: ['family', 'row', '#readRowsReqOpts'],
 });
 
 function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
