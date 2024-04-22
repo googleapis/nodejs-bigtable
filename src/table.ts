@@ -43,6 +43,7 @@ import {CreateBackupCallback, CreateBackupResponse} from './cluster';
 import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
+import * as protos from '../protos/protos';
 
 // See protos/google/rpc/code.proto
 // (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
@@ -824,7 +825,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
       }
 
-      const reqOpts: any = this.#readRowsReqOpts(ranges, rowKeys, options);
+      const reqOpts: protos.google.bigtable.v2.IReadRowsRequest =
+        this.#readRowsReqOpts(ranges, rowKeys, options);
 
       if (hasLimit) {
         reqOpts.rowsLimit = rowsLimit - rowsRead;
