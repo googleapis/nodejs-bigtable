@@ -43,7 +43,7 @@ function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
   if (request.rows && request.rows.rowRanges) {
     requestOptions.rowRanges = request.rows.rowRanges.map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (range: any) => {
+      (range: google.bigtable.v2.RowRange) => {
         const convertedRowRange = {} as {[index: string]: string};
         {
           // startKey and endKey get filled in during the grpc request.
@@ -56,8 +56,8 @@ function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
             delete range.endKey;
           }
         }
-        Object.keys(range).forEach(
-          key => (convertedRowRange[key] = range[key].asciiSlice())
+        Object.entries(range).forEach(
+          ([key, value]) => (convertedRowRange[key] = value.asciiSlice())
         );
         return convertedRowRange;
       }
