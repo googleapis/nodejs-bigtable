@@ -130,7 +130,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe('createReadStream using mock server', () => {
+  describe.only('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
@@ -187,6 +187,7 @@ describe('Bigtable/Table', () => {
               protos.google.bigtable.v2.IReadRowsResponse
             >
           ) => {
+            console.log('reached service');
             const response = responses!.shift();
             assert(response);
             rowKeysRead.push([]);
