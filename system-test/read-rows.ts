@@ -19,7 +19,7 @@ const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
 import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
-import {ReadRowsTest} from './testTypes';
+import {CreateReadStreamRequest, ReadRowsTest} from './testTypes';
 import {ServiceError, GrpcClient, CallOptions, GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
@@ -59,7 +59,7 @@ interface TestRowRange {
   endKeyClosed?: Uint8Array | string | null;
 }
 interface RowKeysWithFunction {
-  asciiSlice: () => Uint8Array;
+  asciiSlice: () => string;
 }
 function getRequestOptions(request: {
   rows?: {
@@ -67,8 +67,8 @@ function getRequestOptions(request: {
     rowKeys?: Uint8Array[] | null;
   } | null;
   rowsLimit?: string | number | Long | null | undefined;
-}): google.bigtable.v2.IRowSet {
-  const requestOptions = {} as google.bigtable.v2.IRowSet;
+}): CreateReadStreamRequest {
+  const requestOptions = {} as CreateReadStreamRequest;
   if (request.rows && request.rows.rowRanges) {
     requestOptions.rowRanges = request.rows.rowRanges.map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -113,7 +113,7 @@ function getRequestOptions(request: {
     typeof request.rowsLimit === 'string'
   ) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (requestOptions as any).rowsLimit = parseInt(request.rowsLimit);
+    requestOptions.rowsLimit = parseInt(request.rowsLimit);
   }
   return requestOptions;
 }
@@ -125,7 +125,6 @@ describe('Bigtable/Table', () => {
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
 
   const INSTANCE = bigtable.instance('instance');
-  const TABLE = INSTANCE.table('table');
 
   describe('close', () => {
     it('should fail when invoking readRows with closed client', async () => {
@@ -192,7 +191,7 @@ describe('Bigtable/Table', () => {
         // These variables store request/response data capturing data sent
         // and received when using readRows with retries. This data is evaluated
         // in checkResults at the end of the test for correctness.
-        const requestedOptions: google.bigtable.v2.IRowSet[] = [];
+        const requestedOptions: CreateReadStreamRequest[] = [];
         const responses = test.responses;
         const rowKeysRead: string[][] = [];
         let endCalled = false;
