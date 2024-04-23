@@ -214,7 +214,7 @@ export class BigtableClient {
       readRows: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,
         !!opts.fallback,
-        /* gaxStreamingRetries: */ false
+        /* gaxStreamingRetries: */ true
       ),
       sampleRowKeys: new this._gaxModule.StreamDescriptor(
         this._gaxModule.StreamType.SERVER_STREAMING,

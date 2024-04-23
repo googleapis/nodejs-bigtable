@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {GoogleError, RetryOptions, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
@@ -898,6 +898,13 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         numRequestsMade,
         options.gaxOptions
       );
+      // Set to currently not retry
+      const backOffSettings =
+        options.gaxOptions?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
+      const shouldRetryFn = function checkRetry(error: GoogleError) {
+        return false; // return [14, 4].includes(error!.code!);
+      };
+      gaxOpts.retry = new RetryOptions([], backOffSettings, shouldRetryFn);
 
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',

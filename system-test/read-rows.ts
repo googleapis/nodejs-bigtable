@@ -130,7 +130,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe('createReadStream using mock server', () => {
+  describe.only('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
@@ -162,6 +162,7 @@ describe('Bigtable/Table', () => {
         let endCalled = false;
         let error: ServiceError | null = null;
         function checkResults() {
+          console.log(error!.message);
           if (test.error) {
             assert(!endCalled, ".on('end') should not have been invoked");
             assert.strictEqual(error!.code, test.error);
