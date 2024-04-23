@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>quote test</title>
+  <script src="../node_modules/es5-shim/es5-shim.js"></script>
+  <script src="../quote.js"></script>
+</head>
+
+<body>
+  <h1>quote test</h1>
+  <script src="../node_modules/console-log-div/console-log-div.js"></script>
+  <script>
+  if (typeof quote !== 'function') {
+    throw new Error('Cannot find quote function');
+  }
+  var result = quote('foo');
+  if (result !== '"foo"') {
+    throw new Error('Invalid result ' + result);
+  }
+  console.log('quote around foo gives', result);
+  </script>
+</body>
+</html>

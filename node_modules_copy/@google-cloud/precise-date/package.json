@@ -1,0 +1,50 @@
+{
+  "name": "@google-cloud/precise-date",
+  "version": "4.0.0",
+  "description": "A simple utility for precise-dateing functions and classes.",
+  "main": "build/src/index.js",
+  "types": "build/src/index.d.ts",
+  "repository": "googleapis/nodejs-precise-date",
+  "scripts": {
+    "test": "c8 mocha build/test",
+    "lint": "gts check",
+    "clean": "gts clean",
+    "compile": "tsc -p .",
+    "fix": "gts fix",
+    "prepare": "npm run compile",
+    "pretest": "npm run compile",
+    "docs": "mkdir docs && touch docs/noop.html",
+    "docs-test": "echo no docs 👻",
+    "presystem-test": "npm run compile",
+    "samples-test": "cd samples/ && npm link ../ && npm test && cd ../",
+    "system-test": "mocha build/system-test",
+    "prelint": "cd samples; npm link ../; npm install",
+    "precompile": "gts clean"
+  },
+  "keywords": [
+    "nano",
+    "date",
+    "time",
+    "precise"
+  ],
+  "files": [
+    "build/src",
+    "!build/src/**/*.map"
+  ],
+  "author": "Google Inc.",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^20.4.9",
+    "@types/sinon": "^10.0.0",
+    "c8": "^8.0.1",
+    "codecov": "^3.0.4",
+    "gts": "^5.0.0",
+    "mocha": "^9.2.2",
+    "sinon": "^15.0.0",
+    "typescript": "^5.1.6"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
