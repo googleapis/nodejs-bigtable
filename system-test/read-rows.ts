@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bigtable, protos, Table} from '../src';
+import {Bigtable, Cluster, protos, Table} from '../src';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: ReadRowsTest[];
 };
@@ -20,7 +20,7 @@ import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
 import {ReadRowsTest} from './testTypes';
-import {ServiceError, GrpcClient, CallOptions} from 'google-gax';
+import {ServiceError, GrpcClient, CallOptions, GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
@@ -38,18 +38,41 @@ function rowResponseFromServer(rowKey: string) {
   };
 }
 
+function isRowKeysWithFunction(array: unknown): array is RowKeysWithFunction {
+  return (array as RowKeysWithFunction).asciiSlice !== undefined;
+}
+
+function isRowKeysWithFunctionArray(
+  array: unknown[]
+): array is RowKeysWithFunction[] {
+  return array.every((element: unknown) => {
+    return isRowKeysWithFunction(element);
+  });
+}
+
+interface TestRowRange {
+  startKey?: 'startKeyClosed' | 'startKeyOpen';
+  endKey?: 'endKeyOpen' | 'endKeyClosed';
+  startKeyClosed?: Uint8Array | string | null;
+  startKeyOpen?: Uint8Array | string | null;
+  endKeyOpen?: Uint8Array | string | null;
+  endKeyClosed?: Uint8Array | string | null;
+}
+interface RowKeysWithFunction {
+  asciiSlice: () => Uint8Array;
+}
 function getRequestOptions(request: {
-  rows: {
-    rowRanges: google.bigtable.v2.RowRange[];
-    rowKeys: Uint8Array[];
-  };
-  rowsLimit: string;
+  rows?: {
+    rowRanges?: TestRowRange[] | null;
+    rowKeys?: Uint8Array[] | null;
+  } | null;
+  rowsLimit?: string | number | Long | null | undefined;
 }): google.bigtable.v2.IRowSet {
   const requestOptions = {} as google.bigtable.v2.IRowSet;
   if (request.rows && request.rows.rowRanges) {
     requestOptions.rowRanges = request.rows.rowRanges.map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (range: google.bigtable.v2.RowRange) => {
+      (range: TestRowRange) => {
         const convertedRowRange = {} as {[index: string]: string};
         {
           // startKey and endKey get filled in during the grpc request.
@@ -69,10 +92,13 @@ function getRequestOptions(request: {
       }
     );
   }
-  if (request.rows && request.rows.rowKeys) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    requestOptions.rowKeys = request.rows.rowKeys.map((rowKeys: any) =>
-      rowKeys.asciiSlice()
+  if (
+    request.rows &&
+    request.rows.rowKeys &&
+    isRowKeysWithFunctionArray(request.rows.rowKeys)
+  ) {
+    requestOptions.rowKeys = request.rows.rowKeys.map(
+      (rowKeys: RowKeysWithFunction) => rowKeys.asciiSlice()
     );
   }
   // The grpc protocol sets rowsLimit to '0' if rowsLimit is not provided in the
@@ -81,7 +107,11 @@ function getRequestOptions(request: {
   // Do not append rowsLimit to collection of request options if received grpc
   // rows limit is '0' so that test data in read-rows-retry-test.json remains
   // shorter.
-  if (request.rowsLimit && request.rowsLimit !== '0') {
+  if (
+    request.rowsLimit &&
+    request.rowsLimit !== '0' &&
+    typeof request.rowsLimit === 'string'
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (requestOptions as any).rowsLimit = parseInt(request.rowsLimit);
   }
@@ -204,7 +234,7 @@ describe('Bigtable/Table', () => {
             }
             if (response.end_with_error) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const error: any = new Error();
+              const error: GoogleError = new GoogleError();
               error.code = response.end_with_error;
               stream.emit('error', error);
             } else {
