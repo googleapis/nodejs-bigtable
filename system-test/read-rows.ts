@@ -65,7 +65,7 @@ function emitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
     metadata: metadata,
   });
   stream.emit('error', error);
-  // stream.emit('status', status);
+  stream.emit('status', status);
 }
 
 function oldEmitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
@@ -327,7 +327,7 @@ describe('Bigtable/Table', () => {
         ) => {
           console.log(`Server retry counter: ${retryCounter++}`);
           // emitError(stream, 4);
-          oldEmitError(stream, 4);
+          emitError(stream, 4);
         },
       });
       const BigtableClient = new v2.BigtableClient({
@@ -354,7 +354,7 @@ describe('Bigtable/Table', () => {
       const shouldRetryFn = function checkRetry(error: GoogleError) {
         return false; // return [14, 4].includes(error!.code!);
       };
-      const retry = new RetryOptions([101], backOffSettings, shouldRetryFn);
+      const retry = new RetryOptions([], backOffSettings, shouldRetryFn);
       const options: CallOptions = {
         otherArgs: {
           header: {
