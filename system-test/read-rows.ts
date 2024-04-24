@@ -24,6 +24,7 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {ServerWritableStream} from '@grpc/grpc-js';
+import * as v2 from '../src/v2';
 
 const {grpc} = new GrpcClient();
 
@@ -248,6 +249,79 @@ describe('Bigtable/Table', () => {
             error = err as ServiceError;
             checkResults();
           });
+      });
+    });
+  });
+
+  describe.only('readrows directly using mock server', () => {
+    let server: MockServer;
+    let service: MockService;
+    let apiEndpoint: string;
+    let port: string;
+    before(async () => {
+      // make sure we have everything initialized before starting tests
+      port = await new Promise<string>(resolve => {
+        server = new MockServer(resolve);
+      });
+      apiEndpoint = `localhost:${port}`;
+      service = new BigtableClientMockService(server);
+    });
+
+    after(async () => {
+      server.shutdown(() => {});
+    });
+
+    it('testing readrows directly (no handwritten layer)', done => {
+      let retryCounter = 0;
+      service.setService({
+        ReadRows: (
+          stream: ServerWritableStream<
+            protos.google.bigtable.v2.IReadRowsRequest,
+            protos.google.bigtable.v2.IReadRowsResponse
+          >
+        ) => {
+          console.log(`Retry counter: ${retryCounter++}`);
+          const error: GoogleError = new GoogleError();
+          error.code = 4; // DEADLINE_EXCEEDED
+          stream.emit('error', error);
+        },
+      });
+      const BigtableClient = new v2.BigtableClient({
+        servicePath: 'localhost',
+        apiEndpoint: 'localhost:1234',
+        port: parseInt(port),
+        sslCreds: grpc.credentials.createInsecure(),
+      });
+      const request: protos.google.bigtable.v2.IReadRowsRequest = {
+        tableName:
+          'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
+        rows: {
+          rowKeys: [],
+          rowRanges: [],
+        },
+      };
+      const options: CallOptions = {
+        otherArgs: {
+          header: {
+            'bigtable-attempt': 0,
+          },
+        },
+        retryRequestOptions: {
+          currentRetryAttempt: 0,
+          noResponseRetries: 0,
+          objectMode: true,
+          shouldRetryFn: () => false,
+        },
+      };
+      const stream = BigtableClient.readRows(request, options);
+      stream.on('error', (error: any) => {
+        console.log('catching error');
+        console.log(error);
+        done();
+      });
+      stream.on('end', () => {
+        console.log('ending');
+        done();
       });
     });
   });
