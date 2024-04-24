@@ -64,8 +64,12 @@ function emitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
     details: 'Failed to read',
     metadata: metadata,
   });
-  stream.emit('error', error);
-  stream.emit('status', status);
+  setImmediate(() => {
+    stream.emit('error', error);
+  });
+  setImmediate(() => {
+    stream.emit('status', status);
+  });
 }
 
 function oldEmitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
