@@ -23,11 +23,43 @@ import {ServiceError, GrpcClient, CallOptions, GoogleError} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
-import {ServerWritableStream} from '@grpc/grpc-js';
+import {Metadata, ServerWritableStream} from '@grpc/grpc-js';
 import * as v2 from '../src/v2';
+import * as protobuf from 'protobufjs';
 
 const {grpc} = new GrpcClient();
 
+function emitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
+  const errorInfoObj = {
+    reason: 'SERVICE_DISABLED',
+    domain: 'googleapis.com',
+    metadata: {
+      consumer: 'projects/455411330361',
+      service: 'translate.googleapis.com',
+    },
+  };
+  // TODO: See if we can parse gax filesystem for status.json
+  const errorProtoJson = require('../../system-test/data/status.json');
+  const root = protobuf.Root.fromJSON(errorProtoJson);
+  const errorInfoType = root.lookupType('ErrorInfo');
+  const buffer = errorInfoType.encode(errorInfoObj).finish() as Buffer;
+  const any = {
+    type_url: 'type.googleapis.com/google.rpc.ErrorInfo',
+    value: buffer,
+  };
+  const status = {code, message: 'test', details: [any]};
+  const Status = root.lookupType('google.rpc.Status');
+  const status_buffer = Status.encode(status).finish() as Buffer;
+  const metadata = new Metadata();
+  metadata.set('grpc-status-details-bin', status_buffer);
+  const error = Object.assign(new GoogleError('test error'), {
+    code, // DEADLINE_EXCEEDED
+    details: 'Failed to read',
+    metadata: metadata,
+  });
+  stream.emit('error', error);
+  stream.emit('status', status);
+}
 function rowResponseFromServer(rowKey: string) {
   return {
     rowKey: Buffer.from(rowKey).toString('base64'),
@@ -37,6 +69,8 @@ function rowResponseFromServer(rowKey: string) {
     value: Buffer.from(rowKey).toString('base64'),
   };
 }
+
+
 
 function isRowKeysWithFunction(array: unknown): array is RowKeysWithFunction {
   return (array as RowKeysWithFunction).asciiSlice !== undefined;
@@ -281,9 +315,7 @@ describe('Bigtable/Table', () => {
           >
         ) => {
           console.log(`Server retry counter: ${retryCounter++}`);
-          const error: GoogleError = new GoogleError();
-          error.code = 4; // DEADLINE_EXCEEDED
-          stream.emit('error', error);
+          emitError(stream, 4);
         },
       });
       const BigtableClient = new v2.BigtableClient({
