@@ -280,7 +280,7 @@ describe('Bigtable/Table', () => {
             protos.google.bigtable.v2.IReadRowsResponse
           >
         ) => {
-          console.log(`Retry counter: ${retryCounter++}`);
+          console.log(`Server retry counter: ${retryCounter++}`);
           const error: GoogleError = new GoogleError();
           error.code = 4; // DEADLINE_EXCEEDED
           stream.emit('error', error);
