@@ -300,6 +300,7 @@ describe('Bigtable/Table', () => {
           rowRanges: [],
         },
       };
+      // TODO: Modify these call options as needed.
       const options: CallOptions = {
         otherArgs: {
           header: {
