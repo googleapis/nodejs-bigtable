@@ -19,13 +19,20 @@ const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
 import {CreateReadStreamRequest, ReadRowsTest} from './testTypes';
-import {ServiceError, GrpcClient, CallOptions, GoogleError} from 'google-gax';
+import {
+  ServiceError,
+  GrpcClient,
+  CallOptions,
+  GoogleError,
+  RetryOptions,
+} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {Metadata, ServerWritableStream} from '@grpc/grpc-js';
 import * as v2 from '../src/v2';
 import * as protobuf from 'protobufjs';
+import {BackoffSettings} from 'google-gax/build/src/gax';
 
 const {grpc} = new GrpcClient();
 
@@ -58,7 +65,13 @@ function emitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
     metadata: metadata,
   });
   stream.emit('error', error);
-  stream.emit('status', status);
+  // stream.emit('status', status);
+}
+
+function oldEmitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
+  const error: GoogleError = new GoogleError();
+  error.code = code;
+  stream.emit('error', error);
 }
 function rowResponseFromServer(rowKey: string) {
   return {
@@ -69,8 +82,6 @@ function rowResponseFromServer(rowKey: string) {
     value: Buffer.from(rowKey).toString('base64'),
   };
 }
-
-
 
 function isRowKeysWithFunction(array: unknown): array is RowKeysWithFunction {
   return (array as RowKeysWithFunction).asciiSlice !== undefined;
@@ -315,7 +326,8 @@ describe('Bigtable/Table', () => {
           >
         ) => {
           console.log(`Server retry counter: ${retryCounter++}`);
-          emitError(stream, 4);
+          // emitError(stream, 4);
+          oldEmitError(stream, 4);
         },
       });
       const BigtableClient = new v2.BigtableClient({
@@ -333,18 +345,32 @@ describe('Bigtable/Table', () => {
         },
       };
       // TODO: Modify these call options as needed.
+      // Set to currently not retry
+      const backOffSettings = {
+        initialRetryDelayMillis: 10,
+        retryDelayMultiplier: 2,
+        maxRetryDelayMillis: 60000,
+      };
+      const shouldRetryFn = function checkRetry(error: GoogleError) {
+        return false; // return [14, 4].includes(error!.code!);
+      };
+      const retry = new RetryOptions([101], backOffSettings, shouldRetryFn);
       const options: CallOptions = {
         otherArgs: {
           header: {
             'bigtable-attempt': 0,
           },
         },
+        retry,
+        maxRetries: 3,
+        /*
         retryRequestOptions: {
           currentRetryAttempt: 0,
           noResponseRetries: 0,
           objectMode: true,
           shouldRetryFn: () => false,
         },
+         */
       };
       const stream = BigtableClient.readRows(request, options);
       stream.on('error', (error: any) => {
