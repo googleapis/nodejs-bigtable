@@ -333,6 +333,7 @@ describe('Bigtable/Table', () => {
 
     it('testing readrows directly (no handwritten layer)', done => {
       let retryCounter = 0;
+      let catchingErrorCount = 0;
       service.setService({
         ReadRows: (
           stream: ServerWritableStream<
@@ -367,7 +368,7 @@ describe('Bigtable/Table', () => {
         maxRetryDelayMillis: 60000,
       };
       const shouldRetryFn = function checkRetry(error: GoogleError) {
-        return false; // return [14, 4].includes(error!.code!);
+        return true; // return [14, 4].includes(error!.code!);
       };
       // TODO: Issues to address
       // Issue 2:
@@ -392,8 +393,8 @@ describe('Bigtable/Table', () => {
       };
       const stream = BigtableClient.readRows(request, options);
       stream.on('error', (error: any) => {
-        console.log('catching error');
-        console.log(error);
+        console.log(`catching error counter: ${catchingErrorCount++}`);
+        console.log(`error code: ${error.code}`);
         done();
       });
       stream.on('end', () => {
