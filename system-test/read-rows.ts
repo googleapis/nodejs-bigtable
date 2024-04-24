@@ -16,7 +16,6 @@ import {Bigtable, Cluster, protos, Table} from '../src';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: ReadRowsTest[];
 };
-import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
 import {CreateReadStreamRequest, ReadRowsTest} from './testTypes';
