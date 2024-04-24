@@ -71,7 +71,6 @@ function getRequestOptions(request: {
   const requestOptions = {} as CreateReadStreamRequest;
   if (request.rows && request.rows.rowRanges) {
     requestOptions.rowRanges = request.rows.rowRanges.map(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (range: TestRowRange) => {
         const convertedRowRange = {} as {[index: string]: string};
         {
@@ -112,7 +111,6 @@ function getRequestOptions(request: {
     request.rowsLimit !== '0' &&
     typeof request.rowsLimit === 'string'
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     requestOptions.rowsLimit = parseInt(request.rowsLimit);
   }
   return requestOptions;
@@ -232,7 +230,6 @@ describe('Bigtable/Table', () => {
               });
             }
             if (response.end_with_error) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const error: GoogleError = new GoogleError();
               error.code = response.end_with_error;
               stream.emit('error', error);
