@@ -33,10 +33,17 @@ import {Metadata, ServerWritableStream} from '@grpc/grpc-js';
 import * as v2 from '../src/v2';
 import * as protobuf from 'protobufjs';
 import {BackoffSettings} from 'google-gax/build/src/gax';
+import {google} from '../protos/protos';
 
 const {grpc} = new GrpcClient();
 
-function emitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
+function emitError(
+  stream: ServerWritableStream<
+    protos.google.bigtable.v2.IReadRowsRequest,
+    protos.google.bigtable.v2.IReadRowsResponse
+  >,
+  code: number
+) {
   const errorInfoObj = {
     reason: 'SERVICE_DISABLED',
     domain: 'googleapis.com',
@@ -65,6 +72,10 @@ function emitError<T, U>(stream: ServerWritableStream<T, U>, code: number) {
     metadata: metadata,
   });
   setImmediate(() => {
+    const response = {
+      chunks: [].map(rowResponseFromServer),
+    };
+    stream.write(response);
     stream.emit('error', error);
   });
   setImmediate(() => {
@@ -358,6 +369,9 @@ describe('Bigtable/Table', () => {
       const shouldRetryFn = function checkRetry(error: GoogleError) {
         return false; // return [14, 4].includes(error!.code!);
       };
+      // TODO: Issues to address
+      // Issue 2:
+      // a. When gax retries, the error still seems to bubble up to the user
       const retry = new RetryOptions([], backOffSettings, shouldRetryFn);
       const options: CallOptions = {
         otherArgs: {
