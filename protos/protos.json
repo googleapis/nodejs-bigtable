@@ -11,7 +11,7 @@
                     "csharp_namespace": "Google.Cloud.Bigtable.Admin.V2",
                     "go_package": "google.golang.org/genproto/googleapis/bigtable/admin/v2;admin",
                     "java_multiple_files": true,
-                    "java_outer_classname": "TableProto",
+                    "java_outer_classname": "TypesProto",
                     "java_package": "com.google.bigtable.admin.v2",
                     "php_namespace": "Google\\Cloud\\Bigtable\\Admin\\V2",
                     "ruby_package": "Google::Cloud::Bigtable::Admin::V2",
@@ -1173,6 +1173,13 @@
                             "multiClusterRoutingUseAny",
                             "singleClusterRouting"
                           ]
+                        },
+                        "isolation": {
+                          "oneof": [
+                            "priority",
+                            "standardIsolation",
+                            "dataBoostIsolationReadOnly"
+                          ]
                         }
                       },
                       "fields": {
@@ -1195,6 +1202,21 @@
                         "singleClusterRouting": {
                           "type": "SingleClusterRouting",
                           "id": 6
+                        },
+                        "priority": {
+                          "type": "Priority",
+                          "id": 7,
+                          "options": {
+                            "deprecated": true
+                          }
+                        },
+                        "standardIsolation": {
+                          "type": "StandardIsolation",
+                          "id": 11
+                        },
+                        "dataBoostIsolationReadOnly": {
+                          "type": "DataBoostIsolationReadOnly",
+                          "id": 10
                         }
                       },
                       "nested": {
@@ -1216,6 +1238,48 @@
                             "allowTransactionalWrites": {
                               "type": "bool",
                               "id": 2
+                            }
+                          }
+                        },
+                        "Priority": {
+                          "values": {
+                            "PRIORITY_UNSPECIFIED": 0,
+                            "PRIORITY_LOW": 1,
+                            "PRIORITY_MEDIUM": 2,
+                            "PRIORITY_HIGH": 3
+                          }
+                        },
+                        "StandardIsolation": {
+                          "fields": {
+                            "priority": {
+                              "type": "Priority",
+                              "id": 1
+                            }
+                          }
+                        },
+                        "DataBoostIsolationReadOnly": {
+                          "oneofs": {
+                            "_computeBillingOwner": {
+                              "oneof": [
+                                "computeBillingOwner"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "computeBillingOwner": {
+                              "type": "ComputeBillingOwner",
+                              "id": 1,
+                              "options": {
+                                "proto3_optional": true
+                              }
+                            }
+                          },
+                          "nested": {
+                            "ComputeBillingOwner": {
+                              "values": {
+                                "COMPUTE_BILLING_OWNER_UNSPECIFIED": 0,
+                                "HOST_PAYS": 1
+                              }
                             }
                           }
                         }
@@ -1453,6 +1517,116 @@
                                 "response_type": "Table",
                                 "metadata_type": "UndeleteTableMetadata"
                               }
+                            }
+                          ]
+                        },
+                        "CreateAuthorizedView": {
+                          "requestType": "CreateAuthorizedViewRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*/tables/*}/authorizedViews",
+                            "(google.api.http).body": "authorized_view",
+                            "(google.api.method_signature)": "parent,authorized_view,authorized_view_id",
+                            "(google.longrunning.operation_info).response_type": "AuthorizedView",
+                            "(google.longrunning.operation_info).metadata_type": "CreateAuthorizedViewMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "post": "/v2/{parent=projects/*/instances/*/tables/*}/authorizedViews",
+                                "body": "authorized_view"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "parent,authorized_view,authorized_view_id"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "AuthorizedView",
+                                "metadata_type": "CreateAuthorizedViewMetadata"
+                              }
+                            }
+                          ]
+                        },
+                        "ListAuthorizedViews": {
+                          "requestType": "ListAuthorizedViewsRequest",
+                          "responseType": "ListAuthorizedViewsResponse",
+                          "options": {
+                            "(google.api.http).get": "/v2/{parent=projects/*/instances/*/tables/*}/authorizedViews",
+                            "(google.api.method_signature)": "parent"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "get": "/v2/{parent=projects/*/instances/*/tables/*}/authorizedViews"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "parent"
+                            }
+                          ]
+                        },
+                        "GetAuthorizedView": {
+                          "requestType": "GetAuthorizedViewRequest",
+                          "responseType": "AuthorizedView",
+                          "options": {
+                            "(google.api.http).get": "/v2/{name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                            "(google.api.method_signature)": "name"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "get": "/v2/{name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "name"
+                            }
+                          ]
+                        },
+                        "UpdateAuthorizedView": {
+                          "requestType": "UpdateAuthorizedViewRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).patch": "/v2/{authorized_view.name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                            "(google.api.http).body": "authorized_view",
+                            "(google.api.method_signature)": "authorized_view,update_mask",
+                            "(google.longrunning.operation_info).response_type": "AuthorizedView",
+                            "(google.longrunning.operation_info).metadata_type": "UpdateAuthorizedViewMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "patch": "/v2/{authorized_view.name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                                "body": "authorized_view"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "authorized_view,update_mask"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "AuthorizedView",
+                                "metadata_type": "UpdateAuthorizedViewMetadata"
+                              }
+                            }
+                          ]
+                        },
+                        "DeleteAuthorizedView": {
+                          "requestType": "DeleteAuthorizedViewRequest",
+                          "responseType": "google.protobuf.Empty",
+                          "options": {
+                            "(google.api.http).delete": "/v2/{name=projects/*/instances/*/tables/*/authorizedViews/*}",
+                            "(google.api.method_signature)": "name"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "delete": "/v2/{name=projects/*/instances/*/tables/*/authorizedViews/*}"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "name"
                             }
                           ]
                         },
@@ -1736,6 +1910,34 @@
                               "(google.longrunning.operation_info)": {
                                 "response_type": "Table",
                                 "metadata_type": "RestoreTableMetadata"
+                              }
+                            }
+                          ]
+                        },
+                        "CopyBackup": {
+                          "requestType": "CopyBackupRequest",
+                          "responseType": "google.longrunning.Operation",
+                          "options": {
+                            "(google.api.http).post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups:copy",
+                            "(google.api.http).body": "*",
+                            "(google.api.method_signature)": "parent,backup_id,source_backup,expire_time",
+                            "(google.longrunning.operation_info).response_type": "Backup",
+                            "(google.longrunning.operation_info).metadata_type": "CopyBackupMetadata"
+                          },
+                          "parsedOptions": [
+                            {
+                              "(google.api.http)": {
+                                "post": "/v2/{parent=projects/*/instances/*/clusters/*}/backups:copy",
+                                "body": "*"
+                              }
+                            },
+                            {
+                              "(google.api.method_signature)": "parent,backup_id,source_backup,expire_time"
+                            },
+                            {
+                              "(google.longrunning.operation_info)": {
+                                "response_type": "Backup",
+                                "metadata_type": "CopyBackupMetadata"
                               }
                             }
                           ]
@@ -2136,6 +2338,13 @@
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
+                        },
+                        "ignoreWarnings": {
+                          "type": "bool",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
                         }
                       },
                       "nested": {
@@ -2165,6 +2374,13 @@
                             "drop": {
                               "type": "bool",
                               "id": 4
+                            },
+                            "updateMask": {
+                              "type": "google.protobuf.FieldMask",
+                              "id": 6,
+                              "options": {
+                                "(google.api.field_behavior)": "OPTIONAL"
+                              }
                             }
                           }
                         }
@@ -2191,6 +2407,14 @@
                       }
                     },
                     "CheckConsistencyRequest": {
+                      "oneofs": {
+                        "mode": {
+                          "oneof": [
+                            "standardReadRemoteWrites",
+                            "dataBoostReadLocalWrites"
+                          ]
+                        }
+                      },
                       "fields": {
                         "name": {
                           "type": "string",
@@ -2206,8 +2430,22 @@
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
                           }
+                        },
+                        "standardReadRemoteWrites": {
+                          "type": "StandardReadRemoteWrites",
+                          "id": 3
+                        },
+                        "dataBoostReadLocalWrites": {
+                          "type": "DataBoostReadLocalWrites",
+                          "id": 4
                         }
                       }
+                    },
+                    "StandardReadRemoteWrites": {
+                      "fields": {}
+                    },
+                    "DataBoostReadLocalWrites": {
+                      "fields": {}
                     },
                     "CheckConsistencyResponse": {
                       "fields": {
@@ -2470,6 +2708,226 @@
                         }
                       }
                     },
+                    "CopyBackupRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Cluster"
+                          }
+                        },
+                        "backupId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
+                          }
+                        },
+                        "expireTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CopyBackupMetadata": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Backup"
+                          }
+                        },
+                        "sourceBackupInfo": {
+                          "type": "BackupInfo",
+                          "id": 2
+                        },
+                        "progress": {
+                          "type": "OperationProgress",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "CreateAuthorizedViewRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).child_type": "bigtableadmin.googleapis.com/AuthorizedView"
+                          }
+                        },
+                        "authorizedViewId": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "authorizedView": {
+                          "type": "AuthorizedView",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        }
+                      }
+                    },
+                    "CreateAuthorizedViewMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "CreateAuthorizedViewRequest",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "ListAuthorizedViewsRequest": {
+                      "fields": {
+                        "parent": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).child_type": "bigtableadmin.googleapis.com/AuthorizedView"
+                          }
+                        },
+                        "pageSize": {
+                          "type": "int32",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        },
+                        "pageToken": {
+                          "type": "string",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        },
+                        "view": {
+                          "type": "AuthorizedView.ResponseView",
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
+                    "ListAuthorizedViewsResponse": {
+                      "fields": {
+                        "authorizedViews": {
+                          "rule": "repeated",
+                          "type": "AuthorizedView",
+                          "id": 1
+                        },
+                        "nextPageToken": {
+                          "type": "string",
+                          "id": 2
+                        }
+                      }
+                    },
+                    "GetAuthorizedViewRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
+                          }
+                        },
+                        "view": {
+                          "type": "AuthorizedView.ResponseView",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateAuthorizedViewRequest": {
+                      "fields": {
+                        "authorizedView": {
+                          "type": "AuthorizedView",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "updateMask": {
+                          "type": "google.protobuf.FieldMask",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        },
+                        "ignoreWarnings": {
+                          "type": "bool",
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
+                    "UpdateAuthorizedViewMetadata": {
+                      "fields": {
+                        "originalRequest": {
+                          "type": "UpdateAuthorizedViewRequest",
+                          "id": 1
+                        },
+                        "requestTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 2
+                        },
+                        "finishTime": {
+                          "type": "google.protobuf.Timestamp",
+                          "id": 3
+                        }
+                      }
+                    },
+                    "DeleteAuthorizedViewRequest": {
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "REQUIRED",
+                            "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
+                          }
+                        },
+                        "etag": {
+                          "type": "string",
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OPTIONAL"
+                          }
+                        }
+                      }
+                    },
                     "RestoreInfo": {
                       "oneofs": {
                         "sourceInfo": {
@@ -2501,6 +2959,13 @@
                       "options": {
                         "(google.api.resource).type": "bigtableadmin.googleapis.com/Table",
                         "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}"
+                      },
+                      "oneofs": {
+                        "automatedBackupConfig": {
+                          "oneof": [
+                            "automatedBackupPolicy"
+                          ]
+                        }
                       },
                       "fields": {
                         "name": {
@@ -2541,6 +3006,10 @@
                         "deletionProtection": {
                           "type": "bool",
                           "id": 9
+                        },
+                        "automatedBackupPolicy": {
+                          "type": "AutomatedBackupPolicy",
+                          "id": 13
                         }
                       },
                       "nested": {
@@ -2590,6 +3059,98 @@
                             "ENCRYPTION_VIEW": 5,
                             "FULL": 4
                           }
+                        },
+                        "AutomatedBackupPolicy": {
+                          "fields": {
+                            "retentionPeriod": {
+                              "type": "google.protobuf.Duration",
+                              "id": 1,
+                              "options": {
+                                "(google.api.field_behavior)": "REQUIRED"
+                              }
+                            },
+                            "frequency": {
+                              "type": "google.protobuf.Duration",
+                              "id": 2,
+                              "options": {
+                                "(google.api.field_behavior)": "REQUIRED"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "AuthorizedView": {
+                      "options": {
+                        "(google.api.resource).type": "bigtableadmin.googleapis.com/AuthorizedView",
+                        "(google.api.resource).pattern": "projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}",
+                        "(google.api.resource).plural": "authorizedViews",
+                        "(google.api.resource).singular": "authorizedView"
+                      },
+                      "oneofs": {
+                        "authorizedView": {
+                          "oneof": [
+                            "subsetView"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "name": {
+                          "type": "string",
+                          "id": 1,
+                          "options": {
+                            "(google.api.field_behavior)": "IDENTIFIER"
+                          }
+                        },
+                        "subsetView": {
+                          "type": "SubsetView",
+                          "id": 2
+                        },
+                        "etag": {
+                          "type": "string",
+                          "id": 3
+                        },
+                        "deletionProtection": {
+                          "type": "bool",
+                          "id": 4
+                        }
+                      },
+                      "nested": {
+                        "FamilySubsets": {
+                          "fields": {
+                            "qualifiers": {
+                              "rule": "repeated",
+                              "type": "bytes",
+                              "id": 1
+                            },
+                            "qualifierPrefixes": {
+                              "rule": "repeated",
+                              "type": "bytes",
+                              "id": 2
+                            }
+                          }
+                        },
+                        "SubsetView": {
+                          "fields": {
+                            "rowPrefixes": {
+                              "rule": "repeated",
+                              "type": "bytes",
+                              "id": 1
+                            },
+                            "familySubsets": {
+                              "keyType": "string",
+                              "type": "FamilySubsets",
+                              "id": 2
+                            }
+                          }
+                        },
+                        "ResponseView": {
+                          "values": {
+                            "RESPONSE_VIEW_UNSPECIFIED": 0,
+                            "NAME_ONLY": 1,
+                            "BASIC": 2,
+                            "FULL": 3
+                          }
                         }
                       }
                     },
@@ -2598,6 +3159,10 @@
                         "gcRule": {
                           "type": "GcRule",
                           "id": 1
+                        },
+                        "valueType": {
+                          "type": "Type",
+                          "id": 3
                         }
                       }
                     },
@@ -2698,15 +3263,24 @@
                         },
                         "sourceTable": {
                           "type": "Table",
-                          "id": 2
+                          "id": 2,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "dataSizeBytes": {
                           "type": "int64",
-                          "id": 3
+                          "id": 3,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "createTime": {
                           "type": "google.protobuf.Timestamp",
-                          "id": 4
+                          "id": 4,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "deleteTime": {
                           "type": "google.protobuf.Timestamp",
@@ -2714,7 +3288,10 @@
                         },
                         "state": {
                           "type": "State",
-                          "id": 6
+                          "id": 6,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         },
                         "description": {
                           "type": "string",
@@ -2746,6 +3323,13 @@
                           "id": 2,
                           "options": {
                             "(google.api.field_behavior)": "REQUIRED"
+                          }
+                        },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 10,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
                         },
                         "expireTime": {
@@ -2830,6 +3414,13 @@
                           "options": {
                             "(google.api.field_behavior)": "OUTPUT_ONLY"
                           }
+                        },
+                        "sourceBackup": {
+                          "type": "string",
+                          "id": 10,
+                          "options": {
+                            "(google.api.field_behavior)": "OUTPUT_ONLY"
+                          }
                         }
                       }
                     },
@@ -2837,6 +3428,129 @@
                       "values": {
                         "RESTORE_SOURCE_TYPE_UNSPECIFIED": 0,
                         "BACKUP": 1
+                      }
+                    },
+                    "Type": {
+                      "oneofs": {
+                        "kind": {
+                          "oneof": [
+                            "bytesType",
+                            "int64Type",
+                            "aggregateType"
+                          ]
+                        }
+                      },
+                      "fields": {
+                        "bytesType": {
+                          "type": "Bytes",
+                          "id": 1
+                        },
+                        "int64Type": {
+                          "type": "Int64",
+                          "id": 5
+                        },
+                        "aggregateType": {
+                          "type": "Aggregate",
+                          "id": 6
+                        }
+                      },
+                      "nested": {
+                        "Bytes": {
+                          "fields": {
+                            "encoding": {
+                              "type": "Encoding",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Encoding": {
+                              "oneofs": {
+                                "encoding": {
+                                  "oneof": [
+                                    "raw"
+                                  ]
+                                }
+                              },
+                              "fields": {
+                                "raw": {
+                                  "type": "Raw",
+                                  "id": 1
+                                }
+                              },
+                              "nested": {
+                                "Raw": {
+                                  "fields": {}
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "Int64": {
+                          "fields": {
+                            "encoding": {
+                              "type": "Encoding",
+                              "id": 1
+                            }
+                          },
+                          "nested": {
+                            "Encoding": {
+                              "oneofs": {
+                                "encoding": {
+                                  "oneof": [
+                                    "bigEndianBytes"
+                                  ]
+                                }
+                              },
+                              "fields": {
+                                "bigEndianBytes": {
+                                  "type": "BigEndianBytes",
+                                  "id": 1
+                                }
+                              },
+                              "nested": {
+                                "BigEndianBytes": {
+                                  "fields": {
+                                    "bytesType": {
+                                      "type": "Bytes",
+                                      "id": 1
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "Aggregate": {
+                          "oneofs": {
+                            "aggregator": {
+                              "oneof": [
+                                "sum"
+                              ]
+                            }
+                          },
+                          "fields": {
+                            "inputType": {
+                              "type": "Type",
+                              "id": 1
+                            },
+                            "stateType": {
+                              "type": "Type",
+                              "id": 2,
+                              "options": {
+                                "(google.api.field_behavior)": "OUTPUT_ONLY"
+                              }
+                            },
+                            "sum": {
+                              "type": "Sum",
+                              "id": 4
+                            }
+                          },
+                          "nested": {
+                            "Sum": {
+                              "fields": {}
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -2852,8 +3566,8 @@
                 "java_package": "com.google.bigtable.v2",
                 "php_namespace": "Google\\Cloud\\Bigtable\\V2",
                 "ruby_package": "Google::Cloud::Bigtable::V2",
-                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/Table",
-                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}"
+                "(google.api.resource_definition).type": "bigtableadmin.googleapis.com/AuthorizedView",
+                "(google.api.resource_definition).pattern": "projects/{project}/instances/{instance}/tables/{table}/authorizedViews/{authorized_view}"
               },
               "nested": {
                 "Bigtable": {
@@ -2869,15 +3583,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readRows",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readRows",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -2889,6 +3609,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -2907,14 +3631,18 @@
                       "responseStream": true,
                       "options": {
                         "(google.api.http).get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
-                            "get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys"
+                            "get": "/v2/{table_name=projects/*/instances/*/tables/*}:sampleRowKeys",
+                            "additional_bindings": {
+                              "get": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:sampleRowKeys"
+                            }
                           }
                         },
                         {
@@ -2926,6 +3654,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -2944,15 +3676,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRow",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,mutations,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRow",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRow",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -2964,6 +3702,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -2983,15 +3725,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRows",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,entries,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:mutateRows",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:mutateRows",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3003,6 +3751,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3021,15 +3773,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:checkAndMutateRow",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:checkAndMutateRow",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,predicate_filter,true_mutations,false_mutations,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:checkAndMutateRow",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:checkAndMutateRow",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3041,6 +3799,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3097,15 +3859,21 @@
                       "options": {
                         "(google.api.http).post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
                         "(google.api.http).body": "*",
-                        "(google.api.routing).routing_parameters.field": "app_profile_id",
-                        "(google.api.routing).routing_parameters.path_template": "{table_name=projects/*/instances/*/tables/*}",
+                        "(google.api.http).additional_bindings.post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readModifyWriteRow",
+                        "(google.api.http).additional_bindings.body": "*",
+                        "(google.api.routing).routing_parameters.field": "authorized_view_name",
+                        "(google.api.routing).routing_parameters.path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}",
                         "(google.api.method_signature)": "table_name,row_key,rules,app_profile_id"
                       },
                       "parsedOptions": [
                         {
                           "(google.api.http)": {
                             "post": "/v2/{table_name=projects/*/instances/*/tables/*}:readModifyWriteRow",
-                            "body": "*"
+                            "body": "*",
+                            "additional_bindings": {
+                              "post": "/v2/{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}:readModifyWriteRow",
+                              "body": "*"
+                            }
                           }
                         },
                         {
@@ -3117,6 +3885,10 @@
                               },
                               {
                                 "field": "app_profile_id"
+                              },
+                              {
+                                "field": "authorized_view_name",
+                                "path_template": "{authorized_view_name=projects/*/instances/*/tables/*/authorizedViews/*}"
                               }
                             ]
                           }
@@ -3185,8 +3957,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 9,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3208,6 +3988,10 @@
                     "requestStatsView": {
                       "type": "RequestStatsView",
                       "id": 6
+                    },
+                    "reversed": {
+                      "type": "bool",
+                      "id": 7
                     }
                   },
                   "nested": {
@@ -3294,8 +4078,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 4,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3322,8 +4114,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 6,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3356,8 +4156,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 5,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3447,8 +4255,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 9,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3511,8 +4327,16 @@
                       "type": "string",
                       "id": 1,
                       "options": {
-                        "(google.api.field_behavior)": "REQUIRED",
+                        "(google.api.field_behavior)": "OPTIONAL",
                         "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/Table"
+                      }
+                    },
+                    "authorizedViewName": {
+                      "type": "string",
+                      "id": 6,
+                      "options": {
+                        "(google.api.field_behavior)": "OPTIONAL",
+                        "(google.api.resource_reference).type": "bigtableadmin.googleapis.com/AuthorizedView"
                       }
                     },
                     "appProfileId": {
@@ -3806,6 +4630,31 @@
                     }
                   }
                 },
+                "Value": {
+                  "oneofs": {
+                    "kind": {
+                      "oneof": [
+                        "rawValue",
+                        "rawTimestampMicros",
+                        "intValue"
+                      ]
+                    }
+                  },
+                  "fields": {
+                    "rawValue": {
+                      "type": "bytes",
+                      "id": 8
+                    },
+                    "rawTimestampMicros": {
+                      "type": "int64",
+                      "id": 9
+                    },
+                    "intValue": {
+                      "type": "int64",
+                      "id": 6
+                    }
+                  }
+                },
                 "RowRange": {
                   "oneofs": {
                     "startKey": {
@@ -4084,6 +4933,7 @@
                     "mutation": {
                       "oneof": [
                         "setCell",
+                        "addToCell",
                         "deleteFromColumn",
                         "deleteFromFamily",
                         "deleteFromRow"
@@ -4094,6 +4944,10 @@
                     "setCell": {
                       "type": "SetCell",
                       "id": 1
+                    },
+                    "addToCell": {
+                      "type": "AddToCell",
+                      "id": 5
                     },
                     "deleteFromColumn": {
                       "type": "DeleteFromColumn",
@@ -4125,6 +4979,26 @@
                         },
                         "value": {
                           "type": "bytes",
+                          "id": 4
+                        }
+                      }
+                    },
+                    "AddToCell": {
+                      "fields": {
+                        "familyName": {
+                          "type": "string",
+                          "id": 1
+                        },
+                        "columnQualifier": {
+                          "type": "Value",
+                          "id": 2
+                        },
+                        "timestamp": {
+                          "type": "Value",
+                          "id": 3
+                        },
+                        "input": {
+                          "type": "Value",
                           "id": 4
                         }
                       }
@@ -4272,9 +5146,33 @@
                 },
                 "FeatureFlags": {
                   "fields": {
+                    "reverseScans": {
+                      "type": "bool",
+                      "id": 1
+                    },
                     "mutateRowsRateLimit": {
                       "type": "bool",
                       "id": 3
+                    },
+                    "mutateRowsRateLimit2": {
+                      "type": "bool",
+                      "id": 5
+                    },
+                    "lastScannedRowResponses": {
+                      "type": "bool",
+                      "id": 4
+                    },
+                    "routingCookie": {
+                      "type": "bool",
+                      "id": 6
+                    },
+                    "retryInfo": {
+                      "type": "bool",
+                      "id": 7
+                    },
+                    "clientSideMetricsEnabled": {
+                      "type": "bool",
+                      "id": 8
                     }
                   }
                 },
@@ -4425,6 +5323,11 @@
               "id": 1050,
               "extend": "google.protobuf.ServiceOptions"
             },
+            "apiVersion": {
+              "type": "string",
+              "id": 525000001,
+              "extend": "google.protobuf.ServiceOptions"
+            },
             "CommonLanguageSettings": {
               "fields": {
                 "referenceDocsUri": {
@@ -4533,6 +5436,10 @@
                 "protoReferenceDocumentationUri": {
                   "type": "string",
                   "id": 110
+                },
+                "restReferenceDocumentationUri": {
+                  "type": "string",
+                  "id": 111
                 }
               }
             },
@@ -4643,6 +5550,11 @@
                 "longRunning": {
                   "type": "LongRunning",
                   "id": 2
+                },
+                "autoPopulatedFields": {
+                  "rule": "repeated",
+                  "type": "string",
+                  "id": 3
                 }
               },
               "nested": {
@@ -4703,7 +5615,10 @@
               "rule": "repeated",
               "type": "google.api.FieldBehavior",
               "id": 1052,
-              "extend": "google.protobuf.FieldOptions"
+              "extend": "google.protobuf.FieldOptions",
+              "options": {
+                "packed": false
+              }
             },
             "FieldBehavior": {
               "values": {
@@ -4714,7 +5629,8 @@
                 "INPUT_ONLY": 4,
                 "IMMUTABLE": 5,
                 "UNORDERED_LIST": 6,
-                "NON_EMPTY_DEFAULT": 7
+                "NON_EMPTY_DEFAULT": 7,
+                "IDENTIFIER": 8
               }
             },
             "resourceReference": {
@@ -4842,6 +5758,21 @@
                 }
               }
             },
+            "Edition": {
+              "values": {
+                "EDITION_UNKNOWN": 0,
+                "EDITION_PROTO2": 998,
+                "EDITION_PROTO3": 999,
+                "EDITION_2023": 1000,
+                "EDITION_2024": 1001,
+                "EDITION_1_TEST_ONLY": 1,
+                "EDITION_2_TEST_ONLY": 2,
+                "EDITION_99997_TEST_ONLY": 99997,
+                "EDITION_99998_TEST_ONLY": 99998,
+                "EDITION_99999_TEST_ONLY": 99999,
+                "EDITION_MAX": 2147483647
+              }
+            },
             "FileDescriptorProto": {
               "fields": {
                 "name": {
@@ -4906,8 +5837,8 @@
                   "id": 12
                 },
                 "edition": {
-                  "type": "string",
-                  "id": 13
+                  "type": "Edition",
+                  "id": 14
                 }
               }
             },
@@ -5016,7 +5947,8 @@
                   "type": "VerificationState",
                   "id": 3,
                   "options": {
-                    "default": "UNVERIFIED"
+                    "default": "UNVERIFIED",
+                    "retention": "RETENTION_SOURCE"
                   }
                 }
               },
@@ -5138,8 +6070,8 @@
                 "Label": {
                   "values": {
                     "LABEL_OPTIONAL": 1,
-                    "LABEL_REQUIRED": 2,
-                    "LABEL_REPEATED": 3
+                    "LABEL_REPEATED": 3,
+                    "LABEL_REQUIRED": 2
                   }
                 }
               }
@@ -5327,13 +6259,6 @@
                     "default": false
                   }
                 },
-                "phpGenericServices": {
-                  "type": "bool",
-                  "id": 42,
-                  "options": {
-                    "default": false
-                  }
-                },
                 "deprecated": {
                   "type": "bool",
                   "id": 23,
@@ -5393,6 +6318,10 @@
                 ]
               ],
               "reserved": [
+                [
+                  42,
+                  42
+                ],
                 [
                   38,
                   38
@@ -5618,8 +6547,8 @@
                 "EditionDefault": {
                   "fields": {
                     "edition": {
-                      "type": "string",
-                      "id": 1
+                      "type": "Edition",
+                      "id": 3
                     },
                     "value": {
                       "type": "string",
@@ -5849,7 +6778,7 @@
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
-                    "edition_defaults.edition": "2023",
+                    "edition_defaults.edition": "EDITION_2023",
                     "edition_defaults.value": "EXPLICIT"
                   }
                 },
@@ -5859,7 +6788,7 @@
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
-                    "edition_defaults.edition": "2023",
+                    "edition_defaults.edition": "EDITION_PROTO3",
                     "edition_defaults.value": "OPEN"
                   }
                 },
@@ -5869,18 +6798,18 @@
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
-                    "edition_defaults.edition": "2023",
+                    "edition_defaults.edition": "EDITION_PROTO3",
                     "edition_defaults.value": "PACKED"
                   }
                 },
-                "stringFieldValidation": {
-                  "type": "StringFieldValidation",
+                "utf8Validation": {
+                  "type": "Utf8Validation",
                   "id": 4,
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
-                    "edition_defaults.edition": "2023",
-                    "edition_defaults.value": "MANDATORY"
+                    "edition_defaults.edition": "EDITION_PROTO3",
+                    "edition_defaults.value": "VERIFY"
                   }
                 },
                 "messageEncoding": {
@@ -5889,7 +6818,7 @@
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
-                    "edition_defaults.edition": "2023",
+                    "edition_defaults.edition": "EDITION_PROTO2",
                     "edition_defaults.value": "LENGTH_PREFIXED"
                   }
                 },
@@ -5899,15 +6828,8 @@
                   "options": {
                     "retention": "RETENTION_RUNTIME",
                     "targets": "TARGET_TYPE_FILE",
-                    "edition_defaults.edition": "2023",
+                    "edition_defaults.edition": "EDITION_PROTO3",
                     "edition_defaults.value": "ALLOW"
-                  }
-                },
-                "rawFeatures": {
-                  "type": "FeatureSet",
-                  "id": 999,
-                  "options": {
-                    "targets": "TARGET_TYPE_UNKNOWN"
                   }
                 }
               },
@@ -5921,8 +6843,26 @@
                   1001
                 ],
                 [
+                  1002,
+                  1002
+                ],
+                [
+                  9990,
+                  9990
+                ],
+                [
                   9995,
                   9999
+                ],
+                [
+                  10000,
+                  10000
+                ]
+              ],
+              "reserved": [
+                [
+                  999,
+                  999
                 ]
               ],
               "nested": {
@@ -5948,11 +6888,10 @@
                     "EXPANDED": 2
                   }
                 },
-                "StringFieldValidation": {
+                "Utf8Validation": {
                   "values": {
-                    "STRING_FIELD_VALIDATION_UNKNOWN": 0,
-                    "MANDATORY": 1,
-                    "HINT": 2,
+                    "UTF8_VALIDATION_UNKNOWN": 0,
+                    "VERIFY": 2,
                     "NONE": 3
                   }
                 },
@@ -5968,6 +6907,37 @@
                     "JSON_FORMAT_UNKNOWN": 0,
                     "ALLOW": 1,
                     "LEGACY_BEST_EFFORT": 2
+                  }
+                }
+              }
+            },
+            "FeatureSetDefaults": {
+              "fields": {
+                "defaults": {
+                  "rule": "repeated",
+                  "type": "FeatureSetEditionDefault",
+                  "id": 1
+                },
+                "minimumEdition": {
+                  "type": "Edition",
+                  "id": 4
+                },
+                "maximumEdition": {
+                  "type": "Edition",
+                  "id": 5
+                }
+              },
+              "nested": {
+                "FeatureSetEditionDefault": {
+                  "fields": {
+                    "edition": {
+                      "type": "Edition",
+                      "id": 3
+                    },
+                    "features": {
+                      "type": "FeatureSet",
+                      "id": 2
+                    }
                   }
                 }
               }

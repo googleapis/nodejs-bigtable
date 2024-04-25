@@ -272,7 +272,7 @@ export function readRowsImpl(
           errorAfterChunkNo = undefined; // do not send error for the second time
           const error = new GoogleError('Uh oh');
           error.code = Status.ABORTED;
-          stream.destroy(error);
+          stream.emit('error', error);
           cancelled = true;
           break;
         }
