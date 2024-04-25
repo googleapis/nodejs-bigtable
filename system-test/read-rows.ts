@@ -72,14 +72,24 @@ function emitError(
     metadata: metadata,
   });
   setImmediate(() => {
-    const response = {
-      chunks: [].map(rowResponseFromServer),
-    };
-    stream.write(response);
     stream.emit('error', error);
   });
   setImmediate(() => {
     stream.emit('status', status);
+  });
+}
+
+function emitResponse(
+  stream: ServerWritableStream<
+    protos.google.bigtable.v2.IReadRowsRequest,
+    protos.google.bigtable.v2.IReadRowsResponse
+  >
+) {
+  setImmediate(() => {
+    const response = {
+      chunks: [].map(rowResponseFromServer),
+    };
+    stream.write(response);
   });
 }
 
@@ -332,8 +342,8 @@ describe('Bigtable/Table', () => {
     });
 
     it('testing readrows directly (no handwritten layer)', done => {
-      let retryCounter = 0;
-      let catchingErrorCount = 0;
+      let serverAttemptCounter = 1;
+      let catchingErrorCount = 1;
       service.setService({
         ReadRows: (
           stream: ServerWritableStream<
@@ -341,7 +351,10 @@ describe('Bigtable/Table', () => {
             protos.google.bigtable.v2.IReadRowsResponse
           >
         ) => {
-          console.log(`Server retry counter: ${retryCounter++}`);
+          console.log(`Server attempt counter: ${serverAttemptCounter++}`);
+          if (serverAttemptCounter === 1) {
+            emitResponse(stream);
+          }
           // emitError(stream, 4);
           emitError(stream, 4);
         },
