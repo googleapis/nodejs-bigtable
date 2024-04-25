@@ -124,6 +124,7 @@ describe('Bigtable/Table', () => {
   });
 
   describe('createReadStream', () => {
+    console.log('test');
     let clock: sinon.SinonFakeTimers;
     let endCalled: boolean;
     let error: ServiceError | null;
