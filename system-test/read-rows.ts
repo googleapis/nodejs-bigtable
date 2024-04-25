@@ -162,7 +162,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe('createReadStream using mock server', () => {
+  describe.only('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
