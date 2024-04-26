@@ -940,8 +940,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         }
         return false;
       };
+
       rowStream
-        /*
         .on('error', (error: ServiceError) => {
           rowStreamUnpipe(rowStream, userStream);
           activeRequestStream = null;
@@ -969,7 +969,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.emit('error', error);
           }
         })
-           */
         .on('data', _ => {
           // Reset error count after a successful read so the backoff
           // time won't keep increasing when as stream had multiple errors
