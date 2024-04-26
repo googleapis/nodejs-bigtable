@@ -38,7 +38,7 @@ popd
 
 # Run the conformance test
 cd cloud-bigtable-clients-test/tests
-eval "go test -v -proxy_addr=:9999 -run TestReadRows_NoRetry_ErrorAfterLastRow\\b"
+eval "go test -v -proxy_addr=:9999 -run TestReadRows_NoRetry_ErrorAfterLastRow"
 RETURN_CODE=$?
 
 echo "exiting with ${RETURN_CODE}"
