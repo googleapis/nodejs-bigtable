@@ -29,6 +29,7 @@ import * as v2 from '../src/v2';
 import * as gax from 'google-gax';
 import {Duplex} from 'stream';
 import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
+import * as mocha from 'mocha';
 
 const {grpc} = new GrpcClient();
 
@@ -226,6 +227,7 @@ describe('Bigtable/Table', () => {
   });
 
   describe.only('createReadStream mocking out the gapic layer', () => {
+    // TODO: Consider moving this to unit tests.
     const bigtable = new Bigtable();
     const clientOptions = bigtable.options.BigtableClient;
     const gapicClient: v2.BigtableClient = new v2['BigtableClient'](
@@ -234,19 +236,33 @@ describe('Bigtable/Table', () => {
     bigtable.api['BigtableClient'] = gapicClient;
     const table: Table = bigtable.instance('fake-instance').table('fake-table');
 
-    it('should pass the right retry configuration to the gapic layer', done => {
+    function mockReadRows(
+      done: mocha.Done,
+      expectedRequest: protos.google.bigtable.v2.IReadRowsRequest,
+      expectedOptions: CallOptions
+    ) {
       gapicClient.readRows = (
         request?: protos.google.bigtable.v2.IReadRowsRequest,
         options?: CallOptions
       ) => {
-        done();
-        // This code is added just so the mocked gapic function will compile:
+        try {
+          assert.deepStrictEqual(request, expectedRequest);
+          assert.deepStrictEqual(options, expectedOptions);
+          done();
+        } catch (e: unknown) {
+          done(e);
+        }
+        // The following code is added just so the mocked gapic function will compile:
         const duplex: gax.CancellableStream = new StreamProxy(
           gax.StreamType.SERVER_STREAMING,
           () => {}
         );
         return duplex;
       };
+    }
+
+    it('should pass the right retry configuration to the gapic layer', done => {
+      mockReadRows(done, {}, {});
       table.createReadStream();
     });
   });
