@@ -29,7 +29,7 @@ import * as v2 from '../src/v2';
 import * as gax from 'google-gax';
 import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
 import * as mocha from 'mocha';
-import {createReadStreamRetryOptions} from '../src/utils/createreadstream-retry-options';
+import {retryOptions} from '../src/utils/retry-options';
 
 const {grpc} = new GrpcClient();
 
@@ -247,7 +247,7 @@ describe('Bigtable/Table', () => {
           'bigtable-attempt': 0,
         },
       },
-      retry: createReadStreamRetryOptions({}),
+      retry: retryOptions({}),
     };
 
     function mockReadRows(

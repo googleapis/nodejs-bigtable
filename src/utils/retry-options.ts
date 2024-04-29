@@ -35,7 +35,7 @@ const createReadStreamShouldRetryFn = function checkRetry(
   return false;
 };
 
-export function createReadStreamRetryOptions(gaxOpts: CallOptions) {
+export function retryOptions(gaxOpts: CallOptions) {
   const backoffSettings =
     gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
   return new RetryOptions([], backoffSettings, createReadStreamShouldRetryFn);

@@ -45,9 +45,9 @@ import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
 import * as protos from '../protos/protos';
 import {
-  createReadStreamRetryOptions, DEFAULT_BACKOFF_SETTINGS,
+  retryOptions, DEFAULT_BACKOFF_SETTINGS,
   RETRYABLE_STATUS_CODES,
-} from './utils/createreadstream-retry-options';
+} from './utils/retry-options';
 
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
@@ -817,7 +817,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
       // Attach retry options to gax if they are not provided in the function call.
       if (!gaxOpts.retry) {
-        gaxOpts.retry = createReadStreamRetryOptions(gaxOpts);
+        gaxOpts.retry = retryOptions(gaxOpts);
       }
 
       const requestStream = this.bigtable.request({
