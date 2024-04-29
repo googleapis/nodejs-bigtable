@@ -27,9 +27,9 @@ import {BigtableClientMockService} from '../src/util/mock-servers/service-implem
 import {ServerWritableStream} from '@grpc/grpc-js';
 import * as v2 from '../src/v2';
 import * as gax from 'google-gax';
-import {Duplex} from 'stream';
 import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
 import * as mocha from 'mocha';
+import {createReadStreamRetryOptions} from '../src/utils/createreadstream-retry-options';
 
 const {grpc} = new GrpcClient();
 
@@ -229,6 +229,10 @@ describe('Bigtable/Table', () => {
   describe.only('createReadStream mocking out the gapic layer', () => {
     // TODO: Consider moving this to unit tests.
     // TODO: Write tests to ensure options reaching Gapic layer are
+    // TODO: Future tests
+    // 1. Provide more gax options
+    // 2. Override the retry function
+    // 3. Anything with retryRequestOptions?
     // unchanged for other streaming calls
     const bigtable = new Bigtable();
     const clientOptions = bigtable.options.BigtableClient;
@@ -243,16 +247,13 @@ describe('Bigtable/Table', () => {
           'bigtable-attempt': 0,
         },
       },
-      retryRequestOptions: {
-        currentRetryAttempt: 0,
-
-      }
-    }
+      retry: createReadStreamRetryOptions({}),
+    };
 
     function mockReadRows(
       done: mocha.Done,
-      expectedRequest: protos.google.bigtable.v2.IReadRowsRequest,
-      expectedOptions: CallOptions
+      expectedRequest?: protos.google.bigtable.v2.IReadRowsRequest,
+      expectedOptions?: CallOptions
     ) {
       gapicClient.readRows = (
         request?: protos.google.bigtable.v2.IReadRowsRequest,
@@ -260,7 +261,39 @@ describe('Bigtable/Table', () => {
       ) => {
         try {
           assert.deepStrictEqual(request, expectedRequest);
-          assert.deepStrictEqual(options, expectedOptions);
+          if (options || expectedOptions) {
+            // Do value comparison on options.retry since
+            // it won't be reference equal to expectedOptions.retry:
+            assert(options);
+            assert(expectedOptions);
+            const retry = options.retry;
+            const expectedRetry = expectedOptions.retry;
+            assert.deepStrictEqual(
+              retry?.retryCodes,
+              expectedRetry?.retryCodes
+            );
+            assert.deepStrictEqual(
+              retry?.shouldRetryFn,
+              expectedRetry?.shouldRetryFn
+            );
+            assert.deepStrictEqual(
+              retry?.backoffSettings,
+              expectedRetry?.backoffSettings
+            );
+            assert.deepStrictEqual(
+              retry?.getResumptionRequestFn,
+              expectedRetry?.getResumptionRequestFn
+            );
+            assert.deepStrictEqual(
+              retry?.shouldRetryFn,
+              expectedRetry?.shouldRetryFn
+            );
+            // Ensure other gaxOptions properties are correct:
+            assert.deepStrictEqual(
+              Object.assign(options, {retry: undefined}),
+              Object.assign(expectedOptions, {retry: undefined})
+            );
+          }
           done();
         } catch (e: unknown) {
           done(e);
@@ -285,7 +318,7 @@ describe('Bigtable/Table', () => {
           tableName:
             'projects/cloud-native-db-dpes-shared/instances/fake-instance/tables/fake-table',
         },
-        {}
+        expectedGaxOptions
       );
       table.createReadStream();
     });

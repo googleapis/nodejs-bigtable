@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {GoogleError, ServiceError} from 'google-gax';
+import {ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
@@ -44,18 +44,13 @@ import {google} from '../protos/protos';
 import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
 import * as protos from '../protos/protos';
+import {
+  createReadStreamRetryOptions, DEFAULT_BACKOFF_SETTINGS,
+  RETRYABLE_STATUS_CODES,
+} from './utils/createreadstream-retry-options';
 
-// See protos/google/rpc/code.proto
-// (4=DEADLINE_EXCEEDED, 8=RESOURCE_EXHAUSTED, 10=ABORTED, 14=UNAVAILABLE)
-const RETRYABLE_STATUS_CODES = new Set([4, 8, 10, 14]);
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
-
-const DEFAULT_BACKOFF_SETTINGS: BackoffSettings = {
-  initialRetryDelayMillis: 10,
-  retryDelayMultiplier: 2,
-  maxRetryDelayMillis: 60000,
-};
 
 /**
  * @typedef {object} Policy
@@ -789,23 +784,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       /*
         This was in the custom retry logic
         Incorporate this somehow
-        const backOffSettings =
-          options.gaxOptions?.retry?.backoffSettings ||
-          DEFAULT_BACKOFF_SETTINGS;
        */
-      const shouldRetryFn = function checkRetry(error: GoogleError) {
-        return (
-          error.code &&
-          (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
-        );
-      };
-      const retryOpts = {
-        currentRetryAttempt: 0, // was numConsecutiveErrors
-        // Handling retries in this client. Specify the retry options to
-        // make sure nothing is retried in retry-request.
-        noResponseRetries: 0,
-        shouldRetryFn,
-      };
 
       if (lastRowKey) {
         TableUtils.spliceRanges(ranges, lastRowKey);
@@ -836,12 +815,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       // TODO: Consider removing populateAttemptHeader.
       const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
 
+      // Attach retry options to gax if they are not provided in the function call.
+      if (!gaxOpts.retry) {
+        gaxOpts.retry = createReadStreamRetryOptions(gaxOpts);
+      }
+
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
         method: 'readRows',
         reqOpts,
         gaxOpts,
-        retryOpts,
       });
 
       activeRequestStream = requestStream!;
@@ -864,19 +847,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       });
 
       rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
-
-      // Retry on "received rst stream" errors
-      const isRstStreamError = (error: GoogleError | ServiceError): boolean => {
-        if (error.code === 13 && error.message) {
-          const error_message = (error.message || '').toLowerCase();
-          return (
-            error.code === 13 &&
-            (error_message.includes('rst_stream') ||
-              error_message.includes('rst stream'))
-          );
-        }
-        return false;
-      };
 
       rowStream
         .on('error', (error: ServiceError) => {
