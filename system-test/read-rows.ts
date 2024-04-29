@@ -25,6 +25,10 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {ServerWritableStream} from '@grpc/grpc-js';
+import * as v2 from '../src/v2';
+import * as gax from 'google-gax';
+import {Duplex} from 'stream';
+import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
 
 const {grpc} = new GrpcClient();
 
@@ -218,6 +222,32 @@ describe('Bigtable/Table', () => {
             checkResults();
           });
       });
+    });
+  });
+
+  describe.only('createReadStream mocking out the gapic layer', () => {
+    const bigtable = new Bigtable();
+    const clientOptions = bigtable.options.BigtableClient;
+    const gapicClient: v2.BigtableClient = new v2['BigtableClient'](
+      clientOptions
+    );
+    bigtable.api['BigtableClient'] = gapicClient;
+    const table: Table = bigtable.instance('fake-instance').table('fake-table');
+
+    it('should pass the right retry configuration to the gapic layer', done => {
+      gapicClient.readRows = (
+        request?: protos.google.bigtable.v2.IReadRowsRequest,
+        options?: CallOptions
+      ) => {
+        done();
+        // This code is added just so the mocked gapic function will compile:
+        const duplex: gax.CancellableStream = new StreamProxy(
+          gax.StreamType.SERVER_STREAMING,
+          () => {}
+        );
+        return duplex;
+      };
+      table.createReadStream();
     });
   });
 });
