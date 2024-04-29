@@ -727,9 +727,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const rowsLimit = options.limit || 0;
     const hasLimit = rowsLimit !== 0;
     let rowsRead = 0;
-    let numConsecutiveErrors = 0;
-    let numRequestsMade = 0;
-    let retryTimer: NodeJS.Timeout | null;
 
     rowKeys = options.keys || [];
 
@@ -781,26 +778,23 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (activeRequestStream) {
         activeRequestStream.abort();
       }
-      if (retryTimer) {
-        clearTimeout(retryTimer);
-      }
       return originalEnd(chunk, encoding, cb);
     };
 
     const makeNewRequest = () => {
-      // Avoid cancelling an expired timer if user
-      // cancelled the stream in the middle of a retry
-      retryTimer = null;
-
       const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
 
+      /*
+        This was in the custom retry logic
+        Incorporate this somehow
+        const backOffSettings =
+          options.gaxOptions?.retry?.backoffSettings ||
+          DEFAULT_BACKOFF_SETTINGS;
+       */
       const shouldRetryFn = function checkRetry(error: GoogleError) {
-        numConsecutiveErrors++;
-        numRequestsMade++;
         return (
-          numConsecutiveErrors <= maxRetries &&
           error.code &&
           (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
         );
@@ -839,10 +833,8 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         reqOpts.rowsLimit = rowsLimit - rowsRead;
       }
 
-      const gaxOpts = populateAttemptHeader(
-        numRequestsMade,
-        options.gaxOptions
-      );
+      // TODO: Consider removing populateAttemptHeader.
+      const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
 
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
@@ -896,28 +888,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
             userStream.end();
             return;
           }
-          numConsecutiveErrors++;
-          numRequestsMade++;
-          if (
-            numConsecutiveErrors <= maxRetries &&
-            (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
-          ) {
-            const backOffSettings =
-              options.gaxOptions?.retry?.backoffSettings ||
-              DEFAULT_BACKOFF_SETTINGS;
-            const nextRetryDelay = getNextDelay(
-              numConsecutiveErrors,
-              backOffSettings
-            );
-            retryTimer = setTimeout(makeNewRequest, nextRetryDelay);
-          } else {
-            userStream.emit('error', error);
-          }
-        })
-        .on('data', _ => {
-          // Reset error count after a successful read so the backoff
-          // time won't keep increasing when as stream had multiple errors
-          numConsecutiveErrors = 0;
+          userStream.emit('error', error);
         })
         .on('end', () => {
           activeRequestStream = null;
