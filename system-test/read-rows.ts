@@ -228,6 +228,8 @@ describe('Bigtable/Table', () => {
 
   describe.only('createReadStream mocking out the gapic layer', () => {
     // TODO: Consider moving this to unit tests.
+    // TODO: Write tests to ensure options reaching Gapic layer are
+    // unchanged for other streaming calls
     const bigtable = new Bigtable();
     const clientOptions = bigtable.options.BigtableClient;
     const gapicClient: v2.BigtableClient = new v2['BigtableClient'](
@@ -235,6 +237,17 @@ describe('Bigtable/Table', () => {
     );
     bigtable.api['BigtableClient'] = gapicClient;
     const table: Table = bigtable.instance('fake-instance').table('fake-table');
+    const expectedGaxOptions = {
+      otherArgs: {
+        headers: {
+          'bigtable-attempt': 0,
+        },
+      },
+      retryRequestOptions: {
+        currentRetryAttempt: 0,
+
+      }
+    }
 
     function mockReadRows(
       done: mocha.Done,
@@ -262,7 +275,18 @@ describe('Bigtable/Table', () => {
     }
 
     it('should pass the right retry configuration to the gapic layer', done => {
-      mockReadRows(done, {}, {});
+      mockReadRows(
+        done,
+        {
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          tableName:
+            'projects/cloud-native-db-dpes-shared/instances/fake-instance/tables/fake-table',
+        },
+        {}
+      );
       table.createReadStream();
     });
   });
