@@ -23,7 +23,7 @@ const isRstStreamError = (error: GoogleError | ServiceError): boolean => {
   return false;
 };
 
-const createReadStreamShouldRetryFn = function checkRetry(
+export const createReadStreamShouldRetryFn = function checkRetry(
   error: GoogleError
 ): boolean {
   if (

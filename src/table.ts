@@ -45,9 +45,11 @@ import {Duplex} from 'stream';
 import {TableUtils} from './utils/table';
 import * as protos from '../protos/protos';
 import {
-  retryOptions, DEFAULT_BACKOFF_SETTINGS,
+  retryOptions,
+  DEFAULT_BACKOFF_SETTINGS,
   RETRYABLE_STATUS_CODES,
 } from './utils/retry-options';
+import {ReadRowsResumptionStrategy} from './utils/read-rows-resumption';
 
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
@@ -716,25 +718,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
    */
   createReadStream(opts?: GetRowsOptions) {
     const options: GetRowsOptions = opts || {};
+    // TODO: Move max retries
     const maxRetries = is.number(this.maxRetries) ? this.maxRetries! : 10;
     let activeRequestStream: AbortableDuplex | null;
-    let rowKeys: string[];
-    const rowsLimit = options.limit || 0;
-    const hasLimit = rowsLimit !== 0;
-    let rowsRead = 0;
-
-    rowKeys = options.keys || [];
-
-    const ranges = TableUtils.getRanges(options);
-
-    // If rowKeys and ranges are both empty, the request is a full table scan.
-    // Add an empty range to simplify the resumption logic.
-    if (rowKeys.length === 0 && ranges.length === 0) {
-      ranges.push({});
-    }
-
-    let chunkTransformer: ChunkTransformer;
-    let rowStream: Duplex;
 
     let userCanceled = false;
     const userStream = new PassThrough({
@@ -775,98 +761,73 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       }
       return originalEnd(chunk, encoding, cb);
     };
+    const chunkTransformer: ChunkTransformer = new ChunkTransformer({
+      decode: options.decode,
+    } as any);
 
-    const makeNewRequest = () => {
-      const lastRowKey = chunkTransformer ? chunkTransformer.lastRowKey : '';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      chunkTransformer = new ChunkTransformer({decode: options.decode} as any);
+    const strategy = new ReadRowsResumptionStrategy(
+      chunkTransformer,
+      options,
+      this.name,
+      this.bigtable.appProfileId
+    );
 
-      /*
-        This was in the custom retry logic
-        Incorporate this somehow
-       */
+    // TODO: Consider removing populateAttemptHeader.
+    const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
 
-      if (lastRowKey) {
-        TableUtils.spliceRanges(ranges, lastRowKey);
-        rowKeys = TableUtils.getRowKeys(rowKeys, lastRowKey);
+    // Attach retry options to gax if they are not provided in the function call.
+    if (!gaxOpts.retry) {
+      gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
+    }
 
-        // If there was a row limit in the original request and
-        // we've already read all the rows, end the stream and
-        // do not retry.
-        if (hasLimit && rowsLimit === rowsRead) {
+    const reqOpts = strategy.getResumeRequest();
+    const requestStream = this.bigtable.request({
+      client: 'BigtableClient',
+      method: 'readRows',
+      reqOpts,
+      gaxOpts,
+    });
+
+    activeRequestStream = requestStream!;
+
+    const toRowStream = new Transform({
+      transform: (rowData, _, next) => {
+        if (
+          userCanceled ||
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (userStream as any)._writableState.ended
+        ) {
+          return next();
+        }
+        strategy.rowsRead++;
+        const row = this.row(rowData.key);
+        row.data = rowData.data;
+        next(null, row);
+      },
+      objectMode: true,
+    });
+
+    const rowStream: Duplex = pumpify.obj([
+      requestStream,
+      chunkTransformer,
+      toRowStream,
+    ]);
+    rowStream
+      .on('error', (error: ServiceError) => {
+        rowStreamUnpipe(rowStream, userStream);
+        activeRequestStream = null;
+        if (IGNORED_STATUS_CODES.has(error.code)) {
+          // We ignore the `cancelled` "error", since we are the ones who cause
+          // it when the user calls `.abort()`.
           userStream.end();
           return;
         }
-        // If all the row keys and ranges are read, end the stream
-        // and do not retry.
-        if (rowKeys.length === 0 && ranges.length === 0) {
-          userStream.end();
-          return;
-        }
-      }
-
-      const reqOpts: protos.google.bigtable.v2.IReadRowsRequest =
-        this.#readRowsReqOpts(ranges, rowKeys, options);
-
-      if (hasLimit) {
-        reqOpts.rowsLimit = rowsLimit - rowsRead;
-      }
-
-      // TODO: Consider removing populateAttemptHeader.
-      const gaxOpts = populateAttemptHeader(0, options.gaxOptions);
-
-      // Attach retry options to gax if they are not provided in the function call.
-      if (!gaxOpts.retry) {
-        gaxOpts.retry = retryOptions(gaxOpts);
-      }
-
-      const requestStream = this.bigtable.request({
-        client: 'BigtableClient',
-        method: 'readRows',
-        reqOpts,
-        gaxOpts,
+        userStream.emit('error', error);
+      })
+      .on('end', () => {
+        activeRequestStream = null;
       });
-
-      activeRequestStream = requestStream!;
-
-      const toRowStream = new Transform({
-        transform: (rowData, _, next) => {
-          if (
-            userCanceled ||
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (userStream as any)._writableState.ended
-          ) {
-            return next();
-          }
-          rowsRead++;
-          const row = this.row(rowData.key);
-          row.data = rowData.data;
-          next(null, row);
-        },
-        objectMode: true,
-      });
-
-      rowStream = pumpify.obj([requestStream, chunkTransformer, toRowStream]);
-
-      rowStream
-        .on('error', (error: ServiceError) => {
-          rowStreamUnpipe(rowStream, userStream);
-          activeRequestStream = null;
-          if (IGNORED_STATUS_CODES.has(error.code)) {
-            // We ignore the `cancelled` "error", since we are the ones who cause
-            // it when the user calls `.abort()`.
-            userStream.end();
-            return;
-          }
-          userStream.emit('error', error);
-        })
-        .on('end', () => {
-          activeRequestStream = null;
-        });
-      rowStreamPipe(rowStream, userStream);
-    };
-
-    makeNewRequest();
+    rowStreamPipe(rowStream, userStream);
     return userStream;
   }
 
