@@ -819,6 +819,9 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       if (!gaxOpts.retry) {
         gaxOpts.retry = retryOptions(gaxOpts);
       }
+      if (!gaxOpts.maxRetries) {
+        gaxOpts.maxRetries = maxRetries;
+      }
 
       const requestStream = this.bigtable.request({
         client: 'BigtableClient',
