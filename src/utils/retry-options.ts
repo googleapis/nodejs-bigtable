@@ -30,8 +30,10 @@ const createReadStreamShouldRetryFn = function checkRetry(
     error.code &&
     (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
   ) {
+    console.log('retry true');
     return true;
   }
+  console.log('retry false');
   return false;
 };
 

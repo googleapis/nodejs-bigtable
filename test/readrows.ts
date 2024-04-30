@@ -283,7 +283,7 @@ describe('Bigtable/ReadRows', () => {
     pipeline(readStream, transform, passThrough, () => {});
   });
 
-  it('should silently resume after server or network error', done => {
+  it.only('should silently resume after server or network error', done => {
     // 1000 rows must be enough to reproduce issues with losing the data and to create backpressure
     const keyFrom = 0;
     const keyTo = 1000;
@@ -299,6 +299,7 @@ describe('Bigtable/ReadRows', () => {
 
     const readStream = table.createReadStream();
     readStream.on('error', (err: GoogleError) => {
+      console.log('catching error');
       done(err);
     });
     readStream.on('data', (row: Row) => {

@@ -21,7 +21,7 @@ const VALUE_SIZE = 1024 * 1024;
 const CHUNK_SIZE = 1023 * 1024 - 1;
 const CHUNK_PER_RESPONSE = 10;
 
-const DEBUG = process.env.BIGTABLE_TEST_DEBUG === 'true';
+const DEBUG = false;
 
 export function debugLog(text: string) {
   if (DEBUG) {
@@ -173,6 +173,7 @@ export function readRowsImpl(
       protos.google.bigtable.v2.IReadRowsResponse
     >
   ): Promise<void> => {
+    console.log('getting request');
     prettyPrintRequest(stream.request);
 
     let stopWaiting: () => void = () => {};
@@ -217,6 +218,7 @@ export function readRowsImpl(
       cancelled = true;
       stopWaiting();
       stream.emit('error', new Error('Cancelled'));
+      stream.emit('status', '');
     });
 
     let chunksSent = 0;
