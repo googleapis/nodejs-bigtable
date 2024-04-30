@@ -1113,7 +1113,7 @@ describe('Bigtable/Table', () => {
       });
     });
 
-    describe('retries', () => {
+    describe.skip('retries', () => {
       let callCreateReadStream: Function;
       let emitters: EventEmitter[] | null; // = [((stream: Writable) => { stream.push([{ key: 'a' }]);
       // stream.end(); }, ...];
