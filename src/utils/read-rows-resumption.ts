@@ -90,7 +90,15 @@ export class ReadRowsResumptionStrategy {
     const backoffSettings =
       gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
     // TODO: Add resume request
-    return new RetryOptions([], backoffSettings, this.canResume);
+    const canResume = (error: GoogleError) => {
+      return this.canResume(error);
+    };
+    const getResumeRequest = (
+      request?: protos.google.bigtable.v2.IReadRowsRequest
+    ) => {
+      return this.getResumeRequest(request);
+    };
+    return new RetryOptions([], backoffSettings, canResume);
   }
 
   #readRowsReqOpts(
