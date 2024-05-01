@@ -226,7 +226,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe.only('createReadStream mocking out the gapic layer', () => {
+  describe('createReadStream mocking out the gapic layer', () => {
     // TODO: Consider moving this to unit tests.
     // TODO: Write tests to ensure options reaching Gapic layer are
     // TODO: Future tests
