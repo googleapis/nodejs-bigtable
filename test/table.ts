@@ -30,6 +30,8 @@ import * as tblTypes from '../src/table';
 import {Bigtable, RequestOptions} from '../src';
 import {EventEmitter} from 'events';
 import {TableUtils} from '../src/utils/table';
+import {ReadRowsResumptionStrategy} from '../src/table';
+// import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -114,12 +116,29 @@ describe('Bigtable/Table', () => {
   let table: any;
 
   before(() => {
+    /*
+    const FakeTableUtils: TableUtils = proxyquire('../src/utils/table', {
+      '../family.js': {Family: FakeFamily},
+      '../mutation.js': {Mutation: FakeMutation},
+      '../filter.js': {Filter: FakeFilter},
+      '../row.js': {Row: FakeRow},
+    }).TableUtils;
+    const FakeReadRowsResumptionStrategy: ReadRowsResumptionStrategy =
+      proxyquire('../src/utils/read-rows-resumption', {
+        '../family.js': {Family: FakeFamily},
+        '../mutation.js': {Mutation: FakeMutation},
+        '../filter.js': {Filter: FakeFilter},
+        '../row.js': {Row: FakeRow},
+        './table.js': {TableUtils: FakeTableUtils},
+      }).ReadRowsResumptionStrategy;
+     */
     Table = proxyquire('../src/table.js', {
       '@google-cloud/promisify': fakePromisify,
       './family.js': {Family: FakeFamily},
       './mutation.js': {Mutation: FakeMutation},
       './filter.js': {Filter: FakeFilter},
       pumpify,
+      // './utils/read-rows-resumption': FakeReadRowsResumptionStrategy,
       './row.js': {Row: FakeRow},
       './chunktransformer.js': {ChunkTransformer: FakeChunkTransformer},
     }).Table;

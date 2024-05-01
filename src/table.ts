@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {GoogleError, RetryOptions, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
@@ -48,8 +48,117 @@ import {
   retryOptions,
   DEFAULT_BACKOFF_SETTINGS,
   RETRYABLE_STATUS_CODES,
+  createReadStreamShouldRetryFn,
 } from './utils/retry-options';
-import {ReadRowsResumptionStrategy} from './utils/read-rows-resumption';
+// import {ReadRowsResumptionStrategy} from './utils/read-rows-resumption';
+
+// TODO: Move ReadRowsResumptionStrategy out into a separate module
+export class ReadRowsResumptionStrategy {
+  private chunkTransformer: ChunkTransformer;
+  private rowKeys: string[];
+  private ranges: PrefixRange[];
+  private rowsLimit: number;
+  private hasLimit: boolean;
+  private tableName: string;
+  private appProfileId?: string;
+  private options: GetRowsOptions;
+  rowsRead = 0;
+  constructor(
+    chunkTransformer: ChunkTransformer,
+    options: GetRowsOptions,
+    tableName: string,
+    appProfileId?: string
+  ) {
+    this.chunkTransformer = chunkTransformer;
+    this.options = options;
+    this.rowKeys = options.keys || [];
+    this.ranges = TableUtils.getRanges(options);
+    this.rowsLimit = options.limit || 0;
+    this.hasLimit = this.rowsLimit !== 0;
+    this.rowsRead = 0;
+    this.tableName = tableName;
+    this.appProfileId = appProfileId;
+    // If rowKeys and ranges are both empty, the request is a full table scan.
+    // Add an empty range to simplify the resumption logic.
+    if (this.rowKeys.length === 0 && this.ranges.length === 0) {
+      this.ranges.push({});
+    }
+  }
+  getResumeRequest(
+    request?: protos.google.bigtable.v2.IReadRowsRequest
+  ): protos.google.bigtable.v2.IReadRowsRequest {
+    const lastRowKey = this.chunkTransformer
+      ? this.chunkTransformer.lastRowKey
+      : '';
+    if (lastRowKey) {
+      TableUtils.spliceRanges(this.ranges, lastRowKey);
+      this.rowKeys = TableUtils.getRowKeys(this.rowKeys, lastRowKey);
+    }
+    const reqOpts: protos.google.bigtable.v2.IReadRowsRequest =
+      this.#readRowsReqOpts(this.ranges, this.rowKeys, this.options);
+
+    if (this.hasLimit) {
+      reqOpts.rowsLimit = this.rowsLimit - this.rowsRead;
+    }
+    return reqOpts;
+  }
+
+  canResume(error: GoogleError): boolean {
+    // If all the row keys and ranges are read, end the stream
+    // and do not retry.
+    if (this.rowKeys.length === 0 && this.ranges.length === 0) {
+      return false;
+    }
+    // If there was a row limit in the original request and
+    // we've already read all the rows, end the stream and
+    // do not retry.
+    if (this.hasLimit && this.rowsLimit === this.rowsRead) {
+      return false;
+    }
+    return createReadStreamShouldRetryFn(error);
+  }
+
+  toRetryOptions(gaxOpts: CallOptions) {
+    const backoffSettings =
+      gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
+    // TODO: Add resume request
+    return new RetryOptions([], backoffSettings, this.canResume);
+  }
+
+  #readRowsReqOpts(
+    ranges: PrefixRange[],
+    rowKeys: string[],
+    options: GetRowsOptions
+  ) {
+    const reqOpts = {
+      tableName: this.tableName,
+      appProfileId: this.appProfileId,
+    } as google.bigtable.v2.IReadRowsRequest;
+
+    // Create the new reqOpts
+    reqOpts.rows = {};
+
+    // TODO: preprocess all the keys and ranges to Bytes
+    reqOpts.rows.rowKeys = rowKeys.map(
+      Mutation.convertToBytes
+    ) as {} as Uint8Array[];
+
+    reqOpts.rows.rowRanges = ranges.map(range =>
+      Filter.createRange(
+        range.start as BoundData,
+        range.end as BoundData,
+        'Key'
+      )
+    );
+
+    const filter = options.filter;
+    if (filter) {
+      reqOpts.filter = Filter.parse(filter);
+    }
+
+    return reqOpts;
+  }
+}
 
 // (1=CANCELLED)
 const IGNORED_STATUS_CODES = new Set([1]);
