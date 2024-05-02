@@ -10,6 +10,7 @@ import {
 } from './retry-options';
 import {Mutation} from '../mutation';
 import {BoundData, Filter} from '../filter';
+import {RequestType} from 'google-gax/build/src/apitypes';
 
 // TOOD: Eliminate duplicates.
 function populateAttemptHeader(attempt: number, gaxOpts?: CallOptions) {
@@ -96,9 +97,9 @@ export class ReadRowsResumptionStrategy {
     const getResumeRequest = (
       request?: protos.google.bigtable.v2.IReadRowsRequest
     ) => {
-      return this.getResumeRequest(request);
+      return this.getResumeRequest(request) as RequestType;
     };
-    return new RetryOptions([], backoffSettings, canResume);
+    return new RetryOptions([], backoffSettings, canResume, getResumeRequest);
   }
 
   #readRowsReqOpts(
