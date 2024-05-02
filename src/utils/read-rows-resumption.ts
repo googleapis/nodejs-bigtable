@@ -45,6 +45,7 @@ export class ReadRowsResumptionStrategy {
     this.rowsLimit = options.limit || 0;
     this.hasLimit = this.rowsLimit !== 0;
     this.rowsRead = 0;
+    // TODO: Create a case class for these two objects:
     this.tableName = tableName;
     this.appProfileId = appProfileId;
     // If rowKeys and ranges are both empty, the request is a full table scan.
