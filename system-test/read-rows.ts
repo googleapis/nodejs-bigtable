@@ -253,7 +253,7 @@ describe('Bigtable/Table', () => {
       );
       table.createReadStream();
     });
-    it('should pass the right retry configuration to the gapic layer', done => {
+    it('should pass maxRetries to the gapic layer', done => {
       const expectedOptions = Object.assign(
         {maxRetries: 7},
         tester.buildReadRowsGaxOptions(tableName, {})
