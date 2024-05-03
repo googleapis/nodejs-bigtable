@@ -9,17 +9,9 @@ import {
   DEFAULT_BACKOFF_SETTINGS,
 } from './retry-options';
 import {Mutation} from '../mutation';
-import {BoundData, Filter} from '../filter';
+import {BoundData, Filter, RawFilter} from '../filter';
 import {RequestType} from 'google-gax/build/src/apitypes';
 
-// TOOD: Eliminate duplicates.
-function populateAttemptHeader(attempt: number, gaxOpts?: CallOptions) {
-  gaxOpts = gaxOpts || {};
-  gaxOpts.otherArgs = gaxOpts.otherArgs || {};
-  gaxOpts.otherArgs.headers = gaxOpts.otherArgs.headers || {};
-  gaxOpts.otherArgs.headers['bigtable-attempt'] = attempt;
-  return gaxOpts;
-}
 
 // TODO: Move ReadRowsResumptionStrategy out into a separate module
 export class ReadRowsResumptionStrategy {
@@ -65,7 +57,7 @@ export class ReadRowsResumptionStrategy {
       this.rowKeys = TableUtils.getRowKeys(this.rowKeys, lastRowKey);
     }
     const reqOpts: protos.google.bigtable.v2.IReadRowsRequest =
-      this.#readRowsReqOpts(this.ranges, this.rowKeys, this.options);
+      this.#readRowsReqOpts(this.ranges, this.rowKeys, this.options.filter);
 
     if (this.hasLimit) {
       reqOpts.rowsLimit = this.rowsLimit - this.rowsRead;
@@ -106,7 +98,7 @@ export class ReadRowsResumptionStrategy {
   #readRowsReqOpts(
     ranges: PrefixRange[],
     rowKeys: string[],
-    options: GetRowsOptions
+    filter: RawFilter
   ) {
     const reqOpts = {
       tableName: this.tableName,
@@ -129,7 +121,6 @@ export class ReadRowsResumptionStrategy {
       )
     );
 
-    const filter = options.filter;
     if (filter) {
       reqOpts.filter = Filter.parse(filter);
     }
