@@ -138,7 +138,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe('createReadStream using mock server', () => {
+  describe.only('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();
@@ -203,6 +203,8 @@ describe('Bigtable/Table', () => {
               stream.write({
                 chunks: response.row_keys.map(rowResponseFromServer),
               });
+            } else {
+              stream.write({});
             }
             if (response.end_with_error) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
