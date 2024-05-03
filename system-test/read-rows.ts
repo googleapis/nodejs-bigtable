@@ -203,8 +203,6 @@ describe('Bigtable/Table', () => {
               stream.write({
                 chunks: response.row_keys.map(rowResponseFromServer),
               });
-            } else {
-              stream.write({});
             }
             if (response.end_with_error) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
