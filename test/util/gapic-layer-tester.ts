@@ -34,8 +34,8 @@ export class GapicLayerTester {
       tableName,
       undefined
     );
-    const expectedResumptionRequest = (request: RequestType) => {
-      return expectedStrategy.getResumeRequest(request) as RequestType;
+    const expectedResumptionRequest = () => {
+      return expectedStrategy.getResumeRequest() as RequestType;
     };
     const expectedRetryOptions = new RetryOptions(
       [],

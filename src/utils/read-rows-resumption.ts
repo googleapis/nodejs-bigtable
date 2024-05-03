@@ -12,7 +12,6 @@ import {Mutation} from '../mutation';
 import {BoundData, Filter, RawFilter} from '../filter';
 import {RequestType} from 'google-gax/build/src/apitypes';
 
-
 // TODO: Move ReadRowsResumptionStrategy out into a separate module
 export class ReadRowsResumptionStrategy {
   private chunkTransformer: ChunkTransformer;
@@ -46,9 +45,7 @@ export class ReadRowsResumptionStrategy {
       this.ranges.push({});
     }
   }
-  getResumeRequest(
-    request?: protos.google.bigtable.v2.IReadRowsRequest
-  ): protos.google.bigtable.v2.IReadRowsRequest {
+  getResumeRequest(): protos.google.bigtable.v2.IReadRowsRequest {
     const lastRowKey = this.chunkTransformer
       ? this.chunkTransformer.lastRowKey
       : '';
@@ -90,7 +87,7 @@ export class ReadRowsResumptionStrategy {
     const getResumeRequest = (
       request?: protos.google.bigtable.v2.IReadRowsRequest
     ) => {
-      return this.getResumeRequest(request) as RequestType;
+      return this.getResumeRequest() as RequestType;
     };
     return new RetryOptions([], backoffSettings, canResume, getResumeRequest);
   }
