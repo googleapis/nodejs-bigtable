@@ -1,4 +1,4 @@
-// Copyright 2016 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bigtable, GetRowsOptions, protos, Table, Value} from '../src';
-import {ChunkTransformer} from '../src/chunktransformer';
+import {Bigtable, protos, Table} from '../src';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: ReadRowsTest[];
 };
@@ -21,13 +20,12 @@ import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
 import {ReadRowsTest} from './testTypes';
-import {ServiceError, GrpcClient, CallOptions, RetryOptions} from 'google-gax';
+import {ServiceError, GrpcClient, CallOptions} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {ServerWritableStream} from '@grpc/grpc-js';
 import {GapicLayerTester} from '../test/util/gapic-layer-tester';
-import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
 
 const {grpc} = new GrpcClient();
 
@@ -276,151 +274,6 @@ describe('Bigtable/Table', () => {
         .table('fake-table');
       tableWithRetries.maxRetries = 7;
       tableWithRetries.createReadStream();
-    });
-  });
-  describe.only('ReadrowsResumptionStrategy', () => {
-    // TODO: Move this out into its own file.
-    const tableName = 'fake-table-name';
-    function generateStrategy(
-      options: GetRowsOptions,
-      lastRowKey?: Value
-    ): ReadRowsResumptionStrategy {
-      const chunkTransformer = new ChunkTransformer({
-        decode: false,
-      } as any);
-      if (lastRowKey) {
-        chunkTransformer.lastRowKey = lastRowKey;
-      }
-      return new ReadRowsResumptionStrategy(chunkTransformer, options, {
-        tableName,
-      });
-    }
-    it('should generate the right resumption request with no options each time', () => {
-      const strategy = generateStrategy({});
-      const noRangesNoKeys = {
-        rows: {
-          rowKeys: [],
-          rowRanges: [{}],
-        },
-        tableName,
-      };
-      assert.deepStrictEqual(strategy.getResumeRequest(), noRangesNoKeys);
-    });
-    it('should generate the right resumption requests with a last row key', () => {
-      const strategy = generateStrategy(
-        {
-          keys: ['a', 'b', 'c'],
-        },
-        'b'
-      );
-      assert.deepStrictEqual(strategy.getResumeRequest(), {
-        rows: {
-          rowKeys: ['c'].map(key => Buffer.from(key)),
-          rowRanges: [],
-        },
-        tableName,
-      });
-    });
-    it('should generate the right resumption request with the lastrow key in a row range', () => {
-      const strategy = generateStrategy(
-        {
-          ranges: [
-            {start: 'a', end: 'c'},
-            {start: 'e', end: 'g'},
-          ],
-        },
-        'b'
-      );
-      assert.deepStrictEqual(strategy.getResumeRequest(), {
-        rows: {
-          rowKeys: [],
-          rowRanges: [
-            {startKeyOpen: Buffer.from('b'), endKeyClosed: Buffer.from('c')},
-            {startKeyClosed: Buffer.from('e'), endKeyClosed: Buffer.from('g')},
-          ],
-        },
-        tableName,
-      });
-    });
-    it('should generate the right resumption request with the lastrow key at the end of a row range', () => {
-      const strategy = generateStrategy(
-        {
-          ranges: [
-            {start: 'a', end: 'c'},
-            {start: 'e', end: 'g'},
-          ],
-        },
-        'c'
-      );
-      assert.deepStrictEqual(strategy.getResumeRequest(), {
-        rows: {
-          rowKeys: [],
-          rowRanges: [
-            {startKeyClosed: Buffer.from('e'), endKeyClosed: Buffer.from('g')},
-          ],
-        },
-        tableName,
-      });
-    });
-    it('should generate the right resumption request with the limit', () => {
-      const strategy = generateStrategy({
-        limit: 71,
-      });
-      strategy.rowsRead = 37;
-      assert.deepStrictEqual(strategy.getResumeRequest(), {
-        rows: {
-          rowKeys: [],
-          rowRanges: [{}],
-        },
-        rowsLimit: 34,
-        tableName,
-      });
-    });
-    it('should generate the right resumption request with start and end', () => {
-      const strategy = generateStrategy(
-        {
-          start: 'b',
-          end: 'm',
-        },
-        'd'
-      );
-      assert.deepStrictEqual(strategy.getResumeRequest(), {
-        rows: {
-          rowKeys: [],
-          rowRanges: [
-            {
-              startKeyOpen: Buffer.from('d'),
-              endKeyClosed: Buffer.from('m'),
-            },
-          ],
-        },
-        tableName,
-      });
-    });
-    it('should generate the right resumption request with prefixes', () => {
-      const strategy = generateStrategy(
-        {
-          prefixes: ['d', 'f', 'h'],
-        },
-        'e'
-      );
-      const request = strategy.getResumeRequest();
-      assert.deepStrictEqual(request, {
-        rows: {
-          rowKeys: [],
-          rowRanges: [
-            {
-              startKeyClosed: Buffer.from('f'),
-              endKeyOpen: Buffer.from('g'),
-            },
-            {
-              startKeyClosed: Buffer.from('h'),
-              endKeyOpen: Buffer.from('i'),
-            },
-          ],
-        },
-        tableName,
-      });
     });
   });
 });
