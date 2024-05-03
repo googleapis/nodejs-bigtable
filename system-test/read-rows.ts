@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import {Bigtable, protos, Table} from '../src';
-import {ChunkTransformer} from '../src/chunktransformer';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: ReadRowsTest[];
 };
@@ -21,28 +20,11 @@ import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
 import {ReadRowsTest} from './testTypes';
-import {
-  ServiceError,
-  GrpcClient,
-  CallOptions,
-  GoogleError,
-  RetryOptions,
-} from 'google-gax';
+import {ServiceError, GrpcClient, CallOptions, RetryOptions} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {ServerWritableStream} from '@grpc/grpc-js';
-import * as v2 from '../src/v2';
-import * as gax from 'google-gax';
-import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
-import * as mocha from 'mocha';
-import {
-  createReadStreamShouldRetryFn,
-  DEFAULT_BACKOFF_SETTINGS,
-  retryOptions,
-} from '../src/utils/retry-options';
-import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
-import {RequestType} from 'google-gax/build/src/apitypes';
 import {GapicLayerTester} from '../test/util/gapic-layer-tester';
 
 const {grpc} = new GrpcClient();
@@ -106,9 +88,6 @@ describe('Bigtable/Table', () => {
   const INSTANCE_NAME = 'fake-instance2';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (bigtable as any).grpcCredentials = grpc.credentials.createInsecure();
-
-  const INSTANCE = bigtable.instance('instance');
-  const TABLE = INSTANCE.table('table');
 
   describe('close', () => {
     it('should fail when invoking readRows with closed client', async () => {
@@ -251,37 +230,16 @@ describe('Bigtable/Table', () => {
     // 2. Override the retry function
     // 3. Anything with retryRequestOptions?
     // unchanged for other streaming calls
-    const bigtable = new Bigtable();
+    const bigtable = new Bigtable({
+      projectId: 'fake-project-id',
+    });
     const tester = new GapicLayerTester(bigtable);
     const table: Table = bigtable.instance('fake-instance').table('fake-table');
-    const chunkTransformer: ChunkTransformer = new ChunkTransformer({
-      decode: false,
-    } as any);
-    const expectedStrategy = new ReadRowsResumptionStrategy(
-      chunkTransformer,
-      {},
-      'projects/{{projectId}}/instances/fake-instance/tables/fake-table',
-      undefined
-    );
-    const expectedResumptionRequest = (request: RequestType) => {
-      return expectedStrategy.getResumeRequest(request) as RequestType;
-    };
-    const expectedRetryOptions = new RetryOptions(
-      [],
-      DEFAULT_BACKOFF_SETTINGS,
-      createReadStreamShouldRetryFn,
-      expectedResumptionRequest
-    );
-    const expectedGaxOptions = {
-      otherArgs: {
-        headers: {
-          'bigtable-attempt': 0,
-        },
-      },
-      retry: expectedRetryOptions,
-    };
+    const tableName =
+      'projects/fake-project-id/instances/fake-instance/tables/fake-table';
 
     it('should pass the right retry configuration to the gapic layer', done => {
+      const expectedOptions = tester.buildReadRowsGaxOptions(tableName, {});
       tester.testReadRowsGapicCall(
         done,
         {
@@ -289,12 +247,33 @@ describe('Bigtable/Table', () => {
             rowKeys: [],
             rowRanges: [{}],
           },
-          tableName:
-            'projects/cloud-native-db-dpes-shared/instances/fake-instance/tables/fake-table',
+          tableName,
         },
-        expectedGaxOptions
+        expectedOptions
       );
       table.createReadStream();
+    });
+    it('should pass the right retry configuration to the gapic layer', done => {
+      const expectedOptions = Object.assign(
+        {maxRetries: 7},
+        tester.buildReadRowsGaxOptions(tableName, {})
+      );
+      tester.testReadRowsGapicCall(
+        done,
+        {
+          rows: {
+            rowKeys: [],
+            rowRanges: [{}],
+          },
+          tableName,
+        },
+        expectedOptions
+      );
+      const tableWithRetries: Table = bigtable
+        .instance('fake-instance')
+        .table('fake-table');
+      tableWithRetries.maxRetries = 7;
+      tableWithRetries.createReadStream();
     });
   });
 });

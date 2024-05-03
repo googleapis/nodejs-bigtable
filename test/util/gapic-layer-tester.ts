@@ -1,11 +1,17 @@
-import {Bigtable, protos} from '../../src';
-import {GoogleInnerError} from '../../src/table';
+import {ChunkTransformer} from '../../src/chunktransformer';
+import {Bigtable, GetRowsOptions, protos} from '../../src';
 import * as v2 from '../../src/v2';
 import * as mocha from 'mocha';
-import {CallOptions, GoogleError} from 'google-gax';
+import {CallOptions, GoogleError, RetryOptions} from 'google-gax';
 import * as assert from 'assert';
 import * as gax from 'google-gax';
 import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
+import {ReadRowsResumptionStrategy} from '../../src/utils/read-rows-resumption';
+import {RequestType} from 'google-gax/build/src/apitypes';
+import {
+  createReadStreamShouldRetryFn,
+  DEFAULT_BACKOFF_SETTINGS,
+} from '../../src/utils/retry-options';
 
 export class GapicLayerTester {
   private gapicClient: v2.BigtableClient;
@@ -13,6 +19,46 @@ export class GapicLayerTester {
     const clientOptions = bigtable.options.BigtableClient;
     this.gapicClient = new v2['BigtableClient'](clientOptions);
     bigtable.api['BigtableClient'] = this.gapicClient;
+    const detectedProjectId = 'detected-project-id';
+    /*
+    bigtable.getProjectId_ = (
+      callback: (err: Error | null, projectId?: string) => void
+    ) => {
+      callback(null, detectedProjectId);
+    };
+     */
+  }
+
+  buildReadRowsGaxOptions(
+    tableName: string,
+    options: GetRowsOptions
+  ): CallOptions {
+    const chunkTransformer: ChunkTransformer = new ChunkTransformer({
+      decode: false,
+    } as any);
+    const expectedStrategy = new ReadRowsResumptionStrategy(
+      chunkTransformer,
+      options,
+      tableName,
+      undefined
+    );
+    const expectedResumptionRequest = (request: RequestType) => {
+      return expectedStrategy.getResumeRequest(request) as RequestType;
+    };
+    const expectedRetryOptions = new RetryOptions(
+      [],
+      DEFAULT_BACKOFF_SETTINGS,
+      createReadStreamShouldRetryFn,
+      expectedResumptionRequest
+    );
+    return {
+      otherArgs: {
+        headers: {
+          'bigtable-attempt': 0,
+        },
+      },
+      retry: expectedRetryOptions,
+    };
   }
 
   testReadRowsGapicCall(
