@@ -18,7 +18,7 @@ import {ChunkTransformer} from '../../src/chunktransformer';
 import {ReadRowsResumptionStrategy} from '../../src/utils/read-rows-resumption';
 import * as assert from 'assert';
 
-describe.only('ReadrowsResumptionStrategy', () => {
+describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
   // TODO: Move this out into its own file.
   // TODO: Would be good to parameterize the test to prove it is idempotent
   const tableName = 'fake-table-name';
