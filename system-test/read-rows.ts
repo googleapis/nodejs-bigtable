@@ -21,7 +21,13 @@ import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
 import {ReadRowsTest} from './testTypes';
-import {ServiceError, GrpcClient, CallOptions, GoogleError, RetryOptions} from 'google-gax';
+import {
+  ServiceError,
+  GrpcClient,
+  CallOptions,
+  GoogleError,
+  RetryOptions,
+} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
@@ -30,9 +36,14 @@ import * as v2 from '../src/v2';
 import * as gax from 'google-gax';
 import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
 import * as mocha from 'mocha';
-import {createReadStreamShouldRetryFn, DEFAULT_BACKOFF_SETTINGS, retryOptions} from '../src/utils/retry-options';
+import {
+  createReadStreamShouldRetryFn,
+  DEFAULT_BACKOFF_SETTINGS,
+  retryOptions,
+} from '../src/utils/retry-options';
 import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
 import {RequestType} from 'google-gax/build/src/apitypes';
+import {GapicLayerTester} from '../test/util/gapic-layer-tester';
 
 const {grpc} = new GrpcClient();
 
@@ -241,11 +252,7 @@ describe('Bigtable/Table', () => {
     // 3. Anything with retryRequestOptions?
     // unchanged for other streaming calls
     const bigtable = new Bigtable();
-    const clientOptions = bigtable.options.BigtableClient;
-    const gapicClient: v2.BigtableClient = new v2['BigtableClient'](
-      clientOptions
-    );
-    bigtable.api['BigtableClient'] = gapicClient;
+    const tester = new GapicLayerTester(bigtable);
     const table: Table = bigtable.instance('fake-instance').table('fake-table');
     const chunkTransformer: ChunkTransformer = new ChunkTransformer({
       decode: false,
@@ -274,86 +281,8 @@ describe('Bigtable/Table', () => {
       retry: expectedRetryOptions,
     };
 
-    function testReadRowsGapicCall(
-      done: mocha.Done,
-      expectedRequest: protos.google.bigtable.v2.IReadRowsRequest,
-      expectedOptions: CallOptions
-    ) {
-      gapicClient.readRows = (
-        request: protos.google.bigtable.v2.IReadRowsRequest,
-        options: CallOptions
-      ) => {
-        try {
-          assert.deepStrictEqual(request, expectedRequest);
-          if (options || expectedOptions) {
-            // Do value comparison on options.retry since
-            // it won't be reference equal to expectedOptions.retry:
-            assert(options);
-            assert(expectedOptions);
-            const retry = options.retry;
-            const expectedRetry = expectedOptions.retry;
-            // First check that the retry codes are correct
-            // These do not need to be reference equal for a passing check
-            assert.deepStrictEqual(
-              retry?.retryCodes,
-              expectedRetry?.retryCodes
-            );
-            // Next check that the backoff settings are correct
-            // These do not need to be reference equal for a passing check
-            assert.deepStrictEqual(
-              retry?.backoffSettings,
-              expectedRetry?.backoffSettings
-            );
-            // Next check that the shouldRetryFn gets the right result for
-            // each error type.
-            assert(retry);
-            assert(expectedRetry);
-            assert(retry.shouldRetryFn);
-            assert(expectedRetry.shouldRetryFn);
-            const grpcErrorCodes = [
-              1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-            ]; // TODO: Replace later
-            // This function maps a shouldRetryFn to in the retry parameter
-            // to an array of what its output would be for each grpc code.
-            const mapCodeToShouldRetryArray = (
-              retryParameter: Partial<gax.RetryOptions>
-            ) =>
-              grpcErrorCodes
-                .map((code: number) =>
-                  Object.assign(new GoogleError('Test error'), {code: code})
-                )
-                .map((error: GoogleError) => {
-                  retryParameter.shouldRetryFn
-                    ? retryParameter.shouldRetryFn(error)
-                    : undefined;
-                });
-            assert.deepStrictEqual(
-              mapCodeToShouldRetryArray(retry),
-              mapCodeToShouldRetryArray(expectedRetry)
-            );
-            // Check that the output of the resumption function:
-            assert(retry.getResumptionRequestFn);
-            assert(expectedRetry.getResumptionRequestFn);
-            assert.deepStrictEqual(
-              retry.getResumptionRequestFn({}),
-              expectedRetry.getResumptionRequestFn({})
-            );
-          }
-          done();
-        } catch (e: unknown) {
-          done(e);
-        }
-        // The following code is added just so the mocked gapic function will compile:
-        const duplex: gax.CancellableStream = new StreamProxy(
-          gax.StreamType.SERVER_STREAMING,
-          () => {}
-        );
-        return duplex;
-      };
-    }
-
     it('should pass the right retry configuration to the gapic layer', done => {
-      testReadRowsGapicCall(
+      tester.testReadRowsGapicCall(
         done,
         {
           rows: {
