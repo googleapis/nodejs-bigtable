@@ -769,8 +769,10 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     const strategy = new ReadRowsResumptionStrategy(
       chunkTransformer,
       options,
-      this.name,
-      this.bigtable.appProfileId
+      {
+        tableName: this.name,
+        appProfileId: this.bigtable.appProfileId
+      }
     );
 
     // TODO: Consider removing populateAttemptHeader.

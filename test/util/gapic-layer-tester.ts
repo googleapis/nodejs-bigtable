@@ -31,8 +31,7 @@ export class GapicLayerTester {
     const expectedStrategy = new ReadRowsResumptionStrategy(
       chunkTransformer,
       options,
-      tableName,
-      undefined
+      {tableName}
     );
     const expectedResumptionRequest = () => {
       return expectedStrategy.getResumeRequest() as RequestType;

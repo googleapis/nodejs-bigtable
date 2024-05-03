@@ -12,6 +12,12 @@ import {Mutation} from '../mutation';
 import {BoundData, Filter, RawFilter} from '../filter';
 import {RequestType} from 'google-gax/build/src/apitypes';
 
+// This interface contains the information that will be used in a request.
+interface TableStrategyInfo {
+  tableName: string;
+  appProfileId?: string;
+}
+
 // TODO: Move ReadRowsResumptionStrategy out into a separate module
 export class ReadRowsResumptionStrategy {
   private chunkTransformer: ChunkTransformer;
@@ -19,15 +25,13 @@ export class ReadRowsResumptionStrategy {
   private ranges: PrefixRange[];
   private rowsLimit: number;
   private hasLimit: boolean;
-  private tableName: string;
-  private appProfileId?: string;
   private options: GetRowsOptions;
+  private tableStrategyInfo: TableStrategyInfo;
   rowsRead = 0;
   constructor(
     chunkTransformer: ChunkTransformer,
     options: GetRowsOptions,
-    tableName: string,
-    appProfileId?: string
+    tableStrategyInfo: TableStrategyInfo
   ) {
     this.chunkTransformer = chunkTransformer;
     this.options = options;
@@ -37,8 +41,7 @@ export class ReadRowsResumptionStrategy {
     this.hasLimit = this.rowsLimit !== 0;
     this.rowsRead = 0;
     // TODO: Create a case class for these two objects:
-    this.tableName = tableName;
-    this.appProfileId = appProfileId;
+    this.tableStrategyInfo = tableStrategyInfo;
     // If rowKeys and ranges are both empty, the request is a full table scan.
     // Add an empty range to simplify the resumption logic.
     if (this.rowKeys.length === 0 && this.ranges.length === 0) {
@@ -97,10 +100,8 @@ export class ReadRowsResumptionStrategy {
     rowKeys: string[],
     filter: RawFilter
   ) {
-    const reqOpts = {
-      tableName: this.tableName,
-      appProfileId: this.appProfileId,
-    } as google.bigtable.v2.IReadRowsRequest;
+    const reqOpts = this
+      .tableStrategyInfo as google.bigtable.v2.IReadRowsRequest;
 
     // Create the new reqOpts
     reqOpts.rows = {};
