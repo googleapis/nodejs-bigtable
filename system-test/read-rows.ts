@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bigtable, protos, Table} from '../src';
+import {Bigtable, ChunkTransformer, GetRowsOptions, protos, Table} from '../src';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: ReadRowsTest[];
 };
@@ -26,6 +26,7 @@ import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {ServerWritableStream} from '@grpc/grpc-js';
 import {GapicLayerTester} from '../test/util/gapic-layer-tester';
+import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
 
 const {grpc} = new GrpcClient();
 
@@ -274,6 +275,25 @@ describe('Bigtable/Table', () => {
         .table('fake-table');
       tableWithRetries.maxRetries = 7;
       tableWithRetries.createReadStream();
+    });
+  });
+  describe.only('ReadrowsResumptionStrategy', () => {
+    const fakeTableName = 'fake-table-name';
+    function generateStrategy(
+      options: GetRowsOptions
+    ): ReadRowsResumptionStrategy {
+      return new ReadRowsResumptionStrategy(
+        new ChunkTransformer({
+          decode: false,
+        } as any),
+        options,
+        {tableName: fakeTableName}
+      );
+    }
+    // TODO: Parameterized tests here.
+    it('should generate the right resumption request with no options', done => {
+      const strategy = generateStrategy({});
+      assert.deepStrictEqual(strategy.getResumeRequest(), {});
     });
   });
 });
