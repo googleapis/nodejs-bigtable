@@ -19,14 +19,6 @@ export class GapicLayerTester {
     const clientOptions = bigtable.options.BigtableClient;
     this.gapicClient = new v2['BigtableClient'](clientOptions);
     bigtable.api['BigtableClient'] = this.gapicClient;
-    const detectedProjectId = 'detected-project-id';
-    /*
-    bigtable.getProjectId_ = (
-      callback: (err: Error | null, projectId?: string) => void
-    ) => {
-      callback(null, detectedProjectId);
-    };
-     */
   }
 
   buildReadRowsGaxOptions(
