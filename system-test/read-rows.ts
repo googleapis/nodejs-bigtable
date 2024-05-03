@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Bigtable, ChunkTransformer, GetRowsOptions, protos, Table} from '../src';
+import {Bigtable, GetRowsOptions, protos, Table} from '../src';
+import {ChunkTransformer} from '../src/chunktransformer';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: ReadRowsTest[];
 };
@@ -291,9 +292,22 @@ describe('Bigtable/Table', () => {
       );
     }
     // TODO: Parameterized tests here.
-    it('should generate the right resumption request with no options', done => {
+    it('should generate the right resumption request with no options', () => {
       const strategy = generateStrategy({});
-      assert.deepStrictEqual(strategy.getResumeRequest(), {});
+      assert.deepStrictEqual(strategy.getResumeRequest(), {
+        rows: {
+          rowKeys: [],
+          rowRanges: [{}],
+        },
+        tableName: fakeTableName,
+      });
+      assert.deepStrictEqual(strategy.getResumeRequest(), {
+        rows: {
+          rowKeys: [],
+          rowRanges: [{}],
+        },
+        tableName: fakeTableName,
+      });
     });
   });
 });
