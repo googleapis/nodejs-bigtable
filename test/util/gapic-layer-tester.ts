@@ -2,7 +2,7 @@ import {ChunkTransformer} from '../../src/chunktransformer';
 import {Bigtable, GetRowsOptions, protos} from '../../src';
 import * as v2 from '../../src/v2';
 import * as mocha from 'mocha';
-import {CallOptions, GoogleError, RetryOptions} from 'google-gax';
+import {CallOptions, GoogleError, grpc, RetryOptions} from 'google-gax';
 import * as assert from 'assert';
 import * as gax from 'google-gax';
 import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
@@ -93,9 +93,9 @@ export class GapicLayerTester {
             assert(expectedRetry);
             assert(retry.shouldRetryFn);
             assert(expectedRetry.shouldRetryFn);
-            const grpcErrorCodes = [
-              1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
-            ]; // TODO: Replace later
+            const grpcErrorCodes = Object.values(grpc.status)
+              .map((status, index) => index)
+              .slice(1);
             // This function maps a shouldRetryFn to in the retry parameter
             // to an array of what its output would be for each grpc code.
             const mapCodeToShouldRetryArray = (
