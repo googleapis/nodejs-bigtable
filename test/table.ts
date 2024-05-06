@@ -46,7 +46,6 @@ const fakePromisify = Object.assign({}, promisify, {
     assert.deepStrictEqual(options.exclude, [
       'family',
       'row',
-      '#readRowsReqOpts',
     ]);
   },
 });

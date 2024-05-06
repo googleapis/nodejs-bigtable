@@ -1495,40 +1495,6 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
     makeNextBatchRequest();
   }
 
-  #readRowsReqOpts(
-    ranges: PrefixRange[],
-    rowKeys: string[],
-    options: GetRowsOptions
-  ) {
-    const reqOpts = {
-      tableName: this.name,
-      appProfileId: this.bigtable.appProfileId,
-    } as google.bigtable.v2.IReadRowsRequest;
-
-    // Create the new reqOpts
-    reqOpts.rows = {};
-
-    // TODO: preprocess all the keys and ranges to Bytes
-    reqOpts.rows.rowKeys = rowKeys.map(
-      Mutation.convertToBytes
-    ) as {} as Uint8Array[];
-
-    reqOpts.rows.rowRanges = ranges.map(range =>
-      Filter.createRange(
-        range.start as BoundData,
-        range.end as BoundData,
-        'Key'
-      )
-    );
-
-    const filter = options.filter;
-    if (filter) {
-      reqOpts.filter = Filter.parse(filter);
-    }
-
-    return reqOpts;
-  }
-
   /**
    * Get a reference to a table row.
    *
@@ -1938,7 +1904,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
  * that a callback is omitted.
  */
 promisifyAll(Table, {
-  exclude: ['family', 'row', '#readRowsReqOpts'],
+  exclude: ['family', 'row'],
 });
 
 function getNextDelay(numConsecutiveErrors: number, config: BackoffSettings) {
