@@ -8,10 +8,7 @@ import * as gax from 'google-gax';
 import {StreamProxy} from 'google-gax/build/src/streamingCalls/streaming';
 import {ReadRowsResumptionStrategy} from '../../src/utils/read-rows-resumption';
 import {RequestType} from 'google-gax/build/src/apitypes';
-import {
-  createReadStreamShouldRetryFn,
-  DEFAULT_BACKOFF_SETTINGS,
-} from '../../src/utils/retry-options';
+import {DEFAULT_BACKOFF_SETTINGS} from '../../src/utils/retry-options';
 
 export class GapicLayerTester {
   private gapicClient: v2.BigtableClient;
@@ -36,10 +33,13 @@ export class GapicLayerTester {
     const expectedResumptionRequest = () => {
       return expectedStrategy.getResumeRequest() as RequestType;
     };
+    const expectedCanResume = (error: GoogleError) => {
+      return expectedStrategy.canResume(error);
+    };
     const expectedRetryOptions = new RetryOptions(
       [],
       DEFAULT_BACKOFF_SETTINGS,
-      createReadStreamShouldRetryFn,
+      expectedCanResume,
       expectedResumptionRequest
     );
     return {

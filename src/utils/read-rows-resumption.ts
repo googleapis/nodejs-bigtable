@@ -1,16 +1,30 @@
-import {GetRowsOptions, GoogleInnerError, PrefixRange} from '../table';
+// Copyright 2024 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+import {GetRowsOptions, PrefixRange} from '../table';
 import {ChunkTransformer} from '../chunktransformer';
 import * as protos from '../../protos/protos';
 import {TableUtils} from './table';
 import {google} from '../../protos/protos';
-import {CallOptions, GoogleError, RetryOptions} from 'google-gax';
-import {
-  createReadStreamShouldRetryFn,
-  DEFAULT_BACKOFF_SETTINGS,
-} from './retry-options';
+import {CallOptions, GoogleError, RetryOptions, ServiceError} from 'google-gax';
 import {Mutation} from '../mutation';
-import {BoundData, Filter, RawFilter} from '../filter';
+import {BoundData, Filter} from '../filter';
 import {RequestType} from 'google-gax/build/src/apitypes';
+import {
+  DEFAULT_BACKOFF_SETTINGS,
+  RETRYABLE_STATUS_CODES,
+} from './retry-options';
 
 // This interface contains the information that will be used in a request.
 interface TableStrategyInfo {
@@ -18,6 +32,29 @@ interface TableStrategyInfo {
   appProfileId?: string;
 }
 
+/**
+ * Create a ReadRowsResumptionStrategy object to specify retry behaviour
+ *
+ * @class
+ * @param {ChunkTransformer} chunkTransformer A ChunkTransformer stream defined
+ * in chunktransformer.ts which is typically used for parsing chunked data from
+ * the server into a format ready for the user. The lastRowKey parameter of the
+ * chunkTransformer object is used for resumption logic.
+ * @param {GetRowsOptions} options Options provided to createreadstream used for
+ * customizing the readRows call.
+ * @param {TableStrategyInfo} tableStrategyInfo Data passed about the table
+ * that is necessary for the readRows request.
+ *
+ * @example
+ * ```
+ * const strategy = new ReadRowsResumptionStrategy(
+ *   chunkTransformer,
+ *   options,
+ *   {tableName: 'projects/my-project/instances/my-instance/tables/my-table'}
+ * )
+ * gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
+ * ```
+ */
 export class ReadRowsResumptionStrategy {
   private chunkTransformer: ChunkTransformer;
   private rowKeys: string[];
@@ -47,6 +84,20 @@ export class ReadRowsResumptionStrategy {
       this.ranges.push({});
     }
   }
+
+  /**
+   * Gets the next readrows request.
+   *
+   * This function computes the next readRows request that will be sent to the
+   * server. Based on the last row key calculated by data already passed through
+   * the chunk transformer, the set of row keys and row ranges is calculated and
+   * updated. The calculated row keys and ranges are used along with other
+   * properties provided by the user like limits and filters to compute and
+   * return a request that will be used in the next read rows call.
+   *
+   * @return {protos.google.bigtable.v2.IReadRowsRequest} The request options
+   * for the next readrows request.
+   */
   getResumeRequest(): protos.google.bigtable.v2.IReadRowsRequest {
     const lastRowKey = this.chunkTransformer
       ? this.chunkTransformer.lastRowKey
@@ -84,6 +135,20 @@ export class ReadRowsResumptionStrategy {
     return reqOpts;
   }
 
+  /**
+   * Decides if the client is going to retry a request.
+   *
+   * canResume contains the logic that will decide if the client will retry with
+   * another request when it receives an error. This logic is passed along to
+   * google-gax and used by google-gax to decide if the client should retry
+   * a request when google-gax receives an error. If canResume returns true then
+   * the client will retry with another request computed by getResumeRequest. If
+   * canResume request returns false then the error will bubble up from gax to
+   * the handwritten layer.
+   *
+   * @param {GoogleError} [error] The error that Google Gax receives.
+   * @return {boolean} True if the client will retry
+   */
   canResume(error: GoogleError): boolean {
     // If all the row keys and ranges are read, end the stream
     // and do not retry.
@@ -96,10 +161,41 @@ export class ReadRowsResumptionStrategy {
     if (this.hasLimit && this.rowsLimit === this.rowsRead) {
       return false;
     }
-    return createReadStreamShouldRetryFn(error);
+    const isRstStreamError = (error: GoogleError | ServiceError): boolean => {
+      // Retry on "received rst stream" errors
+      if (error.code === 13 && error.message) {
+        const error_message = (error.message || '').toLowerCase();
+        return (
+          error.code === 13 &&
+          (error_message.includes('rst_stream') ||
+            error_message.includes('rst stream'))
+        );
+      }
+      return false;
+    };
+    if (
+      error.code &&
+      (RETRYABLE_STATUS_CODES.has(error.code) || isRstStreamError(error))
+    ) {
+      return true;
+    }
+    return false;
   }
 
-  toRetryOptions(gaxOpts: CallOptions) {
+  /**
+   * Creates a RetryOptions object that can be used by google-gax.
+   *
+   * This class contains the business logic to specify retry behaviour of
+   * readrows requests and this function packages that logic into a RetryOptions
+   * object that google-gax expects.
+   *
+   * @param {CallOptions} [gaxOpts] The call options that will be used to
+   * specify retry behaviour.
+   * @return {RetryOptions} A RetryOptions object that google-gax expects that
+   * can determine retry behaviour.
+   *
+   */
+  toRetryOptions(gaxOpts: CallOptions): RetryOptions {
     const backoffSettings =
       gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
     // TODO: Add resume request
