@@ -18,7 +18,6 @@ interface TableStrategyInfo {
   appProfileId?: string;
 }
 
-// TODO: Move ReadRowsResumptionStrategy out into a separate module
 export class ReadRowsResumptionStrategy {
   private chunkTransformer: ChunkTransformer;
   private rowKeys: string[];
@@ -56,8 +55,28 @@ export class ReadRowsResumptionStrategy {
       TableUtils.spliceRanges(this.ranges, lastRowKey);
       this.rowKeys = TableUtils.getRowKeys(this.rowKeys, lastRowKey);
     }
-    const reqOpts: protos.google.bigtable.v2.IReadRowsRequest =
-      this.#readRowsReqOpts(this.ranges, this.rowKeys, this.options.filter);
+    const reqOpts = this
+      .tableStrategyInfo as google.bigtable.v2.IReadRowsRequest;
+
+    // Create the new reqOpts
+    reqOpts.rows = {};
+
+    // TODO: preprocess all the keys and ranges to Bytes
+    reqOpts.rows.rowKeys = this.rowKeys.map(
+      Mutation.convertToBytes
+    ) as {} as Uint8Array[];
+
+    reqOpts.rows.rowRanges = this.ranges.map(range =>
+      Filter.createRange(
+        range.start as BoundData,
+        range.end as BoundData,
+        'Key'
+      )
+    );
+
+    if (this.options.filter) {
+      reqOpts.filter = Filter.parse(this.options.filter);
+    }
 
     if (this.hasLimit) {
       reqOpts.rowsLimit = this.rowsLimit - this.rowsRead;
@@ -93,36 +112,5 @@ export class ReadRowsResumptionStrategy {
       return this.getResumeRequest() as RequestType;
     };
     return new RetryOptions([], backoffSettings, canResume, getResumeRequest);
-  }
-
-  #readRowsReqOpts(
-    ranges: PrefixRange[],
-    rowKeys: string[],
-    filter: RawFilter
-  ) {
-    const reqOpts = this
-      .tableStrategyInfo as google.bigtable.v2.IReadRowsRequest;
-
-    // Create the new reqOpts
-    reqOpts.rows = {};
-
-    // TODO: preprocess all the keys and ranges to Bytes
-    reqOpts.rows.rowKeys = rowKeys.map(
-      Mutation.convertToBytes
-    ) as {} as Uint8Array[];
-
-    reqOpts.rows.rowRanges = ranges.map(range =>
-      Filter.createRange(
-        range.start as BoundData,
-        range.end as BoundData,
-        'Key'
-      )
-    );
-
-    if (filter) {
-      reqOpts.filter = Filter.parse(filter);
-    }
-
-    return reqOpts;
   }
 }

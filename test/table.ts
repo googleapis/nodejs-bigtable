@@ -43,10 +43,7 @@ const fakePromisify = Object.assign({}, promisify, {
       return;
     }
     promisified = true;
-    assert.deepStrictEqual(options.exclude, [
-      'family',
-      'row',
-    ]);
+    assert.deepStrictEqual(options.exclude, ['family', 'row']);
   },
 });
 
