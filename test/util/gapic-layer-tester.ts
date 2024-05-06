@@ -110,8 +110,8 @@ export class GapicLayerTester {
                     ? retryParameter.shouldRetryFn(error)
                     : undefined;
                 });
-            // This check ensures that for each error code, the boolean return
-            // value of the shouldRetryFn is correct.
+            // This check ensures that for each grpc error code, the boolean
+            // return value of the shouldRetryFn is correct.
             assert.deepStrictEqual(
               mapCodeToShouldRetryArray(retry),
               mapCodeToShouldRetryArray(expectedRetry)
