@@ -10,6 +10,7 @@ import {ReadRowsResumptionStrategy} from '../../src/utils/read-rows-resumption';
 import {RequestType} from 'google-gax/build/src/apitypes';
 import {DEFAULT_BACKOFF_SETTINGS} from '../../src/utils/retry-options';
 
+// TODO: Add comments to this tester
 export class GapicLayerTester {
   private gapicClient: v2.BigtableClient;
   constructor(bigtable: Bigtable) {
@@ -116,7 +117,7 @@ export class GapicLayerTester {
               mapCodeToShouldRetryArray(retry),
               mapCodeToShouldRetryArray(expectedRetry)
             );
-            // Check that the output of the resumption function:
+            // Check that the output of the resumption function is correct:
             assert(retry.getResumptionRequestFn);
             assert(expectedRetry.getResumptionRequestFn);
             // This if statement is needed to satisfy the compiler.
