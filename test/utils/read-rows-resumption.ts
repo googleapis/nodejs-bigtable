@@ -13,100 +13,159 @@
 // limitations under the License.
 
 import {describe, it} from 'mocha';
-import {GetRowsOptions, Value} from '../../src';
 import {ChunkTransformer} from '../../src/chunktransformer';
 import {ReadRowsResumptionStrategy} from '../../src/utils/read-rows-resumption';
 import * as assert from 'assert';
 
 describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
-  // TODO: Move this out into its own file.
-  // TODO: Would be good to parameterize the test to prove it is idempotent
   const tableName = 'fake-table-name';
-  function generateStrategy(
-    options: GetRowsOptions,
-    lastRowKey?: Value
-  ): ReadRowsResumptionStrategy {
-    const chunkTransformer = new ChunkTransformer({
-      decode: false,
-    } as any);
-    if (lastRowKey) {
-      chunkTransformer.lastRowKey = lastRowKey;
-    }
-    return new ReadRowsResumptionStrategy(chunkTransformer, options, {
-      tableName,
-    });
-  }
-  it('should generate the right resumption request with no options each time', () => {
-    const strategy = generateStrategy({});
-    const noRangesNoKeys = {
-      rows: {
-        rowKeys: [],
-        rowRanges: [{}],
+  [
+    {
+      name: 'should generate the right resumption request with no options each time',
+      expectedResumeRequest: {
+        rows: {
+          rowKeys: [],
+          rowRanges: [{}],
+        },
+        tableName,
       },
-      tableName,
-    };
-    assert.deepStrictEqual(strategy.getResumeRequest(), noRangesNoKeys);
-  });
-  it('should generate the right resumption requests with a last row key', () => {
-    const strategy = generateStrategy(
-      {
+      options: {},
+    },
+    {
+      name: 'should generate the right resumption requests with a last row key',
+      expectedResumeRequest: {
+        rows: {
+          rowKeys: ['c'].map(key => Buffer.from(key)),
+          rowRanges: [],
+        },
+        tableName,
+      },
+      options: {
         keys: ['a', 'b', 'c'],
       },
-      'b'
-    );
-    assert.deepStrictEqual(strategy.getResumeRequest(), {
-      rows: {
-        rowKeys: ['c'].map(key => Buffer.from(key)),
-        rowRanges: [],
+      lastRowKey: 'b',
+    },
+    {
+      name: 'should generate the right resumption request with the lastrow key in a row range',
+      expectedResumeRequest: {
+        rows: {
+          rowKeys: [],
+          rowRanges: [
+            {startKeyOpen: Buffer.from('b'), endKeyClosed: Buffer.from('c')},
+            {startKeyClosed: Buffer.from('e'), endKeyClosed: Buffer.from('g')},
+          ],
+        },
+        tableName,
       },
-      tableName,
-    });
-  });
-  it('should generate the right resumption request with the lastrow key in a row range', () => {
-    const strategy = generateStrategy(
-      {
+      options: {
         ranges: [
           {start: 'a', end: 'c'},
           {start: 'e', end: 'g'},
         ],
       },
-      'b'
-    );
-    assert.deepStrictEqual(strategy.getResumeRequest(), {
-      rows: {
-        rowKeys: [],
-        rowRanges: [
-          {startKeyOpen: Buffer.from('b'), endKeyClosed: Buffer.from('c')},
-          {startKeyClosed: Buffer.from('e'), endKeyClosed: Buffer.from('g')},
-        ],
+      lastRowKey: 'b',
+    },
+    {
+      name: 'should generate the right resumption request with the lastrow key at the end of a row range',
+      expectedResumeRequest: {
+        rows: {
+          rowKeys: [],
+          rowRanges: [
+            {startKeyClosed: Buffer.from('e'), endKeyClosed: Buffer.from('g')},
+          ],
+        },
+        tableName,
       },
-      tableName,
-    });
-  });
-  it('should generate the right resumption request with the lastrow key at the end of a row range', () => {
-    const strategy = generateStrategy(
-      {
+      options: {
         ranges: [
           {start: 'a', end: 'c'},
           {start: 'e', end: 'g'},
         ],
       },
-      'c'
-    );
-    assert.deepStrictEqual(strategy.getResumeRequest(), {
-      rows: {
-        rowKeys: [],
-        rowRanges: [
-          {startKeyClosed: Buffer.from('e'), endKeyClosed: Buffer.from('g')},
-        ],
+      lastRowKey: 'c',
+    },
+    {
+      name: 'should generate the right resumption request with start and end',
+      expectedResumeRequest: {
+        rows: {
+          rowKeys: [],
+          rowRanges: [
+            {
+              startKeyOpen: Buffer.from('d'),
+              endKeyClosed: Buffer.from('m'),
+            },
+          ],
+        },
+        tableName,
       },
-      tableName,
+      options: {
+        start: 'b',
+        end: 'm',
+      },
+      lastRowKey: 'd',
+    },
+    {
+      name: 'should generate the right resumption request with prefixes',
+      expectedResumeRequest: {
+        rows: {
+          rowKeys: [],
+          rowRanges: [
+            {
+              startKeyClosed: Buffer.from('f'),
+              endKeyOpen: Buffer.from('g'),
+            },
+            {
+              startKeyClosed: Buffer.from('h'),
+              endKeyOpen: Buffer.from('i'),
+            },
+          ],
+        },
+        tableName,
+      },
+      options: {
+        prefixes: ['d', 'f', 'h'],
+      },
+      lastRowKey: 'e',
+    },
+  ].forEach(test => {
+    it(test.name, () => {
+      const chunkTransformer = new ChunkTransformer({
+        decode: false,
+      } as any);
+      if (test.lastRowKey) {
+        chunkTransformer.lastRowKey = test.lastRowKey;
+      }
+      const strategy = new ReadRowsResumptionStrategy(
+        chunkTransformer,
+        test.options,
+        {
+          tableName,
+        }
+      );
+      // Do this check 2 times to make sure getResumeRequest is idempotent.
+      assert.deepStrictEqual(
+        strategy.getResumeRequest(),
+        test.expectedResumeRequest
+      );
+      assert.deepStrictEqual(
+        strategy.getResumeRequest(),
+        test.expectedResumeRequest
+      );
     });
   });
   it('should generate the right resumption request with the limit', () => {
-    const strategy = generateStrategy({
-      limit: 71,
-    });
+    const chunkTransformer = new ChunkTransformer({
+      decode: false,
+    } as any);
+    const strategy = new ReadRowsResumptionStrategy(
+      chunkTransformer,
+      {
+        limit: 71,
+      },
+      {
+        tableName,
+      }
+    );
     strategy.rowsRead = 37;
     assert.deepStrictEqual(strategy.getResumeRequest(), {
       rows: {
@@ -114,52 +173,6 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
         rowRanges: [{}],
       },
       rowsLimit: 34,
-      tableName,
-    });
-  });
-  it('should generate the right resumption request with start and end', () => {
-    const strategy = generateStrategy(
-      {
-        start: 'b',
-        end: 'm',
-      },
-      'd'
-    );
-    assert.deepStrictEqual(strategy.getResumeRequest(), {
-      rows: {
-        rowKeys: [],
-        rowRanges: [
-          {
-            startKeyOpen: Buffer.from('d'),
-            endKeyClosed: Buffer.from('m'),
-          },
-        ],
-      },
-      tableName,
-    });
-  });
-  it('should generate the right resumption request with prefixes', () => {
-    const strategy = generateStrategy(
-      {
-        prefixes: ['d', 'f', 'h'],
-      },
-      'e'
-    );
-    const request = strategy.getResumeRequest();
-    assert.deepStrictEqual(request, {
-      rows: {
-        rowKeys: [],
-        rowRanges: [
-          {
-            startKeyClosed: Buffer.from('f'),
-            endKeyOpen: Buffer.from('g'),
-          },
-          {
-            startKeyClosed: Buffer.from('h'),
-            endKeyOpen: Buffer.from('i'),
-          },
-        ],
-      },
       tableName,
     });
   });
