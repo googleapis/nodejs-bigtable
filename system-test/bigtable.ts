@@ -1609,8 +1609,9 @@ describe('Bigtable', () => {
             ? {projectId: process.env.GCLOUD_PROJECT2}
             : {}
         );
-        const instanceId = generateId('instance');
-        const instance = bigtableSecondaryProject.instance(instanceId);
+        const secondInstance = bigtableSecondaryProject.instance(
+          generateId('instance')
+        );
         const destinationClusterId = generateId('cluster');
         {
           // Create production instance with given options
@@ -1626,20 +1627,20 @@ describe('Bigtable', () => {
             labels: {'prod-label': 'prod-label'},
             type: 'production',
           };
-          const [, operation] = await instance.create(instanceOptions);
+          const [, operation] = await secondInstance.create(instanceOptions);
           await operation.promise();
         }
         // Create the copy and test the copied backup
         await testCopyBackup(
           backup,
           {
-            cluster: new Cluster(instance, destinationClusterId),
+            cluster: new Cluster(secondInstance, destinationClusterId),
             id: generateId('backup'),
             expireTime: copyExpireTime,
           },
-          instance
+          secondInstance
         );
-        await instance.delete();
+        await secondInstance.delete();
       });
       it('should restore a copied backup', async () => {
         const backupId = generateId('backup');
