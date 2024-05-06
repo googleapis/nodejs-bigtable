@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {GoogleError, RetryOptions, ServiceError} from 'google-gax';
+import {ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
