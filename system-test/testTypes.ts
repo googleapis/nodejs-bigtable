@@ -50,7 +50,7 @@ export interface Test {
 
 interface CreateReadStreamResponse {
   row_keys?: string[];
-  end_with_error?: 4;
+  end_with_error?: number;
 }
 
 interface CreateReadStreamRequest {
