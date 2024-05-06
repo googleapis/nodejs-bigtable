@@ -136,7 +136,9 @@ export class GapicLayerTester {
       } catch (e: unknown) {
         done(e);
       }
-      // The following code is added just so the mocked gapic function will compile:
+      // The following code is added just so the mocked gapic function will compile.
+      // A return value is provided to match the return value of the readrows
+      // Gapic function.
       const duplex: gax.CancellableStream = new StreamProxy(
         gax.StreamType.SERVER_STREAMING,
         () => {}
