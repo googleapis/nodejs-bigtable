@@ -1604,13 +1604,13 @@ describe('Bigtable', () => {
           assert.deepStrictEqual(backup.expireDate, sourceExpireTime);
         }
         // Create client, instance, cluster for second project
-        const bigtable = new Bigtable(
+        const bigtableSecondaryProject = new Bigtable(
           process.env.GCLOUD_PROJECT2
             ? {projectId: process.env.GCLOUD_PROJECT2}
             : {}
         );
         const instanceId = generateId('instance');
-        const instance = bigtable.instance(instanceId);
+        const instance = bigtableSecondaryProject.instance(instanceId);
         const destinationClusterId = generateId('cluster');
         {
           // Create production instance with given options
