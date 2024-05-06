@@ -1182,6 +1182,38 @@ describe('Bigtable/Table', () => {
         tableWithRetries.maxRetries = 7;
         tableWithRetries.createReadStream();
       });
+      /*
+      it('should pass the right information to the gapic layer in a complex example', done => {
+        const options = {
+          maxRetries: 7,
+          timeout: 734,
+          autoPaginate: true,
+          maxResults: 565,
+          maxRetries: 477,
+
+        }
+        const expectedOptions = Object.assign(
+          ,
+          tester.buildReadRowsGaxOptions(tableName, {})
+        );
+        tester.testReadRowsGapicCall(
+          done,
+          {
+            rows: {
+              rowKeys: [],
+              rowRanges: [{}],
+            },
+            tableName,
+          },
+          expectedOptions
+        );
+        const tableWithRetries: Table = bigtable
+          .instance('fake-instance')
+          .table('fake-table');
+        tableWithRetries.maxRetries = 7;
+        tableWithRetries.createReadStream();
+      });
+      */
     });
     describe.skip('retries', () => {
       let callCreateReadStream: Function;

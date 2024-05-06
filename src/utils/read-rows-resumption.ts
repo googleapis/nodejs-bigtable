@@ -196,9 +196,6 @@ export class ReadRowsResumptionStrategy {
    *
    */
   toRetryOptions(gaxOpts: CallOptions): RetryOptions {
-    const backoffSettings =
-      gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS;
-    // TODO: Add resume request
     const canResume = (error: GoogleError) => {
       return this.canResume(error);
     };
@@ -207,6 +204,14 @@ export class ReadRowsResumptionStrategy {
     ) => {
       return this.getResumeRequest() as RequestType;
     };
-    return new RetryOptions([], backoffSettings, canResume, getResumeRequest);
+    // On individual calls, the user can override any of the default
+    // retry options. Overrides can be done on the retryCodes, backoffSettings,
+    // shouldRetryFn or getResumptionRequestFn.
+    return new RetryOptions(
+      gaxOpts?.retry?.retryCodes || [],
+      gaxOpts?.retry?.backoffSettings || DEFAULT_BACKOFF_SETTINGS,
+      gaxOpts?.retry?.shouldRetryFn || canResume,
+      gaxOpts?.retry?.getResumptionRequestFn || getResumeRequest
+    );
   }
 }
