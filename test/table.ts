@@ -556,8 +556,6 @@ describe('Bigtable/Table', () => {
         assert.strictEqual(config.method, 'readRows');
         assert.strictEqual(config.reqOpts.tableName, TABLE_NAME);
         assert.strictEqual(config.reqOpts.appProfileId, undefined);
-        // TODO: When we know the reference structure of the request options
-        // then we can add the right assert deepStrictEqual back here
         assert.deepStrictEqual(config.gaxOpts, {
           otherArgs: {headers: {'bigtable-attempt': 0}},
           retry: config.gaxOpts.retry,
