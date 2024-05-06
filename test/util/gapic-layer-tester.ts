@@ -96,7 +96,7 @@ export class GapicLayerTester {
             const grpcErrorCodes = Object.values(grpc.status)
               .map((status, index) => index)
               .slice(1);
-            // This function maps a shouldRetryFn to in the retry parameter
+            // This function maps a shouldRetryFn in the retry parameter
             // to an array of what its output would be for each grpc code.
             const mapCodeToShouldRetryArray = (
               retryParameter: Partial<gax.RetryOptions>
@@ -110,6 +110,8 @@ export class GapicLayerTester {
                     ? retryParameter.shouldRetryFn(error)
                     : undefined;
                 });
+            // This check ensures that for each error code, the boolean return
+            // value of the shouldRetryFn is correct.
             assert.deepStrictEqual(
               mapCodeToShouldRetryArray(retry),
               mapCodeToShouldRetryArray(expectedRetry)
