@@ -1183,7 +1183,7 @@ describe('Bigtable/Table', () => {
         tableWithRetries.maxRetries = 7;
         tableWithRetries.createReadStream();
       });
-      it.only('should pass custom retry settings to the gapic layer', done => {
+      it('should pass custom retry settings to the gapic layer', done => {
         const customRetryCodes = [11, 12];
         const customBackOffSettings = {
           initialRetryDelayMillis: 17,
@@ -1224,37 +1224,32 @@ describe('Bigtable/Table', () => {
           .table('fake-table');
         tableWithRetries.createReadStream({
           gaxOptions: {
-            retry
+            retry,
           },
         });
       });
-      /*
       it('should pass the right information to the gapic layer in a complex example', done => {
-        // TODO:
-        const backoffSettings = {
-          initialRetryDelayMillis: 328,
-          retryDelayMultiplier: 993,
-          maxRetryDelayMillis: 434,
-        };
         const gaxOptions = {
-          maxRetries: 7,
           timeout: 734,
           autoPaginate: true,
           maxResults: 565,
           maxRetries: 477,
         };
         const options = {
-          end: 'ad',
           filter: {
-            row: 'cn'
+            row: 'cn',
           },
           gaxOptions,
           keys: ['ey', 'gh'],
           limit: 98,
-          prefix: 'tz',
-          prefixes: ['uy', 'xz'],
-          ranges: [{start: 'cc', end: 'ef'}, {start: {inclusive: false, value: 'pq'}, end: {inclusive: true, value: 'rt'}}]
-        }
+          ranges: [
+            {start: 'cc', end: 'ef'},
+            {
+              start: {inclusive: false, value: 'pq'},
+              end: {inclusive: true, value: 'rt'},
+            },
+          ],
+        };
         const expectedOptions = Object.assign(
           gaxOptions,
           tester.buildReadRowsGaxOptions(tableName, {})
@@ -1263,10 +1258,23 @@ describe('Bigtable/Table', () => {
           done,
           {
             rows: {
-              rowKeys: [],
-              rowRanges: [{}],
+              rowKeys: ['ey', 'gh'].map(key => Buffer.from(key)),
+              rowRanges: [
+                {
+                  startKeyClosed: Buffer.from('cc'),
+                  endKeyClosed: Buffer.from('ef'),
+                },
+                {
+                  startKeyOpen: Buffer.from('pq'),
+                  endKeyClosed: Buffer.from('rt'),
+                },
+              ],
             },
             tableName,
+            filter: {
+              rowKeyRegexFilter: Buffer.from('cn'),
+            },
+            rowsLimit: 98,
           },
           expectedOptions
         );
@@ -1274,9 +1282,8 @@ describe('Bigtable/Table', () => {
           .instance('fake-instance')
           .table('fake-table');
         tableWithRetries.maxRetries = 7;
-        tableWithRetries.createReadStream();
+        tableWithRetries.createReadStream(options);
       });
-      */
     });
     describe.skip('retries', () => {
       let callCreateReadStream: Function;
