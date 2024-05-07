@@ -779,7 +779,7 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
 
     // Attach retry options to gax if they are not provided in the function call.
     gaxOpts.retry = strategy.toRetryOptions(gaxOpts);
-    if (!gaxOpts.maxRetries) {
+    if (gaxOpts.maxRetries === undefined) {
       gaxOpts.maxRetries = maxRetries;
     }
 
