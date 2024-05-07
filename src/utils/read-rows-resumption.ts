@@ -25,11 +25,61 @@ import {
   DEFAULT_BACKOFF_SETTINGS,
   RETRYABLE_STATUS_CODES,
 } from './retry-options';
+import * as is from 'is';
 
 // This interface contains the information that will be used in a request.
 interface TableStrategyInfo {
   tableName: string;
   appProfileId?: string;
+}
+
+// Gets the row keys for a readrows request.
+function getRowKeys(
+  rowKeys: string[],
+  lastRowKey: string | number | true | Uint8Array
+) {
+  // Remove rowKeys already read.
+  return rowKeys.filter(rowKey =>
+    TableUtils.greaterThan(rowKey, lastRowKey as string)
+  );
+}
+
+// Modifies ranges in place based on the lastRowKey to prepare
+// a readrows request.
+function spliceRanges(
+  ranges: PrefixRange[],
+  lastRowKey: string | number | true | Uint8Array
+): void {
+  // Readjust and/or remove ranges based on previous valid row reads.
+  // Iterate backward since items may need to be removed.
+  for (let index = ranges.length - 1; index >= 0; index--) {
+    const range = ranges[index];
+    const startValue = is.object(range.start)
+      ? (range.start as BoundData).value
+      : range.start;
+    const endValue = is.object(range.end)
+      ? (range.end as BoundData).value
+      : range.end;
+    const startKeyIsRead =
+      !startValue ||
+      TableUtils.lessThanOrEqualTo(startValue as string, lastRowKey as string);
+    const endKeyIsNotRead =
+      !endValue ||
+      (endValue as Buffer).length === 0 ||
+      TableUtils.lessThan(lastRowKey as string, endValue as string);
+    if (startKeyIsRead) {
+      if (endKeyIsNotRead) {
+        // EndKey is not read, reset the range to start from lastRowKey open
+        range.start = {
+          value: lastRowKey,
+          inclusive: false,
+        };
+      } else {
+        // EndKey is read, remove this range
+        ranges.splice(index, 1);
+      }
+    }
+  }
 }
 
 /**
@@ -103,8 +153,8 @@ export class ReadRowsResumptionStrategy {
       ? this.chunkTransformer.lastRowKey
       : '';
     if (lastRowKey) {
-      TableUtils.spliceRanges(this.ranges, lastRowKey);
-      this.rowKeys = TableUtils.getRowKeys(this.rowKeys, lastRowKey);
+      spliceRanges(this.ranges, lastRowKey);
+      this.rowKeys = getRowKeys(this.rowKeys, lastRowKey);
     }
     const reqOpts = this
       .tableStrategyInfo as google.bigtable.v2.IReadRowsRequest;

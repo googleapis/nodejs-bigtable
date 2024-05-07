@@ -65,52 +65,8 @@ export class TableUtils {
     return this.lessThan(rhs, lhs);
   }
 
-  static spliceRanges(
-    ranges: PrefixRange[],
-    lastRowKey: string | number | true | Uint8Array
-  ): void {
-    // Readjust and/or remove ranges based on previous valid row reads.
-    // Iterate backward since items may need to be removed.
-    for (let index = ranges.length - 1; index >= 0; index--) {
-      const range = ranges[index];
-      const startValue = is.object(range.start)
-        ? (range.start as BoundData).value
-        : range.start;
-      const endValue = is.object(range.end)
-        ? (range.end as BoundData).value
-        : range.end;
-      const startKeyIsRead =
-        !startValue ||
-        this.lessThanOrEqualTo(startValue as string, lastRowKey as string);
-      const endKeyIsNotRead =
-        !endValue ||
-        (endValue as Buffer).length === 0 ||
-        this.lessThan(lastRowKey as string, endValue as string);
-      if (startKeyIsRead) {
-        if (endKeyIsNotRead) {
-          // EndKey is not read, reset the range to start from lastRowKey open
-          range.start = {
-            value: lastRowKey,
-            inclusive: false,
-          };
-        } else {
-          // EndKey is read, remove this range
-          ranges.splice(index, 1);
-        }
-      }
-    }
-  }
   static lessThanOrEqualTo(lhs: string, rhs: string) {
     return !this.greaterThan(lhs, rhs);
-  }
-  static getRowKeys(
-    rowKeys: string[],
-    lastRowKey: string | number | true | Uint8Array
-  ) {
-    // Remove rowKeys already read.
-    return rowKeys.filter(rowKey =>
-      this.greaterThan(rowKey, lastRowKey as string)
-    );
   }
 
   static createPrefixRange(start: string): PrefixRange {
