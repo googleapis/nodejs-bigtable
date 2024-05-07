@@ -490,6 +490,27 @@
         { "row_keys": ["a"], "end_with_error": 4}
       ],
       "row_keys_read": [["a"]]
+    },
+    {
+      "name": "should not retry if all the ranges are read",
+      "createReadStream_options": {
+        "ranges": [{"start": "a", "end": "c", "endInclusive": true}]
+      },
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [
+            {
+              "startKeyClosed": "a",
+              "endKeyOpen": "c"
+            }
+          ]
+        }
+      ],
+      "responses": [
+        { "row_keys": ["c"], "end_with_error": 4}
+      ],
+      "row_keys_read": [["a"]]
     }
   ]
 }

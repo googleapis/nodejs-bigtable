@@ -1377,42 +1377,6 @@ describe('Bigtable/Table', () => {
         }
       });
 
-      it('should not retry if all the keys are read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        callCreateReadStream({keys: ['a']}, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
-      it('shouldn not retry if all the ranges are read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'c'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        const options = {
-          ranges: [{start: 'a', end: 'c', endInclusive: true}],
-        };
-
-        callCreateReadStream(options, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          assert.deepStrictEqual(reqOptsCalls[0].rows, {
-            rowKeys: [],
-            rowRanges: [{start: 'a', end: 'c', startInclusive: true}],
-          });
-          done();
-        });
-      });
-
       it('shouldn not retry with keys and ranges that are read', done => {
         emitters = [
           ((stream: Duplex) => {
