@@ -19,7 +19,7 @@ import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
 import {PassThrough, Writable, Duplex} from 'stream';
-import {ServiceError} from 'google-gax';
+import {GoogleError, RetryOptions, ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
 import {ChunkTransformer} from '../src/chunktransformer.js';
@@ -33,6 +33,7 @@ import {TableUtils} from '../src/utils/table';
 import {ReadRowsResumptionStrategy} from '../src/utils/read-rows-resumption';
 import {GapicLayerTester} from './util/gapic-layer-tester';
 import {Table} from '../src/table';
+import {RequestType} from 'google-gax/build/src/apitypes';
 
 const sandbox = sinon.createSandbox();
 const noop = () => {};
@@ -1182,18 +1183,80 @@ describe('Bigtable/Table', () => {
         tableWithRetries.maxRetries = 7;
         tableWithRetries.createReadStream();
       });
+      it.only('should pass custom retry settings to the gapic layer', done => {
+        const customRetryCodes = [11, 12];
+        const customBackOffSettings = {
+          initialRetryDelayMillis: 17,
+          retryDelayMultiplier: 289,
+          maxRetryDelayMillis: 60923,
+        };
+        const customCanResume = (error: GoogleError) => error.code === 6;
+        const customGetResumptionRequestFn = (request: RequestType) => {
+          return {fakeProperty: 19};
+        };
+        const retry = new RetryOptions(
+          customRetryCodes,
+          customBackOffSettings,
+          customCanResume,
+          customGetResumptionRequestFn
+        );
+        const expectedOptions = {
+          otherArgs: {
+            headers: {
+              'bigtable-attempt': 0,
+            },
+          },
+          retry,
+        };
+        tester.testReadRowsGapicCall(
+          done,
+          {
+            rows: {
+              rowKeys: [],
+              rowRanges: [{}],
+            },
+            tableName,
+          },
+          expectedOptions
+        );
+        const tableWithRetries: Table = bigtable
+          .instance('fake-instance')
+          .table('fake-table');
+        tableWithRetries.createReadStream({
+          gaxOptions: {
+            retry
+          },
+        });
+      });
       /*
       it('should pass the right information to the gapic layer in a complex example', done => {
-        const options = {
+        // TODO:
+        const backoffSettings = {
+          initialRetryDelayMillis: 328,
+          retryDelayMultiplier: 993,
+          maxRetryDelayMillis: 434,
+        };
+        const gaxOptions = {
           maxRetries: 7,
           timeout: 734,
           autoPaginate: true,
           maxResults: 565,
           maxRetries: 477,
-
+        };
+        const options = {
+          end: 'ad',
+          filter: {
+            row: 'cn'
+          },
+          gaxOptions,
+          keys: ['ey', 'gh'],
+          limit: 98,
+          prefix: 'tz',
+          prefixes: ['uy', 'xz'],
+          ranges: [{start: 'cc', end: 'ef'}, {start: {inclusive: false, value: 'pq'}, end: {inclusive: true, value: 'rt'}}]
         }
         const expectedOptions = Object.assign(
-          ,
+          gaxOptions,
           tester.buildReadRowsGaxOptions(tableName, {})
         );
         tester.testReadRowsGapicCall(
