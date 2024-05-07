@@ -184,6 +184,7 @@ describe('Bigtable/Table', () => {
               protos.google.bigtable.v2.IReadRowsResponse
             >
           ) => {
+            console.log('in set service');
             const response = responses!.shift();
             assert(response);
             rowKeysRead.push([]);
@@ -218,3 +219,25 @@ describe('Bigtable/Table', () => {
     });
   });
 });
+
+/*
+Don't forget this test case
+{
+      "name": "should not retry over maxRetries",
+      "createReadStream_options": {
+        "gaxOptions": {
+          "maxRetries": 0
+        }
+      },
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [{}]
+        }
+      ],
+      "responses": [
+        { "row_keys": [],"end_with_error": 4 }
+      ],
+      "row_keys_read": [[]]
+    },
+ */

@@ -362,22 +362,77 @@
       "row_keys_read": [[]]
     },
     {
-      "name": "should not retry over maxRetries",
-      "createReadStream_options": {
-        "gaxOptions": {
-          "maxRetries": 0
-        }
-      },
+      "name": "should have a range which starts after the last read key",
+      "createReadStream_options": {},
       "request_options": [
         {
           "rowKeys": [],
           "rowRanges": [{}]
+        },
+        {
+          "rowKeys": [],
+          "rowRanges": [{
+            "startKeyOpen": "a"
+          }]
         }
       ],
       "responses": [
-        { "end_with_error": 4 }
+        { "row_keys": ["a"], "end_with_error": 4 },
+        { "row_keys": ["z"]}
       ],
-      "row_keys_read": [[]]
+      "row_keys_read": [["a"], ["z"]]
+    },
+    {
+      "name": "should move the active range start to after the last read key",
+      "createReadStream_options": {"ranges": [{"start": "a"}]},
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [{
+            "startKeyClosed": "a"
+          }]
+        },
+        {
+          "rowKeys": [],
+          "rowRanges": [{
+            "startKeyOpen": "a"
+          }]
+        }
+      ],
+      "responses": [
+        { "row_keys": ["a"], "end_with_error": 4 },
+        { "row_keys": ["z"]}
+      ],
+      "row_keys_read": [["a"], ["z"]]
+    },
+    {
+      "name": "should remove ranges which were already read",
+      "createReadStream_options": {
+        "ranges": [{"start": "a", "end": "b"}, {"start": "c"}]
+      },
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [{
+            "startKeyClosed": "a",
+            "endKeyClosed": "b"
+          },
+          {
+            "startKeyClosed": "c"
+          }]
+        },
+        {
+          "rowKeys": [],
+          "rowRanges": [{
+            "startKeyClosed": "c"
+          }]
+        }
+      ],
+      "responses": [
+        { "row_keys": ["a", "b"], "end_with_error": 4 },
+        { "row_keys": ["c"]}
+      ],
+      "row_keys_read": [["a", "b"], ["c"]]
     }
   ]
 }
