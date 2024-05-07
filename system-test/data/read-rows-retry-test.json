@@ -364,7 +364,9 @@
     {
       "name": "should not retry over maxRetries",
       "createReadStream_options": {
-        "maxRetries": 0
+        "gaxOptions": {
+          "maxRetries": 0
+        }
       },
       "request_options": [
         {
