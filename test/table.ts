@@ -1377,26 +1377,6 @@ describe('Bigtable/Table', () => {
         }
       });
 
-      it('shouldn not retry with keys and ranges that are read', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a1'}]);
-            stream.push([{key: 'd'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        const options = {
-          ranges: [{start: 'a', end: 'b'}],
-          keys: ['c', 'd'],
-        };
-
-        callCreateReadStream(options, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
       it('should retry received rst stream errors', done => {
         const rstStreamError = new Error('Received Rst_stream') as ServiceError;
         rstStreamError.code = 13;

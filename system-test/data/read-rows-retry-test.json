@@ -541,6 +541,31 @@
       ],
       "row_keys_read": [["a1", "d"]],
       "error": 4
+    },
+    {
+      "name": "should retry received rst stream errors",
+      "createReadStream_options": {
+        "keys": ["a"]
+      },
+      "request_options": [
+        {
+          "rowKeys": [
+            "a"
+          ],
+          "rowRanges": []
+        },
+        {
+          "rowKeys": [
+            "a"
+          ],
+          "rowRanges": []
+        }
+      ],
+      "responses": [
+        {"row_keys": [], "end_with_error": 13, "error_message": "rst_stream error"},
+        {"row_keys": ["a"]}
+      ],
+      "row_keys_read": [[],["a"]]
     }
   ]
 }

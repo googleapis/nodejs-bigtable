@@ -51,6 +51,7 @@ export interface Test {
 interface CreateReadStreamResponse {
   row_keys?: string[];
   end_with_error?: number;
+  error_message?: string;
 }
 
 interface CreateReadStreamRequest {
