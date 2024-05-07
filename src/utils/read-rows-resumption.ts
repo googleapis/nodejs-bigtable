@@ -149,13 +149,6 @@ export class ReadRowsResumptionStrategy {
    * for the next readrows request.
    */
   getResumeRequest(): protos.google.bigtable.v2.IReadRowsRequest {
-    const lastRowKey = this.chunkTransformer
-      ? this.chunkTransformer.lastRowKey
-      : '';
-    if (lastRowKey) {
-      spliceRanges(this.ranges, lastRowKey);
-      this.rowKeys = getRowKeys(this.rowKeys, lastRowKey);
-    }
     const reqOpts = this
       .tableStrategyInfo as google.bigtable.v2.IReadRowsRequest;
 
@@ -200,6 +193,15 @@ export class ReadRowsResumptionStrategy {
    * @return {boolean} True if the client will retry
    */
   canResume(error: GoogleError): boolean {
+    // First update the row keys and the row ranges based on the last row key.
+    const lastRowKey = this.chunkTransformer
+      ? this.chunkTransformer.lastRowKey
+      : '';
+    if (lastRowKey) {
+      spliceRanges(this.ranges, lastRowKey);
+      this.rowKeys = getRowKeys(this.rowKeys, lastRowKey);
+    }
+
     // If all the row keys and ranges are read, end the stream
     // and do not retry.
     if (this.rowKeys.length === 0 && this.ranges.length === 0) {
