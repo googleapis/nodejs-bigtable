@@ -472,9 +472,24 @@
         }
       ],
       "responses": [
-        { "row_keys": ["a", "b"]}
+        { "row_keys": ["a", "b"], "end_with_error": 4}
       ],
       "row_keys_read": [["a", "b"]]
+    },
+    {
+      "name": "should not retry if all the keys are read",
+      "createReadStream_options": {
+        "keys": ["a"]
+      },
+      "request_options": [
+        {
+          "rowKeys": ["a"]
+        }
+      ],
+      "responses": [
+        { "row_keys": ["a"], "end_with_error": 4}
+      ],
+      "row_keys_read": [["a"]]
     }
   ]
 }

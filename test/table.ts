@@ -1377,26 +1377,6 @@ describe('Bigtable/Table', () => {
         }
       });
 
-      it('should not retry if limit is reached', done => {
-        emitters = [
-          ((stream: Duplex) => {
-            stream.push([{key: 'a'}]);
-            stream.push([{key: 'b'}]);
-            stream.emit('error', makeRetryableError());
-          }) as {} as EventEmitter,
-        ];
-
-        const options = {
-          ranges: [{start: 'a', end: 'c'}],
-          limit: 2,
-        };
-
-        callCreateReadStream(options, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
       it('should not retry if all the keys are read', done => {
         emitters = [
           ((stream: Duplex) => {
