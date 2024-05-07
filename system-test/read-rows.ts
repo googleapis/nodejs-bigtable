@@ -196,6 +196,9 @@ describe('Bigtable/Table', () => {
             if (response.end_with_error) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const error: any = new Error();
+              if (response.error_message) {
+                error.message = response.error_message;
+              }
               error.code = response.end_with_error;
               stream.emit('error', error);
             } else {
