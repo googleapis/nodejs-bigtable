@@ -433,6 +433,48 @@
         { "row_keys": ["c"]}
       ],
       "row_keys_read": [["a", "b"], ["c"]]
+    },
+    {
+      "name": "should remove the keys which were already read",
+      "createReadStream_options": {
+        "keys": ["a", "b"]
+      },
+      "request_options": [
+        {
+          "rowKeys": ["a", "b"],
+          "rowRanges": []
+        },
+        {
+          "rowKeys": ["b"],
+          "rowRanges": []
+        }
+      ],
+      "responses": [
+        { "row_keys": ["a"], "end_with_error": 4 },
+        { "row_keys": ["c"]}
+      ],
+      "row_keys_read": [["a"], ["c"]]
+    },
+    {
+      "name": "should not retry if limit is reached",
+      "createReadStream_options": {
+        "ranges": [{"start": "a", "end": "c"}],
+        "limit": 2
+      },
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [{
+            "startKeyClosed": "a",
+            "endKeyClosed": "c"
+          }],
+          "rowsLimit": 2
+        }
+      ],
+      "responses": [
+        { "row_keys": ["a", "b"]}
+      ],
+      "row_keys_read": [["a", "b"]]
     }
   ]
 }

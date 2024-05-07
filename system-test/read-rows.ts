@@ -184,7 +184,6 @@ describe('Bigtable/Table', () => {
               protos.google.bigtable.v2.IReadRowsResponse
             >
           ) => {
-            console.log('in set service');
             const response = responses!.shift();
             assert(response);
             rowKeysRead.push([]);
