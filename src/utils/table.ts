@@ -14,8 +14,6 @@
 
 import {GetRowsOptions, PrefixRange} from '../table';
 import {Mutation} from '../mutation';
-import * as is from 'is';
-import {BoundData} from '../filter';
 
 export class TableUtils {
   static getRanges(options: GetRowsOptions): PrefixRange[] {
