@@ -484,7 +484,8 @@
       },
       "request_options": [
         {
-          "rowKeys": ["a"]
+          "rowKeys": ["a"],
+          "rowRanges": []
         }
       ],
       "responses": [
@@ -512,7 +513,7 @@
       "responses": [
         { "row_keys": ["c"], "end_with_error": 4}
       ],
-      "row_keys_read": [["a"]],
+      "row_keys_read": [["c"]],
       "error": 4
     },
     {
