@@ -524,19 +524,22 @@
       },
       "request_options": [
         {
-          "rowKeys": [],
+          "rowKeys": [
+            "c",
+            "d"
+          ],
           "rowRanges": [
             {
               "startKeyClosed": "a",
-              "endKeyOpen": "c"
+              "endKeyClosed": "b"
             }
           ]
         }
       ],
       "responses": [
-        { "row_keys": ["c"], "end_with_error": 4}
+        { "row_keys": ["a1", "d"], "end_with_error": 4}
       ],
-      "row_keys_read": [["a"]],
+      "row_keys_read": [["a1", "d"]],
       "error": 4
     }
   ]
