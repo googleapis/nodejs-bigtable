@@ -505,7 +505,7 @@
           "rowRanges": [
             {
               "startKeyClosed": "a",
-              "endKeyOpen": "c"
+              "endKeyClosed": "c"
             }
           ]
         }
