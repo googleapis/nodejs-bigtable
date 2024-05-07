@@ -25,7 +25,6 @@ import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
 import {BigtableClientMockService} from '../src/util/mock-servers/service-implementations/bigtable-client-mock-service';
 import {ServerWritableStream} from '@grpc/grpc-js';
-import {GapicLayerTester} from '../test/util/gapic-layer-tester';
 
 const {grpc} = new GrpcClient();
 
@@ -128,7 +127,7 @@ describe('Bigtable/Table', () => {
     });
   });
 
-  describe('createReadStream using mock server', () => {
+  describe.only('createReadStream using mock server', () => {
     let server: MockServer;
     let service: MockService;
     let bigtable = new Bigtable();

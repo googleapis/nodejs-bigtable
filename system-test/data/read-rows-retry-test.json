@@ -144,12 +144,12 @@
         }]
       },
       "request_options": [
-        { "rowKeys": [], 
+        { "rowKeys": [],
           "rowRanges": [
           { "startKeyClosed": "a", "endKeyClosed": "c" },
           { "startKeyClosed": "x", "endKeyClosed": "z" }
         ] },
-        { "rowKeys": [], 
+        { "rowKeys": [],
           "rowRanges": [ { "startKeyClosed": "x", "endKeyClosed": "z" } ] }
       ],
       "responses": [
@@ -326,8 +326,56 @@
         [ "y" ],
         [ "z" ]
       ]
+    },
+
+    {
+      "name": "should do a retry the stream is interrupted",
+      "createReadStream_options": {},
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [{}]
+        },
+        {
+          "rowKeys": [],
+          "rowRanges": [{}]
+        }
+      ],
+      "responses": [
+        { "row_keys": [], "end_with_error": 4 },
+        { "row_keys": [ "z" ] }
+      ],
+      "row_keys_read": [[], ["z"]]
+    },
+    {
+      "name": "should not retry CANCELLED errors",
+      "createReadStream_options": {},
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [{}]
+        }
+      ],
+      "responses": [
+        { "row_keys": [], "end_with_error": 1 }
+      ],
+      "row_keys_read": [[]]
+    },
+    {
+      "name": "should not retry over maxRetries",
+      "createReadStream_options": {
+        "maxRetries": 0
+      },
+      "request_options": [
+        {
+          "rowKeys": [],
+          "rowRanges": [{}]
+        }
+      ],
+      "responses": [
+        { "end_with_error": 4 }
+      ],
+      "row_keys_read": [[]]
     }
-
-
   ]
 }

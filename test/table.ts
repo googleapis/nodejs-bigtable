@@ -1377,39 +1377,6 @@ describe('Bigtable/Table', () => {
         }
       });
 
-      it('should do a retry the stream is interrupted', done => {
-        emitters = [
-          ((stream: Writable) => {
-            stream.emit('error', makeRetryableError());
-            stream.end();
-          }) as {} as EventEmitter,
-          ((stream: Writable) => {
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-        callCreateReadStream(null, () => {
-          assert.strictEqual(reqOptsCalls.length, 2);
-          done();
-        });
-      });
-
-      it('should not retry CANCELLED errors', done => {
-        emitters = [
-          ((stream: Writable) => {
-            const cancelledError = new Error(
-              'do not retry me!'
-            ) as ServiceError;
-            cancelledError.code = 1;
-            stream.emit('error', cancelledError);
-            stream.end();
-          }) as {} as EventEmitter,
-        ];
-        callCreateReadStream(null, () => {
-          assert.strictEqual(reqOptsCalls.length, 1);
-          done();
-        });
-      });
-
       it('should not retry over maxRetries', done => {
         const error = new Error('retry me!') as ServiceError;
         error.code = 4;
