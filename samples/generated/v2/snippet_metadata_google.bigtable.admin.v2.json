@@ -1320,6 +1320,242 @@
       }
     },
     {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_CreateAuthorizedView_async",
+      "title": "bigtable createAuthorizedView Sample",
+      "origin": "API_DEFINITION",
+      "description": " Creates a new AuthorizedView in a table.",
+      "canonical": true,
+      "file": "bigtable_table_admin.create_authorized_view.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 69,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "CreateAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CreateAuthorizedView",
+        "async": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view_id",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "authorized_view",
+            "type": ".google.bigtable.admin.v2.AuthorizedView"
+          }
+        ],
+        "resultType": ".google.longrunning.Operation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "CreateAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.CreateAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ListAuthorizedViews_async",
+      "title": "bigtable listAuthorizedViews Sample",
+      "origin": "API_DEFINITION",
+      "description": " Lists all AuthorizedViews from a specific table.",
+      "canonical": true,
+      "file": "bigtable_table_admin.list_authorized_views.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 76,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "ListAuthorizedViews",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.ListAuthorizedViews",
+        "async": true,
+        "parameters": [
+          {
+            "name": "parent",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "page_size",
+            "type": "TYPE_INT32"
+          },
+          {
+            "name": "page_token",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "view",
+            "type": ".google.bigtable.admin.v2.AuthorizedView.ResponseView"
+          }
+        ],
+        "resultType": ".google.bigtable.admin.v2.ListAuthorizedViewsResponse",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "ListAuthorizedViews",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.ListAuthorizedViews",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_GetAuthorizedView_async",
+      "title": "bigtable getAuthorizedView Sample",
+      "origin": "API_DEFINITION",
+      "description": " Gets information from a specified AuthorizedView.",
+      "canonical": true,
+      "file": "bigtable_table_admin.get_authorized_view.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 60,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "GetAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GetAuthorizedView",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "view",
+            "type": ".google.bigtable.admin.v2.AuthorizedView.ResponseView"
+          }
+        ],
+        "resultType": ".google.bigtable.admin.v2.AuthorizedView",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "GetAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.GetAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_UpdateAuthorizedView_async",
+      "title": "bigtable updateAuthorizedView Sample",
+      "origin": "API_DEFINITION",
+      "description": " Updates an AuthorizedView in a table.",
+      "canonical": true,
+      "file": "bigtable_table_admin.update_authorized_view.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 72,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "UpdateAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UpdateAuthorizedView",
+        "async": true,
+        "parameters": [
+          {
+            "name": "authorized_view",
+            "type": ".google.bigtable.admin.v2.AuthorizedView"
+          },
+          {
+            "name": "update_mask",
+            "type": ".google.protobuf.FieldMask"
+          },
+          {
+            "name": "ignore_warnings",
+            "type": "TYPE_BOOL"
+          }
+        ],
+        "resultType": ".google.longrunning.Operation",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.UpdateAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      }
+    },
+    {
+      "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_DeleteAuthorizedView_async",
+      "title": "bigtable deleteAuthorizedView Sample",
+      "origin": "API_DEFINITION",
+      "description": " Permanently deletes a specified AuthorizedView.",
+      "canonical": true,
+      "file": "bigtable_table_admin.delete_authorized_view.js",
+      "language": "JAVASCRIPT",
+      "segments": [
+        {
+          "start": 25,
+          "end": 62,
+          "type": "FULL"
+        }
+      ],
+      "clientMethod": {
+        "shortName": "DeleteAuthorizedView",
+        "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.DeleteAuthorizedView",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "TYPE_STRING"
+          },
+          {
+            "name": "etag",
+            "type": "TYPE_STRING"
+          }
+        ],
+        "resultType": ".google.protobuf.Empty",
+        "client": {
+          "shortName": "BigtableTableAdminClient",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteAuthorizedView",
+          "fullName": "google.bigtable.admin.v2.BigtableTableAdmin.DeleteAuthorizedView",
+          "service": {
+            "shortName": "BigtableTableAdmin",
+            "fullName": "google.bigtable.admin.v2.BigtableTableAdmin"
+          }
+        }
+      }
+    },
+    {
       "regionTag": "bigtableadmin_v2_generated_BigtableTableAdmin_ModifyColumnFamilies_async",
       "title": "bigtable modifyColumnFamilies Sample",
       "origin": "API_DEFINITION",
@@ -1466,7 +1702,7 @@
       "segments": [
         {
           "start": 25,
-          "end": 60,
+          "end": 72,
           "type": "FULL"
         }
       ],
@@ -1482,6 +1718,14 @@
           {
             "name": "consistency_token",
             "type": "TYPE_STRING"
+          },
+          {
+            "name": "standard_read_remote_writes",
+            "type": ".google.bigtable.admin.v2.StandardReadRemoteWrites"
+          },
+          {
+            "name": "data_boost_read_local_writes",
+            "type": ".google.bigtable.admin.v2.DataBoostReadLocalWrites"
           }
         ],
         "resultType": ".google.bigtable.admin.v2.CheckConsistencyResponse",
