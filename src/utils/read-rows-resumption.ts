@@ -89,7 +89,8 @@ function spliceRanges(
  * @param {ChunkTransformer} chunkTransformer A ChunkTransformer stream defined
  * in chunktransformer.ts which is typically used for parsing chunked data from
  * the server into a format ready for the user. The lastRowKey parameter of the
- * chunkTransformer object is used for resumption logic.
+ * chunkTransformer object is used for resumption logic to determine what keys
+ * and ranges should be included in the request for instance.
  * @param {GetRowsOptions} options Options provided to createreadstream used for
  * customizing the readRows call.
  * @param {TableStrategyInfo} tableStrategyInfo Data passed about the table
