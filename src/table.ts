@@ -14,7 +14,7 @@
 
 import {promisifyAll} from '@google-cloud/promisify';
 import arrify = require('arrify');
-import {ServiceError} from 'google-gax';
+import {RetryOptions, ServiceError} from 'google-gax';
 import {BackoffSettings} from 'google-gax/build/src/gax';
 import {PassThrough, Transform} from 'stream';
 
@@ -1443,6 +1443,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         numRequestsMade,
         options.gaxOptions
       );
+      if (options.gaxOptions?.retry === undefined) {
+        // For now gax will not do any retries for table.mutate
+        // Retries for table.mutate will be done in a separate scope of work.
+        options.gaxOptions.retry = new RetryOptions(
+          [],
+          DEFAULT_BACKOFF_SETTINGS,
+          () => false
+        );
+      }
 
       this.bigtable
         .request<google.bigtable.v2.MutateRowsResponse>({
@@ -1526,6 +1535,16 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
+    if (gaxOptions?.retry === undefined) {
+      // For now gax will not do any retries for table.sampleRowKeys
+      // Retries for table.sampleRowKeys will be moved to gax in a separate
+      // scope of work.
+      gaxOptions.retry = new RetryOptions(
+        [],
+        DEFAULT_BACKOFF_SETTINGS,
+        () => false
+      );
+    }
     this.sampleRowKeysStream(gaxOptions)
       .on('error', callback)
       .pipe(
