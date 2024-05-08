@@ -38,7 +38,9 @@ function rowResponseFromServer(rowKey: string) {
   };
 }
 
-function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
+function getRequestOptions(
+  request: protos.google.bigtable.v2.IReadRowsRequest
+): google.bigtable.v2.IRowSet {
   const requestOptions = {} as google.bigtable.v2.IRowSet;
   if (request.rows && request.rows.rowRanges) {
     requestOptions.rowRanges = request.rows.rowRanges.map(
@@ -77,7 +79,7 @@ function getRequestOptions(request: any): google.bigtable.v2.IRowSet {
   // shorter.
   if (request.rowsLimit && request.rowsLimit !== '0') {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (requestOptions as any).rowsLimit = parseInt(request.rowsLimit);
+    (requestOptions as any).rowsLimit = request.rowsLimit;
   }
   return requestOptions;
 }
