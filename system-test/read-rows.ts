@@ -78,7 +78,7 @@ function getRequestOptions(
   // shorter.
   if (request.rowsLimit && request.rowsLimit !== '0') {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (requestOptions as any).rowsLimit = request.rowsLimit;
+    requestOptions.rowsLimit = parseInt(request.rowsLimit as string);
   }
   return requestOptions;
 }
