@@ -16,10 +16,9 @@ import {Bigtable, protos, Table} from '../src';
 const {tests} = require('../../system-test/data/read-rows-retry-test.json') as {
   tests: ReadRowsTest[];
 };
-import {google} from '../protos/protos';
 import * as assert from 'assert';
 import {describe, it, before} from 'mocha';
-import {ReadRowsTest} from './testTypes';
+import {CreateReadStreamRequest, ReadRowsTest} from './testTypes';
 import {ServiceError, GrpcClient, CallOptions} from 'google-gax';
 import {MockServer} from '../src/util/mock-servers/mock-server';
 import {MockService} from '../src/util/mock-servers/mock-service';
@@ -40,8 +39,8 @@ function rowResponseFromServer(rowKey: string) {
 
 function getRequestOptions(
   request: protos.google.bigtable.v2.IReadRowsRequest
-): google.bigtable.v2.IRowSet {
-  const requestOptions = {} as google.bigtable.v2.IRowSet;
+): CreateReadStreamRequest {
+  const requestOptions = {} as CreateReadStreamRequest;
   if (request.rows && request.rows.rowRanges) {
     requestOptions.rowRanges = request.rows.rowRanges.map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -155,7 +154,7 @@ describe('Bigtable/Table', () => {
         // These variables store request/response data capturing data sent
         // and received when using readRows with retries. This data is evaluated
         // in checkResults at the end of the test for correctness.
-        const requestedOptions: google.bigtable.v2.IRowSet[] = [];
+        const requestedOptions: CreateReadStreamRequest[] = [];
         const responses = test.responses;
         const rowKeysRead: string[][] = [];
         let endCalled = false;

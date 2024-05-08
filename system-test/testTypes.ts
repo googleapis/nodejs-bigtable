@@ -54,7 +54,7 @@ interface CreateReadStreamResponse {
   error_message?: string;
 }
 
-interface CreateReadStreamRequest {
+export interface CreateReadStreamRequest {
   rowKeys: string[];
   rowRanges: google.bigtable.v2.IRowRange[];
   rowsLimit?: number;
