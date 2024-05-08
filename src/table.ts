@@ -1443,9 +1443,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
         numRequestsMade,
         options.gaxOptions
       );
-      if (options.gaxOptions?.retry === undefined) {
-        // For now gax will not do any retries for table.mutate
-        // Retries for table.mutate will be done in a separate scope of work.
+      if (
+        options.gaxOptions?.retry === undefined &&
+        options.gaxOptions?.retryRequestOptions === undefined
+      ) {
+        // For now gax will not do any retries for table.mutate unless
+        // the user specifically provides retry or retryRequestOptions in the
+        // call.
+        // Moving retries to gax for table.mutate will be done in a
+        // separate scope of work.
         options.gaxOptions.retry = new RetryOptions(
           [],
           DEFAULT_BACKOFF_SETTINGS,
@@ -1535,10 +1541,15 @@ Please use the format 'prezzy' or '${instance.name}/tables/prezzy'.`);
       typeof optionsOrCallback === 'function' ? optionsOrCallback : cb!;
     const gaxOptions =
       typeof optionsOrCallback === 'object' ? optionsOrCallback : {};
-    if (gaxOptions?.retry === undefined) {
-      // For now gax will not do any retries for table.sampleRowKeys
-      // Retries for table.sampleRowKeys will be moved to gax in a separate
-      // scope of work.
+    if (
+      gaxOptions?.retry === undefined &&
+      gaxOptions?.retryRequestOptions === undefined
+    ) {
+      // For now gax will not do any retries for table.sampleRowKeys unless
+      // the user specifically provides retry or retryRequestOptions in the
+      // call.
+      // Moving retries to gax for table.sampleRowKeys will be done in a
+      // separate scope of work.
       gaxOptions.retry = new RetryOptions(
         [],
         DEFAULT_BACKOFF_SETTINGS,
