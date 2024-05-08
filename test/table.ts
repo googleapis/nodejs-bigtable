@@ -18,7 +18,7 @@ import {afterEach, before, beforeEach, describe, it} from 'mocha';
 import * as proxyquire from 'proxyquire';
 import * as pumpify from 'pumpify';
 import * as sinon from 'sinon';
-import {PassThrough, Writable, Duplex} from 'stream';
+import {PassThrough, Writable} from 'stream';
 import {GoogleError, RetryOptions, ServiceError} from 'google-gax';
 
 import * as inst from '../src/instance';
