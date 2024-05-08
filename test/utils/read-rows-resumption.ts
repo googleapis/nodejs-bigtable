@@ -16,6 +16,7 @@ import {describe, it} from 'mocha';
 import {ChunkTransformer} from '../../src/chunktransformer';
 import {ReadRowsResumptionStrategy} from '../../src/utils/read-rows-resumption';
 import * as assert from 'assert';
+import {GoogleError} from 'google-gax';
 
 describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
   const tableName = 'fake-table-name';
@@ -142,6 +143,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
           tableName,
         }
       );
+      strategy.canResume(new GoogleError()); // Updates strategy state.
       // Do this check 2 times to make sure getResumeRequest is idempotent.
       assert.deepStrictEqual(
         strategy.getResumeRequest(),
@@ -167,6 +169,7 @@ describe('Bigtable/Utils/ReadrowsResumptionStrategy', () => {
       }
     );
     strategy.rowsRead = 37;
+    strategy.canResume(new GoogleError()); // Updates strategy state.
     assert.deepStrictEqual(strategy.getResumeRequest(), {
       rows: {
         rowKeys: [],
